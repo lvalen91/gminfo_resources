@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This enumdef is used to define any enumeration calibrations needed for SpeechRecognitionContentSettings.caldef file.">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>5/11/2018</Date>
+    <Description>Initial release of this enumeration definition file.</Description>
+    <Author>Xu Fang Zhao and Phani Lakkavajhala</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This calibration value enables or disables the functionality of Contacts Download of Manage Device Application Message. Furthermore, this calibration is used to enable contacts download from mobile mybrandApp to the vehicle." Name="Speech_MyBrandApp_Contacts">
+    <EnumID>_3V_zsFU5EeiX6c692dtayQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Disables the functionality of Contacts Download of Manage Device Application Message" Name="Disabled">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enables the functionality of Contacts Download of Manage Device Application Message" Name="Enabled">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

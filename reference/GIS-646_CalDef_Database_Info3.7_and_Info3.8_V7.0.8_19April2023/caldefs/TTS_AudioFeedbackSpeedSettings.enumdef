@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" xsi:schemaLocation="http://www.caltools.gm.com/enumdef enumdef_1.0.xsd" Description="Contains feedback speed rate enumeration for TTS.">
+  <EnumDefFileVersion>3</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>13OCT14</Date>
+    <Description>Corrected invalid enumdef name to support code generation.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="In the Audio Feedback Speed settings menu, the user is presented with the options Slow, Medium, and Fast. These settings correlate to the following iTextToSpeech SpeechRate values" Name="AudioFeedbackSpeedRate">
+    <EnumID>_d_VdwMWIEeOEzdA9o_rOxw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Slow = 75%" Name="Slow">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Medium = 100%" Name="Medium">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Fast = 125%" Name="Fast">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

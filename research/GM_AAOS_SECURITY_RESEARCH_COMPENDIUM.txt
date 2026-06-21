@@ -1,0 +1,1178 @@
+================================================================================
+GM AAOS INFOTAINMENT SECURITY RESEARCH COMPENDIUM
+================================================================================
+Document Version: 1.2
+Created: December 28, 2025
+Last Updated: December 28, 2025
+Platform: GM Infotainment 3 (IOK) - gminfo3.7/3.8 CSM Module
+Target Firmware: Y177 (SIHM22B-499.2) / Y181 (SIHM22B-499.3)
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1.  EXECUTIVE SUMMARY
+2.  SYSTEM ARCHITECTURE OVERVIEW
+3.  HARDWARE COMPONENTS
+4.  SOFTWARE STACK
+5.  DPS/SPS PROGRAMMING SYSTEM ANALYSIS
+6.  CALDEF DATABASE - SECURITY CALIBRATIONS
+7.  EEPROM SECURITY BYPASS MECHANISMS
+8.  VIP MCU ANALYSIS (RENESAS RH850)
+9.  PROTOKEY AND ICUSB SECURITY
+10. UPDATE PACKAGE STRUCTURE
+11. ATTACK SURFACE ANALYSIS
+12. SECURITY COMPARISON: Y177 vs Y181
+13. DPS CAPABILITIES AND LIMITATIONS
+14. RECOMMENDED RESEARCH PATHS
+15. TECHNICAL REFERENCE DATA
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+This document consolidates all research findings on the GM AAOS (Android
+Automotive OS) infotainment system security architecture. The primary research
+goals are:
+
+  1. Enable ADB access without physical EEPROM modification
+  2. Understand DPS/SPS programming capabilities for security modification
+  3. Document the VIP-SOC security trust chain
+  4. Identify potential paths to disable SELinux enforcement
+
+KEY FINDINGS:
+- ADB bypass confirmed working via EEPROM modification (0x0440 + 0x0A80)
+- SELinux changed from PERMISSIVE (Y177) to ENFORCING (Y181)
+- PROTOKEY service mediates ADB authentication via BCM seed exchange
+- DPS cannot directly access security EEPROM addresses
+- Calibration files are separate from VIP EEPROM security flags
+- OTA version check is DISABLED - downgrade attacks possible
+- MEC (Manufacturing Enable Counter) controls device registration
+
+================================================================================
+2. SYSTEM ARCHITECTURE OVERVIEW
+================================================================================
+
+The GM IOK infotainment system uses a multi-processor architecture:
+
++------------------+     +------------------+     +------------------+
+|   Intel SoC      |     |   VIP MCU        |     |   BCM            |
+|   (Android 12)   |<--->|   (RH850)        |<--->|   (Body Control) |
++------------------+     +------------------+     +------------------+
+        |                        |                        |
+        |   IPC/HDLC             |   GMLAN/CAN            |
+        |                        |                        |
+        v                        v                        v
++------------------+     +------------------+     +------------------+
+| GHS INTEGRITY    |     | VIP EEPROM       |     | Vehicle Network  |
+| Hypervisor       |     | (M24C64 I2C)     |     | (CAN/LIN)        |
++------------------+     +------------------+     +------------------+
+
+BOOT SEQUENCE:
+1. VIP MCU initializes from internal flash
+2. VIP reads configuration from I2C EEPROM (M24C64)
+3. VIP initializes Intel SoC power rails
+4. Intel ABL (Automotive Bootloader) executes
+5. GHS INTEGRITY hypervisor loads
+6. Android VM starts under hypervisor control
+7. VIP and SoC establish IPC communication (HDLC protocol)
+8. PROTOKEY service requests seeds from BCM via VIP
+9. If valid seed-key exchange, ADB authentication proceeds
+
+TRUST CHAIN:
+  VIP Bootloader -> VIP App -> EEPROM Flags -> SoC HostOS -> Android
+
+================================================================================
+3. HARDWARE COMPONENTS
+================================================================================
+
+3.1 SYSTEM-ON-CHIP (Intel)
+--------------------------
+Model:          Intel Atom x7-A3960
+Architecture:   Goldmont (Apollo Lake / Broxton)
+Process:        14nm
+Cores:          4 cores / 4 threads
+Base Freq:      800 MHz
+Boost Freq:     2.4 GHz
+TDP:            10W
+Qualification:  AEC-Q100 Automotive Grade
+
+3.2 VIP MCU (Renesas)
+---------------------
+Model:          Renesas RH850/P1M-E
+Architecture:   RH850 (V850 successor)
+Role:           Vehicle Interface Processor
+Functions:      Power management, CAN gateway, security enforcement
+EEPROM:         ST M24C64 (8KB I2C EEPROM)
+Firmware:       VIP App 2B.174.4.1 (March 2022)
+                Bolo Version B2.9C.01.01
+
+3.3 EEPROM (Security Storage)
+-----------------------------
+Model:          ST Microelectronics M24C64
+Type:           I2C Serial EEPROM
+Capacity:       64 Kbit (8KB)
+Organization:   8192 x 8 bit
+I2C Address:    0x50 (typical)
+Write Cycle:    5ms max
+Endurance:      4 million write cycles
+
+KEY EEPROM ADDRESSES:
+| Address | Frame | Purpose                    | Stock    | Bypass   |
+|---------|-------|----------------------------|----------|----------|
+| 0x0440  | 0xC3  | ADB Enable Primary         | C3 00 C3 | 5A FF 5A |
+| 0x0A80  | 0xFF  | ADB Enable Backup          | FF FF FF | 5A FF 5A |
+| 0x0B40  | 0x69  | Debug Mode Toggle (suspect)| 69 00 xx | 69 FF xx |
+| 0x0B60  | 0xC3  | Unknown Config             | varies   | unknown  |
+| 0x16E0  | --    | CRC Block 1                | checksum | recalc   |
+| 0x19E0  | --    | CRC Block 2                | checksum | recalc   |
+| 0x1A80  | --    | CRC Block 3                | checksum | recalc   |
+| 0x1B40  | --    | CRC Block 4                | checksum | recalc   |
+
+FRAME PROTOCOL:
+| Frame Byte | Purpose                        |
+|------------|--------------------------------|
+| 0x5A       | Security/VIN frames            |
+| 0x69       | Configuration toggle frames    |
+| 0xC3       | Calibration frames             |
+| 0xF0       | Data/String frames             |
+
+3.4 DISPLAY
+-----------
+Panel:          Chunghwa DD134IA-01B
+Resolution:     2400 x 960 @ 60Hz
+Size:           13.39" diagonal
+Touch:          Atmel maXTouch (16-point multitouch)
+
+3.5 NETWORK INTERFACES
+----------------------
+Ethernet:       Intel I211 (1Gbps, VLANs supported)
+WiFi:           Broadcom BCM (802.11ac, 2.4/5GHz)
+Bluetooth:      5.0 (HFP, A2DP, AVRCP, PBAP, MAP)
+
+================================================================================
+4. SOFTWARE STACK
+================================================================================
+
+4.1 OPERATING SYSTEM LAYERS
+---------------------------
+Layer 0:  VIP Firmware (Renesas RH850 bare-metal)
+Layer 1:  GHS INTEGRITY RTOS (Hypervisor)
+Layer 2:  Android 12 (API 32, Automotive variant)
+
+4.2 KEY BUILD INFORMATION
+-------------------------
+Build ID:       W231E-Y181.3.2-SIHM22B-499.3
+Fingerprint:    gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231
+Build Type:     user (release-keys)
+Build Date:     July 22, 2025
+Kernel:         Linux 4.19.305-240125T145315Z
+Security Patch: June 2025 (Y181) / February 2025 (Y177)
+
+4.3 SECURITY CONFIGURATION
+--------------------------
+| Property                  | Y177 Value  | Y181 Value  |
+|---------------------------|-------------|-------------|
+| ro.debuggable             | 0           | 0           |
+| ro.boot.selinux           | permissive  | permissive  |
+| getenforce (runtime)      | Permissive  | Enforcing   |
+| ro.boot.flash.locked      | 1           | 1           |
+| ro.boot.verifiedbootstate | green       | green       |
+| sys.oem_unlock_allowed    | 0           | 0           |
+
+CRITICAL OBSERVATION:
+Kernel boots with androidboot.selinux=permissive but runtime shows Enforcing.
+Something in boot chain FORCES enforcing mode (likely init.rc or GM service).
+
+4.4 GM-SPECIFIC SERVICES
+------------------------
+| Service              | Function                              |
+|----------------------|---------------------------------------|
+| gmprotokey           | ICUSB/ADB authentication, PROTOKEY   |
+| gmprotokey_recovery  | Recovery mode key service             |
+| gmlogger             | Debug/crash logging                   |
+| gmloggervendorserviced | Vendor logging extension            |
+| gmcrashlogd          | Crash log daemon                      |
+| gm_update_engine     | OTA update processing                 |
+| gm_vehicle_hal       | Vehicle HAL implementation            |
+| gm-location-hal-1_0  | Location services                     |
+
+4.5 KEY FILE PATHS
+------------------
+Calibration:    /mnt/vendor/oem_config/
+EEPROM Config:  /mnt/vendor/calibration/
+Crash Logs:     /data/gmlogger/gmcrashlogs/
+Update Cache:   /update_cache/
+
+================================================================================
+5. DPS/SPS PROGRAMMING SYSTEM ANALYSIS
+================================================================================
+
+5.1 TOOL OVERVIEW
+-----------------
+DPS (Development Programming System):
+  - Windows-based ECU flash programming tool
+  - Uses J2534 pass-thru interface
+  - Connects via OBD-II or bench harness
+  - Requires GM TIS2Web subscription for production use
+
+SPS (Service Programming System):
+  - Dealer-level programming system
+  - Integrated with GM diagnostic tools
+  - Full security access with dealer credentials
+
+SPAT (Service Programming Archive Tool):
+  - Creates custom programming archives
+  - Uses SPSToolBridge.LOG for blob mapping
+  - Packages utility + calibration files
+
+5.2 DPS CAPABILITIES
+--------------------
+CONFIRMED FUNCTIONS:
+[+] Get Controller Info - Read DIDs from ECU
+[+] Read PSI (Programming Support Information)
+[+] Read PEC (Programming Error Code)
+[+] Read BIS (Boot Status)
+[+] Read SBI (Security Bypass Indicator)
+[+] Read ECUID
+[+] ECU Configuration via XML
+[+] Flash utility files (Blob ID:0)
+[+] Flash calibration files (various Blob IDs)
+[+] Request ECU Bypass Tickets (SBAT)
+
+DPS DATA SOURCES:
+- SPSToolBridge.LOG: C:\Users\<username>\sps\SPSToolBridge.LOG
+- Contains blob name/ID mappings from programming sessions
+
+EXAMPLE SPSToolBridge.LOG:
+  Blob name: 10011000.dll, Blob ID: 0, Blob Size: 234283  (Utility File)
+  Blob name: 10000001.cfx, Blob ID: 1, Blob Size: 124      (Calibration)
+  Blob name: 10013941.dll, Blob ID: 16, Blob Size: 267107
+  Blob name: 10013940.cfx, Blob ID: 17, Blob Size: 499
+
+5.3 MODULE ID MAPPING
+---------------------
+| Mod ID | Hex  | Name              | Sign Type            |
+|--------|------|-------------------|----------------------|
+| 0      | 0x00 | OTA_Utility       | NONE                 |
+| 1      | 0x01 | VIP_APP           | VIP_APPLICATION      |
+| 21     | 0x15 | SOC_HOSTOS        | HOST_OS_IMAGE        |
+| 22     | 0x16 | SOC_SYSTEM        | ANDROID_SYSTEM       |
+| 23     | 0x17 | SOC_BOOT          | ANDROID_BOOT_KERNEL  |
+| 24     | 0x18 | SOC_UTILS         | NONE                 |
+| 26     | 0x1A | SOC_VENDOR        | ANDROID_VENDOR       |
+| 28     | 0x1C | SXM               | NONE                 |
+| 29     | 0x1D | GPS               | NONE                 |
+| 51     | 0x33 | TUNER             | NONE                 |
+| 52     | 0x34 | ETH_SWITCH        | NONE                 |
+| 55     | 0x37 | SOC_ACPIO         | NONE                 |
+| 56     | 0x38 | SOC_VBMETA        | ANDROID_VBMETA       |
+| 57     | 0x39 | SOC_PRODUCT       | ANDROID_PRODUCT      |
+| 71     | 0x47 | VIP_BOOT          | VIP_BOOTLOADER       |
+| 72     | 0x48 | SOC_ABL           | INTEL_ABL            |
+| 92     | 0x5C | Manifest          | NONE                 |
+| 93     | 0x5D | Signature         | NONE                 |
+
+5.4 SIGNING TYPES
+-----------------
+| Sign Type            | Required For           | Bypass Possible? |
+|----------------------|------------------------|------------------|
+| NONE                 | Utility, GPS, Tuner    | YES              |
+| VIP_APPLICATION      | VIP App firmware       | NO (need keys)   |
+| VIP_BOOTLOADER       | VIP Bootloader         | NO (need keys)   |
+| HOST_OS_IMAGE        | GHS INTEGRITY          | NO (need keys)   |
+| INTEL_ABL            | Intel Bootloader       | NO (need keys)   |
+| ANDROID_SYSTEM       | system partition       | NO (AVB)         |
+| ANDROID_VENDOR       | vendor partition       | NO (AVB)         |
+| ANDROID_PRODUCT      | product partition      | NO (AVB)         |
+| ANDROID_VBMETA       | Verified Boot metadata | NO (AVB)         |
+| ANDROID_BOOT_KERNEL  | boot image             | NO (AVB)         |
+| TSS                  | GM Trust Services      | NO (HSM)         |
+
+5.5 SBAT (SECURITY BYPASS AUTHORIZATION TICKETS)
+------------------------------------------------
+Purpose:  Authorized security bypass for development/service
+Server:   GM Cyber SBAT Ticket Server
+Access:   Requires dealer/engineering credentials
+Function: Issues time-limited bypass tickets for specific ECUs
+
+DPS User Guide shows SBI (Security Bypass Indicator) values:
+  $4444 = Bypass Inactive (normal production state)
+  $0080 = Bypass Active (authorized bypass mode)
+
+5.6 DPS LIMITATIONS FOR SECURITY BYPASS
+---------------------------------------
+DPS CANNOT:
+1. Write to arbitrary EEPROM addresses (only predefined calibration space)
+2. Bypass signed module requirements without proper keys
+3. Access VIP security EEPROM addresses (0x0440, 0x0A80, 0x0B40)
+4. Modify Android partitions without breaking AVB
+5. Issue SBAT tickets without GM server authentication
+
+DPS CAN:
+1. Read current calibration and security state via DIDs
+2. Flash unsigned modules (GPS, Tuner, Ethernet switch)
+3. Attempt firmware downgrades (version check disabled)
+4. Create custom utility files (if format understood)
+
+================================================================================
+6. CALDEF DATABASE - SECURITY CALIBRATIONS
+================================================================================
+
+Source: GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023
+
+The CalDef database contains ~100+ calibration definition files describing
+all configurable parameters for GM infotainment systems.
+
+6.1 SECURITY-RELEVANT CALIBRATIONS
+----------------------------------
+
+FILE: SFS2_SecurityExtensionsFRD.caldef
+---------------------------------------
+DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE
+  Type:     Boolean
+  Default:  FALSE
+  Purpose:  Bypasses MEC (Manufacturing Enable Counter) checks
+  Effect:   When TRUE, device registration enabled regardless of MEC
+  Note:     Intended for development only, FALSE in production
+
+EXPIRATION_ENFORCEMENT
+  Type:     Boolean
+  Default:  TRUE
+  Purpose:  Certificate expiration checking
+  Effect:   When TRUE, enforces certificate validity in normal mode
+
+OCSP_CHECK_FREQUENCY
+  Type:     Integer
+  Default:  900 seconds
+  Range:    300-86400 seconds
+  Purpose:  OCSP certificate status check interval
+
+FILE: SFS22_SecurityEventLoggingFRD.caldef
+------------------------------------------
+SECURITY_EVENT_LOGGING_ENABLED
+  Type:     Boolean
+  Purpose:  Enables security event logging to back-office server
+
+FILE: GIS763_InfotainmentProg_GlobalB.caldef
+--------------------------------------------
+GIS763_Gateway
+  Type:     Integer
+  Default:  69 (0x45)
+  Purpose:  Diagnostic address of CGM (Central Gateway Module)
+
+GIS763_WAITING_FOR_SECURE_ACCESS
+  Type:     Integer
+  Default:  1000 ms
+  Range:    300-3000 ms
+  Purpose:  Timeout waiting for SecurityAccess unlock
+
+GIS763_WAITING_FOR_SEED
+  Type:     Integer
+  Default:  1 second
+  Range:    1-10 seconds
+  Purpose:  Timeout waiting for SecurityAccess seed response
+
+GIS763_WAITING_ON_SESSION_KEYS
+  Type:     Integer
+  Default:  3 seconds
+  Purpose:  Timeout for session key response
+
+GIS763_PROGRAMMING_ENABLED
+  Type:     Boolean
+  Default:  TRUE
+  Purpose:  Master programming enable/disable
+
+GIS763_SigningCertificateIssuer
+  Default:  "CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC"
+
+GIS763_SigningCertificateSubject
+  Default:  "CN=GM Code Signature Server, OU=GM NA INFOTAINMENT, O=GM"
+
+FILE: GIS363_InfotainmentProg_GlobalA.caldef
+--------------------------------------------
+PROGRAMMING_ENABLED
+  Type:     Boolean
+  Default:  TRUE
+
+WAITING_ON_GMLAN
+  Type:     Integer
+  Default:  200 ms
+  Purpose:  CAN network response timeout
+
+MAX_OPERATIONAL_PROG_FILE_SIZE
+  Type:     Integer
+  Default:  4000 MB
+  Purpose:  Maximum programming file size in RAM
+
+SigningCertificateIssuer
+  Default:  "CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC"
+
+6.2 DIAGNOSTIC DTC CODES (Security Related)
+--------------------------------------------
+From GIS643_DiagnosticCalDef_GlobalA.caldef:
+
+B124F_44: "Security Access not Activated"
+  - Programming attempted without unlocking ECU
+
+From GIS641_DiagnosticCalDef_GlobalB.caldef:
+
+B1964_00: "USB D(+) Serial Data General Failure"
+  - MD Digital Signature Mismatch
+  - LIC Digital Signature Mismatch
+  - Security access not activated
+
+U1961_92: "Security Peripheral Performance"
+  - MAC generation timeout from security peripheral
+
+================================================================================
+7. EEPROM SECURITY BYPASS MECHANISMS
+================================================================================
+
+7.1 CONFIRMED ADB BYPASS METHOD
+-------------------------------
+The ADB authentication bypass requires modifying VIP EEPROM at two addresses:
+
+PRIMARY FLAG (0x0440):
+  Stock:    C3 00 C3  (ADB disabled, requires GM Secure Client)
+  Bypass:   5A FF 5A  (ADB enabled, no authentication required)
+
+BACKUP FLAG (0x0A80):
+  Stock:    FF FF FF
+  Bypass:   5A FF 5A
+
+PROCEDURE:
+1. Desolder M24C64 EEPROM from VIP board
+2. Read full contents using CH341A or similar programmer
+3. Modify bytes at 0x0440: C3 00 C3 -> 5A FF 5A
+4. Modify bytes at 0x0A80: FF FF FF -> 5A FF 5A
+5. Recalculate CRCs at 0x16E0, 0x19E0, 0x1A80, 0x1B40
+6. Write modified image back to EEPROM
+7. Resolder EEPROM to board
+
+CRC CALCULATION:
+The EEPROM uses CRC16 checksums for data integrity. Specific algorithm
+and block boundaries need further analysis. Incorrect CRCs may cause
+VIP to reject configuration.
+
+7.1.1 COMPLETE EEPROM BINARY DIFF (Stock vs ADB-Enabled)
+---------------------------------------------------------
+Comparing EEPROM dumps: side_B_K1_P1.txt (stock) vs side_B_K1_P2.txt (ADB)
+
+Address    Stock Value              ADB-Enabled Value        Notes
+--------   ----------------------   ----------------------   ----------------
+0x0440     C3 00 C3                 5A FF 5A                 PRIMARY ADB FLAG
+0x0A80     FF FF FF                 5A FF 5A                 BACKUP ADB FLAG
+0x0AA0     69 00 xx                 C3 00 xx                 Frame type change
+0x0B60     69 9D 00 00 00 69        C3 17 03 00 00 C3        Config modification
+
+CRC BLOCK CHANGES (recalculated after modification):
+0x16E0     [original CRC]           [new CRC]                CRC Block 1
+0x19E0     [original CRC]           [new CRC]                CRC Block 2
+0x1A80     [original CRC]           [new CRC]                CRC Block 3
+0x1B40     [original CRC]           [new CRC]                CRC Block 4
+
+FRAME BYTE ANALYSIS:
+- 0x5A: Used for security-critical flags (VIN, ADB enable)
+- 0x69: Configuration toggle frames
+- 0xC3: Calibration data frames
+- 0xF0: Data/string content frames
+
+The pattern "5A FF 5A" at 0x0440 is significant:
+- 0x5A = Security frame marker
+- 0xFF = Enable byte (vs 0x00 = disabled)
+- 0x5A = Frame marker again (framing pattern)
+
+7.2 SUSPECTED DEBUG FLAG (0x0B40)
+---------------------------------
+Address 0x0B40 uses frame byte 0x69 (configuration toggle pattern).
+Hypothesis: Setting byte at 0x0B41 to 0xFF may enable debug mode.
+
+Current:  69 00 xx ...
+Test:     69 FF xx ...
+
+If debug mode is enabled, it may:
+- Disable SELinux enforcement
+- Enable additional ADB capabilities
+- Expose hidden developer options
+
+7.3 WHY DPS CANNOT ACCESS THESE FLAGS
+--------------------------------------
+The EEPROM addresses 0x0440, 0x0A80, 0x0B40 are in a security-critical
+region that is:
+
+1. Not mapped to any DPS Module ID
+2. Accessed directly by VIP firmware via I2C
+3. Outside the calibration data space
+4. Protected from UDS/diagnostic write access
+
+DPS calibration writes go through:
+  DPS -> J2534 -> CAN/UDS -> VIP -> Specific Module Flash
+
+EEPROM security flags are accessed via:
+  VIP Firmware -> I2C Bus -> M24C64 EEPROM -> Raw Address
+
+These are fundamentally different access paths.
+
+================================================================================
+8. VIP MCU ANALYSIS (RENESAS RH850)
+================================================================================
+
+8.1 VIP FIRMWARE IDENTIFICATION
+-------------------------------
+From UART console capture (VIP_log_2B.174.4.1_10JUL24.txt):
+
+VIP Application Version: 2B.174.4.1
+Build Date:              24Mar22-0256
+Bolo Version:            B2.9C.01.01 (23Jul28-1212)
+ARXML Version:           22.22.158
+Hardware Variant:        56, SubVariant: 0
+
+8.2 VIP BOOT SEQUENCE
+---------------------
+[000128] STBC_WUF0WUF0 = 0x0, wakeup_factor = 0x0
+[000128] RESCTLRESF = 0x0, reset_factor = 0x201
+[000132] IPC: IPC-Version: 4.1.0
+[000132] IPC: API-Version: 0404
+[000132] HDLC: Init: WindowSize-5
+[000153] PLC: st = CSM_Startup
+[000158] PROTOKEY: ICUSB module enabled
+[000235] PROTOKEY: Receives invalid seed [2] from BCM
+
+8.3 VIP CALIBRATION VALUES (from log)
+-------------------------------------
+cal_critical_state_of_charge_ignore = 1
+cal_vin_relearn_en = 1
+cal_local_infotainment_cancel_mode = 0
+cal_background_sleep_timeout_sec = 10
+cal_sleep_fault_timeout_sec = 900
+cal_startup_fault_timeout_sec = 15
+cal_suspend_to_ram_en = 1
+cal_maximum_flush_fault_time = 36000
+
+8.4 VIP-SOC COMMUNICATION
+-------------------------
+Protocol: IPC over HDLC
+Channels:
+  - Channel 12: Flow control
+  - Channel 14: Boot reason, system state
+  - Channel 17, 18: Additional control
+
+IPC Messages Observed:
+  - IPC_ID_NotifyAlarmStatus
+  - Power Level notifications
+  - SendLastBootReason
+  - PLC/SysState messages
+
+8.5 VIP POWER STATE MACHINE
+---------------------------
+States observed:
+  - Sleep (0x0)
+  - BackgroundSleepTimeout
+  - AnimationInit (0x1)
+  - NormalInit
+  - CSM_Startup
+
+Timers:
+  - SoC SOH Timeout: 1500 (15 sec)
+  - Shutdown Timeout: 3500 (35 sec)
+  - Startup Timeout: 6000 (60 sec)
+  - Unmount Timeout: 800 (8 sec)
+  - Hypervisor Startup Timeout: 300 (3 sec)
+
+================================================================================
+9. PROTOKEY AND ICUSB SECURITY
+================================================================================
+
+9.1 PROTOKEY SERVICE
+--------------------
+The PROTOKEY service runs on VIP and mediates ADB authentication:
+
+1. SoC requests ADB access via IPC
+2. VIP's PROTOKEY module queries BCM for security seeds
+3. BCM provides cryptographic seed values
+4. VIP calculates expected key from seed
+5. If key matches, ADB access is granted
+
+9.2 SEED-KEY EXCHANGE (from VIP log)
+------------------------------------
+Observed behavior on bench (no BCM connected):
+
+[PROTOKEY] ICUSB module enabled
+[PROTOKEY] Receives invalid seed [1] from BCM
+[PROTOKEY] Receives invalid seed [2] from BCM
+[PROTOKEY] No Seed 0 received or cached
+[PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[PROTOKEY] No Seed 1 received or cached
+[PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[J6_CDD] J6_prv_ProtoKey: Protokey transmitted to SoC, status is 3
+
+INTERPRETATION:
+- VIP expects valid seeds from BCM
+- Without BCM, seeds are null (00 00 00 00 00 00 00 00)
+- Checksum 524289 = 0x80001 (likely error flag)
+- Status 3 indicates authentication failure
+
+9.2.1 UDS SEED FORMAT DISCOVERY (from DPS logs)
+-----------------------------------------------
+Analysis of DPS programming logs revealed the complete seed format:
+
+NORMAL STATE (ADB secured, Y177update_CSM.Txt):
+  SecurityAccess Response: 67 01 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01
+                               14 AC 6F 52 95 6C BB B0 78 A1 90 53 99 B8 B5 71 93
+
+  Seed Structure (32 bytes total):
+    Bytes 0-15:  ECUID = 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC
+    Bytes 16-31: Random Challenge = 6F 52 95 6C BB B0 78 A1 90 53 99 B8 B5 71 93
+
+  MEC Counter: 0 (unlocked/development state)
+
+BYPASSED STATE (EEPROM modified, A11_CSM_x80.Txt):
+  SecurityAccess Response: 67 01 FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+                               FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+
+  Seed = ALL 0xFF (32 bytes of 0xFF)
+  MEC Counter: 244 (locked production state)
+  SBI: $0000 (Bypass Inactive - misleading when EEPROM bypassed)
+
+KEY INSIGHT:
+When the EEPROM bypass is active (0x0440 = 5A FF 5A), the seed returns
+all 0xFF bytes instead of ECUID + Challenge. This indicates VIP is NOT
+performing real security - it returns a dummy seed that likely auto-passes.
+
+ECUID CONFIRMED:
+  $004B41DC0000160006104145610114AC
+  This ECUID appears in both secured and bypassed states, confirming
+  it is a fixed device identifier used in the seed calculation.
+
+9.3 SBAT KEY REFERENCE
+----------------------
+From VIP log:
+[SBAT] keyNBID = 0x0000
+
+NBID = Number Block ID, indicates no bypass ticket loaded
+
+9.4 ICUSB MODES
+---------------
+ICUSB (Infotainment Communication USB) operates in modes:
+
+1. Normal Mode: ADB requires GM Secure Client authentication
+2. Bypass Mode: ADB enabled via EEPROM flags (0x0440/0x0A80)
+3. SBAT Mode: Temporary bypass via authorized ticket
+
+9.5 BYPASSING PROTOKEY
+----------------------
+The EEPROM modification at 0x0440 bypasses PROTOKEY by:
+- Setting a flag that VIP checks before initiating seed-key exchange
+- When flag is 0xFF (bypass), VIP skips BCM authentication
+- SoC receives "authenticated" status without actual verification
+
+This is why physical EEPROM modification works but DPS cannot achieve
+the same result - DPS has no path to write this specific flag.
+
+================================================================================
+10. UPDATE PACKAGE STRUCTURE
+================================================================================
+
+10.1 PACKAGE CONTENTS
+---------------------
+Update packages contain:
+
+| File Type      | Purpose                              |
+|----------------|--------------------------------------|
+| *.mnf          | Manifest (edify-like update script)  |
+| *.smd          | Signature data                       |
+| Vit2File.vit   | Binary header / file index           |
+| indication.*   | Package identifier                   |
+| gm_usb_ignore_battery | Battery check bypass flag     |
+| delivery_manifest.csv | Human-readable file list      |
+| [Part Numbers] | Actual firmware/partition images     |
+
+10.2 MANIFEST SCRIPT ANALYSIS (86331663.mnf)
+--------------------------------------------
+The manifest uses GM's custom update extension (gmext):
+
+Device Check:
+  getprop("ro.product.device") == "gminfo37"
+
+Version Info:
+  ui_print("Full update target version: [SIHM22B-00499.03] target FCID: [0x54f3]")
+  ui_print("version check disabled")   <-- IMPORTANT: Downgrade possible
+
+Update Operations:
+  gmext.write_emmc_image()           - Direct eMMC write (boot partition)
+  gmext.extract_emmc_image()         - Extract to partition (vbmeta, acpio)
+  gmext.extract_logical_partition()  - Dynamic partition update (system, vendor)
+  gmext.update_ecu()                 - Flash ECU modules (VIP, HostOS, etc.)
+  gmext.switch_slot()                - A/B slot switching
+  gmext.update_dynamic_partition_config() - Update super partition config
+
+10.3 VIT FILE STRUCTURE
+-----------------------
+Vit2File.vit binary header (hexdump):
+
+Offset 0x60: "GMSUPPLIERNO_001"  - Supplier identifier
+Followed by:  File name references with padding
+
+Each entry: [ModuleID byte][Filename padded to 20 chars][0xFF padding]
+
+10.4 DELIVERY MANIFEST FIELDS
+-----------------------------
+Part Number, Part ID, Description, DLS/PLS, Model Year, Product Code,
+Release Type, Sign Type, Signing Attribute, Module ID, CVN, EWO,
+Fill/Pad Byte, Site of Source Code, Misc. Comments, File,
+Bypass P/N & Module ID Check, From Part Number, From DLS/PLS,
+To Part Number, To DLS/PLS, UPC, FNA, ECU
+
+10.5 PARTITION SIZES (from manifest)
+------------------------------------
+Dynamic partition group "group_sys": 9,432,989,696 bytes total
+  system:  3,228,360,704 bytes (~3.0 GB)
+  vendor:    466,915,328 bytes (~445 MB)
+  product: 2,700,648,448 bytes (~2.5 GB)
+
+================================================================================
+11. ATTACK SURFACE ANALYSIS
+================================================================================
+
+11.1 NETWORK SERVICES
+---------------------
+| Port  | Binding     | Service Type | Status      |
+|-------|-------------|--------------|-------------|
+| 7000  | 0.0.0.0     | Unknown      | UNEXPLORED  |
+| 6363  | 0.0.0.0     | NDN/ICN?     | UNEXPLORED  |
+| 49156 | 0.0.0.0     | Dynamic      | UNEXPLORED  |
+| 9002  | 192.168.1.1 | VLAN         | Internal    |
+| 9010  | 192.168.1.1 | VLAN         | Internal    |
+| 9016  | 192.168.1.1 | VLAN         | Internal    |
+
+RECOMMENDATION: Port scan and service identification on 7000, 6363, 49156
+
+11.2 DEVICE NODES
+-----------------
+| Device       | Permissions | Potential                     |
+|--------------|-------------|-------------------------------|
+| /dev/ttyACM1 | crw-rw-rw-  | World-accessible UART console |
+| /dev/tty     | crw-rw-rw-  | Standard TTY                  |
+| /dev/tty0    | crw-rw----  | VT console (root:system)      |
+
+/dev/ttyACM1 corresponds to MCP2200 USB-UART bridge and may provide:
+- VIP debug console access
+- GHS INTEGRITY shell
+- Bootloader interaction
+
+Hardware Note: 74LVC08A AND gate may be gating UART TX/RX signals
+
+11.3 USB ATTACK SURFACE
+-----------------------
+Connected USB devices:
+- 2x Aptiv H2H bridges (VID:10646 PID:261)
+- 2x GM V10 E2 PD hubs (VID:10646 PID:306)
+- 2x Vendor DFU devices (VID:10646 PID:288)
+- MCP2200 serial debug (VID:1240 PID:223)
+
+DFU (Device Firmware Update) devices are potential attack vectors.
+
+11.4 CAN BUS / UDS DIAGNOSTIC
+-----------------------------
+UDS Services available:
+- Service $10: Diagnostic Session Control
+- Service $22: Read Data By Identifier
+- Service $27: Security Access (seed-key)
+- Service $2E: Write Data By Identifier
+- Service $31: Routine Control
+- Service $34: Request Download
+- Service $36: Transfer Data
+- Service $37: Request Transfer Exit
+
+Security levels:
+- Level 1/2: Basic access
+- Level 3/4: Extended diagnostics
+- Level 5+: Programming/calibration
+
+================================================================================
+12. SECURITY COMPARISON: Y177 vs Y181
+================================================================================
+
+| Aspect              | Y177 (499.2)        | Y181 (499.3)        |
+|---------------------|---------------------|---------------------|
+| SELinux Runtime     | Permissive          | ENFORCING           |
+| Security Patch      | February 2025       | June 2025           |
+| Kernel Build        | March 2025          | July 2025           |
+| VIP Bootloader      | 85056831            | 85056831 (SAME)     |
+| VIP App             | 86283151            | 86331656            |
+| OTA Version Check   | DISABLED            | DISABLED            |
+| Boot State          | green/locked        | green/locked        |
+| OEM Unlock          | Disabled            | Disabled            |
+| ro.debuggable       | 0                   | 0                   |
+
+KEY DIFFERENCE:
+Y177 runs with SELinux permissive, Y181 forces enforcing.
+The SELinux mode change is the ONLY significant security difference.
+
+VIP FIRMWARE COMPARISON:
+- Binary diff shows 549,518 byte differences
+- Version identifiers changed (CM -> CN in header)
+- Hash/signature blocks differ
+- ICUSB/PROTOKEY code paths IDENTICAL
+- SELinux control is NOT in VIP firmware
+
+CONCLUSION: SELinux enforcement is controlled by Android init, not VIP.
+
+================================================================================
+13. DPS CAPABILITIES AND LIMITATIONS
+================================================================================
+
+13.1 WHAT DPS CAN DO FOR SECURITY RESEARCH
+------------------------------------------
+[+] Read security state via DIDs:
+    - DID $90: VIN
+    - DID $98: Repair Shop Code
+    - DID $99: Programming Date
+    - DID $B4: Traceability
+    - DID $F0: Secure Programming Data (PSI, PEC, BIS, SBI, ECUID)
+
+[+] Flash unsigned modules:
+    - GPS (Module 29)
+    - Tuner (Module 51)
+    - Ethernet Switch (Module 52)
+    - SXM (Module 28)
+
+[+] Attempt firmware downgrade:
+    - Version check disabled in manifest
+    - May restore Y177 SELinux permissive mode
+    - AVB rollback protection status unknown
+
+[+] Read SPSToolBridge.LOG:
+    - Obtain blob name/ID mappings
+    - Understand calibration file structure
+
+[+] Create custom SPAT archives:
+    - Package custom utility files
+    - Requires understanding of format
+
+13.2 WHAT DPS CANNOT DO
+-----------------------
+[-] Write to EEPROM security addresses (0x0440, 0x0A80, 0x0B40)
+    - These are not in calibration space
+    - Require physical I2C access
+
+[-] Flash signed modules without keys:
+    - VIP_APPLICATION (VIP App)
+    - VIP_BOOTLOADER (VIP Boot)
+    - HOST_OS_IMAGE (GHS INTEGRITY)
+    - INTEL_ABL (Bootloader)
+    - ANDROID_* (All Android partitions)
+
+[-] Bypass SecurityAccess without algorithm:
+    - Seed-key calculation required
+    - No known algorithm leak
+
+[-] Issue SBAT tickets without GM credentials:
+    - Requires dealer authentication
+    - Server connection mandatory
+
+13.3 POTENTIAL DPS EXPLOITS
+---------------------------
+1. Utility File Manipulation (LOW probability):
+   - Blob ID:0 is utility file with interpreter opcodes
+   - If not signed, custom opcodes could modify EEPROM
+   - Requires reverse engineering of opcode format
+
+2. Calibration Override (MEDIUM probability):
+   - DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE exists in CalDef
+   - If accessible via DPS, could bypass MEC checks
+   - Need to identify which Module ID contains this cal
+
+3. Downgrade Attack (MEDIUM-HIGH probability):
+   - OTA version check confirmed disabled
+   - Y177 has SELinux permissive
+   - Test: Create Y177 archive, flash, verify SELinux
+
+================================================================================
+14. RECOMMENDED RESEARCH PATHS
+================================================================================
+
+14.1 IMMEDIATE PRIORITY
+-----------------------
+1. Y177 DOWNGRADE TEST
+   - Create DPS archive from Y177 update package
+   - Flash to Y181 unit
+   - Verify SELinux mode changes to permissive
+   - Check if ADB EEPROM bypass still needed
+
+2. UTILITY FILE ANALYSIS
+   - Dump utility file from SPSToolBridge.LOG reference
+   - Reverse engineer interpreter opcode format
+   - Determine if custom opcodes could write EEPROM
+   - Check if utility files are signed
+
+3. CALDEF-TO-MODULE MAPPING
+   - Identify which Module IDs contain security calibrations
+   - Find DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE location
+   - Test if DPS can modify these values
+
+14.2 MEDIUM PRIORITY
+--------------------
+4. UART CONSOLE EXPLORATION (/dev/ttyACM1)
+   - Monitor during boot cycle
+   - Check for bootloader menu access
+   - Test for GHS INTEGRITY shell
+   - Verify 74LVC08A gate status
+
+5. NETWORK SERVICE ENUMERATION
+   - Port scan 7000, 6363, 49156
+   - Identify protocols and services
+   - Test for unauthenticated access
+   - Fuzz for vulnerabilities
+
+6. UDS SECURITY ACCESS RESEARCH
+   - Capture seed-key exchanges via CAN
+   - Analyze algorithm patterns
+   - Check for weak implementations
+   - Test known GM algorithm variants
+
+14.3 LONG TERM
+--------------
+7. VIP FIRMWARE REVERSE ENGINEERING
+   - Dump VIP flash via JTAG
+   - Identify PROTOKEY code paths
+   - Find EEPROM read/write functions
+   - Locate security decision logic
+
+8. GHS INTEGRITY ANALYSIS
+   - Understand hypervisor security model
+   - Find VM escape vectors
+   - Analyze partition isolation
+
+9. SBAT SERVER EMULATION
+   - Analyze SBAT ticket format
+   - Attempt local server setup
+   - Test ticket forgery
+
+================================================================================
+15. TECHNICAL REFERENCE DATA
+================================================================================
+
+15.1 PARTITION LAYOUT
+---------------------
+From fstab:
+
+system   /system  ext4 ro,barrier=1 avb=vbmeta,logical,first_stage_mount
+vendor   /vendor  ext4 ro,barrier=1 avb,logical,first_stage_mount
+product  /product ext4 ro,barrier=1 avb,logical,first_stage_mount
+/dev/block/by-name/data      /data      f2fs fileencryption=aes-256-xts
+/dev/block/by-name/boot      /boot      emmc slotselect
+/dev/block/by-name/vbmeta    /vbmeta    emmc slotselect
+/dev/block/by-name/metadata  /metadata  ext4 first_stage_mount
+/dev/block/by-name/config    /mnt/vendor/oem_config ext4
+/dev/block/by-name/calibration /mnt/vendor/calibration ext4
+
+15.2 AVB (Android Verified Boot) KEYS
+-------------------------------------
+From fstab avb_keys parameter:
+- /avb/q-gsi.avbpubkey
+- /avb/r-gsi.avbpubkey
+- /avb/s-gsi.avbpubkey
+
+15.3 KEY SYSTEM PROPERTIES
+--------------------------
+[ro.build.fingerprint]: gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys
+[ro.boot.hardware]: full_gminfo37_gb
+[ro.hardware]: full_gminfo37_gb
+[ro.product.device]: gminfo37
+[ro.product.brand]: gm
+[ro.debuggable]: 0
+[ro.boot.flash.locked]: 1
+[ro.boot.verifiedbootstate]: green
+[sys.oem_unlock_allowed]: 0
+[persist.sys.gm.encryption]: true
+[persist.sys.cal.brand]: GM_Brand_Chevrolet
+
+15.4 IPC CHANNEL MAPPING
+------------------------
+From VIP log analysis:
+
+Channel 12: Flow control (XON/XOFF)
+Channel 14: Boot reason, power management
+Channel 17: System state
+Channel 18: Additional control
+
+IPC Version: 4.1.0
+API Version: 0404
+HDLC Window Size: 5
+IFRAME Timeout: 50ms
+UFRAME Timeout: 20ms
+
+15.5 SEED-KEY CHECKSUM
+----------------------
+PROTOKEY seed checksum observed: 524289 (0x80001)
+
+This appears to be an error flag (0x80000) + counter (0x0001).
+When valid seeds are received, checksum will differ.
+
+15.6 ECU ADDRESS MAPPING (from DPS Logs)
+----------------------------------------
+24 ECUs detected on LS-CAN network during DPS session:
+
+| ECU ID | Name                      | ReqCANId    | RspCANId    |
+|--------|---------------------------|-------------|-------------|
+| 0x10   | Powertrain                | 0x14DA10F2  | 0x14DAF210  |
+| 0x20   | Chassis                   | 0x14DA20F2  | 0x14DAF220  |
+| 0x28   | Brake/ABS                 | 0x14DA28F2  | 0x14DAF228  |
+| 0x31   | Steering                  | 0x14DA31F2  | 0x14DAF231  |
+| 0x40   | Body                      | 0x14DA40F2  | 0x14DAF240  |
+| 0x45   | Gateway (CGM)             | 0x14DA45F2  | 0x14DAF245  |
+| 0x58   | HVAC                      | 0x14DA58F2  | 0x14DAF258  |
+| 0x60   | Cluster/IPC               | 0x14DA60F2  | 0x14DAF260  |
+| 0x80   | CSM (Infotainment)        | 0x14DA80F2  | 0x145AF280  |
+| ...    | (14 additional ECUs)      | ...         | ...         |
+
+CRITICAL ECU - CSM (0x80):
+  Function: Central Stack Module (Infotainment)
+  Request:  0x14DA80F2
+  Response: 0x145AF280 (note different format)
+  This is the primary target for ADB/security research.
+
+GATEWAY ECU - CGM (0x45):
+  Function: Central Gateway Module
+  All diagnostic routing passes through this ECU.
+  CalDef confirms: GIS763_Gateway = 69 (0x45)
+
+15.7 UDS SERVICE REFERENCE FOR SECURITY RESEARCH
+-------------------------------------------------
+Key UDS services for security analysis:
+
+Service $22 - Read Data By Identifier:
+  DID $90:  VIN
+  DID $98:  Repair Shop Code/Date
+  DID $99:  Programming Date
+  DID $B4:  Traceability (part numbers)
+  DID $F0:  Secure Programming Data
+
+Service $27 - Security Access:
+  Request Seed (Level 1):  27 01
+  Response:                67 01 [32-byte seed]
+  Send Key (Level 2):      27 02 [32-byte key]
+  Success Response:        67 02
+
+  Note: ECUID (16 bytes) is embedded in first half of seed.
+        Random challenge (16 bytes) is in second half.
+
+Service $2E - Write Data By Identifier:
+  Used for calibration writes
+  Requires successful SecurityAccess first
+
+15.8 DPS LOG FILE LOCATIONS
+---------------------------
+Windows paths observed in research:
+
+SPSToolBridge.LOG:     C:\Users\<user>\sps\SPSToolBridge.LOG
+DPS Program Logs:      C:\Program Files\DPS\logs\
+Controller Info:       Exported via DPS "Get Controller Info"
+
+Key DPS log files analyzed:
+- A11_CSM.ProgramLog.Txt    (Programming session with EEPROM bypass)
+- A11_CSM_x80.Txt           (ECU 0x80 state with bypass active)
+- Y177update_CSM.Txt        (Programming session with normal security)
+
+15.9 TYPE4 VCAP ANALYSIS
+------------------------
+Type4 VCAP is a DATA CAPTURE tool, NOT a programming tool.
+
+VCAP File Structure (XML):
+  <Capture Version="2.1" Id="VIN" SystemTime="...">
+    <Dlc Protocol="gmlan" Type="global-a">
+      <Subnet Id="ls">
+        <Device Id="ECU_ID" TxCanId="XXX">
+          <Service Id="1A">...</Service>  <!-- Read DIDs -->
+          <Service Id="22">...</Service>  <!-- Read Extended DIDs -->
+          <Service Id="27">...</Service>  <!-- SecurityAccess Seeds -->
+          <Service Id="A2">...</Service>  <!-- Security Status -->
+        </Device>
+      </Subnet>
+    </Dlc>
+  </Capture>
+
+Type4 VCAP Package Contents:
+  - CameraLoops_com_0: PE32 DLL (utility/interpreter)
+  - CameraLoops_com_1-4: XML definition files for data capture
+  - Type4_VCAP_*.tbl: Mapping table
+
+VCAP Seed Data Captured (2-byte seeds, older system):
+  | ECU ID | RxCanId | Seed (hex) |
+  |--------|---------|------------|
+  | 0x58   | 647     | 3630       |
+  | 0x60   | 64C     | 9D53       |
+  | 0x51   | 651     | E20B       |
+  | 0x7E8  | HS-CAN  | EDB3       |
+  | 0x7EA  | HS-CAN  | 52BB       |
+
+IMPORTANT: These are 2-byte seeds from an older vehicle (2018).
+The CSM (gminfo3.7) uses 32-byte seeds (ECUID + Challenge).
+
+15.10 DPS ARCHIVE CREATOR (SPAT) ANALYSIS
+-----------------------------------------
+DPS Archive Creator packages programming files for DPS flash operations.
+
+Directory Structure:
+  /DPS_Archive_Creator_V2/
+  ├── RunMe.exe              (Main application)
+  ├── SPSToolBridge.txt      (Blob ID mappings)
+  ├── tis2web.txt            (Vehicle->Part number mapping)
+  └── bin/                   (Gzip-compressed files)
+      ├── 10017461.cfx       (Calibration - XML workflow)
+      ├── 10017550.dll       (Utility - PE32 DLL)
+      └── 8xxxxxxx           (Part number files)
+
+SPSToolBridge.txt Format:
+  Blob name: 10011000.dll, Blob ID: 0, Blob Size: 234283
+  Blob name: 10000001.cfx, Blob ID: 1, Blob Size: 124
+
+tis2web.txt Format (Vehicle->Part mapping):
+  A11  00  N/A  85577468
+  A11  02  N/A  87863250
+  ...
+
+Calibration File (.cfx) Structure:
+  - XML format with <Config> root element
+  - <Text> elements for UI display strings
+  - <Action> elements for workflow steps
+  - NOT raw binary data - UI/workflow configuration only
+
+Utility File (.dll) Structure:
+  - Windows PE32 DLL
+  - Contains interpreter opcodes
+  - Executes UDS commands via J2534
+
+CRITICAL FINDING:
+DPS Archive Creator CANNOT write to EEPROM security addresses because:
+1. Calibration files are XML workflow configs, not raw memory patches
+2. EEPROM addresses (0x0440, 0x0A80) not mapped to any Module ID
+3. VIP accesses EEPROM directly via I2C, not through UDS calibration
+4. No DPS mechanism exists to send raw I2C commands
+
+================================================================================
+END OF DOCUMENT
+================================================================================
+
+Document Changelog:
+- v1.2 (2025-12-28): Added Type4 VCAP and DPS Archive Creator analysis
+  * Documented VCAP XML structure and seed capture format
+  * Analyzed DPS Archive Creator (SPAT) file structure
+  * Confirmed calibration files are XML workflow, not raw memory
+  * Documented critical finding: DPS cannot access EEPROM addresses
+- v1.1 (2025-12-28): Added seed format discovery, ECU mapping, EEPROM diff details
+  * Documented 32-byte seed structure: ECUID (16) + Challenge (16)
+  * Added bypass indicator: All 0xFF seed when EEPROM modified
+  * Added complete EEPROM binary diff with frame byte analysis
+  * Added ECU address mapping (24 ECUs on LS-CAN)
+  * Added UDS service reference for security research
+  * Added DPS log file locations
+- v1.0 (2025-12-28): Initial comprehensive compilation
+
+Future Updates:
+- Add Y177 downgrade test results
+- Document utility file opcode format (reverse engineering)
+- Add successful attack paths
+- Complete seed-key algorithm reverse engineering
+- Test open-source CAN tools for UDS communication

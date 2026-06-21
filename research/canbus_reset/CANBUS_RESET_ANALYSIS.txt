@@ -1,0 +1,166 @@
+GM SPS Type4 CAN Bus Radio Reset Application Analysis
+======================================================
+Date: 2024-12-30
+Files: 10017908.dll (GbPowerModeList.dll), 10017909.cfx (config XML)
+
+EXECUTIVE SUMMARY
+-----------------
+This is a GM Type4 UDS Application for resetting the A11 Radio module via CAN bus.
+It uses the tisvcsv4.dll (TIS Vehicle Communication Software v4) library to abstract
+the diagnostic communication layer. The actual CAN arbitration IDs are managed by
+the VCS infrastructure based on vehicle configuration, not hardcoded in the DLL.
+
+FILE DETAILS
+------------
+1. 10017909.cfx (Configuration XML):
+   - Action ID: 2068
+   - Text ID: 881 ("Reset ECU")
+   - Simple config defining the reset action
+
+2. 10017908.dll (GbPowerModeList.dll):
+   - Type: 32-bit Windows PE DLL
+   - Size: ~1MB (1,071,648 bytes uncompressed)
+   - Exports: CMessage, GetResult, Launch, SetInternal
+   - Key Import: tisvcsv4.dll (GM TIS VCS v4)
+
+VCS INTERFACE FUNCTIONS
+-----------------------
+The DLL imports these functions from tisvcsv4.dll:
+
+1. CBuildService::constructor(IVcsUI&)
+   - Initializes the service builder with VCS interface
+
+2. CBuildService::SetInitToType4Mode()
+   - Configures the application for Type4 mode
+   - CONFIRMS this is a Type4 Application
+
+3. CBuildService::BuildRequestedService(eProtocol, serviceID, &retCode)
+   - Builds UDS service requests
+   - Protocol enum includes GMLAN, HS-CAN, etc.
+   - ServiceID is 16-bit unsigned
+
+4. CServiceInterface::GetInterface(ISerUdsExp2**)
+   - Gets the UDS communication interface
+
+5. CMessage::CheckConstruction()
+   - Validates message construction
+
+UDS SERVICES DETECTED
+---------------------
+1. DiagnosticSessionControl (0x10):
+   - Used for session management
+   - Likely uses Extended Session (0x10 0x03) for reset operations
+
+2. ECUReset (0x11):
+   - 0x11 0x01 - hardReset
+   - 0x11 0x02 - keyOffOnReset
+   - 0x11 0x03 - softReset
+   Found at multiple locations in binary
+
+3. SecurityAccess (0x27):
+   - Functions: getUnlockResponse, generate27Response
+   - CONFIRMS Security Access is REQUIRED before reset
+   - Uses seed-key authentication
+
+4. RoutineControl (0x31):
+   - 0x31 0x01 - startRoutine
+   - 0x31 0x02 - stopRoutine
+   - 0x31 0x03 - requestRoutineResults
+
+   Detected Routine IDs:
+   - 0x3208 (most prominent - likely main reset routine)
+   - 0x10E7, 0x10FF, 0x1000
+   - 0x008B, 0x00C9, 0x00C2
+   - 0x3266, 0x320A
+
+PREREQUISITES / VALIDATION
+--------------------------
+1. BCM Power Mode Check:
+   - Error: "Unable to validate power mode. Please verify that the Body
+            Control Module (BCM) is updated to the latest software and calibrations."
+   - Requirement: "Ensure the vehicle is in power mode 'Run' or Service Mode."
+
+2. Extended Mode:
+   - Error: "Extended mode error"
+   - Must establish Extended Diagnostic Session
+
+USER WARNING
+------------
+"WARNING! This procedure will reset all user settings in the Radio!"
+
+PROBABLE RESET SEQUENCE
+-----------------------
+Based on analysis, the likely UDS message sequence is:
+
+1. DiagnosticSessionControl - Enter Extended Session
+   Request:  0x10 0x03
+   Response: 0x50 0x03 ...
+
+2. SecurityAccess - Request Seed
+   Request:  0x27 0x01
+   Response: 0x67 0x01 [seed bytes]
+
+3. SecurityAccess - Send Key
+   Request:  0x27 0x02 [calculated key]
+   Response: 0x67 0x02
+
+4. RoutineControl - Start Reset Routine
+   Request:  0x31 0x01 0x32 0x08 [optional params]
+   Response: 0x71 0x01 0x32 0x08 ...
+
+5. ECUReset - Perform Reset
+   Request:  0x11 0x01 (or 0x11 0x03)
+   Response: 0x51 0x01 (or 0x51 0x03)
+
+CAN ADDRESSING
+--------------
+The CAN arbitration IDs are NOT hardcoded in this DLL. They are managed by
+the tisvcsv4.dll VCS layer based on:
+- Vehicle configuration (from TIS2Web/SPS)
+- Target module (A11 Radio)
+- Protocol selection (HS-CAN, GMLAN, etc.)
+
+For GM vehicles, typical A11 Radio addressing:
+- GMLAN: May use physical addressing via Serial Gateway
+- Direct HS-CAN: Likely 0x641 (Tx) / 0x249 (Rx) or similar
+
+The Type4 Application abstracts these details - SPS handles the routing.
+
+SERIAL GATEWAY VS DIRECT
+------------------------
+Based on the user's note, this reset function:
+- Previously required VCI Code unlock via Serial Gateway Module
+- May now work directly to A11 Radio via shortcut path
+- The DLL itself doesn't distinguish - VCS handles routing
+
+SECURITY CONSIDERATIONS
+-----------------------
+1. Security Access (0x27) is REQUIRED
+   - Uses seed-key algorithm
+   - Algorithm likely in tisvcsv4.dll or vehicle-specific
+
+2. BCM validation prevents unauthorized reset
+   - Must have proper power mode
+   - BCM software must be current
+
+3. Type4 applications require SPS/TIS2Web infrastructure
+   - Cannot be executed standalone
+   - VCI (Vehicle Communication Interface) required
+
+CONCLUSION
+----------
+This Type4 Application provides a CAN-level factory data reset for the A11
+Radio module. It requires:
+- GM SPS/TIS2Web infrastructure
+- Proper VCI connection
+- Security Access authentication
+- Vehicle in Run/Service power mode
+
+The reset uses RoutineControl (0x31) with routine ID 0x3208, followed by
+ECUReset (0x11). The security algorithm and actual CAN addressing are
+managed by the VCS layer and vehicle configuration data from GM servers.
+
+For manual execution outside SPS, you would need:
+1. The Security Access seed-key algorithm
+2. Proper CAN arbitration IDs for your specific vehicle
+3. UDS-capable diagnostic tool

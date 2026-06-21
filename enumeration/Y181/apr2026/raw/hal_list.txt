@@ -1,0 +1,234 @@
+Warning: Skipping "android.frameworks.automotive.display@1.0::IAutomotiveDisplayProxyService/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.frameworks.displayservice@1.0::IDisplayService/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.frameworks.schedulerservice@1.0::ISchedulingPolicyService/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.frameworks.sensorservice@1.0::ISensorManager/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.frameworks.stats@1.0::IStats/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.atrace@1.0::IAtraceDevice/default": no information for PID 389, are you root?
+Warning: Skipping "android.hardware.audio.effect@5.0::IEffectsFactory/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.audio@5.0::IDevicesFactory/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.automotive.audiocontrol@1.0::IAudioControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.automotive.vehicle@2.0::IVehicle/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.bluetooth@1.0::IBluetoothHci/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.boot@1.0::IBootControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.boot@1.1::IBootControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.broadcastradio@2.0::IBroadcastRadio/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.cas@1.0::IMediaCasService/default": no information for PID 558, are you root?
+Warning: Skipping "android.hardware.configstore@1.0::ISurfaceFlingerConfigs/default": no information for PID 560, are you root?
+Warning: Skipping "android.hardware.drm@1.0::ICryptoFactory/clearkey": no information for PID 561, are you root?
+Warning: Skipping "android.hardware.drm@1.0::ICryptoFactory/widevine": no information for PID 562, are you root?
+Warning: Skipping "android.hardware.gatekeeper@1.0::IGatekeeper/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.gnss@1.0::IGnss/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.gnss@1.1::IGnss/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.gnss@2.0::IGnss/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.gnss@2.1::IGnss/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.graphics.allocator@4.0::IAllocator/default": no information for PID 564, are you root?
+Warning: Skipping "android.hardware.graphics.composer@2.1::IComposer/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.graphics.composer@2.2::IComposer/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.graphics.composer@2.3::IComposer/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.health@2.0::IHealth/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.health@2.1::IHealth/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.keymaster@3.0::IKeymasterDevice/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.media.c2@1.0::IComponentStore/software": no information for PID 847, are you root?
+Warning: Skipping "android.hardware.media.omx@1.0::IOmx/default": no information for PID 828, are you root?
+Warning: Skipping "android.hardware.sensors@2.0::ISensors/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.sensors@2.1::ISensors/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.thermal@1.0::IThermal/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.thermal@2.0::IThermal/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.usb@1.0::IUsb/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.wifi.supplicant@1.0::ISupplicant/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.wifi.supplicant@1.1::ISupplicant/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.wifi@1.0::IWifi/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.wifi@1.1::IWifi/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.wifi@1.2::IWifi/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hardware.wifi@1.3::IWifi/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.hidl.allocator@1.0::IAllocator/ashmem": no information for PID 556, are you root?
+Warning: Skipping "android.hidl.base@1.0::IBase/ashmem": cannot be fetched from service manager (null)
+Warning: Skipping "android.hidl.base@1.0::IBase/clearkey": cannot be fetched from service manager (null)
+Warning: Skipping "android.hidl.base@1.0::IBase/software": cannot be fetched from service manager (null)
+Warning: Skipping "android.hidl.base@1.0::IBase/widevine": cannot be fetched from service manager (null)
+Warning: Skipping "android.hidl.manager@1.0::IServiceManager/default": no information for PID 227, are you root?
+Warning: Skipping "android.system.net.netd@1.0::INetd/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.system.net.netd@1.1::INetd/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.system.suspend@1.0::ISystemSuspend/default": cannot be fetched from service manager (null)
+Warning: Skipping "android.system.wifi.keystore@1.0::IKeystore/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.audio.control@1.0::IGMAudioControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.audio@1.0::IAmpControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.audio@1.0::IDiagnostics/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.audio@1.0::IECNRControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.audio@1.0::ISourceControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.audio@1.1::IAmpControl/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.calibrations.base@1.0::ICalibrationServiceBase/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.calibrations.provider@1.0::ICalibrationProvider/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.calibrations@1.0::ICalibrationService/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.diagnostics.bridge@1.0::IDiagnosticsBridgeService/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.diagnostics.ethernet@1.0::IDiagnosticsEthernetService/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.diagnostics.internal@1.0::IDiagnosticsInternalService/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.diagnostics.obd@1.0::IDiagnosticsObd/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.diagnostics@1.0::IDiagnosticsService/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.ffsd@1.0::IFfsd/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.gmlocation@1.0::IGmLocation/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.gmlogger.loggerhal@1.0::ILoggerBridge/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.healthmonitor@1.0::IHealthMonitor/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.panel@1.0::IPanel/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.panel@1.0::IPanelDiagnostics/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.powermode@1.0::IPowerModing/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.swupdate@1.0::IECUInformation/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.swupdate@1.0::IECUUpdate/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.gm.tod@1.0::IRemoteRtcService/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.harman.hardware.ame@1.0::IDiagnostics/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.harman.hardware.navsens@1.0::INavsens/default": cannot be fetched from service manager (null)
+Warning: Skipping "vendor.harman.harmanaudiotuning@1.0::IHarmanAudioTuningFactory/default": cannot be fetched from service manager (null)
+| All HIDL binderized services (registered with hwservicemanager)
+VINTF    R Interface                                                                         Thread Use Server Clients
+FM       ? android.frameworks.automotive.display@1.0::IAutomotiveDisplayProxyService/default N/A        N/A    
+DC,FM    ? android.frameworks.displayservice@1.0::IDisplayService/default                    N/A        N/A    
+DC,FM    ? android.frameworks.schedulerservice@1.0::ISchedulingPolicyService/default         N/A        N/A    
+FM       ? android.frameworks.sensorservice@1.0::ISensorManager/default                      N/A        N/A    
+FM       ? android.frameworks.stats@1.0::IStats/default                                      N/A        N/A    
+DM,FC    Y android.hardware.atrace@1.0::IAtraceDevice/default                                N/A        389    
+DM,FM,FC ? android.hardware.audio.effect@5.0::IEffectsFactory/default                        N/A        N/A    
+DM,FM,FC ? android.hardware.audio@5.0::IDevicesFactory/default                               N/A        N/A    
+DM,FC    ? android.hardware.automotive.audiocontrol@1.0::IAudioControl/default               N/A        N/A    
+DM,FM,FC ? android.hardware.automotive.vehicle@2.0::IVehicle/default                         N/A        N/A    
+DM,FM,FC ? android.hardware.bluetooth@1.0::IBluetoothHci/default                             N/A        N/A    
+DM,FM,FC ? android.hardware.boot@1.0::IBootControl/default                                   N/A        N/A    
+DM,FM,FC ? android.hardware.boot@1.1::IBootControl/default                                   N/A        N/A    
+DM,FC    ? android.hardware.broadcastradio@2.0::IBroadcastRadio/default                      N/A        N/A    
+DM       Y android.hardware.cas@1.0::IMediaCasService/default                                N/A        558    
+DM,FC    Y android.hardware.cas@1.1::IMediaCasService/default                                N/A        558    
+DM,FC    Y android.hardware.cas@1.2::IMediaCasService/default                                N/A        558    
+DM,FM    Y android.hardware.configstore@1.0::ISurfaceFlingerConfigs/default                  N/A        560    
+DM,FM,FC Y android.hardware.configstore@1.1::ISurfaceFlingerConfigs/default                  N/A        560    
+DM,FC    Y android.hardware.drm@1.0::ICryptoFactory/clearkey                                 N/A        561    
+DM,FC    Y android.hardware.drm@1.0::ICryptoFactory/widevine                                 N/A        562    
+DM,FC    Y android.hardware.drm@1.0::IDrmFactory/clearkey                                    N/A        561    
+DM,FC    Y android.hardware.drm@1.0::IDrmFactory/widevine                                    N/A        562    
+DM,FC    Y android.hardware.drm@1.1::ICryptoFactory/clearkey                                 N/A        561    
+DM,FC    Y android.hardware.drm@1.1::ICryptoFactory/widevine                                 N/A        562    
+DM,FC    Y android.hardware.drm@1.1::IDrmFactory/clearkey                                    N/A        561    
+DM,FC    Y android.hardware.drm@1.1::IDrmFactory/widevine                                    N/A        562    
+DM,FC    Y android.hardware.drm@1.2::ICryptoFactory/clearkey                                 N/A        561    
+DM,FC    Y android.hardware.drm@1.2::ICryptoFactory/widevine                                 N/A        562    
+DM,FC    Y android.hardware.drm@1.2::IDrmFactory/clearkey                                    N/A        561    
+DM,FC    Y android.hardware.drm@1.2::IDrmFactory/widevine                                    N/A        562    
+DM,FC    Y android.hardware.drm@1.3::ICryptoFactory/clearkey                                 N/A        561    
+DM,FC    Y android.hardware.drm@1.3::ICryptoFactory/widevine                                 N/A        562    
+DM,FC    Y android.hardware.drm@1.3::IDrmFactory/clearkey                                    N/A        561    
+DM,FC    Y android.hardware.drm@1.3::IDrmFactory/widevine                                    N/A        562    
+DM,FC    Y android.hardware.drm@1.4::ICryptoFactory/clearkey                                 N/A        561    
+DM,FC    Y android.hardware.drm@1.4::ICryptoFactory/widevine                                 N/A        562    
+DM,FC    Y android.hardware.drm@1.4::IDrmFactory/clearkey                                    N/A        561    
+DM,FC    Y android.hardware.drm@1.4::IDrmFactory/widevine                                    N/A        562    
+DM,FC    ? android.hardware.gatekeeper@1.0::IGatekeeper/default                              N/A        N/A    
+DM       ? android.hardware.gnss@1.0::IGnss/default                                          N/A        N/A    
+DM       ? android.hardware.gnss@1.1::IGnss/default                                          N/A        N/A    
+DM,FC    ? android.hardware.gnss@2.0::IGnss/default                                          N/A        N/A    
+DM,FC    ? android.hardware.gnss@2.1::IGnss/default                                          N/A        N/A    
+DM,FM,FC Y android.hardware.graphics.allocator@4.0::IAllocator/default                       N/A        564    
+DM,FM,FC ? android.hardware.graphics.composer@2.1::IComposer/default                         N/A        N/A    
+DM,FM,FC ? android.hardware.graphics.composer@2.2::IComposer/default                         N/A        N/A    
+DM,FM,FC ? android.hardware.graphics.composer@2.3::IComposer/default                         N/A        N/A    
+DM,FM,FC ? android.hardware.health@2.0::IHealth/default                                      N/A        N/A    
+DM,FM,FC ? android.hardware.health@2.1::IHealth/default                                      N/A        N/A    
+DM,FM,FC ? android.hardware.keymaster@3.0::IKeymasterDevice/default                          N/A        N/A    
+FM       Y android.hardware.media.c2@1.0::IComponentStore/software                           N/A        847    
+FM       Y android.hardware.media.c2@1.1::IComponentStore/software                           N/A        847    
+FM       Y android.hardware.media.c2@1.2::IComponentStore/software                           N/A        847    
+DM,FM,FC Y android.hardware.media.omx@1.0::IOmx/default                                      N/A        828    
+DM,FM,FC Y android.hardware.media.omx@1.0::IOmxStore/default                                 N/A        828    
+DM,FC    ? android.hardware.sensors@2.0::ISensors/default                                    N/A        N/A    
+DM,FC    ? android.hardware.sensors@2.1::ISensors/default                                    N/A        N/A    
+DM,FM    ? android.hardware.thermal@1.0::IThermal/default                                    N/A        N/A    
+DM,FM,FC ? android.hardware.thermal@2.0::IThermal/default                                    N/A        N/A    
+DM,FC    ? android.hardware.usb@1.0::IUsb/default                                            N/A        N/A    
+DM,FC    ? android.hardware.wifi.supplicant@1.0::ISupplicant/default                         N/A        N/A    
+DM,FC    ? android.hardware.wifi.supplicant@1.1::ISupplicant/default                         N/A        N/A    
+DM,FC    ? android.hardware.wifi@1.0::IWifi/default                                          N/A        N/A    
+DM,FC    ? android.hardware.wifi@1.1::IWifi/default                                          N/A        N/A    
+DM,FC    ? android.hardware.wifi@1.2::IWifi/default                                          N/A        N/A    
+DM,FC    ? android.hardware.wifi@1.3::IWifi/default                                          N/A        N/A    
+DC,FM    Y android.hidl.allocator@1.0::IAllocator/ashmem                                     N/A        556    
+X        ? android.hidl.base@1.0::IBase/ashmem                                               N/A        N/A    
+X        ? android.hidl.base@1.0::IBase/clearkey                                             N/A        N/A    
+X        ? android.hidl.base@1.0::IBase/software                                             N/A        N/A    
+X        ? android.hidl.base@1.0::IBase/widevine                                             N/A        N/A    
+DC,FM    Y android.hidl.manager@1.0::IServiceManager/default                                 N/A        227    
+FM       Y android.hidl.manager@1.1::IServiceManager/default                                 N/A        227    
+FM       Y android.hidl.manager@1.2::IServiceManager/default                                 N/A        227    
+DC,FM    Y android.hidl.token@1.0::ITokenManager/default                                     N/A        227    
+FM       ? android.system.net.netd@1.0::INetd/default                                        N/A        N/A    
+FM       ? android.system.net.netd@1.1::INetd/default                                        N/A        N/A    
+FM       ? android.system.suspend@1.0::ISystemSuspend/default                                N/A        N/A    
+DC,FM    ? android.system.wifi.keystore@1.0::IKeystore/default                               N/A        N/A    
+DM       ? vendor.gm.audio.control@1.0::IGMAudioControl/default                              N/A        N/A    
+DM       ? vendor.gm.audio@1.0::IAmpControl/default                                          N/A        N/A    
+DM       ? vendor.gm.audio@1.0::IDiagnostics/default                                         N/A        N/A    
+DM       ? vendor.gm.audio@1.0::IECNRControl/default                                         N/A        N/A    
+DM       ? vendor.gm.audio@1.0::ISourceControl/default                                       N/A        N/A    
+DM       ? vendor.gm.audio@1.1::IAmpControl/default                                          N/A        N/A    
+DM       ? vendor.gm.calibrations.base@1.0::ICalibrationServiceBase/default                  N/A        N/A    
+DM       ? vendor.gm.calibrations.provider@1.0::ICalibrationProvider/default                 N/A        N/A    
+DM       ? vendor.gm.calibrations@1.0::ICalibrationService/default                           N/A        N/A    
+DM       ? vendor.gm.diagnostics.bridge@1.0::IDiagnosticsBridgeService/default               N/A        N/A    
+DM       ? vendor.gm.diagnostics.ethernet@1.0::IDiagnosticsEthernetService/default           N/A        N/A    
+DM       ? vendor.gm.diagnostics.internal@1.0::IDiagnosticsInternalService/default           N/A        N/A    
+DM       ? vendor.gm.diagnostics.obd@1.0::IDiagnosticsObd/default                            N/A        N/A    
+DM       ? vendor.gm.diagnostics@1.0::IDiagnosticsService/default                            N/A        N/A    
+DM       ? vendor.gm.ffsd@1.0::IFfsd/default                                                 N/A        N/A    
+DM       ? vendor.gm.gmlocation@1.0::IGmLocation/default                                     N/A        N/A    
+DM       ? vendor.gm.gmlogger.loggerhal@1.0::ILoggerBridge/default                           N/A        N/A    
+DM       ? vendor.gm.healthmonitor@1.0::IHealthMonitor/default                               N/A        N/A    
+DM       ? vendor.gm.panel@1.0::IPanel/default                                               N/A        N/A    
+DM       ? vendor.gm.panel@1.0::IPanelDiagnostics/default                                    N/A        N/A    
+DM       ? vendor.gm.powermode@1.0::IPowerModing/default                                     N/A        N/A    
+DM       ? vendor.gm.swupdate@1.0::IECUInformation/default                                   N/A        N/A    
+DM       ? vendor.gm.swupdate@1.0::IECUUpdate/default                                        N/A        N/A    
+DM       ? vendor.gm.tod@1.0::IRemoteRtcService/default                                      N/A        N/A    
+DM       ? vendor.harman.hardware.ame@1.0::IDiagnostics/default                              N/A        N/A    
+DM       ? vendor.harman.hardware.navsens@1.0::INavsens/default                              N/A        N/A    
+DM       ? vendor.harman.harmanaudiotuning@1.0::IHarmanAudioTuningFactory/default            N/A        N/A    
+
+| All HIDL interfaces getService() has ever returned as a passthrough interface;
+| PIDs / processes shown below might be inaccurate because the process
+| might have relinquished the interface or might have died.
+| The Server / Server CMD column can be ignored.
+| The Clients / Clients CMD column shows all process that have ever dlopen'ed 
+| the library and successfully fetched the passthrough implementation.
+VINTF    R Interface                                                Thread Use Server Clients
+FC       ? android.hardware.boot@1.1::IBootControl/default          N/A        390    390
+DM,FM,FC ? android.hardware.graphics.mapper@4.0::IMapper/default    N/A        N/A    565 604 624 828 1154 1393 2206 2244 2370 3251 4980 5063 14323
+FC       ? android.hardware.health@2.1::IHealth/default             N/A        566    566
+FC       ? android.hardware.keymaster@3.0::IKeymasterDevice/default N/A        258    258
+FC       ? android.hardware.thermal@2.0::IThermal/default           N/A        567    567
+DC,FM    ? android.hidl.memory@1.0::IMapper/ashmem                  N/A        N/A    828 14323
+
+| All available HIDL passthrough implementations (all -impl.so files).
+| These may return subclasses through their respective HIDL_FETCH_I* functions.
+VINTF R Interface                                                                 Thread Use Server Clients
+X     ? android.hardware.audio.effect@5.0::I*/* (/vendor/lib/hw/)                 N/A        N/A    
+X     ? android.hardware.audio.effect@5.0::I*/* (/vendor/lib64/hw/)               N/A        N/A    
+X     ? android.hardware.audio@4.0::I*/* (/vendor/lib/hw/)                        N/A        N/A    
+X     ? android.hardware.audio@4.0::I*/* (/vendor/lib64/hw/)                      N/A        N/A    
+X     ? android.hardware.audio@5.0::I*/* (/vendor/lib/hw/)                        N/A        N/A    
+X     ? android.hardware.audio@5.0::I*/* (/vendor/lib64/hw/)                      N/A        N/A    
+X     ? android.hardware.boot@1.0::I*/* (/vendor/lib/hw/) (-1.1)                  N/A        N/A    
+X     ? android.hardware.boot@1.0::I*/* (/vendor/lib64/hw/) (-1.1)                N/A        N/A    
+X     ? android.hardware.broadcastradio@1.0::I*/* (/vendor/lib/hw/)               N/A        N/A    
+X     ? android.hardware.broadcastradio@1.0::I*/* (/vendor/lib64/hw/)             N/A        N/A    
+X     ? android.hardware.gatekeeper@1.0::I*/* (/vendor/lib/hw/)                   N/A        N/A    
+X     ? android.hardware.gatekeeper@1.0::I*/* (/vendor/lib64/hw/)                 N/A        N/A    
+X     ? android.hardware.graphics.mapper@4.0::I*/* (/vendor/lib/hw/) (.minigbm)   N/A        N/A    
+X     ? android.hardware.graphics.mapper@4.0::I*/* (/vendor/lib64/hw/) (.minigbm) N/A        N/A    
+X     ? android.hardware.health@2.0::I*/* (/vendor/lib/hw/) (-2.1)                N/A        N/A    
+X     ? android.hardware.health@2.0::I*/* (/vendor/lib64/hw/) (-2.1)              N/A        N/A    
+X     ? android.hardware.keymaster@3.0::I*/* (/vendor/lib/hw/)                    N/A        N/A    
+X     ? android.hardware.keymaster@3.0::I*/* (/vendor/lib64/hw/)                  N/A        N/A    
+X     ? android.hardware.renderscript@1.0::I*/* (/vendor/lib/hw/)                 N/A        N/A    
+X     ? android.hardware.renderscript@1.0::I*/* (/vendor/lib64/hw/)               N/A        N/A    
+X     ? android.hardware.thermal@2.0::I*/* (/vendor/lib/hw/) (.intel)             N/A        N/A    
+X     ? android.hardware.thermal@2.0::I*/* (/vendor/lib64/hw/) (.intel)           N/A        N/A    
+X     ? android.hidl.memory@1.0::I*/* (/apex/com.android.vndk.v32/lib/hw/)        N/A        N/A    
+X     ? android.hidl.memory@1.0::I*/* (/apex/com.android.vndk.v32/lib64/hw/)      N/A        N/A    
+X     ? android.hidl.memory@1.0::I*/* (/system/lib/hw/)                           N/A        N/A    
+X     ? android.hidl.memory@1.0::I*/* (/system/lib64/hw/)                         N/A        N/A    
+

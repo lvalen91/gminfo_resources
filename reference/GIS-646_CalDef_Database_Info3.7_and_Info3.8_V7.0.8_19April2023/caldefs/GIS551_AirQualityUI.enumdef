@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This enumdef file includes enumeratation values for enumeration calibrations defined within the GIS551_AirQualityUI.caldef.">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>1/3/2018</Date>
+    <Description>For CR#: 1529732, within this new GIS551_AirQualityUI.enumdef file added three enumerations for three new enumeration calibrations ( 1. AQ_STATUSAREAINDICATION, 2. AQ_INDEXCOLORCODE, and 3. AQ_INDEXCOLORCODE_SETTINGAVAIL) within the GIS551_AirQualityUI.caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="If the air quality feature is enabled status area indication should be enabled. If the air quality feature is not present this calibration should be disabled / not applicable. " Name="AQ_STATUSAREAINDICATION">
+    <EnumID>_N4hR0O_WEeeJ-4EGVvY9Kg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="$00 = Not Applicable" Name="Not_Applicable">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$01 = Disabled" Name="Disabled">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$02 = Enabled" Name="Enabled">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Region Based Color Code." Name="AQ_INDEXCOLORCODE">
+    <EnumID>_J0Nc8O_YEeeJ-4EGVvY9Kg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="$00 = Not Applicable" Name="Not_Applicable">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$01 = Green" Name="Green">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$02 = Blue" Name="Blue">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="If the air quality feature is enabled status area indication should be enabled. If the air quality feature is not present this calibration should be disabled / not applicable. " Name="AQ_INDEXCOLORCODE_SETTINGAVAIL">
+    <EnumID>_OQ2VcO_aEeeJ-4EGVvY9Kg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="$00 = Not Applicable" Name="Not_Applicable">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$01 = Disabled" Name="Disabled">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$02 = Enabled" Name="Enabled">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

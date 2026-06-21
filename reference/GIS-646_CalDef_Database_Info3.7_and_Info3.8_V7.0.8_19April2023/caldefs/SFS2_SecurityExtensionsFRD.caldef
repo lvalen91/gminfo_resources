@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Calibratable parameters for Android system security extentions in the CSM.">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>26NOV14</Date>
+    <Description>updates as per SFS-2 v1.4</Description>
+    <Author>Calvin Chou</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/12/2015</Date>
+    <Description> Based on feedback from Calvin Chou and Ritu Pande, within the SFS2_SecurityExtensionsFRD.caldef,updated the default value for EXPIRATION_ENFORCEMENT CAL from False to True.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/24/2016</Date>
+    <Description>Added a new calibration called DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE that will be implemented in the GM Palto software to deterimine if the CSM suppresses device registration to the back office server until the Manufacturing Enable Counter (MEC) is set to 0 or not.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Flag defined for development purposes to bypass the Manufacturing Enable Counter checks that inhibit automatic device registration until the vehicle has been fully assembled and tested.  This flag is intended to be left at its FALSE value for production release.  When TRUE, automatic device registration will be enabled irrespective of the MEC. When FALSE, automatic device registration will only be triggered if the MEC == 0.  See SFS-2 for details." Name="DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE" References="SFS-2" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_H-yGEDoJEeaUVpPOqbaY_w</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Frequency at which OCSP requests are sent from the Back Office to the CA." Name="OCSP_CHECK_FREQUENCY" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_mOR4QMZQEeOtcboReKeVHA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>900</Value>
+      <MinValue>300</MinValue>
+      <MaxValue>86400</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When performing validation, the TCS library will enforce certificate expiration if and only if the EXPIRATION_ENFORCEMENT is set to true, and only if running in &#xfffd;normal&#xfffd; Android mode, as opposed to the recovery mode." Name="EXPIRATION_ENFORCEMENT" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_cbesAMZREeOtcboReKeVHA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Per request from Calvin Chou and Ritu Pande, updated the default value for EXPIRATION_ENFORCEMENT CAL from False to True.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

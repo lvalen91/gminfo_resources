@@ -1,0 +1,144 @@
+NetworkProviders for: VcnNetworkProvider PhoneSwitcherNetworkRequstListener TcpInternetManager OemPaidWifiNetworkFactory WifiNetworkFactory TelephonyNetworkFactory[0] EthernetNetworkFactory VpnNetworkProvider:10 VpnNetworkProvider:0 UntrustedWifiNetworkFactory
+
+Active default network: 100
+
+Current per-app default networks: Per-App Network Preference:
+    none
+
+Current Networks:
+  NetworkAgentInfo{network{100}  handle{432902426637}  ni{Ethernet CONNECTED extra: } Score(50 ; KeepConnected : 0 ; Policies : IS_UNMETERED)   lp{{InterfaceName: vlan5 LinkAddresses: [ 192.168.1.100/24 ] DnsAddresses: [ /192.168.1.102 ] Domains: null MTU: 1500 Routes: [ 192.168.1.0/24 -> 0.0.0.0 vlan5 mtu 0,0.0.0.0/0 -> 192.168.1.102 vlan5 mtu 0 ]}}  nc{[ Transports: CELLULAR Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_ROAMING&FOREGROUND&NOT_CONGESTED&NOT_SUSPENDED&NOT_VCN_MANAGED LinkUpBandwidth>=50000Kbps LinkDnBandwidth>=450000Kbps]}}
+    Requests: REQUEST:21 LISTEN:13 BACKGROUND_REQUEST:0 total:34
+      NetworkRequest [ REQUEST id=1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_VCN_MANAGED RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ LISTEN id=5, [ Capabilities: FOREGROUND RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ REQUEST id=7, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ LISTEN id=8, [ Capabilities: FOREGROUND RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ LISTEN id=9, [ Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN&FOREGROUND&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ LISTEN id=10, [ Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ LISTEN id=11, [ RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ LISTEN id=12, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ REQUEST id=15, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ REQUEST id=17, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ REQUEST id=19, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: com.android.networkstack.inprocess] ]
+      NetworkRequest [ REQUEST id=23, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1001 RequestorUid: 1001 RequestorPkg: com.android.phone] ]
+      NetworkRequest [ REQUEST id=24, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED RequestorUid: 1000 RequestorPkg: com.gm.domain.server.delayed] ]
+      NetworkRequest [ LISTEN id=27, [ Transports: CELLULAR|WIFI Capabilities: NOT_VPN RequestorUid: 10046 RequestorPkg: com.android.systemui] ]
+      NetworkRequest [ REQUEST id=29, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10046 RequestorUid: 10046 RequestorPkg: com.android.systemui] ]
+      NetworkRequest [ REQUEST id=31, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10046 RequestorUid: 10046 RequestorPkg: com.android.systemui] ]
+      NetworkRequest [ LISTEN id=32, [ RequestorUid: 10046 RequestorPkg: com.android.systemui] ]
+      NetworkRequest [ REQUEST id=34, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ REQUEST id=37, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1001000 RequestorUid: 1001000 RequestorPkg: com.gm.homescreen] ]
+      NetworkRequest [ REQUEST id=39, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10074 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ REQUEST id=43, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ LISTEN id=44, [ Capabilities: INTERNET&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ REQUEST id=46, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ REQUEST id=51, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ REQUEST id=53, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ LISTEN id=54, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ LISTEN id=55, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&FOREGROUND&NOT_VCN_MANAGED Uid: 1010102 RequestorUid: 1010102 RequestorPkg: com.google.android.apps.automotive.templates.host] ]
+      NetworkRequest [ REQUEST id=57, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010074 RequestorUid: 1000 RequestorPkg: android] ]
+      NetworkRequest [ REQUEST id=62, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ LISTEN id=63, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ REQUEST id=68, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ REQUEST id=70, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010102 RequestorUid: 1010102 RequestorPkg: com.google.android.apps.automotive.templates.host] ]
+      NetworkRequest [ REQUEST id=72, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]
+      NetworkRequest [ LISTEN id=73, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]
+    Inactivity Timers:
+
+Status for known UIDs:
+  
+Network Requests:
+  uid/pid:1000/1154 activeRequest: 1 callbackRequest: 1 [NetworkRequest [ REQUEST id=1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_VCN_MANAGED RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 1 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 5 [NetworkRequest [ LISTEN id=5, [ Capabilities: FOREGROUND RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: 7 callbackRequest: 6 [NetworkRequest [ REQUEST id=7, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 8 [NetworkRequest [ LISTEN id=8, [ Capabilities: FOREGROUND RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 9 [NetworkRequest [ LISTEN id=9, [ Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN&FOREGROUND&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 10 [NetworkRequest [ LISTEN id=10, [ Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 11 [NetworkRequest [ LISTEN id=11, [ RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 12 [NetworkRequest [ LISTEN id=12, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 13 [NetworkRequest [ LISTEN id=13, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&VALIDATED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 asUid: 1010107 activeRequest: 15 callbackRequest: 14 [NetworkRequest [ REQUEST id=15, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: 17 callbackRequest: 16 [NetworkRequest [ REQUEST id=17, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: 19 callbackRequest: 18 [NetworkRequest [ REQUEST id=19, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: com.android.networkstack.inprocess] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: null callbackRequest: 20 [NetworkRequest [ LISTEN id=20, [ Transports: WIFI Capabilities: NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: com.android.networkstack.inprocess] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1001/1675 activeRequest: null callbackRequest: 21 [NetworkRequest [ LISTEN id=21, [ Transports: WIFI Capabilities: INTERNET&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1001 RequestorUid: 1001 RequestorPkg: com.android.phone] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1001/1675 activeRequest: 23 callbackRequest: 22 [NetworkRequest [ REQUEST id=23, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1001 RequestorUid: 1001 RequestorPkg: com.android.phone] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1328 activeRequest: 24 callbackRequest: 24 [NetworkRequest [ REQUEST id=24, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED RequestorUid: 1000 RequestorPkg: com.gm.domain.server.delayed] ]] callback flags: 0 priority: 2147483647
+  uid/pid:10046/1393 activeRequest: null callbackRequest: 27 [NetworkRequest [ LISTEN id=27, [ Transports: CELLULAR|WIFI Capabilities: NOT_VPN RequestorUid: 10046 RequestorPkg: com.android.systemui] ]] callback flags: 1 priority: 2147483647
+  uid/pid:10046/1393 activeRequest: 29 callbackRequest: 28 [NetworkRequest [ REQUEST id=29, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10046 RequestorUid: 10046 RequestorPkg: com.android.systemui] ]] callback flags: 1 priority: 2147483647
+  uid/pid:10046/1393 activeRequest: 31 callbackRequest: 30 [NetworkRequest [ REQUEST id=31, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10046 RequestorUid: 10046 RequestorPkg: com.android.systemui] ]] callback flags: 1 priority: 2147483647
+  uid/pid:10046/1393 activeRequest: null callbackRequest: 32 [NetworkRequest [ LISTEN id=32, [ RequestorUid: 10046 RequestorPkg: com.android.systemui] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 activeRequest: 34 callbackRequest: 33 [NetworkRequest [ REQUEST id=34, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1000 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1001000/2244 activeRequest: 37 callbackRequest: 36 [NetworkRequest [ REQUEST id=37, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1001000 RequestorUid: 1001000 RequestorPkg: com.gm.homescreen] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 asUid: 10074 activeRequest: 39 callbackRequest: 38 [NetworkRequest [ REQUEST id=39, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10074 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010107/3405 activeRequest: 43 callbackRequest: 42 [NetworkRequest [ REQUEST id=43, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:10107/2302 activeRequest: null callbackRequest: 44 [NetworkRequest [ LISTEN id=44, [ Capabilities: INTERNET&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:10107/2302 activeRequest: 46 callbackRequest: 45 [NetworkRequest [ REQUEST id=46, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:10107/2302 activeRequest: 51 callbackRequest: 50 [NetworkRequest [ REQUEST id=51, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:10107/2302 activeRequest: 53 callbackRequest: 52 [NetworkRequest [ REQUEST id=53, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:10107/2302 activeRequest: null callbackRequest: 54 [NetworkRequest [ LISTEN id=54, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010102/3817 activeRequest: null callbackRequest: 55 [NetworkRequest [ LISTEN id=55, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&FOREGROUND&NOT_VCN_MANAGED Uid: 1010102 RequestorUid: 1010102 RequestorPkg: com.google.android.apps.automotive.templates.host] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1000/1154 asUid: 1010074 activeRequest: 57 callbackRequest: 56 [NetworkRequest [ REQUEST id=57, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010074 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010107/3405 activeRequest: 62 callbackRequest: 61 [NetworkRequest [ REQUEST id=62, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010107/3405 activeRequest: null callbackRequest: 63 [NetworkRequest [ LISTEN id=63, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010107/3405 activeRequest: 68 callbackRequest: 67 [NetworkRequest [ REQUEST id=68, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010102/3817 activeRequest: 70 callbackRequest: 69 [NetworkRequest [ REQUEST id=70, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010102 RequestorUid: 1010102 RequestorPkg: com.google.android.apps.automotive.templates.host] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010107/2890 activeRequest: 72 callbackRequest: 71 [NetworkRequest [ REQUEST id=72, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  uid/pid:1010107/2890 activeRequest: null callbackRequest: 73 [NetworkRequest [ LISTEN id=73, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+
+mLegacyTypeTracker:
+  Supported types: 1 7 9 17
+  Current state:
+    9 [100 CELLULAR]
+
+
+Supported Socket keepalives: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+Reserved Privileged keepalives: 2
+Allowed Unprivileged keepalives per uid: 2
+Socket keepalives:
+
+Bad Wi-Fi avoidance: unrestricted
+
+
+mNetworkRequestInfoLogs (most recent first):
+  2026-04-07T14:36:03.926 - RELEASE uid/pid:1010107/4696 activeRequest: 65 callbackRequest: 64 [NetworkRequest [ REQUEST id=65, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:36:03.925 - RELEASE uid/pid:1010107/4696 activeRequest: null callbackRequest: 66 [NetworkRequest [ LISTEN id=66, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:26:21.528 - RELEASE uid/pid:1010074/4292 activeRequest: 59 callbackRequest: 58 [NetworkRequest [ REQUEST id=59, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010074 RequestorUid: 1010074 RequestorPkg: com.android.statementservice] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:26:08.670 - RELEASE uid/pid:10074/3519 activeRequest: 41 callbackRequest: 40 [NetworkRequest [ REQUEST id=41, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10074 RequestorUid: 10074 RequestorPkg: com.android.statementservice] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:26:03.820 - RELEASE uid/pid:10107/3991 activeRequest: null callbackRequest: 49 [NetworkRequest [ LISTEN id=49, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:26:03.818 - RELEASE uid/pid:10107/3991 activeRequest: 48 callbackRequest: 47 [NetworkRequest [ REQUEST id=48, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:55.788 - REGISTER uid/pid:1010107/2890 activeRequest: null callbackRequest: 73 [NetworkRequest [ LISTEN id=73, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:55.773 - REGISTER uid/pid:1010107/2890 activeRequest: null callbackRequest: 71 [NetworkRequest [ REQUEST id=72, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:55.404 - REGISTER uid/pid:1010102/3817 activeRequest: null callbackRequest: 69 [NetworkRequest [ REQUEST id=70, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010102 RequestorUid: 1010102 RequestorPkg: com.google.android.apps.automotive.templates.host] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:55.197 - REGISTER uid/pid:1010107/3405 activeRequest: null callbackRequest: 67 [NetworkRequest [ REQUEST id=68, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:53.520 - REGISTER uid/pid:1010107/4696 activeRequest: null callbackRequest: 66 [NetworkRequest [ LISTEN id=66, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:53.499 - REGISTER uid/pid:1010107/4696 activeRequest: null callbackRequest: 64 [NetworkRequest [ REQUEST id=65, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:50.616 - REGISTER uid/pid:1010107/3405 activeRequest: null callbackRequest: 63 [NetworkRequest [ LISTEN id=63, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:50.596 - REGISTER uid/pid:1010107/3405 activeRequest: null callbackRequest: 61 [NetworkRequest [ REQUEST id=62, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010107 RequestorUid: 1010107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:48.593 - RELEASE uid/pid:1010064/4339 activeRequest: 60 callbackRequest: 60 [NetworkRequest [ REQUEST id=60, [ Transports: CELLULAR|WIFI|ETHERNET Capabilities: INTERNET&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1010064 RequestorUid: 1010064 RequestorPkg: com.gm.spn] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:48.577 - REGISTER uid/pid:1010064/4339 activeRequest: null callbackRequest: 60 [NetworkRequest [ REQUEST id=60, [ Transports: CELLULAR|WIFI|ETHERNET Capabilities: INTERNET&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 1010064 RequestorUid: 1010064 RequestorPkg: com.gm.spn] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:47.849 - REGISTER uid/pid:1010074/4292 activeRequest: null callbackRequest: 58 [NetworkRequest [ REQUEST id=59, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010074 RequestorUid: 1010074 RequestorPkg: com.android.statementservice] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:47.778 - REGISTER uid/pid:1000/1154 asUid: 1010074 activeRequest: null callbackRequest: 56 [NetworkRequest [ REQUEST id=57, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 1010074 RequestorUid: 1000 RequestorPkg: android] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:45.884 - REGISTER uid/pid:1010102/3817 activeRequest: null callbackRequest: 55 [NetworkRequest [ LISTEN id=55, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&FOREGROUND&NOT_VCN_MANAGED Uid: 1010102 RequestorUid: 1010102 RequestorPkg: com.google.android.apps.automotive.templates.host] ]] callback flags: 0 priority: 2147483647
+  2026-04-07T14:25:36.769 - REGISTER uid/pid:10107/2302 activeRequest: null callbackRequest: 54 [NetworkRequest [ LISTEN id=54, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10107 RequestorUid: 10107 RequestorPkg: com.google.android.gms] ]] callback flags: 0 priority: 2147483647
+
+mNetworkInfoBlockingLogs (most recent first):
+
+NetTransition WakeLock activity (most recent first):
+  total acquisitions: 0
+  total releases: 0
+  cumulative duration: 0s
+  longest duration: 0s
+  
+  bandwidth update requests (by uid):
+
+mOemNetworkPreferencesLogs (most recent first):
+
+
+Permission Monitor:
+  Interface filtering rules:
+
+Legacy network activity:
+  mNetworkActive=true
+  Idle timers:
+    vlan5:
+      timeout=10 type=0

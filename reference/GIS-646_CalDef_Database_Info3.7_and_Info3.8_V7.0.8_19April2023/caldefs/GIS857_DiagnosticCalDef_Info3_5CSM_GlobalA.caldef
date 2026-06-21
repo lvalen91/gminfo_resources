@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Includes diagnostic related calibrations specific only to the GIS-857 for the Low Radio, and not applicable at all to either the GIS-643 or GIS-657.">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>12/15/2017</Date>
+    <Description>For CR#: 1482227, added two new calibrations (DTC_MASK_B248A_02 and DTC_MASK_B248A_04) within the new GIS857_DiagnosticCalDef_Info3_5CSM_GlobalA.caldef file.</Description>
+    <Author>Zachary Lemons</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="B248A_04_Wifi Antenna Circuit - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B248A_04" References="GIS-857" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_RxSooO2xEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/15/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Zachary Lemons</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B248A_02_Wifi Antenna Circuit - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B248A_02" References="GIS-857" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_3_oFkO2pEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/15/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Zachary Lemons</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

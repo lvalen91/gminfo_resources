@@ -1,0 +1,308 @@
+================================================================================
+GM AAOS QUICK REFERENCE CARD
+================================================================================
+Last Updated: January 1, 2026 (v1.2)
+================================================================================
+
+=== EEPROM BYPASS (CONFIRMED WORKING) ===
+
+ADB Enable:
+  Address 0x0440: C3 00 C3 -> 5A FF 5A
+  Address 0x0A80: FF FF FF -> 5A FF 5A
+
+CRC Locations: 0x16E0, 0x19E0, 0x1A80, 0x1B40
+  ** CRC NOT ENFORCED AT BOOT ** (empirically verified)
+  VIN set to all 0xFF: Module booted normally, no reset
+
+OTA Behavior: Security flags RESET to 0x00 after update!
+  Must re-apply EEPROM modifications after OTA/SPS updates.
+
+Suspected Debug Flag:
+  Address 0x0B40: 69 00 xx -> 69 FF xx (UNTESTED)
+
+Frame Types:
+  0x5A = Security/VIN
+  0x69 = Config toggle
+  0xC3 = Calibration
+  0xF0 = Data/String
+
+=== MODULE IDs (CORRECTED 2025-12-28) ===
+
+| ID | Hex  | Module      | Sign Type | Notes                    |
+|----|------|-------------|-----------|--------------------------|
+| 0  | 0x00 | Utility     | NONE      |                          |
+| 1  | 0x01 | VIP_APP     | TSS       | GM signed                |
+| 21 | 0x15 | HostOS      | TSS       | GHS INTEGRITY            |
+| 22 | 0x16 | System      | TSS       | + AVB protected          |
+| 23 | 0x17 | Boot        | NONE      | AVB chain only           |
+| 24 | 0x18 | Utils       | NONE      |                          |
+| 26 | 0x1A | Vendor      | TSS       | + AVB protected          |
+| 28 | 0x1C | SXM         | NONE      |                          |
+| 29 | 0x1D | GPS         | NONE      |                          |
+| 51 | 0x33 | Tuner       | NONE      |                          |
+| 52 | 0x34 | EthSwitch   | NONE      |                          |
+| 55 | 0x37 | ACPIO       | NONE      |                          |
+| 56 | 0x38 | VBMETA      | NONE      | Self-signed AVB          |
+| 57 | 0x39 | Product     | NONE      | AVB chain only           |
+| 71 | 0x47 | VIP_BOOT    | NONE      | *ATTACK VECTOR*          |
+| 72 | 0x48 | SOC_ABL     | NONE      | *ATTACK VECTOR* Intel ABL|
+
+=== SECURITY DIFFERENCES ===
+
+Y177: SELinux PERMISSIVE, Patch Feb 2025
+Y181: SELinux ENFORCING,  Patch Jun 2025
+
+OTA Version Check: DISABLED (downgrade possible)
+
+=== KEY CALIBRATIONS ===
+
+DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE
+  - Bypasses MEC check when TRUE
+  - File: SFS2_SecurityExtensionsFRD.caldef
+
+GIS763_PROGRAMMING_ENABLED
+  - Master programming enable
+  - File: GIS763_InfotainmentProg_GlobalB.caldef
+
+=== UDS SEED FORMAT (32 bytes) ===
+
+NORMAL STATE (secured):
+  Bytes 0-15:  ECUID (device identifier)
+  Bytes 16-31: Random Challenge
+  Example: 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC
+           6F 52 95 6C BB B0 78 A1 90 53 99 B8 B5 71 93
+
+BYPASSED STATE (EEPROM modified):
+  All bytes: FF FF FF FF... (32x 0xFF)
+  This indicates VIP is skipping real authentication.
+
+=== PROTOKEY SEED FORMAT (VIP-BCM) ===
+
+Valid:   XX XX XX XX XX XX XX XX (8 bytes from BCM)
+Invalid: 00 00 00 00 00 00 00 00 (bench/no BCM)
+Checksum: 524289 = 0x80001 (error flag)
+
+=== KEY ECU ADDRESSES ===
+
+CSM (Infotainment):  ECU 0x80, Req: 0x14DA80F2, Rsp: 0x145AF280
+Gateway (CGM):       ECU 0x45, Req: 0x14DA45F2, Rsp: 0x14DAF245
+Total ECUs on LS-CAN: 24
+
+=== NETWORK PORTS (UNEXPLORED) ===
+
+7000/tcp  - 0.0.0.0 - Unknown
+6363/tcp  - 0.0.0.0 - NDN?
+49156/tcp - 0.0.0.0 - Dynamic
+
+=== I2C ACCESS (POTENTIAL SOFTWARE BYPASS) ===
+
+World-accessible buses:
+  /dev/i2c-0: crw-rw-rw- (root:root)
+  /dev/i2c-1: crw-rw-rw- (root:root)
+
+EEPROM I2C address: Unknown (likely 0x50-0x57)
+SELinux: Y177 permissive (may work), Y181 enforcing (likely blocked)
+
+=== HARDWARE COMPONENTS ===
+
+I2C EEPROM:  ST M24C64 (8KB) - Security flags, VIN, config
+SPI Flash:   ISSI IS25LP016 (2MB) - Logs, backup, extended cfg
+  Location:  Opposite side of PCB from EEPROM
+  Markings:  IS25LP016, DNL3, 2243, P3A368L2
+  Critical:  NO (module likely boots without it)
+
+=== UART CONSOLE ===
+
+Device: /dev/ttyACM1 (world R/W)
+Chip:   MCP2200 USB-UART
+Gate:   74LVC08A (may block signals)
+
+=== FILE LOCATIONS ===
+
+SPSToolBridge.LOG: C:\Users\<user>\sps\SPSToolBridge.LOG
+Calibration:       /mnt/vendor/oem_config/
+EEPROM Config:     /mnt/vendor/calibration/
+Crash Logs:        /data/gmlogger/gmcrashlogs/
+
+=== VIP FIRMWARE ===
+
+Version: 2B.174.4.1
+Build:   24Mar22-0256
+Bolo:    B2.9C.01.01
+MCU:     Renesas RH850/P1M-E
+
+=== SOC INFO ===
+
+CPU:      Intel Atom x7-A3960 (Apollo Lake)
+Kernel:   Linux 4.19.305
+Android:  12 (API 32)
+Build:    W231E-Y181.3.2-SIHM22B-499.3
+
+=== SIGNING CERTIFICATE ===
+
+Issuer:  CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC
+Subject: CN=GM Code Signature Server, OU=GM NA INFOTAINMENT, O=GM
+
+=== SBAT BYPASS INDICATORS ===
+
+$4444 = Bypass Inactive (production)
+$0080 = Bypass Active (authorized)
+
+=== DPS QUICK CAPABILITIES ===
+
+CAN DO:
+  - Read DIDs ($90, $98, $99, $B4, $F0)
+  - Flash unsigned modules (GPS, Tuner, SXM)
+  - Create SPAT archives
+  - Attempt downgrades
+
+CANNOT DO:
+  - Write EEPROM security addresses
+  - Flash signed modules without keys
+  - Issue SBAT tickets without GM auth
+  - Bypass AVB protection
+
+=== TYPE4 vs SPAT ===
+
+Type4 VCAP: Data CAPTURE (reads seeds, DIDs, DTCs)
+SPAT/Archive: Programming (flashes modules)
+
+Calibration files (.cfx): XML workflow, NOT raw memory
+Utility files (.dll): PE32 DLL with interpreter opcodes
+
+CRITICAL: Neither can access EEPROM I2C addresses
+
+=== GSI/DSU STATUS ===
+
+Developer Options GSI loader: PRESENT but NON-FUNCTIONAL
+SEPolicy blocker: gm_update_engine denied gsi_metadata access
+Treble: ENABLED (ro.treble.enabled=true)
+VNDK: 32 (Android 12)
+First API: 29 (Android 10)
+
+Diagnostic: scripts/diagnose_gsi.sh
+
+=== CALDEF vs VIP CALIBRATIONS ===
+
+CRITICAL: Two SEPARATE calibration systems exist!
+
+CalDef Database (SFS2, GIS763, etc.):
+  - Controls Android/SoC software behavior
+  - Stored in system/vendor partitions
+  - Modified via OTA/USB updates
+  - CANNOT affect ADB authentication
+
+VIP Firmware Calibrations (cal_*):
+  - Controls VIP MCU behavior
+  - Stored in VIP internal flash
+  - Modified only via VIP firmware flash
+  - Controls EEPROM security flag checks
+
+Key CalDef Entries (Android-side only):
+  DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE = FALSE
+    -> Bypasses MEC for registration (NOT ADB)
+  EXPIRATION_ENFORCEMENT = TRUE
+    -> Certificate expiration validation
+  GIS763_PROGRAMMING_ENABLED = TRUE
+    -> Master programming enable
+
+VIP Cal Indexes (transmitted to SoC):
+  Index 0-14: Various config (150-84 bytes each)
+
+=== UPDATE PROCESS (NO RECOVERY/FASTBOOT) ===
+
+Update Engine: gm_update_engine (Android service)
+Update Type:   RAW partition images (NOT delta)
+
+Key Functions:
+  gmext.write_emmc_image()     - Direct eMMC write
+  gmext.extract_logical_partition() - Dynamic partition
+  gmext.update_ecu()           - Flash via VIP/UDS
+  gmext.switch_slot()          - A/B slot switch
+
+ECU Update Path:
+  gm_update_engine -> IPC -> VIP MCU -> UDS/CAN -> Target ECU
+
+GHS Hypervisor Role:
+  - Controls boot chain (not Android bootloader)
+  - Provides virtualized storage to Android
+  - SOC_HOSTOS (Module 21) IS the hypervisor
+
+AVB Status:
+  [ro.boot.avb_version]: 1.2
+  [ro.boot.vbmeta.device_state]: locked
+  [ro.boot.verifiedbootstate]: green
+
+=== PRE-AVB SECURITY (VIP_BOOT & SOC_ABL) ===
+
+CRITICAL: "Sign Type = NONE" means no TSS (GM cloud signing).
+Both modules have INTERNAL validation that provides security!
+
+VIP_BOOT (Module 71) Internal Security:
+  - Harman checksum validation (proprietary)
+  - SHA-256 message digest (cv_Act_Library)
+  - Application signed header validation
+  - SBA/SBAT ticket validation
+  - HDLC CRC protection
+
+SOC_ABL (Module 72) Internal Security:
+  - Intel CSE hardware root of trust
+  - RbeVerifyHashSha256 hash authentication
+  - SVN anti-rollback (fuse-based)
+  - fTPM hardware fuses
+  - Multiple lock states (SocCfgLock, OemLock, manuf_lock)
+  - PKCS7 certificate validation
+
+Exploitation Feasibility:
+  VIP_BOOT: MODERATE (software validation, RE possible)
+  SOC_ABL:  DIFFICULT (Intel CSE hardware protection)
+
+Best Attack Path: VIP_BOOT modification to bypass EEPROM checks
+
+=== PRIORITY RESEARCH TASKS (UPDATED 2025-12-28) ===
+
+1. [CRITICAL] I2C EEPROM bus mapping (software bypass potential)
+2. [CRITICAL] Reverse engineer Harman checksum algorithm
+3. [HIGH] Analyze VIP_BOOT signed header validation
+4. [HIGH] Map RH850 binary structure (EEPROM reading code)
+5. [MEDIUM] Y177 downgrade test (SELinux permissive + I2C access)
+6. [LOW] EEPROM 0x0B40 flag testing (CRC not enforced - safe to test)
+7. [LOW] SOC_ABL Intel CSE research (likely dead end)
+
+=== EMPIRICAL TEST RESULTS ===
+
+TESTED - NO ADVERSE EFFECT:
+  VIN (0x5C0-0x5D1) set to all 0xFF: Module booted normally
+
+CONFIRMED:
+  OTA updates reset security flags (0x0440/0x0A80) to secured state
+  CRC validation NOT enforced at boot time
+  SPS connection FAILS when EEPROM is in bypassed state (all-0xFF seed)
+
+=== CAN BUS DATA RESET RECOVERY (2026-01-01) ===
+
+CRITICAL FINDING: EEPROM bypass state blocks SPS/DPS connection!
+
+EEPROM Bypassed → Seed = all 0xFF → SPS refuses connection
+EEPROM Locked   → Seed = ECUID+Challenge → SPS connects
+
+RECOVERY PROCEDURE (for bricked UI via wm density/size):
+  1. Restore EEPROM: 0x0440/0x0A80 → locked state
+  2. Verify seed via DPS (should show ECUID, not 0xFF)
+  3. Apply SPS Type4: PIC6630 / Cal 10017909 "Reset ECU"
+  4. Post-reset: OOBE, ADB locked, re-modify EEPROM if needed
+
+Files: /GM_research/10017909_canbus_resest/
+  - 10017909.cfx: Reset ECU XML config
+  - 10017908.dll: Security DLL (AES-CMAC)
+  - A11_sps_datareset.Txt: Session log with valid seed
+
+Tested Build: Y175 (older than Y177/Y181)
+
+CATCH-22:
+  ADB access requires: EEPROM bypassed → SPS cannot connect
+  SPS recovery requires: EEPROM locked → Lose ADB access
+
+See: gm_dps/DPS_ANALYSIS_REPORT.md Appendix O for full details
+
+================================================================================

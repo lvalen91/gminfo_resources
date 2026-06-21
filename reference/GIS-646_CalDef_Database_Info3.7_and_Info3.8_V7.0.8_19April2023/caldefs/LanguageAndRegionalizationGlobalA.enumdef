@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Enumeration calibrations for INFO 3.0 Language and Regionalization calibrations in the  LanguageAndRegionalizationGlobalA.caldef file. Note as clarification although this enumdef has GlobalA in it's naming convention, similar to the calibrations within the LanguageAndRegionalizationGlobalA.caldef file these enumerations do not have any Global A or Global B dependence and are used to support both either Global A or Global B. With that said, unfortunately it is too late to make a naming convention update to remove the GlobalA reference in the name to clarify that now without affecting the GM Apps software team, which are using this exact enumdef naming convention in the current MY17 and MY18 App software code releases too.">
+  <EnumDefFileVersion>12</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>13OCT14</Date>
+    <Description>Deleted &quot;Reserved&quot; enum value names.  These are not required or allowed in caldef. </Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>14OCT14</Date>
+    <Description>Removed duplicates in HMI_TEXT_LANGUAGE and COUNTRY_CODE_VARIABLES.  Renamed to COUNTRY_CODE</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>15OCT2014</Date>
+    <Description>Deleted duplicate entries in KEYBOARD_LANGUAGE_ENABLE_VARIABLES</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>15OCT2014</Date>
+    <Description>Deleted duplicate entries in LANGUAGE_NAVIGATION_MAP_SCRIPT</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>24OCT2014</Date>
+    <Description>Deleted duplicate entries in LANGUAGE_NAVIGATION_PHONETIC_STREET_NAMES_FOR_PROMPTS</Description>
+    <Author>Chris Long</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>24OCT2014</Date>
+    <Description>Deleted duplicate entries in HMI_TEXT_LANGUAGE</Description>
+    <Author>Chris Long</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/4/2015</Date>
+    <Description>For the SYSTEM_LANGUAGES enumeration CAL added the new enumeration value SOUTH_AMERICAN_ENGLISH for English SA added in GIS-507 Figure 3.3.1.6 (Section: 3.3.1.4) for MY18. Within the SYSTEM_LANGUAGES enumeration CAL, updated the listing of default languages shown in the Descrition tab for the UK_ENGLISH, US_ENGLISH, RUSSIAN, DANISH, and SPANISH enumerations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/30/2015</Date>
+    <Description>For the SYSTEM_LANGUAGES enumeration CAL, for enumeration value 35 changed  the enumeration name from SOUTH_AMERICAN_ENGLISH to SOUTH_AFRICAN_ENGLISH to represent English SA in GIS-507 Figure 3.3.1.6 (Section: 3.3.1.4) for MY18.  Also within the SYSTEM_LANGUAGES enumeration CAL, updated the listing of default languages shown in the Descrition tab to add Isreal for US_ENGLISH enumeration and eliminate Isreal this listing for the UK_ENGLISH enumeartion.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/26/2016</Date>
+    <Description>Within this caldef, added the following additional countriies as enumeration values to the COUNTRY_CODE enumeration CAL: GEORGIA, ARMENIA, AZERBAIJAN, KYRGYZSTAN, TURKMENISTAN, TAJIKISTAN, BAHRAIN, OTHER S/E AFRICA, OTHER SOUTH AFRICA, OTHER SUB-SAHARAN AFRICA, OTHER NORTH AFRICA, SINGAPORE, AFGHANISTAN, BAHRAIN, IRAQ, and YEMEN.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/24/2016</Date>
+    <Description>Within the LanguageAndRegionalizationGlobalA.caldef  and LanguageAndRegionalizationGlobalA.caldef LanguageAndRegionalizationGlobalA.enumdef files made the following updates: Added new TARGET_SYSTEM_LANGUAGE_ENABLE_CALIBRATIONS to allow the flexibiltiy to enable (add to the user interface display)/disable (remove from the user interface display) as needed the available system languages in the SETTINGS SYSTEM LANGUAGE selection menu instead of tying the display of the available system languages to the COUNTRY_CODE calibration as was being done previously. Renamed the SYSTEM_LANGUAGE calibration to DEFAULT_SYSTEM_LANGUAGE and updated the description of this calibration to clarify the intended purposes of this calibration. Also, updated the enumeration value names and values for each of these enumeration to correspond to the Software Mapping (Hexadecimal Converted) number shown in the GIS-547 to make it easier to follow corresponding enumeration references in relation to the GIS-547. Added on to the description shown for the COUNTRY_CODE calibration to clarify that this calibration is also being used as referenced in GIS-331 Wifi Calibration Specification for determining the regulatory wifi power variation settings to use for the wifi chip that shall be dynamically determined and set based on the value (country value) set for this calibration. Also added additonal COUNTRY_CODE enumeration values that needed to be added. Deleted the following three calibrations that were confirmed by Thiep Nguyen not to be needed for NAV: 1.) LANGUAGE_NAVIGATION_MAP_SCRIPT, 2.) LANGUAGE_NAVIGATION_PHONETIC_STREET_NAMES_FOR_PROMPTS, and 3.) LANGUAGE_NAVIGATION_PHONETIC_POINTS_OF_INTEREST. Deleted the following two calibrations: 1.) LANGUAGE_SPEECH_VOICE_RECOGNITION and 2.) TEXT_TO_SPEECH_MANEUVER_PROMPTS_AND_MESSAGE_READBACK that were confirmed by Greg Lindemann not to be needed for voice recognition/speech recongniton. Deleted the KEYBOARD_LANGUAGES calibration  (along with the associated KEYBOARD_LANGUAGE_ENABLE_VARIABLES enumeration calibration) confirmed by team (Greg Frietag, Paul Hollenbeck, and Scott Griesmann) not to be needed. Also, deleted the HMI_TEXT_LANGUAGE calibration that was confirmed not to be needed with the use of the DEFAULT_SYSTEM_LANGUAGE calibration that has the same function. Also, deleted the following three calibrations 1.) DATE_FORMAT_DISPLAYED_VARIABLES, 2.) DATE_FORMAT_SEPERATOR_VARIABLES, and 3.) GRAPHICS_ANIMATION_THEMES_VAIRABLES since these calibrations were confirmed by Cody Hansen not be needed. Note these calibrations are not needed because the date format displayed and date format separator are automatically determined by the language setting selected, and the GRAPHICS_ANIMATION_THEMES_VAIRABLES calibration is not needed since the GMBrand calibration is already being used for the purpose of what this calibration was going to be used for. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the LanguageAndRegionalizationGlobalA.enumdef file to LanguageAndRegionalization.enumdef for this enumdef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to not have any reference to GlobalA or GlobalB in the caldef/enumdef naming convention if calibrations contained in a caldef/enumdef file are not GlobalA or GlobalB specific.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>11/7/2016</Date>
+    <Description>Added the country GAZA (shown in the country support list of GIS-547) to the country enumeration list for the COUNTRY_CODE calibration.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>11/21/2016</Date>
+    <Description> Changed the names of both the LanguageAndRegionalization caldef/enumdef files back to LanguageAndRegionalizationGlobalA. The name of these caldef/enumdef files were changed initially to help make it clearer that the calibrations within these caldef/enumdef files are not Global A specific calibrations, and these calibrations are intended to be used for both Global A and B. However, a naming convention change to these caldef/enumdef files would cause the GM Apps team to support a different software branch for MY19 than what was done for MY17 and MY18, which the GM Apps team confirmed could not be supported long term. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>6/13/2017</Date>
+    <Description>Within the LanguageAndRegionalizationGlobalA.enumdef file added four additonal enumerations values ( 1. HONG_KONG, 2. INDONESIA, 3. MALAYSIA, and 4. NO MAX TRANSMIT POWER REQUIREMENT) to the COUNTRY_CODE enumeration calibration and included a description for the COUNTRY_CODE enumerations that did not have a description previously.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>1/12/2018</Date>
+    <Description>Within the LanguageAndRegionalizationGlobalA.enumdef file, added the following 51 additional countries needed per GIS-547 and pertient vehicle PPCs to the COUNTRY_CODE calibration enumeration list: 1.) BERMUDA, 2,) ANTIGUA, 3.) BARBUDA, 4.) HAITI, 5.) JAMAICA, 6.) REPUBLIC OF TRINIDAD AND TOBAGO, 7.) TURKS AND CAICOS ISLAND, 8.) BELIZE, 9.) HONDURAS, 10.) NICARAGUA, 11.) LIBYA, 12.) MOROCCO, 13.) TUNISIA, 14.) BENIN, 15.) CAPE VERDE ISLANDS, 16.) BURUNDI, 17.) BURKINA FASO, 18.) CAMEROON, 19.) CHAD, 20.) EQUATORIAL GUINEA, 21.) ERITREA, 22.) GABON, 23.) GUINEA, 24.) GUINEA BISSAU, 25.) MADAGASCAR, 26.) MALI, 27.) TOGO, 28.) RWANDA, 29.) GAMBIA, 30.) ANGOLA, 31.) CENTRAL AFRICA, 32.) COMORO ISLANDS, 33.) DEMOCRATIC REPUBLIC OF THE CONGO, 34.) DJIBOUTI, 35.) ETHIOPIA, 36.) GHANA, 37.) NIGER, 38.) NIGERIA, 39.) SENEGAL, 40.) SIERRA_LEONE, 41.) SOMALIA, 42.) ST LUCIA, 43.) SURINAM, 44.) FIJI, 45.) MYANMAR, 46.) CAMBODIA, 47.) LAOS, 48.) TAHITI, 49.) NEW CALEDONIA, 50.) BRUNEI, and 51.) BARBADOS. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>09/18/2018</Date>
+    <Description>Added additional countries (Algeria, Liberia, and Northen Mariana Island) not previously listed in the COUNTY_CODE enumeration list in LanguageandRegionalization.enumdef </Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration of system language enable calibrations to support the supported target system languages from GIS-547." Name="AVAILABLE_TARGET_SYSTEM_LANGUAGE_ENABLES">
+    <EnumID>_vRtzsDh5EeaLbPZ4FkO9uQ</EnumID>
+    <EnumDefinitionVersion>6</EnumDefinitionVersion>
+    <EnumValueDefinition Description="System Language enable/disable calibration for English (US)" Name="ENGLISH_US_ENABLED">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for French (Canadian)" Name="FRENCH_CANADIAN_ENABLED">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description=" System Language enable/disable calibration for Spanish (North American)" Name="SPANISH_NORTH_AMERICAN_ENABLED">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for German" Name="GERMAN_ENABLED">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for English (UK)" Name="ENGLISH_UK_ENABLED">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Italian" Name="ITALIAN_ENABLED">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Spanish (European)" Name="SPANISH_ENABLED">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for French (European)" Name="FRENCH_ENABLED">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Chinese (Simplified)" Name="CHINESE_SIMPLIFIED_ENABLED">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Russian" Name="RUSSIAN_ENABLED">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Dutch" Name="DUTCH_ENABLED">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Turkish" Name="TURKISH_ENABLED">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Polish" Name="POLISH_ENABLED">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Portuguese (European)" Name="PORTUGUESE_ENABLED">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Korean" Name="KOREAN_ENABLED">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Arabic" Name="ARABIC_ENABLED">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Greek" Name="GREEK_ENABLED">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Swedish" Name="SWEDISH_ENABLED">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for English (Australian)" Name="ENGLISH_AUSTRALIAN_ENABLED">
+      <Value>40</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Hungarian" Name="HUNGARIAN_ENABLED">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Portuguese (Brazilian)" Name="PORTUGUESE_BRAZILIAN_ENABLED">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for English (S. Africa)" Name="ENGLISH_SOUTH_AFRICA_ENABLED">
+      <Value>41</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Danish" Name="DANISH_ENABLED">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Romanian" Name="ROMANIAN_ENABLED">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Norwegian" Name="NORWEGIAN_ENABLED">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Finnish" Name="FINNISH_ENABLED">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Croation" Name="CROATION_ENABLED">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Slovenian" Name="SLOVENIAN_ENABLED">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for India" Name="ENGLISH_INDIA_ENABLED">
+      <Value>99</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Thai" Name="THAI_ENABLED">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Czech" Name="CZECH_ENABLED">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Slovak" Name="SLOVAK_ENABLED">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Bulgarian" Name="BULGARIAN_ENABLED">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Ukrainian" Name="UKRAINIAN_ENABLED">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Serbian" Name="SERBIAN_ENABLED">
+      <Value>35</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System Language enable/disable calibration for Japanese" Name="JAPANESE_ENABLED">
+      <Value>12</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Default language enumeration list. Used to set the initial default system language that is available in the SETTINGS SYSTEM LANGUAGE selection menu. The DEFAULT_SYSTEM_LANGUAGE shall be checked to confirm it is one of the available system languages enabled at a given time by the TARGET_SYSTEM_LANGUAGE_ENABLE_CALIBRATIONS. If at any time the value set for the DEFAULT_SYSTEM_LANGUAGE calibration is not one of the available system languages enabled by the TARGET_SYSTEM_LANGUAGE_ENABLE_CALIBRATIONS, the DEFAULT_SYSTEM_LANGUAGE calibration shall be set to a fail safe value based on the value the REGION calibration is set to at that time. For the purpose of referencing the REGION calibration to determine the fail safe value to set the DEFAULT_SYSTEM_LANGUAGE calibration if the REGION calibration is set to any of the following four REGION enumeration calibration values of 1.) EUROPE, 2.) AFRICA, 3.) AUSTRALIA, or 4.) INDIA, the DEFAULT_SYSTEM_LANGUAGE calibration shall be set to a fail safe default system language of ENGLISH_UK. Otherwise if the REGION calibration is not set to any one of these four Region enumeration calibration values, the DEFAULT_SYSTEM_LANGUAGE calibration shall be set to a fail safe default system language of ENGLISH_US." Name="DEFAULT_SYSTEM_LANGUAGE">
+    <EnumID>_sJrvYLEKEeO_VpIpRoy4MQ</EnumID>
+    <EnumDefinitionVersion>4</EnumDefinitionVersion>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English; Locale = en-US" Name="ENGLISH_US">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = French; Locale = fr-CA" Name="FRENCH_CANADIAN">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Spanish; Locale = es-MX" Name="SPANISH_NORTH_AMERICAN">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = German; Locale = de-DE" Name="GERMAN">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English; Locale = en-GB" Name="ENGLISH_UK">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Italian; Locale = it-IT" Name="ITALIAN">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Spanish; Locale = es-ES" Name="SPANISH">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = French; Locale = fr-FR" Name="FRENCH">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Chinese (Sim.); Locale =  zh-CN" Name="CHINESE_SIMPLIFIED">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Russian; Locale = ru-RU" Name="RUSSIAN">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Dutch; Locale = nl-NL" Name="DUTCH">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Turkish; Locale = tr-TR" Name="TURKISH">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Polish; Locale = pl-PL" Name="POLISH">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Portuguese ; Locale = pt-PT" Name="PORTUGUESE">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Korean ; Locale = ko-KP" Name="KOREAN">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Arabic; Locale = ar-SA" Name="ARABIC">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Greek; Locale = el-GR" Name="GREEK">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Swedish; Locale = sv-SE" Name="SWEDISH">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English (AU); Locale = en-AU" Name="ENGLISH_AUSTRALIAN">
+      <Value>40</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Hungarian; Locale = hu-HU" Name="HUNGARIAN">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Portuguese (BR); Locale = pt-BR" Name="PORTUGUESE_BRAZILIAN">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English (S. Africa); Locale = en-ZA" Name="ENGLISH_SOUTH_AFRICA">
+      <Value>41</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Danish; Locale = da-DK" Name="DANISH">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Romanian; Locale = ro-RO" Name="ROMANIAN">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Norwegian; Locale = no-NO" Name="NORWEGIAN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Finnish; Locale = fi-FI" Name="FINNISH">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Croatian; Locale = hr-HR" Name="CROATION">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Slovenian; Locale = sl-SI" Name="SLOVENIAN">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English (India); Locale = TBD" Name="ENGLISH_INDIA">
+      <Value>99</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Thai; Locale = th-TH" Name="THAI">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Czech; Locale = cs-CZ" Name="CZECH">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Slovak; Locale = sk-SK" Name="SLOVAK">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Bulgarian; Locale = bg-BG" Name="BULGARIAN">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Ukrainian; Locale = uk-UA" Name="UKRAINIAN">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Serbian; Locale = sr-CS" Name="SERBIAN">
+      <Value>35</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Japanese; Locale = ja-JP" Name="JAPANESE">
+      <Value>12</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Country code enumeration list. As referenced in the GIS-331 Wifi Calibration Spec., Contry code will be based on RPO Calibration. As referenced in the GIS-331 Wifi Requirements Specification, this country code calibration is also being used for determining the regulatory wifi power variation settings to use for the wifi chip that shall be dynamically determined and set based on the value (country value) set for this calibration. Note, the value (country value) set for this calibration is determined by the country RPO (Regular Production Options Content) code for a given vehicle based on the PPC (Program Planning Content) for that vehicle, which represents the intended country of sell for that vehicle." Name="COUNTRY_CODE">
+    <EnumID>_NiUcILEYEeO_VpIpRoy4MQ</EnumID>
+    <EnumDefinitionVersion>11</EnumDefinitionVersion>
+    <EnumValueDefinition Description="ANDORA" Name="ANDORA">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ARGENTINA" Name="ARGENTINA">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="AUSTRIA" Name="AUSTRIA">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BELGUIM" Name="BELGUIM">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BRAZIL" Name="BRAZIL">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CANADA" Name="CANADA">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CARIBBEAN" Name="CARIBBEAN">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CENTRAL AMERICA" Name="CENTRAL_AMERICA">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CHILI" Name="CHILI">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CROATIA" Name="CROATIA">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="DENMARK" Name="DENMARK">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ESTONIA" Name="ESTONIA">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="FINLAND" Name="FINLAND">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="FRANCE" Name="FRANCE">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GERMANY" Name="GERMANY">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GREECE" Name="GREECE">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GREENLAND" Name="GREENLAND">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GULF AREA" Name="GULF_AREA">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="HUNGARY" Name="HUNGARY">
+      <Value>18</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="IRELAND" Name="IRELAND">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ISRAEL" Name="ISRAEL">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ITALY" Name="ITALY">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="JAPAN" Name="JAPAN">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="JORDAN" Name="JORDAN">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="KAZAKHSTAN" Name="KAZAKHSTAN">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SOUTH KOREA" Name="SOUTH_KOREA">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="KUWAIT" Name="KUWAIT">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LATVIA" Name="LATVIA">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LEBANON" Name="LEBANON">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LITHUANIA" Name="LITHUANIA">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MALTA" Name="MALTA">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MEXICO" Name="MEXICO">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MONTENEGRO" Name="MONTENEGRO">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NETHERLANDS" Name="NETHERLANDS">
+      <Value>33</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NORWAY" Name="NORWAY">
+      <Value>34</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="POLAND" Name="POLAND">
+      <Value>35</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="PORTUGAL" Name="PORTUGAL">
+      <Value>36</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="RUSSIA" Name="RUSSIA">
+      <Value>37</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SAUDI ARABIA" Name="SAUDI_ARABIA">
+      <Value>38</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SERBIA" Name="SERBIA">
+      <Value>39</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SLOVAKIA" Name="SLOVAKIA">
+      <Value>40</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SPAIN" Name="SPAIN">
+      <Value>41</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SWEDEN" Name="SWEDEN">
+      <Value>42</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SWITZERLAND" Name="SWITZERLAND">
+      <Value>43</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TAIWAN" Name="TAIWAN">
+      <Value>44</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TURKEY" Name="TURKEY">
+      <Value>45</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="UKRAINE" Name="UKRAINE">
+      <Value>46</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="URUGUAY" Name="URUGUAY">
+      <Value>47</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GREAT BRITAIN" Name="GREAT_BRITAIN">
+      <Value>48</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="UNITED STATES" Name="UNITED_STATES">
+      <Value>49</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="US VIRGIN ISLANDS" Name="US_VIRGIN_ISLANDS">
+      <Value>50</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="PUERTO RICO" Name="PUERTO_RICO">
+      <Value>51</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BAHAMAS" Name="BAHAMAS">
+      <Value>52</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BOLIVIA" Name="BOLIVIA">
+      <Value>53</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CAYMAN ISLANDS" Name="CAYMAN_ISLANDS">
+      <Value>54</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="COLOMBIA" Name="COLOMBIA">
+      <Value>55</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="COSTA RICA" Name="COSTA_RICA">
+      <Value>56</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ECUADOR" Name="ECUADOR">
+      <Value>57</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="FRENCH GUIANA" Name="FRENCH_GUIANA">
+      <Value>58</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GUADELOUPE" Name="GUADELOUPE">
+      <Value>59</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GUYANA" Name="GUYANA">
+      <Value>60</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MARTINIQUE" Name="MARTINIQUE">
+      <Value>61</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="PANAMA" Name="PANAMA">
+      <Value>62</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="PARAGUAY" Name="PARAGUAY">
+      <Value>63</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="PERU" Name="PERU">
+      <Value>64</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="VENEZUELA" Name="VENEZUELA">
+      <Value>65</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ALBANIA" Name="ALBANIA">
+      <Value>66</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BELARUS" Name="BELARUS">
+      <Value>67</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BOSNIA" Name="BOSNIA">
+      <Value>68</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="HERZEGOVINA" Name="HERZEGOVINA">
+      <Value>69</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BULGARIA" Name="BULGARIA">
+      <Value>70</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CYPRUS" Name="CYPRUS">
+      <Value>71</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CZECH_REPUBLIC" Name="CZECH_REPUBLIC">
+      <Value>72</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GIBRALTAR" Name="GIBRALTAR">
+      <Value>73</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ICELAND" Name="ICELAND">
+      <Value>74</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LIECHTENSTEIN" Name="LIECHTENSTEIN">
+      <Value>75</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MACEDONIA" Name="MACEDONIA">
+      <Value>76</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MOLDOVA" Name="MOLDOVA">
+      <Value>77</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MONACO" Name="MONACO">
+      <Value>78</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LUXEMBOURG" Name="LUXEMBOURG">
+      <Value>80</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description=" ROMANIA" Name=" ROMANIA">
+      <Value>81</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SAN MARINO" Name="SAN_MARINO">
+      <Value>82</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SLOVENIA" Name="SLOVENIA">
+      <Value>83</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="VATICAN_CITY" Name="VATICAN_CITY">
+      <Value>84</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OMAN" Name="OMAN">
+      <Value>85</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="QATAR" Name="QATAR">
+      <Value>86</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="UZBEKISTAN" Name="UZBEKISTAN">
+      <Value>88</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="UNITED ARAB EMIRATES" Name="UNITED_ARAB_EMIRATES">
+      <Value>89</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="EGYPT" Name="EGYPT">
+      <Value>90</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SOUTH AFRICA" Name="SOUTH_AFRICA">
+      <Value>91</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CHINA" Name="CHINA">
+      <Value>92</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="AUSTRALIA" Name="AUSTRALIA">
+      <Value>95</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NEW ZEALAND" Name="NEW_ZEALAND">
+      <Value>96</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="PHILIPPINES" Name="PHILIPPINES">
+      <Value>97</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="THAILAND" Name="THAILAND">
+      <Value>98</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GUAM" Name="GUAM">
+      <Value>99</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="INDIA" Name="INDIA">
+      <Value>100</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GEORGIA" Name="GEORGIA">
+      <Value>101</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ARMENIA" Name="ARMENIA">
+      <Value>102</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="AZERBAIJAN" Name="AZERBAIJAN">
+      <Value>103</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="KYRGYZSTAN" Name="KYRGYZSTAN">
+      <Value>104</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TURKMENISTAN" Name="TURKMENISTAN">
+      <Value>105</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TAJIKISTAN" Name="TAJIKISTAN">
+      <Value>106</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BAHRAIN" Name="BAHRAIN">
+      <Value>107</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OTHER S/E AFRICA" Name="OTHER_SE_AFRICA">
+      <Value>108</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OTHER SOUTH AFRICA" Name="OTHER_SOUTH_AFRICA">
+      <Value>109</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OTHER SUB-SAHARAN AFRICA" Name="OTHER_SUB_SAHARAN_AFRICA">
+      <Value>110</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OTHER NORTH AFRICA" Name="OTHER_NORTH_AFRICA">
+      <Value>111</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SINGAPORE" Name="SINGAPORE">
+      <Value>112</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="AFGHANISTAN" Name="AFGHANISTAN">
+      <Value>113</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="IRAQ" Name="IRAQ">
+      <Value>114</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="YEMEN" Name="YEMEN">
+      <Value>115</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="DOMINICAN REPUBLIC" Name="DOMINICAN_REPUBLIC">
+      <Value>116</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="EL SALVADOR" Name="EL_SALVADOR">
+      <Value>117</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GUATEMALA" Name="GUATEMALA">
+      <Value>118</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NETHERLANDS ANTILLES" Name="NETHERLANDS_ANTILLES">
+      <Value>119</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ARUBA" Name="ARUBA">
+      <Value>120</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CURACAO" Name="CURACAO">
+      <Value>121</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="St MAARTEN" Name="ST_MAARTEN">
+      <Value>122</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BONAIRE" Name="BONAIRE">
+      <Value>123</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SYRIA" Name="SYRIA">
+      <Value>124</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GAZA" Name="GAZA">
+      <Value>125</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="HONG KONG" Name="HONG_KONG">
+      <Value>126</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="INDONESIA" Name="INDONESIA">
+      <Value>127</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MALAYSIA" Name="MALAYSIA">
+      <Value>128</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NO MAX TRANSMIT POWER REQUIREMENT" Name="NO_MAX_TRANSMIT_POWER_REQUIREMENT">
+      <Value>129</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BERMUDA" Name="BERMUDA">
+      <Value>130</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ANTIGUA" Name="ANTIGUA">
+      <Value>131</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BARBUDA" Name="BARBUDA">
+      <Value>132</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="HAITI" Name="HAITI">
+      <Value>133</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="JAMAICA" Name="JAMAICA">
+      <Value>134</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="REPUBLIC OF TRINIDAD AND TOBAGO" Name="REPUBLIC_OF_TRINIDAD_AND_TOBAGO">
+      <Value>135</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TURKS AND CAICOS ISLAND" Name="TURKS_AND_CAICOS_ISLAND">
+      <Value>136</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BELIZE" Name="BELIZE">
+      <Value>137</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="HONDURAS" Name="HONDURAS">
+      <Value>138</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NICARAGUA" Name="NICARAGUA">
+      <Value>139</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LIBYA" Name="LIBYA">
+      <Value>140</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MOROCCO" Name="MOROCCO">
+      <Value>141</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TUNISIA" Name="TUNISIA">
+      <Value>142</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BENIN" Name="BENIN">
+      <Value>143</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CAPE VERDE ISLANDS" Name="CAPE_VERDE_ISLANDS">
+      <Value>144</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BURUNDI" Name="BURUNDI">
+      <Value>145</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BURKINA FASO" Name="BURKINA_FASO">
+      <Value>146</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CAMEROON" Name="CAMEROON">
+      <Value>147</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CHAD" Name="CHAD">
+      <Value>148</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="EQUATORIAL GUINEA" Name="EQUATORIAL_GUINEA">
+      <Value>149</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ERITREA" Name="ERITREA">
+      <Value>150</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GABON" Name="GABON">
+      <Value>151</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GUINEA" Name="GUINEA">
+      <Value>152</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GUINEA BISSAU" Name="GUINEA_BISSAU">
+      <Value>153</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MADAGASCAR" Name="MADAGASCAR">
+      <Value>154</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MALI" Name="MALI">
+      <Value>155</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TOGO" Name="TOGO">
+      <Value>156</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="RWANDA" Name="RWANDA">
+      <Value>157</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GAMBIA" Name="GAMBIA">
+      <Value>158</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ANGOLA" Name="ANGOLA">
+      <Value>159</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CENTRAL AFRICA" Name="CENTRAL_AFRICA">
+      <Value>160</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="COMORO ISLANDS" Name="COMORO_ISLANDS">
+      <Value>161</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="DEMOCRATIC REPUBLIC OF THE CONGO" Name="DEMOCRATIC_REPUBLIC_OF_THE_CONGO">
+      <Value>162</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="DJIBOUTI" Name="DJIBOUTI">
+      <Value>163</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ETHIOPIA" Name="ETHIOPIA">
+      <Value>164</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GHANA" Name="GHANA">
+      <Value>165</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NIGER" Name="NIGER">
+      <Value>166</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NIGERIA" Name="NIGERIA">
+      <Value>167</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SENEGAL" Name="SENEGAL">
+      <Value>168</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SIERRA LEONE" Name="SIERRA_LEONE">
+      <Value>169</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SOMALIA" Name="SOMALIA">
+      <Value>170</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ST LUCIA" Name="ST_LUCIA">
+      <Value>171</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SURINAM" Name="SURINAM">
+      <Value>172</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="FIJI" Name="FIJI">
+      <Value>173</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MYANMAR" Name="MYANMAR">
+      <Value>174</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CAMBODIA" Name="CAMBODIA">
+      <Value>175</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LAOS" Name="LAOS">
+      <Value>176</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TAHITI" Name="TAHITI">
+      <Value>177</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="NEW CALEDONIA" Name="NEW_CALEDONIA">
+      <Value>178</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BRUNEI" Name="BRUNEI">
+      <Value>179</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BARBADOS" Name="BARBADOS">
+      <Value>180</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Algeria" Name="ALGERIA">
+      <Value>181</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Liberia" Name="LIBERIA">
+      <Value>182</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Northen Mariana Island" Name="NORTHEN_MARIANA_ISLAND">
+      <Value>183</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="DRIVE_SIDE to comprehend vehicle configuration of Right Hand Drive (RHD) versus Left Hand Drive (LHD) with respect to GMLAN message location of driver front versus passenger front." Name="DRIVER_SIDE">
+    <EnumID>_kGfywMPnEeOFYIr7JW1WWw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="LHD">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="RHD">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Regions on the continent include GMNA, South America/Central America, Europe, Turkey, Middle East, Israel, Africa, China, Australia, S. E. Asia, Taiwan, India, Japan, South Korea, Guam" Name="REGIONS">
+    <EnumID>_LqdnINRNEeOBI_YIOwraKg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="The Region of GMNA includes the countries Canada, Unted States, Mexico, US Virgin Islands, Puerto Rico." Name="GMNA">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of South America/Central America includes Argentina, Bahamas, Bolivia, Brazil, Cayman Islands, Chile, Colombia, Costa Rica, Ecuador, French Guiana, Guadeloupe, Guyana, Martinique, Panama, Paraguay, Peru, Uruguay, Venezuela." Name="SOUTH_AMERICA_CENTRAL_AMERICA">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Europe includes all the countries of Albania, Andorra, Austria, Belarus, Belgium, Bosnia and Herzegovina, Bulgaria, Croatia, Cyprus, Czech Republic, Denmark, Estonia, Finland, France, Georgia, Germany, Gibraltar, Great Britain, Greece, Hungary, Iceland, Ireland, Italy, Latvia, Liechtenstein, Lithuania, Luxembourg, Macedonia, Republic of, Malta, Moldova, Republic of, Monaco, Montenegro, Netherlands, Norway, Poland, Portugal, Romania, Russian Federation, San Marino, Serbia, Slovakia (Slovak Republic), Slovenia, Spain, Sweden, Switzerland, Ukraine, Vatican City ." Name="EUROPE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Turkey includes the country of Turkey." Name="TURKEY">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of the Middle East includes the countries of Bahrain, Jordan, Kuwait, Lebanon, Oman, Qatar, Saudi Arabia and United Arab Emirates." Name="MIDDLE_EAST">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Israel includes the country of Israel." Name="ISRAEL">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Africa includes the countries of Egypt and South Africa." Name="AFRICA">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of China includes the countries and cities of China, Hong Kong and Macau." Name="CHINA">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Australia includes the countries of Australia and New Zealand." Name="AUSTRALIA">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of S. E. Asia includes the countries of Philippines and Thailand." Name="SOUTH_EAST_ASIA">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Taiwan includes the country of Taiwan." Name="TAIWAN">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of India includes the country of India." Name="INDIA">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Japan includes the country of Japan." Name="JAPAN">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of South Korea includes the country of South Korea." Name="SOUTH_KOREA">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Region of Guam includes the country of Guam." Name="GUAM">
+      <Value>14</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

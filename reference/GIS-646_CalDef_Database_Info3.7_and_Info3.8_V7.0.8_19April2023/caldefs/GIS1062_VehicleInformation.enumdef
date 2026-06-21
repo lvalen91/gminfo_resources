@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Enumerations for the GIS1062_VehicleInformation.caldef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>01/04/2019</Date>
+    <Description>Per CR#2082798, initial release of the GIS1062_VehicleInformation.enumdef to support new VehicleInfoCard EnumIntegerMap calibration defined within GIS1062_VehicleInformation.caldef file.</Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration to enable or disable vehicle information cards from Vehicle Information apps" Name="VehicleInfoCard">
+    <EnumID>_Uv1kwBA1Eem5b8vPZHHVFA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Notifications Vehicle Info Card" Name="Notifications">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OilLife Vehicle Info Card" Name="OilLife">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Tire Pressure Vehicle Info Card" Name="TirePressure">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Fuel Economy Vehicle Info Card" Name="FuelEconomy">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Efficiency Gauge Vehicle Info Card" Name="EfficiencyGauge">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Average Speed Vehicle Info Card" Name="AverageSpeed">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Traffic Sign Vehicle Info Card" Name="TrafficSignMemory">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Timer Vehicle Info Card" Name="Timer">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Diesel Exhaust Fluid Vehicle Info Card" Name="DieselExhaustFluid">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Fuel Filter Life Vehicle Info Card" Name="FuelFilterLife">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Off Road Vehicle Info Card" Name="OffRoad">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Engine Hours Vehicle Info Card" Name="EngineHours">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Battery Voltage Vehicle Info Card" Name="BatteryVoltage">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Oil Pressure Vehicle Info Card" Name="OilPressure">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trailer Brake Vehicle Info Card" Name="TrailerBrake">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Coolant Temperature Vehicle Info Card" Name="CoolantTemperature">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Transmission Fluid Temp Vehicle Info Card" Name="TransmissionFluidTemp">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Transmission Fluid Life Vehicle Info Card" Name="TransmissionFluidLife">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Air Filter Life Vehicle Info Card" Name="AirFilterLife">
+      <Value>18</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Brake Pad Life Vehicle Info Card" Name="BrakePadLife">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Traction and Stability Vehicle Info Card" Name="TractionAndStability">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Owners Manual Vehicle Info Card" Name="OwnersManual">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Weather Vehicle Info Card" Name="Weather">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trailering Status Vehicle Info Card" Name="TraileringStatus">
+      <Value>23</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

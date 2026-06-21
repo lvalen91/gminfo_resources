@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef file contains calibrations related to GIS-1008 specification.">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/30/2018</Date>
+    <Description>Per CR#1686594, initial realease of the GIS1008_Users.caldef with Setup_Information_Card and Welcome_User_View calibrations.</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The dwell time for a welcome message after the user escapes from Select Profile view and comes back to Welcome User view." Name="Welcome_User_View" References="GIS-508 section 5.1" Usage="MID,HIGH,VCU">
+    <CalID>_w6Kv8NxVEeirwbrltDv1bw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The dwell time for a setup information card on Welcome Screen of Profile Creation Wizard." Name="Setup_Information_Card" References="GIS508 Section 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Wx18MNxVEeirwbrltDv1bw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2018</Date>
+      <Description>Initial Release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

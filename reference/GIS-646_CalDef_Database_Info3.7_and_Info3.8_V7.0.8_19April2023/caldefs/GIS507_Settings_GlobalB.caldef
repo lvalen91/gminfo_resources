@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Includes calibrations from the GIS-507 that are Global B specific.">
+  <CalDefFileVersion>3</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/24/2016</Date>
+    <Description>Initial release of this caldef file</Description>
+    <Author>Ginnard Kimbrough </Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/9/2017</Date>
+    <Description>Within the GIS507_Settings_GlobalB.caldef file made the following updates: 1.) To comprehend clarification updates made in the latest version GIS-507 made the following updates to the existing DMCPercentCustomModePercentName: Removed MyMode as a enumeration value, and replaced it with the enumeration value of V_Mode_And_Z_Mode_Disabled instead, updated the default value of this calibration from V_Mode to V_Mode and Z_Mode Disabled, and updated the calibration description of this calibration. 2.) Also to comprehend clarification updates made in the latest GIS-507 added the new calibration called DMCPercentCustomModePercentName, and 3.) Updated the usage field for the DMCPercentCustomModePercentName calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Provide enumerations for DMC %Personal Mode% name." Name="DMCPercentPersonalModePercentName" References="GIS507 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_EHqqwE4PEeep_Namk9CiEQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/9/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_7AOakE4NEeep_Namk9CiEQ</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Provide enumerations for DMC %Custom Mode% brand name." Name="DMCPercentCustomModePercentName" References="GIS507 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_k9ZTwJ7NEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool. Updated the default value of the DMCPercentCustomModePercentName calibration from V_Mode to V_Mode and Z_Mode Disabled and updated the calibration description to reflect the descprition for this calibration in the latest GIS-507</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_2HIDkJ7HEea-Ao5FQchwtQ</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

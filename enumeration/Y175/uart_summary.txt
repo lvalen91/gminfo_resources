@@ -1,0 +1,11 @@
+=== UART PROBE SUMMARY ===
+
+Devices found:
+crw-rw-rw- 1 root root 166,   1 2026-01-17 08:19 /dev/ttyACM1
+
+World-accessible UART devices:
+
+NOTE: UART may require specific baud rate or activity trigger.
+Try manual probing with: adb shell cat /dev/ttyACM1 &
+Then trigger activity on the device.
+

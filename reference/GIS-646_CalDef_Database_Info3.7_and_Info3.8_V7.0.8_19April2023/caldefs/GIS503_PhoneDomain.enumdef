@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="This calibration determines the default phonebook sorting order. Even though language is the primary factor that influences the phonebook sort order, to clarify complexity, this calibration applies to all langauges that are currently enabled. Factory default sort order will apply to all available languages within a specific vehicle configuration." Name="DefaultPreferredPhonebookSortOrder">
+    <EnumID>_eCTBYG7dEeSssq_awwoZ3g</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="USA, Canada, Mexico" Name="FirstNamePreferredSortorder">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="China, Japan, Korea" Name="LastNamePreferredSortorder">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

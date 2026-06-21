@@ -1,0 +1,419 @@
+================================================================================
+DOCUMENTATION REVIEW AND CORRECTIONS
+================================================================================
+Document Version: 1.0
+Created: December 28, 2025
+Purpose: Identify errors, missing information, and improvements in project docs
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. CRITICAL ERRORS FOUND
+2. MISSING INFORMATION
+3. QUESTIONS THAT CAN NOW BE ANSWERED
+4. ENHANCED/IMPROVED ANSWERS
+5. RECOMMENDED DOCUMENTATION UPDATES
+
+================================================================================
+1. CRITICAL ERRORS FOUND
+================================================================================
+
+ERROR #1: VIP_BOOT SIGNING STATUS MISREPRESENTED
+-------------------------------------------------
+Location: GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt, Section 5.4
+
+INCORRECT (Line 270):
+  | 71     | 0x47 | VIP_BOOT          | VIP_BOOTLOADER       |
+
+CORRECT (from delivery_manifest.csv):
+  | 71     | 0x47 | VIP_BOOT          | NONE                 |
+
+IMPACT: VIP_BOOT (Module 71) is UNSIGNED! This is a potential attack vector.
+        A custom VIP bootloader could theoretically be flashed via DPS.
+
+ADDITIONAL UNSIGNED MODULES CONFIRMED:
+  | Module ID | Name       | Sign Type |
+  |-----------|------------|-----------|
+  | 23        | SOC_BOOT   | NONE      |
+  | 24        | SOC_UTILS  | NONE      |
+  | 55        | SOC_ACPIO  | NONE      |
+  | 56        | SOC_VBMETA | NONE      |
+  | 57        | SOC_PRODUCT| NONE      |
+  | 71        | VIP_BOOT   | NONE      |
+  | 72        | SOC_ABL    | NONE      |
+
+WARNING: SOC_ABL (Intel ABL bootloader) is also UNSIGNED!
+         Both VIP and Intel bootloaders can potentially be replaced.
+
+---
+
+ERROR #2: EEPROM FRAME BYTE INCONSISTENCY
+-----------------------------------------
+Location: GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt, Section 3.3
+
+STATED (Line 122):
+  | 0x0440  | 0xC3  | ADB Enable Primary         | C3 00 C3 | 5A FF 5A |
+
+ACTUAL (from EEPROM_Analysis_Report.md):
+  Address 0x0440 has stock value "C3 00 C3" with frame byte 0xC3
+  Bypass value "5A FF 5A" uses frame byte 0x5A
+
+CLARIFICATION NEEDED:
+  The frame byte CHANGES from 0xC3 to 0x5A when enabling bypass.
+  This is not an error but the documentation should clarify that the
+  bypass procedure changes the frame type from "Calibration" (0xC3) to
+  "Security" (0x5A).
+
+---
+
+ERROR #3: NETWORK PORTS INCOMPLETE
+----------------------------------
+Location: GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt, Section 11.1
+
+DOCUMENTED:
+  | Port  | Binding     | Service Type |
+  | 7000  | 0.0.0.0     | Unknown      |
+  | 6363  | 0.0.0.0     | NDN/ICN?     |
+  | 49156 | 0.0.0.0     | Dynamic      |
+
+MISSING (from open_ports.txt):
+  | Port  | Binding       | Service Type           |
+  | 9002  | 192.168.1.1   | Internal VLAN service  |
+  | 9005  | 192.168.1.1   | Internal VLAN service  |
+  | 9010  | 192.168.1.1   | Internal VLAN service  |
+  | 9012  | 192.168.1.1   | Internal VLAN service  |
+  | 9016  | 192.168.1.1   | Internal VLAN service  |
+  | 9018  | 192.168.1.1   | Internal VLAN service  |
+
+These are likely vehicle internal network services (camera, audio, etc.)
+
+================================================================================
+2. MISSING INFORMATION
+================================================================================
+
+MISSING #1: I2C BUS ACCESS PERMISSIONS (CRITICAL!)
+--------------------------------------------------
+From raw/i2c_devices.txt:
+
+  crw-rw-rw- 1 root        root        89, 0 /dev/i2c-0  <-- WORLD ACCESSIBLE
+  crw-rw-rw- 1 root        root        89, 1 /dev/i2c-1  <-- WORLD ACCESSIBLE
+  crw-rw-rw- 1 system      system      89, 2 /dev/i2c-2  <-- SYSTEM ACCESSIBLE
+  crw-rw-rw- 1 audioserver audioserver 89, 3 /dev/i2c-3  <-- AUDIO ACCESSIBLE
+  crw------- 1 root        root        89, 4 /dev/i2c-4
+  crw------- 1 root        root        89, 5 /dev/i2c-5
+  crw------- 1 root        root        89, 6 /dev/i2c-6
+  crw-rw---- 1 system      system      89, 7 /dev/i2c-7
+  crw------- 1 root        root        89, 8 /dev/i2c-8
+  crw------- 1 root        root        89, 9 /dev/i2c-9
+  crw------- 1 root        root        89, 10 /dev/i2c-10
+
+CRITICAL QUESTION: Does /dev/i2c-0 or /dev/i2c-1 connect to the EEPROM?
+If so, this could enable SOFTWARE-ONLY EEPROM modification via ADB!
+
+RESEARCH REQUIRED:
+  1. Determine which I2C bus connects to M24C64 EEPROM
+  2. If world-accessible, test direct I2C write via i2c-tools
+  3. SELinux may block even with world permissions
+
+---
+
+MISSING #2: GHS KERNEL CONFIGURATION
+------------------------------------
+From raw/kernel_config.txt:
+
+GHS-Specific Kernel Options:
+  CONFIG_GHS_GUEST_COMMS=y           # GHS guest communication
+  CONFIG_GHS_PARAVIRTUAL_SUPPORT=y   # Paravirtualization support
+  CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y # VMM bootloader control
+  CONFIG_ANDROID_GM_GHS_MMC=y        # GHS MMC driver
+  CONFIG_SND_GHS_PCM=y               # GHS PCM audio driver
+  CONFIG_HYPERVISOR_GUEST=y          # Running as hypervisor guest
+
+These should be documented as they confirm the VM architecture.
+
+---
+
+MISSING #3: EXACT GSI BLOCKER RULE
+----------------------------------
+From vendor_sepolicy.cil (line 2672):
+
+  (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
+
+This is the EXACT rule that blocks GSI installation.
+The "dontaudit" means the denial is silently suppressed in logs.
+
+Additional GSI-related rules found:
+  - hal_bootctl_default CAN access gsi_metadata_file_type
+  - gsid has dontaudit for certain capabilities
+
+---
+
+MISSING #4: ANDROID MULTI-USER CONFIGURATION
+--------------------------------------------
+From mounts.txt:
+  - User 0: Primary user
+  - User 10: Secondary user (pre-created)
+
+From all_properties.txt:
+  [android.car.number_pre_created_users]: [1]
+  [android.car.systemuser.headless]: [true]
+  [android.car.user_hal_enabled]: [true]
+
+This is standard Android Automotive multi-user setup.
+
+---
+
+MISSING #5: USB ENUMERATION FAILED
+----------------------------------
+The USB devices enumeration failed:
+  "Cannot enumerate USB"
+
+The USB device information in the documentation came from other sources,
+not from this enumeration. Should note that /sys/kernel/debug/usb/devices
+is not accessible.
+
+================================================================================
+3. QUESTIONS THAT CAN NOW BE ANSWERED
+================================================================================
+
+Q1: What is the exact GSI blocker?
+----------------------------------
+ANSWER: The SEPolicy rule in vendor_sepolicy.cil:
+  (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
+
+This prevents gm_update_engine from searching the gsi_metadata_file directory,
+which is required for DSU (Dynamic System Updates) to work.
+
+---
+
+Q2: Is VIP_BOOT signed?
+-----------------------
+ANSWER: NO. VIP_BOOT (Module 71) has Sign Type = NONE in delivery_manifest.csv.
+This means a custom VIP bootloader could potentially be flashed via DPS.
+
+---
+
+Q3: Can we access EEPROM via software?
+--------------------------------------
+PARTIAL ANSWER: There are world-accessible I2C buses (/dev/i2c-0, /dev/i2c-1).
+However, we don't know which bus connects to the EEPROM.
+
+RESEARCH NEEDED:
+  - Determine EEPROM I2C bus mapping
+  - Check if SELinux allows I2C access from shell
+  - Test with i2cdetect/i2cget tools if available
+
+---
+
+Q4: What modules can be flashed without GM signing keys?
+--------------------------------------------------------
+ANSWER (from delivery_manifest.csv):
+  | Module | Name        | Sign Type | Flashable? |
+  |--------|-------------|-----------|------------|
+  | 23     | SOC_BOOT    | NONE      | YES        |
+  | 24     | SOC_UTILS   | NONE      | YES        |
+  | 28     | SXM         | NONE      | YES        |
+  | 29     | GPS         | NONE      | YES        |
+  | 51     | TUNER       | NONE      | YES        |
+  | 52     | ETH_SWITCH  | NONE      | YES        |
+  | 55     | SOC_ACPIO   | NONE      | YES        |
+  | 56     | SOC_VBMETA  | NONE      | YES*       |
+  | 57     | SOC_PRODUCT | NONE      | YES*       |
+  | 71     | VIP_BOOT    | NONE      | YES        |
+  | 72     | SOC_ABL     | NONE      | YES        |
+
+* = May break AVB chain
+
+---
+
+Q5: Are there additional network services to explore?
+-----------------------------------------------------
+ANSWER: Yes. Internal network on 192.168.1.1 has services on:
+  - Port 9002, 9005, 9010, 9012, 9016, 9018
+
+These are likely vehicle internal services (camera streams, audio, etc.)
+
+================================================================================
+4. ENHANCED/IMPROVED ANSWERS
+================================================================================
+
+ENHANCEMENT #1: ADB BYPASS MECHANISM
+------------------------------------
+Original explanation was simplified. Enhanced explanation:
+
+The ADB bypass works by modifying TWO EEPROM locations:
+  1. Primary flag (0x0440): Changes frame from 0xC3 to 0x5A
+  2. Backup flag (0x0A80): Changes from 0xFF to 0x5A frame
+
+When VIP reads these flags during boot:
+  - 0xC3 frame = Calibration data = Security enabled
+  - 0x5A frame = Security override = Bypass active
+
+The bypass causes VIP to return all-0xFF seed instead of ECUID+Challenge,
+which tells the PROTOKEY service to skip BCM authentication.
+
+---
+
+ENHANCEMENT #2: GSI COMPATIBILITY
+---------------------------------
+The documentation stated GSI is "blocked by SEPolicy."
+Enhanced explanation:
+
+GSI ARCHITECTURE SUPPORT (all present):
+  [X] A/B partitions (boot_a/b, vbmeta_a/b, etc.)
+  [X] Dynamic partitions (super at vda13)
+  [X] Treble support (ro.treble.enabled=true)
+  [X] VNDK 32 (Android 12)
+  [X] First API level 29 (Android 10)
+  [X] GSI AVB keys in fstab
+
+GSI BLOCKERS:
+  1. SEPolicy dontaudit rule (vendor_sepolicy.cil:2672)
+  2. GHS hypervisor controls boot chain
+  3. No standard fastboot/recovery access
+  4. VIP controls boot flags
+
+POTENTIAL BYPASS:
+  - Modify vendor_sepolicy.cil (requires AVB bypass)
+  - Direct partition write via dd (requires root + AVB bypass)
+  - Custom boot image (SOC_BOOT is unsigned)
+
+---
+
+ENHANCEMENT #3: BOOTLOADER EXPLOITATION POTENTIAL
+-------------------------------------------------
+Both VIP_BOOT and SOC_ABL are UNSIGNED:
+
+VIP_BOOT (Module 71) - Renesas RH850 Bootloader:
+  - Controls VIP initialization
+  - Reads EEPROM security flags
+  - Could be modified to always return bypass state
+  - Format: Unknown (Renesas RH850 binary)
+
+SOC_ABL (Module 72) - Intel Automotive Bootloader:
+  - Controls Intel SoC boot
+  - Initializes GHS INTEGRITY
+  - Could be modified to bypass security
+  - Format: Intel ABL image
+
+RESEARCH PRIORITY: Understand VIP_BOOT format and modification potential.
+
+================================================================================
+5. RECOMMENDED DOCUMENTATION UPDATES
+================================================================================
+
+[HIGH] Update MODULE SIGNING TABLE in Compendium Section 5.4:
+  - Correct VIP_BOOT from "VIP_BOOTLOADER" to "NONE"
+  - Correct SOC_ABL from "INTEL_ABL" to "NONE"
+  - Add note about exploitation potential
+
+[HIGH] Add I2C BUS ANALYSIS section:
+  - Document all 11 I2C buses
+  - Note world-accessible buses (i2c-0, i2c-1)
+  - Add research task to identify EEPROM bus
+
+[HIGH] Add EXACT GSI BLOCKER to documentation:
+  - Include vendor_sepolicy.cil line 2672
+  - Document the dontaudit mechanism
+
+[MEDIUM] Add GHS KERNEL CONFIG section:
+  - Document all CONFIG_GHS_* options
+  - Note paravirtualization support
+
+[MEDIUM] Update NETWORK SERVICES table:
+  - Add internal ports (9002, 9005, 9010, etc.)
+  - Note 192.168.1.1 internal network
+
+[LOW] Clarify EEPROM frame byte behavior:
+  - Note that bypass changes frame type
+  - Add diagram showing frame transition
+
+[LOW] Add USB enumeration limitations:
+  - Note that /sys/kernel/debug/usb/devices not accessible
+  - Document alternative enumeration methods
+
+================================================================================
+NEXT RESEARCH PRIORITIES (Updated 2025-12-28)
+================================================================================
+
+STATUS UPDATE: VIP_BOOT and SOC_ABL have been analyzed. Key finding:
+"Sign Type = NONE" means no GM TSS signature, but INTERNAL validation exists.
+
+1. [CRITICAL] Reverse engineer Harman checksum algorithm
+   - VIP_BOOT uses proprietary checksum
+   - Extract algorithm from RH850 binary
+   - Implement in Python for testing
+
+2. [CRITICAL] Determine which I2C bus connects to EEPROM
+   - If i2c-0 or i2c-1, test software EEPROM write
+   - Could eliminate need for physical modification
+
+3. [HIGH] Analyze VIP_BOOT "signed header" validation
+   - Is it software key or hardware based?
+   - Can it be bypassed or recreated?
+   - Key unknown in exploitation chain
+
+4. [HIGH] Map RH850 binary structure
+   - Function entry points
+   - EEPROM reading code location
+   - Security flag validation logic
+
+5. [MEDIUM] Test Y177 downgrade
+   - Version check disabled in manifest
+   - May restore SELinux permissive
+   - AVB rollback status unknown
+
+6. [LOW] SOC_ABL Intel CSE research
+   - Intel CSE provides hardware root of trust
+   - May be dead end due to fuse-based security
+   - Focus on VIP_BOOT instead
+
+COMPLETED ANALYSIS (2025-12-28):
+--------------------------------
+[X] VIP_BOOT internal security documented
+    - Harman checksum, SHA-256 digest, signed header, SBAT
+    - cv_Act_Library crypto (SHA, SHA256, AES)
+    - Software-based = potentially bypassable
+
+[X] SOC_ABL internal security documented
+    - Intel CSE with 10+ key types (hardware fused)
+    - SVN anti-rollback (cannot decrement)
+    - fTPM fuses, lock states, PKCS7 validation
+    - Hardware-based = very difficult to bypass
+
+[X] CRC enforcement behavior documented (CRITICAL FINDING)
+    - CRC is NOT enforced at boot time
+    - VIN set to all 0xFF: Module booted normally
+    - CRC may only be validated during OTA/SPS programming
+    - More EEPROM regions safely modifiable than initially assumed
+
+[X] IS25LP016 SPI Flash identified
+    - ISSI 16Mbit (2MB) Quad SPI NOR Flash
+    - Located opposite side of PCB from M24C64 EEPROM
+    - Markings: IS25LP016, DNL3, 2243, P3A368L2
+    - Purpose: Likely logs, calibration backup (non-critical)
+    - Blank replacement may self-populate via OTA/SPS
+
+[X] OTA/SPS EEPROM behavior documented
+    - Security flags (0x0440/0x0A80) reset to secured state after OTA
+    - VIP writes to EEPROM during update finalization
+    - EEPROM modifications must be re-applied after updates
+
+================================================================================
+ADDITIONAL HARDWARE NOTES (2025-12-28)
+================================================================================
+
+IS25LP016 SPI FLASH:
+  - 8-pin SOIC (larger package than standard)
+  - Opposite side of PCB from I2C EEPROM
+  - Not critical for boot - module likely functions without it
+  - If damaged: May be replaceable with blank chip + OTA recovery
+
+I2C BUS ACCESS:
+  - /dev/i2c-0 and /dev/i2c-1 are WORLD-ACCESSIBLE
+  - If EEPROM is on either bus, software bypass possible
+  - SELinux blocks on Y181 (enforcing), may work on Y177 (permissive)
+
+================================================================================
+END OF DOCUMENT
+================================================================================

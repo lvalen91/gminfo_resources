@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef file contains calibrations specific to the GIS-1024 specification.">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/30/2018</Date>
+    <Description>Per CR#1686594, initial release of GIS1024_TermsAndConditions.caldef with Enter_Name calibration. </Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="If the user is driving, the Enter Name field is greyed out and if selected by the user, the Feature Unavailable quick note is shown. If the user is viewing the Enter Name Screen and then begins driving, the screen is exited, and the Feature Unavailable quick notice is shown. The bypass counter is also incremented." Name="Enter_Name" References="GIS524 section 5.5, GIS1000 section 6.2" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_nlAWUN0kEei01ZUlzIrUtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

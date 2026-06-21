@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.research.ghsprobe">
+
+    <!-- Network access for ECU/GHS bridge probing -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <!-- Storage for saving probe results -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <!-- Vehicle HAL permissions (may or may not be granted to untrusted_app) -->
+    <uses-permission android:name="android.car.permission.CAR_INFO" />
+    <uses-permission android:name="android.car.permission.CAR_SPEED" />
+    <uses-permission android:name="android.car.permission.CAR_MILEAGE" />
+    <uses-permission android:name="android.car.permission.CAR_ENERGY" />
+    <uses-permission android:name="android.car.permission.CAR_ENERGY_PORTS" />
+    <uses-permission android:name="android.car.permission.READ_CAR_STEERING" />
+    <uses-permission android:name="android.car.permission.CAR_EXTERIOR_ENVIRONMENT" />
+    <uses-permission android:name="android.car.permission.CAR_TIRES" />
+    <uses-permission android:name="android.car.permission.CAR_ENGINE_DETAILED" />
+    <uses-permission android:name="android.car.permission.CAR_DYNAMICS_STATE" />
+    <uses-permission android:name="android.car.permission.CONTROL_CAR_CLIMATE" />
+    <uses-permission android:name="android.car.permission.CONTROL_CAR_DOORS" />
+    <uses-permission android:name="android.car.permission.CONTROL_CAR_SEATS" />
+    <uses-permission android:name="android.car.permission.CONTROL_CAR_EXTERIOR_LIGHTS" />
+    <uses-permission android:name="android.car.permission.CAR_DRIVING_STATE" />
+    <uses-permission android:name="android.car.permission.CAR_DIAGNOSTICS" />
+    <uses-permission android:name="android.car.permission.GET_CAR_VENDOR_CATEGORY_INFO" />
+    <uses-permission android:name="android.car.permission.GET_CAR_VENDOR_CATEGORY_DOOR" />
+    <uses-permission android:name="android.car.permission.GET_CAR_VENDOR_CATEGORY_HVAC" />
+    <uses-permission android:name="android.car.permission.GET_CAR_VENDOR_CATEGORY_SEAT" />
+
+    <!-- Required for Android Automotive -->
+    <uses-feature
+        android:name="android.hardware.type.automotive"
+        android:required="true" />
+
+    <application
+        android:label="GHS Probe"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Meta-data to indicate this is an automotive app -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
+    </application>
+</manifest>

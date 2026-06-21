@@ -1,0 +1,215 @@
+Bluetooth Status
+  enabled: true
+  state: ON
+  address: F8:6D:CC:DC:32:D6
+  name: myChevrolet
+  time since enabled: 00:12:34.824
+
+Enable log:
+  07-22 03:45:47  Enabled  due to SYSTEM_BOOT by android
+  07-22 03:45:49  Enabled  due to APPLICATION_REQUEST by com.gm.domain.server.delayed
+
+Bluetooth crashed 0 times
+
+0 BLE apps registered
+
+BluetoothManagerService:
+  mEnable:true
+  mQuietEnable:false
+  mEnableExternal:true
+  mQuietEnableExternal:false
+
+
+AdapterProperties
+  Name: myChevrolet
+  Address: F8:6D:CC:DC:32:D6
+  BluetoothClass: null
+  ScanMode: SCAN_MODE_CONNECTABLE
+  ConnectionState: STATE_DISCONNECTED
+  State: ON
+  MaxConnectedAudioDevices: 1
+  A2dpOffloadEnabled: false
+  Discovering: false
+  DiscoveryEndMs: 0
+  Bonded devices:
+mSnoopLogSettingAtEnable = empty
+mDefaultSnoopLogSettingAtEnable = null
+
+AdapterState:
+ total records=4
+ rec[0]: time=07-22 03:45:49.306 processed=OffState org=OffState dest=TurningBleOnState what=3(0x3) BLE_TURN_ON
+ rec[1]: time=07-22 03:45:50.957 processed=TurningBleOnState org=TurningBleOnState dest=BleOnState what=7(0x7) BLE_STARTED
+ rec[2]: time=07-22 03:45:50.966 processed=BleOnState org=BleOnState dest=TurningOnState what=1(0x1) USER_TURN_ON
+ rec[3]: time=07-22 03:45:52.413 processed=TurningOnState org=TurningOnState dest=OnState what=5(0x5) BREDR_STARTED
+curState=OnState
+
+SilenceDeviceManager:
+  Address            | Is silenced?
+
+BluetoothDatabase:
+  Metadata Changes:
+
+Metadata:
+
+Profile: GattService
+  mAdvertisingServiceUuids:
+  mMaxScanFilters: 0
+
+Registered App
+  Scanner:
+  Client:
+  Server:
+
+
+GATT Scanner Map
+  Entries: 0
+
+GATT Client Map
+  Entries: 0
+
+GATT Server Map
+  Entries: 0
+
+GATT Handle Map
+  Entries: 0
+  Requests: 0
+
+Profile: A2dpSinkService
+  Active Device = null
+  Max Connected Devices = 1
+  Devices Tracked = 0
+
+Profile: HeadsetClientService
+
+Profile: AvrcpControllerService
+  Devices Tracked = 0
+  Active Device = null
+
+  sBrowseTree: Size: 2[ Name: __ROOT__ Scope:0 expected Children: 255 mChildren.size(): 0] 
+  Image handles in use (0):
+  Cover Artwork Enabled: True
+  CoverArtManager:
+    Download Scheme: thumbnail
+  CoverArtStorage:
+
+  BluetoothMediaBrowserService:
+    track=null
+    playbackState=PlaybackState {state=7, position=0, buffered position=0, speed=0.0, updated=28190, actions=0, error code=0, error message=Bluetooth audio disconnected, custom actions=[], active item id=-1}
+    queue=[]
+    internal_queue=[]
+
+Profile: PbapClientService
+
+Profile: MapClientService
+
+Connection Events:
+  None
+
+Bond Events: 
+  Total Number of events: 0
+
+A2DP State:
+  TxQueue:
+  Counts (enqueue/dequeue/readbuf)                        : 0 / 0 / 0
+  Last update time ago in ms (enqueue/dequeue/readbuf)    : 0 / 0 / 0
+  Frames per packet (total/max/ave)                       : 0 / 0 / 0
+  Counts (flushed/dropped/dropouts)                       : 0 / 0 / 0
+  Counts (max dropped)                                    : 0
+  Last update time ago in ms (flushed/dropped)            : 0 / 0
+  Counts (underflow)                                      : 0
+  Bytes (underflow)                                       : 0
+  Last update time ago in ms (underflow)                  : 0
+  Enqueue deviation counts (overdue/premature)            : 0 / 0
+  Enqueue overdue scheduling time in ms (total/max/ave)   : 0 / 0 / 0
+  Enqueue premature scheduling time in ms (total/max/ave) : 0 / 0 / 0
+  Dequeue deviation counts (overdue/premature)            : 0 / 0
+  Dequeue overdue scheduling time in ms (total/max/ave)   : 0 / 0 / 0
+  Dequeue premature scheduling time in ms (total/max/ave) : 0 / 0 / 0
+
+A2DP Peers State:
+  Active peer: null
+
+A2DP Source State: Disabled
+
+A2DP Sink State: Enabled
+  Active peer: 00:00:00:00:00:00
+  Peers:
+
+BTA AV State:
+  State Machine State: INIT
+  SDP A2DP source handle: 0
+  SDP A2DP sink handle: 65538
+  Features: 0x965b
+  SDP handle: 0
+  Disabling: false
+  SCO occupied: false
+  Connected audio channels: 0
+  Connected audio channels mask: 0x0
+  Registered audio channels mask: 0x3f
+  Connected LCBs mask: 0x0
+  Offload start pending handle: 0
+  Offload started handle: 0
+
+AVDTP Stack State:
+  AVDTP signalling L2CAP channel MTU: 672
+
+AVRCP Target Service not started
+
+Bluetooth Config:
+  Config Source: Original file
+  Devices loaded: 3
+  File created/tagged: 2026-02-13 16:28:16
+  File source: Empty
+
+Bluetooth HF Client BTA Statistics
+
+Bluetooth Wakelock Statistics:
+  Is acquired                    : false
+  Acquired/released count        : 49 / 49
+  Acquired/released error count  : 0 / 0
+  Last acquire/release error code: 0 / 0
+  Last acquired time (ms)        : 1
+  Acquired time min/max/avg (ms) : 0 / 1119 / 25
+  Total acquired time (ms)       : 1239
+  Total run time (ms)            : 754258
+
+Bluetooth Memory Allocation Statistics:
+  Total allocated/free/used counts : 0 / 0 / 0
+  Total allocated/free/used octets : 0 / 0 / 0
+
+Bluetooth Alarms Statistics:
+  Total Alarms: 1
+
+  Alarm : btm_ble_addr.refresh_raddr_timer (SINGLE)
+    Action counts (sched/resched/exec/cancel)      : 2 / 0 / 1 / 0
+    Deviation counts (overdue/premature)           : 0 / 0
+    Time in ms (since creation/interval/remaining) : 238163 / 571201 / 333038
+    Overdue scheduling time in ms (total/max/avg)  : 0 / 0 / 0
+    Premature scheduling time in ms (total/max/avg): 0 / 0 / 0
+
+Hearing Aid Manager:
+  Hearing Aid Audio HAL:
+    Counts (underflow)                                      : 0
+    Bytes (underflow)                                       : 0
+    Last update time ago in ms (underflow)                  : 0
+
+
+connection_manager state:
+	no Low Energy connection attempts
+
+BT Quality Report Events: 
+Event queue is empty.
+--- BEGIN:BTSNOOP_LOG_SUMMARY (4875 bytes in) ---
+Ai6p+WDmTgYAeJzll11oVEcUx8/MvXfvvbuz2V0TROySjNRqKxibhKA+NI3ZpkmpFrvQpJaqCRipkPUrbamxsC202II2BAL9wlYsAd+kL4U81Lz0xSTSh4JQlaVaWsRK
+RVEMrdnrOTPj3iwumCet2zuEcPZ/zpmZ35yZO9cGG+iRlgAXm/QBkjU2Q9PGdpih5CShBtsxi6QYQ3POaveAQQxbo4seLcL9OhLUQVTlSDs6R4vOkaccLAkJbJ/ZJAmG
+pn8i5Scg3kEuPv4s/STEsY2rbqIMzbPNF2Zys+RwCX+UPAld2E4phxcYmkEQWDPBNfx3teFG4nLx+dsjQRrd+28HQX42oCeBk7PBg4qPg+08zd5OMkhhW61y1zA7CcAn
+iz8XzwcHD5HXWZpEDw6cJmif1hPsERDBdpky5ATX4jlDMCdU+jGm0zNK3xemZ9ydN4jNxouT11DoxXk+FnptIa9hM4gi1/0Ma8rjNIiExJl6MKckh6H5QUmzpFqB7y29
+AmgGoLmQS45Sc4krGIXTysVlaP4LHqkzlCCtE+RNAjQVYEsnaKcEq3T/vZbuf5Xp/ycKX6PDG0z4Gkre7dEfudyg8CelKqleVSQeQ/MJ6GYCBDSrGpJevsjzNGQCMGcA
+MAnksky5CE8NKph8jlyetoyLZvQmucR0JTqmEtGM4GJYtqNcJqjQnpGqgz5bR6NJy/w6zaJR8jOcxJdM6kYt/qHwe9xRkf1GTHhq3faS2CmYCnzNaJ0i1LrMmt40U+rS
+muoxY7T9Ji6jN6ramcuF5dkHyewwY12uS/IoRS4RHCSJTxlxicYgKbRO4PoH8HuUpDsMzY7MpnXrW1rXy8xg/9CQbJI7Nr6yYfWzTetaK2+eanluYXsxjkiy4jpjvmXB
+IuYwl0cf9cAexkPlsdLV5ZEVcAebqp1aMZs7kHlr4N39ewYH3n7Uo3yoDyF52SCpFao8RsGUh/DnUfkfVAqxqPdL5UGnx3tAR4s+zL8whzma2ekvO7+tHThCL5A2TrcG
+Gfnu3L7s9BbKsd2cQI5UPN9w7Qo8HUukqpwosdgVK/EkswfuHeR5Mv+2Sgc5kToMlSrPtWKpKmdFLBrCyiMW6h17HwtfsaipZhrEotktYxF8VGkHxQyL+uqlQSwOhXVB
+l52P8We5QvA+Jf5lNtAKDWqwLVIBVLwEqrFaURGLpvINdHyEV2CRKGPRkqpCGsTiaLiB6BulbtQBWS/w03CRkmMRLdfrq7c6d5cKprQrpqSW6tB+0tIYauvQneblltah
+H84P3RqG0gp8OrGwFUi5Vz/JdJ/Z0H7885W9WzdPNvzymK8Isfim/AhTX6ULYLHsPhY7vxL4oXnzxz9T01kYvrjpMWNDLF71yliMvr8wFk0PZBFMTRVOFqYKhX+mCtTZ
+f5wNsVgcsqD90zoyb/+cCvcPabtBa+pLeptT0uhieuzkaNu9i2lnvHQxHVs7UffDkfR2upj+yvTF9MJvfWNrD1COd/zSxfQuTO1MyA==
+--- END:BTSNOOP_LOG_SUMMARY ---

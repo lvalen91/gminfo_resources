@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This CalDef file contains CALs defined in the GIS-738 Spec.">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11/6/2015</Date>
+    <Description>Initial release of GIS738_RVCVideoRobustnessRequirement.caldef file.</Description>
+    <Author>Manish Khadtare</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/8/2016</Date>
+    <Description>For the SCREEN_RESOLUTION enum CAL in this caldef file added two addional enumeration value selections needed for 8in High Resolution (1280 X 768) and 10.2 in High Resolution (1920 X 1080) in the GIS738_RVCVideoRobustnessRequirement.enumdef file. Updated the max range from 720 to 768 for the following calibrations; PARTIAL_WINDOW_1_VERTICAL_START, PARTIAL_WINDOW_1_VERTICAL_STOP, PARTIAL_WINDOW_2_VERTICAL_START, PARTIAL_WINDOW_2_VERTICAL_STOP</Description>
+    <Author>Manish Khadtare</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>4/20/2016</Date>
+    <Description>Updated the calibration name for the following calibrations (PARTIAL_WINDOW_1_VERTICAL_LENGTH, PARTIAL_WINDOW_1_HORIZONTAL_LENGTH, PARTIAL_WINDOW_2_VERTICAL_LENGTH, PARTIAL_WINDOW_2_HORIZONTAL_LENGTH) to add the word LENGTH at the end of the calibration name instead of the word STOP, so that TW micro within CSM doesn't calculate the negative values affecting the final video on the display (related to Assembla Ticket#: 2358). Also, added a new calibration to this caldef called REVERSE_TIMER. </Description>
+    <Author>Manish Khadtare</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>11/21/2016</Date>
+    <Description>Within this caldef file updated the default value for the SCREEN_RESOLUTION calibration from 800 X 480, which is one of the screen resolutions used to support analog camera, to a default value of 1280 X 768, one of the screen resolutions used to support digital camera, since this represents a more valid camera screen resolution for MY19 and beyond. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>10/2/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the GIS738_RVCVideoRobustnessRequirement.caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnaard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Video Analysis time from REVERSE ACTIVE" Name="REVERSE_TIMER" References="GIS-738 &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ORwMcAcmEeaAJrZ-zJTzfg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/20/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1600</Value>
+      <MinValue>500</MinValue>
+      <MaxValue>2000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Measure the height in pixel vertically for partial window 2" Name="PARTIAL_WINDOW_2_VERTICAL_LENGTH" References="GIS-738 &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Bp2ZAITKEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/8/2016</Date>
+      <Description>Changed the max range from 720 to 768 pixels and PARTIAL_WINDOW_2_VERTICAL_STOP Default value to 768</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/20/2016</Date>
+      <Description>Change of word STOP to LENGTH</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>768</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>768</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Measure the width in pixel horizontally for partial window 2" Name="PARTIAL_WINDOW_2_HORIZONTAL_LENGTH" References="GIS-738 &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_XRD2MITDEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/10/2016</Date>
+      <Description>Changed the max range from 720 to 768 pixels and PARTIAL_WINDOW_2_HORIZONTAL_STOP Default value to 1280</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/20/2016</Date>
+      <Description>Changed word STOP to LENGTH</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1280</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1280</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Start pixel measurement vertically for partial window 2" Name="PARTIAL_WINDOW_2_VERTICAL_START" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_YJxRwITBEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/8/2016</Date>
+      <Description>Changed the max range from 720 to 768 pixels</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>70</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>768</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Start pixel measurement horizontally for partial window 2" Name="PARTIAL_WINDOW_2_HORIZONTAL_START" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_MHz7wITBEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/10/2016</Date>
+      <Description>Changed the max range from 720 to 768 pixels and PARTIAL_WINDOW_2_HORIZONTAL_START Default value to 705</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>705</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1280</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Measure the height in pixel vertically for partial window 1" Name="PARTIAL_WINDOW_1_VERTICAL_LENGTH" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ALBZoITBEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/8/2016</Date>
+      <Description>Changed the max range from 720 to 768 pixels Changed the max range from 720 to 768 pixels and PARTIAL_WINDOW_1_VERTICAL_STOP Default value to 768</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/20/2016</Date>
+      <Description>change of word STOP to LENGTH</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>768</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>768</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Measure the width in pixel horizontally for partial window 1" Name="PARTIAL_WINDOW_1_HORIZONTAL_LENGTH" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_xYL3cITAEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/10/2016</Date>
+      <Description>Changed the max range from 720 to 768 pixels and PARTIAL_WINDOW_1_HORIZONTAL_STOP Default value to 571</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/20/2016</Date>
+      <Description>Change of word STOP to LENGTH </Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>571</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1280</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Start pixel measurement vertically for partial window 1" Name="PARTIAL_WINDOW_1_VERTICAL_START" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_jlC3sITAEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/8/2016</Date>
+      <Description>Changed the max range from 720 to 768 pixels</Description>
+      <Author>Manish Khadtare</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>70</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>768</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Start pixel measurement horizontally for partial window 1 " Name="PARTIAL_WINDOW_1_HORIZONTAL_START" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_DVV2AITAEeWr6LNAoRJjVg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1280</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Number of distinct pixels in each dimension that can be displayed" Name="SCREEN_RESOLUTION" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>__-Jk4IQIEeWHkIX-EVZFdA</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/21/2016</Date>
+      <Description>Updated the default value for the SCREEN_RESOLUTION calibration from 800 X 480, which is one of the screen resolutions used to support analog camera, to a default value of 1280 X 768, one of the screen resolutions used to support digital camera, since this represents a more valid camera screen resolution for MY19 and beyond. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PWvKYIQHEeWHkIX-EVZFdA</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="A video frame is called a suspect frame when the Rear Cross Traffic Alert (RCTA), Park Assist Icon is ON initially or the phase difference &#x2018;value&#x2019; between two compared frames > PHASE_MEASUREMENT_DEFAULT &#x2264; SUSPECT_PHASE_VALUE" Name="SUSPECT_PHASE_VALUE" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_WVNN0IQGEeWHkIX-EVZFdA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>400</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Number of measured frame failed during video analysis, for Video Analysis IC to go to Bypass Mode" Name="NUMBER_OF_MEASURED_FRAMES_FAIL" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_HfUXoIQGEeWHkIX-EVZFdA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>16</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Number of frames analyzed by the Video Analysis IC " Name="FRAME_DEPTH" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_0iPCkIQFEeWHkIX-EVZFdA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>16</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Summation of absolute difference between adjacent pixels between TWO measured frames." Name="PHASE_MEASUREMENT_DEFAULT" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_nYng8IQFEeWHkIX-EVZFdA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Luma measurement used to detect White Image" Name="WHITE_IMAGE_LUMA" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_YUVCYIQFEeWHkIX-EVZFdA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>255</Value>
+      <MinValue>230</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Luma Measurement used to detect Dark Image" Name="DARK_IMAGE_LUMA" References="GIS-738  &amp; GIS-742 (starting in MY19)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_0VO90IQEEeWHkIX-EVZFdA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>25</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

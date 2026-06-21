@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="HMI" Description="Calibrations related to the HMI display of an TCP OTA SW update.  Reference GIS-787.">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11/17/2016</Date>
+    <Description>Intial release release of this caldef file based on GIS-787 per CR 1140460</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS787_RemoteTCPMProgrammingHMI_GlobalB.caldef, added GEM usage to the Remote_Reflash_Display_Time calibration in this caldef. Since this calibration fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>23May18</Date>
+    <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Timer used for the display of the OTA Updater programming completion status screen." Name="Remote_Reflash_Display_Time" References="GIS-787-7.0" Usage="LOW,GEM">
+    <CalID>_mVTWYIDHEeaEGrxOYCXaQg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>23May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>3</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

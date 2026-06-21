@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="System" Description="Download related calibrations, includes retry parameters">
+  <CalDefFileVersion>9</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>15APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>SuSanta Sarkar</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10Nov14</Date>
+    <Description>Added new cals released with GIS-668 v1.0.  Corrected DM_HTTPS_Conn_Retry_time max values.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2FEB15</Date>
+    <Description>Addressed Harman/GM concerns with cal resolution not equal to 1, resolved OTA OMA DM server default URL cal duplication with the RemoteServerSettings caldef.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>3Jun16</Date>
+    <Description>Updated defaults values for the following calibrations: DOWNLOAD_CERT_SUBJECT, DOWNLOAD_CERT_ISSUER, OMADM_CERT_SUBJECT, OMADM_CERT_ISSUER, DOWNLOAD_ISSUE_SUB_ENABLED, and OMADM_ISSUE_SUB_ENABLED.   </Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS668_RemoteOMADMServerInterface.caldef file to GIS668_RemoteOMADMServerInterface_GlobalA.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef files that conatin Global A specific calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>8Jun17</Date>
+    <Description>Revised all calibration for the additional Architecture usage options from CalDef tool V27.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>8Jun17</Date>
+    <Description>Added new OCSP_STAPLING_ENABLE cal for MY20 per CR # 744166.  Added new WAITING_FOR_HOST cal for the 20MY per CR  1053172.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Cancel/Reset Host response wait time" Name="WAITING_FOR_HOST" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_DhYxIDTlEeeAXf-LwbTQ6A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>8Jun17</Date>
+      <Description>Initial release of WAITING_FOR_HOST cal for 20MY per CR# 1053172.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="OCSP Stapling Enable" Name="OCSP_STAPLING_ENABLED" References="GIS-668-1500" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_BTXuUDTNEeeAXf-LwbTQ6A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>8Jun17</Date>
+      <Description>Initial release of the OCSP_STAPLING_ENABLE cal for MY20 per CR # 744166.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is the {host port} portion of the OTA OMA DM server URL. This is the public Internet facing port." Name="OVER_THE_AIR_REFLASH_SERVER_HOST_PORT" References="GIS-668" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_DkuAIKsGEeS6cJs-G6It5w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2FEB15</Date>
+      <Description>Moved from RemoteServerSettings.caldef</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>443</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the base {server_name} portion of the OTA OMA DM server URL." Name="OVER_THE_AIR_REFLASH_SERVER_NAME" References="GIS-668" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_fikAgKsFEeS6cJs-G6It5w</CalID>
+    <Type>String</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2FEB15</Date>
+      <Description>Moved from RemoteServerSettings.caldef</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>500</MaxLength>
+      <StringValue>vtmpub.oboservices.mobi</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Update Package deletion enable" Name="UPDATE_PACKAGE_DELETE" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_iwiVMGkWEeSGTPDwLeC47Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Download progress update rate (K bytes)" Name="PERIODIC_UPDATE_SIZE" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_dGlDEGkWEeSGTPDwLeC47Q</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Download Server Certificate Subject" Name="DOWNLOAD_CERT_SUBJECT" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_vIdwoGkVEeSGTPDwLeC47Q</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3Jun16</Date>
+      <Description>Updated default</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>32</MaxLength>
+      <StringValue>CN=OCCSERVER,OU=OnStar,O=ONSTAR</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Download Server Certificate Issuer" Name="DOWNLOAD_CERT_ISSUER" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_sjrfsGkVEeSGTPDwLeC47Q</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3Jun16</Date>
+      <Description>Updated default</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>32</MaxLength>
+      <StringValue>CN=ONSTAR,O=ONSTAR,OU=ONSTAR</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="OMADM Server Certificate Subject" Name="OMADM_CERT_SUBJECT" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_nF3MIGkVEeSGTPDwLeC47Q</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3Jun16</Date>
+      <Description>Updated default</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>32</MaxLength>
+      <StringValue>CN=OCCSERVER,OU=OnStar,O=ONSTAR</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="OMADM Server Certificate Issuer" Name="OMADM_CERT_ISSUER" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_jt2ugGkVEeSGTPDwLeC47Q</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3Jun16</Date>
+      <Description>Updated default</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>32</MaxLength>
+      <StringValue>CN=ONSTAR,O=ONSTAR,OU=ONSTAR</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Download Server Cert Subject/Issuer Verification Enable" Name="DOWNLOAD_ISSUE_SUB_ENABLED" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_Yh-2gWkWEeSGTPDwLeC47Q</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3Jun16</Date>
+      <Description>Updated default to false</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="OMADM Server Cert Subject/Issuer Verification Enable" Name="OMADM_ISSUE_SUB_ENABLED" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_ESJgIGkWEeSGTPDwLeC47Q</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3Jun16</Date>
+      <Description>Updated default to false</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Max Download Timer During Engine Off (minutes)" Name="MAX_DOWNLOAD_DURATION" References="GIS-668-1500 v1.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_FZnT8GkVEeSGTPDwLeC47Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed units to none, revised min/max to match GIS-668</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Inactivity Timer for Download" Name="Download_Data_Transfer_Inactivity_timer" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_mlOpwcQNEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>120</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Network connection set up Timer" Name="Network_connection_setup_timer" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_wsd_gcQNEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Inactivity Timer" Name="OMADM_session_Inactivity_timer" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_R1WhYMQNEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>120</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Remote Reflash feature enabled or diasabled" Name="Remote_Reflash_Feature" References="GIS-697-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_RCLikcQOEeO3q7u_anfWeg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Version Comparison enabled or diasabled" Name="Enable_Version_Compare" References="GIS-697-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_iR66IcQQEeO3q7u_anfWeg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="OMADM download feature enabled or diasabled" Name="OMADM_Feature" References="GIS-697-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_Dij7wMQOEeO3q7u_anfWeg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DM and https, retry timer # 6 (1 bit = 5 minutes)" Name="DM_HTTPS_Conn_Retry_time_6" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_-JfBccQREeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed units to none, revised min/max to match GIS-668</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>96</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DM and https, retry timer # 5 (1 bit = 5 minutes)" Name="DM_HTTPS_Conn_Retry_time_5" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_2B85ocQREeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed units to none, revised min/max to match GIS-668</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>48</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DM and https, retry timer # 4 (1 bit = 5 minutes)" Name="DM_HTTPS_Conn_Retry_time_4" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_vCKdAcQREeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed units to none, revised min/max to match GIS-668</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>24</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DM and https, retry timer # 3 in minutes" Name="DM_HTTPS_Conn_Retry_time_3" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_kzTcUMQREeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed units to none, revised min/max to match GIS-668</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DM and https, retry timer # 2 in minutes" Name="DM_HTTPS_Conn_Retry_time_2" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_W-GAAcQREeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed units to none, revised min/max to match GIS-668</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DM and https, retry timer # 1 in minutes" Name="DM_HTTPS_Conn_Retry_time_1" References="GIS-668-1500" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_shRDAMQQEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed units to none, revised min/max to match GIS-668</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>8Jun17</Date>
+      <Description>Revised for the additional Architecture usage options from CalDef tool V27.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

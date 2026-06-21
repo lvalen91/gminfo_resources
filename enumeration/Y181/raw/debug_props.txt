@@ -1,0 +1,7 @@
+[dalvik.vm.dex2oat-minidebuginfo]: [true]
+[dalvik.vm.minidebuginfo]: [true]
+[debug.atrace.tags.enableflags]: [0]
+[debug.force_rtl]: [false]
+[debug.sf.nobootanimation]: [1]
+[debug.tracing.screen_brightness]: [0.05]
+[ro.debuggable]: [0]

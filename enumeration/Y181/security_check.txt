@@ -1,0 +1,53 @@
+=== GM AAOS Quick Security Check ===
+
+[*] Device: gminfo37
+[*] Build:  W231E-Y181.3.2-SIHM22B-499.3
+
+=== KERNEL ===
+Linux version 4.19.305-240125T145315Z-gf1edde901aa7 (nobody@android-build) (Android (7485623, based on r416183b1) clang version 12.0.7 (https://android.googlesource.com/toolchain/llvm-project c935d99d7cf2016289302412d708641d52d2f7ee), GNU ld (GNU Binutils for Ubuntu) 2.34) #1 SMP PREEMPT Tue Jul 22 07:52:16 EDT 2025
+
+=== SECURITY PATCH ===
+2025-06-05
+
+=== SELINUX ===
+Mode: Enforcing
+Enforce value: 1
+=== VERIFIED BOOT ===
+State: green
+Locked: 1
+Verity: 
+
+=== BOOTLOADER ===
+Version: 2344
+Slot: _a
+
+=== DEBUG STATUS ===
+ro.debuggable: 0
+ro.secure: 1
+ro.adb.secure: 1
+
+=== CURRENT USER ===
+uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0
+
+=== ROOT CHECK ===
+su binary: Not found
+
+=== INTERESTING PORTS ===
+tcp        0      0 127.0.0.1:53            0.0.0.0:*               LISTEN      -
+tcp        0      0 192.168.5.1:53          0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:7000            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:6363            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:49156           0.0.0.0:*               LISTEN      -
+tcp6       0      0 ::1:53                  [::]:*                  LISTEN      -
+tcp6       0      0 fe80::f86d:ccff:fe1c:53 [::]:*                  LISTEN      -
+tcp6       0      0 [::]:7000               [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9016 [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9002 [::]:*                  LISTEN      -
+
+=== MCP2200 UART ===
+crw-rw-rw- 1 root      root      166,   1 2011-11-11 02:11 /dev/ttyACM1
+crw-rw---- 1 bluetooth bluetooth   4,  64 2025-12-20 08:13 /dev/ttyS0
+crw------- 1 root      root        4,  65 2011-11-11 02:11 /dev/ttyS1
+crw------- 1 root      root        4,  66 2011-11-11 02:11 /dev/ttyS2
+crw------- 1 root      root        4,  67 2011-11-11 02:11 /dev/ttyS3
+

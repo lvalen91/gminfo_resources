@@ -1,0 +1,202 @@
+--------- beginning of main
+12-20 08:16:31.395  2685  2685 D CarPlay_PlayerManager: onCinemoEvent(): CINEMO_EC_GRAPH_STATUS
+12-20 08:16:31.396   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.400   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.404   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.408   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.412   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.416   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.420   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.422   632   632 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+12-20 08:16:31.423   604   604 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 875353, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2025, .month = 11, .day = 20, .hour = 17, .minute = 16, .second = 32, .ms = 526, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _GPS_DR, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE | GNSS_FIX_TYPE_DEAD_RECKONING (0x200008), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 269.640015, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 1.100000, .mVerticalAccuracy = 2.200000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+12-20 08:16:31.423   604   604 D GM_LOCATION: GNSS T 0 UTC 1766250992526 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 269.640015 FIX 4 SRC 1
+12-20 08:16:31.424   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.428   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.432   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.436   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.440   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.445   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.446   337   371 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010746492891713 raw 872724925143 dt 126303760 draw 126293952 newFactor 1.0000777 avg 1.0000825 ac 0.1
+12-20 08:16:31.448   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.452   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.456   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.460   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.464  1339  1339 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 875386163341 < nextUpdateTimeNanos: 875586150540
+12-20 08:16:31.464   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+--------- beginning of system
+12-20 08:16:31.466  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.467  1339  1339 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5475960325, mValue=0}
+12-20 08:16:31.467  1339  1339 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+12-20 08:16:31.467  1339  1339 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+12-20 08:16:31.468  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.468   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.469  1339  1339 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5475960325, mValue=0}
+12-20 08:16:31.469  1339  1339 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+12-20 08:16:31.469  1339  1339 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+12-20 08:16:31.472   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.476   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.480   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.484   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.489   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.489   604   604 D GM_LOCATION: WHEEL T 875419 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+12-20 08:16:31.492   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.496   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.500   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.504   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.508   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.512   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.516   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.520   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.524   632   632 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+12-20 08:16:31.524   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.525   604   604 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 875454, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2025, .month = 11, .day = 20, .hour = 17, .minute = 16, .second = 32, .ms = 627, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _GPS_DR, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE | GNSS_FIX_TYPE_DEAD_RECKONING (0x200008), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 269.640015, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 1.100000, .mVerticalAccuracy = 2.200000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+12-20 08:16:31.525   604   604 D GM_LOCATION: GNSS T 0 UTC 1766250992627 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 269.640015 FIX 4 SRC 1
+12-20 08:16:31.528   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.532   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.536   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.540   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.542   869   989 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002A21] T[2]HSU(309) fq 89100, fs 59, hwQ 255, pQ 100, afQ 255 trdAfQ 255, mp 16, ofs -1000, adj 3, bw 228, dev 53, agc 0, stp 1, ant 1, fs1 -99, fs2 -99, hl FECCED
+12-20 08:16:31.545   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.548   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.552   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.556   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.559  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.560   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.561  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.562  1338  1689 I TimeOfDay: GmVehicleTimeSource.computeTime(302)	TimeOfDay:GmVehicleTimeSource Computed Local Time: LocalTime{Time=2025-12-20 08:16:29, TimeMillis=1766218589561, LocalTimeSourceType=CELLULAR}	(pool-2-thread-1)
+12-20 08:16:31.563  1338  1615 D TimeOfDay: TimeofDayService.pollAndUpdateTimezone(817)	TCP cellular time based time zone detection active	(VehicleTime)
+12-20 08:16:31.563  1338  1615 D TimeOfDay: TimeofDayService.checkForTimeZones(844)	Current trusted time: 1766250991562, local time: 1766218590560, time zone offset: -32400000, time zone change offset: 0	(VehicleTime)
+12-20 08:16:31.564   497   507 I pulseaudio: [combine] module-combine-sink.c: debug: current 9 streams into crossbar 8,dumping state=0.
+12-20 08:16:31.564   497   507 I pulseaudio: [combine] module-combine-sink.c: stream[8:pcmChime_p] Channel start 6 Channels 2.
+12-20 08:16:31.564   497   507 I pulseaudio: [combine] module-combine-sink.c: channel [6] RMS [0.00] samples [384000] in past 8 seconds
+12-20 08:16:31.564   497   507 I pulseaudio: [combine] module-combine-sink.c: channel [7] RMS [0.00] samples [384000] in past 8 seconds
+12-20 08:16:31.565   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.567  1339  1339 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 875486105658 < nextUpdateTimeNanos: 875586150540
+12-20 08:16:31.567  1339  1339 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 875486105658 < nextUpdateTimeNanos: 875486163341
+12-20 08:16:31.568   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.572   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.574   598  1221 D ethctrlmgr: readDataFromEthCtrlSrvr(): client select timeout
+12-20 08:16:31.576   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.580   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.585   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.589   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.589   604   604 D GM_LOCATION: WHEEL T 875519 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+12-20 08:16:31.592   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.596   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.600   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.604   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.608   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.612   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.614  6415  6453 D trailering_app: TrailerFuelEconomyManager.onFuelInjectedEvent(177)	VDFuelEvent{action='ROLLING_COUNT', data=0.7561956}	(pool-2-thread-2)
+12-20 08:16:31.616   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.620   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.621   632   632 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+12-20 08:16:31.621   604   604 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 875551, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2025, .month = 11, .day = 20, .hour = 17, .minute = 16, .second = 32, .ms = 726, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _GPS_DR, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE | GNSS_FIX_TYPE_DEAD_RECKONING (0x200008), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 269.640015, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 1.100000, .mVerticalAccuracy = 2.200000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+12-20 08:16:31.621   604   604 D GM_LOCATION: GNSS T 0 UTC 1766250992726 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 269.640015 FIX 4 SRC 1
+12-20 08:16:31.624  2280  2355 D nfsa.transport.in: /192.168.1.106:9010: Heartbeat( 100 ) Status, clientHandle = 0, service = 1001.6, 23 bytes
+12-20 08:16:31.624   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.628   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.632   869   989 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002A22] T[1]HSU(309) fq 97500, fs 48, hwQ 255, pQ 98, afQ 250 trdAfQ 250, mp 6, ofs -1000, adj 7, bw 193, dev 21, agc 0, stp 1, ant 0, fs1 -99, fs2 -99, hl 5E115
+12-20 08:16:31.632   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.636   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.640   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.644   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.648   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.652   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.656   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.660   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.664   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.668  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.669   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.669   851   863 I lvds_device: updateRvcStatus to 1
+12-20 08:16:31.669   851   863 D lvds_device: buf[0] : 0x2a
+12-20 08:16:31.669   851   863 D lvds_device: buf[1] : 0x01
+12-20 08:16:31.669  1339  1339 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5475960325, mValue=0}
+12-20 08:16:31.669  1339  1339 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+12-20 08:16:31.669  1339  1339 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+12-20 08:16:31.671  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.671  1339  1339 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5475960325, mValue=0}
+12-20 08:16:31.671  1339  1339 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+12-20 08:16:31.671  1339  1339 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+12-20 08:16:31.671  1339  1339 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 875586136906 < nextUpdateTimeNanos: 875586150540
+12-20 08:16:31.672   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.676  1160  6779 E AdbDebuggingManager: Caught an exception opening the socket: java.io.IOException: Connection refused
+12-20 08:16:31.676   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.680   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.684   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.688   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.689   604   604 D GM_LOCATION: WHEEL T 875619 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+12-20 08:16:31.692   584   649 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 1000 for CH-8:
+12-20 08:16:31.692   584   649 D pal_common: [CommIPC] isReadDataAvailable:[CommIPC.cpp:192] Timeout is expired.
+12-20 08:16:31.692   584   649 W pal_calibrations: [IpcCalibration] read:[Ipc.cpp:45] Timeout is expired in IPC Calibrations channel, repeat waiting
+12-20 08:16:31.692   584   649 W pal_calibrations: [calibrationsCore] mainWorkerThread:[palCalibrationCore.cpp:192] Warning caught in worker body: Timeout expired
+12-20 08:16:31.692   584   649 D pal_calibrations: [IpcCalibration] read:[Ipc.cpp:37] Wait data start
+12-20 08:16:31.692   584   649 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 0 for CH-8:
+12-20 08:16:31.692   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.696   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.698   337   369 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010746744811169 raw 872976823708 dt 126120864 draw 126110346 newFactor 1.0000834 avg 1.0000826 ac 0.1
+12-20 08:16:31.700   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.703  2280  2355 D nfsa.transport.in: /192.168.1.102:9010: Heartbeat( 100 ) Status, clientHandle = 0, service = 1001.2, 22 bytes
+12-20 08:16:31.704   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.708   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.712   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.716   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.720   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.724   632   632 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+12-20 08:16:31.724   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.725   604   604 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 875654, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2025, .month = 11, .day = 20, .hour = 17, .minute = 16, .second = 32, .ms = 826, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _GPS_DR, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE | GNSS_FIX_TYPE_DEAD_RECKONING (0x200008), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 269.640015, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 1.100000, .mVerticalAccuracy = 2.200000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+12-20 08:16:31.725   604   604 D GM_LOCATION: GNSS T 0 UTC 1766250992826 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 269.640015 FIX 4 SRC 1
+12-20 08:16:31.728   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.732   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.736   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.740   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.745   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.748   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.752   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.756   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.760   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.764   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.765  1339  1339 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 875686119077 < nextUpdateTimeNanos: 875686136906
+12-20 08:16:31.768   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.772   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.776   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.780   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.784   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.788   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.790   604   604 D GM_LOCATION: WHEEL T 875720 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+12-20 08:16:31.792   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.796   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.800   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.804   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.806   849   870 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:428] Wait timeout: file descriptor is not ready for reading
+12-20 08:16:31.808   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.812   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.816   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.819  6415  6453 D trailering_app: TrailerFuelEconomyManager.onFuelInjectedEvent(177)	VDFuelEvent{action='ROLLING_COUNT', data=0.7563482}	(pool-2-thread-2)
+12-20 08:16:31.820   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.821   632   632 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+12-20 08:16:31.821   604   604 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 875751, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2025, .month = 11, .day = 20, .hour = 17, .minute = 16, .second = 32, .ms = 926, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _GPS_DR, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE | GNSS_FIX_TYPE_DEAD_RECKONING (0x200008), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 269.640015, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 1.100000, .mVerticalAccuracy = 2.200000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+12-20 08:16:31.821   604   604 D GM_LOCATION: GNSS T 0 UTC 1766250992926 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 269.640015 FIX 4 SRC 1
+12-20 08:16:31.824   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.828   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.832   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.836   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.840   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.841   869   989 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002A23] T[2]HSU(309) fq 89100, fs 59, hwQ 255, pQ 100, afQ 255 trdAfQ 255, mp 14, ofs 1000, adj 3, bw 211, dev 50, agc 0, stp 1, ant 1, fs1 -99, fs2 -99, hl FECCED
+12-20 08:16:31.844   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.848   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.852   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.856   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.860   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.862   598   662 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:428] Wait timeout: file descriptor is not ready for reading
+12-20 08:16:31.864   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.868   497  1053 W pulseaudio: [alsa-sink-csm_amp] module-combine-sink.c: sink_input_process_msg() Data accumulated in memblockq alsa_output.avb.csm_amp for 8000 us
+12-20 08:16:31.869  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.870  1339  1339 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5475960325, mValue=0}
+12-20 08:16:31.870  1339  1339 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+12-20 08:16:31.870  1339  1339 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+12-20 08:16:31.871  1384  1683 D CAR.HalClient: Returning status: OK
+12-20 08:16:31.872  1339  1339 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5475960325, mValue=0}
+12-20 08:16:31.872  1339  1339 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+12-20 08:16:31.872  1339  1339 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+12-20 08:16:31.872  1339  1339 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 875786145009 < nextUpdateTimeNanos: 876686119077

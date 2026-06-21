@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This caldef file defines the AM specific tuner calibrations.  These calibrations are primarily defined to configure the tuner for specific regions.">
+  <CalDefFileVersion>14</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>May 8, 2014</Date>
+    <Description>Dropped AM_ScanThreshold1 and AM_ScanThreshold2 as scanning is no longer supported.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>December 1, 2014</Date>
+    <Description>Cal Def File Version 4.  December 1, 2014:  
+Here is a summary of the changes for this release:
+
+1.  Deleted AM_Range Type Integer and replaced with Enumeration AM_Range_Definition from GIS653_AMTuner.enumdef.  Cal was incorrectly defined as an integer value.
+
+2.  Deleted AM_StepSize Type Integer and replaced with Enumeration AM_Range_Definition from GIS653_AMTuner.enumdef.  Cal was incorrectly defined as an integer value.
+
+3. Deleted AM_AutoC_Level and AM_Autostore as these features are no longer used for Info 3 programs.   
+
+4. AM_TimeToProductAudio. Added this calibration to define the time in msec to delay producing audio after a preset selection, seek/tune, or direct tune process before audio is played to allow for system dynamic switching conditions to dissipate.  See GMW16273.
+
+5.  AM_AGC_Threshold.  This calibration defines the AM Band AGC thresholds for a specific region as defined in GMW16273.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>06Feb2015</Date>
+    <Description>The following changes were made to this GIS-653 AM Tuner caldef file:
+ 1. AM_AGC_Threshold.  Added usage HIGH, MID, LOW as this was not    previously defined.  Corrected mapping problem to the enum value as it showed invalid in previous release.
+
+2.  Deleted AMFM_FastTuneRate and AMFM_FastSeekRate as they are already defined in the AMFMTunerCommon.caldef file and therefore redundant cals.
+
+3. Changed cal type for AM_Seek to an enum to match the enum values defined in GIS653AMTuner.enumdef.  Removed reference to GIS-1-205 as this specification is obsolete and has been replaced by GMW16273.
+
+3. Corrected description for AM_SeekC_HighLevel and AM_SeekCLowLevel to change reference from FMSeekC to AMSeekC. 
+
+4. Changed description for AM_Noise as it was not correct.
+
+5.  Added the following calibrations to address the Assembla ticket for tuner reception performance calibrations exposed to the caldef files by Harman.  This contain the SS prefix to indicate these are supplier specific calibrations.  Harman should use this designation plus the High/Mid Usage field to query these cals from the database.
+
+SS_AM_SoftMuteResponse
+SS_AM_SoftMuteStart
+SS_AM_SoftMuteSlope 
+SS_AM_SoftMuteLimiter
+SS_AM_IFBandwidthControlParameter</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated AM_Noise cal in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>25-Jun-2015</Date>
+    <Description>The following changes have been implemented for this release:&#xD;
+1. Added new Cals:&#xD;
+
+    BrazilAMBandDisable for pending Brazlian AM regulations. 
+    AntennaPhantomPowerCycleTime to support Antenna diagnostics defined in GIS-653. 
+    AM_AntMastSignalThreshold for strong station threshold.  
+    AM_SeekStopCount.  For minimum SeekStops.
+    AntennaConfiguration. For whether the mast antenna is included.&#xD;
+
+2.  Also added these to support direction from GM-Harman workshop to eliminate enum in favor of specific values
+    AM_Stop_Frequency 
+    AM_Start_Frequency
+    AM_Step_Size&#xD;
+
+3.Deleted the AM_Range CAL&#xD;
+</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>03.09.2015</Date>
+    <Description>Changed description and default values of the following supplier-specific parameters: SS_AM_SoftMuteStart, SS_AM_SoftMuteSlope, SS_AM_SoftMuteLimiter.</Description>
+    <Author>Christian Gross</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>3/10/2016</Date>
+    <Description>Within the GIS653_AMTuner.caldef file per recommendation from Dennis Ward and Don Hibbard from GM Validation, updated the maximum value for the AM_SeekC_HighLevel CAL from 60 to 100 to provide the maximum capability of the first pass seek high threshold so that the range of values can accomodate any possible vehicle line variations needed to meet GMW16273 requirements.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS653_AMTuner.caldef file, added GEM usage to the following calibrations within this caldef: (1.) BrazilAMBandDisable, (2.) AntennaConfiguration, (3.) AM_FM_FastTuneRate, (4.) AM_Step_Size, (5.) AM_Start_Frequency, (6.) AM_Stop_Frequency, (7.) AM_Seek, (8.) AM_AGC_Threshold, (9.)AntennaPhantomPowerCycleTime, (10.) AM_TimeToFirstAudio, (11.) AM_SeekC_HighLevel, (12.) AM_SeekStopCount, (13.) AM_AntMastSignalThreshold, (14.) AM_SeekC_LowLevel, and (15.) AM_SoftMute. Since these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>05/10/2018</Date>
+    <Description>GMW16273 related changes. Per CR#1768009, deleted AM_AGC_Threshold, and AM_SoftMute calibrations from GIS653_AMTuner.caldef. Updated the default value for the AM_Seek calibration to the enumeration value of AM_Seek_Threshold_C</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>6/19/2019</Date>
+    <Description>Per CR#2303157 AOSP transition, updated description for cal BrazilAMBandDisable. In MY22 GIS-646 Cal DB V6.0.3, deprecating the following cals AntennaConfiguration, AM_SeekStopCount, AM_AntMastSignalThreshold as Mast Installation Verification test requirements were not implemented. </Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This cal BrazilAMBandDisable for disabling AM band in Brazil and also to disable AM Band for other markets, if required.When enabled, the AM Band source icon supporting AM shall be removed." Name="BrazilAMBandDisable" References="GIS-653-7600" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_SXXSERt1EeWzztLp5T7pOw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Update description of calibration</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="his calibration informs the tuner whether a mast antenna is included as part of the Infotainment configuration.   Only configurations with the mast antenna option are required to run the Antenna Mast Installation Verification test. If True, includes mast antenna. If false, doesn't include mast antenna. Default is False." Name="AntennaConfiguration" References="GIS-653-7200" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_4hHxABttEeWeKtb2c1Y4bg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Defines the step size frequency  in kHz of the AM band." Name="AM_Step_Size" References="GIS-653-1900" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_MMu80BtqEeWeKtb2c1Y4bg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>9</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>KHz</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the start frequency (lower limit) in kHz of the AM band." Name="AM_Start_Frequency" References="GIS-653-1900" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypRwsRtpEeWeKtb2c1Y4bg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>530</Value>
+      <MinValue>520</MinValue>
+      <MaxValue>540</MaxValue>
+      <Units>KHz</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the stop frequency (upper limit) in kHz of the AM band." Name="AM_Stop_Frequency" References="GIS-653-1900" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_FAHQABtoEeWeKtb2c1Y4bg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1710</Value>
+      <MinValue>1590</MinValue>
+      <MaxValue>1720</MaxValue>
+      <Units>KHz</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the AM IF Bandwidth parameter in kHz.  The default value is set to Auto (0).  This is a Supplier Specific Calibration." Name="SS_AM_IF_BandwidthControlParameter" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_3Qo8Ia42EeSPIs8u9gqkmw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>31</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the AM Soft Mute Limiter parameter in dB.  The default value is 5 (-30dB). This is a Supplier Specific Calibration.  The integer value selected defines the dB setting. For further details can be found in the SAF775X Radio User Manual Section 7.11.6. " Name="SS_AM_SoftMuteLimiter" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_o8A_8a42EeSPIs8u9gqkmw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the AM Soft Mute Slope parameter in dB.  The default value is 0 (30dB). This is a Supplier Specific Calibration.  The integer value selected defines the dB setting. For further details can be found in the SAF775X Radio User Manual Section 7.11.4. " Name="SS_AM_SoftMuteSlope" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Og2vwa42EeSPIs8u9gqkmw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>7</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the AM Soft Mute Start parameter in dB&#xb5;V.  The integer value selected defines the dB&#xb5;V setting. For further details can be found in the SAF775X Radio User Manual Section 7.11.4. The default value is 5 (26dB&#xb5;V). This is a Supplier Specific Calibration." Name="SS_AM_SoftMuteStart" References="SAF775X Radio User Manual Section 7.11.4" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_dVO_gK41EeSPIs8u9gqkmw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration selects a Slow or Fast response for AM Soft Muting.  The default value is Slow. This is a Supplier Specific Calibration." Name="SS_AM_SoftMuteResponse" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_SC1ToK40EeSPIs8u9gqkmw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_F8N8kK4zEeSPIs8u9gqkmw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Creates a cycle time for toggling the phantom power On-Off time as defined in specific profile of conducting this test.  Cycles times will be on the order of msecs.  For example if this cal is set to 200 msecs, it means the tuner shall apply phantom power for 200 msec and then immediately turn the phantom power off." Name="AntennaPhantomPowerCycleTime" References="GIS-653-7500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_HsQB8RtvEeWeKtb2c1Y4bg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the time in msec to delay producing audio after a preset selection, seek/tune, or direct tune process before audio is played to allow for system dynamic switching conditions to dissipate.  See GMW16273." Name="AM_TimeToFirstAudio" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_M2ufYHokEeSjYPic2Gk-6g</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3600</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the AM_Seek cal as defined in GMW16273. Updated to align GMW16273 May 2018 version. " Name="AM_Seek" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_VDYlcK4yEeSPIs8u9gqkmw</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2018-May-10</Date>
+      <Description>AM Seek caldef did not change, corresponding AM Seek enumdefchanged. AM_Seek_Thresholds 1-4 are reserved, AM_Seek_C remain.</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>05/10/2018</Date>
+      <Description>Updated the default value for the AM_Seek calibration to the enumeration value of AM_Seek_Threshold_C</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EAyXMMsREeO1s9fQsZ57eg</EnumID>
+      <Value>5</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="High seek threshold when AMSeekC selected" Name="AM_SeekC_HighLevel" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypHfEk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file. Original CALDS block is AMTuner</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/10/2016</Date>
+      <Description>Per recommendation from Dennis Ward and Don Hibbard from GM Validation, updated the maximum value for the AM_SeekC_HighLevel CAL from 60 to 100 to provide the maximum capability of the first pass seek high threshold so that the range of values can accomodate any possible vehicle line variations needed to meet GMW16273 requirements.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>34</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Low seek threshold when AMSeekC selected" Name="AM_SeekC_LowLevel" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypHfE01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file. Original CALDS block is AMTuner</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>28</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration sets the minimum SeekStops that must occur to trigger the pass-fail test result.  If the SeekStop count exceeds the AM_SeekStopCount calibration, then the test passes.  If the SeekStop count is less that the AM_SeekStopCount calibration, then the test fails." Name="AM_SeekStopCount" References="GIS-653-7200" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_rzA8IRtsEeWeKtb2c1Y4bg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file. Original CALDS block is AMTuner</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>25</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration sets the signal threshold for determining the presence of an AM strong station during an Update Station list sequence.  The value of this calibration may or may not be the same as the cal used for AM strong station thresholds used during normal tuning operations.  This provides more flexibility for tailoring the test criteria independently of the strong station threshold used in the production calibration." Name="AM_AntMastSignalThreshold" References="GIS-653-7200" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_VGRU4RtgEeWeKtb2c1Y4bg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file. Original CALDS block is AMTuner</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>25</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="RDS does not expect a seek stop below this level. Optional Calibration - Supplier Dependant." Name="AM_Noise" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ypHfF01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file. Original CALDS block is AMTuner</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated AM_Noise cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

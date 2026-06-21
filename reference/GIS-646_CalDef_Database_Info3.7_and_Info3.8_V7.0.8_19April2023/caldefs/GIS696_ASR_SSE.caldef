@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This is the SpeechRec Front-end performance caldef.  It contains the BinaryFiles for each SpeechRec tuning set.  The tuning sets vary according to device projection connectivity">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/30/2015</Date>
+    <Description>Initial release of SpeechRec Front-end SSE .bsd</Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>3/3/2016</Date>
+    <Description>Within this caldef file added a new binary file type calibration called  SRgmspeechSERVER.bsd for two mic. SSE .bsd tuning file for Info3 radio server ASR. Also, uploaded updated.bsd files for the following four CALs: 1.) SRotherBT, 2.) SRandroidautoUSB, 3.) SRsiriBT, and 4.) SRcarplayUSB per Assembla#: 2273.</Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/28/2016</Date>
+    <Description>Removing usage of Low Radio for the SRotherBT, SRandroidautoUSB, SRsiriBT, and SRcarplayUSB calibrations here in this caldef file. Calibrations needed for the Low Radio Speech Recognition use cases created in the LowRadioGIS696_ASR_SSE.caldef file.</Description>
+    <Author>Ginnard Kimbrough </Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>Nov 03, 2016</Date>
+    <Description>Within GIS696_ASR_SSE.caldef file for RTC CR#: 1228981, added the following eight new calibration parameters for new MY19 features, favorite list, nick names, and relation tags: 1.) Maximum_Size_Media_Favorite_List, 2.) Maximum_Size_POI_Favorite_List, 3.) Maximum_Size_Contact_Favorite_List, 4.) Enable_Relation_Tags, 5.) Enable_Nick_Names, 6.) Enable_Favorite_Media, 7.) Enable_Favorite_POI, and 8.) Enable_Favorite_Contact.</Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Maximum size of media favorite list" Name="Maximum_Size_Media_Favorite_List" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_INrsIKHwEeaJqbkuKRxh9Q</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum size of POI favorite list" Name="Maximum_Size_POI_Favorite_List" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_A1DRsKHwEeaJqbkuKRxh9Q</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum size of contact favorite list" Name="Maximum_Size_Contact_Favorite_List" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_2-rpgKHvEeaJqbkuKRxh9Q</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable/disable relation tags for ASR. $00 = Disable and $01 = Enable." Name="Enable_Relation_Tags" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_upL-MKHvEeaJqbkuKRxh9Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable/disable nick names for ASR. $00 = Disable and $01 = Enable." Name="Enable_Nick_Names" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_pBCC4KHvEeaJqbkuKRxh9Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable/disable Media favorite list for ASR. $00 = Disable and $01 = Enable." Name="Enable_Favorite_Media" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_hjTGAKHvEeaJqbkuKRxh9Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable/disable POI favorite list for ASR. $00 = Disable and $01 = Enable." Name="Enable_Favorite_POI" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Y3InIKHvEeaJqbkuKRxh9Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable/disable contact favorite list for both phone and navigation domains. $00 = Disable and $01 = Enable." Name="Enable_Favorite_Contact" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_EK3B0KHuEeaJqbkuKRxh9Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Nov 03, 2016</Date>
+      <Description>Inital release of this CAL.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Two mic. SSE .bsd tuning file for Info3 radio server ASR, SRgmspeechSERVER.bsd" Name="SRgmspeechSERVER" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Vi1VMKAfEeWzH_G2Tu-bFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/3/2016</Date>
+      <Description>Inital release of this CAL. Also, for now as reference uploaded SRgmspeechEMBEDDED.bsd as an initial starter default file for this CAL since there is not a file available to use for this CAL for now.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRgmspeechEMBEDDED_UsedasInitialStarterFileforthisCAL.bsd</Filename>
+      <Data>AAEiAwAAAAAAAAACAAAAAAAAAABCU0QgU1NFIEJhc2ljIFNpZ25hbHByb2Nlc3NpbmcgRGF0YSBDUkM6MFg2OTVBMzU5MyAAAAAAAAAAAAAAAAAAAAAAAgAAAAAACg0KEAAAAAAAAAAPAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAA5AAAADUQDQpTU0VfTUFJTl9Db25maWcAPQAAAAYGBgYGAwQDAwMDAwMDAwMDAwMEAwMDAwQDAwMDAwMDAwMDAwMDAwMDAwMDAwMGBgMDAwYDAwMDAwMDAwMPAQABAIA+oAAAAAIAAAAAAAAAAQAAAAEAAAABAAAAAgAAAAIAAAAAAAAAAgAAAAAAAAABAAAAAQAAAAEAAAADAAAAAAAAAAEAAAABAAAAAQAAAAMAAAAAAAAAAQAAAAEAAAAAAAAAAgAAAAEAAAABAAAAAQAAAAIAAAACAAAAAAAAAAEAAAAAAAAAAQAAAAEAAAACAAAAAQAAAAAAAAABAAAAAQAAAAEAAAABAAAAAAAYHwEAAAADAAAAAAAAAAEAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAAAAAAAAoNCtABAAAACg0KGwAAAAAAAAABAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAADAAAAMwTDQpTU0VfTUFJTl9Db25maWdWZXJzaW9uSW5mbwADAAAAAwMDDAMAAAARAAAAAAAAAAAKDQoUAAAAAAoNCg8AAAAAAAAABgAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAKIAAACNDw0KU1NFX0FFQ19Db25maWcAUAAAAAUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQMFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF3igAAQDQB6b9Vv8w/1b/Yv8w/4L/KwG4/5MLyv8rAWL/DgfQBzD/MP8+/z7/Tf9VApYAb/8sAUwdLgHRD+gD6AMA9DD4of9D0FoAAAAOB9AHWgLoAgPxBgC0BFoCtATQB7QE6APQB1oCtARaArQERf3NAM38zQDNBJr/vAJE/Sr/ZgAG7sDxwOAw+JDoF/g1/xoDAAC6A87/ZAAuAdEPAAA6AAAKDQr9RAAAAAoNChMAAAAAAAAAAQAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAAwAAABiEA0KU1NFX0FOQUxfTWljQ29uZmlnAAQAAAAFBQMDFAB9AH0AAAAAMgAAAAAKDQosAQAAAAoNChMAAAAAAAAAAQAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAAwAAABmEA0KU1NFX0FOQUxfUmVmQ29uZmlnAAQAAAAFBQMDFAB9AH0PAAAAMgAAAAAKDQo7AQAAAAoNChAAAAAAAAAAAwAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAACQAAACYDw0KU1NFX05SX05mQ29uZmlnABIAAAAFBQUFBQUFBQUFBQUFBQUFBQVspv2QAbAEAAAAAAAAAAABAAEA/3/U/mQAAACIHBb9MPgAAAAAAAoNCn0JAAAACg0KFQAAAAAAAAADAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAADAAAACERDQpTU0VfVFNJTkZPX1JlZkNvbmZpZwAGAAAABQUFBQYGJpABZAD0AegDmQAsAQAKDQqbAwAAAAoNChYAAAAAAAAAAwAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAAwAAACVEQ0KU1NFX1RTSU5GT19SZWN2Q29uZmlnAAYAAAAFBQUFBgYmkAFkAPQB6AOZACwBAAoNCpsDAAA=</Data>
+      <Length>1403</Length>
+      <Checksum>3053990965</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="SSE .bsd tuning file for single micphone channel for Android Auto ASR with Bluetooth connection" Name="SRotherBT" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_5wLo8H81EeWMmJGlhCyCXg</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRotherBT.bsd</Filename>
+      <Data>AAEiAwAAAAAAAAACAAAAAAAAAABCU0QgU1NFIEJhc2ljIFNpZ25hbHByb2Nlc3NpbmcgRGF0YSBDUkM6MFgzNTdGMkYxNyAAAAAAAAAAAAAAAAAAAAAAAgAAAAAACg0KEAAAAAAAAAAOAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAA3AAAACwQDQpTU0VfTUFJTl9Db25maWcAOwAAAAYGBgYGAwQDAwMDAwMDAwMDAwMEAwMDAwQDAwMDAwMDAwMDAwMDAwMDAwMDAwMGBgMDAwYDAwMDAwMDBwEAAQCAPgABAAACAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAAAAAAIAAAAAAAAAAQAAAAEAAAABAAAAAwAAAAAAAAABAAAAAQAAAAEAAAADAAAAAAAAAAEAAAABAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAgAAAAAAAAABAAAAAAAAAAEAAAABAAAAAgAAAAIAAAAAAAAAAQAAAAEAAAACAAAAAQAAAAEAQB8BAAAAAQAAAAAAAAABAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAACg0KWwEAAAAKDQoaAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAQAAAAYBMNClNTRV9NQUlOX1NwYXJzZVByb2NDb25maWcACAAAAAYGBgYGBgYGOKAPAgBQFwYAAAAAAAAAAAAACg0KHgEAAAAKDQoPAAAAAAAAAAYAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAACiAAAAjQ8NClNTRV9BRUNfQ29uZmlnAFAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUDBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBd40AAEAugOm/Vb/MP9W/2L/MP+C/ysBuP+TC8r/KwFi/w4H0Acw/zD/Pv8+/03/VQKWALD/LAFMHS4B0Q/oA+gDAPQw+KH/Q9BaAAAADgfQB1oC6AID8QYAtARaArQE0Ae0BOgD0AdaArQEWgK0BEX9zQDN/M0AzQSa/7wCRP0q/2YABu7A8cDgMPiQ6Bf4Nf8aAwAAugPU/mQALgHRDwAAOgAACg0KNUUAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAYhANClNTRV9BTkFMX01pY0NvbmZpZwAEAAAABQUDAxSQZZBlAAAAAGQAAAAACg0KTgIAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAZhANClNTRV9BTkFMX1JlZkNvbmZpZwAEAAAABQUDAxQAfQB9CAAAAGQAAAAACg0KZgEAAAAKDQoOAAAAAAAAAA8AAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAIAAAA0g4NClNTRV9OUl9Db25maWcABAAAAAUFBQUYpv16AMcLc/8ACg0KYQQAAAAKDQoQAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAiAAAAlQ8NClNTRV9OUl9OZkNvbmZpZwARAAAABQUFBQUFBQUFBQUFBQUFBQVmEv2QAbAEAAAAAAAAAQABAP9/AABkAAAAiBwW/TD4AAAAAAAKDQoXBwAAAAoNChEAAAAAAAAAAgAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAABgAAADODw0KU1NFX1NZTlRIX0NvbmZpZwAHAAAAAwMDAwMFBSABAAAAMHUAAAEAAABkAAAA+wAAAKAP0AcACg0KjAMAAAAKDQoSAAAAAAAAAAAAAAAFAAAAAQAAAAEAAAAPAAAAAAAAAAAAAAAeAAAAFBANClNTRV9TWU5USF9FUU5vZGVzAN4AuAFfAvcIcAXl/sIBvgC2AM4RKwfHAAAAAAAAAAAKDQpeCQAA</Data>
+      <Length>1497</Length>
+      <Checksum>1281773763</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="SSE .bsd tuning file for single micphone channel for Android Auto ASR with USB connection" Name="SRandroidautoUSB" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_muZaEH81EeWMmJGlhCyCXg</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded the latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRandroidautoUSB.bsd</Filename>
+      <Data>AAEiAwAAAAAAAAACAAAAAAAAAABCU0QgU1NFIEJhc2ljIFNpZ25hbHByb2Nlc3NpbmcgRGF0YSBDUkM6MFhEODE5RDNGMyAAAAAAAAAAAAAAAAAAAAAAAgAAAAAACg0KEAAAAAAAAAAOAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAA3AAAACwQDQpTU0VfTUFJTl9Db25maWcAOwAAAAYGBgYGAwQDAwMDAwMDAwMDAwMEAwMDAwQDAwMDAwMDAwMDAwMDAwMDAwMDAwMGBgMDAwYDAwMDAwMDBwEAAQCAPgABAAACAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAAAAAAIAAAAAAAAAAQAAAAEAAAABAAAAAwAAAAAAAAABAAAAAQAAAAEAAAADAAAAAAAAAAEAAAABAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAgAAAAAAAAABAAAAAAAAAAEAAAABAAAAAgAAAAIAAAAAAAAAAQAAAAEAAAACAAAAAQAAAAEAQB8BAAAAAQAAAAAAAAABAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAACg0KWwEAAAAKDQoaAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAQAAAAYBMNClNTRV9NQUlOX1NwYXJzZVByb2NDb25maWcACAAAAAYGBgYGBgYGOKAPAgBQFwYAAAAAAAAAAAAACg0KHgEAAAAKDQoPAAAAAAAAAAYAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAACiAAAAjQ8NClNTRV9BRUNfQ29uZmlnAFAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUDBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBd40AAEAugOm/Vb/MP9W/2L/MP+C/ysBuP+TC8r/KwFi/w4H0Acw/zD/Pv8+/03/VQKWALD/LAFMHS4B0Q/oA+gDAPQw+KH/Q9BaAAAADgfQB1oC6AID8QYAtARaArQE0Ae0BOgD0AdaArQEWgK0BEX9zQDN/M0AzQSa/7wCRP0q/2YABu7A8cDgMPiQ6Bf4Nf8aAwAAugPU/mQALgHRDwAAOgAACg0KNUUAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAYhANClNTRV9BTkFMX01pY0NvbmZpZwAEAAAABQUDAxSQZZBlAAAAAGQAAAAACg0KTgIAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAZhANClNTRV9BTkFMX1JlZkNvbmZpZwAEAAAABQUDAxQAfQB9CwAAAGQAAAAACg0KaQEAAAAKDQoOAAAAAAAAAA8AAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAIAAAA0g4NClNTRV9OUl9Db25maWcABAAAAAUFBQUYpv16AMcLc/8ACg0KYQQAAAAKDQoQAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAiAAAAlQ8NClNTRV9OUl9OZkNvbmZpZwARAAAABQUFBQUFBQUFBQUFBQUFBQVmEv2QAbAEAAAAAAAAAQABAP9/AABkAAAAiBwW/TD4AAAAAAAKDQoXBwAAAAoNChEAAAAAAAAAAgAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAABgAAADODw0KU1NFX1NZTlRIX0NvbmZpZwAHAAAAAwMDAwMFBSABAAAAMHUAAAEAAABkAAAA+wAAAKAP0AcACg0KjAMAAAAKDQoSAAAAAAAAAAAAAAAFAAAAAQAAAAEAAAAPAAAAAAAAAAAAAAAeAAAAFBANClNTRV9TWU5USF9FUU5vZGVzAN4AuAFfAvcIcAXl/sIBvgC2AM4RKwfHAAAAAAAAAAAKDQpeCQAA</Data>
+      <Length>1497</Length>
+      <Checksum>3216765709</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="SSE .bsd tuning file for single micphone channel for Carplay Siri ASR with Bluetooth connection" Name="SRsiriBT" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_GICy8H81EeWMmJGlhCyCXg</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded the latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRsiriBT.bsd</Filename>
+      <Data>AAEiAwAAAAAAAAACAAAAAAAAAABCU0QgU1NFIEJhc2ljIFNpZ25hbHByb2Nlc3NpbmcgRGF0YSBDUkM6MFgzNTdGMkYxNyAAAAAAAAAAAAAAAAAAAAAAAgAAAAAACg0KEAAAAAAAAAAOAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAA3AAAACwQDQpTU0VfTUFJTl9Db25maWcAOwAAAAYGBgYGAwQDAwMDAwMDAwMDAwMEAwMDAwQDAwMDAwMDAwMDAwMDAwMDAwMDAwMGBgMDAwYDAwMDAwMDBwEAAQCAPgABAAACAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAAAAAAIAAAAAAAAAAQAAAAEAAAABAAAAAwAAAAAAAAABAAAAAQAAAAEAAAADAAAAAAAAAAEAAAABAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAgAAAAAAAAABAAAAAAAAAAEAAAABAAAAAgAAAAIAAAAAAAAAAQAAAAEAAAACAAAAAQAAAAEAQB8BAAAAAQAAAAAAAAABAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAACg0KWwEAAAAKDQoaAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAQAAAAYBMNClNTRV9NQUlOX1NwYXJzZVByb2NDb25maWcACAAAAAYGBgYGBgYGOKAPAgBQFwYAAAAAAAAAAAAACg0KHgEAAAAKDQoPAAAAAAAAAAYAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAACiAAAAjQ8NClNTRV9BRUNfQ29uZmlnAFAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUDBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBd40AAEAugOm/Vb/MP9W/2L/MP+C/ysBuP+TC8r/KwFi/w4H0Acw/zD/Pv8+/03/VQKWALD/LAFMHS4B0Q/oA+gDAPQw+KH/Q9BaAAAADgfQB1oC6AID8QYAtARaArQE0Ae0BOgD0AdaArQEWgK0BEX9zQDN/M0AzQSa/7wCRP0q/2YABu7A8cDgMPiQ6Bf4Nf8aAwAAugPU/mQALgHRDwAAOgAACg0KNUUAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAYhANClNTRV9BTkFMX01pY0NvbmZpZwAEAAAABQUDAxSQZZBlAAAAAGQAAAAACg0KTgIAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAZhANClNTRV9BTkFMX1JlZkNvbmZpZwAEAAAABQUDAxQAfQB9CAAAAGQAAAAACg0KZgEAAAAKDQoOAAAAAAAAAA8AAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAIAAAA0g4NClNTRV9OUl9Db25maWcABAAAAAUFBQUYpv16AMcLc/8ACg0KYQQAAAAKDQoQAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAiAAAAlQ8NClNTRV9OUl9OZkNvbmZpZwARAAAABQUFBQUFBQUFBQUFBQUFBQVmEv2QAbAEAAAAAAAAAQABAP9/AABkAAAAiBwW/TD4AAAAAAAKDQoXBwAAAAoNChEAAAAAAAAAAgAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAABgAAADODw0KU1NFX1NZTlRIX0NvbmZpZwAHAAAAAwMDAwMFBSABAAAAMHUAAAEAAABkAAAA+wAAAKAP0AcACg0KjAMAAAAKDQoSAAAAAAAAAAAAAAAFAAAAAQAAAAEAAAAPAAAAAAAAAAAAAAAeAAAAFBANClNTRV9TWU5USF9FUU5vZGVzAN4AuAFfAvcIcAXl/sIBvgC2AM4RKwfHAAAAAAAAAAAKDQpeCQAA</Data>
+      <Length>1497</Length>
+      <Checksum>1281773763</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="SSE .bsd tuning file for single micphone channel for Carplay Siri ASR with USB connection" Name="SRcarplayUSB" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RYdMsH80EeWMmJGlhCyCXg</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded the latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRcarplayUSB.bsd</Filename>
+      <Data>AAEiAwAAAAAAAAACAAAAAAAAAABCU0QgU1NFIEJhc2ljIFNpZ25hbHByb2Nlc3NpbmcgRGF0YSBDUkM6MFhBN0ZDMEU1QiAAAAAAAAAAAAAAAAAAAAAAAgAAAAAACg0KEAAAAAAAAAAOAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAA3AAAACwQDQpTU0VfTUFJTl9Db25maWcAOwAAAAYGBgYGAwQDAwMDAwMDAwMDAwMEAwMDAwQDAwMDAwMDAwMDAwMDAwMDAwMDAwMGBgMDAwYDAwMDAwMDBwEAAQDAXQABAAACAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAAAAAAIAAAAAAAAAAQAAAAEAAAABAAAAAwAAAAAAAAABAAAAAQAAAAEAAAADAAAAAAAAAAEAAAABAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAgAAAAAAAAABAAAAAAAAAAEAAAABAAAAAgAAAAIAAAAAAAAAAQAAAAEAAAACAAAAAQAAAAEAQB8BAAAAAQAAAAAAAAABAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAACg0KugEAAAAKDQoaAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAQAAAAYBMNClNTRV9NQUlOX1NwYXJzZVByb2NDb25maWcACAAAAAYGBgYGBgYGOKAPAgBQFwYAAAAAAAAAAAAACg0KHgEAAAAKDQoPAAAAAAAAAAYAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAACiAAAAjQ8NClNTRV9BRUNfQ29uZmlnAFAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUDBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBd40AAEAugOm/Vb/MP9W/2L/MP+C/ysBuP+TC8r/KwFi/w4H0Acw/zD/Pv8+/03/VQKWALD/LAFMHS4B0Q/oA+gDAPQw+KH/Q9BaAAAADgfQB1oC6AID8QYAtARaArQE0Ae0BOgD0AdaArQEWgK0BEX9zQDN/M0AzQSa/7wCRP0q/2YABu7A8cDgMPiQ6Bf4Nf8aAwAAugPU/mQALgHRDwAAOgAACg0KNUUAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAYhANClNTRV9BTkFMX01pY0NvbmZpZwAEAAAABQUDAxSQZZBlAAAAAGQAAAAACg0KTgIAAAAKDQoTAAAAAAAAAAEAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAMAAAAZhANClNTRV9BTkFMX1JlZkNvbmZpZwAEAAAABQUDAxQAfQB9CQAAAGQAAAAACg0KZwEAAAAKDQoOAAAAAAAAAA8AAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAIAAAA0g4NClNTRV9OUl9Db25maWcABAAAAAUFBQUYpv16AMcLc/8ACg0KYQQAAAAKDQoQAAAAAAAAAAIAAAALAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAiAAAAlQ8NClNTRV9OUl9OZkNvbmZpZwARAAAABQUFBQUFBQUFBQUFBQUFBQVmEv2QAbAEAAAAAAAAAQABAP9/AABkAAAAiBwW/TD4AAAAAAAKDQoXBwAAAAoNChEAAAAAAAAAAgAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAABgAAADODw0KU1NFX1NZTlRIX0NvbmZpZwAHAAAAAwMDAwMFBSABAAAAMHUAAAEAAABkAAAA+wAAAKAP0AcACg0KjAMAAAAKDQoSAAAAAAAAAAAAAAAFAAAAAQAAAAEAAAAPAAAAAAAAAAAAAAAeAAAAFBANClNTRV9TWU5USF9FUU5vZGVzAN4AuAFfAvcIcAXl/sIBvgC2AM4RKwfHAAAAAAAAAAAKDQpeCQAA</Data>
+      <Length>1497</Length>
+      <Checksum>2260011167</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="SSE .bsd tuning file for Info3 radio embedded ASR" Name="SRgmspeechEMBEDDED" References="GIS-696" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LBLMcH8yEeWMmJGlhCyCXg</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2015</Date>
+      <Description>For now, an initial .bsd file uploaded as the default for this CAL. Note, an updated file is not available at this time for this CAL per Assembla#: 2273. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRgmspeechEMBEDDED.bsd</Filename>
+      <Data>AAEiAwAAAAAAAAACAAAAAAAAAABCU0QgU1NFIEJhc2ljIFNpZ25hbHByb2Nlc3NpbmcgRGF0YSBDUkM6MFg2OTVBMzU5MyAAAAAAAAAAAAAAAAAAAAAAAgAAAAAACg0KEAAAAAAAAAAPAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAA5AAAADUQDQpTU0VfTUFJTl9Db25maWcAPQAAAAYGBgYGAwQDAwMDAwMDAwMDAwMEAwMDAwQDAwMDAwMDAwMDAwMDAwMDAwMDAwMGBgMDAwYDAwMDAwMDAwMPAQABAIA+oAAAAAIAAAAAAAAAAQAAAAEAAAABAAAAAgAAAAIAAAAAAAAAAgAAAAAAAAABAAAAAQAAAAEAAAADAAAAAAAAAAEAAAABAAAAAQAAAAMAAAAAAAAAAQAAAAEAAAAAAAAAAgAAAAEAAAABAAAAAQAAAAIAAAACAAAAAAAAAAEAAAAAAAAAAQAAAAEAAAACAAAAAQAAAAAAAAABAAAAAQAAAAEAAAABAAAAAAAYHwEAAAADAAAAAAAAAAEAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAAAAAAAAoNCtABAAAACg0KGwAAAAAAAAABAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAADAAAAMwTDQpTU0VfTUFJTl9Db25maWdWZXJzaW9uSW5mbwADAAAAAwMDDAMAAAARAAAAAAAAAAAKDQoUAAAAAAoNCg8AAAAAAAAABgAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAKIAAACNDw0KU1NFX0FFQ19Db25maWcAUAAAAAUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQMFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF3igAAQDQB6b9Vv8w/1b/Yv8w/4L/KwG4/5MLyv8rAWL/DgfQBzD/MP8+/z7/Tf9VApYAb/8sAUwdLgHRD+gD6AMA9DD4of9D0FoAAAAOB9AHWgLoAgPxBgC0BFoCtATQB7QE6APQB1oCtARaArQERf3NAM38zQDNBJr/vAJE/Sr/ZgAG7sDxwOAw+JDoF/g1/xoDAAC6A87/ZAAuAdEPAAA6AAAKDQr9RAAAAAoNChMAAAAAAAAAAQAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAAwAAABiEA0KU1NFX0FOQUxfTWljQ29uZmlnAAQAAAAFBQMDFAB9AH0AAAAAMgAAAAAKDQosAQAAAAoNChMAAAAAAAAAAQAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAAwAAABmEA0KU1NFX0FOQUxfUmVmQ29uZmlnAAQAAAAFBQMDFAB9AH0PAAAAMgAAAAAKDQo7AQAAAAoNChAAAAAAAAAAAwAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAACQAAACYDw0KU1NFX05SX05mQ29uZmlnABIAAAAFBQUFBQUFBQUFBQUFBQUFBQVspv2QAbAEAAAAAAAAAAABAAEA/3/U/mQAAACIHBb9MPgAAAAAAAoNCn0JAAAACg0KFQAAAAAAAAADAAAACwAAAAEAAAABAAAAAQAAAAAAAAAAAAAADAAAACERDQpTU0VfVFNJTkZPX1JlZkNvbmZpZwAGAAAABQUFBQYGJpABZAD0AegDmQAsAQAKDQqbAwAAAAoNChYAAAAAAAAAAwAAAAsAAAABAAAAAQAAAAEAAAAAAAAAAAAAAAwAAACVEQ0KU1NFX1RTSU5GT19SZWN2Q29uZmlnAAYAAAAFBQUFBgYmkAFkAPQB6AOZACwBAAoNCpsDAAA=</Data>
+      <Length>1403</Length>
+      <Checksum>3053990965</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

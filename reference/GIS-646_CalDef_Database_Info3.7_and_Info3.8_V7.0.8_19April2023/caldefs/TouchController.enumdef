@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" xsi:schemaLocation="http://www.caltools.gm.com/enumdef enumdef_1.0.xsd">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>13OCT14</Date>
+    <Description>Removed invalid characters from enum value names to allow code generation.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="TOUCH_INTERFACE">
+    <EnumID>_HtJWAFz5EeOQzJtmpqqaoA</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="TouchLIN">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="LVDSBackChannel">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="TODO" Name="TOUCH_CONTROLLER_ID">
+    <EnumID>_TQ7iQFz5EeOQzJtmpqqaoA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_1">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_2">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_3">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_4">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_5">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_6">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_7">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_8">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_9">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_10">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_11">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_12">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_13">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_14">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_15">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TOUCH_CONTROLLER_16">
+      <Value>15</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

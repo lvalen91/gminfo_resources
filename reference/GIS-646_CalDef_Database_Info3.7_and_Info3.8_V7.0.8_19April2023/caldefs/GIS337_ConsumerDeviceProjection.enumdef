@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This Enumeration Definition includes cals defined in GIS-337 ">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11/19/2015</Date>
+    <Description>Initial release of Enumeration definition for Apple CarPlay display feature configuration </Description>
+    <Author>Nikhil Neti</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This enumeration defines the touchscreen fidelity configuration in Apple CarPlay as set in the Display feature bitfield in the Info message" Name="Apple_CarPlay_touchFidelity">
+    <EnumID>_SAg6QE9oEeW60K_zy5B5uQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="limited touch interface" Name="Low_fidelity_touch">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="full touch interface" Name="High_fidelity_touch">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

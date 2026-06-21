@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>11APR14</Date>
+    <Description>Deleted ENABLE_APPLICATIONTRAY_HYBRID. Deleted ENERGYSUMMARY_MINIMUMPOPUP_DISPLAYTIMER. Deleted ENERGYSUMMARY_POPUP_DISPLAYTIMER. Deleted ENERGYSUMMARY_POPUPREQUEST_WAITTIMER. Deleted INVALID_DATA_POPUP_TIMER. Deleted SCHEDULE_UPDATE_TIMEOUT_TIMER. Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>Matthew Highstrom</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated ENABLE_APPLICATION_HYBRID, HYBRID_SYSTEM_HMI, MAXALLOWED_FUELECONOMY_DISPLAY, and TODC_VOLTAGE_DISPLAY cals in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>9/28/2017</Date>
+    <Description>Within the Hybrid.caldef file, removed the  MAXALLOWED_FUELECONOMY_DISPLAY calibration since this is a duplicate calibration as the calibration intended to be used, which is the MAXALLOWED_FUELECONOMY_DISPLAY calibration already capture in the GIS520_EnergyUI.caldef . Note, the GIS520_EnergyUI.caldef  file captures all of the required calibrations that were defined in the calibration section of the GIS-520 under CR#: 1171995.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="HomeScreen Applications - This calibration turns the HYBRID icon on or off on the home screen" Name="ENABLE_APPLICATION_HYBRID" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqjCcE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_navn_map_database_graphics_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_APPLICATION_HYBRID cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Calibration determined the type of HMI to suppoer for a specific Hybrid architacture/system.  The details of features and functions are documented in GIS-400 specifications and relate to the enumerations of this calibration.&#xA;9.16.1.3~MY14 Unique Configurations&#xA;Based on Hybrid / extended Range Vehicle&#xA;&#xA;" Name="HYBRID_SYSTEM_HMI" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq7c-U1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_navn_map_database_graphics_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated HYBRID_SYSTEM_HMI cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_yq7c-k1AEeO3UM5MzM17kw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="120V_240V_North_America=0:120V_only_North_America=1:220V_only_China_ Korea=2:230V_only_Europe=3:240V_only_Australia_New_Zealand=4:Text_Only=5" Name="TODC_VOLTAGE_DISPLAY" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysF6mU1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_country_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated TODC_VOLTAGE_DISPLAY cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ysF6mk1AEeO3UM5MzM17kw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

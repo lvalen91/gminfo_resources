@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>9/3/2019</Date>
+    <Description>Per CR#2060763 AOSP transition, Created new audio bus enums and new volume group enum. Added VOICE, MISCELLANEOUS, HIGHPRIORITY volume groups to existing defined groups for Android platforms. Updated description for each enum. Initial release.</Description>
+    <Author>Christine Marzan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>04/08/2020</Date>
+    <Description>Per CR#2060763 AOSP transition.  The enumeration names have been changed to removed the numerical references as they imply an implementation direction.  Bus numbers may change in the future thereby creating conflicts and further changes to the calilbrations.  Also deleting usage of bus11_lvm_prompt from AudioPatchRoutingBusEnum as it is not required.  Also deleting Bus9_rsi2_out and Bus10_rsi2_out as  they are not being used.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="An audio input is routed, through an audio patch, to the given output bus enumeration, used for both audio request management and source offset computation. Audio patch is needed for audio sources coming from an &quot;external&quot; device." Name="AudioPatchRoutingBusEnum">
+    <EnumID>_IICSUM9JEemPWJhcezmybg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="SXM Satellite Tuner L/R" Name="BUS_SXM">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LVM L/R" Name="BUS_LVM">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Onstar calling" Name="BUS_TCP_PHONE_DLINK">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Onstar mutex prompts" Name="BUS_TCP_PROMPT">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BT call downlink" Name="BUS_BT_DNLINK">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Radio tuner (FM/RDS/RDS traffic announcements) L/R" Name="BUS_TUNER">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Onstar Emergency calling" Name="BUS_TCP_PHONE_EMERG_DNLINK">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Radio tuner (AM) L/R" Name="BUS_TUNER_AM">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Onstar mix prompts" Name="BUS_TCP_MIXPROMPT">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Digital Audio Broadcasting L/R" Name="BUS_DAB">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="RSI audio to support listen in mode." Name="BUS_RSI">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="An audio input is routed by default to the given output bus enumeration, used for both audio request management and source offset computation." Name="DefaultAudioRoutingBusEnum">
+    <EnumID>_GElCQM9IEemPWJhcezmybg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Main cabin music playback" Name="BUS_MEDIA">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Main cabin navigation prompts" Name="BUS_NAVIGATION">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Main cabin voice command" Name="BUS_VOICE_COMMAND">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Main cabin voice call ringing" Name="BUS_CALL_RING">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Main cabin call" Name="BUS_CALL">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Main cabin alarm sound" Name="BUS_ALARM">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Main cabin notifications" Name="BUS_NOTIFICATION">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Main cabin system sound" Name="BUS_SYSTEM">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Onstar Emergency Call ringtone" Name="BUS_ECALL_RING">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Support for Carplay alternate audio requirements" Name="BUS_MIX_UNDUCK">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Audio for cues such as Welcome, Goodbye and Run." Name="BUS_AUDIO_CUE">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="High priority audio routed to amplifier mutex sink" Name="BUS_HIGH_PRIO_MUTEX">
+      <Value>11</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of system volume groups  (AOSP)" Name="AOSPVolumeGroup">
+    <EnumID>_mR3dkM9SEemPWJhcezmybg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Ringtone" Name="AOSP_VOL_GROUP_RING">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Phone, BT call, DTCP call" Name="AOSP_VOL_GROUP_VOICE_CALL">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Music/Media" Name="AOSP_VOL_GROUP_MUSIC">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Navigation, LVM, Projection Prompts, DTCP Mix Prompt, DTMF, Notification" Name="AOSP_VOL_GROUP_PROMPT">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Audio Cue" Name="AOSP_VOL_GROUP_AUDIO_CUE">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Emergency Call" Name="AOSP_VOL_GROUP_EMERGENCY_PHONE">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="RDS Traffic" Name="AOSP_VOL_GROUP_RDS_TRAFFIC">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Chimes" Name="AOSP_VOL_GROUP_CHIME">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Speech Rec, Virtual Assistant, TTS Usages, DTCP Prompt" Name="AOSP_VOL_GROUP_VOICE">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="System, Alarm" Name="AOSP_VOL_GROUP_MISCELLANEOUS">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Super Cruise TTS Prompts, Other/Future Active Safety TTS (Internal Vol Grp, not user adjustable)" Name="AOSP_VOL_GROUP_HIGH_PRIORITY">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

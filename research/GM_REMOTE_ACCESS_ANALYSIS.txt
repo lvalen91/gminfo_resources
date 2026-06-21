@@ -1,0 +1,492 @@
+================================================================================
+         GM AAOS REMOTE ACCESS & VEHICLE CONTROL ANALYSIS
+                    Security Research Findings
+================================================================================
+
+DISCLAIMER: This analysis is for educational and security research purposes.
+Findings are based on static firmware analysis of GM AAOS (Android Automotive).
+
+================================================================================
+                         EXECUTIVE SUMMARY
+================================================================================
+
+GM vehicles with AAOS (Android Automotive OS) have multiple remote access
+pathways that allow General Motors to:
+
+  - Push firmware updates (potentially mandatory)
+  - Access vehicle CAN bus remotely
+  - Collect telemetry and security event data
+  - Execute remote commands (start, lock, climate, etc.)
+
+These capabilities exist through TWO independent systems:
+  1. OnStar/Telematics Module (works WITHOUT the radio installed)
+  2. A11 Infotainment Radio (AAOS)
+
+================================================================================
+                    SECTION 1: NETWORK ARCHITECTURE
+================================================================================
+
+GM vehicles use a complex internal network connecting multiple ECUs:
+
+PHYSICAL LAYER - Broadcom BCM8953x Ethernet Switch:
++------------------------------------------------------------------+
+|  Port 0: RSI (Rear Seat Interface)                               |
+|  Port 1: AMP (Amplifier)                                         |
+|  Port 2: CGM (Connectivity Gateway Module / Telematics) <------- |
+|  Port 3: TCP                                                     |
+|  Port 5: host (A11 SoC - Infotainment)                    <----- |
++------------------------------------------------------------------+
+          ^                                      ^
+          |                                      |
+    TELEMATICS                           INFOTAINMENT
+    (OnStar)                               (Radio)
+
+INTERNAL VLAN CONFIGURATION:
++------------------------------------------------------------------+
+| VLAN 5 (192.168.1.x/24):                                         |
+|   192.168.1.100  CSM_ETH (A11 Radio)                             |
+|   192.168.1.101  ADB (Android Debug Bridge)                      |
+|   192.168.1.102  TCP_ETH                                         |
+|   192.168.1.103  AMP_ETH (Amplifier)                             |
+|   192.168.1.106  IPC (Inter-Process Communication)               |
+|   192.168.1.107  CGM Host Processor    <-- TELEMATICS            |
+|   192.168.1.112  CGM_ETH               <-- TELEMATICS            |
+|                                                                  |
+| VLAN 4 (172.16.4.x/24):                                          |
+|   172.16.4.12    EOCM_HCP_SECONDARY    <-- Enhanced OnStar       |
+|   172.16.4.13    EOCM_HCB              <-- Enhanced OnStar       |
+|   172.16.4.15    EOCM_HCP_HOST         <-- Enhanced OnStar       |
++------------------------------------------------------------------+
+
+EXTERNAL CONNECTIVITY:
++------------------------------------------------------------------+
+|                                                                  |
+|  [INTERNET] <---> [AT&T LTE] <---> [OnStar/CGM Module]           |
+|       ^                                    |                     |
+|       |                                    | Internal Ethernet   |
+|       |                                    v                     |
+|       +<---- [User WiFi] <---> [A11 Radio/AAOS]                  |
+|                                            |                     |
+|                                            | Serial IPC          |
+|                                            v                     |
+|                                       [VIP - RH850]              |
+|                                            |                     |
+|                                            | CAN Bus             |
+|                                            v                     |
+|                                    [Vehicle ECUs]                |
+|                                    BCM, ECM, HVAC, etc.          |
+|                                                                  |
++------------------------------------------------------------------+
+
+================================================================================
+                 SECTION 2: REMOTE ACCESS COMPONENTS
+================================================================================
+
+2.1 PRIMARY SERVICES
+--------------------
+
++------------------------------------------------------------------+
+| SERVICE                  | PACKAGE/BINARY                        |
++------------------------------------------------------------------+
+| GM Connection Service    | com.gm.domain.server.delayed          |
+|                          | SELinux: gmConnectionService          |
++------------------------------------------------------------------+
+| GM Update Engine         | /vendor/bin/hw/gm_update_engine       |
+|                          | SELinux: gm_update_engine             |
++------------------------------------------------------------------+
+| Red Bend Update Agent    | /vendor/bin/rb_ua                     |
+|                          | SELinux: redbend_exec                 |
++------------------------------------------------------------------+
+| GM Diagnostics Daemon    | gm_diagnosticsd                       |
++------------------------------------------------------------------+
+| OnStar UI                | com.gm.hmi.onstarui                   |
++------------------------------------------------------------------+
+
+2.2 GM CONNECTION SERVICE PERMISSIONS
+-------------------------------------
+Package: com.gm.domain.server.delayed
+
+Android Permissions:
+  - android.permission.REBOOT
+  - android.permission.WRITE_SECURE_SETTINGS
+  - android.permission.START_ACTIVITIES_FROM_BACKGROUND
+  - android.permission.MANAGE_USB
+  - gm.permission.ACCESS_ONSTAR
+  - android.car.permission.CAR_VENDOR_EXTENSION
+  - android.car.permission.CAR_CONTROL_AUDIO_SETTINGS
+  - android.car.permission.CAR_NAVIGATION_MANAGER
+
+SELinux Capabilities (gmConnectionService):
+  - Binder call to gm_update_engine (trigger updates)
+  - Read vendor_gm_security_state_prop
+  - Write to update_cache_file
+  - Access GHS camera device
+  - Set system properties
+  - Set USB properties
+
+2.3 GM UPDATE ENGINE CAPABILITIES
+---------------------------------
+Binary: /vendor/bin/hw/gm_update_engine
+Runs as: root
+
+SELinux Permissions:
+  - sys_admin capability
+  - net_raw capability (raw network packets)
+  - Read/Write block devices:
+      * boot_block_device
+      * super_block_device
+      * gm_system_block_device
+      * vendor_block_device
+      * product_block_device
+      * odm_block_device
+  - Execute Red Bend Update Agent (rb_ua)
+  - Access ghs_device (GHS Hypervisor)
+  - IPC with VIP via ipc_serverd
+  - Execute vendor shell scripts
+
+2.4 RED BEND UPDATE AGENT
+-------------------------
+Binary: /vendor/bin/rb_ua
+Size: 929,880 bytes
+
+Identified Capabilities (from strings analysis):
+  - "(mandatory)" - Supports mandatory updates
+  - Self-update capability
+  - Recovery update mode
+  - Remote update handling
+  - Scout and update operations
+  - Firmware installer support
+
+Key Strings Found:
+  "Redbend UA: Update started"
+  "Update completed successfully"
+  "(mandatory)"
+  "Redbend UA: Self update started"
+  "Remote address changed"
+
+================================================================================
+                 SECTION 3: UPDATE LIBRARIES
+================================================================================
+
+/vendor/lib64/:
+  - libpal_swupdate_ecu.so      -> ECU updates (including VIP)
+  - libpal_swupdate_hostos.so   -> Host OS updates
+  - libpal_swupdate_sxm.so      -> SiriusXM module updates
+  - libpal_swupdate_fidm.so     -> FIDM updates
+  - libfidm_update.so           -> FIDM update library
+  - vendor.gm.swupdate@1.0.so   -> GM Software Update HAL
+  - libswupdate_fcid.so         -> FCID updates
+
+HAL Interfaces:
+  - vendor.gm.swupdate::IECUInformation
+  - vendor.gm.swupdate::IECUUpdate
+
+================================================================================
+                 SECTION 4: REMOTE SERVER INFRASTRUCTURE
+================================================================================
+
+GM Cloud Endpoints (from CalDef analysis):
+
++------------------------------------------------------------------+
+| SERVER                        | PORT  | PURPOSE                  |
++------------------------------------------------------------------+
+| vtmpub.oboservices.mobi       | 443   | OTA/OMA-DM Updates       |
+| vehicle.api.gm.com            | 443   | Device Registration      |
+| vehicle.api.gm.com            | 20445 | Security Event Logging   |
+| vehicle.api.gm.com            | 20647 | Account Authentication   |
+| vehicle.api.gm.com            | 20647 | Personalization Sync     |
+| sit-gm.cs21.force.com         | 443   | App Shop                 |
++------------------------------------------------------------------+
+
+Enabled Features (CalDef defaults):
+  - GIS768_Remote_Reflash_Feature = TRUE
+  - GIS768_OMADM_Feature = TRUE
+  - GIS768_IgnoreCurrentPartNumberCheck = TRUE  <-- Can bypass version!
+  - SECURITY_EVENT_LOGGING_ENABLED = TRUE
+  - BACK_OFFICE_SERVER_ENABLED = TRUE
+
+================================================================================
+               SECTION 5: USER CONSENT ANALYSIS
+================================================================================
+
+5.1 OPERATIONS REQUIRING USER CONSENT
+-------------------------------------
+  - USB firmware updates (CONSENT_PROCEED timeout: 11 seconds)
+  - OTA updates (notification displayed)
+
+5.2 OPERATIONS WITHOUT EXPLICIT CONSENT
+---------------------------------------
+  - Security Event Logging (always-on telemetry)
+  - Device registration
+  - Calibration value queries
+  - Diagnostic data collection
+
+5.3 POTENTIALLY CONSENT-BYPASSING
+---------------------------------
+  - "(mandatory)" flag in Red Bend UA suggests forced updates possible
+  - gmConnectionService has REBOOT permission (can reboot without consent)
+  - gmConnectionService has START_ACTIVITIES_FROM_BACKGROUND
+  - WRITE_SECURE_SETTINGS allows modifying system settings
+
+5.4 CALIBRATION FILE SECURITY RESET
+------------------------------------
+GM added security flag reset to calibration files (defense-in-depth):
+
+File: 85783460 (SW ID 07)
+Contains encrypted payload that resets:
+  - EEPROM 0x0440 -> C300 (Security LOCKED)
+  - EEPROM 0x0A80 -> C300 (Backup LOCKED)
+  - EEPROM 0x0B40 -> 6900 (Debug mode OFF)
+
+This means SPS calibration visits can reset security modifications.
+
+================================================================================
+               SECTION 6: TELEMATICS vs INFOTAINMENT
+================================================================================
+
+CRITICAL: OnStar/Telematics operates INDEPENDENTLY of A11 Radio!
+
++------------------------------------------------------------------+
+| CAPABILITY              | TELEMATICS (CGM) | A11 RADIO (AAOS)    |
++------------------------------------------------------------------+
+| Internet Connection     | LTE (AT&T)       | WiFi or via CGM     |
+| CAN Bus Access          | DIRECT           | Via VIP (RH850)     |
+| Remote Start            | YES              | NO (relay only)     |
+| Remote Lock/Unlock      | YES              | NO (relay only)     |
+| Works Without Radio     | YES              | N/A                 |
+| User Can Disable        | NO*              | YES (sort of)       |
++------------------------------------------------------------------+
+* Requires physical disconnection of telematics module
+
+PROOF: Remote start, lock, and climate control work even with
+A11 radio removed. This confirms telematics has independent:
+  - Cellular modem
+  - CAN bus connection
+  - Command execution capability
+
+================================================================================
+              SECTION 7: COMPLETE REMOTE ACCESS CHAIN
+================================================================================
+
+FIRMWARE UPDATE PATH:
++------------------------------------------------------------------+
+|                                                                  |
+|  GM Cloud (vtmpub.oboservices.mobi)                              |
+|            |                                                     |
+|            | HTTPS/OMA-DM                                        |
+|            v                                                     |
+|  Telematics Module (CGM/EOCM)                                    |
+|            |                                                     |
+|            | Internal Ethernet                                   |
+|            v                                                     |
+|  com.gm.domain.server.delayed (gmConnectionService)              |
+|            |                                                     |
+|            | Binder IPC                                          |
+|            v                                                     |
+|  gm_update_engine                                                |
+|            |                                                     |
+|            | exec()                                              |
+|            v                                                     |
+|  Red Bend UA (/vendor/bin/rb_ua)                                 |
+|            |                                                     |
+|            | Block device writes                                 |
+|            v                                                     |
+|  Flash Partitions (boot, system, vendor, etc.)                   |
+|                                                                  |
++------------------------------------------------------------------+
+
+VEHICLE CONTROL PATH (CAN Bus Commands):
++------------------------------------------------------------------+
+|                                                                  |
+|  GM Cloud / OnStar                                               |
+|            |                                                     |
+|            | LTE (AT&T)                                          |
+|            v                                                     |
+|  Telematics Module (CGM/TCU)                                     |
+|            |                                                     |
+|            | GMLAN / CAN Bus                                     |
+|            v                                                     |
+|  Vehicle ECUs (BCM, ECM, HVAC, etc.)                             |
+|            |                                                     |
+|            v                                                     |
+|  Physical Actions (Start, Lock, Climate)                         |
+|                                                                  |
++------------------------------------------------------------------+
+
+================================================================================
+                  SECTION 8: ISOLATION RECOMMENDATIONS
+================================================================================
+
+FOR RESEARCH/TESTING PURPOSES ONLY:
+
+8.1 BLOCK A11 REMOTE ACCESS:
+  - Don't connect to WiFi
+  - Firewall block: *.gm.com, *.onstar.com, *.oboservices.mobi
+
+8.2 BLOCK TELEMATICS REMOTE ACCESS:
+  - Disconnect telematics antenna
+  - Remove telematics module fuse (research which one)
+  - Physical removal (may cause DTCs)
+
+8.3 FULL ISOLATION (Bench Testing):
+  - Remove radio from vehicle
+  - Power on bench with isolated power supply
+  - No network connections
+
+8.4 DOMAINS TO BLOCK (if using WiFi):
+  - vtmpub.oboservices.mobi
+  - vehicle.api.gm.com
+  - *.gm.com
+  - *.onstar.com
+  - sit-gm.cs21.force.com
+
+================================================================================
+            SECTION 9: GHS HYPERVISOR ARCHITECTURE
+================================================================================
+
+GM's A11 radio uses a GHS (Green Hills Software) Hypervisor that runs BELOW
+Android, providing safety-critical functions independently of the OS.
+
+9.1 HYPERVISOR DEVICE INTERFACES
+--------------------------------
+GHS provides multiple device interfaces to Android:
+
++------------------------------------------------------------------+
+| DEVICE PATH          | SELinux CONTEXT       | PURPOSE            |
++------------------------------------------------------------------+
+| /dev/ghs/ipc         | ghs_device            | Inter-Process Comm |
+| /dev/ghs/cal         | ghs_device            | Calibration        |
+| /dev/ghs/chime       | ghs_device            | Audio Chimes       |
+| /dev/ghs/camera      | ghs_camera_device     | Camera Access      |
+| /dev/ghs/tee-att     | ghs_device            | TEE Attestation    |
+| /dev/ghs/audit       | ghs_device            | Security Audit     |
++------------------------------------------------------------------+
+
+9.2 CAMERA BYPASS ARCHITECTURE
+------------------------------
+CRITICAL FINDING: Backup camera works DURING Android reboot!
+
+When Android reboots (adb reboot, steering wheel hold), the display shows
+the backup camera feed if the vehicle is shifted into reverse. This proves:
+
+  1. GHS hypervisor continues running when Android restarts
+  2. GHS receives CAN bus signals (gear position) independently
+  3. GHS directly controls display overlay for camera feed
+  4. Android EVS (External Vehicle Service) is a PASSTHROUGH, not the source
+
+CAMERA DATA FLOW:
++------------------------------------------------------------------+
+|                                                                  |
+|  [Rear Camera] --> [Video Input] --> [GHS Hypervisor]            |
+|                                           |                      |
+|                                           | /dev/ghs/camera      |
+|                                           v                      |
+|  [CAN Bus: Gear Position] -------> [GHS Display Controller]      |
+|                                           |                      |
+|                                           | Direct Overlay       |
+|                                           v                      |
+|                                    [Display Panel]               |
+|                                    /dev/ttyS3, /dev/i2c-7        |
+|                                                                  |
++------------------------------------------------------------------+
+
+9.3 EARLY EVS SYSTEM
+--------------------
+Binary: /vendor/bin/earlyEvs_harman (COMMENTED OUT in production)
+
+SELinux capabilities of early_evs domain:
+  - camera_device access (read/write)
+  - video_device access (read/write)
+  - gpu_device access (read/write)
+  - display_panel_device access
+  - can_socket access (CAN bus!)
+  - serial_device access
+
+The early_evs service was designed to provide camera during early boot
+BEFORE Android fully starts. In production, this is handled by GHS directly.
+
+9.4 WHO ACCESSES GHS CAMERA?
+----------------------------
+SELinux policy shows these domains access ghs_camera_device:
+
+  - gmConnectionService  (GM's main connection service)
+  - system_app          (System applications)
+
+This allows Android apps to request camera overlays via GHS when needed.
+
+9.5 DISPLAY PANEL CONTROL
+-------------------------
+Display panel devices (/dev/ttyS3, /dev/i2c-7) are accessed by:
+
+  - gmConnectionService
+  - gm_update_engine
+  - gm_vehiclepanel
+  - early_evs
+  - remote_display
+  - system_app
+
+This multi-layered access confirms GHS can control display independently.
+
+9.6 SECURITY IMPLICATIONS
+-------------------------
+  - GHS continues operating when Android crashes or reboots
+  - Camera feed is a SAFETY feature - must work without Android
+  - GHS has direct hardware access, bypassing Android security
+  - GHS could theoretically display anything on screen without Android
+  - CAN bus signals reach GHS before Android processes them
+
+================================================================================
+                      SECTION 10: KEY FINDINGS SUMMARY
+================================================================================
+
+1. GM has DUAL remote access paths (Telematics + A11 Radio)
+
+2. Telematics module operates INDEPENDENTLY - removing the radio
+   does NOT disable remote vehicle control
+
+3. Red Bend Update Agent supports "(mandatory)" updates - potential
+   for forced updates without user consent
+
+4. gmConnectionService has REBOOT permission - can restart device
+   without user interaction
+
+5. Security Event Logging is ALWAYS ON - telemetry constantly
+   reports to vehicle.api.gm.com:20445
+
+6. A11 and Telematics share internal Ethernet network - data can
+   flow between them
+
+7. GIS768_IgnoreCurrentPartNumberCheck = TRUE allows bypassing
+   version validation on updates
+
+8. Calibration files now include security reset payloads as
+   defense-in-depth against EEPROM modifications
+
+9. Complete remote access chain: Cloud -> Telematics -> Android
+   Service -> Update Engine -> Red Bend -> Flash
+
+10. No way to fully disable remote access without physical
+    disconnection of telematics module
+
+11. GHS Hypervisor operates BELOW Android, controlling camera and
+    display directly - backup camera works even during Android reboot
+
+12. GHS has direct CAN bus access and can overlay content on display
+    independently of Android OS state
+
+================================================================================
+                         DOCUMENT INFO
+================================================================================
+
+Analysis Date: January 2026
+Firmware Analyzed: GM AAOS Y177/Y181
+Platform: Intel Apollo Lake (bxtp)
+Radio: A11 (Info 3.x)
+
+This analysis is based on static firmware examination. Actual behavior
+may vary. Dynamic analysis (packet capture, runtime monitoring) would
+be needed to confirm all capabilities.
+
+================================================================================
+                      END OF ANALYSIS
+================================================================================

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="HMI" Description="GIS-502 Audio settings screen calibrations.">
+  <CalDefFileVersion>16</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>14JAN2013</Date>
+    <Description>Deleted AU_ATC_SETTINGS_XXX cals and replaced with ATC_BASS_, MID_, and TREBLE_SETTINGS arrays</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>14JAN2014</Date>
+    <Description>Changed default value for ATC_XXX enables from False to True.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>28JAN2014</Date>
+    <Description>Deleted all cals relative to surround as this feature is no longer support.  Also deleted all cals relative to DSP since DSP settings are received dynamically from the remote amplifier per GIS-631 and are not calibrated.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>02SEPT2014</Date>
+    <Description>Corrected issues with fade, audiopilot, simulated surround, and ATC calibrations.</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27JAN2015</Date>
+    <Description>Corrected issue with ATC_TREBLE_CONTROL_SETTINGS calID in which the &quot;Custom&quot; ATC mode was being called out instead of the &quot;Country&quot; ATC mode.  </Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated usage for DEFAULT_DSP_MODE, ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE, NOISE_COMP_TEXT_STRING, SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE, and SIMULATED_SURROUND_DISPLAY_TEXT_STRING cals in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>05JUNE2015</Date>
+    <Description>Updated SIMULATED_SURROUND_DISPLAY_TEXT_STRING, ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE, and NOISE_COMP_TEXT_STRING calibrations for default values in MY18.  Also set all ATC Enable bits to false as these calibrations are not needed.</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>9/4/2015</Date>
+    <Description>Since ATC functionality has been removed from the radio, confimed with Dominic Colella all the ATC CALs previous shown in this CalDef file can be removed.  Per request from Sanghyun Ryu, updated CAL usage for the ENABLE_FADE CAL to not show Low Radio usage.  </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>2/29/2016</Date>
+    <Description>Within this caldef file re-added usage of Low Radio for the ENABLE_FADE CAL. Per email from Steffan Poppe on 2/4/2016, it has been confirmed by both the GMK and GMNA team the  ENABLE_FADE CAL is needed for the Low Radio too.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>3/4/2016</Date>
+    <Description>Also, documentation update only per request from Ian Singer, Amplifier DRE: Updated the description within the ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE and NOISE_COMP_TEXT_STRING calibrations to instead of referencing  as Bose &quot;Audio Pilot&quot; that was shown within the calibration description information for these calibration updated to instead show as Bose &quot;AudioPilot&quot; for consistency and to have the correct naming reference within this description information.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>9/29/2017</Date>
+    <Description>Within the AudioHMICals.caldef file, added GEM usage to the ENABLE_FADE calibration. Since it fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>16</Version>
+    <Date>6/7/2019</Date>
+    <Description>Corrected descriptions for all calibrations in this caldef file to make it clear what is the applicable use case.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Determines default DSP mode to set based on requirements in UIS-202 and Audio Equalization function modules.  Defaults to NORMAL, which is DSP_MODE_3" Name="DEFAULT_DSP_MODE" References="UIS-202 and Audio Equalization requirements" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XRjNgMZAEeOsIMxD3Xbm-Q</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated usage for DEFAULT_DSP_MODE cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/7/2019</Date>
+      <Description>Updated descriptions for the calibration</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_nLzgMMY_EeOsIMxD3Xbm-Q</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration enables the appropriate UI display to match the interior vehicle configuration. (FALSE = front row only, TRUE = front and rear)" Name="ENABLE_FADE" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yqrlVk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>344 and/or 343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the ENABLE_FADE CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2/29/2016</Date>
+      <Description>Re-added usage of Low Radio for the ENABLE_FADE CAL. Per email from Steffan Poppe on 2/4/2016, it has been confirmed by both the GMK and GMNA team the  ENABLE_FADE CAL is needed for the Low Radio too.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/7/2019</Date>
+      <Description>Updated descriptions for the calibration</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When this calibration is set to true, HMI shall show the Vehicle Noise Compensation for the branded audio solution. When this calibration set to false, HMI shall show SCV." Name="ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yquBkU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>344 and/or 343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated usage for ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>05JUNE2015</Date>
+      <Description>Change default to false as this is the most likely case for this setting.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>3/4/2016</Date>
+      <Description>Also, documentation update only per request from Ian Singer, Amplifier DRE: Updated the description within this calibration to instead of referencing  as Bose &quot;Audio Pilot&quot; that was shown within the calibration description information for this calibration updated to instead show as Bose &quot;AudioPilot&quot; for consistency and to have the correct naming reference within this description information.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/7/2019</Date>
+      <Description>Updated descriptions for the calibration</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE is set to TRUE, the SMT shall set the required text string associated with branded vehicle noise compensation feature. If ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE set to FALSE, this cal is ignored. Current options: Bose Audio Pilot , Adaptive Volume. This can be changed to other string types using a cal override." Name="NOISE_COMP_TEXT_STRING" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yrT3dU1AEeO3UM5MzM17kw</CalID>
+    <Type>String</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>344 and/or 343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated usage for NOISE_COMP_TEXT_STRING cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>05JUNE2015</Date>
+      <Description>Updated text string to reflect actual naming convention for &quot;Bose AudioPilot&quot; feature. </Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>3/4/2016</Date>
+      <Description>Also, documentation update only per request from Ian Singer, Amplifier DRE: Updated the description within this calibration to instead of referencing  as Bose &quot;Audio Pilot&quot; that was shown within the calibration description information for this calibration updated to instead show as Bose &quot;AudioPilot&quot; for consistency and to have the correct naming reference within this description information.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/7/2019</Date>
+      <Description>Updated descriptions for the calibration</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>31</MaxLength>
+      <StringValue>Bose AudioPilot</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="When this calibration is set to true, HMI shall show the surround mode UI for the branded audio solution. When this calibration set to false, the surround mode UI shall be removed." Name="SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysCQMU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>344 and/or 343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated usage for SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/7/2019</Date>
+      <Description>Updated descriptions for the calibration</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE is set to TRUE, the SMT shall set the required text string associated with branded surround mode feature. If SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE set to FALSE, this cal is ignored. Current options: Bose Centerpoint , Surround. This can be changed to other string types using a cal override." Name="SIMULATED_SURROUND_DISPLAY_TEXT_STRING" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysCQMk1AEeO3UM5MzM17kw</CalID>
+    <Type>String</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>344 and/or 343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated usage for SIMULATED_SURROUND_DISPLAY_TEXT_STRING cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>05JUNE2015</Date>
+      <Description>Updated text string to reflect correct wording for Bose &quot;Centerpoint&quot; feature. </Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/7/2019</Date>
+      <Description>Updated descriptions for the calibration</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>11</MaxLength>
+      <StringValue>Centerpoint</StringValue>
+    </String>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef file contains calibratoins from the GIS-538">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>1/13/2017</Date>
+    <Description>Initial release of the GIS538_MyModeUI.caldef file to add the following three driverworkload calibrations 1.)  SettingsDriverWorkload, 2.) KeyboardInputDriverWorkload, and 3.) DisclaimerDriverWorkload from the GIS-538.  </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from enetering settings and will see the system lockout notification." Name="SettingsDriverWorkload" References="GIS-538 10.1.1.1 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_mtQg4NxwEea9hOtd-fbZ_Q</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from entering characters into TeleNav." Name="KeyboardInputDriverWorkload" References="GIS-538 10.1.1.1 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_cA128NxvEea9hOtd-fbZ_Q</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from viewing the disclaimer." Name="DisclaimerDriverWorkload" References="GIS-538 10.1.1.1 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_cUUegNxtEea9hOtd-fbZ_Q</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

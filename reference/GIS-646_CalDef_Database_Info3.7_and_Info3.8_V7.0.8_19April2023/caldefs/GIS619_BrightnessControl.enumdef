@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Contains enumdefs used by caldefs GIS619_BrightnessControl.caldef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="Used by INDICATOR_BRIGHTNESS_SOURCE calibration in order to determine which CAN signal to use for Normval vs. Deadfronted controls." Name="INDICATOR_BRIGHTNESS_SOURCE_ENUM">
+    <EnumID>_hGse4Fa8EeOFNdVjGV6f4g</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="when INDICATOR_BRIGHTNESS_SOURCE = NORMAL, the InteriorDimmingLevel signal shall be used to compute the output values" Name="NORMAL">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="when INDICATOR_BRIGHTNESS_SOURCE = DEADFRONT, the InteriorDisplayDimmingLevel signal shall be used to compute the output values" Name="DEADFRONT">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

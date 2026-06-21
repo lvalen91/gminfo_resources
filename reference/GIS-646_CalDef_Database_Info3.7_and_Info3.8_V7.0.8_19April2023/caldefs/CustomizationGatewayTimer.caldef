@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>01JUNE2015</Date>
+    <Description>Initial release of calibration to support MY18 GIS-601 Customizations for Global A and MY19 GIS-630 Customizations for Global B.  </Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>9/29/2017</Date>
+    <Description>Within the CustomizationGatewayTimer.caldef file, added GEM usage to the CUSTOMIZATION_GATEWAY_RESET_TIMER calibration. Since it fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Implemented in MY18 on Global A vehicles as defined in GIS-601-402-1-1 and MY19 on Global B vehicles as defined in GIS-630-3300.  FYI:  Setting this timer value &lt;= 500 ms may cause timing issues for serial data gateway modules.  " Name="CUSTOMIZATION_GATEWAY_RESET_TIMER" References="GIS-601-402-1-1 and GIS-630-3300" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_i0DswAiXEeW_AJEPDelH5w</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>01JUNE2015</Date>
+      <Description>Initial release of calibration to support MY18 GIS-601 Customizations for Global A and MY19 GIS-630 Customizations for Global B.  </Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>0.5</Value>
+      <MinValue>0.1</MinValue>
+      <MaxValue>5.0</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

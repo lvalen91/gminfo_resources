@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Amplifier Type calibrations, reference in GIS-604 and GIS-633. V1.0  - Initial Release.">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>17APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usages</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>9/4/2015</Date>
+    <Description>Within this CalDef file per request from Sanghyun Ryu, updated CAL usage for the AmplifierType CAL to not show Low Radio usage.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>12/1/2015</Date>
+    <Description>Based on feedback received from Jideok Son, made usage correction to add Low Radio usage for the Amplifier Type calibration within this CalDef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>9/29/2017</Date>
+    <Description>Within the AmpInterface.caldef file, added GEM usage to the AmplifierType calibration. Since it fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The CSM/Low Radio shall use the AmplifierType calibration to determine the type of amplifier within the vehicle.  When no premium remote amplifier is present, this calibration notifies the CSM/Low Radio of whether a discrete amplifier or remote ANC module are present." Name="AmplifierType" References="GIS-633-3207 and GIS-604-170." Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_skP0gMWPEeOaCvydzCgwdA</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description> Per request from Sanghyun Ryu, updated CAL usage for the AmplifierType CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to add Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_o7s18MWOEeOaCvydzCgwdA</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

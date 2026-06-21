@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This Caldef file contains calibrations for the TECHWELL TW8445 registers to perform image quality adjustment for applications that use the TECHWELL TW8445 with digital camera.">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/14/2017</Date>
+    <Description>Intial release of calibrations within this caldef</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/18/2017</Date>
+    <Description>Within the IMAGE_ENHANCEMENT_TECHWELL_TW8845REGISTERS_WITH_DIGITAL_CAMERA.caldef file added usage of Low Radio for all calibrations within this caldef file since starting in MY20 Info3.5 Low Radio starts using the Techwell TW8845.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the IMAGE_ENHANCEMENT_TECHWELL_TW8845REGISTERS_WITH_DIGITAL_CAMERA.caldef, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: CONTRAST_R; DESCRITPION: Red Contrast Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x881_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_G417wVGaEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: CONTRAST_G; DESCRITPION: Green Contrast Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x882_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_tt_AYVGaEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: CONTRAST_B; DESCRITPION: Blue Contrast Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x883_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_shy6EVGaEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: CONTRAST_Y; DESCRITPION: Y Contrast Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x884_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ZGKLUVGbEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: BRIGHTNESS_R; DESCRITPION: Red Brightness Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x887_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JVzbgVGcEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: BRIGHTNESS_G; DESCRITPION: Green Brightness Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x888_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_VmiF8FGfEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: BRIGHTNESS_B; DESCRITPION: Blue Brightness Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x889_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_4YwuwVGfEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: BRIGHTNESS_Y; DESCRITPION: Y Brightness Adjustment. Also, note the following: 80h+ = Higher contrast; 80h = Neutral; 80h- = Lower contrast. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x88A_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_dzK6wVGgEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>128</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: H_SHARP_CORR; DESCRITPION: Coring function for sharpness control.." Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x88B_BITS_7_thru_4" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_f5QQwVGQEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: H_SHARPNESS; DESCRIPTION: Sharpness adjustment." Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x88B_BITS_3_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_IKmDEVGQEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: SH_FREQ; DESCRIPTION: Sharpness frequency select; 1 = High Frequency, and  0 = Low Frequency. Also, note as reference: a value of True = 1, and a value of False = 0. " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x88C_BIT7" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_2rzQ8VGPEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrogh</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: BPY2R; DESCRIPTION: Bypass YCbCr conversion to RGB; 1 = Bypass conversion, and  0 = Convert YCbCr to RGB.  Also, note as reference: a value of True = 1, and a value of False = 0.  " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x8BE_BIT2" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_2JTJYVGmEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: Y16; DESCRIPTION: Y pedestal level selection of YUV to RGB conversion; 1 = Decimal 16 level become black level, and  0 = No offset adjustment.  Also, note as reference: a value of True = 1, and a value of False = 0.  " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x8BE_BIT1" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_6REsgVGlEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="VP2 IMAGE ADJUSTMENT REGISTER; Note as defined in the TW8845 data sheet: FUNCTION: BT7; DESCRIPTION: Conversion matrix selection of YUV to RGB conversion; 1 = Matrix for HDTV standard, and  0 = Matrix for SDTV standard.  Also, note as reference: a value of True = 1, and a value of False = 0.  " Name="TW8845_WITH_DIGITAL_CAMERA_REGISTER_0x8BE_BIT0" References="TECHWELL TW8845 Data Sheet" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_3J0dIVGkEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added Low Radio usage for this calibration since MY20 Info3.5 starts using the Techwell TW8845.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

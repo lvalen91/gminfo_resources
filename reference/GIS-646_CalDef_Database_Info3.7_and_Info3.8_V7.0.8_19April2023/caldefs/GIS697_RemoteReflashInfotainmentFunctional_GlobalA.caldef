@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="System" Description="These calibration are used to adjust the rate of check for update in OTA use case.">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>15APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>SuSanta Sarkar</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10Nov14</Date>
+    <Description>Deleted REMOTE_REFLASH_ENABLE cal due to duplication with Remote_Reflash_Feature cal in GIS668_RemoteOMADMServerInterface</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS697_RemoteReflashInfotainmentFunctional.caldef file to GIS697_RemoteReflashInfotainmentFunctional_GlobalA.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef files that conatin Global A specific calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Low rate of checking for updates" Name="CHECK_UPDATE_IN_IGN_4" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_oRznscQKEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Medium rate of checking for updates" Name="CHECK_UPDATE_IN_IGN_3" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_Nfqa4cQKEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Higher rate of checking for updates" Name="CHECK_UPDATE_IN_IGN_2" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_5puLMcQJEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Highest rate of checking for updates" Name="CHECK_UPDATE_IN_IGN_1" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_NYzaYMQJEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Days to continue checking at the low rate" Name="CONTINUE_DAYS_4" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_830pccQKEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Days to continue checking at the medium rate" Name="CONTINUE_DAYS_3" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_1CwxsMQKEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>255</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Days to continue checking at the higher rate" Name="CONTINUE_DAYS_2" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_EtbwQcQKEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Days to continue checking at the highest rate" Name="CONTINUE_DAYS_1" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_mJLjwMQJEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>7</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Current rate of checking for update" Name="CURR_UPDATE_CHECK_RATE" References="GIS-697-6.0" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_LkZLkMQLEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ns1:CalDefinitionFile xmlns:ns1="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Intended to include Global B specific calibrations for the GIS-619">
+  <CalDefFileVersion>5</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>5/24/2016</Date>
+    <Description>Initial release of this caldef file to include Global B specific calibrations for the GIS-619.</Description>
+    <Author>Younus Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS619_BrightnessControl_GlobalB.caldef  file, added GEM usage to all of the calibrations within this caldef except for the two calibrations {  (1.) OPTICAL_DRIVE_BRIGHTNESS_INPUT_TABLE_GLOBALB and (2.)OPTICAL_DRIVE_BRIGHTNESS_OUTPUT_TABLE_GLOBALB }. Note, did not add GEM usage for these two calibrations since both of these calibraions did not fall within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>09/14/2018</Date>
+    <Description>Per CR#1879935, Updated GIS619_Brightness_Control_GlobalB.caldef changed default value for LOCAL_MODE_DIMMING_LEVEL_GLOBALB calibration.</Description>
+    <Author>Younus A. Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Local Mode Dimming Level is the level used for dimming computations in the UserInitiated LocalInfotainment and LocalValet states as defined in GIS-618.  Default value is N-value, where E=(N)*1.0  and E is dimming level in percent luminance." Name="LOCAL_MODE_DIMMING_LEVEL_GLOBALB" References="GIS-619-150 " Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_1MpY4Ay6Eeab4ezHobftRw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Date>
+      <Description>10/2/2017</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>09/14/2018</Date>
+      <Description>Updated default value from 25 to 40. </Description>
+      <Author>Younes A. Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>40</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>127</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Main Display Brightness Failsoft Output.  Default value is N-value, where E=(N/65535)*100 and E is dimming level in percent luminance.  " Name="DISPLAY_BRIGHTNESS_FAILSOFT_GLOBALB" References="GIS-619-150 " Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_42ChcQy6Eeab4ezHobftRw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>17039</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.0015259022</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Input axis values for brightness level. Default value is N-value, where E=(N)*1.0 and E is brightness level in percent luminance. " Name="INDICATOR_BRIGHTNESS_INPUT_TABLE_GLOBALB" References="GIS-619-150 " Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_TZWnwBMAEeappLMV3_fLfg</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>127</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>5</ArrayValue>
+      <ArrayValue>9</ArrayValue>
+      <ArrayValue>13</ArrayValue>
+      <ArrayValue>17</ArrayValue>
+      <ArrayValue>21</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>29</ArrayValue>
+      <ArrayValue>33</ArrayValue>
+      <ArrayValue>37</ArrayValue>
+      <ArrayValue>40</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>60</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>70</ArrayValue>
+      <ArrayValue>75</ArrayValue>
+      <ArrayValue>80</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>90</ArrayValue>
+      <ArrayValue>95</ArrayValue>
+      <ArrayValue>100</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Output axis values for display brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. " Name="INDICATOR_BRIGHTNESS_OUTPUT_TABLE_GLOBALB" References="GIS-619-150" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_xBa40BMAEeappLMV3_fLfg</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.0015259022</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>3277</ArrayValue>
+      <ArrayValue>5898</ArrayValue>
+      <ArrayValue>8520</ArrayValue>
+      <ArrayValue>11141</ArrayValue>
+      <ArrayValue>13762</ArrayValue>
+      <ArrayValue>16384</ArrayValue>
+      <ArrayValue>19005</ArrayValue>
+      <ArrayValue>21627</ArrayValue>
+      <ArrayValue>24248</ArrayValue>
+      <ArrayValue>26214</ArrayValue>
+      <ArrayValue>36044</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>42598</ArrayValue>
+      <ArrayValue>45875</ArrayValue>
+      <ArrayValue>49151</ArrayValue>
+      <ArrayValue>52428</ArrayValue>
+      <ArrayValue>55705</ArrayValue>
+      <ArrayValue>58982</ArrayValue>
+      <ArrayValue>62258</ArrayValue>
+      <ArrayValue>65535</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Input axis values for Indicator brightness level. Default value is N-value, where E=(N)*1.0 and E is brightness level in percent luminance. " Name="CONTROL_BRIGHTNESS_INPUT_TABLE_GLOBALB" References="GIS-619-150" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_xNC7UAywEeab4ezHobftRw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>127</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>5</ArrayValue>
+      <ArrayValue>15</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>35</ArrayValue>
+      <ArrayValue>45</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>75</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>100</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Output axis values for display brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. " Name="CONTROL_BRIGHTNESS_OUTPUT_TABLE_GLOBALB" References="GIS-619-150" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_7SBGkAy4Eeab4ezHobftRw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.0015259022</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>3277</ArrayValue>
+      <ArrayValue>9830</ArrayValue>
+      <ArrayValue>16384</ArrayValue>
+      <ArrayValue>22937</ArrayValue>
+      <ArrayValue>29491</ArrayValue>
+      <ArrayValue>36044</ArrayValue>
+      <ArrayValue>42598</ArrayValue>
+      <ArrayValue>49151</ArrayValue>
+      <ArrayValue>55705</ArrayValue>
+      <ArrayValue>65535</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Input axis values for optical drive brightness. Default value is N-value, where E=(N)*1.0 and E is brightness level in percent luminance. " Name="OPTICAL_DRIVE_BRIGHTNESS_INPUT_TABLE_GLOBALB" References="GIS-619-150" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_M9b94BOoEeappLMV3_fLfg</CalID>
+    <Type>IntegerArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>127</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>5</ArrayValue>
+      <ArrayValue>9</ArrayValue>
+      <ArrayValue>13</ArrayValue>
+      <ArrayValue>17</ArrayValue>
+      <ArrayValue>21</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>29</ArrayValue>
+      <ArrayValue>33</ArrayValue>
+      <ArrayValue>37</ArrayValue>
+      <ArrayValue>40</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>60</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>70</ArrayValue>
+      <ArrayValue>75</ArrayValue>
+      <ArrayValue>80</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>90</ArrayValue>
+      <ArrayValue>95</ArrayValue>
+      <ArrayValue>100</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Output axis values for optical drive brightness. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. " Name="OPTICAL_DRIVE_BRIGHTNESS_OUTPUT_TABLE_GLOBALB" References="GIS-619-150 " Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_q6mVMBOoEeappLMV3_fLfg</CalID>
+    <Type>IntegerArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.0015259022</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>3277</ArrayValue>
+      <ArrayValue>5898</ArrayValue>
+      <ArrayValue>8520</ArrayValue>
+      <ArrayValue>11141</ArrayValue>
+      <ArrayValue>13762</ArrayValue>
+      <ArrayValue>16384</ArrayValue>
+      <ArrayValue>19005</ArrayValue>
+      <ArrayValue>21627</ArrayValue>
+      <ArrayValue>24248</ArrayValue>
+      <ArrayValue>26214</ArrayValue>
+      <ArrayValue>36044</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>42598</ArrayValue>
+      <ArrayValue>45875</ArrayValue>
+      <ArrayValue>49151</ArrayValue>
+      <ArrayValue>52428</ArrayValue>
+      <ArrayValue>55705</ArrayValue>
+      <ArrayValue>58982</ArrayValue>
+      <ArrayValue>62258</ArrayValue>
+      <ArrayValue>65535</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Input axis values for brightness level. Default value is N-value, where E=(N)*1.0 and E is brightness level in percent luminance. " Name="DISPLAY_BRIGHTNESS_INPUT_TABLE_GLOBALB" References="GIS-619-150 " Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_sgcWYAy9Eea0_Ls20O9LdA</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>127</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>5</ArrayValue>
+      <ArrayValue>9</ArrayValue>
+      <ArrayValue>13</ArrayValue>
+      <ArrayValue>17</ArrayValue>
+      <ArrayValue>21</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>29</ArrayValue>
+      <ArrayValue>33</ArrayValue>
+      <ArrayValue>37</ArrayValue>
+      <ArrayValue>40</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>60</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>70</ArrayValue>
+      <ArrayValue>75</ArrayValue>
+      <ArrayValue>80</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>90</ArrayValue>
+      <ArrayValue>95</ArrayValue>
+      <ArrayValue>100</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Output axis values for display brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. " Name="DISPLAY_BRIGHTNESS_OUTPUT_TABLE_GLOBALB" References="GIS-619-150" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JMmt8AzAEea0_Ls20O9LdA</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.0015259022</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>3277</ArrayValue>
+      <ArrayValue>5898</ArrayValue>
+      <ArrayValue>8520</ArrayValue>
+      <ArrayValue>11141</ArrayValue>
+      <ArrayValue>13762</ArrayValue>
+      <ArrayValue>16384</ArrayValue>
+      <ArrayValue>19005</ArrayValue>
+      <ArrayValue>21627</ArrayValue>
+      <ArrayValue>24248</ArrayValue>
+      <ArrayValue>26214</ArrayValue>
+      <ArrayValue>36044</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>42598</ArrayValue>
+      <ArrayValue>45875</ArrayValue>
+      <ArrayValue>49151</ArrayValue>
+      <ArrayValue>52428</ArrayValue>
+      <ArrayValue>55705</ArrayValue>
+      <ArrayValue>58982</ArrayValue>
+      <ArrayValue>62258</ArrayValue>
+      <ArrayValue>65535</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Input axis values for Camera brightness level. Default value is N-value, where E=(N)*1.0 and E is brightness level in percent luminance. " Name="DISPLAY_CAMERA_IMAGE_INPUT_TABLE_GLOBALB" References="GIS-619-150" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Q4qdkA4nEeaBr7QHlVyUoA</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>127</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>5</ArrayValue>
+      <ArrayValue>9</ArrayValue>
+      <ArrayValue>13</ArrayValue>
+      <ArrayValue>17</ArrayValue>
+      <ArrayValue>21</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>29</ArrayValue>
+      <ArrayValue>33</ArrayValue>
+      <ArrayValue>37</ArrayValue>
+      <ArrayValue>40</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>60</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>70</ArrayValue>
+      <ArrayValue>75</ArrayValue>
+      <ArrayValue>80</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>90</ArrayValue>
+      <ArrayValue>95</ArrayValue>
+      <ArrayValue>100</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Output axis values for Camera brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. " Name="DISPLAY_CAMERA_IMAGE_OUTPUT_TABLE_GLOBALB" References="GIS-619-150" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_TJvS4A4oEeaBr7QHlVyUoA</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>21</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.0015259022</Resolution>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>39321</ArrayValue>
+      <ArrayValue>42598</ArrayValue>
+      <ArrayValue>45875</ArrayValue>
+      <ArrayValue>49151</ArrayValue>
+      <ArrayValue>52428</ArrayValue>
+      <ArrayValue>55705</ArrayValue>
+      <ArrayValue>58982</ArrayValue>
+      <ArrayValue>62258</ArrayValue>
+      <ArrayValue>65535</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Lag filter constant for use in filter algorithm for smooth transition between dimming values.  Value is an integer defined as a 16 bit unsigned fraction.  Default value is N-value, where E=(N/65535) is the filter constant. " Name="BRIGHTNESS_LAG_FILTER_CONST_GLOBALB" References="GIS-619-150 " Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>__PuNsBPIEeappLMV3_fLfg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>19068</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.5259022E-5</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Lag filter low end threshold.  When FilteredValue &lt;= this threshold, the output of the FilteredValue shall be set to zero.  Default value is N-value, where E=(N/65535)*100 is the low end threshold." Name="LAG_FILTER_LOW_END_THRESHOLD_GLOBALB" References="GIS-619-150" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_UE2CcBPJEeappLMV3_fLfg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4587</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.0015259022</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This enumeration determines which CAN signal shall be used to compute the indicator brightness.  It was specifically defined for Info3/Global B in order to properly handle deadfronted ICSs such as the MY13 and beyond Cadillac ICS." Name="INDICATOR_BRIGHTNESS_SOURCE_GLOBALB" References="GIS-619-150 " Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_SKgeQUUBEeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_hGse4Fa8EeOFNdVjGV6f4g</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+</ns1:CalDefinitionFile>

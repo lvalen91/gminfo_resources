@@ -1,0 +1,778 @@
+================================================================================
+GM AAOS VIP CONTROL AND EEPROM MODIFICATION ANALYSIS
+================================================================================
+Document Version: 1.1
+Created: December 28, 2025
+Updated: December 28, 2025
+Purpose: Comprehensive analysis of VIP control scope, EEPROM modification,
+         CRC protection boundaries, and DPS capabilities/limitations
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. EXECUTIVE SUMMARY
+2. EEPROM MEMORY ARCHITECTURE
+3. CRC PROTECTION ANALYSIS
+4. VIP-CONTROLLED FEATURES (COMPREHENSIVE)
+5. ADB BYPASS MECHANISM (COMPLETE CHAIN)
+6. DPS CAPABILITIES AND LIMITATIONS
+7. ALTERNATIVE MODIFICATION METHODS
+8. I2C SOFTWARE ACCESS POTENTIAL
+9. RESEARCH PRIORITIES AND ATTACK VECTORS
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+The GM AAOS infotainment system uses a VIP MCU (Renesas RH850/P1M-E) as the
+security gatekeeper. The VIP reads configuration from an M24C64 I2C EEPROM
+(8KB) and controls Android system behavior including:
+
+- ADB authentication (PROTOKEY service)
+- Power management (startup, shutdown, suspend-to-RAM)
+- System timeouts and calibrations (30+ parameters)
+- ECU diagnostics and programming authorization
+- Boot sequence coordination with GHS hypervisor
+
+KEY FINDINGS:
+  [1] Security flags at 0x0440/0x0A80 are OUTSIDE CRC-protected regions
+  [2] VIP controls ADB via seed response (0xFF = bypass, real ECUID = secured)
+  [3] DPS CANNOT write EEPROM security addresses directly
+  [4] I2C buses /dev/i2c-0 and /dev/i2c-1 are WORLD-ACCESSIBLE
+  [5] VIP_BOOT is unsigned but has internal Harman checksum validation
+  [6] 30+ calibration values read from EEPROM control system behavior
+  [7] CRC is NOT ENFORCED AT BOOT (empirically verified - see Section 3.4)
+  [8] IS25LP016 SPI flash (2MB) identified on board - secondary storage
+  [9] OTA/SPS updates can restore EEPROM values (resets security flags)
+
+================================================================================
+2. EEPROM MEMORY ARCHITECTURE
+================================================================================
+
+2.1 DEVICE SPECIFICATIONS
+-------------------------
+Chip:     ST M24C64 (64-Kbit / 8KB I2C EEPROM)
+Package:  TSSOP8
+Bus:      I2C (address unknown - research needed)
+Location: Near VIP MCU (Renesas RH850)
+
+2.2 MEMORY MAP OVERVIEW
+-----------------------
+| Range           | Purpose                        | CRC Protected? |
+|-----------------|--------------------------------|----------------|
+| 0x0000-0x005F   | Header & Boot Flags            | NO             |
+| 0x0060-0x0397   | Reserved/Scratch (zeroed)      | NO             |
+| 0x0398-0x03BF   | Module ID Codes                | YES            |
+| 0x0400-0x045F   | SECURITY FLAGS (ADB bypass)    | NO (!)         |
+| 0x0460-0x04FF   | Radio/Audio Settings           | YES            |
+| 0x0500-0x05FF   | String Data (VIN, Serial, etc) | YES            |
+| 0x0600-0x07FF   | Additional Configuration       | YES            |
+| 0x0800-0x0A7F   | Reserved (0xFF padding)        | NO             |
+| 0x0A80-0x0AFF   | BACKUP SECURITY FLAGS          | NO (!)         |
+| 0x0B00-0x0DFF   | Feature Flags & Runtime Config | PARTIAL        |
+| 0x0E00-0x0EBF   | Display/UI Settings            | YES            |
+| 0x0EC0-0x10FF   | Calibration Tables             | YES            |
+| 0x1100-0x15FF   | Audio/Feature Tables           | YES            |
+| 0x1600-0x1FFF   | CRCs and Reserved              | N/A            |
+
+2.3 FRAMING PROTOCOL
+--------------------
+The EEPROM uses marker bytes to identify data types:
+
+| Frame | Purpose        | Description                              |
+|-------|----------------|------------------------------------------|
+| 0x5A  | Security/VIN   | High-importance security data            |
+| 0x69  | Configuration  | System config, feature toggles           |
+| 0xF0  | Data/Strings   | ASCII strings, lookup tables             |
+| 0xC3  | Calibration    | Color/audio calibration data             |
+
+Structure: [FRAME_BYTE] [DATA...] [FRAME_BYTE]
+Example:   5A FF 5A = Security flag with value 0xFF
+
+================================================================================
+3. CRC PROTECTION ANALYSIS
+================================================================================
+
+3.1 CRC LOCATIONS
+-----------------
+| Address | Name           | Value       | Covers                    |
+|---------|----------------|-------------|---------------------------|
+| 0x16E0  | Primary CRC    | 0xE2890000  | Main config (0x0398-0x07FF)|
+| 0x19E0  | Secondary CRC  | 0xF1890000  | Backup config             |
+| 0x1A80  | Config CRC     | 0x00000107  | Feature flags             |
+| 0x1B40  | Data CRC       | 0x128A0000  | Calibration tables        |
+| 0x1B60  | Block CRC #1   | 0x00000001  | Block validation          |
+| 0x1B80  | Block CRC #2   | 0x00000001  | Block validation          |
+
+3.2 CRC-PROTECTED vs UNPROTECTED REGIONS
+----------------------------------------
+CRITICAL FINDING: Security flags are UNPROTECTED by CRC!
+
+UNPROTECTED REGIONS (can modify without CRC recalculation):
+  - 0x0000-0x005F: Header/Boot flags
+  - 0x0400-0x045F: PRIMARY SECURITY FLAGS (ADB bypass!)
+  - 0x0800-0x0A7F: Reserved/padding
+  - 0x0A80-0x0AFF: BACKUP SECURITY FLAGS (ADB bypass!)
+
+CRC-PROTECTED REGIONS (require CRC recalculation):
+  - 0x0398-0x03BF: Module IDs
+  - 0x0460-0x07FF: Radio/Audio/VIN data
+  - 0x0E00-0x15FF: Display/Audio calibration tables
+
+3.3 WHY ADB BYPASS WORKS WITHOUT CRC
+------------------------------------
+The security flags at 0x0440 and 0x0A80 fall BETWEEN CRC-protected regions:
+  - Primary CRC (0x16E0) covers 0x0398-0x07FF BUT NOT 0x0400-0x045F
+  - The security block uses 0x5A framing (security type)
+  - VIP reads these directly without CRC validation
+
+VIP appears to validate security flags by:
+  1. Checking frame byte (0x5A)
+  2. Reading the value byte
+  3. NOT checking against any CRC
+
+3.4 EMPIRICAL CRC TESTING RESULTS (CRITICAL UPDATE)
+----------------------------------------------------
+**TESTED:** VIN field (0x5C0-0x5D1) set to all 0xFF
+
+**RESULT:** Module still booted into AAOS normally!
+  - No factory reset triggered
+  - No boot failure
+  - No observable differences in behavior
+
+**IMPLICATIONS:**
+  1. CRC is NOT enforced at boot time
+  2. CRC may only be validated during specific operations:
+     - OTA/SPS programming
+     - DPS calibration writes
+     - Dealer service modes
+  3. More EEPROM regions are likely modifiable without CRC recalculation
+  4. The "CRC-protected" designation may be for data integrity during
+     programming, not boot-time validation
+
+**REVISED UNDERSTANDING:**
+  | Region Type              | Boot Validation | Programming Validation |
+  |--------------------------|-----------------|------------------------|
+  | Security flags (0x0440)  | NONE            | Unknown                |
+  | VIN (0x5C0)              | NONE (tested)   | Likely CRC-checked     |
+  | Calibration tables       | NONE (assumed)  | Likely CRC-checked     |
+  | Feature flags            | NONE (assumed)  | Unknown                |
+
+This significantly expands the safe modification space for experimentation.
+
+================================================================================
+4. VIP-CONTROLLED FEATURES (COMPREHENSIVE)
+================================================================================
+
+4.1 EEPROM CALIBRATION VALUES (from VIP_APP firmware)
+------------------------------------------------------
+VIP reads 30+ calibration values from EEPROM at boot:
+
+POWER MANAGEMENT:
+| Calibration                                    | Default | Purpose                |
+|-----------------------------------------------|---------|------------------------|
+| cal_background_sleep_timeout_sec               | 10      | Sleep timeout          |
+| cal_sleep_fault_timeout_sec                    | 900     | Sleep fault timeout    |
+| cal_startup_delay_wait_timeout_msec            | 200     | Startup delay          |
+| cal_startup_fault_timeout_sec                  | 15      | Startup fault timeout  |
+| cal_shutdown_animation_failsafe_timeout        | 15      | Shutdown failsafe      |
+| cal_offmode_active_timeout_sec                 | 30      | Off-mode timeout       |
+| cal_powermode_failure_timeout_sec              | 60      | Power failure timeout  |
+| cal_suspend_to_ram_en                          | 1       | S2R enabled            |
+
+INFOTAINMENT CONTROL:
+| Calibration                                    | Default | Purpose                |
+|-----------------------------------------------|---------|------------------------|
+| cal_veh_initiated_local_infotainment_timeout   | 600     | Vehicle-initiated LI   |
+| cal_user_initiated_local_infotainment_timeout  | 600     | User-initiated LI      |
+| cal_infotainment_activity_timeout_sec          | 30      | Activity timeout       |
+| cal_local_infotainment_cancel_mode             | 0       | Cancel mode            |
+| cal_local_valet_timeout_sec                    | 30      | Valet mode timeout     |
+
+DISPLAY/ANIMATION:
+| Calibration                                    | Default | Purpose                |
+|-----------------------------------------------|---------|------------------------|
+| cal_cluster_animation_ignore                   | 0       | Skip cluster anim      |
+| cal_cluster_hmiready_ignore                    | 0       | Skip HMI ready         |
+| cal_rsi_animation_ignore                       | 1       | Skip RSI animation     |
+| cal_rsi_hmiready_ignore                        | 1       | Skip RSI HMI ready     |
+
+SYSTEM/DEBUG:
+| Calibration                                    | Default | Purpose                |
+|-----------------------------------------------|---------|------------------------|
+| cal_vin_relearn_en                             | 1       | VIN relearn enabled    |
+| cal_critical_state_of_charge_ignore            | 1       | Ignore critical SoC    |
+| cal_maximum_flush_fault_time                   | 36000   | Max flush fault time   |
+| cal_flush_limit_time                           | 24      | Flush limit            |
+
+SUSPEND-TO-RAM (S2R) THRESHOLDS:
+| Calibration                                    | Default | Purpose                |
+|-----------------------------------------------|---------|------------------------|
+| cal_str_min_temp_threshold                     | -10     | Min temp for S2R       |
+| cal_str_mode_soc_min_threshold_1               | 90      | S2R SoC threshold 1    |
+| cal_str_mode_soc_min_threshold_2               | 75      | S2R SoC threshold 2    |
+| cal_str_mode_soc_min_threshold_3               | 60      | S2R SoC threshold 3    |
+| cal_max_suspend_time_1                         | 84      | Max suspend time 1     |
+| cal_max_suspend_time_2                         | 24      | Max suspend time 2     |
+| cal_max_suspend_time_3                         | 16      | Max suspend time 3     |
+
+4.2 VIP IPC CHANNELS TO SOC
+---------------------------
+VIP communicates with Android SoC via SPI-IPC (20 channels):
+
+| Channel | Purpose                                        |
+|---------|------------------------------------------------|
+| 0       | Core IPC control                               |
+| 1-2     | PROTOKEY / Security                            |
+| 3-5     | J6_CDD Diagnostics                             |
+| 6-8     | Power Level Control (PLC)                      |
+| 9-12    | Calibration updates                            |
+| 13-16   | System state / Animation                       |
+| 17-20   | Reserved / Extension                           |
+
+Key IPC Messages:
+  - IPC_ID_RequestShutdown (power down)
+  - IPC_ID_RequestStartup (power up)
+  - IPC_ID_NotifyAlarmStatus (wake timer)
+  - Calibration data transmission
+  - MEC value transmission
+
+4.3 VIP POWER LEVEL CONTROL (PLC)
+---------------------------------
+VIP controls SoC power states:
+
+| Timer                          | Default (ms) | Purpose                 |
+|--------------------------------|--------------|-------------------------|
+| SoC SOH Timeout                | 1500         | State-of-Health check   |
+| Shutdown Timeout               | 3500         | Graceful shutdown       |
+| Startup Timeout                | 6000         | Boot timeout            |
+| Unmount Timeout                | 800          | Filesystem unmount      |
+| Tx PN Deactivation Timeout     | 300          | Partial network deact   |
+| Emergency Unmount Timeout      | 100          | Emergency unmount       |
+| Hypervisor Startup Timeout     | 300          | GHS startup timeout     |
+
+4.4 VIP SECURITY SERVICES
+-------------------------
+PROTOKEY (ADB Authentication):
+  - Receives seed from BCM via GMLAN
+  - Caches seed values (Bis_Seed_Cache_Lock)
+  - Validates checksum on seed
+  - Transmits seed to SoC via IPC
+  - Controls ICUSB module enable/disable
+
+MEC (Manufacturers Enable Counter):
+  - Transmitted via J6_CDD IPC channel
+  - Value 0 = Normal operation
+  - Value 244+ = Extended development mode
+  - Affects hypervisor startup timeout
+
+SBAT (Secure Boot Authorization Ticket):
+  - Validates programming authorization
+  - $0000 = Bypass Inactive (production)
+  - $0080 = Bypass Active (authorized)
+
+================================================================================
+5. ADB BYPASS MECHANISM (COMPLETE CHAIN)
+================================================================================
+
+5.1 SIGNAL CHAIN DIAGRAM
+------------------------
+```
++------------------+     +-----------------+     +------------------+
+| EEPROM           |     | VIP MCU         |     | Android SoC      |
+| (M24C64)         |     | (RH850/P1M-E)   |     | (Intel Atom)     |
++------------------+     +-----------------+     +------------------+
+| 0x0440: 5A FF 5A |---->| Read security   |     |                  |
+| 0x0A80: 5A FF 5A |     | flag at boot    |     |                  |
++------------------+     +-----------------+     +------------------+
+                               |
+                               v
+                    +---------------------+
+                    | Check flag value:   |
+                    | 0x00 = Secured      |
+                    | 0xFF = Bypassed     |
+                    +---------------------+
+                               |
+              +----------------+----------------+
+              |                                 |
+        [IF 0x00]                         [IF 0xFF]
+              |                                 |
+              v                                 v
+    +-------------------+           +-------------------+
+    | Request seed from |           | Return 0xFF seed  |
+    | BCM via GMLAN     |           | (all 32 bytes)    |
+    +-------------------+           +-------------------+
+              |                                 |
+              v                                 v
+    +-------------------+           +-------------------+
+    | ECUID + Challenge |           | FF FF FF FF FF... |
+    | (32 bytes)        |           | (32 bytes)        |
+    +-------------------+           +-------------------+
+              |                                 |
+              +---------------------------------+
+                               |
+                               v
+                    +---------------------+
+                    | Transmit seed via   |
+                    | IPC to gm_protokey  |
+                    +---------------------+
+                               |
+                               v
+                    +---------------------+
+                    | Android PROTOKEY    |
+                    | service evaluates   |
+                    +---------------------+
+                               |
+              +----------------+----------------+
+              |                                 |
+        [ECUID seed]                       [0xFF seed]
+              |                                 |
+              v                                 v
+    +-------------------+           +-------------------+
+    | Require GM Secure |           | Skip auth, allow  |
+    | Client auth for   |           | generic adb shell |
+    | ADB access        |           | access            |
+    +-------------------+           +-------------------+
+```
+
+5.2 STATE COMPARISON (from DPS logs)
+------------------------------------
+
+NORMAL STATE (Y177update_CSM.Txt):
+  - EEPROM 0x0440: C3 00 C3 (secured)
+  - EEPROM 0x0A80: FF FF FF (not set)
+  - Seed: $004B41DC0000160006104145610114AC6F52956CBBB078A1905399B8B57193
+  - MEC: 0
+  - SBAT: $0000000000... (bypass inactive)
+  - Result: ADB requires GM Secure Client authentication
+
+BYPASSED STATE (A11_CSM_x80.Txt):
+  - EEPROM 0x0440: 5A FF 5A (bypassed)
+  - EEPROM 0x0A80: 5A FF 5A (bypassed)
+  - Seed: $FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+  - MEC: 244
+  - SBAT: $0000000000... (bypass inactive)
+  - Result: ADB accessible with standard platform-tools
+
+5.3 KEY OBSERVATIONS
+--------------------
+1. The frame byte changes from 0xC3 (Calibration) to 0x5A (Security)
+2. BOTH addresses (0x0440 AND 0x0A80) must be modified
+3. MEC increases to 244 after bypass (counter increments)
+4. SBAT status remains unchanged ($0000)
+5. VIP log shows: "[PROTOKEY] Receives invalid seed [1] from BCM"
+   When BCM returns invalid seed, VIP returns 0x00 bytes with checksum 524289 (0x80001 = error)
+
+================================================================================
+6. DPS CAPABILITIES AND LIMITATIONS
+================================================================================
+
+6.1 WHAT DPS CAN DO
+-------------------
+READ OPERATIONS:
+  [X] Read DIDs ($22 service): $F090, $F098, $F099, $F0B4, $F0F0, etc.
+  [X] Read VIN, serial numbers, module IDs
+  [X] Read ECU software versions
+  [X] Read calibration identifiers
+  [X] Read DTCs from all ECUs
+  [X] Read ECUID from VIP ($F0F3)
+  [X] Request security seed ($27 service)
+
+WRITE/FLASH OPERATIONS:
+  [X] Flash UNSIGNED modules (Sign Type = NONE):
+      - Module 23: SOC_BOOT
+      - Module 24: SOC_UTILS
+      - Module 28: SXM
+      - Module 29: GPS
+      - Module 51: TUNER
+      - Module 52: ETH_SWITCH
+      - Module 55: SOC_ACPIO
+      - Module 56: SOC_VBMETA (breaks AVB)
+      - Module 57: SOC_PRODUCT
+      - Module 71: VIP_BOOT (*)
+      - Module 72: SOC_ABL (*)
+
+      (*) VIP_BOOT and SOC_ABL have internal validation despite no TSS signature
+
+  [X] Create SPAT archives for programming
+  [X] Attempt version downgrades (version check disabled)
+  [X] Clear/modify calibration data via DID writes
+  [X] Execute routine controls ($31 service)
+
+6.2 WHAT DPS CANNOT DO
+----------------------
+EEPROM DIRECT ACCESS:
+  [!] CANNOT write to EEPROM security addresses (0x0440, 0x0A80)
+  [!] CANNOT access EEPROM via I2C directly
+  [!] No UDS service exposed for EEPROM write
+
+  Evidence: DPS uses UDS protocol which routes through VIP.
+  VIP does not expose EEPROM write services via UDS.
+
+CRYPTOGRAPHIC OPERATIONS:
+  [!] CANNOT issue SBAT tickets without GM authorization
+  [!] CANNOT generate security keys (requires GM TSS server)
+  [!] CANNOT flash TSS-signed modules without GM keys
+  [!] CANNOT bypass AVB protection
+
+OTHER LIMITATIONS:
+  [!] CANNOT access fastboot mode (not exposed)
+  [!] CANNOT access recovery mode (uses GHS, not Android recovery)
+  [!] CANNOT modify GHS hypervisor directly
+  [!] CANNOT unlock bootloader
+
+6.3 DPS PROTOCOL FLOW
+---------------------
+```
+DPS/TIS2WEB --> MDI2 (J2534) --> GMLAN/LS-CAN --> Gateway (0x45)
+                                                      |
+                                              +-------+-------+
+                                              |               |
+                                         VIP (0x80)    Other ECUs
+                                              |
+                                      SPI-IPC to SoC
+```
+
+The critical limitation: DPS commands go through VIP via UDS.
+VIP firmware does not expose EEPROM write commands.
+
+================================================================================
+7. ALTERNATIVE MODIFICATION METHODS
+================================================================================
+
+7.1 PHYSICAL EEPROM ACCESS (CONFIRMED WORKING)
+----------------------------------------------
+Method:  Remove EEPROM chip, program with external programmer
+Tools:   XGecu T48/T56 with minipro, or similar
+Chip:    ST M24C64 TSSOP8
+
+Process:
+  1. Desolder M24C64 from PCB (or use SOIC8 clip if possible)
+  2. Read original contents (backup!)
+  3. Modify bytes at 0x0440 and 0x0A80:
+     - Original: C3 00 C3 FF  -->  5A FF 5A FF
+     - Original: FF FF FF FF  -->  5A FF 5A FF
+  4. Write modified contents
+  5. Reinstall chip (or keep clip connected)
+  6. Power on - ADB now accessible
+
+Risks:
+  - Chip desoldering may damage board
+  - Incorrect modification may brick module
+  - OTA updates reset security flags to 0x00
+
+7.2 VIP FIRMWARE MODIFICATION (RESEARCH NEEDED)
+-----------------------------------------------
+VIP_BOOT (Module 71) is flashable via DPS but has internal validation:
+
+Internal Security Mechanisms:
+  - Harman checksum (proprietary algorithm)
+  - SHA-256 message digest (cv_Act_Library)
+  - Application signed header validation
+  - SBA/SBAT ticket validation
+  - HDLC CRC protection
+
+Attack Approach:
+  1. Reverse engineer Harman checksum algorithm
+  2. Create modified VIP_BOOT that:
+     - Always reads security flags as 0xFF
+     - OR: Always returns 0xFF seed regardless of EEPROM
+  3. Calculate valid checksum for modified firmware
+  4. Flash via DPS update_ecu(71, ...)
+
+Feasibility: MODERATE
+  - Checksum algorithm must be reverse engineered
+  - Signed header validation may block
+  - No hardware fuse protection (unlike Intel ABL)
+
+7.3 I2C SOFTWARE ACCESS (RESEARCH NEEDED)
+-----------------------------------------
+See Section 8 for detailed analysis.
+
+7.4 CALDEF MODIFICATION (LIMITED)
+---------------------------------
+CalDef database controls ANDROID behavior, NOT VIP behavior.
+
+CANNOT affect ADB:
+  - DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE
+  - EXPIRATION_ENFORCEMENT
+  - GIS763_PROGRAMMING_ENABLED
+
+These only affect Android-side registration and programming.
+VIP-controlled security is separate.
+
+================================================================================
+8. I2C SOFTWARE ACCESS POTENTIAL
+================================================================================
+
+8.1 I2C BUS PERMISSIONS
+-----------------------
+From /dev enumeration:
+
+| Device     | Permissions  | Owner       | Minor | Access Level    |
+|------------|--------------|-------------|-------|-----------------|
+| /dev/i2c-0 | crw-rw-rw-   | root:root   | 0     | WORLD READABLE/WRITABLE |
+| /dev/i2c-1 | crw-rw-rw-   | root:root   | 1     | WORLD READABLE/WRITABLE |
+| /dev/i2c-2 | crw-rw-rw-   | system      | 2     | System access   |
+| /dev/i2c-3 | crw-rw-rw-   | audioserver | 3     | Audio access    |
+| /dev/i2c-4 | crw-------   | root        | 4     | Root only       |
+| /dev/i2c-5 | crw-------   | root        | 5     | Root only       |
+| /dev/i2c-6 | crw-------   | root        | 6     | Root only       |
+| /dev/i2c-7 | crw-rw----   | system      | 7     | System access   |
+| /dev/i2c-8 | crw-------   | root        | 8     | Root only       |
+| /dev/i2c-9 | crw-------   | root        | 9     | Root only       |
+| /dev/i2c-10| crw-------   | root        | 10    | Root only       |
+
+CRITICAL: /dev/i2c-0 and /dev/i2c-1 are WORLD-ACCESSIBLE!
+
+8.2 RESEARCH QUESTION
+---------------------
+If the M24C64 EEPROM is on i2c-0 or i2c-1, software modification may be
+possible without physical access!
+
+REQUIRED RESEARCH:
+  1. Determine which I2C bus connects to EEPROM
+  2. Find EEPROM I2C address (likely 0x50-0x57)
+  3. Check if SELinux blocks I2C access from shell context
+  4. Test i2cdetect/i2cget/i2cset if available
+
+8.3 POTENTIAL SOFTWARE BYPASS
+-----------------------------
+If i2c-0 or i2c-1 connects to EEPROM:
+
+```bash
+# Scan for devices (if i2c-tools available)
+i2cdetect -y 0
+i2cdetect -y 1
+
+# If EEPROM found at address 0x50:
+# Read current security flag
+i2cget -y 0 0x50 0x0440 b
+
+# Write bypass value (DANGEROUS - test carefully!)
+# Would need to write: 0x5A 0xFF 0x5A 0xFF
+```
+
+BLOCKERS:
+  - SELinux may deny access even with world permissions
+  - Shell context (untrusted_app or shell) may be restricted
+  - i2c-tools may not be installed
+
+8.4 SELINUX CONSIDERATIONS
+--------------------------
+Even with world-accessible device nodes, SELinux may block:
+
+Check with: ls -laZ /dev/i2c-*
+Expected:   u:object_r:i2c_device:s0
+
+Shell access to i2c_device likely requires:
+  - shell domain allow rule
+  - OR: SELinux permissive mode (Y177 only)
+
+Y177 runs SELinux PERMISSIVE - I2C access may work!
+Y181 runs SELinux ENFORCING - likely blocked.
+
+================================================================================
+9. RESEARCH PRIORITIES AND ATTACK VECTORS
+================================================================================
+
+9.1 PRIORITY 1: I2C EEPROM MAPPING [CRITICAL]
+---------------------------------------------
+Goal: Determine if EEPROM is accessible via software
+
+Steps:
+  1. On Y177 (SELinux permissive): Run i2cdetect on buses 0-10
+  2. Identify M24C64 at expected address (0x50-0x57)
+  3. Read byte at 0x0440 to confirm it's the security EEPROM
+  4. If accessible: Test write operation
+
+Impact: Could enable SOFTWARE-ONLY bypass without hardware modification!
+
+9.2 PRIORITY 2: HARMAN CHECKSUM REVERSE ENGINEERING [HIGH]
+----------------------------------------------------------
+Goal: Create custom VIP_BOOT firmware
+
+Steps:
+  1. Extract VIP_BOOT binary (85056831) from update package
+  2. Load in Ghidra with RH850 processor module
+  3. Locate checksum calculation function
+  4. Identify security flag reading code
+  5. Patch to always return 0xFF
+  6. Recalculate checksum
+
+Tools needed:
+  - Ghidra with RH850 support
+  - RH850 reference manual
+  - Existing VIP firmware samples for comparison
+
+9.3 PRIORITY 3: Y177 DOWNGRADE TEST [HIGH]
+------------------------------------------
+Goal: Restore SELinux permissive mode
+
+Steps:
+  1. Obtain Y177 update package
+  2. Flash via DPS (version check disabled)
+  3. Verify boot and SELinux status
+  4. If successful: Test I2C access
+
+Risk: AVB rollback may block, GHS may enforce version
+
+9.4 PRIORITY 4: VIP_BOOT SIGNED HEADER ANALYSIS [MEDIUM]
+--------------------------------------------------------
+Goal: Understand if signed header can be bypassed
+
+Questions:
+  - Is it software key or hardware fused?
+  - What format is the signature?
+  - Can it be regenerated with known algorithm?
+
+9.5 PRIORITY 5: SOC_ABL INTEL CSE ANALYSIS [LOW]
+-----------------------------------------------
+Goal: Understand Intel boot security
+
+Reality check: Intel CSE uses hardware-fused keys.
+This is likely a dead end for modification.
+Focus on VIP_BOOT instead.
+
+================================================================================
+APPENDIX A: EEPROM BYTE MODIFICATIONS
+================================================================================
+
+CONFIRMED WORKING:
+| Address | Stock Value | Bypass Value | Effect              |
+|---------|-------------|--------------|---------------------|
+| 0x0440  | C3 00 C3 FF | 5A FF 5A FF  | Primary ADB bypass  |
+| 0x0A80  | FF FF FF FF | 5A FF 5A FF  | Backup ADB bypass   |
+
+TESTED (NO ADVERSE EFFECT):
+| Address   | Stock Value | Test Value   | Observed Effect     |
+|-----------|-------------|--------------|---------------------|
+| 0x5C0-5D1 | VIN ASCII   | FF FF FF...  | Module booted normally, no reset |
+
+SUSPECTED (UNTESTED):
+| Address | Stock Value | Test Value   | Expected Effect     |
+|---------|-------------|--------------|---------------------|
+| 0x0020  | 69 00       | 69 FF        | Unknown toggle      |
+| 0x0B40  | 69 00       | 69 FF        | Developer mode?     |
+| 0x0E87  | 00          | 01           | Reserved UI flag    |
+| 0x0E88  | 00          | 01           | Reserved UI flag    |
+
+================================================================================
+APPENDIX B: VIP SERVICE ARCHITECTURE
+================================================================================
+
+Android Services controlled by VIP:
+  - gm_protokey (PID 849) - PROTOKEY authentication
+  - gm_update_engine - Update orchestration
+  - calserviced - Calibration management
+  - vendor.harman.hardware.ame@1.0-service - Audio/Media Engine
+
+Init scripts:
+  - init.protokey.rc (vendor)
+  - init.protokey_recovery.rc (system)
+  - gm_update_engine.rc
+  - calserviced.rc
+
+================================================================================
+APPENDIX C: ADDITIONAL HARDWARE COMPONENTS
+================================================================================
+
+C.1 IS25LP016 SPI FLASH (IDENTIFIED)
+------------------------------------
+Location:    Opposite side of PCB from M24C64 EEPROM (through-board proximity)
+Chip:        ISSI IS25LP016 (16Mbit / 2MB SPI NOR Flash)
+Package:     SOIC8 (larger variant)
+Markings:    IS25LP016, DNL3, 2243 (week 43 of 2022), P3A368L2
+Interface:   Quad SPI, 3.3V operation
+
+Likely Purpose:
+  - Crash/diagnostic log storage
+  - Calibration backup data
+  - Audio DSP coefficients
+  - Extended configuration (non-critical)
+
+NOT likely: Critical boot data (that's in VIP internal flash or I2C EEPROM)
+
+Recovery Potential:
+  - If chip stores logs: Blank replacement would self-initialize
+  - If chip stores calibration backup: OTA/SPS may repopulate
+  - If chip stores subsystem firmware: Would need explicit programming
+
+C.2 HARDWARE SUMMARY
+--------------------
+| Component   | Chip        | Purpose                    | Critical? |
+|-------------|-------------|----------------------------|-----------|
+| I2C EEPROM  | ST M24C64   | Security flags, VIN, config| YES       |
+| SPI Flash   | IS25LP016   | Logs, backup, extended cfg | NO        |
+| VIP MCU     | RH850/P1M-E | Security gatekeeper        | YES       |
+| Intel SoC   | Atom x7     | Android execution          | YES       |
+
+================================================================================
+APPENDIX D: OTA/SPS UPDATE BEHAVIOR
+================================================================================
+
+D.1 EEPROM MODIFICATION DURING UPDATES
+--------------------------------------
+**CONFIRMED:** OTA updates actively write to EEPROM!
+
+Evidence: Security flags at 0x0440/0x0A80 reset from bypass (5A FF 5A) back
+to secured state (C3 00 C3) after Y177→Y181 OTA update.
+
+Update Chain:
+  gm_update_engine → IPC → VIP MCU → I2C → EEPROM write
+
+The update manifest contains gmext.update_ecu() calls that coordinate through
+VIP, and VIP handles EEPROM state restoration as part of update finalization.
+
+D.2 EEPROM VALUES THAT MAY BE RESTORED
+--------------------------------------
+| Value Type       | Restored by OTA? | Evidence                    |
+|------------------|------------------|-----------------------------|
+| Security flags   | YES              | Confirmed (ADB re-secured)  |
+| VIN              | UNKNOWN          | Not tested                  |
+| Calibration data | LIKELY           | CalDef updates included     |
+| UI flags         | UNKNOWN          | Not tested                  |
+
+D.3 SPI FLASH (IS25LP016) RECOVERY
+----------------------------------
+If replacing damaged IS25LP016 with blank chip:
+
+| Chip Contents          | Recovery Method              | Likelihood |
+|------------------------|------------------------------|------------|
+| Diagnostic logs        | Auto-initialize on boot      | HIGH       |
+| Calibration backup     | OTA/SPS calibration update   | MEDIUM     |
+| Subsystem firmware     | Dealer-level programming     | LOW        |
+
+The module likely boots even with blank/damaged SPI flash since critical
+boot data is in VIP internal flash and I2C EEPROM.
+
+D.4 IMPLICATIONS FOR RESEARCH
+-----------------------------
+1. EEPROM modifications will be reverted by OTA - must re-apply after updates
+2. SPS calibration updates may restore some EEPROM values
+3. Blank replacement ICs may self-populate via OTA/SPS
+4. VIN modification status after OTA unknown - needs testing
+
+================================================================================
+APPENDIX E: EVIDENCE SOURCES
+================================================================================
+
+Primary Sources:
+  - EEPROM/EEPROM_Analysis_Report.md (memory map)
+  - EEPROM/gm_csm/Y181/ADB_enabled.bin (bypassed dump)
+  - misc/A11_CSM_x80.Txt (DPS log - bypassed state)
+  - misc/Y177update_CSM.Txt (DPS log - normal state)
+  - update_packages/Y181/86331656 (VIP_APP firmware)
+  - update_packages/Y181/85056831 (VIP_BOOT firmware)
+  - logs/VIP_log_2B.174.4.1_10JUL24.txt (VIP UART log)
+  - analysis/adb_Y181/gm_enum_*/raw/i2c_devices.txt
+  - analysis/adb_Y181/gm_enum_*/raw/all_properties.txt
+
+Empirical Testing:
+  - VIN set to all 0xFF: Module booted normally (CRC not enforced at boot)
+  - IS25LP016 identification: Physical inspection of damaged module
+  - Security flag reset: Observed after Y177→Y181 OTA update
+
+================================================================================
+END OF DOCUMENT
+================================================================================

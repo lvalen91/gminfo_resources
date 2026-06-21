@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Includes calibrations from the GIS-1050 Spec. that are Global B specific.">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>09/17/2018</Date>
+    <Description>Per CR#1772564, Initial released GIS1050_RearClimate_GlobalB.caldef with the added calibrations: RearClimateTempColorFahrenheit, RearClimateTempColorCelsius, RearClimateMinTempFahrenheit, RearClimateMaxTempFahrenheit, RearClimateMinTempCelsius, and RearClimateMaxTempCelsius.</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Rear climate maximum temperature value before HMI displays &quot;Hi&quot; as the temperature value" Name="RearClimateMaxTempCelsius" References="GIS1050 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_7rCQgboyEeiSab6pnJ7Ihg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>16</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Rear climate maximum temperature value before HMI displays &quot;Hi&quot; as the temperature value" Name="RearClimateMaxTempFahrenheit" References="GIS1050 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_p54jELoyEeiSab6pnJ7Ihg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>89</Value>
+      <MinValue>50</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Rear climate minimum temperature value before HMI displays &quot;LO&quot; as the temperature value." Name="RearClimateMinTempCelsius" References="GIS1050 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_60PycLoyEeiSab6pnJ7Ihg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>17</Value>
+      <MinValue>16</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Rear climate minimum temperature value before HMI displays &quot;LO&quot; as the temperature value." Name="RearClimateMinTempFahrenheit" References="GIS1050 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_W49P0LoyEeiSab6pnJ7Ihg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>61</Value>
+      <MinValue>50</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration determines the Temperature value (in Celsius) where the color transition from Blue to Red and vice versa (MFC Mode)" Name="RearClimateTempColorCelsius" References="GIS1050 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_l7J5ILoxEeiSab6pnJ7Ihg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>22</Value>
+      <MinValue>16</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration determines the Temperature value (in Fahrenheit) where the color transition from Blue to Red and vice versa (MFC Mode)" Name="RearClimateTempColorFahrenheit" References="GIS1050 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_K0ZHMLoxEeiSab6pnJ7Ihg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>72</Value>
+      <MinValue>50</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

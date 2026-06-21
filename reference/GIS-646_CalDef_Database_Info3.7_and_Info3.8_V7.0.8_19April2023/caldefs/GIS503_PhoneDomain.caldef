@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>10</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/19/15</Date>
+    <Description>Added Driver Workload Cals</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>4-9-15</Date>
+    <Description>Added some new cals for MY18</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6-1-15</Date>
+    <Description>Added Call Ended View and Active Call View Calibrations</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2/29/2016</Date>
+    <Description>Within this caldef file, removed the ConnectingDeviceOverUSBDriverWorkload and AddDeviceDriverWorkload CALs since duplicate CALs already existed in the GIS512_Connections.caldef file. Confirmed with Cody Hansen these CALs were intended to be in the GIS-512, and not in the GIS-503. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>1/25/2017</Date>
+    <Description>Within the GIS503_PhoneDomain.caldef, added the new calibration IGN_OFF_TRANSFER_CALL_SCREEN in the latest version of the GIS-503.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/13/2017</Date>
+    <Description>Within the GIS503_PhoneDomain.caldef file made the following updates: 1.) Updated the functional description of the ActiveCallViewSetting calibration to match the description reflected in the latest version GIS-503.  Also updated the default value of this calibration to  match the desired setting for most applications. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool. and 2.)  Also, updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>10/1/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the GIS503_PhoneDomain.caldef  file. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>05/03/2018</Date>
+    <Description>Within GIS503_PhoneDomain.caldef, updated the default value of TtyEmergencyCallDriverWorkload calibration to match the default value reflected in the GIS-503 Version 5.3 of Feb 2, 2018</Description>
+    <Author>Emmanuel Oleka</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>03/26/2019</Date>
+    <Description>Per CR#1697125, added MAX_NUMBER_OF_PHONES_CONNECTED calibration to the GIS503_PhoneDomain.caldef</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration only applies to Android P or later (Info 3.7 and beyond), capable of supporting Dual Phone mode. Dual Phone Mode allows up to two (2) outgoing phones to connect to the system. The user has the ability to deactivate Dual Phone mode. Deactivating Dual Phone mode will only allow one phone to be connected to the system. The Phones UI will vary depending on the setting chosen by the user. This calibration will be used to define whether the Dual Phone Mode UI will be displayed, or single phone mode UI will be displayed to the user. " Name="MAX_NUMBER_OF_PHONES_CONNECTED" References="GIS-503 Section 5.1.1.2" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_XT5lsE_rEemw0OEy2xt-jw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>03/26/2019</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>2</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Sets the time delay before a Call Transfer screen is shown when turning off vehicle while on active call." Name="IGN_OFF_TRANSFER_CALL_SCREEN" References="GIS-503 5.1.1.1* Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_mLZcUONHEeayQ7dTF1k6LA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/25/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration determines the default phonebook sorting order. Even though language is the primary factor that influences the phonebook sort order, to clarify complexity, this calibration applies to all langauges that are currently enabled. Factory default sort order will apply to all available languages within a specific vehicle configuration." Name="DefaultPrefferedPhonebookSortOrder" References="GIS-503 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_wLolUG7dEeSssq_awwoZ3g</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_eCTBYG7dEeSssq_awwoZ3g</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="As the user is entering digits, the number is auto completed based upon matches to the recent call history. If there are multiple matches, the match shown is based upon the most recent date. The digits entered by the user will be shown visually different from the auto entry numbers. The user continues entering digits if the autocomplete phone number is not the desired phone number. The autocomplete is available when the user is not in a call or is in the add call mode." Name="EnablePhoneAutoComplete" References="GIS-503 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-fHSAG7dEeSssq_awwoZ3g</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="An icon will be displayed when the Bluetooth device is roaming." Name="EnablePhoneStatusRegionRoamingIndicator" References="GIS-503 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_NPD4QG7eEeSssq_awwoZ3g</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Voicemail is a regional requirement. $00 - disable for China applications $01 - enabled for all non-China applications" Name="EnableVoicemailViewButton" References="GIS-503 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_QvsGYG7eEeSssq_awwoZ3g</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value to prevent a battery drain in the event of a software fault that prevents the system from going to Sleep. Also used to limit maximum time in LocalPhone state." Name="SleepFaultTimeOut" References="GIS-503 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_W-cHoG7eEeSssq_awwoZ3g</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>900</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>7200</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Determines if OnStar TTY Setting is present in the Settings list" Name="TTYSetting" References="Gis503" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_pj6SIN8lEeSAdoeK2ksMLw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Sets default value for allowing the user to toggle on or off if incoming calls to appear in the ICS and IPC or IPC only" Name="ActiveCallViewSetting" References="GIS503" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_rJoSwN8lEeSAdoeK2ksMLw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the functional description of the ActiveCallViewSetting calibration to match the description reflected in the latest version GIS-503.  Also updated the default value of this calibration to  match the desired setting for most applications. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Regionally dependent sets the user to either pre_pay or post_pay mode. In post-pay mode the user will not have minutes remaining displayed for OnStar Calls." Name="PrePayMode" References="GIS503" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_twoKMN8lEeSAdoeK2ksMLw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Allows user to toggle on or off if incoming call alerts will be shown in the cluster and centrestack or just the cluster." Name="PrivacySetting" References="Gis503" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_vIyP8N8lEeSAdoeK2ksMLw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Sets value for how long call ended view will be shown after call has ended. Default value is 5s" Name="CallEndedView" References="GIS-503 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_d03O4AiXEeW9i8rzg7Ds1g</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>5.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Sets value for how long after ignition off exiting vehicle pop up should be shown. Default value is 10s." Name="ActiveCallView" References="GIS-503 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_3jX0cAiXEeW9i8rzg7Ds1g</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>10.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is limited to viewing a restricted number of recent call entries using the restricted list view template." Name="RecentCallsListDriverWorkload" References="GIS503 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_rdIW8bisEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Comprehended at widget level, when triggered, the feature restricted popup (GIS-500) is shown, and the virtual numeric keypad in the Keypad tab will need to be replaced with the workload restricted keypad (GIS-500)." Name="VirtualNumericKeypadDriverWorkload" References="GIS503 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_q9JPUbisEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is limited to viewing a restricted number of contact list entries using the restricted list view template." Name="ContactListDriverWorkload" References="GIS503 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_qyjv8bisEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the &#x201c;Edit Contact&#x201d; selection on the OnStar Contacts view is greyed out. Pressing the &#x201c;Edit Contact&#x201d; button will show the feature restricted popup (see GIS- 00). If the user has already started the &#x201c;Edit Contact&#x201d; process and the driving mode lockout is then triggered, the process is cancelled, the feature restricted popup (GIS- 00) is shown, and the user is returned to the screen that initiated the &#x201c;Edit Contact&#x201d; process." Name="VehicleContactEditingDriverWorkload" References="GIS503 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_qk35QbisEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="TTY Lockout to be overridden during an Emergency Call. Do not lockout TTY mode when making or receiving an Emergency Call. This only applies to OnStar emergency calls and is not applicable to OnStar personal calls or Bluetooth personal/emergency behavior.  " Name="TtyEmergencyCallDriverWorkload" References="GIS503 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Nh4uYbiwEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>05/03/2018</Date>
+      <Description>Updated the default value to match the default value reflected in the GIS-503 Version 5.3 of Feb 2, 2018</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

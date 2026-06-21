@@ -1,0 +1,1 @@
+Linux version 4.19.283-PKT-230612T042614Z-ga53d763f5b0d (nobody@android-build) (Android (7485623, based on r416183b1) clang version 12.0.7 (https://android.googlesource.com/toolchain/llvm-project c935d99d7cf2016289302412d708641d52d2f7ee), GNU ld (GNU Binutils for Ubuntu) 2.34) #1 SMP PREEMPT Wed Jun 26 22:22:25 EDT 2024

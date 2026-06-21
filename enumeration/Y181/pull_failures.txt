@@ -1,0 +1,7 @@
+/system/build.prop: adb: error: failed to copy '/system/build.prop' to './gm_enum_20251220_081558/pulled_files/build.prop': remote open failed: Permission denied
+/vendor/build.prop: adb: error: failed to stat remote object '/vendor/build.prop': Permission denied
+/product/build.prop: adb: error: failed to stat remote object '/product/build.prop': No such file or directory
+/default.prop: adb: error: failed to stat remote object '/default.prop': No such file or directory
+/proc/version: adb: error: failed to stat remote object '/proc/version': Permission denied
+/proc/cmdline: adb: error: failed to stat remote object '/proc/cmdline': Permission denied
+/vendor/etc/fstab.gminfo37: adb: error: failed to stat remote object '/vendor/etc/fstab.gminfo37': No such file or directory

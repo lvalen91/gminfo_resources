@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef contains calibrations related to GIS-1009 specification.">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/30/2018</Date>
+    <Description>Per CR#1686594, the initial release of GIS1009_Updater.caldef file with Previous_Updates calibration</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="When enabled, the user is prohibited from entering into the Previous Updates list. If user is already in the view, the driver workload quick notice would be presented." Name="Previous_Updates" References="GIS-509 section 5.5, GIS-1000 section 6.2" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_7CEocN0jEei01ZUlzIrUtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

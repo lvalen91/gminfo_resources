@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Defines the possible enumeration values for the enumeration calibrations defined in the GIS505_OnstarUI.caldef file.">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>9/28/2017</Date>
+    <Description>Within the GIS505_OnstarUI.enumdef file, added two additonal enumeration values (Mexico and Russia) to align with this update made in the GIS-505 OnStar UI v5.0 September 11, 2017 release. This update was made in the GIS-505 per OnStar team direction. Note the additon of these two additional enumeration values (Mexico and Russia) cannot be captured in previous model year version CAL database releases at this time since the previous model year CAL database releases prior to MY20 are already frozen.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="OnStar region calibration to tie graphics to all OnStar logo Usage" Name="Onstar_Regional_Brand_HMI_Logo">
+    <EnumID>_CCiu0MWgEeOEzdA9o_rOxw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Not Used" Name="Not_Used">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="North America" Name="North_America">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="China" Name="China ">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Europe" Name="Europe">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="South America" Name="South_America">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Mexico" Name="Mexico">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Russia" Name="Russia">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved2" Name="Reserved2">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved3" Name="Reserved3">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

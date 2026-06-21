@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This EnumDef file contains enumeration CALs defined in the GIS-525 Spec.">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11/5/2015</Date>
+    <Description>Initial release of GIS525_AuthenticatorUI.enumdef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Calibration to allow the use of phone number to sign in to a GM account in addition to email." Name="GM_Account_Sign_In_Method">
+    <EnumID>_hYg3gIapEeWDt9_8652oNQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Email Only option" Name="Email_Only">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Phone number and Email option" Name="Phone_number_and_Email">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="The following calibrations are defined as combined cals applicable to both AM and FM operation.  These cals define tuner specific behavior.">
+  <CalDefFileVersion>11</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>08May2014</Date>
+    <Description>Changes to GIS653_AMFMTunerCombined.caldef  Version 2  08May2014&#xD;
+&#xD;
+1. Changed cal names to follow CamelCase format&#xD;
+2. Deleted the following cals as they are not relevant for Info 3:&#xD;
+CAL_FASTMANUALTUNESPEED  Defined in tunerHMI.caldef&#xD;
+CAL_FASTSEEKSPEED  Defined in tunerHMI.caldef&#xD;
+CAL_SEEKSTOPBIII  DAB cal.  Will be defined in DABTuner.caldef for My18 release&#xD;
+CAL_SEEKSTOPLBAND  DAB cal.  Will be defined in DABTuner.caldef for My18 release&#xD;
+CAL_SEEKTIMEOUT  DAB cal.  Will be defined in DABTuner.caldef for My18 release&#xD;
+SDARS_CHANNEL_LIST_DETAILS_UPDATE_RATE.  Defined as a combined with AM/FM cal in tunerHMI.caldef&#xD;
+ENABLE_AM_AUDIOMOREFEATURE_TRAFFICINFORMATION_JAPAN   Defined in tunerHMI.caldef&#xD;
+ENABLE_AM_FM_DAB_AUDIOMOREFEATURE_UPDATESTATIONLIST  Will be defined in DABTuner.caldef for My18 release&#xD;
+ENABLE_APPLICATION_AUDIO, ENABLE_APPLICATION_DMB, ENABLE_APPLICATIONTRAY_AUDIO, ENABLE_APPLICATIONTRAY_DMB, TA_OFFSET, STRONG_STN_NUM These cals are from NGI and do not apply in this form to Info 3.&#xD;
+STATION_LIST_UPDATE_RATE and STRONG_STATION_LIST_UPDATE_RATE.  These cals are combined for Info 3.  Combined cal is in tunerHMI.caldef.&#xD;
+TUNER_PARAMETER_ADJUST_ENABLE has been deleted.  This was a Supplier specific cal from NGI.  &#xD;
+SCAN_PTIME   Scans are no longer provided. Only Seek and Tune are defined tuning operations.'&#xD;
+Reviewed with Harman on May 6, 2014.  Also then deleted RefreshStationListMaxValue and RefreshStrongStationListMaxValue.  Moved SensBest to FMTuner.caldef  Added AM_FM_FastSeekRate and AM_FM_FastTuneRate as the tuner needs to process this rate info for press and hold operations.   </Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>18Aug2014</Date>
+    <Description>This change captures reviews jointly held between GM/Harman to improve caldef and align cals properly betwen tuner and HMI.  The MetaDataPagingRate cal was moved from tunerHMI caldef to this document.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>December 1, 2014</Date>
+    <Description>Release File Change Log:  Cal Def File Version 4.  December 2, 2014
+Here is a summary of the changes for this release based on reviews with Harman:
+
+1.  AntennaFailCheckInterval.  Default setting is incorrect and out of defined range.  Changed default value from 0 to 250.
+
+2.  Changed the default state for AM_FM_Antenna1Type to 0 x 1 as this represents the My17 NA configuration.
+
+3.  Chaned the default state for FM_Antenna2Type to 0 x 2 as this represents the My17 NA configuration.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>06Feb  2015</Date>
+    <Description>Here is the list of changes for this GIS-653AMFMTunerCommon.caldef release: 05FEB2015
+
+1.  Added description to the FaderPeriod calibration as it was not fully defined.  Added units of msecs as it was priviously defined as none. 
+
+2.  Added description to AM_FM_Antenna1Type and FM_Antenna2Type as they were previously just shown as GIS-324 references. Fixed enum references so that they correctly match those defined in GIS-324.
+
+3.  Added a new calibration PhaseDiversityEnabled to support uses cases where this feature for given markets.
+
+4.  Added updated description to FaderPeriod as it was not complete.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated FM_Antenna2Type and PhaseDiversityEnabled cals in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>2/29/216</Date>
+    <Description>Within this caldef file, removed the MetaDataPagingRate CAL since a duplicate CAL already existed in the GIS502_TunerHMI.caldef. Alan Budyta confirmed this CAL could be removed from this caldef file and retained in GIS502_TunerHMI.caldef  since this CAL is defined primarily as an HMI cal, the tuner does not care about paging.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS653_AMFMTunerCommon.caldef file, added GEM usage to the following calibrations within this caldef: (1.) AM_FM_Antenna1Type, (2.) AM_FM_FastSeekRate, (3.) AM_FM_FastTuneRate, (4.) FaderPeriod, and (5.) FaderPeriod. Since these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>6/19/2019</Date>
+    <Description>Per CR#2303157 AOSP transition, in MY22 GIS-646 Cal DB V6.0.3 deprecate AM_FM_FastSeekRate calibration. Also, for AM_FM_FastTuneRate cal updated typo within functional description.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration is used to define the antenna type used for the secondary antenna port on the tuner as defined in GIS-324.  The default value is NoAntennaConnected." Name="FM_Antenna2Type" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_DZFIsK33EeSNHqFaWuW3xA</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated FM_Antenna2Type cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PkasUK13EeSmebqxYSJYLA</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to define the antenna type used for the primary antenna port on the tuner as defined in GIS-324.  The default value is ActiveWithPhantom." Name="AM_FM_Antenna1Type" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_lhIlYK3yEeSNHqFaWuW3xA</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_yGDnMKyBEeSmT8v2WsqOvA</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines whether or not the tuner shall support phase diversity.  TRUE means phase diveristy shall be enabled in the tuner.  FALSE means that phase diversity is disabled in the tuner.  The default state is FALSE." Name="PhaseDiversityEnabled" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_oMWq8K3xEeSNHqFaWuW3xA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated PhaseDiversityEnabled cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This AM_FM_FastTuneRate defines the Fast Tune Rate in frequency steps per second. This calibration is used when the User executes an AM or FM Fast Tune operation. The default value is 10 frequency steps/sec." Name="AM_FM_FastSeekRate" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_BuMdIdeAEeOGn-iEWDtkAA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This AM_FM_FastTuneRate defines the Fast Tune Rate in frequency steps per second. This calibration is used when the User executes an AM or FM Fast Tune operation. The default value is 10 frequency steps/sec." Name="AM_FM_FastTuneRate" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_qlbKwNd_EeOGn-iEWDtkAA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/14/2019</Date>
+      <Description>Updated typo within functional description</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the total timing (cycle time) of the muting process in msec.  The default value is 50msec." Name="FaderPeriod" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypiV2k1AEeO3UM5MzM17kw</CalID>
+    <Type>Float</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>50.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>2000.0</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="After switching off the antenna in case of overcurrent protection the antenna supply is switches on again within an AntennaFailRecheckInterval which could by calibrated by CAL_AntennaFailRecheckInterval." Name="AntennaFailCheckInterval" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypi84E1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>4000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,654 @@
+================================================================================
+GM AAOS INFOTAINMENT SECURITY RESEARCH - SESSION KNOWLEDGE TRANSFER
+================================================================================
+Generated: December 20, 2025
+Purpose: Comprehensive summary for continuation in new Claude sessions
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. PROJECT OVERVIEW
+2. HARDWARE ARCHITECTURE
+3. SOFTWARE ARCHITECTURE
+4. CURRENT MODULE STATUS (Y181)
+5. SECURITY ANALYSIS
+6. EEPROM RESEARCH
+7. VIP FIRMWARE ANALYSIS
+8. ATTACK VECTORS
+9. TOOLS CREATED
+10. THE Y177 SITUATION
+11. BRICKED MODULE RECOVERY
+12. ADB BEHAVIOR FINDINGS
+13. KEY FINDINGS SUMMARY
+14. RECOMMENDATIONS & NEXT STEPS
+15. FILE LOCATIONS
+16. OPEN QUESTIONS
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+
+Target: GM Infotainment 3 with Google Built-In (IOK) - gminfo3.7/3.8 CSM Module
+Vehicle: 2024 Chevrolet Silverado 2500HD (VIN: XXXXXXXXXXXXXXXXX)
+Manufacturer: Harman/Samsung
+Platform: Android Automotive OS (AAOS)
+
+Research Goals:
+- Primary: Gain root shell / persistent access
+- Ideal: Replace GM AAOS with custom AOSP AAOS
+- Alternative: Reliable root access on stock GM AAOS
+
+Physical Access Available:
+- Full hardware access to CSM module
+- EEPROM dump capability (XGecu programmer)
+- Module can be used in-vehicle with CAN bus
+- Second "bricked" module available (Y177)
+
+================================================================================
+2. HARDWARE ARCHITECTURE
+================================================================================
+
+Main SoC (Intel):
+- CPU: Intel Atom x7 A3960 (Apollo Lake / Broxton)
+- Architecture: Goldmont 14nm, 4 cores, 2.4GHz boost
+- GPU: Intel HD Graphics 505 (Gen 9)
+- RAM: 6GB DDR3L
+- Storage: 64GB eMMC
+
+Display:
+- Panel: Chunghwa DD134IA-01B
+- Resolution: 2400x960 @ 60Hz
+- Size: 13.39" diagonal
+- Touch: Atmel maXTouch, 16-point multitouch
+
+EEPROM:
+- Chip: ST M24C64 (64-Kbit / 8KB)
+- Package: TSSOP8
+- Interface: I2C
+- Contains: Security flags, calibration, VIN, feature toggles
+
+VIP (Vehicle Interface Processor):
+- Chip: Renesas MCU (exact model unconfirmed)
+- Function: CAN bus gateway, safety watchdog, power management
+- Firmware: Updated via OTA (gmext.update_ecu)
+- Controls: ICUSB (ADB), vehicle communication
+
+UART Interface:
+- Chip: Microchip MCP2200 USB-to-UART bridge
+- Package: Appears to be SSOP-20 (not VQFN as initially thought)
+- Associated IC: Texas Instruments 74LVC08A (quad AND gate)
+- The AND gate may be gating UART signals (hardware security)
+- Device visible in Android: /dev/ttyACM1 (world read/write!)
+
+USB:
+- Controller: Intel xHCI
+- Debug interface: MCP2200 (VID:1240 PID:223)
+- Aptiv bridges: 2x H2H (VID:10646)
+
+Network:
+- Ethernet: Intel I211 (1Gbps)
+- WiFi: Broadcom BCM (802.11ac)
+- Bluetooth: 5.0
+
+================================================================================
+3. SOFTWARE ARCHITECTURE
+================================================================================
+
+Boot Chain:
+1. Power On
+2. Intel ABL (Apollo Lake Bootloader)
+3. GHS INTEGRITY Hypervisor starts
+4. Hypervisor spawns safety-critical partition (RTOS)
+5. Hypervisor spawns Android partition (guest OS)
+6. Linux Kernel boots (under hypervisor)
+7. Android AAOS userspace
+
+Partition Layout (from /dev/block/by-name/):
+- ghs_isys_a/b    : Green Hills INTEGRITY system
+- ghs_abl_update  : ABL update staging
+- ghs_storage     : GHS persistent storage
+- ghs_log         : Hypervisor logs
+- boot_a/b        : Android boot images
+- bootloader_a/b  : Bootloader images
+- system          : Android system (dynamic partition)
+- vendor          : Vendor partition (dynamic partition)
+- product         : Product partition (dynamic partition)
+- vbmeta_a/b      : Verified boot metadata
+- data            : User data (/dev/block/vda26)
+- super           : Dynamic partition container
+- misc            : Boot control
+- metadata        : Encryption metadata
+- persistent      : FRP data
+- teedata         : TEE storage
+- calibration     : Hardware calibration
+- config          : Configuration
+
+OTA Update System:
+- Format: Full partition images (not differential)
+- Method: Direct block writes (like dd)
+- Script: Edify-like syntax with gmext.* extensions
+- Commands:
+  - gmext.write_emmc_image() : Direct partition write
+  - gmext.extract_emmc_image() : Extract to partition
+  - gmext.extract_logical_partition() : Dynamic partitions
+  - gmext.update_ecu() : ECU firmware (VIP, GPS, SXM, etc.)
+  - gmext.switch_slot() : A/B slot switching
+- Both Y177 and Y181 have "version check disabled" in manifests
+
+================================================================================
+4. CURRENT MODULE STATUS (Y181)
+================================================================================
+
+Build Information:
+- Build ID: W231E-Y181.3.2-SIHM22B-499.3
+- Android Version: 12 (API 32)
+- Security Patch: 2025-06-05
+- Kernel: 4.19.305-240125T145315Z (built July 22, 2025)
+- Build Type: user/release-keys
+- Bootloader Version: 2344
+- Current Slot: _a
+
+Security Status:
+- SELinux: ENFORCING (major obstacle - was permissive in Y177!)
+- Verified Boot: green (locked)
+- ro.boot.flash.locked: 1
+- ro.debuggable: 0
+- ro.secure: 1
+- ro.adb.secure: 1
+- sys.oem_unlock_allowed: 0 (bootloader unlock disabled)
+
+ADB Access:
+- Enabled via EEPROM modification
+- Runs as shell user (uid 2000)
+- No root access
+- RSA key authorization bypassed by EEPROM mod
+- ADB DISABLED ON EVERY REBOOT (must re-enable in dev options)
+
+Current User Context:
+uid=2000(shell) gid=2000(shell)
+groups=1004(input),1007(log),1011(adb),1015(sdcard_rw),3001(net_bt_admin),...
+context=u:r:shell:s0
+
+Open Network Ports:
+- 53 (DNS - 127.0.0.1, 192.168.5.1)
+- 7000 (0.0.0.0 - unknown service)
+- 6363 (0.0.0.0 - unknown service)
+- 49156 (0.0.0.0 - unknown service)
+- 9002, 9010, 9016 (192.168.1.1 - VLAN services)
+
+================================================================================
+5. SECURITY ANALYSIS
+================================================================================
+
+THE CRITICAL MISTAKE:
+- User updated from Y177 to Y181
+- Y177 had SELinux in PERMISSIVE mode
+- Y181 changed SELinux to ENFORCING mode
+- This significantly reduced attack surface
+- Kernel exploits now blocked by MAC policy
+
+Y177 vs Y181 Security Comparison:
+| Property        | Y177           | Y181           | Impact           |
+|-----------------|----------------|----------------|------------------|
+| SELinux         | Permissive     | ENFORCING      | Major regression |
+| Security Patch  | ~Feb 2025      | June 2025      | Fewer CVEs       |
+| Kernel Build    | ~March 2025    | July 2025      | Newer, patched   |
+| Verified Boot   | green/locked   | green/locked   | Same             |
+| OEM Unlock      | 0              | 0              | Same (disabled)  |
+
+Attack Surface Assessment:
+- Kernel exploits: BLOCKED (SELinux enforcing)
+- Bootloader unlock: BLOCKED (oem_unlock_allowed=0)
+- ADB privilege escalation: LIMITED (SELinux restricts)
+- UART console: VIABLE (hardware level, bypasses Android)
+- EEPROM manipulation: VIABLE (direct hardware access)
+- OTA tampering: POSSIBLE (if signature bypass found)
+- Network services: UNKNOWN (ports 7000, 6363, 49156 unexplored)
+
+================================================================================
+6. EEPROM RESEARCH
+================================================================================
+
+EEPROM Chip: ST M24C64 (8KB)
+
+Memory Map Overview:
+| Address Range   | Purpose                              |
+|-----------------|--------------------------------------|
+| 0x0000-0x005F   | Header & Boot Flags                  |
+| 0x0060-0x0397   | Reserved/Scratch                     |
+| 0x0398-0x03BF   | Module Identification                |
+| 0x0400-0x045F   | Security Configuration & Flags       |
+| 0x0460-0x04FF   | Radio/Audio Settings                 |
+| 0x0500-0x05FF   | String Data (VIN, Serial, Part#)     |
+| 0x0600-0x07FF   | Additional Configuration             |
+| 0x0800-0x0A7F   | Reserved (0xFF padding)              |
+| 0x0A80-0x0AFF   | Backup Security Flags                |
+| 0x0B00-0x0DFF   | Feature Flags & Runtime Config       |
+| 0x0E00-0x0EBF   | Display/UI Settings                  |
+| 0x0EC0-0x0EFF   | Calibration Block A                  |
+| 0x0F00-0x0F3F   | Brightness Lookup Table              |
+| 0x0F40-0x0F7F   | Color/Display Calibration            |
+| 0x0F80-0x0FDF   | Secondary Brightness Table           |
+| 0x0FE0-0x103F   | Audio Volume Curve                   |
+| 0x1040-0x109F   | Audio Fade/Balance Tables            |
+| 0x10A0-0x12DF   | Audio EQ/DSP Calibration             |
+| 0x12E0-0x13FF   | Device Capabilities & Communication  |
+| 0x1400-0x15FF   | Runtime Data & Additional Flags      |
+| 0x1600-0x1FFF   | Checksums, CRCs, Reserved            |
+
+Framing Protocol:
+- 0x5A : Security/VIN frames
+- 0x69 : Configuration frames
+- 0xF0 : Data/String frames
+- 0xC3 : Calibration frames
+Format: [FRAME_BYTE] [DATA...] [FRAME_BYTE]
+
+CONFIRMED Security Flags (ADB):
+| Address | Purpose              | Disabled Value | Enabled Value |
+|---------|----------------------|----------------|---------------|
+| 0x0440  | ADB Security #1      | 0x00           | 0xFF          |
+| 0x0A80  | ADB Security #2      | 0x00           | 0xFF          |
+Both must be set to 0xFF for ADB to work without GM Secure Client.
+
+SUSPECTED Flags (Untested):
+| Address | Current | Suspected Purpose            |
+|---------|---------|------------------------------|
+| 0x0B40  | 0x00    | Developer/Debug mode         | ← MIGHT BE SELINUX!
+| 0x0020  | 0x00    | Unknown feature toggle       |
+| 0x0B80  | 0x00    | Unknown feature              |
+| 0x0BC0  | 0x00    | Unknown feature              |
+| 0x1500  | 0x00    | Unknown feature              |
+
+Factory Reset Triggers (Speculative):
+| Address | Change To | Expected Effect                    |
+|---------|-----------|-----------------------------------|
+| 0x001   | 0x00      | Virgin boot state, full init      |
+| 0x021   | 0xFF      | Force re-initialization           |
+| 0x16E0  | corrupt   | CRC invalidation (aggressive)     |
+
+CRC/Checksum Locations:
+| Address | Name          | Notes                    |
+|---------|---------------|--------------------------|
+| 0x16E0  | Primary CRC   | Must recalculate after mods |
+| 0x19E0  | Secondary CRC | Backup CRC               |
+| 0x1A80  | Config CRC    | Configuration block      |
+| 0x1B40  | Data CRC      | Data section             |
+
+CRITICAL FINDING - OTA RESETS EEPROM:
+- When Y181 was installed, ADB flag was reset from 0xFF to 0x00
+- User had to re-modify EEPROM to restore ADB access
+- VIP firmware validates EEPROM values on update
+- Out-of-range or checksum-invalid values get "Reinstated to default"
+
+EEPROM Files Available:
+- /EEPROM/gm_csm/old/gm_csm_stock.bin (original)
+- /EEPROM/gm_csm/old/gm_csm_stock_modified.bin (ADB enabled)
+- /EEPROM/gm_csm/old/gm_csm_debugging.bin (different frame bytes)
+- /EEPROM/gm_csm/Y181/ADB_enabled.bin (current working mod)
+
+================================================================================
+7. VIP FIRMWARE ANALYSIS
+================================================================================
+
+VIP App Module Files:
+- Y177: 86283151 (1,934,214 bytes)
+- Y181: 86331656 (1,934,214 bytes)
+- Same size but 549,518 byte differences
+
+VIP Bootloader Files:
+- Y177: 85056831
+- Y181: 85056831 (same file)
+
+Key Strings Found in VIP Firmware:
+
+ICUSB (ADB) Control:
+[PROTOKEY] ICUSB module disabled
+[PROTOKEY] ICUSB module enabled
+[AME_DIAG] ICUSB enabled and both key are provisioned.
+[AME_DIAG] ICUSB enabled and no key provisioned.
+[AME_DIAG] ICUSB enabled and Master key provisioned.
+[AME_DIAG] ICUSB enabled and Unlock key provisioned.
+[AME_DIAG] ICUSB not enabled.
+
+EEPROM Default Restoration:
+[SS_SWC] cal_xxx (%d) read eeprom error !, Reinstating the default value (%d)
+[SS_SWC] cal_xxx (%d) read out of range !, Reinstating the default value (%d)
+
+SoC Communication:
+[J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is %d
+
+Architecture Understanding:
+1. VIP (Renesas) reads EEPROM for ICUSB flag
+2. VIP validates value (range check, checksum)
+3. If invalid → reset to default (disabled)
+4. VIP sends ICUSB status to Intel SoC via IPC
+5. SoC enables/disables ADB daemon based on VIP signal
+
+================================================================================
+8. ATTACK VECTORS
+================================================================================
+
+VIABLE VECTORS:
+
+1. UART Console (Highest Priority)
+   - /dev/ttyACM1 is world read/write from ADB shell
+   - MCP2200 USB-UART bridge on board
+   - May be hardware-gated by 74LVC08A AND gate
+   - Could provide: bootloader access, root shell, GHS console
+   - Test from Mac: screen /dev/cu.usbmodem* 115200
+   - Test from ADB: cat /dev/ttyACM1
+
+2. EEPROM Flag 0x0B40 (Untested)
+   - Suspected "Developer/Debug mode"
+   - Could potentially control SELinux mode
+   - Try: Set 0x0B41 = 0xFF, recalculate CRCs
+   - If successful: Y181 with SELinux permissive
+
+3. Y177 Downgrade
+   - Both manifests have "version check disabled"
+   - Would restore SELinux permissive
+   - Risk: AVB rollback index unknown
+   - EEPROM will need re-modification after
+
+4. Network Services
+   - Port 7000, 6363, 49156 on 0.0.0.0
+   - Unexplored attack surface
+   - May have vulnerabilities independent of SELinux
+
+5. OTA Package Modification
+   - If signature verification can be bypassed
+   - Could flash modified system images
+   - EEPROM flag might control signature verification
+
+BLOCKED VECTORS:
+
+1. Kernel Exploits (CVE-based)
+   - SELinux enforcing blocks exploitation
+   - Even successful exploits get MAC-denied
+
+2. Bootloader Unlock
+   - sys.oem_unlock_allowed = 0
+   - No fastboot access (ABL doesn't expose it)
+
+3. ADB Root
+   - ro.debuggable = 0
+   - adb root command fails
+
+================================================================================
+9. TOOLS CREATED
+================================================================================
+
+Location: /Users/zeno/Downloads/gm_aaos/scripts/
+
+1. gm_aaos_enum.sh
+   - Comprehensive system enumeration
+   - Gathers: kernel, security, partitions, services, GM-specific
+   - Includes rollback/downgrade protection checks
+   - Includes UART probing via ADB
+   - Creates timestamped output directory
+   - Gracefully handles permission denials
+
+2. quick_security_check.sh
+   - Fast security assessment (~30 seconds)
+   - Shows: kernel, SELinux, verified boot, debug status
+   - Includes rollback assessment
+   - Quick UART probe
+
+3. fastboot_enum.sh
+   - For bootloader mode enumeration
+   - Run after: adb reboot bootloader
+   - Note: Fastboot not accessible on this device
+
+4. adb_keepalive.sh
+   - Prevents ADB timeout/disconnect
+   - Sends periodic ping commands
+   - Auto-reconnects on failure
+   - Usage: ./adb_keepalive.sh [interval_seconds]
+
+5. find_adb_disable.sh
+   - Searches for ADB disable mechanism
+   - Checks init.rc files, services, properties
+   - Helps identify boot-time ADB reset
+
+6. recover_bricked_module.sh
+   - Recovery guide for soft-bricked module
+   - ADB display reset commands
+   - Keyboard navigation instructions
+   - EEPROM reset guidance
+
+================================================================================
+10. THE Y177 SITUATION
+================================================================================
+
+Y177 Package Location: /Users/zeno/Downloads/gm_aaos/update_packages/Y177/
+
+Y177 Benefits:
+- SELinux PERMISSIVE (confirmed from earlier research)
+- Kernel exploits would work
+- Easier privilege escalation path
+- "version check disabled" in manifest
+
+Y177 Manifest (86283147.mnf) Key Points:
+- Device check: gminfo37
+- Version: SIHM22B-00499.02
+- Same gmext.* commands as Y181
+- VIP App module: 86283151
+- VIP Bootloader: 85056831
+
+Downgrade Feasibility:
+- Manifest allows it (version check disabled)
+- AVB rollback index status unknown
+- OEM unlock disabled, can't bypass via bootloader
+- May work, may fail at boot
+
+Downgrade Process (If Attempted):
+1. Copy Y177 package to USB drive (FAT32)
+2. Connect USB to module
+3. System should detect update
+4. Accept update prompt
+5. Wait for installation
+6. EEPROM will be reset - need to re-mod for ADB
+
+================================================================================
+11. BRICKED MODULE RECOVERY
+================================================================================
+
+Second Module Status:
+- Running: Y177 or earlier
+- Issue: Display "smallest width" DPI setting changed
+- Result: UI completely unusable/scaled wrong
+- SELinux: PERMISSIVE (valuable for research!)
+- ADB: Unknown if enabled before brick
+
+Recovery Options (In Order):
+
+1. USB Keyboard (Try First - 5 minutes, no risk)
+   - Connect USB keyboard
+   - Boot module
+   - Wait for OTA prompt (if USB with update connected)
+   - Blind navigation: Tab Tab Tab Enter
+   - Other keys: Escape (back), Space (select), Home
+
+2. ADB (If Previously Enabled)
+   - Connect module
+   - Run immediately: adb wait-for-device && adb shell wm density reset
+   - Or: adb shell settings delete secure display_density_forced
+   - Then: adb reboot
+
+3. EEPROM Factory Reset
+   - Dump current EEPROM
+   - Modify address 0x001 → 0x00 (virgin boot state)
+   - Reflash EEPROM
+   - Module should factory reset on next boot
+   - Warning: May need VIN reprogramming at dealer
+
+4. UART Console
+   - If accessible, might provide root shell
+   - Could reset settings via command line
+   - Doesn't depend on Android UI
+
+WHY THIS MODULE IS VALUABLE:
+- Already has Y177 with SELinux permissive
+- If recovered, provides ideal research platform
+- Can keep Y181 module for comparison
+- Two modules = more experimentation options
+
+================================================================================
+12. ADB BEHAVIOR FINDINGS
+================================================================================
+
+Observed Behavior:
+1. EEPROM ADB mod enables capability (no RSA auth needed)
+2. ADB works immediately after enabling in Developer Options
+3. ON EVERY REBOOT: ADB setting is disabled
+4. User must manually re-enable in Developer Options each boot
+5. ADB sessions may timeout/disconnect during use
+
+This Indicates:
+- EEPROM controls CAPABILITY (can ADB be enabled)
+- Software controls SETTING (is ADB currently enabled)
+- Something resets the setting on every boot
+- Likely an init script or GM service
+
+Suspected Culprits:
+- gmprotokey service (handles PROTOKEY/ICUSB)
+- GMLoggerService
+- Init.rc property trigger on boot_completed
+- Security policy enforcement service
+
+Workarounds:
+- Enable ADB over WiFi as backup: adb tcpip 5555
+- Use keepalive script to maintain connection
+- Work quickly after enabling ADB
+- Disable macOS USB power management
+
+Investigation Script: find_adb_disable.sh
+
+================================================================================
+13. KEY FINDINGS SUMMARY
+================================================================================
+
+CONFIRMED:
+✓ ADB access achieved via EEPROM modification (0x0440, 0x0A80)
+✓ Y181 has SELinux ENFORCING (major obstacle)
+✓ Y177 has SELinux PERMISSIVE (valuable)
+✓ OTA updates reset EEPROM to defaults
+✓ VIP firmware validates EEPROM values
+✓ Both Y177 and Y181 have "version check disabled"
+✓ /dev/ttyACM1 is world read/write (UART access possible)
+✓ ADB setting resets on every boot (software mechanism)
+✓ Bootloader (fastboot) not accessible
+✓ OEM unlock disabled
+
+SUSPECTED (Untested):
+? EEPROM 0x0B40 may control SELinux/debug mode
+? UART may provide bootloader/root console access
+? AND gate (74LVC08A) may be gating UART signals
+? Network ports may have exploitable services
+
+ARCHITECTURE:
+- GHS INTEGRITY hypervisor runs on Intel SoC
+- Android runs as guest OS under hypervisor
+- VIP (Renesas) is separate MCU for vehicle interface
+- VIP controls ICUSB (ADB) capability via EEPROM
+- VIP communicates with SoC via IPC
+
+================================================================================
+14. RECOMMENDATIONS & NEXT STEPS
+================================================================================
+
+PRIORITY 1: Recover Y177 Bricked Module
+- Try USB keyboard for blind navigation
+- If fails, use EEPROM 0x001 reset
+- This gives SELinux permissive platform
+
+PRIORITY 2: Test UART Access
+- From ADB: cat /dev/ttyACM1 (background), send commands
+- From Mac: screen /dev/cu.usbmodem* 115200
+- Power cycle module while monitoring
+- Look for boot console output
+
+PRIORITY 3: Test EEPROM 0x0B40
+- Modify 0x0B41 to 0xFF
+- Recalculate CRCs
+- Flash and test if SELinux mode changes
+- Could give Y181 + SELinux permissive
+
+PRIORITY 4: Find ADB Disable Mechanism
+- Run find_adb_disable.sh
+- Locate init script or service
+- If found, may be able to patch
+
+PRIORITY 5: Y177 Downgrade (If Needed)
+- Use Y177 package on USB
+- Accept update prompt
+- Re-modify EEPROM after
+
+FOR HARDWARE UART INVESTIGATION:
+1. Trace MCP2200 pins 8/9 (TX/RX) to 74LVC08A
+2. Find enable input on AND gate
+3. If gated, try:
+   - Lifting enable pin and tying high
+   - Direct wire from MCP2200 to SoC UART
+   - Finding EEPROM flag for UART enable
+
+================================================================================
+15. FILE LOCATIONS
+================================================================================
+
+Project Root: /Users/zeno/Downloads/gm_aaos/
+
+EEPROM Dumps:
+- /EEPROM/EEPROM_Analysis_Report.md (comprehensive analysis)
+- /EEPROM/gm_csm/old/gm_csm_stock.bin
+- /EEPROM/gm_csm/old/gm_csm_stock_modified.bin
+- /EEPROM/gm_csm/old/gm_csm_debugging.bin
+- /EEPROM/gm_csm/Y181/ADB_enabled.bin
+
+Update Packages:
+- /update_packages/Y177/ (SELinux permissive)
+- /update_packages/Y181/ (SELinux enforcing)
+- /data_wipe_update/ (factory reset package)
+
+Documentation:
+- /documentation/gminfo3.7_tech_specs.md
+
+Scripts:
+- /scripts/gm_aaos_enum.sh
+- /scripts/quick_security_check.sh
+- /scripts/fastboot_enum.sh
+- /scripts/adb_keepalive.sh
+- /scripts/find_adb_disable.sh
+- /scripts/recover_bricked_module.sh
+
+Enumeration Output:
+- /scripts/gm_enum_20251220_081558/ (from current session)
+- /scripts/gm_enum_*/raw/ (individual command outputs)
+- /scripts/gm_enum_*/pulled_files/ (pulled system files)
+
+================================================================================
+16. OPEN QUESTIONS
+================================================================================
+
+1. Does EEPROM 0x0B40 control SELinux mode?
+2. What is on the other end of /dev/ttyACM1 (UART)?
+3. Is the 74LVC08A AND gate actually gating UART?
+4. What services run on ports 7000, 6363, 49156?
+5. What exactly resets ADB on boot?
+6. Will Y177 downgrade succeed or fail at AVB check?
+7. Can UART provide bootloader access?
+8. Is there an EEPROM flag for ADB persistence?
+9. What's the CRC algorithm for EEPROM recalculation?
+10. Can GHS INTEGRITY be accessed via any interface?
+
+================================================================================
+END OF KNOWLEDGE TRANSFER DOCUMENT
+================================================================================
+
+To Continue Research in New Session:
+1. Have Claude read this file first
+2. Reference specific sections as needed
+3. Update this document with new findings
+4. Maintain file at: /Users/zeno/Downloads/gm_aaos/SESSION_KNOWLEDGE_TRANSFER.txt
+
+================================================================================

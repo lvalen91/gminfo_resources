@@ -1,0 +1,735 @@
+NAME: ghs_integrity.elf
+LANG: x86:LE:64:default
+COMPILER: windows
+IMAGEBASE: 00200000
+
+=== MEMORY BLOCKS ===
+.kernel_text         00200000-0023c554 size=247125 r=true w=false x=true
+.text                0023c558-0024018b size=15412 r=true w=false x=true
+.t_text              00241000-00242fff size=8192 r=true w=false x=true
+.rsyscall            00243000-00243fff size=4096 r=true w=false x=true
+KernelSpace.secinfo  00244000-00245067 size=4200 r=true w=false x=false
+.execname            00400000-0040005d size=94 r=true w=false x=false
+.initrodata          00400080-0040008f size=16 r=true w=false x=false
+.rodata              004000c0-00403aaf size=14832 r=true w=false x=false
+.mr_r_mod_ipu_fw     00404000-007c6fff size=3944448 r=true w=false x=false
+.mr_r_mod_dsp_fw     007c7000-0084271f size=505632 r=true w=false x=false
+.rodata_protected_globalsb 00843000-0085a9ce size=96719 r=true w=false x=false
+.rdata               0085aa00-0085cf57 size=9560 r=true w=false x=false
+.rtdata              0085d000-0085dfff size=4096 r=true w=false x=false
+.rdata_protected_globalsb 0085e000-0085f5df size=5600 r=true w=false x=false
+.vip_server.text     00860000-00869966 size=39271 r=true w=false x=true
+.vip_server.rodata   0086a000-0086a9db size=2524 r=true w=false x=false
+.lifecycle.text      0086b000-008736ba size=34491 r=true w=false x=true
+.lifecycle.rodata    00874000-008747f3 size=2036 r=true w=false x=false
+.audit.text          00875000-0087bc43 size=27716 r=true w=false x=true
+.audit.rodata        0087c000-0087c353 size=852 r=true w=false x=false
+.dirana3_mux_server.text 0087d000-0088718a size=41355 r=true w=false x=true
+.dirana3_mux_server.rodata 00888000-008886e3 size=1764 r=true w=false x=false
+.chime_requester.text 00889000-0089419d size=45470 r=true w=false x=true
+.chime_requester.rodata 00895000-00bbab6f size=3300208 r=true w=false x=false
+.audio_server.text   00bbb000-00bc466a size=38507 r=true w=false x=true
+.audio_server.rodata 00bc5000-00bc5e7b size=3708 r=true w=false x=false
+.camera.text         00bc6000-00bdb387 size=86920 r=true w=false x=true
+.camera.rodata       00bdc000-00bdee13 size=11796 r=true w=false x=false
+.guidelines.text     00bdf000-00bebecd size=52942 r=true w=false x=true
+.guidelines.rodata   00bec000-00de30bf size=2060480 r=true w=false x=false
+.ota_update.text     00de4000-00df571a size=71451 r=true w=false x=true
+.ota_update.rodata   00df6000-00df79bb size=6588 r=true w=false x=false
+.calibrations.text   00df8000-00e0830a size=66315 r=true w=false x=true
+.calibrations.rodata 00e09000-00e20f8b size=98188 r=true w=false x=false
+.gvtg_server.text    00e21000-00e3feca size=126667 r=true w=false x=true
+.gvtg_server.rodata  00e40000-00e48adb size=35548 r=true w=false x=false
+GuC_Firmware_MR      00e49000-00e6cc7f size=146560 r=true w=false x=false
+HuC_Firmware_MR      00e6d000-00e9057f size=144768 r=true w=false x=false
+.display_i2c.text    00e91000-00e999fe size=35327 r=true w=false x=true
+.display_i2c.rodata  00e9a000-00e9a7cb size=1996 r=true w=false x=false
+.tee_router.text     00e9b000-00ea9537 size=58680 r=true w=false x=true
+.tee_router.rodata   00eaa000-00eab273 size=4724 r=true w=false x=false
+.tee_keymaster.text  00eac000-00ee8bdf size=248800 r=true w=false x=true
+.tee_keymaster.rodata 00ee9000-00f042d3 size=111316 r=true w=false x=false
+.tee_gatekeeper.text 00f05000-00f1500f size=65552 r=true w=false x=true
+.tee_gatekeeper.rodata 00f16000-00f1884b size=10316 r=true w=false x=false
+.tee_hw_crypto.text  00f19000-00f29a6f size=68208 r=true w=false x=true
+.tee_hw_crypto.rodata 00f2a000-00f30a4b size=27212 r=true w=false x=false
+.tee_storage.text    00f31000-00f4fe2f size=126512 r=true w=false x=true
+.tee_storage.rodata  00f50000-00f5fc63 size=64612 r=true w=false x=false
+.vmm1.text           00f60000-00f9bbe1 size=244706 r=true w=false x=true
+.vmm1.rodata         00f9c000-00fc5b4f size=170832 r=true w=false x=false
+.emmc_mux.text       00fc6000-00fd07a5 size=42918 r=true w=false x=true
+.emmc_mux.rodata     00fd1000-00fd26b3 size=5812 r=true w=false x=false
+.lifecycle.data      00fd3000-00fd3313 size=788 r=true w=true x=false
+.vip_server.data     00fd3314-00fd34b7 size=420 r=true w=true x=false
+.audit.data          00fd34b8-0105753b size=540804 r=true w=true x=false
+.dirana3_mux_server.data 0105753c-0105ee7f size=31044 r=true w=true x=false
+.chime_requester.data 0105ee80-0106f0f7 size=66168 r=true w=true x=false
+.audio_server.data   0106f0f8-0106f9a3 size=2220 r=true w=true x=false
+.camera.data         0106f9a4-0106fbe7 size=580 r=true w=true x=false
+.guidelines.data     0106fbe8-0106fcf3 size=268 r=true w=true x=false
+.ota_update.data     0106fcf4-0106ffaf size=700 r=true w=true x=false
+.calibrations.data   0106ffb0-0108f873 size=129220 r=true w=true x=false
+.gvtg_server.data    0108f874-01091a3f size=8652 r=true w=true x=false
+.display_i2c.data    01091a40-01093a93 size=8276 r=true w=true x=false
+.tee_router.data     01093a94-01094217 size=1924 r=true w=true x=false
+.tee_keymaster.data  01094218-0109506f size=3672 r=true w=true x=false
+.tee_gatekeeper.data 01095070-010950db size=108 r=true w=true x=false
+.tee_hw_crypto.data  010950dc-01095197 size=188 r=true w=true x=false
+.tee_storage.data    01095198-01095233 size=156 r=true w=true x=false
+.vmm1.data           01095234-010a067f size=46156 r=true w=true x=false
+.emmc_mux.data       010a0680-010a09e3 size=868 r=true w=true x=false
+.boottable           010a09e4-010dabc3 size=238048 r=true w=true x=true
+.secinfo             010dabc8-010dd21f size=9816 r=true w=false x=false
+.syscall             02200000-02200fff size=4096 r=true w=false x=true
+.mr_r_mod_android_key 02201000-02201fff size=4096 r=true w=true x=false
+.data                02202000-02204557 size=9560 r=true w=true x=false
+.t_data              02205000-02205fff size=4096 r=true w=true x=false
+.data_protected_globalsb 02206000-022075df size=5600 r=true w=true x=false
+.bss                 02207600-0220fe6f size=34928 r=true w=true x=false
+.t_bss               02210000-02211fff size=8192 r=true w=true x=false
+.noclearbss          02212000-02214043 size=8260 r=true w=true x=false
+.earlybss            02215000-02218617 size=13848 r=true w=true x=false
+.pagetable           02219000-02258fff size=262144 r=true w=true x=false
+.bss_protected_globalsb 02259000-0244dadf size=2050784 r=true w=true x=false
+.mr_rw__emmc         02600000-049fffff size=37748736 r=true w=true x=false
+.mr_rw__hda          04a00000-04bfffff size=2097152 r=true w=true x=false
+.mr_rw__xhc_hostmem  04c00000-05416fff size=8482816 r=true w=true x=false
+.cmn_protected_globalsb 05417000-05435249 size=123466 r=true w=true x=false
+.debugbuffer         05435300-054452ff size=65536 r=true w=true x=false
+.traceinfo           05445300-0544530f size=16 r=true w=false x=false
+.heap                05446000-05505fff size=786432 r=true w=true x=false
+.stack               05506000-05509fff size=16384 r=true w=true x=false
+.kstack              0550a000-05609fff size=1048576 r=true w=true x=false
+.dfstack             0560a000-0560a3ff size=1024 r=true w=true x=false
+MemRegion0           0560c000-0561bfff size=65536 r=true w=true x=true
+MemRegion1           0561c000-0562bfff size=65536 r=true w=true x=true
+MemRegion2           0562c000-0563bfff size=65536 r=true w=true x=true
+MemRegion3           0563c000-0564bfff size=65536 r=true w=true x=true
+MemRegion4           0564c000-0565bfff size=65536 r=true w=true x=true
+MemRegion5           0565c000-0566bfff size=65536 r=true w=true x=true
+MemRegion6           0566c000-0567bfff size=65536 r=true w=true x=true
+MemRegion7           0567c000-056fbfff size=524288 r=true w=true x=true
+MemRegion8           056fc000-0570bfff size=65536 r=true w=true x=true
+MemRegion9           0570c000-0578bfff size=524288 r=true w=true x=true
+MemRegion10          0578c000-05793fff size=32768 r=true w=true x=true
+MemRegion11          05794000-057a3fff size=65536 r=true w=true x=true
+MemRegion12          057a4000-057b3fff size=65536 r=true w=true x=true
+MemRegion13          057b4000-057c3fff size=65536 r=true w=true x=true
+MemRegion15          057c4000-057d3fff size=65536 r=true w=true x=true
+MemRegion16          057d4000-057dbfff size=32768 r=true w=true x=true
+MemRegion17          057dc000-057ebfff size=65536 r=true w=true x=true
+MemRegion18          057ec000-057fbfff size=65536 r=true w=true x=true
+.VIP.Initial.stack   057fc000-057fdfff size=8192 r=true w=true x=false
+.Lifecycle.Initial.stack 057fe000-057fefff size=4096 r=true w=true x=false
+.Audit.Initial.stack 057ff000-057fffff size=4096 r=true w=true x=false
+Kernel_IpuPMR        05800000-05dfffff size=6291456 r=true w=true x=true
+Kernel_IpuFbPMR      05e00000-07ffffff size=35651584 r=true w=true x=true
+MemRegion14          08000000-0807ffff size=524288 r=true w=true x=true
+MemRegion19          08080000-0808ffff size=65536 r=true w=true x=true
+MemRegion20          08090000-0809ffff size=65536 r=true w=true x=true
+MemRegion21          080a0000-080affff size=65536 r=true w=true x=true
+MemRegion22          080b0000-080bffff size=65536 r=true w=true x=true
+MemRegion23          080c0000-0810ffff size=327680 r=true w=true x=true
+MemRegion24          08110000-0818ffff size=524288 r=true w=true x=true
+MemRegion25          08190000-0819ffff size=65536 r=true w=true x=true
+.Dirana.Initial.stack 081d7000-081d8fff size=8192 r=true w=true x=false
+.Chimes.Initial.stack 081d9000-081dbfff size=12288 r=true w=true x=false
+.Audio.Initial.stack 081dc000-081defff size=12288 r=true w=true x=false
+.Camera.Initial.stack 081df000-081e0fff size=8192 r=true w=true x=false
+.Lines.Initial.stack 081e1000-081e1fff size=4096 r=true w=true x=false
+.OTA.Initial.stack   081e2000-081e6fff size=20480 r=true w=true x=false
+.Calibrations.Initial.stack 081e7000-081e8fff size=8192 r=true w=true x=false
+.DisplayI2C.Initial.stack 081e9000-081eafff size=8192 r=true w=true x=false
+.TEE_Router.Initial.stack 081eb000-081f2fff size=32768 r=true w=true x=false
+.TEE_Gatekeeper.Initial.stack 081f3000-081f4fff size=8192 r=true w=true x=false
+.TEE_HW_Crypto.Initial.stack 081f5000-081f6fff size=8192 r=true w=true x=false
+.TEE_Storage.Initial.stack 081f7000-081fafff size=16384 r=true w=true x=false
+.EMMC.Initial.stack  081fb000-081fcfff size=8192 r=true w=true x=false
+Guest1_VM_Memory_RAM0 08200000-083fffff size=2097152 r=true w=true x=true
+Guest1_VM_Memory_RAM1 08400000-0d3fffff size=83886080 r=true w=true x=true
+.GPU.Initial.stack   0ee43000-0eec2fff size=524288 r=true w=true x=false
+.TEE_Keymaster.Initial.stack 0f077000-0f086fff size=65536 r=true w=true x=false
+.VMM1.Initial.stack  0f5f2000-0f671fff size=524288 r=true w=true x=false
+.linfix              .linfix::00000000-.linfix::0000653f size=25920 r=false w=false x=false
+.osa                 .osa::00000000-.osa::000009d6 size=2519 r=false w=false x=false
+.rtosdir             .rtosdir::00000000-.rtosdir::0000002b size=44 r=false w=false x=false
+.shstrtab            .shstrtab::00000000-.shstrtab::00000ab7 size=2744 r=false w=false x=false
+.shstrtab.2          .shstrtab.2::00000000-.shstrtab.2::00000324 size=805 r=false w=false x=false
+.strtab              .strtab::00000000-.strtab::000b7bdc size=752605 r=false w=false x=false
+_elfHeader           _elfHeader::00000000-_elfHeader::00000033 size=52 r=false w=false x=false
+_elfProgramHeaders   _elfProgramHeaders::00000000-_elfProgramHeaders::0000121f size=4640 r=false w=false x=false
+_elfSectionHeaders   _elfSectionHeaders::00000000-_elfSectionHeaders::00001c1f size=7200 r=false w=false x=false
+unallocated_0        unallocated_0::00000000-unallocated_0::0000000b size=12 r=false w=false x=false
+unallocated_1        unallocated_1::00000000-unallocated_1::00069ac7 size=432840 r=false w=false x=false
+unallocated_2        unallocated_2::00000000-unallocated_2::000010df size=4320 r=false w=false x=false
+unallocated_3        unallocated_3::00000000-unallocated_3::0000111f size=4384 r=false w=false x=false
+
+FUNCTION_COUNT: 944
+
+=== TOP 60 LARGEST FUNCTIONS ===
+    1865  00202dbd  FUN_00202dbd
+    1740  00229850  FUN_00229850
+    1675  002051a9  FUN_002051a9
+    1574  002158f3  FUN_002158f3
+    1380  0020bbd0  FUN_0020bbd0
+    1345  002060fd  FUN_002060fd
+    1210  0020681b  FUN_0020681b
+    1043  0021480f  FUN_0021480f
+    1021  00214c22  FUN_00214c22
+     967  0021d00e  FUN_0021d00e
+     966  0020493d  FUN_0020493d
+     920  002351a3  FUN_002351a3
+     887  002172d2  FUN_002172d2
+     859  00206cd5  FUN_00206cd5
+     818  00218b70  FUN_00218b70
+     814  00228af7  FUN_00228af7
+     807  00203746  FUN_00203746
+     790  0022b1cb  FUN_0022b1cb
+     775  00200e5d  FUN_00200e5d
+     760  00226cb6  FUN_00226cb6
+     755  0022a150  FUN_0022a150
+     746  00234e9a  FUN_00234e9a
+     739  0020012c  FUN_0020012c
+     725  00208d20  FUN_00208d20
+     705  00224100  FUN_00224100
+     704  00207e6e  FUN_00207e6e
+     699  00212902  FUN_00212902
+     681  0020d84a  FUN_0020d84a
+     680  0020b15e  FUN_0020b15e
+     666  0021960c  FUN_0021960c
+     648  002295c8  FUN_002295c8
+     641  002164ba  FUN_002164ba
+     630  002113a9  FUN_002113a9
+     629  0020e04e  FUN_0020e04e
+     626  002178b6  FUN_002178b6
+     616  00207030  FUN_00207030
+     608  0021255a  FUN_0021255a
+     592  00224f22  FUN_00224f22
+     582  00229382  FUN_00229382
+     570  0021161f  FUN_0021161f
+     551  0020a380  FUN_0020a380
+     550  0020d401  FUN_0020d401
+     546  002145cb  FUN_002145cb
+     531  00226aa3  FUN_00226aa3
+     530  00201e4c  FUN_00201e4c
+     530  0022ab89  FUN_0022ab89
+     523  00211b06  FUN_00211b06
+     522  0020907d  FUN_0020907d
+     518  0020d644  FUN_0020d644
+     517  00200c2c  FUN_00200c2c
+     514  0021b434  FUN_0021b434
+     513  0020167a  FUN_0020167a
+     507  0021ad20  FUN_0021ad20
+     503  0021b20f  FUN_0021b20f
+     502  00201a99  FUN_00201a99
+     495  0021424f  FUN_0021424f
+     494  00235a1e  FUN_00235a1e
+     485  00219f97  FUN_00219f97
+     480  002013ec  FUN_002013ec
+     480  00224d42  FUN_00224d42
+
+=== INTERESTING SYMBOLS ===
+TOTAL_MATCH: 0
+
+=== SAMPLES (up to 800) ===
+
+=== NOTABLE STRINGS (containing keywords) ===
+002441d8  .kernel_text
+00244ba8  .gipctarget
+00244be8  .bootargs
+00244c68  .boottimelog
+00244ca8  .boottimelog_task_strings
+00400000  /home/mal/gm_release/MY22-026/final/iot/cust-build_sb/gm-i35/rel/gm_i35_my22_gb/gm-i35-kernel
+00400144  Secure Boot:      Enabled\n
+007c9b68  $AMEMICSEL
+00843025  .boottable
+0084305c  ASP_PreCrtInitBootstrap
+008430cb  Exception encountered in Kernel
+008430eb  Machine check encountered in Kernel
+0084311d  Double fault encountered in Kernel
+00843505  INTERRUPT_Panic() Called\n
+0084a1b0  ManifestTheKernelDomain
+0084a1c8  CreateAddressSpacesAndMemoryRegions
+0084a202  __ghs_ind_crt0_2
+0084a284  __ghs_init_mem
+0084a293  __ghs_ind_crt0_1
+0084a345  SetupBootTables
+0084c0d0  Extra RAM (MultiBoot)
+0084c0e6  Reserved (MultiBoot)
+0084c256  BSP_InitializeOnBootCpu
+0084c26e  bootargs_IODeviceInit
+0084c411  OS:               INTEGRITY IoT 2020.18.19
+0084c6e7  Boot Mode:        Resume From RAM
+0084c91e  Class with initialize fn must provide KERNEL_ID.\n
+0084cffc  BSP_BootSecondaryCpus
+0084d021  CseSeed
+00852870  BootargsDev
+008528f9  bootargs
+00858fb8  Intel HECI
+0085a9bc  PassthruBootStatus
+0086a064  - Blocking Guest Temperature Request Control IPC Message\n
+0086a09e  - Blocking Guest AMP Control IPC Message (%s)\n
+0086a0cd  Cache IPC msg: Index=%u, toVip=%u, clientMask=0x%02x\n
+0086a103  IPC msg cleared from cache: idx=%u\n
+0086a127  Tried to clear uncached IPC msg: idx=%u\n
+0086a3b8  Got IPC msg on invalid channel: %u\n
+0086a3dc  IPC Channels Opened
+0086a735  Sending cached IPC message on CH%02u: toVip=%u, clientmask=0x%02x\n
+00874118  GHS: Initiating immediate VIP reset\n
+0087413d  GHS: Initiating VIP reset\n
+00874173  GHS: [LIFECYCLE] Unexpected STARTUP in ResetState=%u\n
+008741a9  VipBootCycle: 0x%02x\n
+008741bf  SoCBootCycle: 0x%02x\n
+008741d5  GHS: VipBootCycle: %u\n
+008741ec  GHS: [LIFECYCLE] Got request to boot to ELK\n
+00874247  boot-see-dealer
+00874257  GHS: [LIFECYCLE] Lost Android SoH - rebooting\n
+00874286  GHS: [LIFECYCLE] Booting 'see-dealer' mode\n
+008742b2  GHS: [LIFECYCLE] Android failed to boot (count=%lu)\n
+008742e7  GHS: [LIFECYCLE] Failed to write Lifecycle settings to EMMC\n
+00874324  GHS: [LIFECYCLE] Guest failed to reboot after panic\n
+00874370  GHS: [LIFECYCLE] inSafetyCriticalUseCase=%i\n
+00874513  BootELKWaitForRespSent
+0087452a  BootELKSendAblUserCommand
+00896790  IPCLUSTER_1.wav
+008967a0  IPCLUSTER_2.wav
+008967b0  IPCLUSTER_3.wav
+00bc582f  GHS: [AUDIO] Audio DSP Firmware Loading Failed, Disabling Audio Server\n
+00bc5c18  Info: IPC irq: Notification from firmware hipct
+00bc5c48  Error: DSP IPC failed with
+00df624c  Booted from ABL prompt.\n
+00df6265  INTEGRITY IoT 2020.18.19 MY22-026
+00df62bd  ABL.secureboot=
+00df7020  GHS: Warning: HECI read timed out waiting for H_IG to clear
+00df705c  GHS: Warning: Attempting to read too much data from HECI
+00df7095  GHS: Warning: HECI write timed out waiting for H_IG
+00df70c9  GHS: Error: Not enough free space in HECI write buffer
+00df7100  GHS: Warning: HECI write timed out waiting for CSE ready after write
+00df715c  GHS: Error: Failed to send connect message to HECI client
+00df7196  GHS: Error: Invalid HECI connect status: %d\n
+00df71c3  GHS: Error: Failed to connect to HECI client
+00df71f0  GHS: Error: CSE timed out waiting for ready bit after reset
+00df722c  GHS: Timed out waiting for HECI reset
+00df7252  GHS: Timed out waiting for IS to be signaled to host
+00df7294  GHS: Error: Invalid HECI disconnect status: %d\n
+00df72c4  GHS: Error: Failure to disconnect from HECI client
+00df72f7  GHS: Error: Failed to send disconnect message to HECI client
+00df7388  GHS: Error: Invalid HECI client property status: %d\n
+00df73bd  GHS: Error: Failed to get HECI client properties
+00df73ee  GHS: Error: HECI enumeration response failed
+00df741b  GHS: Error: Failed to issue read property command for HECI client: %d\n
+00df7468  GHS: Error: ABL update command returned invalid length: %d\n
+00df74a4  GHS: Error: Failed to send ABL update command
+00df74d2  GHS: Error: ABL update command failed: %d\n
+00df7512  GHS: Error: CSE prepare update HECI command failed: %d\n
+00df754a  GHS: Error: CSE clear data HECI command failed: %d\n
+00df757e  GHS: CSE clear data HECI command accepted
+00df75a8  GHS: Error: Failed to send HECI command to clear CSE data
+00df75e2  GHS: Error: CSE did not enter prepare update mode
+00df7614  GHS: Error: Failed to send HECI command to prepare CSE update
+00df7652  GHS: Error: Invalid response length to CSE clear data command: %d\n
+00df7695  GHS: Error: Invalid response length to CSE prepare update command: %d\n
+00df76e8  GHS: Error: Get attkb from CSE failed with result=%d\n
+00df771e  GHS: Error: Failed to send GET ATTKB SIZE HECI command
+00df7761  GHS: Error: Failed to send GET ATTKB HECI command
+00df7793  GHS: Error: Read more attkb bytes (%d) than expected (%d)\n
+00df77ce  GHS: Error: Read incorrect number of bytes (%d)\n
+00e093b9  INTEGRITY versions: PALv%i, CAL_TABLEv%i.%i\n
+00e400a7  \nGHS: Supported commands for /dev/ghs/gpu-dbg:\nGHS:     d    Print/log current display controller state\nGHS:     p    Print PPGTT usage\nGHS:     t    Print/log TFM governor information\n
+00e6cb5c  wwwwIntel MIA Kernel
+00e9a3e8  Boot temperature: %d\n
+00ee9068  FREESTAK/home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 125: error event (0x%x) for port (%d)
+00ee9118  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 138: failed to wait for outgoing queue to free up\n
+00ee91b7  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 184: failed (%d) to send_msg for chan (%d)
+00ee924e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee92da  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9366  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee93f2  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee947e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee950a  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9596  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9622  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee96ae  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee973a  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee97c6  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9852  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee98de  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee996a  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee99f6  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9a82  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9b0e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9bb0  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9c3c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9cc8  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9d54  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9de0  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9e6c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9ef8  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00ee9f84  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea010  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea09c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea128  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea1b4  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea240  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea2cc  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea358  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 271: Error serializing response
+00eea730  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 406: Command %d not allowed before configure command\n
+00eea7d2  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 411: Previous configure command failed\n
+00eea866  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 415: Bootloader command %d not allowed after configure command\n
+00eea912  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 422: Dispatching GENERATE_KEY, size: %d
+00eea9a6  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 427: Dispatching BEGIN_OPERATION, size: %d
+00eeaa3d  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 432: Dispatching UPDATE_OPERATION, size: %d
+00eeaad5  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 437: Dispatching FINISH_OPERATION, size: %d
+00eeab6d  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 442: Dispatching IMPORT_KEY, size: %d
+00eeabff  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 447: Dispatching EXPORT_KEY, size: %d
+00eeac91  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 452: Dispatching GET_VERSION, size: %d
+00eead24  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 457: Dispatching ADD_RNG_ENTROPY, size: %d
+00eeadbb  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 462: Dispatching GET_SUPPORTED_ALGORITHMS, size: %d
+00eeae5b  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 467: Dispatching GET_SUPPORTED_BLOCK_MODES, size: %d
+00eeaefc  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 473: Dispatching GET_SUPPORTED_PADDING_MODES, size: %d
+00eeaf9f  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 478: Dispatching GET_SUPPORTED_DIGESTS, size: %d
+00eeb03c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 484: Dispatching GET_SUPPORTED_IMPORT_FORMATS, size: %d
+00eeb0e0  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 490: Dispatching GET_SUPPORTED_EXPORT_FORMATS, size: %d
+00eeb184  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 495: Dispatching GET_KEY_CHARACTERISTICS, size: %d
+00eeb223  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 500: Dispatching ABORT_OPERATION, size %d
+00eeb2b9  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 505: Dispatching ATTEST_KEY, size %d
+00eeb34a  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 510: Dispatching UPGRADE_KEY, size %d
+00eeb3dc  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 515: Dispatching CONFIGURE, size %d
+00eeb46c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 520: Dispatching GET_HMAC_SHARING_PARAMETERS, size %d
+00eeb50e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 525: Dispatching COMPUTE_SHARED_HMAC, size %d
+00eeb5a8  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 530: Dispatching VERIFY_AUTHORIZATION, size %d
+00eeb643  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 535: Dispatching IMPORT_WRAPPED_KEY, size %d
+00eeb6dc  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 540: Dispatching DELETE_KEY, size %d
+00eeb76d  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 545: Dispatching DELETE_ALL_KEYS, size %d
+00eeb803  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 550: Dispatching SET_BOOT_PARAMS, size %d
+00eeb899  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 555: Dispatching KM_PROVISION_KEYBOX, size %d
+00eeb933  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 560: Dispatching SET_ATTESTION_KEY, size %d
+00eeb9cb  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 565: Dispatching SET_ATTESTATION_CERT_CHAIN, size %d
+00eeba6c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 570: Dispatching KM_ATAP_GET_CA_REQUEST, size %d
+00eebb09  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 576: Dispatching KM_ATAP_SET_CA_RESPONSE_BEGIN, size %d
+00eebbad  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 582: Dispatching KM_ATAP_SET_CA_RESPONSE_UPDATE, size %d
+00eebc52  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 588: Dispatching KM_ATAP_SET_CA_RESPONSE_FINISH, size %d
+00eebcf7  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 593: Dispatching KM_ATAP_READ_UUID, size %d
+00eebd8f  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 598: Dispatching KM_SET_PRODUCT_ID, size %d
+00eebe27  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 603: Cannot dispatch unknown command %d
+00eebebb  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 652: failed (%d) to get_msg for chan (%d), closing connection
+00eebf65  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 670: failed to read msg (%d)
+00eebfee  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 673: Read %d-byte message
+00eec074  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 676: invalid message of size (%d)
+00eec102  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 688: configure error (%d)
+00eec188  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 692: error handling message (%d)
+00eec215  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 696: Sending %d-byte response
+00eec29f  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 703: error: no context on channel %d
+00eec330  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 711: error event (0x%x) for chan (%d)
+00eec3c2  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 720: failed (%d) to handle event on channel %d
+00eec45d  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 617: access denied for client uuid
+00eec4ec  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 746: failed (%d) to accept on port %d
+00eec57e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 753: failed to allocate context on chan %d
+00eec615  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 760: failed (%d) to set_cookie on chan %d
+00eec6ab  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 781: got an empty event
+00eec72f  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 795: no handler for event (0x%x) with handle %d
+00eec7cb  com.android.trusty.keymaster.secure
+00eec80c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 809: Failed (%d) to create port %s
+00eec89b  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 817: failed (%d) to set_cookie on port %d
+00eec931  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 826: Failed (%d) to create port %s
+00eec9c0  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 835: failed (%d) to set_cookie on port %d
+00eeca56  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 852: Failed to read resumed state
+00eecae4   ABL.secureboot=1 
+00eecaf7  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 868: Failed to read command line length
+00eecb8b  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 873: Kernel command line is too long
+00eecc1c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 885: Failed to read kernel command line
+00eeccb0  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 916: Initializing
+00eecd2e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 972: Invalid message from VMM.  Defaulting to unverified boot
+00eecdd8  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 975: VMM reported green boot state but device is not locked. Treating as unverified boot
+00eece9d  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 1014: Error %d determining AndroidKeymaster version.
+00eecf3e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 1021: failed (%d) to initialize keymaster
+00eecfd4  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 1033: wait_any failed (%d)
+00eeef58  keymaster::VerifyAuthorizationRequest
+00eeefb8  keymaster::VerifyAuthorizationResponse
+00eef1a0  keymaster::SetBootParamsRequest
+00eef1f8  keymaster::SetBootParamsResponse
+00ef2add  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 54: Error: [%d] opening storage session
+00ef2b70  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 108: Error: [%d] writing storage object '%s'
+00ef2c06  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 112: Error: invalid object size [%d] from '%s'
+00ef2c9e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 125: Error: [%d] reading storage object '%s'
+00ef2d34  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 129: Error: invalid object size [%d] from '%s'
+00ef2dcc  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 142: Error: [%d] reading storage object '%s'
+00ef2e62  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 156: Error: [%d] deleting storage object '%s'
+00ef2fb3  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 328: Error: Cannot increase certificate chain length by more than 1.
+00ef3082  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/secure_storage.cpp, Line 424: Error: Product ID already set!\n
+00ef315e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/provision/provision_keybox.cpp, Line 225: Failed to get keybox from CSE.\n
+00ef33ca  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/provision/provision_keybox.cpp, Line 338: Get keybox from cse failed!
+00ef3ff5  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/provision/provision_keybox.cpp, Line 786: failed(%d) to RetrieveKeybox from CSE
+00ef5480  keymaster::EcdsaVerifyOperationFactory
+00ef5e78  keymaster::HmacVerifyOperationFactory
+00ef6d94  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/android/system/keymaster/android_keymaster/keymaster_enforcement.cpp, Line 449: Auth token signature invalid
+00ef759b  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/android/system/keymaster/android_keymaster/keymaster_enforcement.cpp, Line 391: Usage count-limited keys table full, until reboot.
+00ef91c8  keymaster::RsaVerifyOperation
+00ef9830  keymaster::EcdsaVerifyOperation
+00ef99c3  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/android/system/keymaster/km_openssl/hmac_operation.cpp, Line 53: MAC length may not be specified for verify
+00f17368  GetMillisecondsSinceBoot
+00f1744f  %s: %d: Error:[%llu != %llu] secure storage corrupt.\n
+00f17860  gatekeeper::VerifyRequest
+00f178b8  gatekeeper::VerifyResponse
+00f18177  com.android.trusty.keymaster.secure
+00f2afb4  *num > 0 && *num <= CSE_SEED_MAX_ENTRIES
+00f2b0ba  index < CSE_SEED_MAX_ENTRIES
+00f50048  GHS: TEE_Storage: Clearing storage due to format change.\n
+00f5038c  ss: %s: block_device_tipc_init failed (%d)\n
+00f505f8  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f50667  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f506ee  ipc: failed to read msg (%d, %d)\n
+00f50710  ipc: failed (%d) to get_msg for chan (%d), closing connection\n
+00f5074f  ipc: %s: message too large %d\n
+00f5076e  ipc: invalid message of size (%d, %d)\n
+00f50795  ipc: error event (0x%x) for chan (%d)\n
+00f507bc  ipc: error (%d) in channel, disconnecting peer\n
+00f507ec  ipc: error: unexpected message in channel (%d). closing...\n
+00f5085c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f508b0  ipc: %s: failure initializing channel state (%d)\n
+00f5090f  ipc: failed (%d) to accept on port %d\n
+00f50936  ipc: failed (%d) to set_cookie on chan %d\n
+00f50961  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f509b5  ipc: error event (0x%x) for port (%d)\n
+00f50a0a  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f50a8e  ipc: %s: failed to read msg (%ld)\n
+00f50ab1  ipc: %s: interrupted waiting for response (%ld)
+00f50ae1  ipc: %s: failed to get_msg (%ld)\n
+00f50b28  ipc: failed to wait for outgoing queue to free up\n
+00f50b80  ipc: %s: invalid response length (%zd)\n
+00f50bbc  sync_ipc_send_msg
+00f50be0  ipc: %s: failed (%ld) to send_msg\n
+00f50c03  ipc: %s: failed (%ld) to await response\n
+00f50c2c  ipc: %s: invalid response length (%d)\n
+00f50c53  ipc: %s: response buffer too short (%d < %d) \n
+00f50c82  ipc: %s: response has error (%ld)\n
+00f50ca5  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f50d28  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f50d81  ipc_port_create
+00f50daf  ipc: Failed to create port %s %d\n
+00f50dd1  ipc: Failed to set cookie on port %s (%d)\n
+00f50dfc  ipc: Failed to create msg buffer of size %zu (%d)\n
+00f50e2f  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/ipc.c
+00f50e83  ipc: wait_any failed (%d)\n
+00f50ec9  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f50f41  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f50fa3  block_device_tipc_rpmb_start_read
+00f50fde  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f51040  block_device_tipc_rpmb_start_write
+00f51099  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f510fd  block_device_tipc_rpmb_wait_for_io
+00f51120  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f51196  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f511f8  block_device_tipc_ns_start_write
+00f51236  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f5129a  block_device_tipc_ns_wait_for_io
+00f512bb  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/block_device_tipc.c
+00f5131f  block_device_tipc_init
+00f556ea  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/client_tipc.c
+00f5577a  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/p/trusty/app/storage/client_tipc.c
+00f9c143  GHS: VMM: Missing device '%s'\n
+00f9c166  GHS: VMM: waiting for VIP system reset...\n
+00f9c1c6  A/B Boot Slot: boot%s\n
+00f9c1dd  GHS: Android and INTEGRITY slot mismatch.  INTEGRITY: %s Android: %s Rebooting...\n
+00f9c2e9  OS:               INTEGRITY IoT 2020.18.19\n
+00f9c3ac   ABL.secureboot=1 
+00f9c443  Secure Boot:      Enabled\n
+00f9c5a1  VMM: Error: Kernel command line is too long.\n
+00f9c600  VMM: Error: Failed to read kernel command line.\n
+00f9c631  VMM: GHS: partition load, buffer exceeded.\n
+00f9c79e  VMM: Error: RAM disk overlaps with kernel.\n
+00f9c7ca  VMM: Error: Kernel extends past end of boot image.\n
+00f9c7fe  VMM: Error: RAM disk extends past end of boot image.\n
+00f9c888  VMM: Error: Linux boot image too small.\n
+00f9ca6b  VMM: %s: no signed boot partition in vbmeta.\n
+00f9ca99  VMM: ERROR: failed to load boot partition android header\n
+00f9cb93  VMM: ERROR: failed to load boot%s partition\n
+00f9cbc0  VMM: A/B: no boot image for slot %s\n
+00f9cbe5  androidboot.force_normal_boot=1 
+00f9cc06  androidboot.slot_suffix=%s androidboot.verifiedbootstate=%s 
+00f9cc4c  VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu\n
+00f9cc94  androidboot.vbmeta.device=PARTUUID=%.8x-%.4x-%.4x-%.2x%.2x-%.2x%.2x%.2x%.2x%.2x%.2x 
+00f9cce9  androidboot.vbmeta.avb_version=1.1 androidboot.vbmeta.device_state=%s androidboot.vbmeta.hash_alg=sha256 androidboot.vbmeta.size=%u androidboot.vbmeta.digest=
+00f9cdd6  VMM: ERROR: A/B boot metadta write failed.\n
+00f9ce2c  verify_failed
+00f9ce3a  VMM: I/O error loading boot slot: %d\n
+00f9ce6a  VMM: A/B Boot: ERROR: no valid boot slot\n
+00f9cf2f  VMM: A/B Boot: No more remaining attempts for slot %d\n
+00f9cf73  rollback_error
+00f9cf82  VMM: Failed to verify slot %s\n
+00f9cfa1  ghs_androidboot.altsloterror=%s 
+00f9cfe2  VMM: Error: Android signature FormatVersion is invalid\n
+00f9d01a  VMM: Error: Android signature field is invalid\n
+00f9d07a  VMM: Error: Failed to read Android signature\n
+00f9d0a8  VMM: Error: Android signature FormatVersion is not 1\n
+00f9d0de  VMM: Error: Android signature Certificate DER tag is invalid\n
+00f9d11c  VMM: Error: Android signature AlgorithmIdentifier is missing\n
+00f9d15a  VMM: Error: Android signature AlgorithmIdentifier is invalid\n
+00f9d198  VMM: Error: Android signature certificate is invalid\n
+00f9d1ce  VMM: Error: Android signature certificate version is invalid\n
+00f9d20c  VMM: Error: Android signature certificate subject is invalid\n
+00f9d274  VMM: Error: Android signature root DER tag is invalid\n
+00f9d2bf  VMM: Error: Android signature length is invalid\n
+00f9d2f0  VMM: Error: Android signature/EOC length mismatch\n
+00f9d323  VMM: Error: Android signature certificate issuer is invalid\n
+00f9d360  VMM: Error: Android signature certificate validity is invalid\n
+00f9d39f  VMM: Error: Android signing key boot module not found\n
+00f9d401  VMM: Error: Android signature AlgorithmIdentifier sequence is invalid\n
+00f9d448  VMM: Error: Android signature authenticated attributes sequence is invalid\n
+00f9d494  VMM: Error: Android signature authenticated attributes partition is invalid\n
+00f9d4e1  VMM: Error: Android signature authenticated attributes partition tag is invalid\n
+00f9d532  VMM: Error: Android signature authenticated attributes partition name is too short\n
+00f9d586  VMM: Error: Android signature authenticated attributes partition name does not start with '/'\n
+00f9d5e5  VMM: Error: Android signature authenticated attributes partition name length mismatch\n
+00f9d63c  VMM: Error: Android signature authenticated attributes partition name mismatch\n
+00f9d68c  VMM: Error: Android signature authenticated attributes image length is invalid\n
+00f9d6dc  VMM: Error: Android signature authenticated attributes image length mismatch\n
+00f9d72a  VMM: Error: Android signature certificate version tag is invalid\n
+00f9d76c  VMM: Error: Android signature certificate version length is invalid\n
+00f9d7b1  VMM: Error: Android signature certificate serial number is invalid\n
+00f9d7f5  VMM: Error: Android signature certificate serial number length is invalid\n
+00f9d840  VMM: Error: Android signature certificate algorithm identifer is invalid\n
+00f9d88a  VMM: Error: Android signature certificate public key info is invalid\n
+00f9d8d0  VMM: Error: Android signature certificate public key info algorithm identifier is invalid\n
+00f9d92b  VMM: Error: Android signature certificate public key is invalid\n
+00f9d96c  VMM: Error: Android signature certificate public key tag is invalid\n
+00f9d9b1  VMM: Error: Android signature certificate public key bit string length is invalid\n
+00f9da04  VMM: Error: Android signature certificate public key bit string length is too small\n
+00f9da59  VMM: Error: Android signature certificate public key bit string prefix is invalid\n
+00f9daac  VMM: Error: Android signature certificate public key sequence is invalid\n
+00f9daf6  VMM: Error: Android signature certificate public key exponent is invalid\n
+00f9db40  VMM: Error: Android signature certificate public key exponent tag is invalid\n
+00f9db8e  VMM: Error: Android signature certificate public key exponent length is invalid\n
+00f9dbdf  VMM: Error: Android signature certificate public key exponent length is invalid size\n
+00f9dc35  VMM: Error: Android signature certificate public key exponent prefix is invalid\n
+00f9dc86  VMM: Error: Android signature certificate public key modulus is invalid\n
+00f9dccf  VMM: Error: Android signature hash encoding failed\n
+00f9dd03  VMM: Error: Could not load Android signature\n
+00f9dd66  VMM: Error: Android signature verification failed\n
+00f9dd99  VMM: Error: Failed to find Android boot partition (%u)\n
+00f9de04  VMM: Error: Invalid Android boot image header\n
+00f9de8d  boot-see-dealer
+00f9de9d  VMM: ERROR: Android boot requires misc partition\n
+00f9decf  VMM: ERROR: both A/B and singleton boot partition found!\n
+00f9df09  boot-recovery
+00f9e07c  VMM: Error: Linux boot image protocol too low.\n
+00f9e0ac  VMM: Error: Linux boot expected LOADED_HIGH to be set.\n
+00f9e0e4  androidboot.bootreason=
+00f9e0fc  ABL.secureboot=
+00f9e128  VMM: Error: Linux boot image has wrong magic number.\n
+00f9e188  VMM: Error: Could not load Android boot header.\n
+00f9e1b9  VMM: Error: Could not load Linux boot header.\n
+00f9e1e8  VMM: Error: Linux boot image too small.\n
+00f9e211  androidboot.
+00f9e267  androidboot.bootreason=cold 
+00f9e284  androidboot.bootreason=warm 
+00f9e2a1  androidboot.bootreason=reboot 
+00f9f082  VM triple faulted. Rebooting VM.\n
+00fa0744  Target expects GHS_VMM API version %d\n
+00fa2171  VIRTIO_START vdev id is not VIRTIO_ID_TIPC\n
+00fa3542  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/sysdev/system_usb_passthru.c
+00fa4985  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/sysdev/system_usb_passthru.c
+00fa4a0e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/sysdev/system_usb_passthru.c
+00fa4ae6  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/sysdev/system_usb_passthru.c
+00fa4bf8  Guest used an illegal hypercall! Please update.\n
+00fa4caa  No bios found in boot module.\n
+00fa569a  BootTargetOS
+00fa56a7  BootTargetOS
+00fa571c  Boot Control IO
+00fa7228  GHS Virtual Comms Interface
+00fa9488  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/usb_passthru_emul.c
+00fa94fc  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/usb_passthru_emul.c
+00fa9570  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/usb_passthru_emul.c
+00fa95e4  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/usb_passthru_emul.c
+00faba51  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/timer_pit_emul.c
+00fabada  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/timer_pit_emul.c
+00fabb4b  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/timer_pit_emul.c
+00fabbbc  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/timer_pit_emul.c
+00fabc2d  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/timer_pit_emul.c
+00face80  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/kbd_mouse_8042_emul.c
+00facef6  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/kbd_mouse_8042_emul.c
+00facfca  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/kbd_mouse_8042_emul.c
+00fad063  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/kbd_mouse_8042_emul.c
+00fad0d9  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/kbd_mouse_8042_emul.c
+00fad14f  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/kbd_mouse_8042_emul.c
+00fae70c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/interrupt_ioapic_emul.c
+00fae784  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/interrupt_ioapic_emul.c
+00faf589  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/interrupt_apic_emul.c
+00faf649  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/interrupt_apic_emul.c
+00faf6da  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/interrupt_apic_emul.c
+00faf797  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/interrupt_apic_emul.c
+00fb0a20  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/interrupt_82c59_emul.c
+00fb2ee2  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/clock_pc_rtc_emul.c
+00fb2f88  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/clock_pc_rtc_emul.c
+00fb301c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/clock_pc_rtc_emul.c
+00fb43b6  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/acpi_i82731_emul.c
+00fb4429  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/acpi_i82731_emul.c
+00fb4f36  BootDevs
+00fb54d0  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fb558c  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fb5634  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fb56f9  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fb57e3  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fb585f  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fb592d  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fb59b9  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/dev/device_memory.c
+00fbf94e  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/wifi_passthru_emul.c
+00fbf9c3  /home/mal/gm_release/MY22-026/final/iot/rtos/modules/ghs/virtualization/src/sls/pc_emul/devemul/wifi_passthru_emul.c
+0108e750  P_IPC_AR_CAMERA_PRESENT
+010d8588  BootTimeLogIODevice
+010d85a7  BootargsDev
+010d88b7  CseSeed
+010d88cc  PassthruBootStatus
+010d8933  Kernel_IpuPMR
+010d8941  Kernel_IpuFbPMR
+010d8951  Kernel_BootMod_DSP_Firmware
+010d8a70  PassthruBootStatusIod
+010d8ade  ConnToVMM_Reset_PanicNotify
+010d8b95  ConnToOTA_BootELK
+010d954d  __ghs_named_object_table_IpuPMR__0
+010d9570  __ghs_named_object_table_IpuFbPMR__0
+010d9595  __ghs_named_object_table_IPUDev__0
+010d95b8  __ghs_named_object_table_IpuVMR__0
+010d95db  __ghs_named_object_table_IpuFbVMR__0
+010d9629  Kernel_BootMod_IPU_Firmware
+010d9854  PassthruBootStatusIod
+010d98a0  OtaUpdateBootArgsIod
+010d98d8  OtaUpdateToHeciIod
+010d9908  ConnToLifecycle_BootELK
+010d9a7a  SdhcServerPMR
+010d9dfb  __ghs_named_object_table_tipc_conns__0
+010d9e22  __ghs_named_object_table_tipc_conns__1
+010d9e49  __ghs_named_object_table_tipc_conns__2
+010d9e70  __ghs_named_object_table_tipc_conns__3
+010d9ea1  CseSeed
+010d9ef0  __ghs_named_object_table_tee_conn__0
+010d9f2d  KeymasterBootArgsIod
+010d9f62  __ghs_named_object_table_tee_conn__0
+010d9fa7  __ghs_named_object_table_tee_conn__0
+010d9fec  __ghs_named_object_table_tee_conn__0
+010da090  KernelBufferPMR
+010da0a0  KernelBufferVMR
+010da0b0  IOD_Bootargs
+010da1a1  ConnToLifecycle_Reset_PanicNotify
+010da6cc  Kernel_BootMod_Android_Key
+010da6f5  PassthruBootStatusIod
+010daabd  SdhcServerIod
+010daacb  SdhcServerMr
+010dbeb0  Kernel_IpuPMR
+010dbef0  Kernel_IpuFbPMR
+010dd180  .rom.boottable
+010dd1c8  .boottable
+.shstrtab::0000000c  .kernel_text
+.shstrtab::00000031  KernelSpace.secinfo
+.shstrtab::0000020e  .gipctarget
+.shstrtab::0000021a  .bootargs
+.shstrtab::00000231  .boottimelog
+.shstrtab::0000023e  .boottimelog_task_strings
+.shstrtab::00000724  Kernel_IpuPMR
+.shstrtab::00000732  Kernel_IpuFbPMR
+.shstrtab::00000a9a  .boottable
+.shstrtab.2::0000000b  .kernel_text
+.shstrtab.2::00000202  .gipctarget
+.shstrtab.2::0000020e  .bootargs
+.shstrtab.2::00000225  .boottimelog
+.shstrtab.2::00000232  .boottimelog_task_strings
+.strtab::00000047  gm-i35-kernel.c

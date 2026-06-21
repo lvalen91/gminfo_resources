@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.caltools.gm.com/caldef" 
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		   xmlns="http://www.caltools.gm.com/caldef">
+    <xs:include schemaLocation="shared_types_1.2.xsd"></xs:include>
+     <!-- Revision History
+  	Version		Date			Description												Author
+  	1.0		September 2013		Initial Release											Scott Rush
+   	1.1		September 23, 2013	Change shared_types to shared_types1.1.xsd to correct
+   								base type on IntegerValueType.  See rev log within shared_types
+   								for details.									  		Scott Rush
+  	1.1		September 23, 2013	Removed EnumArrayMap type from CalTypeEnumType as it was removed from
+  								the 1.0 release as a supported type.				   	Scott Rush
+  	1.2		October 3, 2013		Corrected error on RecordFieldType.FieldName.  Type was	Scott Rush
+  								incorrectly set to complex type StringType instead of
+  								xs:string.
+  	1.3		March 20, 2014		Fixed problem with StringArryType.						Jonathon Green
+  	1.4		September 11, 2014	Added Usage attribute to 								Scott Rush
+  								CalDefinitionType to be able to determine with			Scott Rush
+  								cals apply to which component.
+    1.5    	December 3, 2014	1. Added BinaryFile type to be able to support arbitrary	Scott Rush
+    							files initially intended only for HandsFree bsd files		
+    							2.  Also changed types of ArrayLength to all unsignedShort
+    							to be consistent.  Some were previously defined as short
+    							3. Added dBuV to UnitsEnum	
+ 	1.6		December 9, 2014	Deleted LastReleaseVersion attribute	Scott Rush
+ 								It was causing mass confusion.
+	1.7		October 2016		Added 'm' to UnitsEnum per user request	and				Scott Rush
+								m/sec just in case it is requested in the future.
+	1.8		January 2017		Added 'hours' and 'minutes' to UnitsEnum 				Scott Rush
+  	 -->
+    <xs:complexType name="CalDefinitionType">
+    	<xs:sequence>
+    		<xs:element name="CalID" type="CalIDType" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Type" type="CalTypeEnumType" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Version" type="VersionType" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+
+
+            <xs:element name="CalDefChangeRecord"
+    			type="ChangeRecordType" maxOccurs="unbounded" minOccurs="0">
+    		</xs:element>
+    		<xs:choice maxOccurs="1" minOccurs="1">
+    			<xs:element name="Boolean" type="BooleanType"></xs:element>
+    			<xs:element name="Integer" type="IntegerType"></xs:element>
+    			<xs:element name="Float" type="FloatType"></xs:element>
+    			<xs:element name="String" type="StringType"></xs:element>
+    			<xs:element name="Record" type="RecordType"></xs:element>
+    			<xs:element name="Enumeration" type="EnumType"></xs:element>
+    			<xs:element name="IntegerArray"
+    				type="IntegerArrayType">
+    			</xs:element>
+    			<xs:element name="FloatArray" type="FloatArrayType"></xs:element>
+    			<xs:element name="EnumFloatMap"
+    				type="EnumFloatMapType">
+    			</xs:element>
+    			<xs:element name="EnumArray" type="EnumArrayType"></xs:element>
+    			<xs:element name="EnumIntegerMap"
+    				type="EnumIntegerMapType">
+    			</xs:element>
+    			<xs:element name="StringArray" type="StringArrayType"></xs:element>
+    			<xs:element name="BinaryFile" type="BinaryFileType">
+    			</xs:element>
+    		</xs:choice>
+
+    	</xs:sequence>
+    	<xs:attribute name="Name" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="Description" type="xs:string"></xs:attribute>
+    	<xs:attribute name="References" type="xs:string"></xs:attribute>
+    	<xs:attribute name="Usage" type="xs:string">
+    		<xs:annotation>
+    			<xs:documentation>Indicates whether or not a caldef is requried for a specific component.   The component names are LOW, MID, HIGH and are comma delimited within the String.</xs:documentation>
+    		</xs:annotation></xs:attribute>
+    </xs:complexType>
+
+    <xs:element name="CalDefinitionFile">
+ 		
+        <xs:complexType>
+ 			<xs:sequence>
+ 				<xs:element name="CalDefFileVersion" type="VersionType" maxOccurs="1" minOccurs="1">
+ 				</xs:element>
+ 				<xs:element name="CalDefFileChangeRecord" type="ChangeRecordType" maxOccurs="unbounded" minOccurs="0">
+ 				</xs:element>
+  				<xs:element name="CalDefinition" type="CalDefinitionType" maxOccurs="unbounded" minOccurs="0">
+ 				</xs:element>
+   			</xs:sequence>
+    		<xs:attribute name="Description" type="xs:string" use="optional"></xs:attribute>
+			<xs:attribute name="CalDefCategory" type="CalCategoryEnum" use="optional"></xs:attribute>
+ 		</xs:complexType>
+   		<xs:unique name="uniqueIDRequired">
+    		<xs:selector xpath="CalDefinition"/>
+    		<xs:field xpath="CalID"/>
+   		</xs:unique>
+    </xs:element>
+    
+        <xs:complexType name="StringType">
+    	<xs:sequence>
+    		<xs:element name="Encoding" maxOccurs="1" minOccurs="1">
+    			<xs:simpleType>
+    				<xs:restriction base="xs:string">
+     					<xs:enumeration value="UTF8"></xs:enumeration>
+    					<xs:enumeration value="UTF16"></xs:enumeration>
+    				</xs:restriction>
+    			</xs:simpleType>
+    		</xs:element>
+    		<xs:element name="MaxLength" type="xs:unsignedShort"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="StringValue" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+        <xs:simpleType name="CalTypeEnumType">
+        	<xs:restriction base="xs:string">
+        		<xs:enumeration value="Boolean"></xs:enumeration>
+        		<xs:enumeration value="Integer"></xs:enumeration>
+        		<xs:enumeration value="Float"></xs:enumeration>
+        		<xs:enumeration value="String"></xs:enumeration>
+        		<xs:enumeration value="Record"></xs:enumeration>
+        		<xs:enumeration value="Enumeration"></xs:enumeration>
+        		<xs:enumeration value="IntegerArray"></xs:enumeration>
+        		<xs:enumeration value="FloatArray"></xs:enumeration>
+        		<xs:enumeration value="EnumFloatMap"></xs:enumeration>
+        		<xs:enumeration value="EnumArray"></xs:enumeration>
+        		<xs:enumeration value="EnumIntegerMap"></xs:enumeration>
+        		<xs:enumeration value="StringArray"></xs:enumeration>
+        		<xs:enumeration value="BinaryFile"></xs:enumeration>
+        	</xs:restriction>
+        </xs:simpleType>
+
+
+        <xs:simpleType name="CalCategoryEnum">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="Default"></xs:enumeration>
+    		<xs:enumeration value="Audio"></xs:enumeration>
+    		<xs:enumeration value="Chime"></xs:enumeration>
+			<xs:enumeration value="Camera"></xs:enumeration>
+    		<xs:enumeration value="DriverWorkload"></xs:enumeration>
+    		<xs:enumeration value="Equalization"></xs:enumeration>
+    		<xs:enumeration value="HMI"></xs:enumeration>
+    		<xs:enumeration value="HandsFree"></xs:enumeration>
+    		<xs:enumeration value="Tuner"></xs:enumeration>
+    		<xs:enumeration value="Navigation"></xs:enumeration>
+    		<xs:enumeration value="System"></xs:enumeration>
+    	</xs:restriction>
+   </xs:simpleType>
+
+        <xs:simpleType name="UnitsEnum">
+        	<xs:restriction base="xs:string">
+        		<xs:enumeration value="none"></xs:enumeration>
+        		<xs:enumeration value="dB"></xs:enumeration>
+        		<xs:enumeration value="dBuV"></xs:enumeration>
+        		<xs:enumeration value="degrees"></xs:enumeration>
+        		<xs:enumeration value="Hz"></xs:enumeration>
+        		<xs:enumeration value="KHz"></xs:enumeration>
+        		<xs:enumeration value="km"></xs:enumeration>
+        		<xs:enumeration value="km_per_hour"></xs:enumeration>
+        		<xs:enumeration value="pixels"></xs:enumeration>
+        		<xs:enumeration value="percent"></xs:enumeration>
+        		<xs:enumeration value="seconds"></xs:enumeration>
+        		<xs:enumeration value="milliseconds"></xs:enumeration>
+        		<xs:enumeration value="mm"></xs:enumeration>
+        		<xs:enumeration value="m"></xs:enumeration>
+        		<xs:enumeration value="m_per_sec"></xs:enumeration>
+         		<xs:enumeration value="hours"></xs:enumeration>        		
+         		<xs:enumeration value="minutes"></xs:enumeration>
+        	</xs:restriction>
+        </xs:simpleType>
+
+        <xs:complexType name="IntegerType">
+    	<xs:sequence>
+    		<xs:element name="Value" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MinValue" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MaxValue" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Units" type="UnitsEnum" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    		<xs:element name="Resolution" type="xs:float" maxOccurs="1" minOccurs="0"></xs:element>
+    	</xs:sequence>
+     </xs:complexType>
+     <xs:complexType name="BooleanType">
+    	<xs:sequence>
+    		<xs:element name="Value" type="BooleanValueType"
+    			maxOccurs="1" minOccurs="1"></xs:element>
+      	</xs:sequence>
+    </xs:complexType>
+     <xs:complexType name="FloatType">
+    	<xs:sequence>
+    		<xs:element name="Value" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MinValue" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MaxValue" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Units" type="UnitsEnum" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    		<xs:element name="Resolution" type="xs:float" maxOccurs="1" minOccurs="0"></xs:element>
+     	</xs:sequence>
+    </xs:complexType>
+ 
+    <xs:complexType name="EnumType">
+    	<xs:sequence>
+  			<xs:element name="EnumID" type="EnumIDType" maxOccurs="1" minOccurs="1"></xs:element>
+  			<xs:element name="Value" type="EnumValueType"  maxOccurs="1" minOccurs="1"></xs:element>
+	   	</xs:sequence>    	
+    </xs:complexType>
+
+   <xs:complexType name="IntegerArrayType">
+    	<xs:sequence>
+    		<xs:element name="ArrayLength" type="xs:unsignedShort" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MinValue" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MaxValue" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Units" type="UnitsEnum" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+     		<xs:element name="Resolution" type="xs:float" maxOccurs="1" minOccurs="0"></xs:element>
+    		<xs:element name="ArrayValue"
+    			type="IntegerValueType" maxOccurs="unbounded" minOccurs="1">
+    		</xs:element>
+       	</xs:sequence>
+   </xs:complexType>
+
+     <xs:complexType name="FloatArrayType">
+    	<xs:sequence>
+    		<xs:element name="ArrayLength" type="xs:unsignedShort" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MinValue" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MaxValue" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Units" type="UnitsEnum" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+      		<xs:element name="Resolution" type="xs:float" maxOccurs="1" minOccurs="0"></xs:element>
+    		<xs:element name="ArrayValue"
+    			type="FloatValueType" maxOccurs="unbounded" minOccurs="1">
+    		</xs:element>
+       	</xs:sequence>
+   </xs:complexType>
+ 
+  <xs:complexType name="EnumFloatMapEntryType">
+    	<xs:sequence>
+    		<xs:element name="Key" type="EnumValueType" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		
+     		<xs:element name="Value" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+       	</xs:sequence>
+   </xs:complexType>
+
+
+   <xs:complexType name="EnumFloatMapType">
+    	<xs:sequence>
+            <xs:element name="EnumID" type="EnumIDType" maxOccurs="1"
+            	minOccurs="1">
+            </xs:element>
+            <xs:element name="MinValue" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MaxValue" type="FloatValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Units" type="UnitsEnum" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    		<xs:element name="Resolution" type="xs:float" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    		<xs:element name="Entry" type="EnumFloatMapEntryType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</xs:element>
+    	</xs:sequence>
+   </xs:complexType>
+   
+ 	<xs:complexType name="EnumIntegerMapEntryType">
+    	<xs:sequence>
+    		<xs:element name="Key" type="EnumValueType" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		
+     		<xs:element name="Value" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+       	</xs:sequence>
+   </xs:complexType>
+
+  	<xs:complexType name="EnumIntegerMapType">
+    	<xs:sequence>
+            <xs:element name="EnumID" type="EnumIDType" maxOccurs="1"
+            	minOccurs="1">
+            </xs:element>
+            <xs:element name="MinValue" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="MaxValue" type="IntegerValueType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="Units" type="UnitsEnum" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    		<xs:element name="Resolution" type="xs:float" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    		<xs:element name="Entry" type="EnumIntegerMapEntryType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</xs:element>
+    	</xs:sequence>
+   </xs:complexType>
+
+   <xs:complexType name="StringArrayType">
+    	<xs:sequence>
+    		<xs:element name="ArrayLength" type="xs:unsignedShort" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		<xs:element name="ArrayValue"
+    			type="StringType" maxOccurs="unbounded" minOccurs="1">
+    		</xs:element>
+       	</xs:sequence>
+   </xs:complexType>
+
+   <xs:complexType name="EnumArrayType">
+    	<xs:sequence>
+            <xs:element name="EnumID" type="EnumIDType" maxOccurs="1" minOccurs="1">
+    		</xs:element>
+            <xs:element name="ArrayLength" type="xs:unsignedShort"
+            	maxOccurs="1" minOccurs="1">
+            </xs:element>
+
+            <xs:element name="ArrayValue" type="EnumValueType"
+    			maxOccurs="unbounded" minOccurs="1">
+    		</xs:element>
+    	</xs:sequence>
+   </xs:complexType>
+   
+   <xs:complexType name="RecordType">
+   		<xs:sequence>
+			<xs:element name="Field" type="RecordFieldType" maxOccurs="unbounded" minOccurs="1"></xs:element>
+   		</xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="RecordFieldType">
+   		<xs:sequence>
+			<xs:element name="FieldName" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+  			<xs:choice maxOccurs="1" minOccurs="1">
+    			<xs:element name="Boolean" type="BooleanType"></xs:element>
+     			<xs:element name="Integer" type="IntegerType"></xs:element>
+    			<xs:element name="Float" type="FloatType"></xs:element>
+    			<xs:element name="String" type="StringType"></xs:element>
+    			<xs:element name="Enumeration" type="EnumType"></xs:element>
+    		</xs:choice>   			
+   		</xs:sequence>
+   </xs:complexType>
+
+ </xs:schema>

@@ -1,0 +1,1749 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef defines the calibration use cases defined in the GIS-520. ">
+  <CalDefFileVersion>8</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>7/1/2016</Date>
+    <Description>Initial release of this caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef file added five driverworkload calibrations (PortableCordLimitButtonDriverWorkload, ChargingOptionsButtonDriverWorkload, ChargeNowButtonDriverWorkload, ChargeOverridesButtonDriverWorkload, and NextDepartureTimeOverrideButtonDriverWorkload) from the GIS-520.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>1/13/2017</Date>
+    <Description>Within the GIS520_EnergyUI.caldef file, made the following three updates to reflect updates maded by GIS-520 specification owner in the latest version GIS-520 for RTC CR#:1171995 (GIS-520 Energy UI Calibrations for Driver Workload (Safety) and VICM Communication Robustness): 1.) Deleted the following six calibrations: 1.) CHRG_MAINSCREEN_LEGACY, 2.) MAINTENANCE_MODES, 3.) DF_VIEW_SELECTOR, 4.) CHRG_CALC_DEFAULT, 5.) CHRG_PORTABLECORD_QA, and  6.) CHRG_NEXT_DEPTIME_QA that were confirmed not to be needed. 2.) Initially released the following fourteen calibrations: 1.) ENERGYSUMMARY_POPUPREQUEST_WAITTIMER, 2.) ENERGYSUMMARY_MINIMUMPOPUP_DISPLAYTIMER, 3.) DEPARTURETIME_BUTTONHOLDTIME, 4.) ENERGYSUMMARY_POPUP_DISPLAYTIMER, 5.) MAXALLOWED_FUELECONOMY_ DISPLAY, 6.) DEPARTURETIME_SLEWRATE , 7.) DEPARTURETIME_ HOURINCREMENTDECREMENTRATE, 8.) DEPARTURETIME_MINUTEINCREMENTDECREMENTRATE, 9.) MINACTIVITYINDICATORENALBETIME, 10.) MINACTIVITYINDICATORTIME, 11.) SCHEDULE_UPDATE_TIMEOUT_TIMER, 12.) INVALID_DATA_POPUP_TIMER, 13.) EnergyInformationPaneTextDriverWorkload, and 14.) LongPopUpTextDriverWorkload that were added as new calibrations in GIS-520 V4.4. 3.) Updated the default values for the following four driverworkload calibrations: 1. ) PortableCordLimitButtonDriverWorkload, 2.) ChargingOptionsButtonDriverWorkload, 3.)ChargeOverridesButtonDriverWorkload, and 4.) NextDepartureTimeOverrideButtonDriverWorkload to match the updated default values reflected for these calibrations now in the latest version GIS-520.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>10/2/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the GIS520_EnergyUI.caldef . Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>09/10/2018</Date>
+    <Description>Per CR#1827410, Updated GIS520_EnergyUI.caldef by adding following calibrations: DF_ENERGY_DETAILS_BEV, CHRG_TARGETLEVEL, CHRG_PRIORITY, CHRG_MAINSCREEN_AC_LOCK, DF_SUMMARY_POPUP_BEV, and TargetChargeLevelButtonDriverWorkload. Updated the Default value for 13_HYBRID_SYSTEM_HMI calibration to 0</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>5/15/2020</Date>
+    <Description>Per CR#2285976  Updated GIS520_EnergyUI.caldef by adding the following calibrations for MY23 GB Energy app: DC_CHARGE_BATTERY _CONDITIONING, PLUG_ AND _CHARGE, PLUG_ AND _CHARGE_ENABLE, PLUG_ AND _CHARGE_PCID, PLUG_ AND _CHARGE_CERTIFICATE_MANAGEMENT, CABIN _CONDITIONING, CABIN _CONDITIONING_TEMP_SETTING,  CHARGE _SCHEDULING, PREFERRED_CHARGE_TIMES, CHARGING _SUMMARY_NOTIFICATION, ENERGY_ASSIST_TAB_VIEW, ENERGY_EFFICIENCY,  ENERGY_USAGE, ENERGY_EFFICIENCY_BASELINE, MIN_ ACTIVITY_ INDICATOR_ TRIGGER_ TIME,  MIN_ ACTIVITY_INDICATOR_DISPLAY_TIME, WAIT_FOR_RESPONSE, MIN_BUTTON_PRESS_UPDATE_TIME, and  ENERGY_APPLICATION.    Updated description on the following cals: CHRG_VIEW_SELECTOR, CHRG_PORTABLECORD_LIMIT, DF_LIFETIME_DATARESET_ LONGPRESSTIMER, CHRG_LOC_BASED, and CHRG_TARGETLEVEL.</Description>
+    <Author>Caroline Chaplow</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>9/28/2020</Date>
+    <Description>Per CR#2285976, adding new cal CHARGE_COMPLETE_TIME</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Enable display of the estimated charge complete time when not actively charging. $1=Enable, $0=Disable" Name="CHARGE_COMPLETE_TIME" References="UIS 520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_UIAgAATDEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with Target Charge Level Feature from the Charging main screen." Name="TargetChargeLevelButtonDriverWorkload" References="GIS-520 Section 5.5.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>__-ab4LXtEeiKKI0gJXkXCQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/11/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If Enabled, the Target Charge Level feature is enabled and available from the Charging Options Menu, $1=Enable; $0=Disable " Name="CHRG_TARGETLEVEL" References="GIS-520 Section 5.1.1.1 and UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_W7f8ULXmEeiOJdUP7F6pfw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/11/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/24/2020</Date>
+      <Description>Added reference to UIS 520 for MY23 GB</Description>
+      <Author>C. Chaplow</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="If Enabled, the Priority Charging feature is enabled and available from the Delayed Charging Menu, $1=Enable; $0=Disable" Name="CHRG_PRIORITY" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_Cnl-QLXmEeiOJdUP7F6pfw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/11/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="If Enabled, the Charging Main Screen will include the Lock Status while Plugged In and the Stop Charging and Unlock button for AC Charging. (Lock Status and Stop Charging and Unlock Button is always required for DC Fast Charging),  $1=Enable; $0=Disable" Name="CHRG_MAINSCREEN_AC_LOCK" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_VACKoLXlEeiOJdUP7F6pfw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/11/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Summary Pop-Up for BEV specific content, $1=Enable; $0=Disable" Name="DF_SUMMARY_POPUP_BEV" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_KD5psLXkEeiOJdUP7F6pfw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/11/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Details for BEV specific content, $1=Enable; $0=Disable" Name="DF_ENERGY_DETAILS_BEV" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_Y0HQkLUyEeiOJdUP7F6pfw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/11/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Controls the amount of time the invalid data pop-up is displayed." Name="INVALID_DATA_POPUP_TIMER" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_RPWOUNsyEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="If a response is not received from the VICM within a Calibratable time (SCHEDULE_UPDAT E_TIMEOUT_TIMER) when updating the rate schedule, the CSM shall display the Schedule Update Timeout Pop-Up." Name="SCHEDULE_UPDATE_TIMEOUT_TIMER" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_ZjSsYNswEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Controls the minimum amount of time an activity indicator is to remain active to avoid flickers." Name="MINACTIVITYINDICATORTIME" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_PyEfYNsvEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The guideline for displaying an Activity Indicator is when the result of a button press or other system operation will take more than 1 second to complete." Name="MINACTIVITYINDICATORENALBETIME" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_Jm4k8NsuEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Control the amount by which the minute value changes when button is held in the departure time schedule screen." Name="DEPARTURETIME_MINUTEINCREMENTDECREMENTRATE" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_qEET4NssEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Control the amount by which the hour value changes when button is held in the departure time schedule screen. " Name="DEPARTURETIME_HOURINCREMENTDECREMENTRATE" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_y_7VQNskEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Control the update frequency of the hour and minute values when the &#x201c;+&#x201d; or &#x201c;-&#x201c; buttons are held in the departure time schedule screen." Name="DEPARTURETIME_SLEWRATE" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_bFUywNsjEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Calibration used to set the max fuel economy to be displayed. Example: If the calibration is set to 250 and the fuel economy received is 251, &#x201c;250+&#x201d; is displayed.&#x201d; " Name="MAXALLOWED_FUELECONOMY_DISPLAY" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_sUuI4NshEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines how long the CSM shall set its AutoDismiss timer to display the Energy Summary Exit Full screen Pop-Up Alert. " Name="ENERGYSUMMARY_POPUP_DISPLAYTIMER" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yAy74NsWEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Control the time a &#x201c;+&#x201d; or &#x201c;-&#x201c; button must be held to increment the time in the departure time schedule screen." Name="DEPARTURETIME_BUTTONHOLDTIME" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_5_nwcNsSEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="In the event that another request for the display is received immediately after the CSM launches the Energy Summary Exit Pop-Up, The Energy Summary Exit Pop-Up shall be displayed for a minimum of 2s to avoid being interpreted as a screen flicker.  " Name="ENERGYSUMMARY_MINIMUMPOPUP_DISPLAYTIMER" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_fNhuUNsPEea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines how long the CSM shall wait for other Alert Activation from the alert manager on key-off before displaying the Energy Summary Exit Pop-Up Alert.  " Name="ENERGYSUMMARY_POPUPREQUEST_WAITTIMER" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_9aH7UNq4Eea9hOtd-fbZ_Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with Portable Cord Limit Button from the Charging main screen. " Name="PortableCordLimitButtonDriverWorkload" References="GIS 520 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_22YyIJ8bEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value for the PortableCordLimitButtonDriverWorkload calibration to match the updated default value reflected now in the latest version GIS-520.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with Charging Options Button from the Charging main screen." Name="ChargingOptionsButtonDriverWorkload" References="GIS 520 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_z9iVsJ8bEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value for the ChargingOptionsButtonDriverWorkload calibration to match the updated default value reflected now in the latest version GIS-520.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the Charge Now Button from the Charging main screen.  " Name="ChargeNowButtonDriverWorkload" References="GIS 520 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_tyBOoJ8bEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the Charge Overrides Button from the Charging main screen. " Name="ChargeOverridesButtonDriverWorkload" References="GIS 520 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_ovr9MJ8bEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value for the ChargeOverridesButtonDriverWorkload calibration to match the updated default value reflected now in the latest version GIS-520.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the Next Departure Time Button from the Charge Overrides View." Name="NextDepartureTimeOverrideButtonDriverWorkload" References="GIS 520 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_ckcIUJ8bEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value for the NextDepartureTimeOverrideButtonDriverWorkload calibration to match the updated default value reflected now in the latest version GIS-520.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from the Information Pane text from all Charging views. " Name="EnergyInformationPaneTextDriverWorkload" References="GIS 520 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_7KcywNs8Eea9hOtd-fbZ_Q</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from pressing the move info button on Fuel and Engine Maintenance Notifications." Name="LongPopUpTextDriverWorkload" References="GIS 520 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_AeJPENs_Eea9hOtd-fbZ_Q</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines how long we wait to show an Activity Indicator while updating a Rate Schedule." Name="CHRG_UTIL_SCHDLE_ACT_IND" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_N_UrcEDIEeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Determines how long we wait to show an Activity Indicator while updating Departure times." Name="CHRG_DEPTIME_ACT_IND" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_rZF3QEDHEeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="If Enabled and Utility Rate Charging active, the customer may be presented with the rate information as part of their charge start times. Disabled is the Default. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled. " Name="CHRG_MAINSCREEN_PEAK" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_CT-38EDDEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable the Charging View Selector or Charge Tab in the Energy App. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHRG_VIEW_SELECTOR" References="GIS-520 Section 5.1.1.1 and UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_xK2z0EDCEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>4/15/2020</Date>
+      <Description>Updated description to reference charge tab for MY23 implementation</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable the Utility Charging thats based on Legacy Logic from the VICM Module. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHRG_UTILITY_CHRG_LEGACY" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_2jtkUEDBEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable the Delayed Charging thats based on Legacy Logic from the VICM Module. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHRG_DELAYED_CHRG_LEGACY" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_dv5FYEDBEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Home Charge Calculation. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHRG_LOC_BASED_CHRG_CALC" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_KrUBMEDBEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Location Based Charging. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHRG_LOC_BASED" References="GIS-520 Section 5.1.1.1 and UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yPYd0EDAEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>4/15/2020</Date>
+      <Description>Added reference to UIS520 for MY23 GB</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable the Portable Cord Limit thats based on Legacy Logic from the VICM Module. MY23 GB: Enable display of portable cord limit buttons and setting menu item Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHRG_PORTABLECORD_LIMIT" References="GIS-520 Section 5.1.1.1 and UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_TjCsUEDAEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>4/15/2020</Date>
+      <Description>Added Enable display of portable cord limit buttons and setting menu item description for MY23 GB</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines the amount of time the long press needs to be active to initiate the Lifetime Efficiency Data Reset Popup." Name="DF_LIFETIME_DATARESET_LONGPRESSTIMER" References="GIS-520 Section 5.1.1.1 and UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_XfOPAEC1EeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>4/15/2020</Date>
+      <Description>Referenced UIS520 for MY23 GB</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>50</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Baseline Information for the Range Impacts Since Last Full Charge can be shown or not shown. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_RANGE_IMPACTS_FULLCHARGE_BASELINEINFO" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_8EQusEC0EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables the button on the energy usage (with and without MPGe toggle) screens that allows the Lifetime Efficiency Data to be reset. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_LIFETIME_DATARESET_BUTTON" References="GIS-520 Section 5.1.1.1 and UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_R1n-sEC0EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>4/15/2020</Date>
+      <Description>Added reference to UIS520 for MY23 GB</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Summary Pop-Up. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_SUMMARY_POPUP" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_ELjbYEC0EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Details. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_ENERGY_DETAILS" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_UUzzYECzEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Consumption History Bar Graph with Current Average. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_CONSUMPTION_GRAPH_CAVG" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_44qnUECyEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Consumption History Bar Graph. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_CONSUMPTION_GRAPH" References="GIS-520 Section 5.1.1.1 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_rhGJQECyEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Range Impacts Since Last Full Charge. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_RANGE_IMPACTS_FULLCHARGE" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_WouMMECyEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Usage Score Since Last Full Charge. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_USAGE_SCORE_FULLCHARGE" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_70tXIECxEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Usage Score This Drive. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_USAGE_SCORE_DRIVE" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_pSMToECwEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Usage WITH OUT MGPe Toggle and Lifetime efficiency. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_USAGE_WO_TOGGLE_LIFETIME" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_XVZ98ECwEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Usage WITH OUT MGPe Toggle. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_USAGE_WO_TOGGLE" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_Kn3UUECwEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Energy Usage WITH MGPe Toggle. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_USAGE_W_TOGGLE" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_-EIG8ECvEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable BAS3 RWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_BAS3_RWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_0-xhcECuEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable BAS3 FWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_BAS3_FWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_hTlwQECuEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable HEV RWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_HEV_RWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_zjcBUECtEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable HEV FWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_HEV_FWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_Ffu5sECsEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable PHEV RWD Power Flow Driver Feedback View.  Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_PHEV_RWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_LJ4LIECCEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable PHEV FWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_PHEV_FWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_LNLzQECBEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable EREV RWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_EREV_RWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_TsqL4EB_EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable EREV FWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_EREV_FWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_d5xAcEB8EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable BEV RWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_BEV_RWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_E0MqMEB8EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable BEV FWD Power Flow Driver Feedback View. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DF_FLOW_BEV_FWD" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_h9VAgEBQEeaGBJmmd0Rx-Q</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Calibrated features to easily allow different configurations of screens based on the type of Hybrid Powertrain." Name="I3_HYBRID_SYSTEM_HMI" References="GIS-520 Section 5.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_Bg2cMEBSEeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>09/20/2018</Date>
+      <Description>Changed Default value to 0</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_nm9cIEBIEeaGBJmmd0Rx-Q</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables DC Fast Charge Battery Conditioning Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="DC_CHARGE_BATTERY_CONDITIONING" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_5GzrYKRKEeqNcYlRigeTFg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Plug and Charge feature Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="PLUG_AND_CHARGE" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_HoxsMW42EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables ability to enable/disable Plug and Charge feature in vehicle Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="PLUG_AND_CHARGE_ENABLE" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_bmlecW42EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables display of PCID for Plug and Charge feature in vehicle Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="PLUG_AND_CHARGE_PCID" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_juv4YW42EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables ability to manage certificates in vehicle.  This includes display of certificate list and ablity to delete certificates. Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="PLUG_AND_CHARGE_CERTIFICATE_MANAGEMENT" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_tMMDMW42EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Cabin Pre-conditioning Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CABIN_CONDITIONING" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_paPbkW42EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Cabin Conditioning temperature setting Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CABIN_CONDITIONING_TEMP_SETTING" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_IYWSgW43EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Charge Scheduling Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHARGE_SCHEDULING" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_3MLE8W43EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter is used to Enable Preferred Charge Times option.  Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="PREFERRED_CHARGE_TIMES" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_-lsQMW43EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Charging Summary notification Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="CHARGING_SUMMARY_NOTIFICATION" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_DivZAW44EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Energy Assist Tab View Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="ENERGY_ASSIST_TAB_VIEW" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_OgE-YW46EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable display of Energy Efficiency instantaneous numeric value Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="ENERGY_EFFICIENCY_INSTANTANEOUS" References="UIS-520" Usage="MID,HIGH,GLOBALB">
+    <CalID>_EVUWkH99Eeqm07g8leYcyw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables display of baseline on Energy Efficiency graph Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="ENERGY_EFFICIENCY_BASELINE" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_emdBsX91Eeqm07g8leYcyw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Energy Efficiency Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="ENERGY_EFFICIENCY" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_ToAhgW46EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/15/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>Caroline Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Energy Usage Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="ENERGY_USAGE" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_MHV6gW48EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/24/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>C. Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter controls how long to wait for response before showing the activity indicator." Name="MIN_ACTIVITY_INDICATOR_TRIGGER_TIME" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_4GwroG48EeqwvJ_rUJXPGQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/24/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>C. Chaplow</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter controls the minimum amount of time an activity indicator is to remain active to avoid flickers." Name="MIN_ACTIVITY_INDICATOR_DISPLAY_TIME" References="UIS 520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_rqtlMW49EeqwvJ_rUJXPGQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/24/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>C. Chaplow</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter sets the wait time for the response from the VICM when updating the charging schedule.  Infotainment shall display the &quot;Unable to Save Your Updates&quot; pop-up when the timer expires." Name="WAIT_FOR_RESPONSE" References="UIS 520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_17hGoW49EeqwvJ_rUJXPGQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/24/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>C. Chaplow</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter controls timing of transmission of button requests.  Request shall stay at same state until timer expires, no matter what state the button is in.  (Used for condition of user repeatedly toggling the button.)" Name="MIN_BUTTON_PRESS_UPDATE_TIME" References="UIS 520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_gjLaoW4-EeqwvJ_rUJXPGQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/24/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>C. Chaplow</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration parameter enables Energy application Note: A value of True represents $1 = Enabled, and a value of False represents $0 = Disabled." Name="ENERGY_APPLICATION" References="UIS-520/DNG requirements in Electric Vehicle Charging and Energy Center Display module" Usage="MID,HIGH,GLOBALB">
+    <CalID>_5-KKwW4_EeqwvJ_rUJXPGQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/24/2020</Date>
+      <Description>Initial release of this cal</Description>
+      <Author>C. Chaplow</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

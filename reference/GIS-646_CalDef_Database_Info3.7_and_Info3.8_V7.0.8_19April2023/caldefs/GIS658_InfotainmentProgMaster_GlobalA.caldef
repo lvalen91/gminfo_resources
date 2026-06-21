@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="System" Description="GIS-658 INFOTAINMENT PROGRAMMING MASTER REQUIREMENTS  calibrations">
+  <CalDefFileVersion>9</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>14APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>SuSanta Sarkar</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10NOV14</Date>
+    <Description>Removed Low from Usage.  Deleted Manual_Transmission cal due to duplication with GIS659_RemoteReflash VehicleTransmissionType cal per GIS-658 v1.1.  Changed NO_SWITCH_PROG_MODE default to 20 sec.  Corrected typo in the defaults for SigningCertificateIssuer and SigningCertificateSubject.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2Feb15</Date>
+    <Description>Updated due to changes in GIS-658 v1.2.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>12MAY15</Date>
+    <Description>Added VehicleTransmissionType cal and created GIS-658_InfotainmentProgMaster.enumdef.  Updated SigningCertificate cal defaults.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>3Jun16</Date>
+    <Description>Updated WAITING_ON_GMLAN and SigningCertificateSubject defaults</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS658_InfotainmentProgMaster.caldef file to GIS658_InfotainmentProgMaster_GlobalA.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef files that conatin Global A specific calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Used to determine if the park brake status needs to be included in vehicle state determination" Name="VehicleTransmissionType" References="GIS-658-7200 v1.3" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_hwZ34PizEeSNZMuubhcU9w</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12MAY15</Date>
+      <Description>Added VehicleTransmissionType cal due to the deletion of the GIS659_RemoteReflash CalDef</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_t7YR4PixEeSNZMuubhcU9w</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Programming Master waits for this duration for other Networked Devices" Name="DEREGISTER_DURATION" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_qCtq0MPtEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waits for this time after initial notification to clients" Name="MANIFEST_NOTICE" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_32ixoMPuEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waits for next client before ending" Name="WAITING_TO_END" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_alqQgMP5EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waits for this duration  for USB to be reinserted" Name="WAITING_FOR_FILE" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_zPklgMP5EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waiting longer as USB taken out in the middle of installation" Name="WAITING_LONG_FOR_FILE" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_3i3xQMP6EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>60</MinValue>
+      <MaxValue>600</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master is waiting this duration for response from CAN network" Name="WAITING_ON_GMLAN" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_w5-8QMP7EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2Jun16</Date>
+      <Description>Changed default per SuSanta Sarkar</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>20</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waits for client to respond. Some client reset to go to boot mode." Name="WAITING_ON_CLIENT" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_E7Y1EMP8EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waits for this duration, after enabling programming, for the client to make a request for the first programming file." Name="NO_SWITCH_PROG_MODE" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_P1UhIMP-EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed max to 128 and default to 60 per GIS-658 v1.2</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>128</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waits this duration for the user to park, if not parked" Name="WAITING_FOR_PARKING" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_mUmKkMP-EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The size in Mega Bytes (MB) of the file that can be received by cllient and verified in RAM before committing to non-volatile memory" Name="MAX_OPERATIONAL_PROG_FILE_SIZE" References="GIS-658-1100, 12" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_va-q0MP_EeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed default to 8000 per GIS-658 v1.2</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>8000</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="It is the largest size in Mega Bytes (MB) of the file that can be received considering reading from the bus and rewriting in the module, the entire file need not be stored in RAM.  " Name="MAX_PROG_FILE_SIZE" References="GIS-658-1100,9" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_nqNAsMQAEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed default to 8000 per GIS-658 v1.2</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>8000</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Master waits for this duration for user to consent" Name="CONSENT_PROCEED" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_U8mcoMQBEeO3q7u_anfWeg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>11</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Ename or disable programming" Name="PROGRAMMING_ENABLED" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_ndEuMMQBEeO3q7u_anfWeg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Issuer string of the signing certificate" Name="SigningCertificateIssuer" References="GIS-658-7000" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_2gr3UMQBEeO3q7u_anfWeg</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Subject field of the Code Signing Certificate" Name="SigningCertificateSubject" References="GIS-658-8002" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_8DmQ0MQCEeO3q7u_anfWeg</CalID>
+    <Type>String</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3Jun16</Date>
+      <Description>Updated default to match GIS-658 v1.4.4</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC</StringValue>
+    </String>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

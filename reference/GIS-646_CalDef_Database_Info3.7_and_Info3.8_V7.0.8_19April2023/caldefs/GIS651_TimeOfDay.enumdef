@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="">
+  <EnumDefFileVersion>4</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>13OCT14</Date>
+    <Description>Removed invalid characters from enum value names to support code generation.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>06FEB15</Date>
+    <Description>Removed states InternalGallileo and InternalGLONASS.  Added descriptions to remaining states.</Description>
+    <Author>John Edens</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2016-Dec-08</Date>
+    <Description>Within the GIS651_TimeOfDay.caldef and GIS651_TimeOfDay.enumdef files as a part of the updates for RTC CR#: 1231009, removed RDS_CONFIG enumeration calibration because this variable is covered by the calibration called FM_RDS_Clocktime_enabled in the GIS653_FMTuner.caldef file.</Description>
+    <Author>Kiran Soni</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="GPS_DATA_SOURCE">
+    <EnumID>_IDkOwFz1EeOiWbDi2SsW8w</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Description="No GPS network message from Telematics module AND No GPS source antenna connected to CSM." Name="NoGPS">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="CSM is connected directly to an external GPS source antenna." Name="InternalGPS">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Availability of GPS network message from the Telematics module." Name="ExternalOnStarGPS">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

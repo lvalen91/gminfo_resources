@@ -1,0 +1,408 @@
+total 12448
+drwxr-x--x  4 root shell    8192 2008-12-31 15:00 .
+drwxr-xr-x 15 root root     4096 2008-12-31 15:00 ..
+-?????????  ? ?    ?           ?                ? RDMS
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 [ -> toybox
+-rwxr-xr-x  1 root shell  117920 2008-12-31 15:00 abb
+-rwxr-xr-x  1 root shell     128 2008-12-31 15:00 abx
+-rwxr-xr-x  1 root shell     128 2008-12-31 15:00 abx2xml
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 acpi -> toybox
+-rwxr-xr-x  1 root shell     207 2008-12-31 15:00 am
+-?????????  ? ?    ?           ?                ? android.frameworks.automotive.display@1.0-service
+-?????????  ? ?    ?           ?                ? android.frameworks.automotive.mediaPlayer@1.0-service
+-?????????  ? ?    ?           ?                ? animengine
+-?????????  ? ?    ?           ?                ? apexd
+lrwxr-xr-x  1 root shell      13 2008-12-31 15:00 app_process -> app_process64
+-rwxr-xr-x  1 root shell   11876 2008-12-31 15:00 app_process32
+-rwxr-xr-x  1 root shell   14352 2008-12-31 15:00 app_process64
+-rwxr-xr-x  1 root shell      33 2008-12-31 15:00 appops
+-rwxr-xr-x  1 root shell     141 2008-12-31 15:00 appwidget
+-rwxr-xr-x  1 root shell   66896 2008-12-31 15:00 atrace
+-?????????  ? ?    ?           ?                ? audioserver
+-?????????  ? ?    ?           ?                ? auditctl
+-rwxr-xr-x  1 root shell  173256 2008-12-31 15:00 avbctl
+-rwxr-xr-x  1 root shell   37040 2008-12-31 15:00 aw690_mlanevent
+-rwxr-xr-x  1 root shell  313424 2008-12-31 15:00 aw690_mlanutl
+-rwxr-xr-x  1 root shell  258368 2008-12-31 15:00 aw690_uaputl
+-rwxr-xr-x  1 root shell  140608 2008-12-31 15:00 awk
+-rwxr-xr-x  1 root shell   24384 2008-12-31 15:00 badblocks
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 base64 -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 basename -> toybox
+-rwxr-xr-x  1 root shell   87088 2008-12-31 15:00 bc
+-rwxr-xr-x  1 root shell   41944 2008-12-31 15:00 bcc
+-?????????  ? ?    ?           ?                ? blank_screen
+-?????????  ? ?    ?           ?                ? blkid
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 blockdev -> toybox
+-rwxr-xr-x  1 root shell     126 2008-12-31 15:00 bmgr
+-?????????  ? ?    ?           ?                ? bootanimation
+-?????????  ? ?    ?           ?                ? bootstat
+drwxr-x--x  2 root shell    4096 2008-12-31 15:00 bootstrap
+-?????????  ? ?    ?           ?                ? boringssl_self_test32
+-?????????  ? ?    ?           ?                ? boringssl_self_test64
+-?????????  ? ?    ?           ?                ? bpfloader
+-rwxr-xr-x  1 root shell     173 2008-12-31 15:00 bu
+-rwxr-xr-x  1 root shell    4520 2008-12-31 15:00 bugreport
+-rwxr-xr-x  1 root shell    8128 2008-12-31 15:00 bugreportz
+lrwxr-xr-x  1 root shell       5 2008-12-31 15:00 bunzip2 -> bzip2
+lrwxr-xr-x  1 root shell       5 2008-12-31 15:00 bzcat -> bzip2
+-rwxr-xr-x  1 root shell   98048 2008-12-31 15:00 bzip2
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cal -> toybox
+-?????????  ? ?    ?           ?                ? carbugreportd
+-?????????  ? ?    ?           ?                ? carplay.sh
+-?????????  ? ?    ?           ?                ? carpowerpolicyd
+-?????????  ? ?    ?           ?                ? carwatchdogd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cat -> toybox
+-?????????  ? ?    ?           ?                ? charger
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chattr -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chcon -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chgrp -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chmod -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chown -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chroot -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chrt -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cksum -> toybox
+-?????????  ? ?    ?           ?                ? clatd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 clear -> toybox
+-rwxr-xr-x  1 root shell   45672 2008-12-31 15:00 cmd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cmp -> toybox
+-?????????  ? ?    ?           ?                ? com.android.car.procfsinspector
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 comm -> toybox
+-rwxr-xr-x  1 root shell     135 2008-12-31 15:00 content
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cp -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cpio -> toybox
+-?????????  ? ?    ?           ?                ? credstore
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cut -> toybox
+lrwxr-xr-x  1 root shell      34 2008-12-31 15:00 dalvikvm -> /apex/com.android.art/bin/dalvikvm
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 date -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dd -> toybox
+-rwxr-xr-x  1 root shell   10272 2008-12-31 15:00 debuggerd
+lrwxr-xr-x  1 root shell       9 2008-12-31 15:00 defrag.f2fs -> fsck.f2fs
+-rwxr-xr-x  1 root shell      40 2008-12-31 15:00 device_config
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 devmem -> toybox
+lrwxr-xr-x  1 root shell      35 2008-12-31 15:00 dex2oat -> /apex/com.android.art/bin/dex2oat64
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 df -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 diff -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dirname -> toybox
+lrwxr-xr-x  1 root shell      16 2008-12-31 15:00 disable-verity -> set-verity-state
+-rwxr-xr-x  1 root shell   61168 2008-12-31 15:00 dmabuf_dump
+-rwxr-xr-x  1 root shell   93976 2008-12-31 15:00 dmctl
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dmesg -> toybox
+-?????????  ? ?    ?           ?                ? dnsmasq
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dos2unix -> toybox
+-rwxr-xr-x  1 root shell      81 2008-12-31 15:00 dpm
+-?????????  ? ?    ?           ?                ? drmserver
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 du -> toybox
+lrwxr-xr-x  1 root shell       9 2008-12-31 15:00 dump.f2fs -> fsck.f2fs
+-?????????  ? ?    ?           ?                ? dump_frozen.sh
+-?????????  ? ?    ?           ?                ? dumpstate
+-rwxr-xr-x  1 root shell   39528 2008-12-31 15:00 dumpsys
+-rwxr-xr-x  1 root shell   10664 2008-12-31 15:00 e2freefrag
+-?????????  ? ?    ?           ?                ? e2fsck
+-?????????  ? ?    ?           ?                ? e2fsdroid
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 echo -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 egrep -> toybox
+lrwxr-xr-x  1 root shell      16 2008-12-31 15:00 enable-verity -> set-verity-state
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 env -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 expand -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 expr -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 fallocate -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 false -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 fgrep -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 file -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 find -> toybox
+-?????????  ? ?    ?           ?                ? flags_health_check
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 flock -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 fmt -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 free -> toybox
+-?????????  ? ?    ?           ?                ? fsck.f2fs
+-?????????  ? ?    ?           ?                ? fsck_msdos
+-?????????  ? ?    ?           ?                ? fsverity_init
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 fsync -> toybox
+-?????????  ? ?    ?           ?                ? gatekeeperd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 getconf -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 getenforce -> toybox
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 getevent -> toolbox
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 getprop -> toolbox
+-?????????  ? ?    ?           ?                ? gm_protokey_recovery
+-?????????  ? ?    ?           ?                ? gmcrashlogd
+-rwxr-xr-x  1 root shell   88632 2008-12-31 15:00 gmlc
+-?????????  ? ?    ?           ?                ? gmloggerd
+-?????????  ? ?    ?           ?                ? gpuservice
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 grep -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 groups -> toybox
+-rwxr-xr-x  1 root shell   48928 2008-12-31 15:00 gsi_tool
+-?????????  ? ?    ?           ?                ? gsid
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 gunzip -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 gzip -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 head -> toybox
+-?????????  ? ?    ?           ?                ? heapprofd
+-rwxr-xr-x  1 root shell     379 2008-12-31 15:00 hid
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 hostname -> toybox
+drwxr-x--x  2 root shell    4096 2008-12-31 15:00 hw
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 hwclock -> toybox
+-?????????  ? ?    ?           ?                ? hwservicemanager
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 i2cdetect -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 i2cdump -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 i2cget -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 i2cset -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 iconv -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 id -> toybox
+-?????????  ? ?    ?           ?                ? idmap2
+-?????????  ? ?    ?           ?                ? idmap2d
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 ifconfig -> toybox
+-rwxr-xr-x  1 root shell      48 2008-12-31 15:00 ime
+-rwxr-xr-x  1 root shell   40064 2008-12-31 15:00 incident
+-rwxr-xr-x  1 root shell     220 2008-12-31 15:00 incident-helper-cmd
+-?????????  ? ?    ?           ?                ? incident_helper
+-?????????  ? ?    ?           ?                ? incidentd
+-?????????  ? ?    ?           ?                ? init
+-?????????  ? ?    ?           ?                ? init_ethernet.sh
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 inotifyd -> toybox
+-rwxr-xr-x  1 root shell      32 2008-12-31 15:00 input
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 insmod -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 install -> toybox
+-?????????  ? ?    ?           ?                ? installd
+-?????????  ? ?    ?           ?                ? intel_android_target_gfx_info_gathering-v1.6g.sh
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 ionice -> toybox
+-rwxr-xr-x  1 root shell 3005448 2008-12-31 15:00 iorap.cmd.compiler
+-rwxr-xr-x  1 root shell  396672 2008-12-31 15:00 iorap.cmd.maintenance
+-?????????  ? ?    ?           ?                ? iorap.inode2filename
+-?????????  ? ?    ?           ?                ? iorap.prefetcherd
+-?????????  ? ?    ?           ?                ? iorapd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 iorenice -> toybox
+-rwxr-xr-x  1 root shell  432880 2008-12-31 15:00 ip
+lrwxr-xr-x  1 root shell      20 2008-12-31 15:00 ip-wrapper-1.0 -> netutils-wrapper-1.0
+lrwxr-xr-x  1 root shell       8 2008-12-31 15:00 ip6tables -> iptables
+lrwxr-xr-x  1 root shell       8 2008-12-31 15:00 ip6tables-restore -> iptables
+lrwxr-xr-x  1 root shell       8 2008-12-31 15:00 ip6tables-save -> iptables
+lrwxr-xr-x  1 root shell      20 2008-12-31 15:00 ip6tables-wrapper-1.0 -> netutils-wrapper-1.0
+-?????????  ? ?    ?           ?                ? iproute.sh
+-rwxr-xr-x  1 root shell  492880 2008-12-31 15:00 iptables
+lrwxr-xr-x  1 root shell       8 2008-12-31 15:00 iptables-restore -> iptables
+lrwxr-xr-x  1 root shell       8 2008-12-31 15:00 iptables-save -> iptables
+lrwxr-xr-x  1 root shell      20 2008-12-31 15:00 iptables-wrapper-1.0 -> netutils-wrapper-1.0
+-?????????  ? ?    ?           ?                ? iw
+-?????????  ? ?    ?           ?                ? keystore2
+-rwxr-xr-x  1 root shell  119800 2008-12-31 15:00 keystore_cli_v2
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 kill -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 killall -> toybox
+-rwxr-xr-x  1 root shell  750256 2008-12-31 15:00 ld.mc
+-rwxr-xr-x  1 root shell     374 2008-12-31 15:00 ldd
+-rwxr-xr-x  1 root shell   54128 2008-12-31 15:00 librank
+lrwxr-xr-x  1 root shell      36 2008-12-31 15:00 linker -> /apex/com.android.runtime/bin/linker
+lrwxr-xr-x  1 root shell      38 2008-12-31 15:00 linker64 -> /apex/com.android.runtime/bin/linker64
+lrwxr-xr-x  1 root shell      36 2008-12-31 15:00 linker_asan -> /apex/com.android.runtime/bin/linker
+lrwxr-xr-x  1 root shell      38 2008-12-31 15:00 linker_asan64 -> /apex/com.android.runtime/bin/linker64
+l?????????  ? ?    ?           ?                ? linkerconfig -> ?
+-?????????  ? ?    ?           ?                ? llkd
+-?????????  ? ?    ?           ?                ? lmkd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 ln -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 load_policy -> toybox
+-rwxr-xr-x  1 root shell     211 2008-12-31 15:00 locksettings
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 log -> toybox
+-rwxr-xr-x  1 root shell  166960 2008-12-31 15:00 logcat
+-?????????  ? ?    ?           ?                ? logd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 logname -> toybox
+-rwxr-xr-x  1 root shell   15096 2008-12-31 15:00 logwrapper
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 losetup -> toybox
+-rwxr-xr-x  1 root shell   12616 2008-12-31 15:00 lpdump
+-?????????  ? ?    ?           ?                ? lpdumpd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 ls -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 lsattr -> toybox
+-rwxr-xr-x  1 root shell  200152 2008-12-31 15:00 lshal
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 lsmod -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 lsof -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 lspci -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 lsusb -> toybox
+-?????????  ? ?    ?           ?                ? make_f2fs
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 md5sum -> toybox
+-?????????  ? ?    ?           ?                ? mdnsd
+-?????????  ? ?    ?           ?                ? mediaextractor
+-?????????  ? ?    ?           ?                ? mediametrics
+-?????????  ? ?    ?           ?                ? mediaserver
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 microcom -> toybox
+-?????????  ? ?    ?           ?                ? migrate_legacy_obb_data.sh
+-rwxr-xr-x  1 root shell   31840 2008-12-31 15:00 mini-keyctl
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mkdir -> toybox
+-?????????  ? ?    ?           ?                ? mke2fs
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mkfifo -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mkfs.ext2 -> mke2fs
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mkfs.ext3 -> mke2fs
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mkfs.ext4 -> mke2fs
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mknod -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mkswap -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mktemp -> toybox
+-?????????  ? ?    ?           ?                ? mm_events
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 modinfo -> toybox
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 modprobe -> toolbox
+-rwxr-xr-x  1 root shell     268 2008-12-31 15:00 monkey
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 more -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mount -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mountpoint -> toybox
+-?????????  ? ?    ?           ?                ? mtpd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 mv -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 nc -> toybox
+-rwxr-xr-x  1 root shell   71264 2008-12-31 15:00 ndc
+lrwxr-xr-x  1 root shell      20 2008-12-31 15:00 ndc-wrapper-1.0 -> netutils-wrapper-1.0
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 netcat -> toybox
+-?????????  ? ?    ?           ?                ? netd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 netstat -> toybox
+-?????????  ? ?    ?           ?                ? netutils-wrapper-1.0
+-rwxr-xr-x  1 root shell   25040 2008-12-31 15:00 newfs_msdos
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 nice -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 nl -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 nohup -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 nproc -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 nsenter -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 od -> toybox
+-?????????  ? ?    ?           ?                ? odsign
+-rwxr-xr-x  1 root shell     227 2008-12-31 15:00 oem-iptables-init.sh
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 paste -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 patch -> toybox
+-rwxr-xr-x  1 root shell  757000 2008-12-31 15:00 perfetto
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 pgrep -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 pidof -> toybox
+-rwxr-xr-x  1 root shell   37112 2008-12-31 15:00 ping
+-rwxr-xr-x  1 root shell   39176 2008-12-31 15:00 ping6
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 pkill -> toybox
+-rwxr-xr-x  1 root shell      34 2008-12-31 15:00 pm
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 pmap -> toybox
+-?????????  ? ?    ?           ?                ? pppd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 printenv -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 printf -> toybox
+-rwxr-xr-x  1 root shell   45824 2008-12-31 15:00 procrank
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 ps -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 pwd -> toybox
+-?????????  ? ?    ?           ?                ? racoon
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 readelf -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 readlink -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 realpath -> toybox
+-rwxr-xr-x  1 root shell    5624 2008-12-31 15:00 reboot
+-?????????  ? ?    ?           ?                ? recovery-persist
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 renice -> toybox
+-rwxr-xr-x  1 root shell     205 2008-12-31 15:00 requestsync
+lrwxr-xr-x  1 root shell       9 2008-12-31 15:00 resize.f2fs -> fsck.f2fs
+-?????????  ? ?    ?           ?                ? resize2fs
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 restorecon -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 rm -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 rmdir -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 rmmod -> toybox
+-?????????  ? ?    ?           ?                ? rss_hwm_reset
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 rtcwake -> toybox
+-rwxr-x---  1 root shell   12184 2008-12-31 15:00 run-as
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 runcon -> toybox
+-rwxr-xr-x  1 root shell    4032 2008-12-31 15:00 schedtest
+-rwxr-xr-x  1 root shell   23600 2008-12-31 15:00 screencap
+-rwxr-xr-x  1 root shell  124624 2008-12-31 15:00 screenrecord
+-?????????  ? ?    ?           ?                ? sdcard
+-rwxr-xr-x  1 root shell   19440 2008-12-31 15:00 secdiscard
+-rwx------  1 root root   330504 2008-12-31 15:00 secilc
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sed -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sendevent -> toybox
+-rwxr-xr-x  1 root shell    5872 2008-12-31 15:00 sensorservice
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 seq -> toybox
+-rwxr-xr-x  1 root shell   34576 2008-12-31 15:00 service
+-?????????  ? ?    ?           ?                ? servicemanager
+-rwxr-xr-x  1 root shell   75024 2008-12-31 15:00 set-verity-state
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 setenforce -> toybox
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 setprop -> toolbox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 setsid -> toybox
+-rwxr-xr-x  1 root shell      35 2008-12-31 15:00 settings
+-?????????  ? ?    ?           ?                ? sgdisk
+-rwxr-xr-x  1 root shell  322704 2008-12-31 15:00 sh
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sha1sum -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sha224sum -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sha256sum -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sha384sum -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sha512sum -> toybox
+-rwxr-xr-x  1 root shell   16120 2008-12-31 15:00 showmap
+-rwxr-xr-x  1 root shell 1607696 2008-12-31 15:00 simpleperf
+-rwxr-x---  1 root shell   36088 2008-12-31 15:00 simpleperf_app_runner
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sleep -> toybox
+-?????????  ? ?    ?           ?                ? sload_f2fs
+-rwxr-xr-x  1 root shell     120 2008-12-31 15:00 sm
+-?????????  ? ?    ?           ?                ? snapshotctl
+-?????????  ? ?    ?           ?                ? snapuserd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sort -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 split -> toybox
+-rwxr-xr-x  1 root shell   73584 2008-12-31 15:00 ss
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 start -> toolbox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 stat -> toybox
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 stop -> toolbox
+-?????????  ? ?    ?           ?                ? storaged
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 strings -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 stty -> toybox
+-?????????  ? ?    ?           ?                ? surfaceflinger
+-rwxr-xr-x  1 root shell    1068 2008-12-31 15:00 svc
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 swapoff -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 swapon -> toybox
+-?????????  ? ?    ?           ?                ? sxm_env_setup.sh
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sync -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 sysctl -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 tac -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 tail -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 tar -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 taskset -> toybox
+-rwxr-xr-x  1 root shell  295368 2008-12-31 15:00 tc
+lrwxr-xr-x  1 root shell      20 2008-12-31 15:00 tc-wrapper-1.0 -> netutils-wrapper-1.0
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 tee -> toybox
+-rwxr-xr-x  1 root shell     189 2008-12-31 15:00 telecom
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 test -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 time -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 timeout -> toybox
+-?????????  ? ?    ?           ?                ? tombstoned
+-rwxr-xr-x  1 root shell  127952 2008-12-31 15:00 toolbox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 top -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 touch -> toybox
+-rwxr-xr-x  1 root shell  502056 2008-12-31 15:00 toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 tr -> toybox
+-?????????  ? ?    ?           ?                ? traced
+-?????????  ? ?    ?           ?                ? traced_perf
+-?????????  ? ?    ?           ?                ? traced_probes
+-rwxr-xr-x  1 root shell  324016 2008-12-31 15:00 trigger_perfetto
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 true -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 truncate -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 tty -> toybox
+-?????????  ? ?    ?           ?                ? tune2fs
+-rwxr-xr-x  1 root shell   21472 2008-12-31 15:00 tzdatacheck
+lrwxr-xr-x  1 root shell       4 2008-12-31 15:00 ueventd -> init
+-rwxr-xr-x  1 root shell    4173 2008-12-31 15:00 uiautomator
+-rwxr-xr-x  1 root shell     394 2008-12-31 15:00 uinput
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 ulimit -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 umount -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 uname -> toybox
+-?????????  ? ?    ?           ?                ? uncrypt
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 uniq -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 unix2dos -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 unlink -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 unshare -> toybox
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 unzip -> ziptool
+-?????????  ? ?    ?           ?                ? update_verifier
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 uptime -> toybox
+-?????????  ? ?    ?           ?                ? usbd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 usleep -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 uudecode -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 uuencode -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 uuidgen -> toybox
+-?????????  ? ?    ?           ?                ? vdc
+-?????????  ? ?    ?           ?                ? vehicle_binding_util
+-?????????  ? ?    ?           ?                ? viewcompiler
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 vmstat -> toybox
+-?????????  ? ?    ?           ?                ? vold
+-?????????  ? ?    ?           ?                ? vold_prepare_subdirs
+-rwxr-xr-x  1 root shell     169 2008-12-31 15:00 vr
+-?????????  ? ?    ?           ?                ? wait_for_keymaster
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 watch -> toybox
+-?????????  ? ?    ?           ?                ? watchdogd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 wc -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 which -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 whoami -> toybox
+-?????????  ? ?    ?           ?                ? wificond
+-rwxr-xr-x  1 root shell      33 2008-12-31 15:00 wm
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 xargs -> toybox
+-rwxr-xr-x  1 root shell     128 2008-12-31 15:00 xml2abx
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 xxd -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 yes -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 zcat -> toybox
+lrwxr-xr-x  1 root shell       7 2008-12-31 15:00 zipinfo -> ziptool
+-rwxr-xr-x  1 root shell   22856 2008-12-31 15:00 ziptool

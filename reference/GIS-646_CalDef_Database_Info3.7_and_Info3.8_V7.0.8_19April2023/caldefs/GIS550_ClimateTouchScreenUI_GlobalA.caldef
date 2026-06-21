@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Includes calibrations from the GIS-550 that are Global A specific.">
+  <CalDefFileVersion>8</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/19/15</Date>
+    <Description>Fixed cal type on AirDistributionMode and RearAirDistributionMode to show as  enum instead of booleans.  These cals were already being shown in the GIS550_ClimateTouchScreenUI enumdef</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>4-9-15</Date>
+    <Description>Added My18 Cals</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>7/10/2015</Date>
+    <Description>Updated the default value for the AirDistributionMode CAL from ThreeMode to CombiAirDistributionDisplayandAdjustment, and the default value for RearAirDistributionMode CAL from FourMode to CombiAirDistributionDisplayandAdjustment. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/28/2015</Date>
+    <Description>Removed the following CALs : ClimateApplicationEnable, KeHVC_CNT_VCFGNumOfFrontZones, NumberOfRearTempZones, AirDistributionControlDiscreteStyle, Ke_b_SZ_leftTemplnd, TrueManualHVACSystem, DualFrontAirDistribution, HiVoltCoolHtrPresent, HVAC_EcoModeEnbld, AirConditioningCompressorType, AirDistributionRearRoofAvailable, RearBlowerControlAvailable, KeHVC_b_RearDefogEnabled, and ShowIonizerStatus as these CALs were confirmed by Andy Gellatly to only be needed for Global B. For MY18 we're only supporting Global A, not Global B, therefore these CALs are not needed for MY18. These CALs will be added in for MY19 which is the first year of usage of Global B.</Description>
+    <Author>Ginnard Kimbrough </Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS550_ClimateTouchScreenUI.caldef file to GIS550_ClimateTouchScreenUI_GlobalA.caldef that contains the GlobalA specific calibrations from the GIS-550 to distinquish it from the GIS-550 GlobalB caldef file being added in this release that contains the GlobalB specific calibrations from the GIS-550. Also, added two enumeration calibrations, 1.) Defrost_Label and 2.) Windshield_Symbol, in this MY19 release for GlobalA.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>1/13/2017</Date>
+    <Description>Within the GIS550_ClimateTouchScreenUI_GlobalA.caldef file, updated the description for the HvacRadioDisplayEnable and RearHvacRadioDisplayEnable calibrations to reflect updates made by GIS-550 specification owner in the GIS-550 for RTC CR#: 1004138 (Mechanism to turn off Climate Quick Status Panes).</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Determines which Windshield Symbol to be displayed in the Front Climate Screen and Climate Quick Status Pane for the &#x201c;Windshield&#x201d; Air Distribution Mode: &#x2022; $00 - 3 Squiggly Arrows or &#x2022; $01 - Single Arrow " Name="Windshield_Symbol" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_lWJtsEElEeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>7/1/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_6FI3gEEgEeaX676o0O3GfQ</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines which Defrost Label to be displayed in the Front Climate Screen and Climate Quick Status Pane: &#x2022; $00 - ISO only,  &#x2022; $01 - &#x201c;Front&#x201d; plus ISO, or &#x2022; $02 - &#x201c;MAX&#x201d; plus ISO.                                                          " Name="Defrost_Label" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_HOXQMEEkEeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>7/1/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_c65c0EEeEeaX676o0O3GfQ</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen is displayed or not. This includes whether a Climate Home Screen Icon and App Tray Icon are displayed.  Note: The Climate Quick Status Pane continues to be shown regardless of the calibration; when set to $00, touching the Climate Quick Status Pane does nothing (Theme A Only).   &#x2022; $00 (Value = False) - Never display Front Climate Screen. Remove Front Climate Application from Home Screen and App Tray Porch view (Theme A) information will be populated from communicated QSP data. If Rear Climate is enabled, show single tab layout for the Rear Climate Application.  &#x2022; $01 (Value = True) - Front Climate Screen is enabled. Front Climate Application on Home Screen and App Tray will be present, Porch view (Theme A) information will be populated from communicated QSP data.  If Rear Climate is enabled show the Dual tab layout for both the Front Climate and Rear Climate Applications. " Name="HvacRadioDisplayEnable" References="5.1.1.1*MY17 Global A Architecture Calibration Items" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_qiKCEG7iEeSssq_awwoZ3g</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the description for the HvacRadioDisplayEnable calibration to match the description in the latest version GIS-550.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Rear Climate Screen is displayed or not. This includes whether a Rear Climate Home Screen Icon and the Rear Climate &#x201c;tab&#x201d; in the Climate Application is displayed. &#x2022; $00 (Value = False) - Never display Rear Climate Screen. Remove Rear Climate Application from Home  Screen and App Tray, if (but most likely not) applicable (determined by GIS-501).   &#x2022; $01 (Value = True) - Rear Climate Screen is enabled. There is a Rear Climate Home Screen Icon and the Front Climate is enabled show the Dual tab layout for both the Front Climate and Rear Climate Applications." Name="RearHvacRadioDisplayEnable" References="5.1.1.1*MY17 Global A Architecture Calibration Items" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_tjOmYG7iEeSssq_awwoZ3g</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the description for the RearHvacRadioDisplayEnable calibration to match the description in the latest version GIS-550.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen displays the 4-Mode or Combi Air Distribution display and adjustment elements. &#x2022; $00 - display 4-Mode scheme &#x2022; $01 - display Combi scheme" Name="AirDistributionMode" References="5.1.1.1*MY17 Global A Architecture Calibration Items" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_DP17ALipEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>7/10/2015</Date>
+      <Description>Updated the default value for the AirDistributionMode CAL from FourMode to CombiAirDistributionDisplayandAdjustment.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_CpC2MLioEeSxl78x5qydAw</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Rear Climate Screen displays the 3-Mode or Combi Air Distribution display and adjustment elements. &#x2022; $00 - display 3-Mode scheme &#x2022; $01 - display Combi scheme" Name="RearAirDistributionMode" References="5.1.1.1*MY17 Global A Architecture Calibration Items" Usage="LOW,MID,HIGH,GLOBALA,ENTRY_VCU,VCU">
+    <CalID>_MINp4LipEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>7/10/2015</Date>
+      <Description>Updated the default value for RearAirDistributionMode CAL from ThreeMode to CombiAirDistributionDisplayandAdjustment. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_qspSALioEeSxl78x5qydAw</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

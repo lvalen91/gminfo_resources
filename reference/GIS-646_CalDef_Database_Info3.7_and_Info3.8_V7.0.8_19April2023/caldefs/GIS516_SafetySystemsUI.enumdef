@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" xsi:schemaLocation="http://www.caltools.gm.com/enumdef enumdef_1.0.xsd">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>1/25/2017</Date>
+    <Description>Within the GIS516_SafetySystemsUI.enumdef file  deleted the RearParkAssistSymbols enumeration that has no use for Info3, and for that reason the RearParkAssistSymbols enumeration never had an enumeration type calibration in any caldef files associate/linked this enumeration. Note the location of the rear park assist symbols were never calibrated using this enumeration for Info3, the location of these symbols are calibrated using the various park assist location calibraions defined in the GIS-040 (Note: These calibrations are all  already defined in the FrontRearCameraStatic.caldef file)</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Because certain countries drive on different sides of the road, this cal will allow for the left or the right side searching to be the default option" Name="Auto_Parking_side_Of_Vehicle_Default">
+    <EnumID>_8FneoMATEeOEzdA9o_rOxw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Because certain countries drive on different sides of the road, this cal will allow for the left or the right side searching to be the default option" Name="Default_Left">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Because certain countries drive on different sides of the road, this cal will allow for the left or the right side searching to be the default option" Name="Default_Right">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,137 @@
+===============================================================
+ GHS INTEGRITY HYPERVISOR - ATTACK SURFACE ANALYSIS
+ From Android Guest OS (uid=2000 shell / sideloaded app)
+ Date: 2026-04-07
+===============================================================
+
+=== ARCHITECTURE ===
+
+Hardware: Intel Apollo Lake (Broxton) x86_64
+Hypervisor: Green Hills INTEGRITY RTOS
+Guest OS: Android 12 (kernel 4.19.305)
+TEE: Trusty (running on GHS, not ARM TrustZone)
+
+Communication paths:
+  1. PCI 00:03.0 → ghs-comms driver → /dev/ghs/* devices (paravirtual IPC)
+  2. Platform trusty → virtio2 → /dev/trusty-ipc-dev0 (Trusty IPC)
+  3. PCI 00:1c.0 → virtio0 → virtio-blk (virtual storage)
+  4. PCI 00:1d.0 → virtio1 → virtio-console (virtual console)
+  5. Virtual network bridge 192.168.1.1 → ports 9002/9005/9010/9012/9016/9018
+
+Kernel config:
+  CONFIG_GHS_GUEST_COMMS=y        (built-in, not a module)
+  CONFIG_GHS_PARAVIRTUAL_SUPPORT=y
+  CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y
+  CONFIG_ANDROID_GM_GHS_MMC=y
+  CONFIG_HYPERVISOR_GUEST=y
+  CONFIG_TRUSTY_VIRTIO=m          (loadable module)
+  CONFIG_TRUSTY_VIRTIO_IPC=m      (loadable module)
+
+=== SELINUX ACCESS MATRIX ===
+
+Domains that CAN access GHS devices:
+  Domain                      Device              Permissions
+  -------------------------   -----------------   ---------------------------
+  GHSCalibrations             ghs_device          chr_file: read write open
+  gm_vnd_IPCServer            ghs_device          chr_file: read write open
+  ame_hal_service             ghs_device          chr_file: ioctl read getattr lock map open
+  gm_update_engine            ghs_device          chr_file: ioctl read write open
+  plmanager                   ghs_device          chr_file: ioctl rw getattr lock append map open
+  gmloggershell               ghs_device          chr_file: write open / file: write open
+  gmloggervendorserviced      ghs_device          chr_file: read write open
+  ghslogger                   ghs_device          chr_file: read write open
+  gm_vnd_vehicleaudiocontrol  ghs_device          chr_file: read write open
+  kernel_32_0                 ghs_device          chr_file: read open
+  vendor_init_32_0            ghs_device          chr_file: full / file: write create open
+  system_app_32_0             ghs_camera_device   chr_file: read write open
+  gmConnectionService_32_0    ghs_camera_device   chr_file: read write open
+
+Domains BLOCKED from Trusty IPC (neverallow):
+  untrusted_app (ALL versions) → tipc_socket: ALL operations
+  isolated_app → tipc_socket: create
+  
+  This means a sideloaded app (untrusted_app) CANNOT access Trusty IPC.
+
+=== ATTEMPTED ACCESS (ALL BLOCKED) ===
+
+  Interface                     Method              Result
+  ---------------------------   -----------------   --------
+  /dev/trusty-ipc-dev0          shell open          SELinux DENIED (DAC=rw-rw-rw-)
+  /dev/ghs/*                    shell cat           SELinux DENIED (DAC=root:root)
+  /dev/ghs/tee-att              shell cat           SELinux DENIED (DAC=system:system rw)
+  /dev/ghs/snapshot-dbg         shell ls            SELinux DENIED (perms unreadable)
+  192.168.1.1:9002              nc TCP              No route to host
+  192.168.1.1:9005              nc TCP              No route to host  
+  192.168.1.1:9010              nc TCP              No route to host
+  192.168.1.1:9016              nc TCP              No route to host
+  ::ffff:192.168.1.1:9002       nc TCP IPv6         Timeout
+  ::ffff:192.168.1.1:9016       nc TCP              No route to host
+  PCI sysfs (00:03.0)           cat attributes      SELinux DENIED (all ?????????)
+  /proc/trusty/*                cat                 Not accessible / empty
+  Trusty kernel modules         adb pull            Permission denied
+  GHS kernel modules            find                Not found (built-in)
+
+=== VIABLE ATTACK PATHS ===
+
+PATH 1: Exploit a GHS-privileged Android process
+  Target: gm_update_engine (has ioctl+rw to ghs_device)
+  Method: USB update manifest parsing vulnerability
+  Chain:  Craft malicious USB update → trigger update engine → 
+          exploit parser → gain gm_update_engine context → 
+          open /dev/ghs/ota-isys → send commands to hypervisor
+  Feasibility: MEDIUM (requires reversing update manifest format)
+  
+PATH 2: Exploit plmanager 
+  Target: plmanager (has FULL ioctl+rw+map+append to ghs_device)
+  Method: Find exposed binder/AIDL interface, send crafted IPC
+  Chain:  Shell → service call to plmanager → trigger bug →
+          gain plmanager context → full ghs_device access
+  Feasibility: MEDIUM (needs reversing plmanager's service interface)
+
+PATH 3: Exploit system_app → ghs_camera_device
+  Target: Any system_app (can read/write ghs_camera_device)
+  Method: Find a system app with an exploitable component
+  Chain:  Sideload app → exploit a system_app (intent, content 
+          provider, broadcast) → pivot to ghs_camera_device
+  Feasibility: LOW-MEDIUM (system_app only gets camera, not main IPC)
+
+PATH 4: Kernel exploit → bypass SELinux → access all GHS devices
+  Target: Linux kernel 4.19.305
+  Method: Known CVE for 4.19.x LPE (BPF, pipe, etc.)
+  Chain:  Sideload native exploit → gain CAP_SYS_ADMIN →
+          setenforce 0 (DEVELOP=y) → open /dev/ghs/* directly
+  Feasibility: HIGH (4.19 has known exploits, DEVELOP=y allows
+          setenforce, trusty-ipc-dev0 is world-writable DAC)
+
+PATH 5: Virtio descriptor ring manipulation
+  Target: virtio0/1 (PCI 00:1c.0/1d.0) or virtio2 (trusty)
+  Method: Kernel exploit → corrupt virtio vring descriptors
+  Chain:  Kernel LPE → manipulate virtio descriptor tables →
+          trigger hypervisor to process malformed DMA descriptors →
+          corrupt hypervisor memory
+  Feasibility: LOW (requires deep virtio internals + kernel access)
+
+PATH 6: Network-based via dnsmasq exploit on gateway
+  Target: Gateway ECU (192.168.1.102) running dnsmasq-2.78
+  Method: DNSpooq (CVE-2020-25681 thru 25687)
+  Chain:  Exploit dnsmasq on gateway → gain code exec on gateway →
+          pivot to GHS from network side (gateway may have more 
+          direct hypervisor access than Android guest)
+  Feasibility: MEDIUM (well-documented CVEs, but need to confirm
+          DNSSEC is enabled for buffer overflow path)
+
+=== RECOMMENDED NEXT STEPS ===
+
+1. PATH 4 is most viable: Find a kernel 4.19.305 LPE exploit, 
+   gain root, setenforce 0, then directly open /dev/ghs/* devices.
+   The ghs-comms driver is built-in (not a module) so the ioctl
+   interface is always available.
+
+2. Reverse engineer the ghs-comms protocol by:
+   - Dumping the ghs-comms PCI BAR0 memory mapping
+   - Analyzing the kernel's ghs-comms driver (built into vmlinux)
+   - Tracing syscalls from processes that use /dev/ghs/*
+   
+3. Build a PoC app that exploits a known Android 12 LPE to 
+   escalate to root, then interacts with /dev/ghs/ipc.
+

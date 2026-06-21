@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="HMI" Description="GIS-512">
+  <CalDefFileVersion>10</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/19/15</Date>
+    <Description>Added Driver Workload</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6-8-15</Date>
+    <Description>Added OnstarWrapperLaunch2GData calibration</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>9/4/2015</Date>
+    <Description>Per request from Sanghyun Ryu, updated CAL usage for the OnStarAppShopDriverWorkload CAL to not show Low Radio usage.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>11/6/2015</Date>
+    <Description>Updated the description for the BluetoothDeviceConnectionLimit CAL to match the updated description called out in the GIS-512 Spec. for this CAL, and updated the default value for this CAL from Cadillac Cue to myCadillac to match the Bluetooth friendly name called out in the GIS-512 Spec. for Cadillac vehicles.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef file added two new calibrations (ENABLE_NFC and NFCPairingDriverWorkload) from GIS-512 for MY19. Also deleted the DevicesListDriverWorkload calibration from this caldef file since it was confirmed this driver workload restriction is not needed since the devices list is already limited to 10 paired devices so there is no need for a restricted list view as noted in the 3.5 release revision log update history for the GIS-512.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>6/10/2017</Date>
+    <Description>Within the GIS512_Connections.caldef file two calibrations ( 1.)WirelessScreenSharingDefaultSetting and 2.) WirelessScreenSharingSetting) that are also being removed from the GIS-512 specification as part of the RTC CR#: 1431345 update because both calibrations have been confirmed to have no intended use case. Also, updated the usage field for all of the calibrations in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS512_Connections.caldef file, added GEM usage to all of the calibrations within this caldef, except for the following calibrations within this caldef file: 1.) ENABLE_NFC, 2.) NFCPairingDriverWorkload, and 3.) OnStarAppShopDriverWorkload. Note, did not add GEM usage for these three calibrations since these three calibraions did not fall within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>4/23/2020</Date>
+    <Description>Within the GIS512_Connections.caldef file, per agreement with Nasif Addnan from the UX requirement deleted the ENABLE_PHONE_STATUS_REGION_ROAMING_INDICATOR cal, and kept the duplicate cal name defined by the PhoneDomain UX spec from the GIS503_PhoneDomain.caldef </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Cal shows or hides the &#x201c;NFC Ready&#x201d; button in Bluetooth and Drive Projection set-up screens. Range for this calibration is as follows:$1 = Enable and  $0 = Disable (default value is $1)" Name="ENABLE_NFC" References="5.1.1.1*Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NcFdYJ8AEea-Ao5FQchwtQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="A limited amount of Bluetooth devices can be paired to the vehicle. Initial amount is 10." Name="BluetoothDevicePairLimit" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_D6GboGlaEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="A limited amount of Bluetooth device can be actively connected to the vehicle at one time. Initial amount is 2" Name="BluetoothDeviceConnectionLimit" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Yu5twG7gEeSssq_awwoZ3g</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="These Calibrations are desired to be able to enable and disable a complete Bluetooth Profile and its related HMI." Name="EnableBluetooth" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_1y_IAG7gEeSssq_awwoZ3g</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Bluetooth Module device name (user-friendly name) shall be based on the vehicle brand and model. The Bluetooth Module shall not allow changes of the device name. Starting MY18, possible Bluetooth friendly names are: Cadillac vehicles: myCadillac, Chevrolet vehicles: myChevrolet, Buick vehicles: myBuick, GMC vehicles: myGMC, Opel vehicles: myOpel, Vauxhall vehicles: myVauxhall, and Holden vehicles: myHolden  " Name="BluetoothModuleDeviceName" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-ofJEG7gEeSssq_awwoZ3g</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>myCadillac</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="An icon will be displayed to indicate the battery level. The icon will have six different states ranging from level 0 for minimum battery charge to level 5 for maximum battery charge" Name="EnablePhoneStatusRegionBatteryLevel" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_NFz9QGlaEeSUD4W2RgDvTg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="An icon will be displayed to indicate the signal strength. The icon will have six different states ranging from level 0 for no reception to level 5 for maximum reception." Name="EnablePhoneStatusRegionSignalStrength" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_QgHR8G7hEeSssq_awwoZ3g</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If a connection request is not received within 60sec, the Bluetooth Module shall send a notification to the HMI and exit the Pairing Process." Name="BTConnectionRequestTimer" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Z17KwG7hEeSssq_awwoZ3g</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Cal allows or disables Bluetooth pairing when vehicle is moving." Name="BTVehicleMovingOveride" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_YGte4GlaEeSUD4W2RgDvTg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Cal shows or hides the setting for Data Roaming and the indicator that will be displayed when the data source is roaming." Name="EnableDataRoamingIndicator" References="5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_jO7wcKmYEeSBV82hZ9UINQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Cal allows or Disables the use of 2G data for Wi-Fi hotspot" Name="OnstarWrapperLaunch2GData" References="GIS-512 Calibrations" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_t2WZcA4REeW7i8SfmVL_wA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="User shall not be able to initiate Bluetooth pairing process by holding their device to NFC antenna while vehicle is in motion." Name="NFCPairingDriverWorkload" References="GIS 512 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_lh2uEJ8BEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the &#x201c;Add Device&#x201d; selection on the Devices view is greyed out. Pressing the &#x201c;Add Device&#x201d; button will show the feature restricted pop-up (see GIS-500). If the user has already started the &#x201c;Add Device&#x201d; process and the driving mode lockout is then triggered, the process is cancelled, the feature restricted pop-up (GIS-500) is shown, and the user is returned to the screen that initiated the &#x201c;Add Device&#x201d; process." Name="AddDeviceDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-ZJ34bizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Projection devices connected over USB (not Wi-Fi / Wi-Fi Direct) will not be restricted by Lockout." Name="ConnectingDeviceOverUSBDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-HEpYbizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="User will not be able to enter the Keyboard view to rename device while vehicle is in motion." Name="RenameDeviceDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_99sD4bizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the &#x201c;Add Other Network&#x201d; selection on the Wi-Fi Networks view is greyed out. Pressing the &#x201c;Add Other Network&#x201d; button will show the feature restricted pop-up (see GIS-500). If the user has already started the &#x201c;Add Other Network&#x201d; process and the driving mode lockout is then triggered, the process is cancelled, the feature restricted pop-up (GIS- 500) is shown, and the user is returned to the screen that initiated the &#x201c;Add Other Network&#x201d; process." Name="AddWiFiNetworkDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_9zHyobizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="User will not be able to enter the Keyboard view to rename Wi-Fi Network while vehicle is in motion" Name="VehicleWifiNameDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_9nVZYbizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="User will not be able to enter the Keyboard view to change Wi-Fi Password while vehicle is in motion." Name="VehicleWiFiPasswordDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_9d6XobizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="User may not be able to access App Shop when tapping on OnStar related features while vehicle is in motion" Name="OnStarAppShopDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9QF-EbizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the OnStarAppShopDriverWorkload CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="User will not be able to enter the Keyboard view to input password to join Wi-Fi Network while vehicle is in motion." Name="EnteringNetworkSSIDPasswordDriverWorkload" References="GIS 512 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_263hYLizEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

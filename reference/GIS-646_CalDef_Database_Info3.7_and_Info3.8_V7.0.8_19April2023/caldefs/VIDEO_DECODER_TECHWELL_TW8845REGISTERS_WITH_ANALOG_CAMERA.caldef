@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This Caldef file contains calibrations for the TECHWELL TW8445 registers to perform image quality adjustment for applications that use the TECHWELL TW8445 with analog camera.">
+  <CalDefFileVersion>3</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/14/2017</Date>
+    <Description>Intial release of calibrations within this caldef</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>9/28/2017</Date>
+    <Description>Within the VIDEO_DECODER_TECHWELL_TW8845REGISTERS_WITH_ANALOG_CAMERA.caldef file, updated the CalIDs of the following three calibrations:1.) TW8845_WITH_ANALOG_CAMERA_REGISTER_0x112_BIT7, 2.) TW8845_WITH_ANALOG_CAMERA_REGISTER_0x112_BITS_3_thru_0, and 3.) TW8845_WITH_ANALOG_CAMERA_REGISTER_0x117_BITS_7_thru_4. This is being done to resolve an issue with these three calibrations having duplicate CalIDs in prior CAL Database releases as three calibrations in a different caldef file (IMAGE_ENHANCEMENT_TECHWELL_TW8845REGISTERS_WITH_DIGITAL_CAMERA.caldef).</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="CONTRAST CONTROL REGISTER (CONTRAST); Note as defined in the TW8845 data sheet: FUNCTION: CONTRAST; DESCRITPION: These bits control the contrast. They have value of 0 to 3.98 (FFh). A value of 100 (64h) yields a gain of 100%. The gain ranges from 0 to 255%." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x111_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_QYEUcVGIEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="CHROMA (U) GAIN REGISTER (SAT_U); Note as defined in the TW8845 data sheet: FUNCTION: SAT_U ; DESCRITPION: These bits control the digital gain adjustment to the U (or Cb) component of the digital video signal. The color saturation can be adjusted by adjusting the U and V color gain components by the same amount in the normal situation. The U and V can also be adjusted independently to provide greater flexibility. The range of adjustment is 0 to 200%." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x113_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_jEfh4VGJEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>80</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="CHROMA (V) GAIN REGISTER (SAT_V); Note as defined in the TW8845 data sheet: FUNCTION: SAT_V ; DESCRIPTION: These bits control the digital gain adjustment to the V (or Cr) component of the digital video signal. The color saturation can be adjusted by adjusting the U and V color gain components by the same amount in the normal situation. The U and V can also be adjusted independently to provide greater flexibility. The range of adjustment is 0 to 200%." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x114_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_aRp90VGKEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>80</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="BRIGHTNESS CONTROL REGISTER (BRIGHT); Note as defined in the TW8845 data sheet: FUNCTION: BRIGHTNESS ; DESCRIPTION: These bits control the contrast. They have a value of 0 to 3.98 (FFh). A value of 100." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x110_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_IZfM8VGLEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="HUE CONTROL REGISTER (HUE); Note as defined in the TW8845 data sheet: FUNCTION: HUE ; DESCRIPTION: These bits control the color hue. It is in 2&#x2019;s complement form with 0 being the center value. Positive value results in red hue and negative value gives green hue." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x115_BITS_7_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_EtBs0VGMEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="MISCELLANEOUS CONTROL III (MISC3); Note as defined in the TW8845 data sheet: FUNCTION: LCS; DESCRIPTION: 1 = Enable pre-determined output value indicated by CCS when video loss is detected, and 0 = Disable. " Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x12F_BIT2" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_plXtkVGMEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="MISCELLANEOUS CONTROL III (MISC3); Note as defined in the TW8845 data sheet: FUNCTION: FCS; DESCRIPTION: 1 = Force decoder output value determined by CCS, and  0 = Disable.  " Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x12F_BIT3" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_CNItgVGNEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="MISCELLANEOUS CONTROL III (MISC3); Note as defined in the TW8845 data sheet: FUNCTION: CCS; DESCRIPTION: When FCS is set high or video loss condition is detected when LCS is set high, one of two colors display can be selected. Also  1 = Blue color, and 0 =Black. " Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x12F_BIT1" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_ZzBZsVGNEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CORING CONTROL REGISTER (CORING); Note as defined in the TW8845 data sheet: FUNCTION: CTCOR ; DESCRIPTION: These bits control the coring function for the CTI. It has internal step size of 2." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x118_BITS_7_thru_6" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_jT9vAVGOEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="SHARPNESS CONTROL REGISTER I (SHARPNESS); Note as defined in the TW8845 data sheet: FUNCTION: CTI ; DESCRIPTION: Color transient improvement level control. There are 4 enhancement levels with 0 being the lowest and 3 being the highest." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x112_BITS_5_thru_4" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_F7oGkVGPEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VERTICAL PEAKING CONTROL I ; Note as defined in the TW8845 data sheet: FUNCTION: VSHP; DESCRIPTION: Vertical peaking gain control" Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x117_BITS_2_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_fRh-4VGPEeep_Namk9CiEQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>7</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="SHARPNESS CONTROL REGISTER I (SHARPNESS); Note as defined in the TW8845 data sheet: FUNCTION: SCURVE; DESCRIPTION: This bit controls the center frequency of the peaking filter. The corresponding gain adjustment is HFLT. Also, 0 = low and 1 = center." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x112_BIT7" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_HntHsaI9EeevVeh3fF_jdg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2017</Date>
+      <Description>Changed the CalID for this calibration to resolve an issue this calibration had of  having a duplicate CalID as another calibration in a different caldef file (IMAGE_ENHANCEMENT_TECHWELL_TW8845REGISTERS_WITH_DIGITAL_CAMERA.caldef).</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="SHARPNESS CONTROL REGISTER I (SHARPNESS); Note as defined in the TW8845 data sheet: FUNCTION: SHARP; DESCRIPTION: These bits control the amount of sharpness enhancement on the luminance signals. There are 16 levels of control with &#x2018;0&#x2019; having no effect on the output image and &#x2018;15&#x2019; being the strongest." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x112_BITS_3_thru_0" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_u_YuIaI8EeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2017</Date>
+      <Description>Changed the CalID for this calibration to resolve an issue this calibration had of  having a duplicate CalID as another calibration in a different caldef file (IMAGE_ENHANCEMENT_TECHWELL_TW8845REGISTERS_WITH_DIGITAL_CAMERA.caldef).</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="VERTICAL PEAKING CONTROL I ; Note as defined in the TW8845 data sheet: FUNCTION: SHCOR; DESCRIPTION: These bits provide coring function for the sharpness control." Name="TW8845_WITH_ANALOG_CAMERA_REGISTER_0x117_BITS_7_thru_4" References="TECHWELL TW8845 Data Sheet" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_rjhvcKI1EeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2017</Date>
+      <Description>Changed the CalID for this calibration to resolve an issue this calibration had of  having a duplicate CalID as another calibration in a different caldef file (IMAGE_ENHANCEMENT_TECHWELL_TW8845REGISTERS_WITH_DIGITAL_CAMERA.caldef).</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>8</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

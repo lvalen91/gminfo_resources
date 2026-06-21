@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="Camera" Description="Defines Calibrations defined in GIS 942">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>April 12 2018</Date>
+    <Description>CR: 1577383 April 12 2018 Initial release of GIS942_AugmentedReality_GlobalB caldef</Description>
+    <Author>Evelyn Job</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>Oct. 232018</Date>
+    <Description>Per CR#1686594, updated min, max, resolution and default values for the following calibrations:  K_Augmented_Reality_Camera_Focal_x;  K_Augmented_Reality_Camera_Focal_y;  K_Augmented_Reality_Camera_Principle_Point_x;  K_Augmented_Reality_Camera_Principle_Point_y;  K_Augmented_Reality_Camera_Pitch;  K_Augmented_Reality_Camera_Translation_x;  K_Augmented_Reality_Camera_Translation_y;  K_Augmented_Reality_Camera_Translation_z were updated in GIS942_AugmentedReality_GlobalB.caldef file</Description>
+    <Author>Evelyn Job</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Calibration to turn on/off augmented reality display feature." Name="K_Augmented_Reality_Display_Enable" References="GIs-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_S9AZQDqFEeesh_Gsoan6Vg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Ability to turn off display of augmented reality when there is no navigation route (free drive)" Name="K_Augmented_Reality_Shown_In_Free_Drive" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_4K7v0DqCEeesh_Gsoan6Vg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Field of view of the Forward Vision camera" Name="K_Forward_Vision_Camera_View_Angle" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_4RW9YTqBEeesh_Gsoan6Vg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>52</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>180</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Latency - Estimated latency from camera input to recognition output on the object detection serial data messages" Name="K_Forward_Vision_Camera_Latency" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_S0LuUDneEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Width - Image resolution in width" Name="K_Forward_Vision_Camera_Width" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_BdJ7oDnfEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1280</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Height - Image resolution in width" Name="K_Forward_Vision_Camera_Height" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Lroh0TnfEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>960</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4000</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Roll - Camera roll info" Name="K_Forward_Vision_Camera_Roll" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_-HccsDnhEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-180.0</MinValue>
+      <MaxValue>180.0</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>0.00573</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Pitch - Camera roll info" Name="K_Forward_Vision_Camera_Pitch" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Yqrq0TniEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-180.0</MinValue>
+      <MaxValue>180.0</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>0.00573</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Yaw - Camera roll info" Name="K_Forward_Vision_Camera_Yaw" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_V4w80TniEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-180.0</MinValue>
+      <MaxValue>180.0</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>0.00573</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Tx - Translation about X axis" Name="K_Forward_Vision_Camera_Translation_x" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_jp_4EDniEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-1270.0</MinValue>
+      <MaxValue>1270.0</MaxValue>
+      <Units>mm</Units>
+      <Resolution>10.0</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Ty - Translation about Y axis" Name="K_Forward_Vision_Camera_Translation_y" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_70P1kTniEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-1270.0</MinValue>
+      <MaxValue>1270.0</MaxValue>
+      <Units>mm</Units>
+      <Resolution>10.0</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Tz - Translation about Z axis" Name="K_Forward_Vision_Camera_Translation_z" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_CitRoTnjEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1300.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>2550.0</MaxValue>
+      <Units>mm</Units>
+      <Resolution>10.0</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Temperature when CSM sets DTS and Sets display Coordination Message to TRUE" Name="K_Augmented_Reality_Camera_Over_Temp" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_PpjMkCMFEei_qZZEfXs4ZA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>85</Value>
+      <MinValue>60</MinValue>
+      <MaxValue>110</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Field of view of the augmented reality camera" Name="K_Augmented_Reality_Camera_View_Angle" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_icTVoDqBEeesh_Gsoan6Vg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>95</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>180</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="FPS - Frame per second of AR Camera Output" Name="K_Augmented_Reality_Camera_FPS" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_elKCADneEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>120</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Latency - Estimated latency from camera input to CSM image buffering output" Name="K_Augmented_Reality_Camera_Latency" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_4OoWkDneEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Width - Image resolution in width" Name="K_Augmented_Reality_Camera_Width" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_WP2ugTnfEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1920</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Height - Image resolution in width" Name="K_Augmented_Reality_Camera_Height" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_lMjXUTnfEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1080</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4000</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Fx - Focal length" Name="K_Augmented_Reality_Camera_Focal_x" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_iAjjITnkEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct. 23, 2018</Date>
+      <Description>CR 1686594 Change Default Value was 1</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1167</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>16000</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Fy - Focal length" Name="K_Augmented_Reality_Camera_Focal_y" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ofU9YTnkEeeZ_OyASwwfMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct 23 2018</Date>
+      <Description>CR 1686594 Change Default Value was 1</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1167</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Cx - Principal point" Name="K_Augmented_Reality_Camera_Principle_Point_x" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_7KsQUDnkEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct 23 2018</Date>
+      <Description>CR: 1686594 Change resolution was 1 change default was 0</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>-40.5</Value>
+      <MinValue>-4000.0</MinValue>
+      <MaxValue>4000.0</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Cy - Principal point" Name="K_Augmented_Reality_Camera_Principle_Point_y" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_56E9ATnkEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct. 23 2018</Date>
+      <Description>CR 1686594 change resolution was 1 change default was 0</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>170.0</Value>
+      <MinValue>-2000.0</MinValue>
+      <MaxValue>2000.0</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Roll - Camera roll info" Name="K_Augmented_Reality_Camera_Roll" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_HXzGYTnlEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-180.0</MinValue>
+      <MaxValue>180.0</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>0.00573</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Pitch - Camera pitch info" Name="K_Augmented_Reality_Camera_Pitch" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_JNUdkTnlEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct 23 2018</Date>
+      <Description>CR 1686594 Change Default Value was 0</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>10.2</Value>
+      <MinValue>-180.0</MinValue>
+      <MaxValue>180.0</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>0.00573</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Yaw - Camera yaw info" Name="K_Augmented_Reality_Camera_Yaw" References="GIS_942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_KgG7ITnlEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-180.0</MinValue>
+      <MaxValue>180.0</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>0.00573</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Tx - Translation about X axis" Name="K_Augmented_Reality_Camera_Translation_x" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_NrmmwTnlEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct 23 2018</Date>
+      <Description>CR 1686594 Change Default Value was 0 and change max, min values were 1270 resolution was 10</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>1887.92</Value>
+      <MinValue>-2550.0</MinValue>
+      <MaxValue>2550.0</MaxValue>
+      <Units>mm</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Ty - Translation about Y axis" Name="K_Augmented_Reality_Camera_Translation_y" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_QiCBUDnlEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct 23 2018</Date>
+      <Description>CR 1686594 Change Default Value was 1 Resolution was 10</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>-33.88</Value>
+      <MinValue>-1270.0</MinValue>
+      <MaxValue>1270.0</MaxValue>
+      <Units>mm</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Tz - Translation about Z axis" Name="K_Augmented_Reality_Camera_Translation_z" References="GIS-942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Q5rsUTnlEeeZ_OyASwwfMw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Oct 23 2018</Date>
+      <Description>CR 1686594 Change Default Value was 1300, changed resolution was 10</Description>
+      <Author>Evelyn Job</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>1794.09</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>2550.0</MaxValue>
+      <Units>mm</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Display image crop x location in upper left hand corner" Name="K_Augmented_Reality_Camera_Crop_X" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_MaxyIA3KEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1920</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Display image crop Y location in upper left hand corner" Name="K_Augmented_Reality_Camera_Crop_Y" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_-mRgcA3JEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>216</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1080</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Display crop width of display image" Name="K_Augmented_Reality_Camera_Crop_Width" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_vhcPUA3JEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1920</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>1920</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Display crop height of display image" Name="K_Augmented_Reality_Camera_Crop_Height" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_-ZNKQA3IEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>648</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>1080</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Display position X location in upper left of final display" Name="K_Augmented_Reality_Camera_Display_Position_X" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_rRX9wA3IEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2416</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Display position Y Location in upper left of final display" Name="K_Augmented_Reality_Camera_Display_Position_Y" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_tWuWIA3HEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>816</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Final Display overall width" Name="K_Augmented_Reality_Camera_Display_Position_Width" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Njh00A3IEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>2416</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>2416</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Final display overall height" Name="K_Augmented_Reality_Camera_Display_Position_Height" References="GIS 942" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ctZ-AA3IEeiHBoLEy_Dx1g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>816</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>816</MaxValue>
+      <Units>pixels</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

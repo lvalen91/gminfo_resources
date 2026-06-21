@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns1="http://www.caltools.gm.com/enumdef" xsi:schemaLocation="http://www.caltools.gm.com/enumdef enumdef_1.0.xsd">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>17NOV2014</Date>
+    <Description>Updated Volume Group Enumeration values based on feedback from Harman.</Description>
+    <Author>Dominic Colella</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>02APR2015</Date>
+    <Description>Added new enumdef for VSE_PARAM_EQ_FUNCTION to support additional VSE functionality as defined in GIS-604-430.</Description>
+    <Author>Dominic Colella</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Original release as part of Info 3.0 CR 469." Name="VSE_PARAM_EQ_FUNCTION">
+    <EnumID>_zIMV0NFxEeSWPPCziDJYrA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Setting not used." Name="NONE">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="PEQ">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="PHASE_SHIFT_1">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="PHASE_SHIFT_2">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SHELVING_TREB_1">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SHELVING_TREB_2">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SHELVING_BASS_1">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SHELVING_BASS_2">
+      <Value>7</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of system volume groups as defined in GIS-604." Name="VolumeGroupEnum">
+    <EnumID>_AStswCR6EeOFAcqdxEN3jw</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Name="VOL_GROUP_VOICE_CALL">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VOL_GROUP_RING">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VOL_GROUP_MUSIC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VOL_GROUP_PROMPT">
+      <Value>4097</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VOL_GROUP_AUDIO_CUE">
+      <Value>4096</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VOL_GROUP_EMERGENCY_PHONE">
+      <Value>4116</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VOL_GROUP_RDS_TRAFFIC">
+      <Value>4098</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VOL_GROUP_NONE">
+      <Value>65535</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="VOL_GROUP_CHIME">
+      <Value>4125</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</ns1:EnumDefinitionFile>

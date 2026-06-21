@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Enumerations defined for enumeration calibrations in the GIS763_InfotainmentProg_GlobalB.caldef ">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>12MAY16</Date>
+    <Description>Initial release of this enumdef file.</Description>
+    <Author>Pete Ansbro</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Used to determine if the park brake status needs to be included in vehicle state determination" Name="GIS763_VehicleTransmissionType">
+    <EnumID>_OyLgkBebEeaGALvd8QRoVA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Automatic Transmission" Name="AutomaticTrans">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Manual Transmission" Name="ManualTrans">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

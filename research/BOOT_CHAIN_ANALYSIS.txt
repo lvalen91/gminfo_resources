@@ -1,0 +1,968 @@
+================================================================================
+GM AAOS COMPLETE BOOT CHAIN ANALYSIS
+================================================================================
+Document Version: 1.0
+Created: December 28, 2025
+Purpose: Complete documentation of boot chain from power-on to Android
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. BOOT CHAIN OVERVIEW
+2. STAGE 0: VIP MCU BOOT (VIP_BOOT)
+3. STAGE 1: INTEL ABL (SOC_ABL)
+4. STAGE 2: GHS INTEGRITY (SOC_HOSTOS)
+5. STAGE 3: ANDROID BOOT (SOC_BOOT)
+6. BOOT MODULE FORMAT ANALYSIS
+7. RECOVERY MECHANISMS
+8. SECURITY VERIFICATION POINTS
+9. ATTACK SURFACE ANALYSIS
+
+================================================================================
+1. BOOT CHAIN OVERVIEW
+================================================================================
+
+1.1 BOOT SEQUENCE DIAGRAM
+-------------------------
+```
+                    POWER ON
+                       |
+                       v
+    +------------------------------------------+
+    |  STAGE 0: VIP_BOOT (Renesas RH850)       |
+    |  - Module 71 (UNSIGNED)                   |
+    |  - Reads EEPROM security flags            |
+    |  - Initializes VIP_APP                    |
+    |  - Boot Updater Version check             |
+    +------------------------------------------+
+                       |
+                       v
+    +------------------------------------------+
+    |  STAGE 1: SOC_ABL (Intel ABL)            |
+    |  - Module 72 (UNSIGNED)                   |
+    |  - Intel Package format (ipk.)            |
+    |  - RbeVerifyHashSha256 validation         |
+    |  - OemLock/SocCfgLock/manuf_lock states  |
+    |  - Loads GHS INTEGRITY                    |
+    +------------------------------------------+
+                       |
+                       v
+    +------------------------------------------+
+    |  STAGE 2: SOC_HOSTOS (GHS INTEGRITY)     |
+    |  - Module 21 (TSS SIGNED)                 |
+    |  - Hypervisor initialization              |
+    |  - Creates Android VM                     |
+    |  - Paravirtualized storage access         |
+    +------------------------------------------+
+                       |
+                       v
+    +------------------------------------------+
+    |  STAGE 3: SOC_BOOT (Android Boot)        |
+    |  - Module 23 (UNSIGNED, AVB protected)    |
+    |  - Android bootimg format                 |
+    |  - Kernel + ramdisk                       |
+    |  - cmdline: enforcing=0 selinux=permissive|
+    |  - AVB chain validation via vbmeta        |
+    +------------------------------------------+
+                       |
+                       v
+    +------------------------------------------+
+    |  ANDROID INIT                             |
+    |  - gm_update_engine starts                |
+    |  - VIP IPC communication established      |
+    |  - Calibrations loaded (Index 0-14)       |
+    |  - PROTOKEY authentication                |
+    +------------------------------------------+
+```
+
+1.2 PARTITION LAYOUT
+--------------------
+| Partition       | Device | Boot Stage | Purpose                    |
+|-----------------|--------|------------|----------------------------|
+| ghs_isys_a/b    | vda1/2 | Stage 2    | GHS INTEGRITY hypervisor   |
+| ghs_storage     | vda3   | Stage 2    | GHS persistent storage     |
+| ghs_abl_update  | vda4   | Stage 1    | ABL update staging         |
+| bootloader_a/b  | vda5/6 | Stage 1    | Intel ABL images           |
+| boot_a/b        | vda7/8 | Stage 3    | Android boot images        |
+| vbmeta_a/b      | vda10/11| Stage 3   | AVB verification metadata  |
+| super           | vda13  | Stage 3    | Dynamic partitions         |
+
+================================================================================
+2. STAGE 0: VIP MCU BOOT (VIP_BOOT)
+================================================================================
+
+2.1 MODULE DETAILS
+------------------
+File: 85056831 (1.9 MB)
+Sign Type: NONE (UNSIGNED!)
+MCU: Renesas RH850/P1M-E
+Format: GM proprietary with signed header
+
+2.2 HEADER STRUCTURE (from hex dump)
+------------------------------------
+Offset 0x00: Padding (zeros)
+Offset 0x0A: "AA" marker + checksum
+Offset 0x10: "none" (no encryption)
+Offset 0x22: "1NMH" magic (VIP header type)
+Offset 0x88: SHA-256 hash: 9e430f8b17e7567f2617a744efa41970
+Offset 0x226: "CSM" identifier
+Offset 0x266: "Infotainment" string
+
+2.3 BOOT FUNCTIONS (from strings)
+---------------------------------
+- "Starting boot updater application"
+- "Application signed header is valid (flashUpdate=%d)"
+- "Application signed header is invalid (flashUpdate=%d), pec = 0x%x"
+- "Error: Failure writing to flash"
+- "Error: Problem erasing flash"
+- "Error: Problem initializing flash"
+- "Waiting for the SOC to initiate a reset to complete the bootloader update"
+- "Boot Updater Version %02X.%02X.%02X.%02X"
+- "Bootloader Version %02X.%02X.%02X.%02X"
+- "BOLO: Bootloader timeout reset %d"
+- "BOLO: Bootloader Entering Sleep"
+- "keyNBID = 0x%04x"
+
+2.4 VIP BOOT SEQUENCE (from VIP log)
+------------------------------------
+[000128] STBC_WUF0WUF0 = 0x0, wakeup_factor = 0x0
+[000128] RESCTLRESF = 0x0, reset_factor = 0x201
+[000128] HwVariant = 56, HwSubVariant = 0
+[000129] cal_critical_state_of_charge_ignore = 1
+[000129] cal_vin_relearn_en = 1
+...
+[000147] Persistent data checksum is valid: 41
+[000153] Rte_Pim_PLC_BootCounter_PIM is: 2452
+[000158] PROTOKEY ICUSB module enabled
+[001327] SBAT keyNBID = 0x0000, appNBID = 0x0001
+[001328] SbaTicketValidation validation failed: 0x0
+
+2.5 SECURITY IMPLICATIONS
+-------------------------
+VIP_BOOT is UNSIGNED. This means:
+- Custom bootloader could be flashed via DPS update_ecu()
+- Could modify EEPROM reading behavior
+- Could bypass PROTOKEY authentication at VIP level
+
+================================================================================
+3. STAGE 1: INTEL ABL (SOC_ABL)
+================================================================================
+
+3.1 MODULE DETAILS
+------------------
+File: 85738845 (6.0 MB)
+Sign Type: NONE (UNSIGNED!)
+Format: Intel Package (ipk.)
+
+3.2 HEADER STRUCTURE (from hex dump)
+------------------------------------
+Offset 0x00: "ipk." magic (Intel Package)
+Offset 0x10: Size/offset fields
+Offset 0x220: "$UEP" marker (Intel UEP format)
+Offset 0x244: "TUE" marker
+
+3.3 BUILD INFORMATION (from strings)
+-------------------------------------
+HARMAN.ABL.DATE=2024-03-26_07:57:25
+HARMAN.ABL.USER=jenkins@docker-jenkins-ubuntu1804-awsohlx051bs002
+HARMAN.ABL.GIT=dirty:f8b5b633e2d214d1268274f2892e185cc6389f9b
+HARMAN.ABL.VER=922
+HARMAN.ABL.PUBHASH=dbg
+
+3.4 SECURITY KEYS (from strings)
+--------------------------------
+- CSE BXT IVB Integrity Key
+- CSE BXT IVB Confidentiality Key
+- CSE Intel Fixed Key
+- CSE BXT Intel Fixed Root Key
+- CSE IVB Root Key
+- CSE Intel Root Key
+- CSE Non-Intel Root Key
+- rot.key (Root of Trust key)
+- oem.key (OEM key)
+- rpmb_key (Replay Protected Memory Block)
+- oem_sign
+- manfhash (Manufacturing hash)
+
+3.5 BOOT MODES (from strings)
+-----------------------------
+- "Recovery"
+- "FastBoot"
+- "Android"
+- "BOOT_IMAGE str+"
+- "pandroid="
+
+3.6 LOCK STATES (from strings)
+------------------------------
+- SocCfgLock
+- OemLock
+- manuf_lock
+- flash_test
+- sku_boot_sts
+- @lock
+- "LOCKED at %d!"
+
+3.7 VERIFICATION FUNCTIONS (from strings)
+-----------------------------------------
+- "RbeVerifyHashSha256: Hash Authentication failed on data:"
+- "Expected Hash:"
+- "Calculated Hash:"
+- "VerifyMR8onRAM"
+- "Secure Boot Error - bad image path"
+- "iunit_auth"
+- "artbl_hash"
+
+3.8 FLASH PATHS (from strings)
+------------------------------
+- /dev/flash/cse
+- /dev/flash/descr
+- /dev/flash/psvn
+- /dev/flash/uep
+- /dev/flash/dnxp
+- /dev/flash/nvms
+- /dev/flash/ivbp
+- /dev/flash/flog
+- /dev/flash/utok
+- /dev/flash/dvlc
+- /dev/flash/mfs
+
+3.9 SECURITY IMPLICATIONS
+-------------------------
+SOC_ABL is UNSIGNED but contains internal verification:
+- Uses Intel CSE (Converged Security Engine)
+- Has RbeVerifyHashSha256 for hash authentication
+- Manages OemLock/SocCfgLock states
+- Could be modified to disable secure boot checks
+
+================================================================================
+4. STAGE 2: GHS INTEGRITY (SOC_HOSTOS)
+================================================================================
+
+4.1 MODULE DETAILS
+------------------
+File: 85098662 (14.3 MB)
+Sign Type: TSS (GM Signed!)
+Format: GM header + Intel Package (ipk.) + ELF binary
+
+4.2 HEADER STRUCTURE (from hex dump)
+------------------------------------
+Offset 0x00: Padding
+Offset 0x0A: "BM" marker
+Offset 0x22: "1SHG" magic (GHS header type)
+Offset 0x88: SHA-256 hash: b09774fcab5738f037aabf9d2c247452
+Offset 0x220: "ipk." Intel package format
+Offset 0x27B: ELF header (0x7F 'E' 'L' 'F')
+Offset 0x250: "board=harman_info35 gm_part_number=85098662BM"
+
+4.3 KERNEL CONFIGURATION (CONFIG_GHS_*)
+---------------------------------------
+CONFIG_GHS_GUEST_COMMS=y           # Guest communication
+CONFIG_GHS_PARAVIRTUAL_SUPPORT=y   # Paravirtualization
+CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y # VMM bootloader control
+CONFIG_ANDROID_GM_GHS_MMC=y        # GHS MMC driver
+CONFIG_SND_GHS_PCM=y               # GHS PCM audio driver
+CONFIG_HYPERVISOR_GUEST=y          # Running as hypervisor guest
+
+4.4 GHS PARTITIONS
+------------------
+ghs_isys_a/b (vda1/2) - GHS INTEGRITY images (A/B)
+ghs_storage (vda3)    - GHS persistent storage
+ghs_abl_update (vda4) - ABL update staging
+ghs_log (vda24)       - GHS logging
+
+4.5 HYPERVISOR ROLE
+-------------------
+GHS INTEGRITY acts as Type-1 hypervisor:
+1. Loaded by Intel ABL
+2. Creates isolated VM for Android
+3. Provides paravirtualized storage/devices
+4. Controls boot chain from this point
+
+4.6 SECURITY IMPLICATIONS
+-------------------------
+SOC_HOSTOS is TSS SIGNED - cannot be modified without GM keys.
+This is the primary security barrier in the boot chain.
+
+================================================================================
+5. STAGE 3: ANDROID BOOT (SOC_BOOT)
+================================================================================
+
+5.1 MODULE DETAILS
+------------------
+File: 86331652 (64 MB)
+Sign Type: NONE (UNSIGNED, but AVB protected)
+Format: Android bootimg
+
+5.2 BOOTIMG HEADER (from file command)
+--------------------------------------
+Android bootimg:
+- Kernel load address: 0x10008000
+- Ramdisk load address: 0x11000000
+- Second stage address: 0x10f00000
+- Page size: 2048
+
+5.3 KERNEL COMMAND LINE
+-----------------------
+video=HDMI-A-1:e
+loglevel=2
+enforcing=0
+androidboot.selinux=permissive
+no_timer_check
+noxsaves
+reboot_panic=p,w
+i915.hpd_sense_invert=0x7
+intel_iommu=off
+loop.max_part=7
+rootfstype=ext4
+gpt
+console=tty0
+androidboot.hardware=full_gminfo37_gb
+firmware_class.path=/vendor/firmware
+relative_sleep_states=1
+intel_pstate=disable
+pstore.backend=ramoops
+memmap=0x400000$0x50000000
+ramoops.mem_address=0x50000000
+ramoops.mem_size=0x400000
+ramoops.record_size=0x4000
+ramoops.console_size=0x200000
+ramoops.ftrace_size=0x2000
+ramoops.dump_oops=1
+vga=current
+i915.modeset=1
+drm.atomic=1
+i915.nuclear_pageflip=1
+drm.vblankoffdelay=1
+i915.fastboot=1
+
+CRITICAL: cmdline contains "enforcing=0 androidboot.selinux=permissive"
+This is embedded in the boot image - indicates SELinux permissive at image level.
+
+5.4 AVB PROTECTION
+------------------
+From fstab:
+  avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey
+  avb=vbmeta
+
+Runtime properties:
+  [ro.boot.avb_version]: [1.2]
+  [ro.boot.vbmeta.device_state]: [locked]
+  [ro.boot.vbmeta.digest]: [537b0f4b...]
+  [ro.boot.verifiedbootstate]: [green]
+
+5.5 SECURITY IMPLICATIONS
+-------------------------
+SOC_BOOT is UNSIGNED but protected by:
+1. vbmeta hash chain
+2. AVB verification at boot
+3. Device state = locked
+
+Modification would require:
+- Replacing vbmeta (Module 56, also UNSIGNED)
+- Breaking AVB verification chain
+- Or modifying SOC_ABL to skip verification
+
+================================================================================
+6. BOOT MODULE FORMAT ANALYSIS
+================================================================================
+
+6.1 GM PROPRIETARY HEADER FORMAT
+--------------------------------
+All GM modules share a common header structure:
+
+Offset  | Size | Description
+--------|------|------------------------------------------
+0x00    | 10   | Padding (zeros)
+0x0A    | 2    | Module marker ("AA", "BM", etc.)
+0x0C    | 4    | Checksum/flags
+0x10    | 16   | Encryption type ("none" = unencrypted)
+0x22    | 4    | Module type magic:
+        |      |   "1NMH" = VIP module (NMH reversed)
+        |      |   "1SHG" = GHS module (SHG reversed)
+0x26    | 4    | Data length
+0x2A    | 16   | Secondary encryption field
+...     |      | (padding)
+0x88    | 32   | SHA-256 hash of payload
+...     |      | (more padding to 0x220)
+0x220   | ...  | Actual payload begins
+
+6.2 INTEL PACKAGE FORMAT (ipk.)
+-------------------------------
+Used by SOC_ABL and SOC_HOSTOS:
+
+Offset  | Size | Description
+--------|------|------------------------------------------
+0x00    | 4    | "ipk." magic
+0x04    | 4    | Version/flags
+0x08    | 4    | Reserved
+0x0C    | 4    | Payload offset
+0x10    | 4    | Unknown
+0x14    | 4    | Payload size
+...     | ...  | Intel-specific headers
+0x220   | 4    | "$UEP" marker (optional)
+...     | ...  | UEP (Unified Extensible Protocol) data
+
+6.3 ANDROID BOOTIMG FORMAT
+--------------------------
+Standard Android boot image:
+
+Offset  | Size | Description
+--------|------|------------------------------------------
+0x00    | 8    | "ANDROID!" magic
+0x08    | 4    | Kernel size
+0x0C    | 4    | Kernel load address
+0x10    | 4    | Ramdisk size
+0x14    | 4    | Ramdisk load address
+0x18    | 4    | Second size
+0x1C    | 4    | Second load address
+0x20    | 4    | Tags address
+0x24    | 4    | Page size
+0x28    | 4    | Header version
+0x2C    | 4    | OS version
+0x30    | 16   | Name
+0x40    | 512  | Cmdline
+0x240   | 32   | ID (SHA hash)
+0x260   | 1024 | Extra cmdline
+
+================================================================================
+7. RECOVERY MECHANISMS
+================================================================================
+
+7.1 NO TRADITIONAL RECOVERY PARTITION
+-------------------------------------
+The device does NOT have a standard Android recovery partition.
+Recovery functions are handled by:
+
+1. vendor_install_recovery - SEPolicy type for recovery operations
+2. gm_update_engine - Handles partition updates
+3. vendor_flash_recovery.rc - Init script (89 bytes)
+4. gmprotokey_recovery - PROTOKEY recovery service (stopped in normal mode)
+5. hal_bootctl - A/B slot management
+
+7.2 RECOVERY SEPOLICY
+---------------------
+From vendor_sepolicy.cil:
+
+(type vendor_install_recovery)
+(type vendor_install_recovery_exec)
+
+Permissions:
+- Can read boot_block_device
+- Can read/write recovery_block_device
+- Can execute vendor shell/toolbox
+- Can drop caches
+- Process transitions from init
+
+7.3 A/B SLOT RECOVERY
+---------------------
+If boot fails on current slot:
+1. GHS/ABL detects boot failure
+2. Switches to alternate slot via hal_bootctl
+3. Reboots to known-good image
+
+Properties:
+  [ro.boot.slot_suffix]: [_a]  (current slot)
+  [ro.product.ab_ota_partitions]: [boot,system,vbmeta,bootloader,vendor,product,acpio]
+
+7.4 UPDATE RECOVERY
+-------------------
+During updates, recovery is handled by:
+1. gm_update_engine writes to inactive slot
+2. gmext.switch_slot() marks new slot as active
+3. Reboot activates new slot
+4. If new slot fails, falls back to old slot
+
+================================================================================
+8. SECURITY VERIFICATION POINTS
+================================================================================
+
+8.1 VERIFICATION CHAIN
+----------------------
+```
+VIP_BOOT
+   |
+   | (UNSIGNED - no verification)
+   v
+SOC_ABL (Intel ABL)
+   |
+   | RbeVerifyHashSha256()
+   | CSE Secure Boot
+   v
+SOC_HOSTOS (GHS INTEGRITY)
+   |
+   | (TSS SIGNED by GM)
+   v
+SOC_BOOT (Android)
+   |
+   | AVB via vbmeta
+   v
+system/vendor/product
+   |
+   | AVB hash chain
+   v
+Android Runtime
+```
+
+8.2 SBAT (Secure Boot Authorization Ticket)
+-------------------------------------------
+From VIP log:
+  [SBAT] keyNBID = 0x0000
+  [SBAT] appNBID = 0x0001
+  [SBAT] ECU_ID: = 0x00 0x26 0x42 0x25...
+  [SBAT] SbaTicketValidation validation failed: 0x0
+
+SBAT validates software authorization. Failed validation (0x0) indicates
+either no ticket present or validation not required for current operation.
+
+8.3 PROTOKEY AUTHENTICATION
+---------------------------
+From VIP log:
+  [PROTOKEY] ICUSB module enabled
+  [PROTOKEY] Receives invalid seed [1] from BCM
+  [PROTOKEY] Receives invalid seed [2] from BCM
+  [PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+
+"Invalid seed" indicates bench mode (no BCM connection).
+In vehicle, BCM provides valid seeds for authentication.
+
+8.4 MEC (Message Authentication Counter)
+-----------------------------------------
+  [J6_CDD] Transmitted MEC Value - 0x 0
+
+MEC = 0 indicates no message authentication errors/no registration required.
+
+================================================================================
+9. ATTACK SURFACE ANALYSIS
+================================================================================
+
+9.1 WEAKEST POINTS IN BOOT CHAIN
+--------------------------------
+
+CRITICAL - VIP_BOOT (Module 71):
+- UNSIGNED
+- Controls early boot
+- Reads EEPROM security flags
+- If modified: could bypass all VIP security
+
+HIGH - SOC_ABL (Module 72):
+- UNSIGNED
+- Has internal verification (RbeVerifyHashSha256)
+- But verification could potentially be patched out
+- If modified: could disable GHS/Android secure boot
+
+MEDIUM - SOC_BOOT (Module 23):
+- UNSIGNED but AVB protected
+- Contains SELinux permissive cmdline
+- Modification requires breaking AVB chain
+
+9.2 ATTACK VECTORS
+------------------
+
+1. VIP_BOOT REPLACEMENT
+   Method: DPS gmext.update_ecu("71", custom_bootloader)
+   Effect: Full control of VIP boot behavior
+   Difficulty: Requires understanding RH850 binary format
+   Status: UNEXPLORED
+
+2. SOC_ABL MODIFICATION
+   Method: DPS gmext.update_ecu("72", modified_abl)
+   Effect: Disable secure boot checks
+   Difficulty: Intel ABL format is proprietary
+   Status: UNEXPLORED
+
+3. AVB CHAIN BREAK
+   Method: Replace vbmeta with custom keys
+   Effect: Boot custom system/boot images
+   Difficulty: Requires understanding full AVB chain
+   Status: POSSIBLE (vbmeta is unsigned)
+
+9.3 SECURITY RECOMMENDATIONS
+-----------------------------
+For legitimate security research:
+
+1. Focus on VIP_BOOT analysis
+   - Extract and disassemble RH850 binary
+   - Identify EEPROM reading code
+   - Understand security flag validation
+
+2. SOC_ABL analysis
+   - Study Intel ABL format
+   - Identify RbeVerifyHashSha256 implementation
+   - Map boot mode selection logic
+
+3. GHS communication
+   - VIP-to-SoC IPC on channels 1-20
+   - Calibration data format
+   - Power level transitions
+
+================================================================================
+APPENDIX: FILE REFERENCES
+================================================================================
+
+Update Modules:
+- 85056831 - VIP_BOOT (1.9 MB)
+- 85738845 - SOC_ABL (6.0 MB)
+- 85098662 - SOC_HOSTOS (14.3 MB)
+- 86331652 - SOC_BOOT (64 MB)
+- 86331656 - VIP_APP (1.9 MB)
+
+Analysis Sources:
+- logs/VIP_log_2B.174.4.1_10JUL24.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/kernel_config.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/all_properties.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/partitions.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/pulled_files/vendor_sepolicy.cil
+
+================================================================================
+10. PRE-AVB SECURITY MECHANISMS (VIP_BOOT & SOC_ABL)
+================================================================================
+
+CRITICAL CLARIFICATION: "Sign Type = NONE" in delivery_manifest.csv means
+NO TSS (GM Cloud Signing Server) signature. HOWEVER, both modules have
+INTERNAL validation mechanisms that provide security pre-AVB.
+
+10.1 VIP_BOOT INTERNAL SECURITY
+-------------------------------
+Despite being "unsigned" for TSS, VIP_BOOT has multiple internal checks:
+
+A) HARMAN CHECKSUM VALIDATION
+   Evidence (from strings):
+     "Harman checksum is valid."
+     "Error: Harman checksum is invalid."
+
+   This is a proprietary checksum algorithm that validates the bootloader
+   integrity. Modification of the binary without correct checksum would
+   fail validation.
+
+B) MESSAGE DIGEST VALIDATION (SHA-based)
+   Evidence (from strings):
+     "Message digest is valid."
+     "Error: Message digest is invalid."
+
+   Uses SHA-256 via cv_Act_Library:
+     "cv_Act_Library_ES_Version_1.2.1, Jul 28 2023"
+     "actSHA_SPEED_UP"
+     "actSHA256_SPEED_UP"
+     "actAES_SPEED_UP"
+
+   The message digest is stored in header at offset 0x88 (32 bytes).
+   Example: 9e430f8b17e7567f2617a744efa41970
+
+C) APPLICATION SIGNED HEADER VALIDATION
+   Evidence (from strings):
+     "Application signed header is valid (flashUpdate=%d)."
+     "Error: Application signed header is invalid (flashUpdate=%d), pec = 0x%x."
+
+   The header at offset 0x220+ contains a signature block that is validated
+   before flash operations are permitted.
+
+D) SBA/SBAT TICKET VALIDATION
+   Evidence (from strings):
+     "BOLO: SBA ticket is valid."
+     "BOLO: SBA ticket is invalid - result = 0x%x."
+     "First 10 bytes of SBAT = "
+
+   From VIP log:
+     [SBAT] keyNBID = 0x0000
+     [SBAT] appNBID = 0x0001
+     [SBAT] SbaTicketValidation validation failed: 0x0
+
+   SBAT (Secure Boot Authorization Ticket) validates software is authorized
+   by GM. Failed validation indicates no ticket present (bench mode).
+
+E) HDLC CRC VALIDATION
+   Evidence (from strings):
+     "[%08d] HDLC: CRC Failed 0x%X Last RSeq:%d"
+
+   All IPC communication is CRC-protected.
+
+10.2 SOC_ABL INTERNAL SECURITY
+------------------------------
+SOC_ABL has extensive Intel CSE-based security:
+
+A) INTEL CONVERGED SECURITY ENGINE (CSE)
+   Hardware security coprocessor with multiple key types:
+
+   | Key Type                              | Purpose                    |
+   |---------------------------------------|----------------------------|
+   | CSE BXT IVB Integrity Key             | Image integrity            |
+   | CSE BXT IVB Confidentiality Key       | Data encryption            |
+   | CSE Intel Fixed Key                   | Intel baseline security    |
+   | CSE BXT Intel Fixed Root Key          | Root of trust              |
+   | CSE IVB Root Key                      | IVB partition root         |
+   | CSE Intel Root Key                    | Intel signing root         |
+   | CSE Non-Intel Root Key                | OEM signing root           |
+   | rot.key                               | Root of Trust key file     |
+   | oem.key                               | OEM-specific key           |
+   | rpmb_key                              | Replay Protected Memory    |
+
+   These keys are hardware-fused and cannot be extracted or replaced.
+
+B) HASH AUTHENTICATION (RbeVerifyHashSha256)
+   Evidence (from strings):
+     "RbeVerifyHashSha256: Hash Authentication failed on data:"
+     "Expected Hash:"
+     "Calculated Hash:"
+
+   Uses SHA-256 to verify integrity of all loaded images.
+
+C) SVN ANTI-ROLLBACK PROTECTION
+   Evidence (from strings):
+     "SVN check failed"
+     "/home/loadmgr/svns" - SVN storage location
+     "/home/loadmgr/arben" - Anti-rollback enable flags
+     "svn_update"
+
+   SVN Types (from strings):
+     - RbeArbSvn (RBE Anti-Rollback SVN)
+     - OemKmArbSvn (OEM Key Manifest Anti-Rollback SVN)
+     - UcodeArbSvn (Microcode Anti-Rollback SVN)
+     - dal_psvnseed, dal_csvnseed (DAL SVN seeds)
+     - ivi_csvnseed, ivi_psvnseed (IVI SVN seeds)
+
+   This prevents flashing older firmware versions, even if unsigned.
+
+D) HARDWARE FUSES (fTPM)
+   Evidence (from strings):
+     "ftpm_fuses"
+
+   Firmware TPM fuses store permanent security state.
+
+E) LOCK STATES
+   Evidence (from strings):
+     "SocCfgLock" - SoC configuration lock
+     "OemLock" - OEM lock state
+     "manuf_lock" - Manufacturing lock
+     "PRODUCTION_MODE"
+     "@lock"
+     "LOCKED at %d!"
+
+   Multiple lock states prevent modification in production devices.
+
+F) SECURE BOOT VALIDATION
+   Evidence (from strings):
+     "Secure Boot Error - bad image path"
+     "[BUP] unrecovable bad image failure %s"
+     "NOT_PKCS7_SIGNED_DATA"
+     "CERTIFICATE_VERIFY_FAILED"
+     "CRL_VERIFY_FAILURE"
+
+   Full PKI chain validation for loaded images.
+
+10.3 EXPLOITATION FEASIBILITY ANALYSIS
+--------------------------------------
+
+VIP_BOOT EXPLOITATION ASSESSMENT:
+---------------------------------
+| Security Mechanism        | Bypass Difficulty | Notes                    |
+|---------------------------|-------------------|--------------------------|
+| Harman Checksum           | MODERATE          | Proprietary algorithm    |
+|                           |                   | Requires reverse engineer|
+| Message Digest (SHA-256)  | HIGH              | Crypto is sound          |
+|                           |                   | Must recalculate hash    |
+| Signed Header             | UNKNOWN           | Key source unclear       |
+|                           |                   | May be software-based    |
+| SBAT Ticket               | LOW (bypass)      | Fails gracefully (0x0)   |
+|                           |                   | May not block boot       |
+
+OVERALL VIP_BOOT EXPLOITATION: POSSIBLE WITH EFFORT
+- Requires: RH850 disassembly, Harman checksum RE, hash recalculation
+- The "signed header" validation is the key unknown
+
+SOC_ABL EXPLOITATION ASSESSMENT:
+--------------------------------
+| Security Mechanism        | Bypass Difficulty | Notes                    |
+|---------------------------|-------------------|--------------------------|
+| Intel CSE Keys            | VERY HIGH         | Hardware fused           |
+|                           |                   | Cannot be extracted      |
+| RbeVerifyHashSha256       | HIGH              | Can't forge SHA-256      |
+|                           |                   | Would need to patch code |
+| SVN Anti-Rollback         | HIGH              | Fuse-based counter       |
+|                           |                   | Cannot decrement         |
+| fTPM Fuses                | VERY HIGH         | One-time programmable    |
+| Lock States               | VARIES            | May be software-based    |
+| PKCS7/Certificate         | HIGH              | Full PKI chain           |
+
+OVERALL SOC_ABL EXPLOITATION: DIFFICULT
+- Intel CSE provides hardware root of trust
+- Even with modified ABL, CSE may reject unsigned payloads
+- SVN prevents downgrade attacks
+
+10.4 REALISTIC ATTACK PATHS
+---------------------------
+
+PATH 1: VIP_BOOT MODIFICATION (MOST PROMISING)
+----------------------------------------------
+Difficulty: MODERATE-HIGH
+
+Requirements:
+1. Disassemble RH850 binary (85056831)
+2. Reverse engineer Harman checksum algorithm
+3. Identify "signed header" validation routine
+4. Patch out validation OR recreate valid headers
+5. Recalculate message digest (SHA-256)
+6. Flash via DPS gmext.update_ecu("71", modified)
+
+Potential Outcome:
+- Modify EEPROM security flag reading
+- Always return bypass state regardless of EEPROM
+- Eliminate need for physical EEPROM modification
+
+Risk: Brick if failed (but recoverable via DPS)
+
+PATH 2: SOC_ABL MODIFICATION (LESS PROMISING)
+---------------------------------------------
+Difficulty: HIGH-VERY HIGH
+
+Major Obstacle: Intel CSE hardware validation
+- Even if ABL binary is modified, CSE may refuse to load it
+- RbeVerifyHashSha256 uses CSE for verification
+- Cannot bypass hardware security engine
+
+Potential Approach:
+1. Study Intel ABL architecture
+2. Identify if any paths bypass CSE checks
+3. Look for debug/development modes
+4. Check if manuf_lock can be cleared
+
+PATH 3: COMBINED APPROACH
+-------------------------
+Difficulty: MODERATE
+
+If VIP_BOOT can be modified to:
+1. Bypass EEPROM security checks (ADB always enabled)
+2. Present modified security state to SoC
+3. SoC boots with full ADB access
+4. Use ADB to explore further attack surface
+
+This may be the most practical path as it focuses on the weaker
+VIP_BOOT security while avoiding Intel CSE entirely.
+
+10.5 KEY EVIDENCE SUMMARY
+-------------------------
+
+VIP_BOOT Header (85056831):
+Offset 0x00:  00 00 00 00 00 00 00 00 00 00 41 41 (padding + "AA")
+Offset 0x10:  6E 6F 6E 65 ("none" - no encryption)
+Offset 0x22:  31 4E 4D 48 ("1NMH" - reversed "HMN1" magic)
+Offset 0x88:  9e430f8b17e7567f2617a744efa41970 (hash)
+Offset 0x226: 43 53 4D ("CSM" identifier)
+Offset 0x266: 49 6E 66 6F 74 61 69 6E 6D 65 6E 74 ("Infotainment")
+
+SOC_ABL Header (85738845):
+Offset 0x00:  69 70 6B 2E ("ipk." - Intel Package magic)
+Offset 0x220: 24 55 45 50 ("$UEP" - UEFI Executable Package)
+Offset 0x244: 54 55 45 ("TUE" marker)
+
+Crypto Libraries:
+- VIP_BOOT: cv_Act_Library ES v1.2.1 (SHA, SHA256, AES)
+- SOC_ABL: CRYPTOGAMS SHA1/SHA256/SHA512 for x86 by <appro@openssl.org>
+
+================================================================================
+11. CONCLUSIONS AND RESEARCH PRIORITIES
+================================================================================
+
+11.1 VIP_BOOT AND SOC_ABL ARE NOT "UNPROTECTED"
+-----------------------------------------------
+Despite Sign Type = NONE in delivery manifest:
+- VIP_BOOT has 4+ internal validation mechanisms
+- SOC_ABL has Intel CSE hardware security
+
+The "NONE" means no GM TSS cloud signature, NOT no security.
+
+11.2 VIP_BOOT IS THE WEAKER LINK
+--------------------------------
+- Uses software-based validation (no hardware TPM)
+- Harman checksum can potentially be reverse engineered
+- SBAT validation appears to fail gracefully
+- RH850 MCU is well-documented architecture
+
+11.3 SOC_ABL IS STRONGLY PROTECTED
+----------------------------------
+- Intel CSE provides hardware root of trust
+- SVN fuses prevent downgrade
+- Multiple lock states enforce production mode
+- Even with binary modification, hardware may reject
+
+11.4 UPDATED RESEARCH PRIORITIES
+--------------------------------
+[1] CRITICAL: Reverse engineer Harman checksum algorithm
+    - Extract from VIP_BOOT binary
+    - Implement in Python for testing
+
+[2] HIGH: Analyze VIP_BOOT "signed header" validation
+    - Is it software or hardware key based?
+    - Can it be bypassed or recreated?
+
+[3] MEDIUM: Map RH850 binary structure
+    - Function entry points
+    - EEPROM reading code location
+    - Security flag validation logic
+
+[4] LOW: SOC_ABL Intel CSE research
+    - Document CSE verification chain
+    - Identify any bypass paths
+    - May be dead end due to hardware
+
+================================================================================
+12. GHS AVB VERIFICATION (CONFIRMED 2024-12-30)
+================================================================================
+
+12.1 GHS PERFORMS ANDROID VERIFIED BOOT
+---------------------------------------
+CONFIRMED: GHS INTEGRITY hypervisor performs AVB verification BEFORE starting
+the Android VM. This was confirmed via binary string analysis of SOC_HOSTOS
+(85098662).
+
+Key evidence strings found in GHS binary:
+```
+VMM: Error: vbmeta signing key does not match known valid key
+VMM: vbmeta: image verification failed!
+VMM: %s: no signed boot partition in vbmeta.
+Android image failed verification: verity disabled?
+VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
+```
+
+12.2 GHS ROLLBACK PROTECTION
+----------------------------
+GHS maintains its own rollback index in the misc partition (vda9):
+
+```
+VMM: ERROR: failed to read A/B metadata from 'misc'
+VMM: ERROR: A/B metadata: version on disk too new
+VMM: A/B metadata updated
+```
+
+The rollback check compares:
+- vbmeta.rollback_index (from new image)
+- stored_rollback_index (from misc partition)
+
+If image index < stored index: "rollback index is too old" → REJECT
+
+12.3 DOWNGRADE TEST RESULTS
+---------------------------
+Test: Y181 -> Y177 downgrade via USB update
+Result: FAILED
+
+Observed behavior:
+1. Update engine wrote Y177 to inactive slot (progress bar completed)
+2. System rebooted into GHS verification
+3. GHS rejected Y177 (rollback check failed)
+4. A/B fallback to original Y181 slot
+5. System returned to Y181 unchanged
+
+Note: Both Y177 and Y181 vbmeta have rollback_index = 0, indicating GHS
+maintains its own counter independently.
+
+12.4 IMPLICATIONS
+-----------------
+- "version check disabled" in manifest only affects gm_update_engine
+- GHS verification cannot be bypassed from Android
+- Downgrade protection is enforced at hypervisor level
+- misc partition contains critical rollback state
+
+See: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt for complete details.
+
+================================================================================
+END OF DOCUMENT
+================================================================================

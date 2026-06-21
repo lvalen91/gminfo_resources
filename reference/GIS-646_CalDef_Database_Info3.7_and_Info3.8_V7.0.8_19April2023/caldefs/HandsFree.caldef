@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This is the handsfree performance caldef.  It contains a BinaryFile for each handsfree tuning set.  The tuning sets vary according to device projection connectivity">
+  <CalDefFileVersion>12</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/27/2015</Date>
+    <Description>Added same usages to OneMicCarPlayFT_SWB and OneMicMirrorlinkTelWB cals as was already applied to other cals in this Caldef</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/30/2015</Date>
+    <Description>Removing OneMicCarPlaySiriSWB CAL. Note this CAL is being removed, and another CAL for this function is being added for the Speech Recogniton feature in this release. Changed the naming convention for the following CALs 1,) OneMicAnalogOnstarECallWB to SSE_HF_GM_INFO3_AnalogOnstarECallWB, 2.) OneMicBTTelNBTuningSet to SSE_HF_GM_INFO3_BTTelNBTuningSet, 3.) OneMicBTTelWB to SSE_HF_GM_INFO3_BTTelWB, 4.) OneMicCarPlayFT_SWB to SSE_HF_GM_INFO3_CarPlayFT_SWB, 5.) OneMicCarPlayTelWB to  SSE_HF_GM_INFO3_OneMicCarPlayTelWB, 6.) OneMicDigOnstarAdvisorWB to  SSE_HF_GM_INFO3_DigOnstarAdvisorWB, 7.) OneMicDigOnstarECallWB to SSE_HF_GM_INFO3_DigOnstarECallWB, 8.) OneMicGoogleAutoTelWB to SSE_HF_GM_INFO3_GoogleAutoTelWB, OneMicMirrorlinkTelWB to  SSE_HF_GM_INFO3_MirrorlinkTelWB. Also added updated .bsd files. </Description>
+    <Author>Bassam Shahmurad</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>11/10/2015</Date>
+    <Description>SSE_VR_GM_INFO3_Googlenow_WB CAL was removed as it is now made obsolete, and is not needed with the use of the new CAL that was added in the GIS696_ASR_SSE.caldef in the CAL Database Version 1.5.5 Release. Updated  CAL name for SSE_HF_GM_INFO3_OneMicCarPlayTelWB CAL to SSE_HF_GM_INFO3_CarPlayTelWB as it should not have had and is misleading to have a reference to &quot;OneMic&quot;. For the SSE_HF_GM_INFO3_BTTelWB CAL checked in the correct .bsd file (sse_hf_gm-info-3_bt_tel_wb.bsd) in place of the incorrect .bsd file (sse_hf_gm-info-3_carplay_ft_swb.bsd) that was previously checked in the CAL Database Version 1.5.5 Release.</Description>
+    <Author>Bassam Shahmurad</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>3/3/2016</Date>
+    <Description>Within this caldef file uploaded updated.bsd files for the following four CALs:1.) SSE_HF_GM_INFO3_BTTelNBTuningSet, 2.)SSE_HF_GM_INFO3_BTTelWB, 3.) SSE_HF_GM_INFO3_CarPlayFT_SWB, 4.) SSE_HF_GM_INFO3_CarPlayTelWB, 5.)SSE_HF_GM_INFO3_DigOnstarAdvisorWB, 6.) SSE_HF_GM_INFO3_DigOnstarECallWB,  per Assembla#: 2273. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/28/2016</Date>
+    <Description>Removed usage of Low Radio for all of the calibrations within this caldef file and added in a generic description for this calibration since there was no description previously shown at all for this calibration. Calibrations needed for the GIS-380 Handsfree use cases created in the LowRadioHandsFree.caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>12/7/2016</Date>
+    <Description>Within this caldef file, made the following two updates: 1. Removed SSE_HF_GM_INFO3_MirrorlinkTelWB calibration since MirrorLink will not be supported according to the Info 3 roadmap. 2. Added SSE_HF_GM_INFO3_CarPlayTelNB calibration to support CarPlay Certification requirements.</Description>
+    <Author>Tony Pugh</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>9/25/2019</Date>
+    <Description>In support of CR#: CR 2374555, added 2 new calibration parameters ( SSE_TELEPHONY_SWB_VOIP and SSE_TELEPHONY_WB_VOIP) to cover Wideband and Superwideband for app based VoIP calling.</Description>
+    <Author>Harshal Shah</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>10/19/2020</Date>
+    <Description>Per CR#2800045 made the following updates within the HandsFree.caldef file:  Added the following 11 new cals: 1.) SSE_HF_GM_INFO3_CarPlayTelNB_48khz_DL (Parameter for narrowband DL) and 2.) SSE_HF_GM_INFO3_CarPlayTelWB_48khz_DL (Parameter for wideband DL) and 3.) SSE_HF_GM_INFO3_CarPlayFT_SWB_48khz_DL (Parameter for superwideband DL) and 4.) SSE_HF_GM_INFO3_WiFi_CarPlayTelNB_48khz_DL (Parameter for wireless narrowband DL) and 5.) SSE_HF_GM_INFO3_CarPlayTelWB_48khz_DL (Parameter for wireless wideband DL) and 6.) SSE_HF_GM_INFO3_WiFi_CarPlayFT_SWB_48khz_DL (Parameter for wireless superwideband DL) and 7.) SSE_HF_GM_INFO3_WiFi_CarPlayTelNB (Uplink WiFi parameters for NB) and 8.) SSE_HF_GM_INFO3_WiFi_CarPlayTelWB (Uplink WiFi parameters for WB) and 9.) SSE_HF_GM_INFO3_WiFi_CarPlayTelSWB (Uplink WiFi parameters for SWB) and 10.) SSE_TELEPHONY_WB_VoIP_48khz_DL (Downlink for VoIP parameters) and 11.) SSE_TELEPHONY_SWB_VoIP_48khz_DL (Downlink for VoIP parameters)</Description>
+    <Author>Harshal Shah</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>10/19/2020</Date>
+    <Description>Per CR#2800045 made the following updates within the HandsFree.caldef file: Changed the filename extention of the following 11 cals to &quot;.scd&quot;: 1.) SSE_TELEPHONY_SWB_VoIP and 2.) SSE_TELEPHONY_WB_VoIP and 3.) SSE_HF_GM_INFO3_AnalogOnstarECallWB and 4.) SSE_HF_GM_INFO3_CarPlayTelNB and 5.) SSE_HF_GM_INFO3_BTTelNBTuningSet and 6.) SSE_HF_GM_INFO3_BTTelWB and 7.) SSE_HF_GM_INFO3_CarPlayFT_SWB and 8.) SSE_HF_GM_INFO3_DigOnstarECallWB and 9.) SSE_HF_GM_INFO3_CarPlayTelWB and 10.) SSE_HF_GM_INFO3_DigOnstarAdvisorWB and 11.) SSE_HF_GM_INFO3_GoogleAutoTelWB</Description>
+    <Author>Harshal Shah</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Default voice parameters for app based VoIP calling for SWB in downlink scenario" Name="SSE_TELEPHONY_SWB_VoIP_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_HoIrQA8REeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2019</Date>
+      <Description></Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_TELEPHONY_SWB_VoIP_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQDE/yZoBAYAAAAAAAA6AAAAJOVqhQABISgAAAAAIENSQzo4NTZBRTUyNCAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS2AuwAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAAdwSKogACAACtIcasZAAAAPUzx7sEKQAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>1530996359</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Default voice parameters for app based VoIP calling for SWB" Name="SSE_TELEPHONY_SWB_VoIP" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_RMs3MN-kEemC5M7-Fk989w</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2019</Date>
+      <Description></Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description>changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_TELEPHONY_SWB_VoIP.scd</Filename>
+      <Data>/+8BAA0AAQC7n9guBAYAAAAAAAA6AAAAocbt6QABISgAAAAAIENSQzpFOUVEQzZBMSAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS3AXQAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAArSHGrGQAAAD1M8e7BCkAAJGmub4BAAAA2bGtxwEAAACUdWvLAQAAANqjxfABAAAA+FvzigAAAADRqmZSQAYAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>1696612748</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Default voice parameters for app based VoIP calling for WB downlik " Name="SSE_TELEPHONY_WB_VoIP_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_VF8UMQ8REeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2019</Date>
+      <Description></Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_TELEPHONY_WB_VoIP_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQClDIvWBAYAAAAAAAA+AAAA1iXjfQABISgAAAAAIENSQzo3REUzMjVENiAgIAAAAAA8AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACc3UktgLsAAJq8ZUIDAAAAN0zfRAEAAADr6dRFAQAAALVJR0gBAAAABJq2SwEAAADEpZ5TAwAAALz5Y3kBAAAAI6FokgEAAAD4h2qVAQAAAHcEiqIAAgAArSHGrGQAAAD1M8e7WBsAAJGmub4BAAAA2bGtxwEAAACUdWvLAQAAANqjxfABAAAA+FvzigAAAACCSlRuAwAAAHuWf70DAAAA+FvzigEAAADf4E52AgAAAJz549EBAAAA</Data>
+      <Length>300</Length>
+      <Checksum>3488351278</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Default voice parameters for app based VoIP calling for WB " Name="SSE_TELEPHONY_WB_VoIP" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_DOvukN-kEemC5M7-Fk989w</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2019</Date>
+      <Description></Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description> changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_TELEPHONY_WB_VoIP.scd</Filename>
+      <Data>/+8BAA0AAQA4JNj9BAYAAAAAAAA8AAAAKM4kHwABISgAAAAAIENSQzoxRjI0Q0UyOCAgIAAAAAA6AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACavGVCAwAAADdM30QBAAAA6+nURQEAAAC1SUdIAQAAAASatksBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>292</Length>
+      <Checksum>3583760574</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_AnalogOnstarECallWB use case" Name="SSE_HF_GM_INFO3_AnalogOnstarECallWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_vJ7YwX7YEeSB8L8TE_FlFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/19/2020</Date>
+      <Description>changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_AnalogOnstarECallWB.scd</Filename>
+      <Data>/+8BAA0AAQA8lQm/BAYAAAAAAAA8AAAAKM4kHwABQSgAAAAAIENSQzoxRjI0Q0UyOCAgIAAAAAA6AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACavGVCAwAAADdM30QBAAAA6+nURQEAAAC1SUdIAQAAAASatksBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>292</Length>
+      <Checksum>2772282276</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelNB Wifi use case downlik scenario" Name="SSE_HF_GM_INFO3_WiFi_CarPlayTelNB_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_e8QVMQ8VEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/7/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Tony Pugh</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL  and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_WiFi_CarPlayTelNB_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQCZ50v/BAYAAAAAAAA6AAAAxda5sQABISgAAAAAIENSQzpCMUI5RDZDNSAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS2AuwAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAAdwSKogACAACtIcasZAAAAPUzx7tIDQAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>2738689143</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelNB use case downlik scenario" Name="SSE_HF_GM_INFO3_CarPlayTelNB_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_OlPqgA8VEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/7/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Tony Pugh</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_CarPlayTelNB_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQCZ50v/BAYAAAAAAAA6AAAAxda5sQABISgAAAAAIENSQzpCMUI5RDZDNSAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS2AuwAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAAdwSKogACAACtIcasZAAAAPUzx7tIDQAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>2738689143</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelNB use case" Name="SSE_HF_GM_INFO3_WiFi_CarPlayTelNB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_eX8HMA8VEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/7/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Tony Pugh</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for Wifi and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_WiFi_CarPlayTelNB.scd</Filename>
+      <Data>/+8BAA0AAQC6da3RBAYAAAAAAAA2AAAAKgKr0QABISgAAAAAIENSQzpEMUFCMDIyQSAgIAAAAAA0AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS1AHwAAmrxlQgMAAAA3TN9EAQAAALVJR0gBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAAB3BIqigAAAAK0hxqxkAAAA9TPHu0gNAACRprm+AQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>268</Length>
+      <Checksum>3028586496</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelNB use case" Name="SSE_HF_GM_INFO3_CarPlayTelNB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_HhyeMbzFEeaBv_kxpB8Tyg</CalID>
+    <Type>BinaryFile</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/7/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Tony Pugh</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/19/2020</Date>
+      <Description> changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_CarPlayTelNB.scd</Filename>
+      <Data>/+8BAA0AAQC6da3RBAYAAAAAAAA2AAAAKgKr0QABISgAAAAAIENSQzpEMUFCMDIyQSAgIAAAAAA0AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS1AHwAAmrxlQgMAAAA3TN9EAQAAALVJR0gBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAAB3BIqigAAAAK0hxqxkAAAA9TPHu0gNAACRprm+AQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>268</Length>
+      <Checksum>3028586496</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_BTTelNBTuningSet use case" Name="SSE_HF_GM_INFO3_BTTelNBTuningSet" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_ahpGIH7YEeSB8L8TE_FlFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_BTTelNBTuningSet.scd</Filename>
+      <Data>/+8BAA0AAQBl1AQCBAYAAAAAAABAAAAAMJl1UgABQSgAAAAAIENSQzo1Mjc1OTkzMCAgIAAAAAA+AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACc3UktQB8AAJq8ZUIDAAAAN0zfRAEAAADr6dRFAQAAALVJR0gBAAAABJq2SwEAAADEpZ5TAwAAALz5Y3kBAAAAI6FokgEAAAD4h2qVAQAAAHcEiqKAAAAArSHGrGQAAAD1M8e7SA0AAJGmub4BAAAA2bGtxwEAAACUdWvLAQAAANqjxfABAAAA+FvzigAAAADRqmZSQAYAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>308</Length>
+      <Checksum>485541158</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_BTTelWB use case" Name="SSE_HF_GM_INFO3_BTTelWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_6sZ9cX7YEeSB8L8TE_FlFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_BTTelWB.scd</Filename>
+      <Data>/+8BAA0AAQA8lQm/BAYAAAAAAAA8AAAAKM4kHwABQSgAAAAAIENSQzoxRjI0Q0UyOCAgIAAAAAA6AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACavGVCAwAAADdM30QBAAAA6+nURQEAAAC1SUdIAQAAAASatksBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>292</Length>
+      <Checksum>2772282276</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayFT_SWB downlink use case" Name="SSE_HF_GM_INFO3_CarPlayFT_SWB_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_mYi44Q8bEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_CarPlayFT_SWB_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQDE/yZoBAYAAAAAAAA6AAAAJOVqhQABISgAAAAAIENSQzo4NTZBRTUyNCAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS2AuwAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAAdwSKogACAACtIcasZAAAAPUzx7sEKQAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>1530996359</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayFT_SWB downlink WiFi use case" Name="SSE_HF_GM_INFO3_WiFi_CarPlayFT_SWB_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_MNN0cQ8bEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_WiFi_CarPlayFT_SWB_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQDE/yZoBAYAAAAAAAA6AAAAJOVqhQABISgAAAAAIENSQzo4NTZBRTUyNCAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS2AuwAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAAdwSKogACAACtIcasZAAAAPUzx7sEKQAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>1530996359</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayFT_SWB Wifi use case" Name="SSE_HF_GM_INFO3_WiFi_CarPlayTelSWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_0i9wMQ8bEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for Wifi and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_WiFi_CarPlayTelSWB.scd</Filename>
+      <Data>/+8BAA0AAQAxzUIbBAYAAAAAAAA0AAAA00yJugABISgAAAAAIENSQzpCQTg5NENEMyAgIAAAAAAyAAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS3AXQAAmrxlQgMAAAA3TN9EAQAAALVJR0gBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7sEKQAAkaa5vgEAAACUdWvLAQAAANqjxfABAAAA+FvzigAAAADRqmZSQAYAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>260</Length>
+      <Checksum>1547310605</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayFT_SWB use case" Name="SSE_HF_GM_INFO3_CarPlayFT_SWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_4YnPwICiEeSxycHQa8aWRQ</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description> changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_CarPlayFT_SWB.scd</Filename>
+      <Data>/+8BAA0AAQAxzUIbBAYAAAAAAAA0AAAA00yJugABISgAAAAAIENSQzpCQTg5NENEMyAgIAAAAAAyAAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS3AXQAAmrxlQgMAAAA3TN9EAQAAALVJR0gBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7sEKQAAkaa5vgEAAACUdWvLAQAAANqjxfABAAAA+FvzigAAAADRqmZSQAYAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>260</Length>
+      <Checksum>1547310605</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_DigOnstarECallWB use case" Name="SSE_HF_GM_INFO3_DigOnstarECallWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_theNMX7YEeSB8L8TE_FlFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_DigOnstarECallWB.scd</Filename>
+      <Data>/+8BAA0AAQA8lQm/BAYAAAAAAAA8AAAAKM4kHwABQSgAAAAAIENSQzoxRjI0Q0UyOCAgIAAAAAA6AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACavGVCAwAAADdM30QBAAAA6+nURQEAAAC1SUdIAQAAAASatksBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>292</Length>
+      <Checksum>2772282276</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelWB Wifi for downlink use case" Name="SSE_HF_GM_INFO3_WiFi_CarPlayTelWB_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_xWbNoQ8ZEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_WiFi_CarPlayTelWB_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQB9XornBAYAAAAAAAA6AAAAFnwpYwABISgAAAAAIENSQzo2MzI5N0MxNiAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS2AuwAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAAdwSKogACAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>776508283</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelWB for downlink use case" Name="SSE_HF_GM_INFO3_CarPlayTelWB_48khz_DL" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_M42dUA8ZEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for DL and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_CarPlayTelWB_48khz_DL.scd</Filename>
+      <Data>/+8BAA0AAQB9XornBAYAAAAAAAA6AAAAFnwpYwABISgAAAAAIENSQzo2MzI5N0MxNiAgIAAAAAA4AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJzdSS2AuwAAmrxlQgMAAAA3TN9EAQAAAOvp1EUBAAAAtUlHSAEAAAAEmrZLAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAAdwSKogACAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAAIJKVG4DAAAAe5Z/vQMAAAD4W/OKAQAAAN/gTnYCAAAAnPnj0QEAAAA=</Data>
+      <Length>284</Length>
+      <Checksum>776508283</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelWB use case" Name="SSE_HF_GM_INFO3_WiFi_CarPlayTelWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_wmUmYQ8ZEeuKiPVoWm1A1Q</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>Added new file for Wifi and changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_WiFi_CarPlayTelWB.scd</Filename>
+      <Data>/+8BAA0AAQDzeWHeBAYAAAAAAAAyAAAApIlwpgABISgAAAAAIENSQzpBNjcwODlBNCAgIAAAAAAwAAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJq8ZUIDAAAAN0zfRAEAAAC1SUdIAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAArSHGrGQAAAD1M8e7WBsAAJGmub4BAAAAlHVrywEAAADao8XwAQAAAPhb84oAAAAA0apmUkAGAACCSlRuAwAAAHuWf70DAAAA+FvzigEAAADf4E52AgAAAJz549EBAAAA</Data>
+      <Length>252</Length>
+      <Checksum>237971335</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_CarPlayTelWB use case" Name="SSE_HF_GM_INFO3_CarPlayTelWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_k4PtkX7YEeSB8L8TE_FlFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description>changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_CarPlayTelWB.scd</Filename>
+      <Data>/+8BAA0AAQDzeWHeBAYAAAAAAAAyAAAApIlwpgABISgAAAAAIENSQzpBNjcwODlBNCAgIAAAAAAwAAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABK3tIlAQAAAJq8ZUIDAAAAN0zfRAEAAAC1SUdIAQAAAMSlnlMDAAAAvPljeQEAAAAjoWiSAQAAAPiHapUBAAAArSHGrGQAAAD1M8e7WBsAAJGmub4BAAAAlHVrywEAAADao8XwAQAAAPhb84oAAAAA0apmUkAGAACCSlRuAwAAAHuWf70DAAAA+FvzigEAAADf4E52AgAAAJz549EBAAAA</Data>
+      <Length>252</Length>
+      <Checksum>237971335</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_DigOnstarAdvisorWB use case" Name="SSE_HF_GM_INFO3_DigOnstarAdvisorWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_rjO-4X7YEeSB8L8TE_FlFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/3/2016</Date>
+      <Description>Uploaded latest supplied .bsd file in Assembla#: 2273 for the latest default file for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/19/2020</Date>
+      <Description> changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_DigOnstarAdvisorWB.scd</Filename>
+      <Data>/+8BAA0AAQA8lQm/BAYAAAAAAAA8AAAAKM4kHwABQSgAAAAAIENSQzoxRjI0Q0UyOCAgIAAAAAA6AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACavGVCAwAAADdM30QBAAAA6+nURQEAAAC1SUdIAQAAAASatksBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>292</Length>
+      <Checksum>2772282276</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for SSE_HF_GM_INFO3_GoogleAutoTelWB use case" Name="SSE_HF_GM_INFO3_GoogleAutoTelWB" References="GIS-380" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_jhpHAX7YEeSB8L8TE_FlFA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/28/2016</Date>
+      <Description>Removed usage of Low Radio and added in a generic description for this calibration since there was no description previously shown at all for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/19/2020</Date>
+      <Description>changed extention to .scd</Description>
+      <Author>Harshal Shah</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SSE_HF_GM_INFO3_GoogleAutoTelWB.scd</Filename>
+      <Data>/+8BAA0AAQA8lQm/BAYAAAAAAAA8AAAAKM4kHwABQSgAAAAAIENSQzoxRjI0Q0UyOCAgIAAAAAA6AAAA+Fvziv////+Av10FZAAAALlIkwgBAAAACgYkFwIAAABHgtUXAQAAAK55tB8BAAAASt7SJQEAAACavGVCAwAAADdM30QBAAAA6+nURQEAAAC1SUdIAQAAAASatksBAAAAxKWeUwMAAAC8+WN5AQAAACOhaJIBAAAA+IdqlQEAAACtIcasZAAAAPUzx7tYGwAAkaa5vgEAAADZsa3HAQAAAJR1a8sBAAAA2qPF8AEAAAD4W/OKAAAAANGqZlJABgAAgkpUbgMAAAB7ln+9AwAAAPhb84oBAAAA3+BOdgIAAACc+ePRAQAAAA==</Data>
+      <Length>292</Length>
+      <Checksum>2772282276</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>4/16/2018</Date>
+    <Description>This CalDef defines the Calibrations associated with Front Zone Volume Audio System.</Description>
+    <Author>James Stefanovski</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration is used to set the default HMI menu item setting for the Front Zone Audio Control feature, when enabled. " Name="Front_Zone_Audio_Volume_Control_Menu_Item_On" References="" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_VfwvkD5wEeisqKUtCrDaqQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The CSM shall support a calibration defined as FZV_Enabled used as a master enable/disable switch for the feature within the Infotainment system.  The default state is ON == FZV ENABLED.  When enabled, the feature is active including all UI controls associated with the feature.  When disabled, the feature is disabled and all UI is removed from HMI such that none of the FZV UI controls are present.  This allows GM to control the feature using end of line calibrations. If the FZV_Enabled calibration is set to TRUE, then front zone volume control functionality, including HMI controls, shall be enabled by the Infotainment system. &#xa0;If the FZV_Enabled calibration is set to FALSE, then single zone audio (i.e, traditional audio experience) shall be provided by the Infotainment system.&#xa0;If the FZV_Enabled calibration is set to FALSE, then the HMI display shall not show any UI controls or status information associated with FZV feature." Name="Front_Zone_Audio_Volume_Control_Enabled" References="" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_xk2ngD_DEee4MeDnqjMD-Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="An HMI calibration defined as FZV_Sync_Control_Menu_Item_On shall be used to set the default (i.e., factory built intial state) for the sync control in the UI. The initial state is OFF == SYNC DISABLED. This allows independent driver and passenger control." Name="Front_Zone_Audio_Volume_Control_Sync_Menu_Item_On" References="" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_uVlroD_CEee4MeDnqjMD-Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Calibratable parameters for Personalization feature in the CSM.">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>26NOV14</Date>
+    <Description>updates as per SFS-1 v1.2</Description>
+    <Author>Calvin Chou</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated ENABLE_PERSONALIZATION, BLUETOOTH_DEVICE_AUTO_IDENTIFICATION, KEY_FOB_AUTO_IDENTIFICATION, BACKOFFICE_SERVER_NAME, BACKOFFICE_PERIODIC_SYNC_PERIOD, MAX_LOGIN_ATTEMPTS, MAX_NUMBER_OF_PROFILES, LAST_ACTIVE_PROFILE, WELCOME_MESSAGE_DURATION_IDENTIFIED_USERS, WELCOME_MESSAGE_DURATION_SWITCHING_USERS, SEARCH_SCREEN_DURATION, ENABLE_LOCAL_PROFILE, and ENABLE_CONNECTED_PROFILE  cals in this caldef to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/29/2016</Date>
+    <Description>Within this caldef file added two new calibrations ( 1.) PERSONALIZATION_SYNC_API_VERSION and 2.) ACCOUNT_AUTHENTICATOR_API_VERSION) that were added in the SFS-1_GM_INFO_3_0_PERSONALIZATION_v1.6 Spec. release.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="CAL used to track Personalization Sync API Version" Name="PERSONALIZATION_SYNC_API_VERSION" References="SFS-1 v 1.6 Section 4.10" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_QFJuEN-lEeW58O1OdVks4w</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/29/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>v2</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="CAL used to track Account Authenticator API Version" Name="ACCOUNT_AUTHENTICATOR_API_VERSION" References="SFS-1 v 1.6 Section 4.10" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_bQhPwN-kEeW58O1OdVks4w</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/29/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>v2</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="To enable Personalization feature which allows drivers to personalize the settings of the vehicle and the infotainment system to improve their driving experience. " Name="ENABLE_PERSONALIZATION" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yZpp8MZFEeOtcboReKeVHA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_PERSONALIZATION cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use paired BT devices to identify the user automatically." Name="BLUETOOTH_DEVICE_AUTO_IDENTIFICATION" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XMrF0MZGEeOtcboReKeVHA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated BLUETOOTH_DEVICE_AUTO_IDENTIFICATIONcal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use key fob to identify the user automatically." Name="KEY_FOB_AUTO_IDENTIFICATION" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_OX7dQMZHEeOtcboReKeVHA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated KEY_FOB_AUTO_IDENTIFICATION to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Information that allows the CSM to connect with the BackOffice." Name="BACKOFFICE_SERVER_NAME" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_hbBTsMZHEeOtcboReKeVHA</CalID>
+    <Type>String</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated BACKOFFICE_SERVER_NAME to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>beta.api.gm.com:20643</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Duration, in seconds, between periodic syncs of active profiles with the BackOffice." Name="BACKOFFICE_PERIODIC_SYNC_PERIOD" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_2BADwMZIEeOtcboReKeVHA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated BACKOFFICE_PERIODIC_SYNC_PERIOD to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3600</Value>
+      <MinValue>900</MinValue>
+      <MaxValue>86400</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Number of attempts allowed for a user to login upon failure to provide matching Password/PIN/Pattern information before the CSM aborts the login and logs in as the Guest user." Name="MAX_LOGIN_ATTEMPTS" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_x4ENkMZKEeOtcboReKeVHA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MAX_LOGIN_ATTEMPTS to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum number of non-Guest driver profiles supported on the CSM." Name="MAX_NUMBER_OF_PROFILES" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_N7O9YMZLEeOtcboReKeVHA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MAX_NUMBER_OF_PROFILES to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>4</MinValue>
+      <MaxValue>32</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When set, gives priority to the last active profile under certain scenarios. " Name="LAST_ACTIVE_PROFILE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xjYhkMZLEeOtcboReKeVHA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated LAST_ACTIVE_PROFILE to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The dwell time for a welcome message after the user has been identified. " Name="WELCOME_MESSAGE_DURATION_IDENTIFIED_USERS" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_oC8mUO3NEeOIEaLonFn6Ag</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>WELCOME_MESSAGE_DURATION_IDENTIFIED_USERS</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The dwell time for a welcome message when switching users." Name="WELCOME_MESSAGE_DURATION_SWITCHING_USERS" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Si698O3OEeOIEaLonFn6Ag</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated WELCOME_MESSAGE_DURATION_SWITCHING_USERS to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The dwell time for the searching screen where identified devices are shown." Name="SEARCH_SCREEN_DURATION" References="" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_kfB-MO3OEeOIEaLonFn6Ag</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated SEARCH_SCREEN_DURATION to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable the usage of local profiles." Name="ENABLE_LOCAL_PROFILE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zma0EO3OEeOIEaLonFn6Ag</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_LOCAL_PROFILE to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable the usage of connected profiles with GM Account." Name="ENABLE_CONNECTED_PROFILE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_nTuD4HX4EeSOnfK4J16lKA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_LOCAL_PROFILE to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

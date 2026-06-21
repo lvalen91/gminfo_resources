@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="GIS-508">
+  <CalDefFileVersion>8</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/19/15</Date>
+    <Description>Added Driver Workload</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated Welcome_Message_Identified, Welcome_Message_Switching_Users, Searching_Screen, Profile_Identification_Bluetooth_Enable, Profile_Identification_Keyfob_Enable, Personalization_Enable, MaxProfiles, LocalProfilesEnable, ConnectedProfilesEnable, Last_Profile_Enable, and ProfileSettingsDriverWorkload cals in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/12/15</Date>
+    <Description>Per updated GIS-508, starting for MY18 added several individual Profile DriverWorkload Settings , and removed the individual Profile DriverWorkloads Setting that was shown previously in place of this. Also updated the default value for the Last_Profile_Enable CAL from False to True  based on feedback from Cody Hansen.</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>8/18/2015</Date>
+    <Description>Added the ProfileCreationSetupWizardDriverWorkload CAL captured in the GIS-508 Spec. that did not get included for the MY17 release of this CalDef file. For MY17 this will be hard coded, and adding this CAL to start for the MY18 release of this CalDef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>9/15/2016</Date>
+    <Description>Added the following three MY19 calibrations already captured in the released GIS-508 specification: 1.) Max_Incorrect_Attempts, 2.) Lockout_Time, and 3.) Remaining_Attempts_Indicator.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>6/9/2017</Date>
+    <Description>Within the GIS508_PersonalizationFBS.caldef file deleted the LocalProfilesEnable and ConnectedProfilesEnable calibrations  since these are duplicate calibrations as the ENABLE_LOCAL_PROFILE and ENABLE_CONNECTED_PROFILE calibrations in SFS1_PersonalizationFRD.caldef file, and the calibrations in the SFS1_PersonalizationFRD.caldef file were confirmed to be the actually the calibrations being used in software. Also, updated the usage field for all of the calibrations within the FrontRearCameraStatic.caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="When the remaining attempts reaches this level, an indicator is shown to the user how many remaining attempts they have before being locked out. " Name="Remaining_Attempts_Indicator" References="GIS-508" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gvMrIHuFEeakuMXWKMYadg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/15/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The amount of time (in seconds) that a user will be locked out after entering in the maximum number of incorrect attempts." Name="Lockout_Time" References="GIS-508" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_03tdEHt7EeakuMXWKMYadg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/15/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>25500</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The number of times a user can enter an incorrect PIN before locking the profile out." Name="Max_Incorrect_Attempts" References="GIS-508" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TyrLUHt6EeakuMXWKMYadg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/15/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When enabled, user is prohibited from going through the User profile setup wizard process. When tapping on the Add User button (or Users application when no profiles have been added), the feature restricted popup (see GIS-500) is shown. After dismissing, the user is returned to the previous screen. If the user is in the wizard and they begin driving, they are unable to proceed any further. Any key presses (other than screen exit) would trigger the feature restricted popup." Name="ProfileCreationSetupWizardDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_2GryAEW2EeW6VIQrvK9FGA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="The dwell time for a welcome message after the user has been identified." Name="Welcome_Message_Identified" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ZA8KILmgEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Welcome_Message_Identified cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The dwell time for a welcome message when switching users." Name="Welcome_Message_Switching_Users" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_lk6BALmgEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Welcome_Message_Switching_Users cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The dwell time for the searching screen where identified devices are Shown" Name="Searching_Screen" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_OVt7UKmXEeSBV82hZ9UINQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Searching_Screen cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="To enable identification of a User profile via a Bluetooth associated" Name="Profile_Identification_Bluetooth_Enable" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_mBi5sLmgEeOEzdA9o_rOxw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Profile_Identification_Bluetooth_Enable cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="User may elect to use a keyfob for the identification device." Name="Profile_Identification_Keyfob_Enable" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_6xtV8LmgEeOEzdA9o_rOxw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Profile_Identification_Keyfob_Enable cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If a driver would like to create a User profile, thereby enabling this" Name="Personalization_Enable" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_PzFeALmhEeOEzdA9o_rOxw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Personalization_Enable cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Total number of profiles allowed in the vehicle (including Default)" Name="MaxProfiles" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_PmRp0G83EeSiD7Eby4tB3Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MaxProfiles cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>5</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When enabled, the system will default to the last profile when no identifier is detected or assigned. When disabled, the system will default to the Default profile." Name="Last_Profile_Enable" References="GIS-508 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_z_620KmXEeSBV82hZ9UINQ</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Last_Profile_Enable cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/12/15</Date>
+      <Description>Updated the default value for the Last_Profile_Enable CAL from False to True </Description>
+      <Author>Samer Khatib</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any Key presses other than back or screen exit would trigger the feature restricted popup." Name="ProfileSettingsNameDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_sSl8YAiaEeW9i8rzg7Ds1g</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any Key presses other than back or screen exit would trigger the feature restricted popup." Name="ProfileSettingsChangePassword" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_JlNh4AibEeW9i8rzg7Ds1g</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsSignOutDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_tR84cBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsSignInDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_oopyEBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsProfilePictureDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_cQ7AYBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsProfileIdentifiersDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ZcAowBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsProfileIdentifiersAddDeviceDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XZ61MBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsSecurityDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Vn3BsBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsVehicleNameDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TcOQkBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsAddAccountDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_OkwyYBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When the user taps on the option, they would see the feature unavailable quick notice. If they are in the screen and then begin driving, they are unable to proceed any further. Any key presses (other than back or screen exit) would trirgger the feature restricted pop-up." Name="ProfileSettingsDeleteRemoveDriverWorkload" References="GIS508 Driver Workload Restrictions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_L9WrQBBtEeWR7rYGJyg1PA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

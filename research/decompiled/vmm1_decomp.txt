@@ -1,0 +1,57 @@
+==================================================
+STRING @ 00f9d24a
+  -> VMM: Error: Signing key modulus mismatch
+
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9d3d6
+  -> VMM: Error: Signing key exponent mismatch
+
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9d39f
+  -> VMM: Error: Android signing key boot module not found
+
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9c691
+  -> VMM: Error: vbmeta signing key does not match known valid key
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9c6cf
+  -> VMM: vbmeta: image verification failed!
+
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9c93f
+  -> VMM: vbmeta bad header: descriptors outside data block
+
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9cc4c
+  -> VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
+
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9d04a
+  -> VMM: Error: Failed to load Android signing key
+
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9c8f6
+  -> green
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9c933
+  -> locked
+  (no xrefs — may be loaded via pointer table)
+==================================================
+STRING @ 00f9c92c
+  -> orange
+  (no xrefs — may be loaded via pointer table)
+
+==================================================
+DECOMPILING REFERRING FUNCTIONS (0)
+==================================================
+
+=== POINTER TABLES IN vmm1.rodata REFERENCING KEY STRINGS ===

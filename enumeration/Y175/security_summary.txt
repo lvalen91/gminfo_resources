@@ -1,0 +1,111 @@
+=== KEY SECURITY FINDINGS ===
+
+[INFO] Executing: Kernel version
+[OK] Kernel version
+Linux version 4.19.283-PKT-230612T042614Z-ga53d763f5b0d (nobody@android-build) (Android (7485623, based on r416183b1) clang version 12.0.7 (https://android.googlesource.com/toolchain/llvm-project c935d99d7cf2016289302412d708641d52d2f7ee), GNU ld (GNU Binutils for Ubuntu) 2.34) #1 SMP PREEMPT Wed Jun 26 22:22:25 EDT 2024
+--
+# CONFIG_DM_VERITY_AVB is not set
+CONFIG_DM_VERITY_FEC=y
+--
+# CONFIG_IGB_AVB is not set
+CONFIG_X86_PLATFORM_DEVICES=y
+--
+[INFO] Executing: SELinux status
+[OK] SELinux status
+Enforcing
+--
+[INFO] Executing: SELinux mode
+[OK] SELinux mode
+1
+--
+[INFO] Executing: Verified boot state
+[OK] Verified boot state
+green
+--
+[INFO] Executing: Boot flash locked
+[OK] Boot flash locked
+1
+--
+[INFO] Executing: AVB version
+[OK] AVB version
+1.2
+--
+[INFO] Executing: AVB rollback index
+[OK] AVB rollback index
+
+--
+[INFO] Executing: AVB rollback index location
+[OK] AVB rollback index location
+
+--
+[INFO] Executing: AVB device state
+[OK] AVB device state
+locked
+--
+[INFO] Executing: AVB hash algorithm
+[OK] AVB hash algorithm
+sha256
+--
+[INFO] Executing: AVB invalidate on error
+[OK] AVB invalidate on error
+
+--
+[INFO] Executing: Anti-rollback properties
+[WARN] Anti-rollback properties - No output or command failed
+[INFO] Executing: Build version incremental
+--
+[OK] Rollback assessment saved to rollback_assessment.txt
+
+--
+  rollback
+  runtime
+--
+[ro.debuggable]: [0]
+
+--
+[ro.boot.flash.locked]: [1]
+[ro.boot.force_normal_boot]: [1]
+--
+[ro.debuggable]: [0]
+[ro.frp.pst]: [/dev/block/by-name/persistent]
+--
+[sys.oem_unlock_allowed]: [0]
+[sys.rescue_boot_count]: [1]
+--
+[INFO] Pulling: Kernel version (/proc/version)
+[DENIED] Failed to pull /proc/version
+--
+[INFO] Pulling: SELinux policy (/system/etc/selinux/plat_sepolicy.cil)
+[OK] Pulled plat_sepolicy.cil
+[INFO] Pulling: Vendor SELinux (/vendor/etc/selinux/vendor_sepolicy.cil)
+[OK] Pulled vendor_sepolicy.cil
+
+=== ROLLBACK SUMMARY ===
+=== ROLLBACK/DOWNGRADE ASSESSMENT ===
+
+Current Build:
+gm/full_gminfo37_gb/gminfo37:12/W213E-Y175.5.2-SIHM22B-383.1/213:user/release-keys
+
+Security Patch Level:
+2024-05-05
+
+Build Date (UTC):
+1719454474
+
+AVB Rollback Index:
+
+
+OEM Unlock Status:
+  sys.oem_unlock_allowed: 0
+  ro.oem_unlock_supported: 
+
+Verified Boot State:
+  State: green
+  Locked: 1
+
+=== DOWNGRADE RISK ASSESSMENT ===
+
+If AVB rollback index is set and > 0, downgrade may fail at boot.
+If OEM unlock is disallowed, cannot unlock bootloader to bypass.
+Check if Y177 package has matching or lower rollback index.
+

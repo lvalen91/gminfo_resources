@@ -1,0 +1,21 @@
+total 92
+drwxr-xr-x 17 root shell  4096 2008-12-31 15:00 .
+drwxr-xr-x 26 root root   4096 2008-12-31 15:00 ..
+drwxr-x--x  3 root shell  8192 2008-12-31 15:00 bin
+-?????????  ? ?    ?         ?                ? build.prop
+d?????????  ? ?    ?         ?                ? calibrations
+drwxr-xr-x 22 root shell  4096 2008-12-31 15:00 etc
+drwxr-xr-x  7 root shell  4096 2008-12-31 15:00 firmware
+-?????????  ? ?    ?         ?                ? hwc.lock
+drwxr-xr-x  3 root shell  4096 2008-12-31 15:00 intel
+drwxr-xr-x 10 root shell  8192 2008-12-31 15:00 lib
+drwxr-xr-x 12 root shell 12288 2008-12-31 15:00 lib64
+drwx------  2 root root  16384 2008-12-31 15:00 lost+found
+drwxr-xr-x  2 root shell  4096 2008-12-31 15:00 media
+drwxr-xr-x  3 root shell  4096 2008-12-31 15:00 odm
+drwxr-xr-x  3 root shell  4096 2008-12-31 15:00 odm_dlkm
+drwxr-xr-x 64 root shell  4096 2008-12-31 15:00 overlay
+drwxr-xr-x  2 root shell  4096 2008-12-31 15:00 splash
+-?????????  ? ?    ?         ?                ? ueventd.rc
+drwxr-xr-x  3 root shell  4096 2008-12-31 15:00 usr
+drwxr-xr-x  3 root shell  4096 2008-12-31 15:00 vendor_dlkm

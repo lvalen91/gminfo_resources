@@ -1,0 +1,11 @@
+crw-rw-rw- 1 root        root        89,   0 2011-11-11 02:11 /dev/i2c-0
+crw-rw-rw- 1 root        root        89,   1 2011-11-11 02:11 /dev/i2c-1
+crw------- 1 root        root        89,  10 2011-11-11 02:11 /dev/i2c-10
+crw-rw-rw- 1 system      system      89,   2 2011-11-11 02:11 /dev/i2c-2
+crw-rw-rw- 1 audioserver audioserver 89,   3 2011-11-11 02:11 /dev/i2c-3
+crw------- 1 root        root        89,   4 2011-11-11 02:11 /dev/i2c-4
+crw------- 1 root        root        89,   5 2011-11-11 02:11 /dev/i2c-5
+crw------- 1 root        root        89,   6 2011-11-11 02:11 /dev/i2c-6
+crw-rw---- 1 system      system      89,   7 2011-11-11 02:11 /dev/i2c-7
+crw------- 1 root        root        89,   8 2011-11-11 02:11 /dev/i2c-8
+crw------- 1 root        root        89,   9 2011-11-11 02:11 /dev/i2c-9

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This Enum defines all the possible settings for the DriverWorkloads cals.">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="TODO" Name="EnvironmentalFactors">
+    <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Unrestricted mode, vehicle is &#x201c;Parked&#x201d;" Name="UnrestrictedMode">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Vehicle stopped (e.g., vehicle speed = 0 mph/kph)" Name="VehicleStopped">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Moving at Low Speed (e.g., vehicle speed &lt; 5 mph / 8 kph)" Name="LowSpeed">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Moving at Medium or High Speed (e.g., vehicle speed > 5 mph / 8 kph)" Name="MediumSpeed">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Vehicle is NOT &#x201c;Parked&#x201d; and the driver is a Teen" Name="NotParkedTeen">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved" Name="Reserved1">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved" Name="Reserved2">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Restrictions NOT applicable mode" Name="RestrictionsNA">
+      <Value>7</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

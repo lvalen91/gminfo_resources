@@ -1,0 +1,11 @@
+=== GM AAOS Fastboot Enumeration ===
+Timestamp: Sat Dec 20 08:17:38 AKST 2025
+
+[*] Checking fastboot connection...
+ERROR: No fastboot device detected
+
+Troubleshooting:
+  1. Ensure device is in bootloader mode
+  2. Try: adb reboot bootloader
+  3. Check USB connection
+  4. May need Intel-specific fastboot/ABL

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="Used to define trigger condition for exiting LocalInfotainment State" Name="LocalInfotainmentCancelModeEnum">
+    <EnumID>_rTP-sLmyEeONt_iAU7Ji9A</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Trigger condition for leaving LocalInfotainment State" Name="DRIVER_DOOR">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trigger condition for exiting LocalInfotainment State" Name="KEY_OUT">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

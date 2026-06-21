@@ -1,0 +1,102 @@
+=== KEY SECURITY FINDINGS ===
+
+[INFO] Executing: Kernel version
+[OK] Kernel version
+Linux version 4.19.305-240125T145315Z-gf1edde901aa7 (nobody@android-build) (Android (7485623, based on r416183b1) clang version 12.0.7 (https://android.googlesource.com/toolchain/llvm-project c935d99d7cf2016289302412d708641d52d2f7ee), GNU ld (GNU Binutils for Ubuntu) 2.34) #1 SMP PREEMPT Tue Jul 22 07:52:16 EDT 2025
+--
+[INFO] Executing: SELinux status
+[OK] SELinux status
+Enforcing
+--
+[INFO] Executing: SELinux mode
+[OK] SELinux mode
+1--
+[INFO] Executing: Verified boot state
+[OK] Verified boot state
+green
+--
+[INFO] Executing: Boot flash locked
+[OK] Boot flash locked
+1
+--
+[INFO] Executing: AVB version
+[OK] AVB version
+1.2
+--
+[INFO] Executing: AVB device state
+[OK] AVB device state
+locked
+--
+[INFO] Executing: AVB hash algorithm
+[OK] AVB hash algorithm
+sha256
+--
+[INFO] Executing: AVB digest
+[OK] AVB digest
+537b0f4b5248b66ae9a6fb4f20ef7ff968d5720a925aaecf2545770dd9fbc45c
+--
+[INFO] Executing: Security patch level
+[OK] Security patch level
+2025-06-05
+--
+[ro.adb.secure]: [1]
+[ro.debuggable]: [0]
+[ro.secure]: [1]
+--
+[ro.boot.flash.locked]: [1]
+[ro.boot.force_normal_boot]: [1]
+--
+[ro.debuggable]: [0]
+[ro.frp.pst]: [/dev/block/by-name/persistent]
+--
+[sys.oem_unlock_allowed]: [0]
+[sys.rescue_boot_count]: [1]
+--
+[INFO] Pulling: SELinux policy (/system/etc/selinux/plat_sepolicy.cil)
+[OK] Pulled plat_sepolicy.cil
+[INFO] Pulling: Vendor SELinux (/vendor/etc/selinux/vendor_sepolicy.cil)
+[OK] Pulled vendor_sepolicy.cil
+
+=== ROLLBACK SUMMARY ===
+=== ROLLBACK/DOWNGRADE ASSESSMENT ===
+
+Current Build:
+gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys
+
+Security Patch Level:
+2025-06-05
+
+Build Date (UTC):
+1753184729
+
+AVB Rollback Index:
+
+
+OEM Unlock Status:
+  sys.oem_unlock_allowed: 0
+  ro.oem_unlock_supported: 
+
+Verified Boot State:
+  State: green
+  Locked: 1
+
+Boot Slot: _b
+Trusty Implementation: -ghs
+
+=== NETWORK EXPOSURE ===
+Listening ports:
+tcp        0      0 0.0.0.0:6363            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:49156           0.0.0.0:*               LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9016 [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9002 [::]:*                  LISTEN      -
+
+=== GM-SPECIFIC SERVICES ===
+[init.svc.gm-location-hal-1_0]: [running]
+[init.svc.gm_update_engine]: [running]
+[init.svc.gm_vehicle_hal]: [running]
+[init.svc.gmcrashlogd]: [running]
+[init.svc.gmlogger]: [running]
+[init.svc.gmloggervendorserviced]: [running]
+[init.svc.gmprotokey]: [running]
+[init.svc.gmprotokey_recovery]: [stopped]
+

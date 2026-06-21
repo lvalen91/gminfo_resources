@@ -1,0 +1,459 @@
+================================================================================
+GM AAOS UPDATE PROCESS AND SECURITY MECHANISM ANALYSIS
+================================================================================
+Document Version: 1.0
+Created: December 28, 2025
+Purpose: Document update mechanisms, GHS hypervisor role, and security analysis
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. EXECUTIVE SUMMARY
+2. UPDATE PROCESS ARCHITECTURE
+3. GHS INTEGRITY HYPERVISOR ROLE
+4. UPDATE MECHANISM DETAILS (WITH EVIDENCE)
+5. SECURITY MECHANISMS FOR UNSIGNED MODULES
+6. DOWNGRADE FEASIBILITY ANALYSIS
+7. CRITICAL FINDINGS
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+The GM AAOS infotainment system uses a unique update architecture that differs
+from standard Android recovery/fastboot mechanisms:
+
+KEY FINDINGS:
+  - Updates are RAW PARTITION IMAGES, not delta/incremental
+  - gm_update_engine (Android service) orchestrates updates
+  - VIP MCU handles ECU module flashing via UDS/CAN protocol
+  - GHS INTEGRITY hypervisor controls boot chain, not Android
+  - A/B slot switching is used for seamless updates
+  - AVB (Android Verified Boot) protects signed partitions
+  - Several modules are UNSIGNED but protected by other mechanisms
+  - Y177 downgrade is UNVERIFIED (version check disabled but AVB status unknown)
+
+================================================================================
+2. UPDATE PROCESS ARCHITECTURE
+================================================================================
+
+2.1 UPDATE FLOW DIAGRAM
+-----------------------
+```
++------------------------------------------------------------------+
+|                        DPS/TIS2WEB                                |
+|                (Development Programming System)                   |
++------------------------------------------------------------------+
+                              |
+                              | USB/Update Package
+                              v
++------------------------------------------------------------------+
+|                     gm_update_engine                              |
+|              (Android Service - PID 585)                          |
+|   Source: init.svc.gm_update_engine = running                     |
+|                                                                    |
+|   Functions:                                                       |
+|     - gmext.write_emmc_image() -> Direct eMMC writes              |
+|     - gmext.extract_emmc_image() -> Extract to partition          |
+|     - gmext.extract_logical_partition() -> Dynamic partitions     |
+|     - gmext.update_ecu() -> Flash ECU via VIP/UDS                 |
+|     - gmext.switch_slot() -> A/B slot switching                   |
++------------------------------------------------------------------+
+             |                              |
+             | eMMC Writes                  | UDS over IPC
+             v                              v
++------------------------+    +----------------------------------+
+| Android Partitions     |    | VIP MCU (RH850)                  |
+| - boot_a/b             |    | - Receives update_ecu() commands |
+| - system (super)       |    | - Flashes: VIP_APP, VIP_BOOT     |
+| - vendor (super)       |    | - Routes: HostOS, SOC_ABL        |
+| - product (super)      |    | - Uses UDS protocol over CAN     |
+| - vbmeta_a/b           |    +----------------------------------+
+| - bootloader_a/b       |                    |
++------------------------+                    | UDS ($34-$37)
+                                              v
+                               +---------------------------+
+                               | Target ECU Flash          |
+                               | - VIP internal flash      |
+                               | - GHS partition update    |
+                               | - Intel ABL update        |
+                               +---------------------------+
+```
+
+2.2 KEY OBSERVATION
+-------------------
+There is NO traditional Android recovery partition or fastboot mode.
+Updates occur while the system is running (A/B seamless updates) with
+reboot to activate the new slot.
+
+================================================================================
+3. GHS INTEGRITY HYPERVISOR ROLE
+================================================================================
+
+3.1 EVIDENCE OF HYPERVISOR
+--------------------------
+Source: analysis/adb_Y181/gm_enum_20251220_081558/raw/
+
+CPU FLAGS (cpuinfo.txt):
+  "hypervisor" flag present in all 4 CPU cores
+
+KERNEL CONFIG (kernel_config.txt):
+  CONFIG_GHS_GUEST_COMMS=y           # GHS guest communication
+  CONFIG_GHS_PARAVIRTUAL_SUPPORT=y   # Paravirtualization support
+  CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y # VMM bootloader control
+  CONFIG_ANDROID_GM_GHS_MMC=y        # GHS MMC driver
+  CONFIG_SND_GHS_PCM=y               # GHS PCM audio driver
+  CONFIG_HYPERVISOR_GUEST=y          # Running as hypervisor guest
+
+BOOT PROPERTIES (all_properties.txt):
+  [ro.boot.trustyimpl]: [-ghs]       # Trusty implemented via GHS
+
+VIP LOG (VIP_log_2B.174.4.1_10JUL24.txt):
+  [PLC] plc_timer_value for Hypervisor Startup Timeout = 300
+
+3.2 GHS PARTITIONS
+------------------
+Source: partitions.txt
+
+| Partition      | Device | Purpose                    |
+|----------------|--------|----------------------------|
+| ghs_isys_a     | vda1   | GHS INTEGRITY image (A)    |
+| ghs_isys_b     | vda2   | GHS INTEGRITY image (B)    |
+| ghs_storage    | vda3   | GHS persistent storage     |
+| ghs_abl_update | vda4   | GHS ABL update staging     |
+| ghs_log        | vda24  | GHS logging                |
+
+3.3 GHS ROLE IN BOOT AND UPDATES
+--------------------------------
+The boot sequence is:
+
+  1. Intel ABL (SOC_ABL) executes first
+  2. ABL loads GHS INTEGRITY from ghs_isys_a/b
+  3. GHS INTEGRITY starts as hypervisor
+  4. GHS loads Android as a virtual machine guest
+  5. Android kernel has paravirtual drivers for GHS
+
+For updates:
+  - SOC_HOSTOS (Module 21) updates GHS INTEGRITY itself
+  - Update is flashed via gmext.update_ecu("21","...")
+  - VIP routes this update to ghs_abl_update then ghs_isys
+
+CRITICAL: The hypervisor is NOT directly involved in flashing Android
+partitions. It provides the virtualized eMMC access that Android's
+gm_update_engine uses.
+
+================================================================================
+4. UPDATE MECHANISM DETAILS (WITH EVIDENCE)
+================================================================================
+
+4.1 MANIFEST FILE ANALYSIS
+--------------------------
+Source: update_packages/Y181/86331663.mnf
+
+The manifest contains scripted update commands:
+
+```
+assert(ui_print("version check disabled "));
+
+// Direct eMMC writes for Android partitions
+assert(gmext.write_emmc_image("23","86331652","/dev/block/by-name/boot"));
+
+// Extract to eMMC partitions
+assert(gmext.extract_emmc_image("56","86331644","/dev/block/by-name/vbmeta"));
+assert(gmext.extract_emmc_image("55","86331630","/dev/block/by-name/acpio"));
+assert(gmext.extract_emmc_image("24","86331623","/dev/block/by-name/bootloader"));
+
+// ECU updates via VIP/UDS
+assert(gmext.update_ecu("71","85056831"));  // VIP_BOOT (Module 71)
+assert(gmext.update_ecu("1","86331656"));   // VIP_APP (Module 1)
+assert(gmext.update_ecu("21","85098662"));  // SOC_HOSTOS/GHS (Module 21)
+assert(gmext.update_ecu("72","85738845"));  // SOC_ABL (Module 72)
+
+// A/B slot switch
+assert(gmext.switch_slot());
+
+// Dynamic partition updates
+assert(gmext.update_dynamic_partition_config());
+assert(gmext.extract_logical_partition("22","86331654","system"));
+assert(gmext.extract_logical_partition("26","86331650","vendor"));
+assert(gmext.extract_logical_partition("57","86331636","product"));
+
+// Peripheral ECU updates
+assert(gmext.update_ecu("51","85155539"));  // TUNER (Module 51)
+assert(gmext.update_ecu("52","85759612"));  // ETH_SWITCH (Module 52)
+assert(gmext.update_ecu("29","85121980"));  // GPS (Module 29)
+assert(gmext.update_ecu("28","85843750"));  // SXM (Module 28)
+```
+
+4.2 RAW IMAGES CONFIRMED
+------------------------
+Evidence that updates are RAW, not delta:
+
+1. Module sizes from manifest:
+   - system: 3,228,360,704 bytes (~3.0 GB)
+   - product: 2,700,648,448 bytes (~2.5 GB)
+   - vendor: 466,915,328 bytes (~445 MB)
+
+2. Functions used:
+   - gmext.write_emmc_image() = Direct raw write
+   - gmext.extract_emmc_image() = Extract raw image
+   - No delta/patch functions observed
+
+3. Package structure:
+   - Each module is a separate file (e.g., 86331654 for system)
+   - No .patch or .diff files present
+
+4.3 gmext FUNCTION MAPPING
+--------------------------
+| Function                        | Purpose                              |
+|---------------------------------|--------------------------------------|
+| gmext.write_emmc_image()        | Write raw image to eMMC partition    |
+| gmext.extract_emmc_image()      | Extract image to eMMC partition      |
+| gmext.extract_logical_partition()| Update dynamic/super partition      |
+| gmext.update_ecu()              | Flash ECU module via UDS/CAN         |
+| gmext.switch_slot()             | Switch A/B boot slot                 |
+| gmext.update_dynamic_partition_config() | Update super partition table |
+| gmext.show_progress()           | Display update progress              |
+
+================================================================================
+5. SECURITY MECHANISMS FOR UNSIGNED MODULES
+================================================================================
+
+5.1 MODULE SIGNING STATUS
+-------------------------
+Source: update_packages/Y181/delivery_manifest.csv
+
+SIGNED (TSS - GM Signing):
+| Module | Name       | Sign Type | Protected By        |
+|--------|------------|-----------|---------------------|
+| 1      | VIP_APP    | TSS       | GM Signature        |
+| 21     | SOC_HOSTOS | TSS       | GM Signature        |
+| 22     | SOC_SYSTEM | TSS       | GM Signature + AVB  |
+| 26     | SOC_VENDOR | TSS       | GM Signature + AVB  |
+
+UNSIGNED (NONE):
+| Module | Name        | Sign Type | Compensating Control      |
+|--------|-------------|-----------|---------------------------|
+| 23     | SOC_BOOT    | NONE      | AVB vbmeta chain          |
+| 24     | SOC_UTILS   | NONE      | AVB vbmeta chain          |
+| 28     | SXM         | NONE      | UDS auth via VIP          |
+| 29     | GPS         | NONE      | UDS auth via VIP          |
+| 51     | TUNER       | NONE      | UDS auth via VIP          |
+| 52     | ETH_SWITCH  | NONE      | UDS auth via VIP          |
+| 55     | SOC_ACPIO   | NONE      | AVB vbmeta chain          |
+| 56     | SOC_VBMETA  | NONE      | Self-signed AVB key       |
+| 57     | SOC_PRODUCT | NONE      | AVB vbmeta chain          |
+| 71     | VIP_BOOT    | NONE      | UDS security access only  |
+| 72     | SOC_ABL     | NONE      | GHS hypervisor validation |
+
+5.2 AVB (ANDROID VERIFIED BOOT) STATUS
+--------------------------------------
+Source: all_properties.txt
+
+[ro.boot.avb_version]: [1.2]
+[ro.boot.vbmeta.avb_version]: [1.1]
+[ro.boot.vbmeta.device_state]: [locked]
+[ro.boot.vbmeta.digest]: [537b0f4b5248b66ae9a6fb4f20ef7ff968d5720a925aaecf2545770dd9fbc45c]
+[ro.boot.vbmeta.hash_alg]: [sha256]
+[ro.boot.vbmeta.size]: [3328]
+[ro.boot.verifiedbootstate]: [green]
+[ro.boot.flash.locked]: [1]
+
+Source: fstab.txt
+system: avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey,avb=vbmeta
+
+5.3 HOW AVB PROTECTS UNSIGNED PARTITIONS
+----------------------------------------
+Even though some partitions have Sign Type = NONE in the delivery manifest,
+they are protected by the AVB chain:
+
+1. VBMETA is signed and contains hashes/signatures of:
+   - boot
+   - system
+   - vendor
+   - product
+
+2. At boot, AVB validates:
+   - vbmeta signature against built-in keys
+   - Each partition hash against vbmeta entries
+
+3. If ANY partition fails validation:
+   - Device will not boot (or boot in "orange" state)
+   - ro.boot.verifiedbootstate would show "orange" or "red"
+
+CURRENT STATE: "green" = All partitions verified successfully
+
+5.4 UDS SECURITY ACCESS
+-----------------------
+For ECU modules (VIP_BOOT, SXM, GPS, TUNER, etc.), the security is:
+
+1. DPS must authenticate with GM servers to get security keys
+2. UDS SecurityAccess ($27) required before programming
+3. VIP validates security session before accepting downloads
+
+Evidence from DPS log (A11_CSM.ProgramLog.Txt):
+  >> DiagnosticSessionControl ($10) with extendedDiagnosticSession ($03)
+  >> SecurityAccess ($27) required for programming levels
+
+================================================================================
+6. DOWNGRADE FEASIBILITY ANALYSIS (UPDATED 2024-12-30)
+================================================================================
+
+6.1 DOWNGRADE TEST PERFORMED
+----------------------------
+STATUS: CONFIRMED BLOCKED
+
+Test: Y181 (W231E-Y181.3.2-SIHM22B-499.3) -> Y177 (W231E-Y177.6.1-SIHM22B-499.2)
+Method: USB update with Y177 full package
+Result: FAILED - Blocked by GHS hypervisor
+
+6.2 OBSERVED BEHAVIOR
+---------------------
+1. USB with Y177 package was recognized
+2. Update prompt accepted by user
+3. System rebooted into recovery mode
+4. Progress bar incremented (partitions written to inactive slot)
+5. System rebooted multiple times
+6. "Update Failed" screen displayed
+7. Used gm_reboot_normal file to exit error screen
+8. System returned to UNCHANGED Y181
+
+KEY OBSERVATION: Y181 remained completely unchanged. The partition writes
+succeeded but GHS rejected the new slot at boot verification, triggering
+A/B fallback to the original slot.
+
+6.3 ROOT CAUSE: GHS ROLLBACK PROTECTION
+---------------------------------------
+Analysis of GHS binary (85098662) revealed explicit rollback checking:
+
+  "VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu"
+
+GHS maintains its own rollback index in the misc partition (vda9), separate
+from the vbmeta.rollback_index field (which is 0 in both Y177 and Y181).
+
+6.4 WHY "VERSION CHECK DISABLED" DOESN'T HELP
+---------------------------------------------
+The manifest flag "version check disabled" only affects gm_update_engine:
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  WRITE PHASE (gm_update_engine)                                         │
+  │  - "version check disabled" = no version check here                     │
+  │  - Writes raw partitions to inactive slot                               │
+  │  - Essentially a "dumb pipe"                                            │
+  └─────────────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼ reboot
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  VERIFY PHASE (GHS INTEGRITY hypervisor)                                │
+  │  - Reads A/B metadata from misc partition                               │
+  │  - Compares rollback index against stored value                         │
+  │  - REJECTS if image rollback < stored rollback                          │
+  │  - Falls back to original slot on failure                               │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+6.5 COMPARISON WITH OTHER UPDATE SCENARIOS
+------------------------------------------
+| Transition      | Result   | Analysis                           |
+|-----------------|----------|------------------------------------|
+| Y181 -> Y181    | SUCCESS  | Same version reinstall allowed     |
+| Y177 -> Y181    | SUCCESS  | Upgrade allowed                    |
+| Y181 -> Y177    | FAILURE  | Downgrade blocked by GHS           |
+
+6.6 DOWNGRADE RISK ASSESSMENT (UPDATED)
+---------------------------------------
+| Component     | Downgrade Risk | Status                              |
+|---------------|----------------|-------------------------------------|
+| SOC_SYSTEM    | BLOCKED        | GHS rejects at boot verification    |
+| SOC_BOOT      | BLOCKED        | GHS rejects at boot verification    |
+| VIP_APP       | BLOCKED        | Part of rejected update package     |
+| VIP_BOOT      | N/A            | Same binary (85056831) in both      |
+| SOC_HOSTOS    | N/A            | Same binary (85098662) in both      |
+| SOC_ABL       | N/A            | Same binary (85738845) in both      |
+
+6.7 POTENTIAL BYPASS APPROACHES
+-------------------------------
+1. Modify misc partition (vda9) stored rollback index
+   - Risk: CRC and magic validation may fail
+   - Requires understanding A/B metadata structure
+
+2. Factory reset (untested)
+   - May or may not clear stored rollback index
+   - Need to test dealer-level reset
+
+3. Physical eMMC access
+   - Direct write to misc partition
+   - Very invasive
+
+See: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt for complete technical details.
+
+================================================================================
+7. CRITICAL FINDINGS
+================================================================================
+
+7.1 UPDATE ARCHITECTURE SUMMARY
+-------------------------------
+- NO traditional recovery/fastboot
+- gm_update_engine runs in Android
+- VIP MCU handles ECU flashing via UDS
+- GHS provides virtualized storage
+- A/B slots enable seamless updates
+- Updates are RAW partition images
+
+7.2 SECURITY ARCHITECTURE
+-------------------------
+- AVB provides boot-time verification
+- vbmeta.device_state = locked
+- verifiedbootstate = green
+- TSS signing for critical modules
+- UDS security for ECU modules
+- GHS hypervisor controls boot chain
+
+7.3 POTENTIAL ATTACK VECTORS
+----------------------------
+1. VIP_BOOT (Module 71) is UNSIGNED
+   - If custom bootloader could be flashed via DPS
+   - Could modify security flag reading behavior
+
+2. SOC_ABL (Module 72) is UNSIGNED
+   - Intel ABL controls early boot
+   - May allow boot chain modification
+
+3. SOC_BOOT (Module 23) is UNSIGNED
+   - Android boot image
+   - Protected by AVB but no TSS signature
+
+7.4 RESEARCH PRIORITIES
+-----------------------
+[1] CONFIRM DOWNGRADE FEASIBILITY
+    - Attempt Y177 flash via DPS
+    - Document any rollback protection encountered
+    - Note: Y177 has SELinux permissive
+
+[2] ANALYZE VIP_BOOT FORMAT
+    - Extract from update package
+    - Reverse engineer Renesas RH850 binary
+    - Identify security check code
+
+[3] TEST CUSTOM BOOT IMAGE
+    - Since SOC_BOOT is unsigned
+    - AVB may still block at vbmeta verification
+    - Need to understand full AVB chain
+
+================================================================================
+APPENDIX: EVIDENCE SOURCES
+================================================================================
+
+Primary Sources:
+- update_packages/Y181/86331663.mnf (manifest script)
+- update_packages/Y181/delivery_manifest.csv (signing status)
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/all_properties.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/kernel_config.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/fstab.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/cpuinfo.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/partitions.txt
+- logs/VIP_log_2B.174.4.1_10JUL24.txt
+- misc/A11_CSM.ProgramLog.Txt
+
+================================================================================
+END OF DOCUMENT
+================================================================================

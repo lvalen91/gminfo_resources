@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="HMI" Description="Calibrations related to the HMI display of an OTA SW update for OTA GB Phase 2 Architecture.  Reference GIS-887.">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10Apr18</Date>
+    <Description>Intial release release of this caldef file based on GIS-887 v1.2 per CR 1345549.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>21Jun18</Date>
+    <Description>Revised per CR 1622700.  Deleted the Sched_Time_Current_Time_Diff cal and added the Scheduled_Update_Min_Delay and Scheduled_Update_Max_Delay cals.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>01May2019</Date>
+    <Description>Revised per CR 2160541.  Added new cal TestToolPresentInactivityTimer.  Revised cal GIS887_DISPLAY_WAITING_FOR_SERVER_MAX range max and default values.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Maximum amount of time allowed between two consecutive FSA Heartbeat status messages from the RRM when Infotainment System State = RemoteReflashProgramming." Name="GIS887_TestToolPresentInactivityTimer" References="GIS-887-7.0" Usage="LOW,MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_ZjsNAGxFEemfkrkywbGUZw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimum setting for the difference in the scheduled time and current time " Name="GIS887_Scheduled_Update_Min_Delay" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_DeOPgHVUEeihgf-sppMBaQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1800</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum setting for the difference in the scheduled time and current time " Name="GIS887_Scheduled_Update_Max_Delay" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_XV8A0XVUEeihgf-sppMBaQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>86400</Value>
+      <MinValue>1801</MinValue>
+      <MaxValue>86400</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Vehicle transmission type" Name="GIS887_VehicleTransmissionType" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_iWA_MFkdEeiqxJXCTc1_Fw</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_SRbr4D1_EeibzvDXhCyGjg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Maximum amount of time prior to Scheduled Update Time to trigger a reminder notification" Name="GIS887_Scheduled_Update_Reminder" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_hJB34DzzEeiqqPyx-qIIVw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>minutes</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The duration for the UIM to display OTA notifications" Name="GIS887_Remote_Reflash_Display_Time" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ZVQkIDz0EeiqqPyx-qIIVw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The duration for UIM to wait to receive vehicle state data" Name="GIS887_Wait_Veh_Cond_Timeout" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_3h460Dz0EeiqqPyx-qIIVw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The duration for UIM to wait for receipt of FSA DisplayUpdate(DU_Progress == RunningInternal or RunningExternal) after initiating an update" Name="GIS887_Wait_Install_Start_Timeout" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_PzRbEDz1EeiqqPyx-qIIVw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time from the MADAI Expiration Time that user is allowed to schedule an update " Name="GIS887_Sched_Allowed_Delta" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_hRj24Dz1EeiqqPyx-qIIVw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>minutes</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable/disable the &#x201c;Cancel&#x201d; button on the installation countdown screen when MADAI timer has expired for a Constrained Consent update" Name="GIS887_CCEnableCancelButton" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_0qbwEDz1EeiqqPyx-qIIVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Minimum display time for the GIS-509 Verifying Update pop-up" Name="GIS887_DISPLAY_WAITING_FOR_SERVER_MIN" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yXy2QD19EeibzvDXhCyGjg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>3</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum display time for the GIS-509 Verifying Update pop-up" Name="GIS887_DISPLAY_WAITING_FOR_SERVER_MAX" References="GIS-887-7.0" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>__gl4gD19EeibzvDXhCyGjg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>01May2019</Date>
+      <Description>Revised per CR 2160541.  Revised cal GIS887_DISPLAY_WAITING_FOR_SERVER_MAX range max and default values.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>120</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>180</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

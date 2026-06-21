@@ -1,0 +1,2377 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>17APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>Marco Moebus</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage=HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>14OCT2014</Date>
+    <Description>Deleted duplicate AHP_Horizon_Depth caldef</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/12/2015</Date>
+    <Description>Per request from Thiep Nguyen, within this caldef updated the default value for the AHP_Horizon_Depth CAL from MPP_only to Navilink_only.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2016-06-14</Date>
+    <Description>MY19 Updates by Andreas Klein: Add the following new calibrations: AHP_Content_MinMPPLength (Initial release of this calibration: This calibration was previously defined as an integer type calibration (CalID: _JuxRIL5BEeO1CZP5M-nrYg), and is being replaced in this release by the inital release of the AHP_Content_MinMPPLength defined now as an ENUM calibration (CalID: _HGgMwDISEeaowIzu94EMuA)), AHP_Content_MinSubPathLength (Initial release of this calibration: This calibration was previously defined as an integer type calibration (CalID: _OsvnAL5BEeO1CZP5M-nrYg), and is being replaced in this release by the inital release of the AHP_Content_MinSubPathLength defined now as an ENUM calibration (CalID: _RPVMADIUEeaowIzu94EMuA)), AHP_Enable_Extra_Segment_Message, AHP_Enable_System_Specific_Message, AHP_Enable_Checksum_Message, AHP_MPP_Learning_Mode_Enabled, AHP_Content_MaxNoStubs, AHP_Content_MaxNo_SP1_Curvature ( Initial release of this calibration: This calibration was previously defined as an integer type calibration (CalID: _yGLt4L5OEeO1CZP5M-nrYg), and is being replaced by the initial release of the AHP_Content_MaxNo_SP1_Curvature defined now as an ENUM calibration (CalID: _v4v-kDLTEeaZVPjYxm4yTA)), AHP_Content_MaxNo_SP21_ReservedSystem, AHP_Content_MaxNo_SP22_ReservedSystem, AHP_Content_MaxNo_SP23_ReservedSystem, AHP_Content_MaxNo_SP24_ReservedSystem, AHP_Content_MaxNo_SP25_ReservedSystem, AHP_Content_MaxNo_SP26_ReservedSystem, AHP_Content_MaxNo_SP27_ReservedSystem, AHP_Content_MaxNo_SP28_ReservedSystem, AHP_Content_MaxNo_SP29_ReservedSystem, AHP_Content_MaxNo_SP30_ReservedSystem, AHP_Content_MaxNo_SP31_ReservedSystem, AHP_Content_MaxNo_LP8_TrafficSigns (Initial release of this calibration. This calibration was previously defined as an Integer type calibration (CalID: _iq_fMb_jEeO1CZP5M-nrYg), and is being replaced by the initial release of the AHP_Content_MaxNo_LP8_TrafficSigns defined now as an ENUM calibration (CalID: _mvZHQDIsEeaowIzu94EMuA)), AHP_Content_MaxNo_LP22_ReservedSystem, AHP_Content_MaxNo_LP23_ReservedSystem, AHP_Content_MaxNo_LP24_ReservedSystem, AHP_Content_MaxNo_LP25_ReservedSystem, AHP_Content_MaxNo_LP26_ReservedSystem, AHP_Content_MaxNo_LP27_ReservedSystem, AHP_Content_MaxNo_LP28_ReservedSystem, AHP_Content_MaxNo_LP30_ReservedSystem, and AHP_Content_MaxNo_LP31_ReservedSystem. Deleted the following calibrations: AHP_Content_MinMPPLength (CalID:_JuxRIL5BEeO1CZP5M-nrYg), AHP_Content_MinSubPathLength (CalID: _OsvnAL5BEeO1CZP5M-nrYg), AHP_Content_MaxNoStubs (CalID: _VEr60cRzEeO68uG6rmzOVg), AHP_MaxNoPaths (CalID: _kBOsQMRrEeOT-aS2E2f1iQ), AHP_Content_MaxNo_SP1_CurvatureActive (CalID: _yGLt4L5OEeO1CZP5M-nrYg), and AHP_Content_MaxNo_LP8_TrafficSigns (CalID: _iq_fMb_jEeO1CZP5M-nrYg). Also, made the following updates to existing calibrations: For the ADASIS_SUPPORT calibration made the following updated the default value. For the TX_Multiplexed_Minimum_Update_Time calibration made the following changed the units to milliseconds. For TX_Multiplexed_Periodic_Rate calibration updated the Units to milliseconds and updated the default value. For TX_Debug_Delay_Initial_Transmission calibration the calibration name updated from Calibration name updated from TX_Debug_Delay_InitialTransmission to TX_Debug_Delay_Initial_Transmission, and updated the units to milliseconds. For the AHP_Tx_Meta_Message_Update_Interval calibration updated the calibration name from AHP_Tx_MetaMessageUpdateInterval to AHP_Tx_Meta_Message_Update_Interval, and the updated the  units, maximum value, minimum, and default values for this calibration. For the AHP_Tx_Position_Message_Update_Interval calibration updated the calibration name from AHP_Tx_PositionMessageUpdateInterval to AHP_Tx_Position_Message_Update_Interval, and the units, minimum, maximum, and default values for this calibration. For the AHP_Rx_Retransmission_Request and AHP_Debug_Enable_Visualization calibrations updated the calibration names. For the AHP_SecondHorizonOffsetResolution and AHP_TrailingHorizonLength calibrations updated the units, maximum, minimum, default, and resolution values. For the AHP_Content_MaxNoSegments calibration updated the calibration description, minimum, maximum, and default values. For the AHP_Horizon_Depth calibration updated the default value. For the AHP_Content_MaxNo_SP2_RouteNumber calibration updated the calibration name from AHP_Content_MaxNo_SP2_RouteNumberActive to AHP_Content_MaxNo_SP2_RouteNumber and updated the minimum and maximum values for this calibration. For the AHP_Content_MaxNo_SP3_SlopeStep calibration updated the calibration name from AHP_Content_MaxNo_SP3_SlopeStepActive to AHP_Content_MaxNo_SP3_SlopeStep and updated minimum and maximum values For the AHP_Content_MaxNo_SP4_SlopeLinear calibration updated the minimum and maximum values and calibration description. For the AHP_Content_MaxNo_SP5_RoadAccessability  and AHP_Content_MaxNo_SP6_RoadCondition calibrations updated the minimum and maximum values and calibration description. For AHP_Content_MaxNo_SP7_VariableSpeedSignPositions calibration name change from AHP_Content_MaxNo_SP7_VariableSpeedSigns to AHP_Content_MaxNo_SP7_VariableSpeedSignPositions and minimum and maximum values changed. For the AHP_Content_MaxNo_SP8_HeadingChange calibration updated the calibration description and minimum and maximum values. </Description>
+    <Author>Andreas Klein</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2016-06-14</Date>
+    <Description>MY19 Updates by Andreas Klein (continued): For the following calibrations the calibration name, calibration description, and minimum and maximum values were updated for the following calibrations: AHP_Content_MaxNo_SP16_TrafficLightPositionAndLaneValidity, AHP_Content_MaxNo_SP17_MajorOverheadRoadSigns, AHP_Content_MaxNo_SP18_StopLinesYieldLines, AHP_Content_MaxNo_LP1_SPLongitude, AHP_Content_MaxNo_LP2_SPLatitude, AHP_Content_MaxNo_LP3_SPAltitude, AHP_Content_MaxNo_LP4_CPLongitude, AHP_Content_MaxNo_LP5_CPLatitude,  AHP_Content_MaxNo_LP6_CPAltitude, AHP_Content_MaxNo_LP7_LinkIdentifier, AHP_Content_MaxNo_LP9_TruckSpeedLimits, AHP_Content_MaxNo_LP17_RoadSigns, AHP_Content_MaxNo_LP18_LateralDistanceCurvatureToRoadCenter, AHP_Content_MaxNo_LP19_AbsoluteLongitudePosition, AHP_Content_MaxNo_LP20_AbsoluteLatitudePosition, AHP_Content_MaxNo_LP1_SPLongitude, AHP_Content_MaxNo_LP2_SPLatitude, AHP_Content_MaxNo_LP3_SPAltitude, AHP_Content_MaxNo_LP4_CPLongitude, AHP_Content_MaxNo_LP5_CPLatitude, AHP_Content_MaxNo_LP6_CPAltitude, AHP_Content_MaxNo_LP7_LinkIdentifier, AHP_Content_MaxNo_LP9_TruckSpeedLimits, AHP_Content_MaxNo_LP17_RoadSigns, and AHP_Content_MaxNo_LP18_LateralDistanceCurvatureToRoadCenter, AHP_Content_MaxNo_LP19_AbsoluteLongitudePosition, and AHP_Content_MaxNo_LP20_AbsoluteLatitudePosition. For the following calibrations updated the calibration description, minimum and maximum values: AHP_Content_MaxNo_LP10_ExtendedLane, AHP_Content_MaxNo_LP16_LaneWidth, and AHP_Content_MaxNo_LP21_Timestamp. For the AHP_Content_MaxNo_SP19_ReservedSystem calibration updated the calibration name from AHP_Content_MaxNo_SP19_MajorOverheadSign to AHP_Content_MaxNo_SP19_ReservedSystem. For the the AHP_Content_MaxNo_SP20_ResrevedSytem changed the calibration name from AHP_Content_MaxNo_SP20_StopYieldLines to AHP_Content_MaxNo_SP20_ReservedSystem. For the AHP_Content_MaxNo_LP29_ReservedSystem calibration updated the calibration name from AHP_Content_MaxNo_LP22_RoadHeadingHD to AHP_Content_MaxNo_LP29_ReservedSystem.</Description>
+    <Author>Andreas Klein</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2016-08-19</Date>
+    <Description>Within this ADASIS.caldef file made the following updates: 1.) Update made to the ADASIS_SUPPORT enumeration values, 2.) Added new NAVILINK_ENABLED calibration, 3.) Deleted the AHP Horizon Depth calibration previously defined in this caldef file since it was confirmed this additional calibration separate from the ADASIS_SUPPORT calibration is not needed, 4.) Updated the units to meters, minimum, maximum, and resolution values for the AHP_TrailingHorizonLength calibration to correspond to the values shown in the GIS-628 specification for this calibration, 5.) Deleted the AHP_Content_MinSubPathLength calibration with CalID: _RPVMADIUEeaowIzu94EmuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MinSubPathLength with CalID: _001GwGYHEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification, 6.) Deleted the AHP_Content_MinMPPLength calibration with CalID: _HGgMwDISEeaowIzu94EmuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MinMPPLength with calibration with CalID: _SqI_EGYHEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification, 7.) Deleted the AHP_Content_MaxNoStubs calibration with CalID: _IHGtIDIdEeaowIzu94EmuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MaxNoStubs with CalID: _u_rtwGYGEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification , 8.) Deleted the AHP_Content_MaxNo_SP1_Curvature calibration with CalID: _v4v-kDLTEeaZVPjYxm4yTA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MaxNo_SP1_Curvature with CalID: _J00swGYeEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification, 9.) Deleted the AHP_Content_MaxNo_LP8_TrafficSigns calibration with CalID: _mvZHQDIsEeaowIzu94EMuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MaxNo_LP8_TrafficSigns with CalID: _zWCYEGYIEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification, 10.) Updated the units to meters, minimum and resolution values for the AHP_SecondHorizonOffsetResolution calibration to correspond to the values shown in the GIS-628 specification for this calibration, 11.) Updated the calibration Usage type field for all of the ADASIS calibrations defined in the previous revision ADASIS.caldef file that had a Usage type of just High to show all of these calibrations as being needed for both Mid and High, 12.) Also updated the units shown for the Tx_Max_Offset_Range calibration,  from none to meters to reflect the correct intended representation of units for this calibration, and 13.) Also updated the units shown for the TX_Debug_Delay_Initial_Transmission calibration  from none to  milliseconds to reflect the correct intended representation of units for this calibration.</Description>
+    <Author>Andreas Klein</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>2017-06-02</Date>
+    <Description>Added two boolean type calibration parameters (AHP_Tx_Enforced_Message_Priorities and AHP_Tx_Explicit_STUB_Removal_Messages), updated usage field for all calibrations within ADASIS.caldef file to support new &quot;Global A/B&quot; categorization in CalDef tool, corrected Min/Max value for the following 34 calibrations: AHP_Content_MaxNo_SP10_Reserved, AHP_Content_MaxNo_SP11_Reserved, AHP_Content_MaxNo_SP12_Reserved, AHP_Content_MaxNo_SP13_Reserved, AHP_Content_MaxNo_SP14_Reserved, AHP_Content_MaxNo_SP15_Reserved, AHP_Content_MaxNo_SP19_Reserved, AHP_Content_MaxNo_SP20_Reserved, AHP_Content_MaxNo_SP21_Reserved, AHP_Content_MaxNo_SP22_Reserved, AHP_Content_MaxNo_SP23_Reserved, AHP_Content_MaxNo_SP24_Reserved, AHP_Content_MaxNo_SP25_Reserved, AHP_Content_MaxNo_SP26_Reserved, AHP_Content_MaxNo_SP27_Reserved, AHP_Content_MaxNo_SP28_Reserved, AHP_Content_MaxNo_SP29_Reserved, AHP_Content_MaxNo_SP30_Reserved, AHP_Content_MaxNo_SP31_Reserved, AHP_Content_MaxNo_LP11_Reserved, AHP_Content_MaxNo_LP12_Reserved, AHP_Content_MaxNo_LP13_Reserved, AHP_Content_MaxNo_LP14_Reserved, AHP_Content_MaxNo_LP15_Reserved, AHP_Content_MaxNo_LP21_Timestamp, AHP_Content_MaxNo_LP23_ReservedSystem, AHP_Content_MaxNo_LP24_ReservedSystem, AHP_Content_MaxNo_LP25_ReservedSystem, AHP_Content_MaxNo_LP26_ReservedSystem, AHP_Content_MaxNo_LP27_ReservedSystem, AHP_Content_MaxNo_LP28_ReservedSystem, AHP_Content_MaxNo_LP29_ReservedSystem, AHP_Content_MaxNo_LP30_ReservedSystem, AHP_Content_MaxNo_LP31_ReservedSystem within this caldef file to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+    <Author>Andreas Andrae</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Enables/Disables NAVILINK (independent of ADASIS_SUPPORT selection)." Name="NAVILINK_ENABLED" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Yr4q4Ez0Eea8foBPr9M3iw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-08-19</Date>
+      <Description>Initial release of the NAVILINK_ENABLED calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated default calibration value to TRUE. Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="see GDMPRS-923, main switch between ADASIS variants" Name="ADASIS_SUPPORT" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yo_jQE1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated default value to MY19 default setting for Lean ADASIS is: MPP_WITH_STUBS </Description>
+      <Author>Andreas Klein, GIS-628</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2016-08-19</Date>
+      <Description>Updated the ADASIS_SUPPORT enumeration values and updated the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ypAKUE1AEeO3UM5MzM17kw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="3.4.3 Path Length Limits. The ADASIS concept uses different range values to define the length of the ADAS horizon. " Name="Tx_Max_Offset_Range" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yrNw001AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_nav_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High, and update the units defined for this calibration to be meters instead of none.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>8190</MaxValue>
+      <Units>m</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimal update interval to send any data on the horizon, shall be filled with retransmission, if no new data is available (see 7.3.4, GDMPRS-802)" Name="TX_Multiplexed_Minimum_Update_Time" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysKzIE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated units from none to milliseconds</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>5100</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="ADASIS transmission update interval for multiplexed output" Name="TX_Multiplexed_Periodic_Rate" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysKzIU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated default value from 5 to 20, and changed units from none to milliseconds. The multiplexed ADASIS message stream should be provided in a periodic manner.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andraes Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>5100</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Development parameter to delay the initial horizon transmission (in milliseconds)" Name="TX_Debug_Delay_Initial_Transmission" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysKzIk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2014-06-14</Date>
+      <Description>Calibration name updated from TX_Debug_Delay_InitialTransmission to TX_Debug_Delay_Initial_Transmission, and updated the units from none to milliseconds. Development parameter to delay the initial horizon transmission (in milliseconds).</Description>
+      <Author>GIS-628</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High, and updated the units defined for this calibration to be milliseconds instead of none.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>5100</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Configures transmission of meta message in milliseconds, see table in GDMPRS-923" Name="AHP_Tx_Meta_Message_Update_Interval" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_DFSygcRyEeO68uG6rmzOVg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Tx_MetaMessageUpdateInterval to AHP_Tx_Meta_Message_Update_Interval, and updated the  units, maximum value, minimum, and default values for this calibration. META-DATA message should be provided at regular instances. Default setting is: 5s as specified in GIS-628 (Lean ADASIS).</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5000</Value>
+      <MinValue>1000</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Configures transmission of vehicle position message in milliseconds, see table in GDMPRS-923" Name="AHP_Tx_Position_Message_Update_Interval" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_W_e5Qb5BEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Tx_PositionMessageUpdateInterval to AHP_Tx_Position_Message_Update_Interval, and the units, minimum, maximum, and default values for this calibration. POSITION message should be provided at regular instances. Default setting is: 1s as specified in GIS-628 (Lean ADASIS).</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enables acceptance of retransmission requests from data consuming ECUs, see GDMPRS-997, 998" Name="AHP_Rx_Retransmission_Request" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_8GNKYcR6EeO1RolFV9aB-w</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Rx_RetransmissionRequest to AHP_Rx_Retransmission_Request</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Activates debugging interface for horizon displays, see. Appendix A, GDMPRS-807,815,816, etc." Name="AHP_Debug_Enable_Visualization" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_WVs2EL45EeO1CZP5M-nrYg</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Debug_EnableVisualization to AHP_Debug_Enable_Visualization</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description=":  GDMPRS-999 - The map matching and position refinement function shall exhibit a calibration parameter Ke_FreewayMode. If Ke_FreewayMode=True, the map matching shall assume that the vehicle stays always on roads of class 1 and 2 or the direct connections (exit/entrance ramps) of those roads.  GDMPRS-999a" Name="AHP_MPP_RestrictionToFreewayMode" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_73mcEL43EeO1CZP5M-nrYg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="see GDMPRS-1000. As defined in the GDMPRS-100: The map provider shall be able to send out two instances of an electronic horizon at one time, given the calibration parameter AHP_SecondHorizonParallelInstance=True. " Name="AHP_SecondHorizonParallelInstanceActive" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_7CSIML44EeO1CZP5M-nrYg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="see GDMPRS-1000. As defined in the GDMPRS-100: While the first EH shall work with the standard offset resolution of 1m, the second instance shall cover a long horizon of more than 8096m by setting the offset resolution to AHP_SecondHorizonOffsetResolution a higher value such as 10,20,50 or 200m (default:100m). Note: The value range for this calibration is 0-200 meters, and the default value is 100 meters as defined in the GIS-628 Specification." Name="AHP_SecondHorizonOffsetResolution" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_DDJnUL45EeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the units, minimum, maximum, default and resolution values for this calibration.  Second horizon offset resolution should be calibratable. Default setting is: 10s.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Changed the units from km to meters, and updated the description to clarify that the units desired for this calibration should be in meters. With this update, also updated the resolution to 1 and updated the minimum, maximum, resolution, and default values to correspond to how this is defined in the GIS-628 Specification. Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>200</MaxValue>
+      <Units>m</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimum most probable path length, see Appendix B. The value range for this calibration is 200-800 meters, and the default value is 200 meters as defined in the GIS-628 Specification." Name="AHP_Content_MinMPPLength" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_SqI_EGYHEea-68x0t4hw1g</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-08-19</Date>
+      <Description>Initial release of this calibration as an Integer. Deleted the AHP_Content_MinMPPLength calibration with CalID: _HGgMwDISEeaowIzu94EmuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MinMPPLength with calibration with CalID: _SqI_EGYHEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>200</MinValue>
+      <MaxValue>800</MaxValue>
+      <Units>m</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimal sub-path length, see Appendix B. Note: The value range for this calibration is 100-800 meters, and the default value is 100 meters as defined in the GIS-628 Specification." Name="AHP_Content_MinSubPathLength" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_001GwGYHEea-68x0t4hw1g</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-08-19</Date>
+      <Description>Initial release of this calibration as an Integer. Deleted the AHP_Content_MinSubPathLength calibration with CalID: _RPVMADIUEeaowIzu94EmuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MinSubPathLength with CalID: _001GwGYHEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification. </Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>800</MaxValue>
+      <Units>m</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimal trailing horizon length, see Appendix B. Note: The value range for this calibration is 0-500 meters, and the default value is 100 meters as defined in the GIS-628 Specification." Name="AHP_TrailingHorizonLength" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RcE7EL5BEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the untis , minimum, maximum, default and resolution values for this calibration. Trailing horizon length is important for being robust against inaccuracies of the positioning system (e.g., jumps in the vehicle offset), which may result in complete horizon rebuilt. Further, it determines how many data behind the vehicle an application will have to keep in its memory. Default setting is: 100m.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Changed the units from km to meters, and updated the description to clarify that the units desired for this calibration should be in meters. With this update, also updated the resolution to 1 and updated the minimum, maximum, resolution, and default values to correspond to how this is defined in the GIS-628 Specification. Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>m</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable provision of extra segment message as specified in GIS-628 GDMPRS-927. Depending on application requirements and additional SEGMENT message can be provided. Default setting is: false." Name="AHP_Enable_Extra_Segment_Message" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_7ZakcDIaEeaowIzu94EMuA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable provision of GM system specific message as specified in GIS-628 GDMPRS-1059. Depending on application requirements and additional GM system specific message can be provided. Default setting is: true, as specified in GIS-628 (Lean ADASIS)." Name="AHP_Enable_System_Specific_Message" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_YzQMQDIbEeaowIzu94EMuA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables GM checksum message for configurations in which an ASIL-rated feature is using the data. Values: 0 = false, 1 = true. Depending on application requirements and additional CHECKSUM messages can be provided. Default setting is: false." Name="AHP_Enable_Checksum_Message" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_o8eSkDIbEeaowIzu94EMuA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Intial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Allows to enforce horizon data transmission according to message priorities specified by receiving applications (see GIS-628 Sec. 7.1.3). The default calibration for ADASIS message priorities shall be with respect to horizon offset, i.e., FALSE." Name="AHP_Tx_Enforced_Message_Priorities" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_TZ2k4EeMEeetSriMDOh_Jw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2017-06-02</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables transmission of explicit STUB removal messages (see GIS-628 Sec. 7.3.5). Default: FALSE." Name="AHP_Tx_Explicit_STUB_Removal_Messages" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_SpJgsUeMEeetSriMDOh_Jw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2017-06-02</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables the usage of history and dynamic input for MPP calculation. If Disables, only static map attributes are considered." Name="AHP_MPP_Learning_Mode_Enabled" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gWv9cDIcEeaowIzu94EMuA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Intial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Maximum number of SEGMENT messages provided by the AHP within the calibrated horizon (GIS-628 GDMPRS-923)" Name="AHP_Content_MaxNoSegments" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_PlEQccRzEeO68uG6rmzOVg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-60-14</Date>
+      <Description>Updated the calibration description, mimum, maximum, and default values. Maximum number of SEGMENT messages provided by the AHP within the calibrated horizon (GIS-628 GDMPRS-923).</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>90</Value>
+      <MinValue>20</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum Number of Stubs in horizon" Name="AHP_Content_MaxNoStubs" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_u_rtwGYGEea-68x0t4hw1g</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-08-19</Date>
+      <Description>Initial release of this calibration as an Integer. Deleted the AHP_Content_MaxNoStubs calibration with CalID: _IHGtIDIdEeaowIzu94EmuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MaxNoStubs with CalID: _u_rtwGYGEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see GIS-628 Appendix B. Adaptation of value range. Default setting for Lean ADASIS is: 0." Name="AHP_Content_MaxNo_SP1_Curvature" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_J00swGYeEea-68x0t4hw1g</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-08-19</Date>
+      <Description>Initial release of this calibration as an Integer. Deleted the AHP_Content_MaxNo_SP1_Curvature calibration with CalID: _v4v-kDLTEeaZVPjYxm4yTA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MaxNo_SP1_Curvature with CalID: _J00swGYeEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification </Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP2_RouteNumber" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-b5-Mb_fEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_SP2_RouteNumberActive to AHP_Content_MaxNo_SP2_RouteNumber and updated the minimum and maximum values for this calibration.  </Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B" Name="AHP_Content_MaxNo_SP3_SlopeStep" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_1ESdwL5OEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_SP3_SlopeStepActive to AHP_Content_MaxNo_SP3_SlopeStep and updated minimum and maximum values. for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP4_SlopeLinear" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_D7nIIL_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the minimum and maximum values and calibration description. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP5_RoadAccessability" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LZcysL_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description> Updated the minimum and maximum values and calibration description. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP6_RoadCondition" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RR1iYL_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description> Updated the minimum and maximum values and calibration description. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP7_VariableSpeedSignPositions" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_T7LjML_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated calibration name from AHP_Content_MaxNo_SP7_VariableSpeedSigns to AHP_Content_MaxNo_SP7_VariableSpeedSignPositions and minimum and maximum values changed. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP8_HeadingChange" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XkX3cL_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration description and minimum and maximum values. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP9_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_pSbNkb_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP10_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_pnF2Ab_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP11_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_p54PIb_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP12_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qHnJIL_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP13_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qUEQwb_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP14_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_alRcoL_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP15_Reserved" References="GIS-628" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9ybG4b_gEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP16_TrafficLightPositionAndLaneValidity" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Aq3Tob_hEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_SP16_Reseved to AHP_Content_MaxNo_SP16_TrafficLightPositionAndLaneValidity and updated the calibration description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP17_MajorOverheadRoadSigns" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_DQw-4b_hEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated calibration name from AHP_Content_MaxNo_SP17_SuperElevation to AHP_Content_MaxNo_SP17_MajorOverheadRoadSigns and updated the minimum and maximum values. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_SP18_StopLinesYieldLines" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_H7CVob_hEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated calibration name from AHP_Content_MaxNo_SP18_TrafficLights to AHP_Content_MaxNo_SP18_StopLinesYieldLines and updated the minimum and maximum values, and updated the calibration description. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP19_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_MEMjYb_hEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated calibration name from AHP_Content_MaxNo_SP19_MajorOverheadSign to AHP_Content_MaxNo_SP19_ReservedSystem.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP20_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_PigdUb_hEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_SP20_StopYieldLines to AHP_Content_MaxNo_SP20_ReservedSystem.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP21_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_90lMEDIqEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP22_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_rd9koDIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP23_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_0c-uEDIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP24_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_1GXpUDIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP25_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_40pR4DIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP26_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_54sv4DIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP27_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_2him0DIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP28_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_3vb9UDIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP29_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_4QJdsDIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP30_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_3K_McDIrEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_SP31_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Fq4kgDIsEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP1_SPLongitude" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_obrg4L_iEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP1_Long to AHP_Content_MaxNo_LP1_SPLongitude,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP2_SPLatitude" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_sQpAQb_iEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP2_Lat to AHP_Content_MaxNo_LP2_SPLongitude,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP3_SPAltitude" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_t6oc4L_iEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP3_Alt to AHP_Content_MaxNo_LP3_SPAltitude,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP4_CPLongitude" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XDkJEb_jEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP4_CPLong to AHP_Content_MaxNo_LP4_CPLongitude,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP5_CPLatitude" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Z-ELUb_jEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP5_CPLat to AHP_Content_MaxNo_LP5_CPLongitude,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP6_CPAltitude" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_c1z0gb_jEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP6_CPAlt to AHP_Content_MaxNo_LP6_CPAltitude,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP7_LinkIdentifier" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_fI_YEb_jEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP7_LinkId to AHP_Content_MaxNo_LP7_LinkIdentifier,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B.  Setting depends on calibrated horizon length. Default setting for Lean ADASIS is: 10." Name="AHP_Content_MaxNo_LP8_TrafficSigns" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zWCYEGYIEea-68x0t4hw1g</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-08-19</Date>
+      <Description>Initial release of this calibration as an Integer type calibration. Deleted the AHP_Content_MaxNo_LP8_TrafficSigns calibration with CalID: _mvZHQDIsEeaowIzu94EMuA that was initially incorrectly defined as an EnumFloatMap, and created a new calibration also called AHP_Content_MaxNo_LP8_TrafficSigns with CalID: _zWCYEGYIEea-68x0t4hw1g to redefine this calibration as an Integer type calibration corresponding to how it is defined in the GIS-628 specification.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP9_TruckSpeedLimits" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_uv9RYcCdEeONv_vvjKMS3Q</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP9_Reserved to AHP_Content_MaxNo_LP9_TruckSpeedLimits,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP10_ExtendedLane" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zDjNgMCdEeONv_vvjKMS3Q</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP11_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_PjxLwMR6EeO1RolFV9aB-w</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP12_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Y7imsMRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP13_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_fH2X8cRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP14_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gZaGccRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP15_Reserved" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_h3hDMMRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP16_LaneWidth" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_FQZ0Ab_kEeO1CZP5M-nrYg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP17_RoadSigns" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_kHsWEMRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP17_Reserved to AHP_Content_MaxNo_LP17_RoadSigns,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP18_LateralDistanceCurvatureToRoadCenter" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qIieMMRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP18_LatDistCurvToRoadCenter to AHP_Content_MaxNo_LP18_LateralDistanceCurvatureToRoadCenter,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP19_AbsoluteLongitudePosition" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_97QikMF8EeONv_vvjKMS3Q</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP19_AbsLongPos to AHP_Content_MaxNo_LP19_AbsoluteLongitudePosition,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP20_AbsoluteLatitudePosition" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_YWgSUcF9EeONv_vvjKMS3Q</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP20_AbsLatPos to AHP_Content_MaxNo_LP20_AbsoluteLatitudePosition,  and updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. of profiles of that type that shall be part of the horizon, see GIS-628 Appendix B." Name="AHP_Content_MaxNo_LP21_Timestamp" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_vyVYQcRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the description, minimum and maximum values for this calibration. Adaptation of value range.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP22_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gQ-AYTIuEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP23_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gC6WQTIuEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP24_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_fyTHYTIuEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP25_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ffPogTIuEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP26_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ejbggTIuEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP27_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_fDybkTIuEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP28_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_d77boTIuEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP29_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xd_BwcRqEeO14_dil2f8vg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-06-14</Date>
+      <Description>Updated the calibration name from AHP_Content_MaxNo_LP22_RoadHeadingHD to AHP_Content_MaxNo_LP29_ReservedSystem.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP30_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NOIMITIvEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum no. profiles of that type that shall be part of the horizon, see Appendix B" Name="AHP_Content_MaxNo_LP31_ReservedSystem" References="GIS-628 Appendix B" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NjfYITIvEeaowIzu94EMuA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2016-06-14</Date>
+      <Description>Inital release of this calibration.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2016-08-19</Date>
+      <Description>Update the usage type from High to Mid and High.</Description>
+      <Author>Andreas Klein</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-06-02</Date>
+      <Description>Updated usage field to support new &quot;Global A/B&quot; categorization in CalDef tool. Corrected Min/Max value for this calibration to match with what was reflected in the released version of GIS-628 the suppliers currently have.</Description>
+      <Author>Andreas Andrae</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

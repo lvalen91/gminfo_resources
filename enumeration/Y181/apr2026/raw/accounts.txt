@@ -1,0 +1,51 @@
+User UserInfo{0:Driver:813}:
+  Accounts: 0
+  
+  AccountId, Action_Type, timestamp, UID, TableName, Key
+  Accounts History
+  
+  Active Sessions: 0
+  
+  RegisteredServicesCache: 3 services
+    ServiceInfo: AuthenticatorDescription {type=com.google}, ComponentInfo{com.google.android.gms/com.google.android.gms.auth.account.authenticator.GoogleAccountAuthenticatorService}, uid 10107
+    ServiceInfo: AuthenticatorDescription {type=GM}, ComponentInfo{com.gm.authtoken/com.gm.authtoken.service.AuthenticationService}, uid 1000
+    ServiceInfo: AuthenticatorDescription {type=com.android.bluetooth.pbapsink}, ComponentInfo{com.android.bluetooth/com.android.bluetooth.pbapclient.AuthenticationService}, uid 1002
+  
+  Account visibility:
+  
+User UserInfo{10:Driver:412}:
+  Accounts: 1
+    Account {name=<EMAIL_REDACTED>, type=com.google}
+  
+  AccountId, Action_Type, timestamp, UID, TableName, Key
+  Accounts History
+  -1,action_called_account_add,2026-02-13 18:17:11,1010106,accounts,0
+  1,action_account_add,2026-02-13 18:18:29,1001002,accounts,1
+  1,action_called_account_remove,2026-02-13 18:18:44,1001002,accounts,2
+  1,action_account_remove,2026-02-13 18:18:44,1000,accounts,3
+  2,action_account_add,2026-02-13 19:51:38,1001002,accounts,4
+  2,action_called_account_remove,2026-02-13 19:51:46,1001002,accounts,5
+  2,action_account_remove,2026-02-13 19:51:46,1000,accounts,6
+  3,action_account_add,2026-02-14 05:26:38,1001002,accounts,7
+  3,action_called_account_remove,2026-02-14 05:26:52,1001002,accounts,8
+  3,action_account_remove,2026-02-14 05:26:53,1000,accounts,9
+  4,action_account_add,2026-02-14 05:29:23,1001002,accounts,10
+  4,action_called_account_remove,2026-02-14 05:29:31,1001002,accounts,11
+  4,action_account_remove,2026-02-14 05:29:31,1000,accounts,12
+  -1,action_called_account_add,2026-02-17 13:29:45,1010108,accounts,13
+  5,action_account_add,2026-02-17 13:31:11,1010107,accounts,14
+  5,action_clear_password,2026-02-17 13:31:11,1010107,accounts,15
+  
+  Active Sessions: 0
+  
+  RegisteredServicesCache: 3 services
+    ServiceInfo: AuthenticatorDescription {type=com.google}, ComponentInfo{com.google.android.gms/com.google.android.gms.auth.account.authenticator.GoogleAccountAuthenticatorService}, uid 1010107
+    ServiceInfo: AuthenticatorDescription {type=GM}, ComponentInfo{com.gm.authtoken/com.gm.authtoken.service.AuthenticationService}, uid 1001000
+    ServiceInfo: AuthenticatorDescription {type=com.android.bluetooth.pbapsink}, ComponentInfo{com.android.bluetooth/com.android.bluetooth.pbapclient.AuthenticationService}, uid 1001002
+  
+  Account visibility:
+    <EMAIL_REDACTED>
+      com.google.android.apps.maps, 2
+      com.android.vending, 2
+      com.google.android.carassistant, 2
+  

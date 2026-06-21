@@ -1,0 +1,2514 @@
+================================================================================
+GM AAOS INFOTAINMENT SECURITY ASSESSMENT REPORT
+================================================================================
+Generated: December 20, 2025
+Analyst: Claude (Security Research / Android Engineering)
+Target: GM Infotainment 3 (IOK) - gminfo3.7/3.8 CSM Module
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. EXECUTIVE SUMMARY
+2. CRITICAL SECURITY FINDINGS
+3. Y177 VS Y181 SECURITY COMPARISON
+4. ATTACK SURFACE ANALYSIS
+5. EXPLOITABLE VULNERABILITIES
+6. BLOCKED ATTACK VECTORS
+7. EEPROM ATTACK MATRIX
+8. RECOMMENDED ATTACK SEQUENCE
+9. TECHNICAL ARCHITECTURE
+10. CONCLUSION
+11. OTA UPDATE EXPLOITATION ANALYSIS
+12. CAN BUS / UDS DIAGNOSTIC ATTACK SURFACE
+13. EEPROM VIN MANIPULATION - VIRGIN STATE ATTACK
+14. TEST EEPROM BINARIES
+15. DEEP PARTITION ANALYSIS - NEW FINDINGS
+16. VIP UART CONSOLE ANALYSIS
+17. PROTOKEY AND ICUSB SECURITY MECHANISM
+18. EEPROM SECURITY BYPASS - TRUST CHAIN ANALYSIS
+19. COMPREHENSIVE EEPROM FLAG MAPPING
+20. KERNEL CVE RESEARCH - LINUX 4.19.305
+21. GM OTA REMEDIATION ASSESSMENT
+22. SUGGESTED NEXT STEPS FOR RESEARCH
+23. VIP ARCHITECTURE - RENESAS RH850 ANALYSIS
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+Analysis of GM Infotainment 3 (IOK) module comparing Y177 and Y181 firmware
+reveals significant security architecture changes and multiple potential attack
+vectors. The critical finding is that SELinux enforcement was hardened between
+versions, but several exploitable paths remain.
+
+Key Findings:
+- SELinux changed from PERMISSIVE (Y177) to ENFORCING (Y181)
+- Boot parameter shows permissive but runtime is enforcing (override detected)
+- ADB access achieved via EEPROM modification (0x0440 + 0x0A80)
+- UART console (/dev/ttyACM1) is world-accessible
+- Network ports 7000, 6363, 49156 are unexplored attack surface
+- Y177 downgrade possible (version check disabled in manifest)
+- EEPROM flag 0x0B40 suspected to control debug/SELinux mode
+
+================================================================================
+2. CRITICAL SECURITY FINDINGS
+================================================================================
+
+2.1 SELINUX CONFIGURATION ANOMALY
+---------------------------------
+Property Analysis:
+  [ro.boot.selinux]: [permissive]   <- Kernel boot parameter
+  getenforce output:  Enforcing     <- Runtime state
+
+The kernel is booted with androidboot.selinux=permissive but something in the
+boot chain FORCES enforcing mode. Likely causes:
+  - init.rc trigger on boot completion
+  - GM service (gmprotokey or gm_update_engine)
+  - GHS INTEGRITY hypervisor enforcement
+
+IMPLICATION: If the enforcing switch is controlled by software/EEPROM, it may
+be bypassable.
+
+2.2 ADB SECURITY BYPASS (CONFIRMED WORKING)
+-------------------------------------------
+| EEPROM Address | Stock Value | Modified Value | Effect              |
+|----------------|-------------|----------------|---------------------|
+| 0x0440         | C3 00 C3    | 5A FF 5A       | Primary ADB enable  |
+| 0x0A80         | FF FF FF    | 5A FF 5A       | Backup ADB enable   |
+
+Both addresses use 0x5A framing (security frame). Setting the flag byte to
+0xFF disables GM Secure Client authentication requirement.
+
+Frame Protocol:
+  0x5A = Security/VIN frames
+  0x69 = Configuration frames
+  0xF0 = Data/String frames
+  0xC3 = Calibration frames
+
+2.3 POTENTIAL DEBUG/SELINUX EEPROM FLAG
+---------------------------------------
+| Address  | Frame | Current | Suspected Purpose           |
+|----------|-------|---------|----------------------------|
+| 0x0B40   | 0x69  | 0x00    | Developer/Debug mode toggle |
+| 0x0B60   | 0xC3  | varies  | Unknown config              |
+
+HYPOTHESIS: Setting 0x0B41 to 0xFF may enable debug mode or disable SELinux
+enforcement. The 0x69 frame indicates a configuration toggle (same pattern
+as other working flags).
+
+================================================================================
+3. Y177 VS Y181 SECURITY COMPARISON
+================================================================================
+
+| Security Control    | Y177           | Y181           | Impact              |
+|---------------------|----------------|----------------|---------------------|
+| SELinux Mode        | PERMISSIVE     | ENFORCING      | CRITICAL - exploits |
+| Security Patch      | Feb 2025       | June 2025      | Fewer CVEs          |
+| Kernel Build        | March 2025     | July 2025      | More patches        |
+| VIP Bootloader      | 85056831       | 85056831       | SAME - no changes   |
+| VIP App             | 86283151       | 86331656       | Hash diff only      |
+| OTA Version Check   | Disabled       | Disabled       | DOWNGRADE POSSIBLE  |
+| Boot State          | green/locked   | green/locked   | AVB active          |
+| OEM Unlock          | Disabled       | Disabled       | No fastboot unlock  |
+
+VIP FIRMWARE ANALYSIS
+---------------------
+Binary comparison: 549,518 byte differences between Y177/Y181 VIP App firmware
+
+Differences primarily in:
+  - Version identifiers (header bytes 0x0A-0x0D: CM vs CN)
+  - Hash/signature blocks (0x80-0xB0)
+  - Cryptographic signatures
+
+ICUSB/PROTOKEY strings are IDENTICAL between versions.
+CONCLUSION: SELinux control is NOT in VIP firmware - it's in Android partition.
+
+================================================================================
+4. ATTACK SURFACE ANALYSIS
+================================================================================
+
+4.1 NETWORK SERVICES (UNEXPLORED)
+---------------------------------
+| Port    | Binding     | Protocol | Status                    |
+|---------|-------------|----------|---------------------------|
+| 7000    | 0.0.0.0     | TCP      | OPEN - Unknown service    |
+| 6363    | 0.0.0.0     | TCP      | OPEN - NDN protocol?      |
+| 49156   | 0.0.0.0     | TCP      | OPEN - Dynamic port       |
+| 9002    | 192.168.1.1 | TCP      | VLAN - Internal service   |
+| 9010    | 192.168.1.1 | TCP      | VLAN - Internal service   |
+| 9016    | 192.168.1.1 | TCP      | VLAN - Internal service   |
+
+RECOMMENDATION: Port scan and fuzzing of 7000, 6363, 49156 may reveal
+unauthenticated attack vectors.
+
+4.2 DEVICE NODES
+----------------
+| Device       | Permissions | Access     | Potential               |
+|--------------|-------------|------------|-------------------------|
+| /dev/ttyACM1 | crw-rw-rw-  | World R/W  | UART console access     |
+| /dev/tty     | crw-rw-rw-  | World R/W  | Standard TTY            |
+| /dev/tty0    | crw-rw----  | root:system| VT console              |
+
+CRITICAL: /dev/ttyACM1 (MCP2200 USB-UART) is world-readable/writable.
+This may provide:
+  - Bootloader console access
+  - GHS INTEGRITY hypervisor shell
+  - VIP MCU debug interface
+
+Hardware Note: 74LVC08A AND gate may be gating UART signals (hardware security)
+
+4.3 GM-SPECIFIC SERVICES
+------------------------
+| Service              | Status  | Function              | Attack Surface      |
+|----------------------|---------|----------------------|---------------------|
+| gmprotokey           | Running | ICUSB/ADB, PROTOKEY  | Controls debug      |
+| gmlogger             | Running | Crash/debug logging  | Log injection?      |
+| gm_update_engine     | Running | OTA updates          | Package tampering?  |
+| gm_vehicle_hal       | Running | Vehicle interface    | CAN bus access      |
+| diagnosticsd         | Running | Diagnostic services  | UDS protocol        |
+| ipc_server           | Running | Inter-process comm   | VIP communication   |
+| ghs_cal              | Running | GHS calibration      | Hypervisor interface|
+
+================================================================================
+5. EXPLOITABLE VULNERABILITIES
+================================================================================
+
+5.1 HIGH: UART CONSOLE ACCESS
+-----------------------------
+Vector:     /dev/ttyACM1 world-accessible
+Risk:       Root shell, bootloader access
+Mitigation: Hardware AND gate (74LVC08A) may be gating signals
+Test:       cat /dev/ttyACM1 & while power cycling module
+
+5.2 HIGH: Y177 DOWNGRADE ATTACK
+-------------------------------
+Vector:    OTA manifest has "version check disabled"
+Risk:      Restore SELinux permissive
+Barrier:   AVB rollback index (untested)
+Procedure:
+  1. Copy Y177 package to FAT32 USB
+  2. Connect USB, accept update prompt
+  3. Re-apply EEPROM ADB mod post-update
+
+5.3 MEDIUM: EEPROM DEBUG FLAG
+-----------------------------
+Vector:    0x0B40/0x0B41 configuration toggle
+Risk:      May disable SELinux or enable debug mode
+Test:      Set 0x0B41 = 0xFF, recalculate CRCs, reflash
+CRC Locs:  0x16E0, 0x19E0, 0x1A80, 0x1B40
+
+5.4 MEDIUM: NETWORK SERVICE EXPLOITATION
+----------------------------------------
+Vector:    Ports 7000, 6363, 49156 on all interfaces
+Risk:      Remote code execution, info disclosure
+Test:      nc -v <ip> 7000 to probe services
+
+5.5 LOW: ADB SHELL ESCAPE
+-------------------------
+Vector:    SELinux policy gaps for shell domain
+Context:   u:r:shell:s0
+Risk:      Privilege escalation via policy misconfiguration
+Test:      Enumerate allowed transitions from shell context
+
+================================================================================
+6. BLOCKED ATTACK VECTORS
+================================================================================
+
+| Vector             | Reason                    | Workaround              |
+|--------------------|---------------------------|-------------------------|
+| Kernel exploits    | SELinux enforcing         | Downgrade to Y177       |
+| Bootloader unlock  | sys.oem_unlock_allowed=0  | EEPROM flag?            |
+| ADB root           | ro.debuggable=0           | Kernel mod required     |
+| Fastboot           | Not exposed by ABL        | UART bootloader access? |
+| dm-verity bypass   | AVB enabled, locked       | Custom vbmeta?          |
+
+================================================================================
+7. EEPROM ATTACK MATRIX
+================================================================================
+
+| Address | Current | Action   | Expected Result         | Risk   |
+|---------|---------|----------|-------------------------|--------|
+| 0x0B41  | 0x00    | Set 0xFF | Debug/permissive mode   | Medium |
+| 0x0020  | 0x00    | Set 0xFF | Unknown feature         | Low    |
+| 0x0001  | 0x01    | Set 0x00 | Factory reset trigger   | High   |
+| 0x16E0  | CRC     | Corrupt  | Force recovery mode     | High   |
+
+CRC Algorithm: Unknown - requires reverse engineering VIP firmware or
+empirical testing.
+
+EEPROM DIFFERENCES OBSERVED (Stock vs ADB-enabled):
+---------------------------------------------------
+Address 0x0440: C3 00 C3 -> 5A FF 5A (ADB flag)
+Address 0x0A80: FF FF FF -> 5A FF 5A (Backup ADB flag)
+Address 0x0AA0: 69 00 -> C3 00 (Frame byte change)
+Address 0x0B60: 69 9D 00 00 00 69 -> C3 17 03 00 00 C3 (Config change)
+
+================================================================================
+8. RECOMMENDED ATTACK SEQUENCE
+================================================================================
+
+PRIORITY 1: UART CONSOLE INVESTIGATION
+--------------------------------------
+From ADB shell (Y181):
+  cat /dev/ttyACM1 &
+  echo "test" > /dev/ttyACM1
+
+From Mac (if USB exposed):
+  screen /dev/cu.usbmodem* 115200
+  # Power cycle module during monitoring
+
+Expected responses:
+  - Boot log from Intel ABL
+  - GHS INTEGRITY console
+  - VIP debug output
+  - Nothing (AND gate blocking)
+
+PRIORITY 2: EEPROM 0x0B40 EXPERIMENT
+------------------------------------
+1. Dump current EEPROM (XGecu programmer)
+2. Modify 0x0B41: 0x00 -> 0xFF
+3. Identify CRC algorithm or brute-force valid CRCs
+4. Flash modified EEPROM
+5. Boot and check: getenforce
+
+PRIORITY 3: Y177 DOWNGRADE
+--------------------------
+1. Prepare Y177 update on FAT32 USB
+2. Backup current EEPROM
+3. Connect USB to module
+4. Accept update prompt when detected
+5. Wait for installation
+6. Re-apply ADB EEPROM modification
+7. Gain shell with SELinux permissive
+
+PRIORITY 4: NETWORK SERVICE FUZZING
+-----------------------------------
+Port enumeration:
+  nmap -sV -p 7000,6363,49156 <module_ip>
+
+Service probing:
+  nc -v <module_ip> 7000
+  nc -v <module_ip> 6363
+
+================================================================================
+9. TECHNICAL ARCHITECTURE
+================================================================================
+
++-------------------------------------------------------------+
+|                    Intel Apollo Lake SoC                     |
+|  +--------------------------------------------------------+ |
+|  |            GHS INTEGRITY Hypervisor                    | |
+|  |  +------------------+  +-----------------------------+ | |
+|  |  |  Safety RTOS     |  |      Android AAOS Guest     | | |
+|  |  |  (Invisible)     |  |  +------------------------+ | | |
+|  |  |                  |  |  |   Linux Kernel 4.19    | | | |
+|  |  |                  |  |  |   SELinux: ENFORCING   | | | |
+|  |  |                  |  |  |   AVB: green/locked    | | | |
+|  |  |                  |  |  +------------------------+ | | |
+|  |  +------------------+  +-----------------------------+ | |
+|  +--------------------------------------------------------+ |
++-------------------------------------------------------------+
+|  VIP MCU (Renesas)  |  EEPROM (M24C64)  |  UART (MCP2200)   |
+|  - ICUSB control    |  - ADB flags      |  - Debug console? |
+|  - PROTOKEY         |  - Config flags   |  - Bootloader?    |
+|  - CAN gateway      |  - VIN/calibration|  - AND-gated?     |
++-------------------------------------------------------------+
+
+BOOT CHAIN:
+1. Power On
+2. Intel ABL (Apollo Lake Bootloader)
+3. GHS INTEGRITY Hypervisor starts
+4. Hypervisor spawns safety-critical partition (RTOS)
+5. Hypervisor spawns Android partition (guest OS)
+6. Linux Kernel boots (under hypervisor)
+7. Android AAOS userspace
+8. [SOMEWHERE HERE] SELinux switched from permissive to enforcing
+
+================================================================================
+10. CONCLUSION
+================================================================================
+
+The Y181 update significantly hardened security by enabling SELinux enforcement.
+However, multiple attack vectors remain viable:
+
+1. UART console via world-accessible /dev/ttyACM1
+2. Y177 downgrade due to disabled version checking
+3. EEPROM flags at 0x0B40 may control debug/SELinux mode
+4. Network services on open ports are unexplored
+
+MOST PROMISING PATHS:
+---------------------
+1. UART Investigation - Operates below Android layer, may provide hypervisor
+   or bootloader access independent of SELinux state
+
+2. EEPROM 0x0B40 Flag - Follows same pattern as working ADB flags, could
+   restore permissive mode on Y181 without downgrade
+
+3. Y177 Downgrade - Known working path to SELinux permissive, version check
+   disabled, main risk is AVB rollback protection
+
+CRITICAL INSIGHT:
+-----------------
+The boot property ro.boot.selinux=permissive combined with runtime Enforcing
+state indicates the SELinux mode switch is SOFTWARE CONTROLLED, not hardware
+enforced. This means there is likely a configuration option (EEPROM flag,
+init trigger, or service) that controls this behavior and can be modified.
+
+================================================================================
+11. OTA UPDATE EXPLOITATION ANALYSIS
+================================================================================
+
+11.1 UPDATE PACKAGE STRUCTURE
+-----------------------------
+GM OTA packages consist of:
+
+| File Type | Extension | Purpose                                    |
+|-----------|-----------|-------------------------------------------|
+| Manifest  | .mnf      | Binary header + plaintext Edify script    |
+| Signature | .smd      | X.509 cert + SHA256 hashes + RSA sigs     |
+| Payloads  | (numeric) | Partition images, ECU firmware            |
+
+11.2 AVAILABLE GMEXT COMMANDS (Edify Extensions)
+------------------------------------------------
+| Command                                    | Function                        |
+|--------------------------------------------|---------------------------------|
+| gmext.write_emmc_image(id,file,path)       | Direct block write to partition |
+| gmext.extract_emmc_image(id,file,path)     | Extract image to partition      |
+| gmext.extract_logical_partition(id,f,name) | Write to dynamic partition      |
+| gmext.update_ecu(id,file)                  | Update ECU firmware (VIP,GPS)   |
+| gmext.copy_file(id,source,destination)     | Copy file to filesystem path    |
+| gmext.switch_slot()                        | A/B slot switching              |
+| gmext.update_dynamic_partition_config()    | Update partition layout         |
+| gmext.show_progress(id,value,time)         | Progress display                |
+| format(fs,type,device,?,mount)             | Format partition                |
+
+11.3 CRITICAL FINDING: DATA_WIPE DUMMY PACKAGE
+----------------------------------------------
+The data_wipe_update package contains PLACEHOLDER FILES:
+
+85881038: "See dealer! Fake VIP_BOOT image."
+85881039: "See dealer! Fake VIP_APP image."
+85881040: "See dealer! Fake ABL image."
+
+This proves:
+- GM's update system accepts packages with dummy ECU files
+- The manifest script controls execution, not file contents
+- This package is a TEMPLATE for custom update creation
+
+Manifest Script (data_wipe_update/85874101.mnf):
+```
+assert(ui_print("MY22 Dummy package generated by SWUpdate Team"));
+assert(ui_print("Copy status file..."));
+assert(gmext.copy_file("127","85881048","/update_cache/update/status"));
+assert(ui_print("Show progress bar..."));
+assert(gmext.show_progress("127","1","100"));
+assert(ui_print("Formating data partition..."));
+assert(format("f2fs","EMMC","/dev/block/vda26","0","/data"));
+assert(ui_print("Update Complete"));
+```
+
+11.4 DELIVERY MANIFEST SECURITY FLAGS
+-------------------------------------
+From delivery_manifest.csv:
+- "Bypass P/N & Module ID Check" = TRUE for ALL components
+- Sign Types: VIP_APPLICATION, HOST_OS_IMAGE, ANDROID_BOOT_KERNEL, etc.
+- Signing Attribute: VBMETA_BUNDLE for system/vendor/product
+
+11.5 SIGNATURE VERIFICATION
+---------------------------
+Certificate: GM Code Signature Server (GM NA INFOTAINMENT)
+Algorithm: SHA256 with RSA Encryption
+Validity: 2014-02-15 to 2064-02-03 (50-year cert!)
+
+Each component signed individually:
+```
+-----BEGIN SHA256 SW PN 85881043-----
+c79e+PzaTN5nFx...
+-----END SHA256 SW PN 85881043-----
+
+-----BEGIN sha256WithRSAEncryption SW PN 85881043-----
+lQQXniioO3G5nCMeA6RnGB0GHap...
+-----END sha256WithRSAEncryption SW PN 85881043-----
+```
+
+11.6 EXPLOITATION SCENARIOS
+---------------------------
+
+SCENARIO A: Signature Bypass via EEPROM
+If an EEPROM flag disables signature verification:
+1. Create modified .mnf with custom script
+2. Use gmext.copy_file() to write shell scripts to /system
+3. Use gmext.write_emmc_image() for modified boot.img
+4. Flash package via USB update
+
+SCENARIO B: Manifest Script Injection
+If manifest parser has vulnerabilities:
+1. Craft malformed .mnf with injected commands
+2. Bypass signature check through parsing bug
+3. Execute arbitrary gmext commands
+
+SCENARIO C: Post-Verification File Swap
+If files can be modified after signature check:
+1. Let signature verification pass on valid package
+2. Swap payload files before extraction
+3. Modified images get written to partitions
+
+11.7 CUSTOM UPDATE PACKAGE CREATION
+-----------------------------------
+Required components for malicious package:
+
+1. Modified boot.img with:
+   - ro.debuggable=1
+   - androidboot.selinux=permissive
+   - Custom init modifications
+
+2. Modified vbmeta.img with:
+   - AVB_VBMETA_IMAGE_FLAGS_VERIFICATION_DISABLED
+
+3. Manifest script:
+   assert(gmext.write_emmc_image("23","custom_boot","/dev/block/by-name/boot"));
+   assert(gmext.extract_emmc_image("56","custom_vbmeta","/dev/block/by-name/vbmeta"));
+   assert(gmext.switch_slot());
+
+4. Signature bypass (EEPROM flag or vulnerability)
+
+11.8 EEPROM FLAGS TO INVESTIGATE
+--------------------------------
+Potential OTA security control flags:
+
+| Address | Current | Suspected Purpose                    |
+|---------|---------|--------------------------------------|
+| 0x0B40  | 0x00    | Debug mode / signature bypass        |
+| 0x0B60  | varies  | OTA validation control               |
+| 0x0020  | 0x00    | Unknown security feature             |
+
+If setting these to 0xFF disables signature verification:
+- Package signing becomes optional
+- Arbitrary code execution via OTA
+- Full system compromise possible
+
+================================================================================
+12. CAN BUS / UDS DIAGNOSTIC ATTACK SURFACE
+================================================================================
+
+12.1 UDS PROTOCOL IMPLEMENTATION
+--------------------------------
+The VIP MCU implements full UDS (Unified Diagnostic Services) stack:
+
+| UDS Service | Code | Implementation Status |
+|-------------|------|----------------------|
+| Request Download | 0x34 | WAIT_FOR_SERVICE_$34 |
+| Transfer Data | 0x36 | WAIT_FOR_SERVICE_$36 |
+| Request Transfer Exit | 0x37 | WAIT_FOR_SERVICE_$37 |
+| Routine Control | 0x31 | Routine Control %04X |
+| Read DID | 0x22 | DID Read request |
+| Write DID | 0x2E | DID Write request |
+| Security Access | 0x27 | PROTOKEY seed/key |
+| Session Control | 0x10 | Extended Session |
+
+12.2 DPS (DEVELOPMENT PROGRAMMING SYSTEM) SUPPORT
+-------------------------------------------------
+VIP firmware contains DPS session handling:
+- "DpsSessionAborted failed queuing SPI-IPC message"
+- "StartDpsSession failed queuing SPI-IPC message"
+- "---------DPS Started and Sync will be Triggered-------"
+
+This suggests DPS tools (used by engineers) can:
+- Bypass normal security checks
+- Enter development/programming modes
+- Potentially disable SELinux or signature verification
+
+12.3 SPI-IPC COMMUNICATION CHANNELS
+-----------------------------------
+VIP <-> SoC communication uses dedicated IPC channels:
+
+| Channel | Purpose |
+|---------|---------|
+| SERIAL_IPC_CONTROL_CHANNEL | System control commands |
+| SERIAL_IPC_OBD_CHANNEL | OBD diagnostic passthrough |
+| SERIAL_IPC_PROTO_KEY_CHANNEL | ProtoKey/ADB control |
+| SERIAL_IPC_DIAG_CHANNEL | Diagnostic commands |
+| DATE_TIME IPC Channel | Time synchronization |
+
+12.4 CUSTOMER PROGRAMMING IDS (CPIDs)
+-------------------------------------
+Factory reset related CPIDs found:
+- RemoteReflashProgrammingCPID_00 - Programming initiation
+- RemoteReflashProgrammingCPID_1C (0x1C) - Programming control
+
+Events:
+- evRemoteReflashProgrammingBegin
+- evRemoteReflashProgrammingEnd
+- RemoteReflashProgrammingComplete
+- evREMOTE_REFLASH_PROGRAMMING_COMPLETE_TIMEOUT
+
+12.5 VIN AND THEFT LOCK STATES
+------------------------------
+VIP manages anti-theft and VIN states:
+- TheftLocked - Module locked to vehicle
+- NoVIN - No VIN programmed (virgin state)
+- cal_vin_relearn_en - VIN relearn enabled flag in EEPROM
+- evTheftlockedCleared - Theft lock cleared event
+- evNoVINFlagClear - VIN flag cleared event
+
+A factory reset via SPS likely:
+1. Clears TheftLocked state
+2. Clears VIN association
+3. Formats /data partition
+4. Resets EEPROM calibrations
+
+12.6 DIAGNOSTIC SERVICE ARCHITECTURE
+------------------------------------
+Android-side diagnostic processing:
+
+Native Daemon:
+  diagnosticsd (root, PID 598)
+  SELinux: gm_diagnosticsd domain
+
+Binder Interface:
+  gm.diagnostics_service.IDiagnosticsService
+  com.gm.server.diagnostics_service.DiagnosticsService
+
+HAL Clients (can send diagnostics):
+- gm_update_engine
+- gm_protokey
+- gm_vehiclepanel
+- camerad
+
+12.7 CAN ARBITRATION IDS OBSERVED
+---------------------------------
+Diagnostic message IDs from VIP firmware:
+0x911411, 0x911413 - Unknown
+0x923600 - Unknown
+0x93A711, 0x93A713 - Unknown
+0x996011-0x996413 - Likely diagnostic responses
+0x9A1B00-0x9A6286 - Likely routine controls
+0xC07B00-0xC25700 - Likely DID operations
+0xD00100-0xD96784 - Likely programming/flash
+
+12.8 FACTORY RESET ATTACK VECTOR
+--------------------------------
+Based on GM Service Bulletin (SPS Factory Reset):
+
+1. CAN Bus Message Flow:
+   Diagnostic Tool → CAN Bus → VIP (0x7E0?) → UDS Handler
+
+2. Expected Sequence:
+   a. Diagnostic Session Control (0x10 03) - Extended Session
+   b. Security Access (0x27) - Seed/Key exchange
+   c. Routine Control (0x31) - Factory reset routine ID
+   d. VIP forwards to SoC via SPI-IPC
+   e. diagnosticsd executes wipe
+
+3. Without ACDelco Code:
+   - DPS tools may bypass security access
+   - EEPROM flags may disable security checks
+   - Brute-force seed/key algorithm
+
+12.9 DPS/CANBUS EXPLOITATION PATH
+---------------------------------
+If DPS mode can be enabled:
+
+Option A: EEPROM-based DPS Enable
+1. Identify DPS enable flag in EEPROM (0x0B40 region?)
+2. Set flag to enable development mode
+3. Use standard CAN diagnostic tool
+4. Send factory reset routine without security access
+
+Option B: CAN Bus Seed/Key Bypass
+1. Capture seed/key exchanges from legitimate sessions
+2. Reverse engineer GM's security algorithm
+3. Generate valid keys for arbitrary seeds
+4. Send factory reset routine with valid auth
+
+Option C: SPI-IPC Injection (from Android)
+1. With SELinux permissive (Y177 or bypassed)
+2. Access SPI-IPC interface directly
+3. Inject diagnostic commands to VIP
+4. Trigger factory reset bypassing CAN security
+
+12.10 RECOMMENDED CAN BUS TESTING
+---------------------------------
+With module connected to vehicle or CAN simulator:
+
+1. Identify diagnostic request ID:
+   - Try 0x7E0 (standard GM infotainment)
+   - Monitor for responses on 0x7E8
+
+2. Enumerate supported services:
+   ```
+   Send: 7E0 02 10 01 (Default Session)
+   Send: 7E0 02 10 03 (Extended Session)
+   Send: 7E0 02 3E 00 (Tester Present)
+   Send: 7E0 03 22 F1 90 (Read VIN DID)
+   ```
+
+3. Test DPS session:
+   - Monitor for DPS-specific message patterns
+   - Try engineering tool arbitration IDs
+
+4. Routine Control Enumeration:
+   ```
+   Send: 7E0 04 31 01 XX XX (Start Routine)
+   Where XX XX = routine ID to test
+   ```
+
+================================================================================
+13. EEPROM VIN MANIPULATION - VIRGIN STATE ATTACK
+================================================================================
+
+13.1 VIN STORAGE LOCATIONS
+--------------------------
+| Address | Length | Frame | Content | Purpose |
+|---------|--------|-------|---------|---------|
+| 0x05C0 | 19 | 0x5A | Full VIN | Primary VIN storage |
+| 0x14A0 | 12 | 0x5A | Last 8 + suffix | Backup/validation |
+
+Current VIN: XXXXXXXXXXXXXXXXX
+
+Format at 0x05C0:
+  5A XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX 5A
+  ^                     VIN (17 chars)                    ^
+  Frame                                                Frame
+
+Format at 0x14A0:
+  5A 52 46 31 30 32 31 34 33 20 41 00 5A
+  ^  R  F  1  0  2  1  4  3 SP  A     ^
+  Frame    Last 8 chars    Suffix  Frame
+
+13.2 VIP STATE MACHINE - VIN HANDLING
+-------------------------------------
+From VIP firmware strings:
+
+States:
+- "NoVIN Active" - No VIN programmed (virgin state)
+- "Theftlocked Active" - Anti-theft engaged
+
+Events:
+- evNoVINFlagClear - Clear NoVIN state (VIN learned)
+- evTheftlockedCleared - Clear theft lock
+
+EEPROM Calibration:
+- cal_vin_relearn_en - VIN relearn enable flag
+
+Log message:
+- "[SS_LOG] VIN Recvd %02X %02X %02X %02X %02X %02X %02X %02X"
+
+13.3 VIRGIN STATE HYPOTHESIS
+----------------------------
+Setting VIN to all 0xFF should trigger NoVIN state:
+
+1. VIP reads VIN from EEPROM (0x05C0)
+2. All 0xFF detected = no valid VIN
+3. VIP enters "NoVIN Active" state
+4. Module awaits VIN programming from CAN
+5. Theft lock may be bypassed
+6. Different boot behavior possible (setup mode?)
+
+POTENTIAL EFFECTS:
+- Module installable in different vehicle
+- Theft protection disabled
+- Factory reset behavior triggered
+- Possibly SELinux permissive for initial setup
+
+13.4 VIN WIPE TEST PROCEDURE
+----------------------------
+EEPROM Modification:
+
+Location 0x05C0 (Primary VIN):
+  Before: 5A XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX 5A
+  After:  FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+
+Location 0x14A0 (Backup VIN):
+  Before: 5A 52 46 31 30 32 31 34 33 20 41 00 5A
+  After:  FF FF FF FF FF FF FF FF FF FF FF FF FF
+
+Steps:
+1. Dump current EEPROM (backup)
+2. Modify VIN bytes to 0xFF
+3. Recalculate CRCs (if required)
+4. Flash modified EEPROM
+5. Power cycle module
+6. Observe behavior:
+   - Does it enter setup/virgin mode?
+   - Is theft lock cleared?
+   - Any changes to SELinux state?
+   - Factory reset triggered?
+
+13.5 RELATED EEPROM FLAGS
+-------------------------
+VIN-adjacent security flags to investigate:
+
+| Address | Current | Hypothesized Function |
+|---------|---------|----------------------|
+| 0x0440 | 5A FF 5A | ADB Enable (confirmed) |
+| 0x0A80 | 5A FF 5A | Backup ADB (confirmed) |
+| 0x0B40 | 69 00 69 | Debug/Dev mode? |
+| 0x05C0 | VIN | VIN storage |
+| 0x14A0 | Partial VIN | VIN validation |
+
+Theory: Wiping VIN + enabling debug flag (0x0B40=0xFF)
+        may create "factory development" state.
+
+13.6 RISK ASSESSMENT
+--------------------
+Low Risk: VIN can be reprogrammed via CAN if module enters virgin state
+Medium Risk: May require dealer tool to reprogram VIN
+High Risk: May brick module if VIP requires valid VIN for boot
+
+RECOMMENDATION: Test on bricked Y177 module first (already non-functional).
+
+13.7 CAN BUS VIN PROGRAMMING
+----------------------------
+If module enters NoVIN state, VIN programming likely uses:
+
+1. UDS Service: Write DID (0x2E)
+2. DID: 0xF190 (Standard VIN DID)
+3. Sequence:
+   - Extended Session (0x10 03)
+   - Security Access (0x27)
+   - Write DID (0x2E F1 90 + 17 byte VIN)
+
+Or GM proprietary method via RemoteReflashProgramming CPIDs.
+
+================================================================================
+END OF SECURITY ASSESSMENT REPORT
+================================================================================
+
+================================================================================
+14. TEST EEPROM BINARIES
+================================================================================
+
+14.1 BRICKED MODULE TEST EEPROM
+-------------------------------
+File: /EEPROM/gm_csm/BRICKED_Y177_SN<SN_REDACTED>_ADB_VIN_WIPED.bin
+Source: gm_csm_debugging.bin (Bricked Y177 Module)
+Module SN: <SN_REDACTED>
+Original Date: 27.02.2023
+
+Modifications Applied:
+| Address | Before | After | Change |
+|---------|--------|-------|--------|
+| 0x0440 | C3 00 C3 | C3 FF C3 | ADB enabled (C3 frame) |
+| 0x0A80 | F0 00 F0 | F0 FF F0 | ADB backup enabled (F0 frame) |
+| 0x05C0 | 69+VIN+69 | FF...FF | VIN wiped (19 bytes) |
+| 0x14A0 | 69+partial+69 | FF...FF | VIN backup wiped (13 bytes) |
+
+Frame bytes preserved per Y177 firmware expectations.
+
+14.2 EEPROM FILE IDENTIFICATION
+-------------------------------
+| File | Module SN | Firmware | Status |
+|------|-----------|----------|--------|
+| old/gm_csm_debugging.bin | <SN_REDACTED> | Y177 | BRICKED (original) |
+| old/gm_csm_stock.bin | <SN_REDACTED> | Y181 | Working (stock) |
+| old/gm_csm_stock_modified.bin | <SN_REDACTED> | Y181 | Working (modified) |
+| Y181/ADB_enabled.bin | <SN_REDACTED> | Y181 | Working (ADB on) |
+| BRICKED_Y177_SN<SN_REDACTED>_ADB_VIN_WIPED.bin | <SN_REDACTED> | Y177 | TEST IMAGE |
+
+================================================================================
+15. DEEP PARTITION ANALYSIS - NEW FINDINGS
+================================================================================
+
+15.1 SELINUX ENFORCEMENT MECHANISM - ROOT CAUSE
+------------------------------------------------
+CRITICAL DISCOVERY: Boot.img cmdline contains DUPLICATE settings:
+
+Early in cmdline:   enforcing=0 androidboot.selinux=permissive
+Later in cmdline:   enforcing=1 androidboot.selinux=enforcing buildvariant=user
+
+Linux kernel behavior: When a parameter appears multiple times, the LAST value wins.
+Result: Both Y177 and Y181 boot into ENFORCING mode by design.
+
+Boot Image Comparison:
+| Component | Y177 | Y181 | Finding |
+|-----------|------|------|---------|
+| cmdline | enforcing=1 last | enforcing=1 last | IDENTICAL |
+| init binary | MD5: 7786726c... | MD5: 7786726c... | IDENTICAL |
+| sepolicy | MD5: e9ebb7d8... | MD5: 6b2045bf... | DIFFERENT |
+| ramdisk size | 46,373,888 | 46,373,888 | Same |
+
+IMPLICATION: The SELinux mode is NOT controlled by EEPROM or GM software.
+It is hardcoded in the kernel cmdline. To achieve permissive:
+  Option 1: Modify boot.img cmdline (requires signed image or AVB bypass)
+  Option 2: Find kernel vulnerability to change runtime mode
+  Option 3: Policy bypass through sepolicy differences
+
+15.2 ADB DISABLE ON REBOOT MECHANISM
+------------------------------------
+Root Cause Analysis:
+
+| Layer | Control | Setting | Effect |
+|-------|---------|---------|--------|
+| Ramdisk | persist.sys.usb.config | none | USB disabled at boot |
+| Build Props | ro.debuggable | 0 | No auto-ADB enable |
+| init.rc | on property:ro.debuggable=1 | Never triggers | Would enable ADB |
+| VIP/EEPROM | 0x0440/0x0A80 | ICUSB flag | Hardware USB enable |
+
+Boot Sequence:
+1. Kernel boots with persist.sys.usb.config=none (from ramdisk)
+2. This property is READ from ramdisk, overwriting any saved value
+3. User build (ro.debuggable=0) skips auto-ADB trigger
+4. ADB remains disabled until manually enabled via Developer Options
+5. On reboot, step 1 repeats
+
+WORKAROUND OPTIONS:
+a. Modify ramdisk to set persist.sys.usb.config=adb (requires boot.img mod)
+b. Enable ADB via Developer Options, hope it persists (doesn't work)
+c. Use EEPROM ICUSB flag to enable hardware-level USB access
+
+15.3 WIFI ADB BLOCKED - COMPILE-TIME RESTRICTION
+-------------------------------------------------
+Captured Open Ports (no 5555):
+| Port | Binding | Service |
+|------|---------|---------|
+| 7000 | 0.0.0.0 | Unknown |
+| 6363 | 0.0.0.0 | Unknown |
+| 49156 | 0.0.0.0 | Unknown |
+| 53 | 127.0.0.1, 192.168.5.1 | DNS |
+
+adbd Binary Analysis:
+  String found: "adbd does not support arbitrary tcp connections"
+
+This indicates GM compiled adbd WITHOUT TCP/WiFi ADB support.
+This is an intentional automotive security hardening measure.
+
+WiFi ADB is PERMANENTLY DISABLED at compile time - no runtime workaround.
+
+15.4 GHS INTEGRITY HYPERVISOR DEEP ANALYSIS
+--------------------------------------------
+Hypervisor Identification:
+  OS: INTEGRITY IoT 2020.18.19
+  Vendor: Green Hills Software
+  Build: /home/mal/gm_release/MY22-026/final/iot/
+
+Key Components:
+| Module | Function |
+|--------|----------|
+| vmm.c | Virtual Machine Monitor core |
+| bootargs_iodev.c | Android boot argument device |
+| trusty/keymaster | TEE key management |
+| gipc | GHS Inter-Process Communication |
+| virtio | Virtual device I/O |
+
+VMM Functions Found:
+- VMM_GetObject, VMM_InitVMDomain
+- ReadGuestMemory, WriteGuestMemory (guest<->host memory)
+- VMM_SetVirtioBufferAddr (virtio ring handling)
+- HandleBlkInOut, HandleNet (virtio device ops)
+- DirectCopyIntoVAS (address space copy)
+
+TEE Integration:
+- com.android.trusty.keymaster
+- com.android.trusty.storage.client.tp
+- keymaster_ipc.cpp error handling
+
+Android Lifecycle Control:
+- "Lost Android SoH - rebooting" (health monitoring)
+- "Android failed to boot (count=%lu)" (boot failure tracking)
+- "Disabling Android client, invalid message size" (IPC validation)
+
+15.5 HYPERVISOR ESCAPE VECTOR ANALYSIS
+--------------------------------------
+ATTACK SURFACE: Android Guest → INTEGRITY Host
+
+| Vector | Component | Mechanism | Risk Level |
+|--------|-----------|-----------|------------|
+| VirtIO Ring | VMM_SetVirtioBufferAddr | Malformed descriptors | HIGH |
+| Guest Memory | ReadGuestMemory/WriteGuestMemory | Bounds bypass | HIGH |
+| IPC Messages | GIPC cache, "invalid message size" | Format string/overflow | MEDIUM |
+| PCI Passthrough | Passthru_PciDeviceBindings | DMA attacks | HIGH |
+| TEE Storage | storage_client | Path traversal | MEDIUM |
+| Boot Args | bootargs_IODeviceInit | Cmdline injection | LOW |
+| HECI | MEI interface | Intel ME exploits | MEDIUM |
+
+Detailed Attack Vectors:
+
+1. VIRTIO BUFFER OVERFLOW
+   - HandleBlkInOut processes block I/O requests
+   - If ring buffer bounds not validated, write beyond guest memory
+   - Target: Corrupt hypervisor heap/stack
+
+2. GUEST MEMORY BOUNDS BYPASS
+   - ReadGuestMemory/WriteGuestMemory translate addresses
+   - If translation not properly validated, access host memory
+   - Target: Read hypervisor secrets, write code
+
+3. GIPC MESSAGE INJECTION
+   - IPC messages cached between Android and VIP
+   - Size check exists: "invalid message size of %u bytes"
+   - Target: Trigger parsing vulnerabilities in handler
+
+4. PCI/DMA ATTACK
+   - Passthru_PciDeviceBindings passes devices to guest
+   - DMA-capable devices can read/write physical memory
+   - Target: VT-d/IOMMU bypass, read host memory
+
+5. TEE ESCAPE
+   - Trusty storage client manages secure storage
+   - Path traversal in file operations
+   - Target: Access keymaster secrets, modify secure data
+
+Error Messages Indicating Validation:
+- "Invalid register count"
+- "Invalid memory map"
+- "VMCS memory type is wrong"
+- "Got IPC msg on invalid channel"
+
+EXPLOITATION DIFFICULTY: HIGH
+- GHS INTEGRITY is certified for safety-critical systems
+- Extensive input validation observed
+- Hardware isolation (VT-x, VT-d) in use
+- However, no system is 100% secure
+
+15.6 ATTACK RECOMMENDATIONS
+---------------------------
+PRIORITY ORDER:
+
+1. Y177 DOWNGRADE (Lowest Barrier)
+   - Version check disabled in manifest
+   - If AVB rollback protection not enforced
+   - Restores potentially weaker sepolicy
+
+2. SEPOLICY DIFF ANALYSIS (Medium Effort)
+   - Y177 sepolicy: e9ebb7d89bf887fd499e9e3966ea19b2
+   - Y181 sepolicy: 6b2045bf6983b18d73929f41cf5d24a1
+   - Extract and compare policy rules
+   - Identify removed/added permissions
+
+3. VIP FIRMWARE REVERSE ENGINEERING (High Effort)
+   - Identify exact EEPROM CRC algorithm
+   - Find additional security flags
+   - Understand PROTOKEY seed/key algorithm
+
+4. HYPERVISOR VULNERABILITY RESEARCH (Expert Level)
+   - Requires deep GHS INTEGRITY knowledge
+   - Focus on virtio and IPC interfaces
+   - Look for CVEs in INTEGRITY IoT 2020.x
+
+================================================================================
+16. VIP UART CONSOLE ANALYSIS
+================================================================================
+
+16.1 UART DISCOVERY
+-------------------
+Location: JTAG-like debug connector on VIP board
+Captured: /EEPROM/old_VIP/side_B_K1_P1.txt
+Firmware Era: Pre-Y177, approximately Y16X (older firmware before ADB exploit discovery)
+Configuration: 115200 baud, 8N1
+Status: TX only (RX trace likely removed or not bonded)
+
+NOTE: This capture predates the Y177/Y181 firmware versions. The module was
+operational at time of capture, before becoming bricked. VIP firmware behavior
+remains consistent across Android versions as it's a separate MCU.
+
+16.2 VIP FIRMWARE IDENTIFICATION
+--------------------------------
+From UART boot log:
+  VIP Application Version: 2B.174.4.1
+  Build Date: 24Mar22-0256
+  Bolo Version: B2.9C.01.01 (23Jul28-1212)
+  ARXML Version: 22.22.158
+  HwVariant: 56, HwSubVariant: 0
+  Boot Counter: 2452 (at time of capture)
+
+16.3 IPC COMMUNICATION PROTOCOL
+-------------------------------
+| Parameter | Value |
+|-----------|-------|
+| IPC Version | 4.1.0 |
+| API Version | 0404 |
+| Protocol | HDLC |
+| Window Size | 5 |
+| IFRAME Timeout | 50ms |
+| UFRAME Timeout | 20ms |
+
+IPC Channels Observed:
+| Channel | Purpose |
+|---------|---------|
+| ch:2 | Animation control |
+| ch:3 | Unknown |
+| ch:4 | Ethernet status |
+| ch:5 | Unknown |
+| ch:7 | Unknown |
+| ch:8 | Calibration |
+| ch:9 | Unknown |
+| ch:10 | Unknown |
+| ch:12 | Flow control |
+| ch:13 | HMI Ready |
+| ch:14 | Boot reason |
+| ch:16 | Animation |
+| ch:17-20 | Various |
+
+16.4 CALIBRATION VALUES LOGGED AT BOOT
+--------------------------------------
+| Calibration Variable | Value | Purpose |
+|---------------------|-------|---------|
+| cal_vin_relearn_en | 1 | VIN relearn enabled |
+| cal_critical_state_of_charge_ignore | 1 | Battery SOC override |
+| cal_local_infotainment_cancel_mode | 0 | Local cancel disabled |
+| cal_background_sleep_timeout_sec | 10 | Background sleep timer |
+| cal_sleep_fault_timeout_sec | 900 | Sleep fault timeout |
+| cal_veh_initiated_local_infotainment_timeout_sec | 600 | Vehicle timeout |
+| cal_user_initiated_local_infotainment_timeout_sec | 600 | User timeout |
+| cal_startup_delay_wait_timeout_msec | 200 | Startup delay |
+| cal_startup_fault_timeout_sec | 15 | Startup fault timeout |
+| cal_local_valet_timeout_sec | 30 | Valet mode timeout |
+| cal_master_offmode_active_timeout_min | 35 | Off-mode timeout |
+| cal_update_available_local_infotainment_timeout_sec | 60 | Update timeout |
+| cal_cluster_animation_ignore | 0 | Cluster animation |
+| cal_cluster_hmiready_ignore | 0 | Cluster HMI ready |
+| cal_rsi_animation_ignore | 1 | RSI animation |
+| cal_rsi_hmiready_ignore | 1 | RSI HMI ready |
+| cal_disabled_state_offmode_timeout_sec | 30 | Disabled state timeout |
+| cal_suspend_to_ram_en | 1 | Suspend to RAM enabled |
+| cal_maximum_flush_fault_time | 36000 | Max flush time |
+| cal_flush_limit_time | 24 | Flush limit |
+| cal_str_min_temp_threshold | -10 | S2R min temp |
+| cal_str_mode_soc_min_threshold_1 | 90 | S2R SOC threshold 1 |
+| cal_str_mode_soc_min_threshold_2 | 75 | S2R SOC threshold 2 |
+| cal_str_mode_soc_min_threshold_3 | 60 | S2R SOC threshold 3 |
+| cal_max_suspend_time_1 | 84 | Max suspend hours 1 |
+| cal_max_suspend_time_2 | 24 | Max suspend hours 2 |
+| cal_max_suspend_time_3 | 16 | Max suspend hours 3 |
+
+16.5 SBA (SECURE BOOT AUTHENTICATION) STATUS
+--------------------------------------------
+From UART log:
+  [SBAT] keyNBID = 0x0000
+  [SBAT] appNBID = 0x0001
+  [SBAT] ECU_ID: = 0x00 0x26 0x42 0x25 0x00 0x00 0x16 0x00 0x06 0x10 0x41 0x45 0x61 0x01 0x14 0xAC
+  [SBAT] First 10 bytes of SBAT = 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+  [SBAT] SbaTicketValidation validation failed: 0x0
+
+FINDING: SBA validation fails but boot continues - soft failure mode.
+
+16.6 DIDs TRANSMITTED VIA IPC
+-----------------------------
+| DID | Standard UDS Purpose |
+|-----|---------------------|
+| F1A0 | ECU Software Number |
+| F0F3 | Programming Date |
+| F190 | VIN |
+| F0B4 | ECU Manufacturing Date |
+| F1CB | ECU Hardware Number |
+| F1DB | ECU Calibration |
+| F1CC | ECU Programming Info |
+| F1DC | ECU Diagnostic Address |
+
+16.7 HARDWARE COMPONENTS DETECTED
+---------------------------------
+| Component | Status | Notes |
+|-----------|--------|-------|
+| LEO Firmware | 3.x.x | Switch controller |
+| ELMOS E522.40 | Present | Antenna/tuner IC |
+| UBLOX GPS | Not supported | Hardware variant |
+| Gyroscope | Not present | ID 0xFF |
+| Accelerometer | Not present | ID 0xFF |
+| Microphone 1 | CONFIG=1 | Enabled |
+| Microphone 2 | Enabled | Monitored |
+| External Amp | Present | AMPCAL=3 |
+
+16.8 POWER STATE MACHINE
+------------------------
+Power Levels (SoC boot stages):
+  Level 1 → Level 2 → Level 3 → Level 4 → StartupComplete
+
+System States:
+  Sleep (0x0) → AnimationInit (0x1) → HmiInit (0x2) →
+  HmiInactive (0x3) → Accessory (0x7) → On
+
+16.9 UART RX UNAVAILABILITY ANALYSIS
+------------------------------------
+Likely reasons RX was not functional:
+1. RX trace physically not bonded at factory (production security)
+2. UART configured as TX-only debug output in firmware
+3. Console requires specific bootloader interrupt sequence
+4. AND gate (74LVC08A) may be gating RX signals
+
+The TX output is useful for observing VIP behavior but cannot be used
+for command injection without locating and enabling the RX path.
+
+================================================================================
+17. PROTOKEY AND ICUSB SECURITY MECHANISM
+================================================================================
+
+17.1 PROTOKEY OPERATION CONFIRMED VIA UART
+------------------------------------------
+Key log entries from VIP boot:
+
+ICUSB Status (EEPROM flag read at boot):
+  [000158][I][PROTOKEY] ICUSB module enabled
+
+Seed Transmission (every ~1 second):
+  [PROTOKEY] No Seed 0 received or cached
+  [PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+  [PROTOKEY] No Seed 1 received or cached
+  [PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+  [J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+
+17.2 PROTOKEY STATUS CODES
+--------------------------
+| Status | Meaning | Seeds | ADB Access |
+|--------|---------|-------|------------|
+| 1 | Valid | From BCM/GMLAN | Requires GM Secure Client |
+| 3 | Empty | All zeros | Unsecured (if ICUSB enabled) |
+
+17.3 SEED SOURCES
+-----------------
+BCM provides seeds via GMLAN (CAN bus):
+  [PROTOKEY] Receives invalid seed [1] from BCM  ← No BCM connected
+  [PROTOKEY] Receives invalid seed [2] from BCM
+
+When key fob present (vehicle connected):
+  [PROTOKEY] Cached Seed 1 value is 10 7d 9e 16 90 67 ed 8e Checksum is 233964468
+  [PROTOKEY] Cached Seed 2 value is 1a 6a 09 41 a7 37 f7 67 Checksum is 181338891
+  [PROTOKEY] Seed 1 taken from GMLAN
+  [J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 1
+
+17.4 ICUSB FLAG INTERPRETATION
+------------------------------
+CRITICAL CLARIFICATION: "ICUSB module enabled" appears in STOCK configuration.
+
+| EEPROM State | ICUSB Message | Security Behavior |
+|--------------|---------------|-------------------|
+| Stock (0xC3 00 C3) | "ICUSB module enabled" | Requires GM Secure Client |
+| Modified (0x5A FF 5A) | "ICUSB module enabled" | Unsecured ADB allowed |
+
+The EEPROM modification does NOT change whether ICUSB is "enabled" - it changes
+whether the PROTOKEY seed validation is REQUIRED for ADB access.
+
+17.5 SECURITY BYPASS MECHANISM
+------------------------------
+Normal flow (GM Secure Client required):
+  1. VIP reads ICUSB flag from EEPROM
+  2. VIP receives seeds from BCM via GMLAN
+  3. VIP transmits seeds to SoC via IPC (status=1)
+  4. SoC/gm_protokey daemon requires valid GM Secure Client authentication
+  5. ADB connection must authenticate with GM's RSA keys
+
+Bypassed flow (EEPROM modified):
+  1. VIP reads modified ICUSB flag from EEPROM
+  2. VIP may or may not receive seeds (doesn't matter)
+  3. VIP transmits to SoC, but bypass flag is set
+  4. SoC/gm_protokey daemon allows unsecured connections
+  5. ADB connection works without authentication
+
+17.6 VIP FIRMWARE PROTOKEY STRINGS
+----------------------------------
+From firmware analysis:
+  "[PROTOKEY] ICUSB module enabled"
+  "[PROTOKEY] ICUSB module disabled"
+  "[AME_DIAG] ICUSB enabled and no key provisioned."
+  "[J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is %d"
+
+The "no key provisioned" message suggests a specific code path where ICUSB
+is enabled but key/seed validation is intentionally skipped.
+
+================================================================================
+18. EEPROM SECURITY BYPASS - TRUST CHAIN ANALYSIS
+================================================================================
+
+18.1 COMPLETE TRUST CHAIN
+-------------------------
++-------------+    +-------------+    +-------------+    +-------------+
+|   EEPROM    | -> |   VIP MCU   | -> |   HostOS    | -> |   Android   |
+|   M24C64    |    |  RH850/P1x  |    |  INTEGRITY  |    |    AAOS     |
++-------------+    +-------------+    +-------------+    +-------------+
+| ICUSB flag  |    | PROTOKEY    |    | IPC Forward |    | gm_protokey |
+| 0x0440      |    | module      |    | (no verify) |    | daemon      |
++-------------+    +-------------+    +-------------+    +-------------+
+
+18.2 VULNERABILITY AT EACH LAYER
+--------------------------------
+| Layer | Component | Vulnerability |
+|-------|-----------|---------------|
+| EEPROM | M24C64 | No encryption, no authentication |
+| VIP | PROTOKEY | Trusts EEPROM blindly, no tamper detection |
+| HostOS | IPC | Forwards VIP data without verification |
+| Android | gm_protokey | Trusts IPC data, grants access based on flag |
+
+18.3 WHY THE BYPASS WORKS
+-------------------------
+1. EEPROM is physically accessible (I2C, standard pinout)
+2. EEPROM contents are NOT cryptographically signed
+3. VIP firmware does NOT verify EEPROM integrity (only CRC for corruption)
+4. VIP transmits ICUSB status to SoC without authentication
+5. HostOS passes IPC messages without content verification
+6. Android gm_protokey trusts the flag value from VIP
+
+18.4 ATTACK REQUIREMENTS
+------------------------
+Physical access to module for EEPROM modification:
+- Remove module from vehicle
+- Desolder or clip onto EEPROM (M24C64)
+- Read/modify/write using programmer (XGecu T48, etc.)
+- Reinstall module
+
+No special tools needed:
+- Standard I2C EEPROM programmer
+- No cryptographic keys required
+- No firmware exploits needed
+- Works on any module (Y177, Y181, etc.)
+
+18.5 SECURITY DESIGN FLAW
+-------------------------
+The fundamental flaw is trusting configuration data from an unprotected
+external storage device. Proper design would:
+- Store security flags in OTP (One-Time Programmable) memory
+- Cryptographically sign EEPROM contents
+- Verify signatures before trusting flags
+- Use secure element for sensitive configuration
+
+================================================================================
+19. COMPREHENSIVE EEPROM FLAG MAPPING
+================================================================================
+
+19.1 CONFIRMED FLAGS
+--------------------
+| Address | Frame | Stock | Modified | Effect | Status |
+|---------|-------|-------|----------|--------|--------|
+| 0x0440 | 0xC3→0x5A | C3 00 C3 | 5A FF 5A | ADB enable | CONFIRMED |
+| 0x0A80 | 0xFF→0x5A | FF FF FF | 5A FF 5A | ADB backup | CONFIRMED |
+
+19.2 VIN STORAGE (CONFIRMED)
+----------------------------
+| Address | Length | Frame | Purpose |
+|---------|--------|-------|---------|
+| 0x05C0 | 19 | 0x5A | Primary VIN (17 chars + framing) |
+| 0x14A0 | 13 | 0x5A | Backup VIN (last 8 + suffix) |
+
+19.3 SUSPECTED FLAGS (FROM VIP ANALYSIS)
+----------------------------------------
+| Address | Current | Frame | Hypothesis | Test Priority |
+|---------|---------|-------|------------|---------------|
+| 0x0B40 | 0x00 | 0x69 | Debug/Engineering mode | HIGH |
+| 0x0B41 | varies | 0x69 | SELinux control? | HIGH |
+| 0x0B60 | varies | 0xC3 | OTA validation | MEDIUM |
+| 0x0020 | 0x00 | ? | Unknown feature | LOW |
+
+19.4 CALIBRATION VARIABLES FROM VIP FIRMWARE
+--------------------------------------------
+Variables read from EEPROM/NVM at boot:
+
+Power Management:
+- cal_critical_state_of_charge_ignore
+- cal_background_sleep_timeout_sec
+- cal_sleep_fault_timeout_sec
+- cal_suspend_to_ram_en
+- cal_str_min_temp_threshold
+- cal_str_mode_soc_min_threshold_1/2/3
+- cal_max_suspend_time_1/2/3
+
+Infotainment Control:
+- cal_local_infotainment_cancel_mode
+- cal_veh_initiated_local_infotainment_timeout_sec
+- cal_user_initiated_local_infotainment_timeout_sec
+- cal_startup_delay_wait_timeout_msec
+- cal_startup_fault_timeout_sec
+- cal_infotainment_activity_timeout_sec
+
+Display/Animation:
+- cal_cluster_animation_ignore
+- cal_cluster_hmiready_ignore
+- cal_rsi_animation_ignore
+- cal_rsi_hmiready_ignore
+- cal_shutdown_animation_failsafe_timeout
+
+Vehicle Integration:
+- cal_vin_relearn_en
+- cal_local_valet_timeout_sec
+- cal_master_offmode_active_timeout_min
+- cal_rvc_present_status_Control
+
+Audio:
+- MICROPHONE_1_CONFIG
+- ENABLE_MICROPHONE_2
+- AmpCal values
+
+19.5 DID MAPPINGS (FROM IPC TRAFFIC)
+------------------------------------
+| DID | Purpose | Direction |
+|-----|---------|-----------|
+| F1A0 | ECU Software Number | Read |
+| F0F3 | Programming Date | Read |
+| F190 | VIN | Read/Write |
+| F0B4 | ECU Manufacturing Date | Read |
+| F1CB | ECU Hardware Number | Read |
+| F1DB | ECU Calibration Data | Read |
+| F1CC | ECU Programming Info | Read |
+| F1DC | ECU Diagnostic Address | Read |
+
+19.6 NVM BLOCKS IDENTIFIED
+--------------------------
+From VIP firmware:
+- NvMBlockDescriptor_Rte_Pim_PLC_BootCounter_PIM
+- NvMBlockDescriptor_Rte_Pim_PLC_Last_Boot_Reason_PIM
+- NvMBlockDescriptor_Rte_Pim_PLC_Unique_Boot_Counter_PIM
+- SS_LOG persistent data (checksum validated)
+
+19.7 FRAME BYTE PROTOCOL
+------------------------
+| Frame | Type | Purpose |
+|-------|------|---------|
+| 0x5A | Security | VIN, ICUSB, security flags |
+| 0x69 | Configuration | Feature toggles, settings |
+| 0xF0 | Data/String | Text data, identifiers |
+| 0xC3 | Calibration | Calibration values |
+
+Format: [FRAME] [DATA...] [FRAME]
+Example: 5A FF 5A = Security frame, value 0xFF
+
+================================================================================
+20. KERNEL CVE RESEARCH - LINUX 4.19.305
+================================================================================
+
+20.1 TARGET KERNEL IDENTIFICATION
+---------------------------------
+From Y181 boot.img:
+  Kernel: Linux 4.19.305
+  Build: July 22, 2025 (future date - likely toolchain issue)
+  Architecture: x86_64 (Intel Apollo Lake)
+
+20.2 APPLICABLE CVEs FOR PRIVILEGE ESCALATION
+---------------------------------------------
+| CVE | Name | Subsystem | Applicability | Risk |
+|-----|------|-----------|---------------|------|
+| CVE-2024-1086 | nf_tables Use-After-Free | Netfilter | HIGH - 4.19 affected | CRITICAL |
+| CVE-2019-2215 | Binder UAF | Binder IPC | MEDIUM - depends on config | HIGH |
+| CVE-2019-13272 | PTRACE_TRACEME | ptrace | MEDIUM - kernel config | HIGH |
+| CVE-2024-36971 | Route UAF | Networking | MEDIUM - 4.19 series | HIGH |
+
+20.3 CVEs NOT APPLICABLE
+------------------------
+| CVE | Name | Reason |
+|-----|------|--------|
+| CVE-2022-0847 | Dirty Pipe | Requires 5.8+, 4.19 NOT affected |
+| CVE-2021-22555 | Netfilter Heap OOB | Patched in 4.19.x LTS |
+| CVE-2020-0041 | Binder | Likely patched in July 2025 build |
+
+20.4 CVE-2024-1086 ANALYSIS (MOST PROMISING)
+--------------------------------------------
+Vulnerability: Use-after-free in nf_tables verdict handling
+Affected: Linux 3.15 through 6.7.1 (4.19.305 IN RANGE)
+Impact: Local privilege escalation to root
+Requirements:
+  - User namespace enabled (CAP_NET_ADMIN in netns)
+  - nf_tables module loaded
+  - SELinux may block exploitation
+
+Exploitation from ADB shell:
+1. Create user namespace (if permitted)
+2. Trigger UAF in nf_tables
+3. Heap spray to control freed object
+4. Execute arbitrary kernel code
+5. Disable SELinux, gain root
+
+BARRIER: SELinux enforcing mode blocks most exploitation steps.
+         Would work with Y177 (permissive) or after SELinux bypass.
+
+20.5 CVE-2019-2215 ANALYSIS
+---------------------------
+Vulnerability: Use-after-free in Binder driver
+Affected: Multiple Android kernels including some 4.19 variants
+Impact: Local privilege escalation
+Requirements:
+  - Access to binder device
+  - Specific race condition timing
+
+BARRIER: May be patched in July 2025 build.
+         SELinux restricts binder access from shell context.
+
+20.6 EXPLOITATION STRATEGY
+--------------------------
+1. FIRST: Achieve SELinux permissive (via Y177 downgrade or EEPROM flag)
+2. THEN: Attempt CVE-2024-1086 for kernel root
+3. RESULT: Full system compromise
+
+Without SELinux bypass, kernel exploits are significantly harder due to:
+- Domain transition restrictions
+- Capability restrictions
+- File access restrictions
+
+================================================================================
+21. GM OTA REMEDIATION ASSESSMENT
+================================================================================
+
+21.1 CAN GM FIX THIS VIA OTA?
+-----------------------------
+SHORT ANSWER: Partially yes, completely no.
+
+21.2 WHAT GM CAN FIX VIA OTA
+----------------------------
+| Component | Fixable | Method |
+|-----------|---------|--------|
+| Android gm_protokey | YES | App/service update |
+| SELinux policy | YES | Policy update |
+| HostOS IPC validation | MAYBE | Hypervisor update |
+| VIP firmware | YES | ECU update via OTA |
+| EEPROM contents | NO | Hardware, not flashable |
+| EEPROM hardware | NO | Physical chip |
+
+21.3 POTENTIAL SOFTWARE MITIGATIONS
+-----------------------------------
+GM could implement in VIP firmware update:
+
+1. EEPROM Integrity Verification
+   - Store hash of critical EEPROM regions in OTP/secure storage
+   - Verify hash at boot
+   - Refuse to boot if mismatch detected
+
+2. Cryptographic Signing
+   - Sign EEPROM contents with key stored in secure element
+   - Verify signature before trusting flags
+
+3. Runtime Tamper Detection
+   - Periodically re-read and verify EEPROM
+   - Alert if values change unexpectedly
+
+4. Flag Lockdown
+   - Move security-critical flags to OTP
+   - Ignore EEPROM values for ICUSB after update
+
+21.4 WHAT GM CANNOT FIX
+-----------------------
+1. Existing Modified Modules
+   - Users who already modified EEPROM keep access
+   - No way to force EEPROM restoration
+
+2. Physical Hardware Vulnerability
+   - EEPROM remains physically accessible
+   - I2C interface cannot be disabled
+   - Chip can always be desoldered and reprogrammed
+
+3. Downgrade to Vulnerable Firmware
+   - If user captures pre-fix firmware
+   - Can re-flash older VIP firmware
+   - Unless anti-rollback is enforced
+
+21.5 RECOMMENDED GM ACTIONS
+---------------------------
+1. Immediate: Update VIP firmware with EEPROM hash verification
+2. Medium-term: Move security flags to secure storage in new hardware
+3. Long-term: Redesign security architecture for future vehicles
+
+21.6 ATTACK PERSISTENCE
+-----------------------
+Even after GM OTA fix:
+- Attacker can block OTA updates
+- Attacker can re-modify EEPROM after update
+- Attacker can downgrade VIP firmware (if anti-rollback not enforced)
+- Physical access = persistent compromise
+
+================================================================================
+23. VIP ARCHITECTURE - RENESAS RH850 ANALYSIS
+================================================================================
+
+23.1 VIP PROCESSOR CONFIRMATION
+-------------------------------
+**YES, VIP is a Renesas RH850 Microcontroller**
+
+Evidence from VIP Bootloader (85056831):
+  - "RH850-CSIH" - Clocked Serial Interface High-speed (SPI)
+  - "RH850-IIC" - I2C Interface
+  - "BOLO" - BOot LOader prefix for bootloader functions
+
+Evidence from VIP UART Console:
+  - "STBC_WUF0WUF0" - RH850 Standby Control Wake-up Factor register
+  - "RESCTLRESF" - RH850 Reset Control/Reset Factor register
+  - "TAUJ0" - RH850 Timer Array Unit J registers
+  - HwVariant = 56, HwSubVariant = 0
+
+Physical Chip Marking (observed on board):
+  "TM 52176 3TC 2251"
+
+  | Marking | Interpretation |
+  |---------|----------------|
+  | TM | Custom/Masked ROM identifier (GM/Harman OEM part) |
+  | 52176 | GM/Harman custom part number (NOT standard R7Fxxxx) |
+  | 3TC | Package type or batch code |
+  | 2251 | Date code: Week 51 of 2022 |
+
+  NOTE: This is a custom masked ROM ordered by GM/Harman with proprietary
+  firmware pre-programmed. Standard Renesas RH850 markings use R7F701xxx
+  or abbreviated 10xxx/14xxx format. The TM prefix indicates OEM-specific
+  silicon with custom firmware mask.
+
+  PHYSICAL BOARD OBSERVATION: No Renesas-branded IC exists on the gminfo
+  motherboard. The TM 52176 is the only large IC (aside from Intel Atom
+  and eMMC) with appropriate size/pin count for an automotive MCU. This
+  confirms GM/Harman ordered fully "white label" custom silicon with
+  complete OEM rebranding - common for high-volume automotive contracts.
+
+23.2 PHYSICAL BOARD COMPONENT MAP
+---------------------------------
+Source: Annotated board photos (/pictures/gminfo_top.jpeg, gminfo_bottom.jpeg)
+Board P/N: 4050897 REV.R
+
+TOP SIDE (Intel/SoC):
++------------------------------------------------------------------+
+| Component              | Marking/Annotation        | Notes       |
+|------------------------|---------------------------|-------------|
+| Intel Atom SoC         | Intel Atom x7 A3960       | 1.9-2.4 GHz |
+|                        | SR2CM, E459202251         | Apollo Lake |
+| RAM (x4)               | Micron MT53E512M32D       | 2GB each    |
+|                        | 2YS77, 2DS-053            | 8GB total   |
+|                        |                           | LPDDR4      |
+| WiFi/BT Module         | Shielded, U.FL connectors | BCM43xx     |
+| Tuner/RF Module        | P/N:J76521D               | Shielded    |
+| eMMC Flash             | Large BGA, center-right   | 64GB        |
+| Board ID               | G071-4010-03MN            | PCB marking |
++------------------------------------------------------------------+
+
+BOTTOM SIDE (VIP/Renesas):
++------------------------------------------------------------------+
+| Component              | Marking/Annotation        | Function    |
+|------------------------|---------------------------|-------------|
+| VIP MCU (RH850)        | TM 52176                  | Vehicle     |
+|                        | 3TC 2251                  | Interface   |
+|                        | 15873                     | Processor   |
+| EEPROM                 | M24C64 (SOIC-8)           | 8KB I2C     |
+|                        | Adjacent to VIP           | Config/VIN  |
+| CAN Transceiver        | NXP TJA1044GT/3Z          | High-speed  |
+|                        |                           | CAN PHY     |
+| System Basis Chip      | NXP UJA1167ATK/FZ         | CAN+LIN+    |
+|                        | Automotive-Grade          | Regulator+  |
+|                        |                           | Watchdog    |
+| Debug Connector        | Card-edge, 30 contacts    | 15 per side |
+|                        | (12+3 large/small tooth)  | UART/JTAG   |
++------------------------------------------------------------------+
+
+CAN BUS SIGNAL PATH:
+  Vehicle CAN Bus → NXP TJA1044GT/3Z → TM52176 (RH850 VIP)
+                    (Physical Layer)    (Protocol Handler)
+                           ↓
+                    NXP UJA1167ATK/FZ
+                    (Power + Watchdog)
+
+23.3 VIP FIRMWARE IDENTIFICATION
+--------------------------------
+From delivery_manifest.csv:
+
+| Part Number | Component | Description |
+|-------------|-----------|-------------|
+| 86331656 | VIP_APP | VIP Application firmware (Module ID: 1) |
+| 85056831 | VIP_BOOT | VIP Bootloader / BOLO (Module ID: 71) |
+
+Firmware Versions (from UART):
+  VIP Application: 2B.174.4.1
+  Bolo Version: B2.9C.01.01 (23Jul28-1212)
+  ARXML Version: 22.22.158
+
+23.4 RH850 MCU ARCHITECTURE
+---------------------------
+The Renesas RH850 is an automotive-grade 32-bit microcontroller family:
+
+| Feature | Specification |
+|---------|---------------|
+| Architecture | V850 core (32-bit RISC) |
+| Speed | Up to 400 MHz |
+| Flash | 2-16 MB internal |
+| RAM | Up to 2 MB |
+| Interfaces | CAN, CAN-FD, LIN, SPI, I2C, UART |
+| Qualification | AEC-Q100 automotive grade |
+| Safety | ISO 26262 ASIL-D capable |
+
+Likely Variant: RH850/P1x-C series (based on features observed)
+- Multimedia/Infotainment focused
+- Multiple CAN channels (observed CAN5 in firmware)
+- High-speed SPI for SoC communication
+- I2C for EEPROM and sensor access
+
+23.5 VIP COMMUNICATION INTERFACES
+---------------------------------
++------------------+          +-----------------+          +------------------+
+|    Intel SoC     |<--SPI--->|   VIP (RH850)   |<--I2C--->|  EEPROM M24C64   |
+|  (Apollo Lake)   |   IPC    |                 |          |     (8KB)        |
++------------------+          +-----------------+          +------------------+
+                                     |
+                                     | CAN/GMLAN
+                                     v
+                              +-------------+
+                              |     BCM     |
+                              | (Body Ctrl) |
+                              +-------------+
+
+Interface Details:
+
+1. SPI-IPC (VIP ↔ SoC):
+   - RH850-CSIH peripheral
+   - HDLC protocol framing
+   - 20+ logical channels
+   - Bidirectional data, commands, status
+
+2. I2C/IIC (VIP ↔ EEPROM):
+   - RH850-IIC peripheral
+   - Standard I2C protocol
+   - EEPROM at address 0x50 (typical)
+   - 8KB storage (M24C64)
+
+3. CAN/GMLAN (VIP ↔ Vehicle):
+   - Multiple CAN channels (CAN5 observed)
+   - GMLAN for BCM communication
+   - PROTOKEY seeds from BCM
+   - Diagnostic communication (UDS)
+
+4. UART (Debug):
+   - 115200 baud, 8N1
+   - TX-only observed (RX disabled/removed)
+   - Debug output via JTAG-like header
+
+23.6 VIP-EEPROM DATA FLOW
+-------------------------
+Boot Sequence:
+
+1. VIP Power-On Reset
+   ↓
+2. VIP Bootloader (BOLO) initializes
+   ↓
+3. RH850-IIC peripheral initialized
+   ↓
+4. EEPROM read via I2C:
+   - Calibration values (cal_*)
+   - Security flags (ICUSB at 0x0440)
+   - VIN data (0x05C0)
+   - Configuration data
+   ↓
+5. VIP Application starts
+   ↓
+6. PROTOKEY module reads ICUSB flag
+   ↓
+7. IPC connection to SoC established
+   ↓
+8. PROTOKEY status sent to SoC
+
+EEPROM Access Pattern:
+```
+VIP reads EEPROM → Stores in RAM → Uses throughout operation
+                     ↓
+                 Sends to SoC via IPC
+                     ↓
+                 SoC acts on flags (gm_protokey daemon)
+```
+
+23.7 PROTOKEY-EEPROM-SOC RELATIONSHIP
+-------------------------------------
+Detailed ICUSB Flag Flow:
+
+1. EEPROM Address 0x0440:
+   Stock:    C3 00 C3 (Frame=0xC3, Value=0x00)
+   Modified: 5A FF 5A (Frame=0x5A, Value=0xFF)
+
+2. VIP Boot Process:
+   [PROTOKEY] → Reads ICUSB flag from EEPROM
+   [PROTOKEY] → If 0xFF: "ICUSB module enabled" + bypass mode
+   [PROTOKEY] → If 0x00: Normal security mode
+
+3. Seed Handling:
+   BCM → GMLAN → VIP → Cache seeds
+   VIP → Check ICUSB flag
+   VIP → Transmit to SoC via IPC:
+     - status=1: Valid seeds, require GM Secure Client
+     - status=3: Empty/bypass, allow unsecured access
+
+4. SoC (gm_protokey daemon):
+   Receives PROTOKEY status from VIP via IPC
+   If bypass mode: Allow any ADB connection
+   If normal mode: Require GM RSA authentication
+
+23.8 AUTOSAR SOFTWARE ARCHITECTURE
+-----------------------------------
+VIP firmware uses AUTOSAR/MICROSAR architecture:
+
+| Module | Function |
+|--------|----------|
+| Rte_ | Runtime Environment (AUTOSAR) |
+| Dem_ | Diagnostic Event Manager |
+| Dcm_ | Diagnostic Communication Manager |
+| NvM_ | NVRAM Manager (EEPROM abstraction) |
+| CanSM | CAN State Manager |
+| PduR_ | PDU Router |
+| Com_ | Communication stack |
+
+Software Components (SWC):
+- SS_SWC: System State Software Component
+- PLC: Power Level Controller
+- J6_CDD: Intel SoC Complex Device Driver
+- PROTOKEY: Security/ADB control module
+- AME_DIAG: Diagnostic handler
+- CAL: Calibration manager
+
+23.9 SECURITY IMPLICATIONS
+--------------------------
+1. RH850 has NO secure boot for EEPROM:
+   - EEPROM contents trusted without verification
+   - No cryptographic signing of calibration data
+   - Only CRC for corruption detection
+
+2. I2C is physically accessible:
+   - Standard protocol, easy to intercept/modify
+   - EEPROM can be desoldered and reprogrammed
+   - No tamper detection
+
+3. VIP blindly trusts EEPROM:
+   - No integrity verification beyond CRC
+   - Security flags directly control behavior
+   - Modification persists across power cycles
+
+4. AUTOSAR abstraction layer:
+   - NvM_ functions read from EEPROM
+   - Application code trusts NvM data
+   - No security layer between storage and use
+
+23.10 POTENTIAL RH850 ATTACK VECTORS
+------------------------------------
+| Vector | Method | Difficulty |
+|--------|--------|------------|
+| EEPROM Modification | I2C programmer | LOW (confirmed working) |
+| UART RX Injection | Find RX trace, send commands | MEDIUM |
+| JTAG Debug | If enabled on header | MEDIUM-HIGH |
+| SPI-IPC Injection | Intercept SoC communication | HIGH |
+| Flash Modification | Reprogram VIP firmware | HIGH (requires key?) |
+| CAN Injection | Send fake BCM messages | MEDIUM |
+
+23.11 VIP FIRMWARE SECURITY FEATURES
+-------------------------------------
+Observed security mechanisms:
+
+1. SBA Ticket Validation:
+   - "SBA ticket is valid" / "SBA ticket is invalid"
+   - Fails gracefully (soft failure mode)
+
+2. Signed Firmware Updates:
+   - "Application signed header is valid/invalid"
+   - Checked during firmware update only
+
+3. IPC Channel Validation:
+   - "Got IPC msg on invalid channel"
+   - "Invalid IPC message length"
+
+4. Watchdog Timer:
+   - "Bootloader timeout reset"
+   - Prevents system hangs
+
+Missing security:
+- No EEPROM content signing
+- No runtime tamper detection
+- No secure boot chain for configuration
+
+================================================================================
+22. SUGGESTED NEXT STEPS FOR RESEARCH
+================================================================================
+
+22.1 HIGH PRIORITY
+------------------
+1. Y177 DOWNGRADE TEST
+   - Prepare Y177 update package on USB
+   - Test if AVB rollback protection blocks installation
+   - If successful, gain SELinux permissive environment
+
+2. EEPROM 0x0B40 FLAG TEST
+   - Modify 0x0B41 to 0xFF
+   - Recalculate CRCs if needed
+   - Test for debug mode / SELinux changes
+
+3. SEPOLICY COMPARISON
+   - Extract sepolicy from Y177 and Y181
+   - Compare using setools
+   - Identify permission differences
+
+22.2 MEDIUM PRIORITY
+--------------------
+4. KERNEL CVE TESTING
+   - With SELinux permissive (Y177 or bypass)
+   - Test CVE-2024-1086 exploit
+   - Verify kernel root achievement
+
+5. VIP UART RX INVESTIGATION
+   - Probe other test points for RX
+   - Check if JTAG header has RX
+   - Attempt bootloader interrupt
+
+6. NETWORK SERVICE ANALYSIS
+   - Probe ports 7000, 6363, 49156
+   - Identify running services
+   - Look for unauthenticated access
+
+22.3 LOW PRIORITY
+-----------------
+7. HYPERVISOR RESEARCH
+   - Search for GHS INTEGRITY CVEs
+   - Analyze VirtIO implementation
+   - Look for escape vectors
+
+8. CAN BUS DPS MODE
+   - Attempt to trigger DPS session
+   - Test diagnostic commands
+   - Explore factory reset path
+
+================================================================================
+END OF SECURITY ASSESSMENT REPORT - UPDATED
+================================================================================
+
+File Locations Referenced:
+- EEPROM Analysis: /EEPROM/EEPROM_Analysis_Report.md
+- Y177 Package: /update_packages/Y177/
+- Y181 Package: /update_packages/Y181/
+- Enumeration Data: /scripts/Y181/gm_enum_20251220_081558/
+- VIP UART Capture: /EEPROM/old_VIP/side_B_K1_P1.txt
+- VIP Firmware (Y181): /update_packages/Y181/86331656
+- HostOS/Hypervisor: /update_packages/Y181/85098662
+- Boot Image (Y181): /update_packages/Y181/86331652
+- Test EEPROM: /EEPROM/gm_csm/BRICKED_Y177_SN<SN_REDACTED>_ADB_VIN_WIPED.bin
+- Original Research: /documentation/session_summaries/project_research_20DEC25_0917.txt
+- Y181 Ramdisk Analysis: /analysis/boot_comparison/y181_ramdisk/
+- Board Photos: /pictures/gminfo_top.jpeg, gminfo_bottom.jpeg, TM52176_EEPROM.jpeg
+
+Document Version: 2.4
+Last Updated: December 20, 2025
+Sections Added This Session: 16-23 (VIP UART, PROTOKEY, Trust Chain, CVE Research, OTA Fix, RH850 Analysis)
+Updates in v2.2: Added physical board component map (23.2) with NXP CAN transceiver/SBC identification
+Updates in v2.3: Added Section 24 (Extended ADB Enumeration) with new attack surfaces
+Updates in v2.4: Added 24.17 (VIP Access), 24.18 (Media Control - CRITICAL: input keyevent controls radio)
+
+================================================================================
+
+
+================================================================================
+24. EXTENDED ADB ENUMERATION - NEW FINDINGS
+================================================================================
+
+This section documents findings from comprehensive ADB enumeration beyond the
+scope of the existing scripts (gm_aaos_enum.sh, quick_security_check.sh).
+
+24.1 CRITICAL SECURITY-RELEVANT DISCOVERIES
+-------------------------------------------
+
+| Finding                      | Details                                    | Security Implication        |
+|------------------------------|--------------------------------------------|-----------------------------|
+| World-accessible Trusty TEE  | /dev/trusty-ipc-dev0 (crw-rw-rw-)         | Potential TEE attack surface|
+| IPC Socket Channels          | /dev/ipc/ipc2-ipc20, /dev/ipc/ctrlif_s    | Inter-processor comms       |
+| Abstract Sockets             | @gmauthmanagerservice.socket.adb          | IPC attack surface          |
+|                              | @/mocca/*, @/mp/*                          |                             |
+| Writable Partitions          | /mnt/vendor/calibration (rw)              | Persistence opportunities   |
+|                              | /mnt/vendor/oem_config (rw)               |                             |
+| GHS Hypervisor Partitions    | ghs_isys_a/b, ghs_storage, ghs_log        | Hypervisor attack surface   |
+| Intel MEI Interface          | /dev/mei0 accessible                       | Management Engine access    |
+| Diagnostic Device            | /dev/diag (Unix socket)                    | Diagnostic protocol access  |
+| AVB Audio Mount              | /mnt/eavb (drwxrwxrwx)                    | World-writable directory    |
+
+24.2 GM-SPECIFIC BINDER SERVICES (NOT IN SCRIPTS)
+-------------------------------------------------
+
+| Service                                        | Interface                          | Purpose              |
+|------------------------------------------------|------------------------------------|----------------------|
+| com.gm.server.obd.OBDService                   | gm.obd.IOBDService                | OBD access           |
+| com.gm.server.diagnostics_service              | IDiagnosticsService               | Diagnostics          |
+| gm.onstar.OnStarRemoteReflashManager           | IRemoteReflashService             | Remote reflash!      |
+| com.gm.server.update.UpdateService             | IUpdateService                    | OTA updates          |
+| com.gm.server.screenprojection.RDMSADBHandler  | IRDMSADBHandler                   | ADB handler          |
+| passengermode                                  | IPassengerModeManager             | Passenger mode       |
+| gmBOAgent                                      | IGMBOAgentService                 | Backoffice agent     |
+| gm_auth                                        | IGMAuthService                    | Authentication       |
+| gm_camera                                      | ICamera                           | Camera access        |
+| CriticalWKService                              | IDomainServiceController          | Critical domain svc  |
+| DelayedWKService                               | IDomainServiceController          | Delayed domain svc   |
+| clusterService                                 | IClusterHmi                       | Cluster display      |
+| deviceInformationService                       | IDeviceInfoService                | Device info          |
+| com.gm.server.connection.DeviceConnectionService| IDeviceConnectionManager         | Device connections   |
+| com.gm.carplay.service.BINDER                  | ICarPlayService                   | CarPlay              |
+| com.gm.server.NavigationService                | INavigationService                | Navigation           |
+| TimeofDay (Harman)                             | com.harman.timeofday              | Time service         |
+
+24.3 VENDOR HAL LAYER (NOT ENUMERATED BY SCRIPTS)
+-------------------------------------------------
+
+GM Vendor HALs discovered via lshal and VINTF manifest:
+
+  vendor.gm.diagnostics@1.0::IDiagnosticsService/default
+  vendor.gm.diagnostics.bridge@1.0::IDiagnosticsBridgeService/default
+  vendor.gm.diagnostics.ethernet@1.0::IDiagnosticsEthernetService/default
+  vendor.gm.diagnostics.internal@1.0::IDiagnosticsInternalService/default
+  vendor.gm.diagnostics.obd@1.0::IDiagnosticsObd/default
+  vendor.gm.calibrations@1.0::ICalibrationService/default
+  vendor.gm.calibrations.base@1.0::ICalibrationServiceBase/default
+  vendor.gm.calibrations.provider@1.0::ICalibrationProvider/default
+  vendor.gm.gmlocation@1.0::IGmLocation/default
+  vendor.gm.audio@1.0::IAmpControl/default
+  vendor.gm.audio@1.0::IDiagnostics/default
+  vendor.gm.audio@1.0::IECNRControl/default
+  vendor.gm.audio@1.0::ISourceControl/default
+  vendor.gm.audio.control@1.0::IGMAudioControl/default
+  vendor.gm.ffsd@1.0::IFfsd/default
+
+24.4 KERNEL MODULES OF SECURITY INTEREST
+----------------------------------------
+
+| Module              | Size    | Purpose                              |
+|---------------------|---------|--------------------------------------|
+| trusty              | 28672   | Trusty TEE core                      |
+| trusty_ipc          | 24576   | Trusty IPC (4 dependents)            |
+| trusty_virtio       | 20480   | Trusty VirtIO transport              |
+| trusty_log          | 16384   | Trusty logging                       |
+| trusty_mem          | 16384   | Trusty memory management             |
+| trusty_wall         | 16384   | Trusty wall clock                    |
+| trusty_timer        | 16384   | Trusty timer                         |
+| mei_me              | 40960   | Intel Management Engine Interface    |
+| mei                 | 106496  | MEI core                             |
+| tpm_crb             | 20480   | TPM Command Response Buffer          |
+| tpm                 | 57344   | TPM core                             |
+| igb_avb             | 208896  | Intel AVB Ethernet (out-of-tree)     |
+| faceplate           | 16384   | Hardware faceplate controller        |
+| bcmdhd              | 802816  | Broadcom WiFi (out-of-tree)          |
+| eeprom_93cx6.ko     | -       | EEPROM driver (found in modules dir) |
+
+Module path: /vendor/lib/modules/4.19.305-240125T145315Z-gf1edde901aa7/
+
+24.5 GMPROTOKEY AUTHENTICATION FLOW
+-----------------------------------
+
+The ADB authentication mechanism:
+
+  1. Init script: /vendor/etc/init/init.protokey.rc
+     - Creates /data/vendor/gm/security (0771 system:system)
+     - Sets vendor.gm.security.state = "init"
+     - Starts gmprotokey service
+
+  2. Service: /vendor/bin/gm_protokey
+     - Runs as: root (uid=0, gid=0)
+     - Groups: root, system, cache
+     - Mode: oneshot
+
+  3. Recovery: /system/etc/init/init.protokey_recovery.rc
+     - Creates /data/gm_adb (0677 root:system)
+     - Creates /data/gmprotokey (0750 root:shell)
+     - Creates /data/gmprotokey/trigger (0770 shell:root)
+     - Starts gmprotokey_recovery as root
+
+  4. Auth Manager: com.gm.android.gmauthmanagerservice
+     - Activity: GMAdbAuthActivity
+     - Intent: com.gm.android.gmauthmanagerservice.GM_ADB_AUTH
+     - Socket: @gmauthmanagerservice.socket.adb
+     - Utility socket: @gmauthmanagerservice.socket.util
+     - Permission: LAUNCH_AUTH_DIALOG (signature|privileged)
+
+  5. SELinux Contexts:
+     - /data/gm_adb -> gm_secure_adb_file
+     - /data/gmprotokey -> gm_protokey_system_file
+
+  Current State:
+     [init.svc.gmprotokey]: [running]
+     [init.svc.gmprotokey_recovery]: [stopped]
+     [vendor.gm.security.state]: (not readable from shell)
+
+24.6 UPDATE SERVICE INTELLIGENCE
+--------------------------------
+
+From dumpsys com.gm.server.update.UpdateService:
+
+  USB Update Source:
+    mEnabled=true
+    mDevelopmentBuild=false
+    mNotifyUnmount=true
+
+  Reflash Statistics:
+    ReflashCounter=6
+    LastActiveSlot=sSMtd/VtAUN/oV4s49GfbnWUlrButdWaW+XJqBQs8j4=0 (encrypted)
+
+  Update History (7 records):
+    - 85759595.mnf (SIHM22B-00383.01) - Success
+    - 86283147.mnf (SIHM22B-00499.02) - Success
+    - 85874101.mnf (SIHM22B-00526) - Success
+    - GM Update N25-250552 - Status 5 (partial?)
+    - 86331663.mnf (SIHM22B-00499.03) - Success
+    - 85874101.mnf (SIHM22B-00526) - Success (second install)
+
+  Last Programming Status:
+    DateTime=1765231291665 (Dec 08, 2025)
+    Status=2
+    Percentage=1
+    ErrorCode=671
+    ProgrammingType=15
+    PackageType=1
+    ManifestPartNumber=85874101
+    ManifestVersion=SIHM22B-00526
+
+  OTA State Machine: IdleState
+  System State: STATE_PROPULSION
+  Remote Reflash: mRemoteReflashRequested=false
+
+24.7 PASSENGER MODE SERVICE STATE
+---------------------------------
+
+From dumpsys passengermode:
+
+  Vehicle State:
+    mMovingForward: false
+    Gear: 4 (Park)
+    mFasterThanThreshold: false
+    Speed: 0.0
+    isPowerOff: false
+    Ignition: 4
+
+  Occupant Detection:
+    mDriverSeatbeltsBuckled: false
+    mPassengerSeatbeltsBuckled: false
+    mPassengerOnSeat: false
+
+  Mode State:
+    isPassengerMode: false
+    mPCMIsShown: false
+    isTeenActive: false
+    Override count: 0
+    UxR: 0 (no restrictions active)
+
+24.8 PARTITION LAYOUT (EXTENDED)
+--------------------------------
+
+Block devices at /dev/block/by-name/:
+
+  Hypervisor/GHS:
+    ghs_isys_a    -> vda1    (GHS INTEGRITY slot A)
+    ghs_isys_b    -> vda2    (GHS INTEGRITY slot B)
+    ghs_storage   -> vda3    (GHS persistent storage)
+    ghs_abl_update-> vda4    (GHS ABL update staging)
+    ghs_log       -> vda24   (GHS log partition)
+
+  Bootloader:
+    bootloader_a  -> vda5
+    bootloader_b  -> vda6
+
+  Android Boot:
+    boot_a        -> vda7
+    boot_b        -> vda8
+    misc          -> vda9
+    vbmeta_a      -> vda10
+    vbmeta_b      -> vda11
+    metadata      -> vda12
+    super         -> vda13   (Dynamic partitions)
+
+  ACPI/Tables:
+    acpi_a        -> vda14
+    acpi_b        -> vda15
+    acpio_a       -> vda16
+    acpio_b       -> vda17
+
+  Certificates/Security:
+    cert_a        -> vda18
+    cert_b        -> vda19
+    teedata       -> vda21   (TEE persistent data)
+
+  Configuration:
+    persistent    -> vda20
+    config        -> vda22   (mounted rw at /mnt/vendor/oem_config)
+    calibration   -> vda23   (mounted rw at /mnt/vendor/calibration)
+
+  Data:
+    update_cache  -> vda25
+    data          -> vda26
+
+24.9 INPUT DEVICES
+------------------
+
+  /dev/input/event0: "Faceplate Controller"
+    Physical buttons: VOLUMEDOWN, VOLUMEUP, POWER, MENU, BACK,
+                     NEXTSONG, PREVIOUSSONG, HOMEPAGE, SOUND, TUNER
+
+  /dev/input/event1: "Atmel maXTouch Touchscreen"
+    Resolution: 2400x960
+    Multi-touch: 16 slots
+    Pressure sensitive
+
+24.10 NETWORK INTERFACES
+------------------------
+
+  Physical:
+    eth0    -> pci0000:00/0000:00:13.0/0000:01:00.0 (Intel igb_avb)
+
+  Virtual:
+    br0     -> Bridge interface
+    vlan4   -> VLAN 4
+    vlan5   -> VLAN 5
+    wlan0   -> Primary WiFi
+    wlan1   -> Secondary WiFi (hostapd)
+    wlan2   -> Tertiary WiFi (hostapd)
+    dummy0  -> Dummy interface
+
+  Tunnels:
+    ip6_vti0, ip6tnl0, ip_vti0, sit0
+
+24.11 UNIQUE BINARIES DISCOVERED
+--------------------------------
+
+  /vendor/bin/:
+    IPCServer              - VIP MCU IPC server
+    GHSCalibrations        - Hypervisor calibration tool
+    gm_protokey            - ADB authentication daemon (root)
+    gm_update_engine       - OTA update engine (root)
+    diagnosticsd           - Diagnostics daemon
+    ethctrlmgr             - Ethernet switch controller (100KB)
+    ethmvlctrlmgr          - Ethernet MVLAN controller (178KB)
+    abl-user-cmd_vendor    - ABL user commands
+    svn-commit_vendor      - SVN commit utility
+    calserviced            - Calibration service daemon
+    avb_streamhandler_app  - AVB audio stream handler
+    eavbmgr                - Ethernet AVB manager
+    esif_ufd               - Intel ESIF (thermal/power)
+    fw_loader              - Firmware loader
+    gmloggervendorserviced - GM logger (root)
+    gmvt                   - GM video/tuner service
+
+  /system/xbin/:
+    dhdutil                - Broadcom WiFi debug tool (60KB)
+
+  /system/bin/:
+    gmlc                   - GM location client
+    gm_protokey_recovery   - Protokey recovery (root)
+
+24.12 GM-SPECIFIC PROPERTIES
+----------------------------
+
+  Security/Encryption:
+    [persist.sys.gm.encryption]: [true]
+    [persist.sys.gm.encryption_process]: [-1]
+    [ro.adb.secure]: [1]
+
+  Fleet/State:
+    [sys.gm.fleet.state]: [0]
+
+  Services:
+    [init.svc.gmprotokey]: [running]
+    [init.svc.gmprotokey_recovery]: [stopped]
+    [vendor.gmcrashlogd.process.ongoing]: [0]
+    [vendor.gmcrashlogd.token]: [1]
+
+  USB/ADB:
+    [persist.sys.usb.config]: [adb]
+    [sys.usb.config]: [adb]
+    [sys.usb.state]: [adb]
+    [service.adb.tcp.port]: [0]
+
+  Development:
+    development_settings_enabled=1
+    adb_enabled=1
+
+24.13 SELINUX DENIAL LOG SAMPLES
+--------------------------------
+
+Captured denials showing protection working:
+
+  shell access to /data/gm_adb:
+    avc: denied { getattr } for comm="ls" path="/data/gm_adb"
+    scontext=u:r:shell:s0 tcontext=u:object_r:gm_secure_adb_file:s0
+
+  shell access to /data/gmprotokey:
+    avc: denied { getattr } for comm="ls" path="/data/gmprotokey"
+    scontext=u:r:shell:s0 tcontext=u:object_r:gm_protokey_system_file:s0
+
+  GMS traced_producer access:
+    avc: denied { write } for comm="ThreadPoolForeg" name="traced_producer"
+    scontext=u:r:gmscore_app:s0 tcontext=u:object_r:traced_producer_socket:s0
+
+24.14 CAR PROPERTY SERVICE STATISTICS
+-------------------------------------
+
+From dumpsys car_service:
+
+  Total registered property IDs: 150+
+  Active clients: 33
+
+  Property ID ranges observed:
+    0x11xxxxxx - Basic vehicle properties
+    0x13xxxxxx - HVAC properties
+    0x15xxxxxx - Door/window properties
+    0x16xxxxxx - Lighting properties
+    0x21xxxxxx - GM vendor properties (majority)
+    0x25xxxxxx - Additional vendor properties
+
+  Properties actively written by CarPropertyService:
+    0x21400153, 0x2140015a, 0x2140100e, 0x2140100f,
+    0x21401014, 0x21401029, 0x21401059, 0x2140108f,
+    0x21401091-0x214010a0, 0x2141014b, 0x2141015d
+
+24.15 ADDITIONAL ATTACK SURFACE SUMMARY
+---------------------------------------
+
+  TEE/Secure World:
+    - /dev/trusty-ipc-dev0 (world-accessible)
+    - keystore.trusty.so HAL
+    - teedata partition (vda21)
+
+  Intel Platform:
+    - /dev/mei0 (Management Engine)
+    - TPM via tpm_crb module
+
+  IPC Channels:
+    - 19 sockets in /dev/ipc/ (ipc2-ipc20, ctrlif_s)
+    - Abstract sockets (@gmauthmanagerservice.*, @/mocca/*, @/mp/*)
+    - /dev/socket/statsdw (52 connections)
+
+  Writable Storage:
+    - /mnt/vendor/calibration (ext4 rw)
+    - /mnt/vendor/oem_config (ext4 rw)
+    - /mnt/eavb (world-writable)
+    - /data/local/tmp (standard)
+
+  Network:
+    - Multiple WiFi interfaces (wlan0-2)
+    - Ethernet with VLANs (vlan4, vlan5)
+    - Bridge interface (br0)
+    - ethctrlmgr socket at /data/vendor/ethctrlmgr/switchsocket
+
+  Debug:
+    - dhdutil for Broadcom WiFi
+    - Intel ESIF (esif_ufd)
+    - Extensive logging infrastructure
+
+24.16 EXPLOITABLE SETTINGS AND FEATURE FLAGS
+---------------------------------------------
+
+The following settings are accessible/modifiable via ADB and may enable features
+or alter security posture:
+
+SYSTEM SETTINGS (settings list system):
+  com.gm.config.type.dab_dab_linking=false    # DAB-DAB linking (disabled)
+  com.gm.config.type.dab_fm_linking=false     # DAB-FM linking (disabled)
+  com.gm.config.type.rds_reg=false            # RDS regional (disabled)
+  radio_band=1                                 # Current radio band
+  radio_region=0                               # Radio region setting
+
+SECURE SETTINGS (settings list secure):
+  android.car.ENABLE_INITIAL_NOTICE_SCREEN_TO_USER=0
+  android.car.SETUP_WIZARD_IN_PROGRESS=0
+  com.gm.vac.SWC_PTT_APP=                     # Steering wheel PTT app binding
+  enabled_accessibility_services=...           # Can add malicious services
+  enabled_input_methods=...                    # Can add custom input methods
+
+GLOBAL SETTINGS (settings list global):
+  adb_enabled=1                                # Already enabled
+  adb_wifi_enabled=0                           # WiFi ADB (disabled)
+  development_settings_enabled=1               # Already enabled
+  gm.systemui.poweroff=0                       # Power off UI control
+  car_data_subscription_status=3               # Subscription status
+  usb_mass_storage_enabled=1                   # USB mass storage enabled
+  user_switcher_enabled=1                      # Multi-user enabled
+
+PROPERTIES (read-only unless root):
+  [config.disable_cameraservice]: [1]          # Camera disabled
+  [persist.sys.gm.encryption]: [true]          # Encryption enabled
+  [sys.gm.fleet.state]: [0]                    # Fleet state
+  [persist.sys.disable_rescue]: [true]         # Rescue party disabled
+  [persist.vendor.gm.dev_disable_uxr]          # UX restrictions disable flag
+
+POTENTIAL EXPLOITATION VECTORS:
+
+1. Enable WiFi ADB (requires root or settings bypass):
+   settings put global adb_wifi_enabled 1
+   setprop service.adb.tcp.port 5555
+
+2. Disable camera service restrictions:
+   May allow camera access if other checks bypassed
+
+3. Subscription status manipulation:
+   car_data_subscription_status could affect feature gating
+
+4. DAB/RDS feature enabling:
+   May unlock radio features if corresponding hardware present
+
+5. Fleet state manipulation:
+   sys.gm.fleet.state=0 may indicate non-fleet mode
+
+6. UX restrictions bypass (if property writable):
+   persist.vendor.gm.dev_disable_uxr=true could disable driving restrictions
+
+NOTE: Most of these require either:
+  - Root access
+  - SELinux permissive mode
+  - Exploitation of a privileged process
+  - Physical EEPROM modification for persistent changes
+
+The calibration and oem_config partitions contain additional configuration
+but are protected by SELinux (calibration_data_file, gm_oem_config_file contexts).
+These would require:
+  - Compromise of calserviced, gm_vehicle_hal, or gm_update_engine
+  - Direct block device access (currently blocked)
+  - Y177 downgrade for SELinux permissive mode
+
+24.17 VIP ACCESS FROM RUNNING ANDROID SYSTEM
+---------------------------------------------
+
+The VIP (Renesas RH850 MCU) handles EEPROM, CAN bus, security functions.
+Access paths from Android:
+
+INTERFACE                 ACCESS LEVEL              NOTES
+-------------------------------------------------------------------------------
+/dev/ipc/ipc2-ipc20       SELinux protected         19 IPC channels to VIP
+/dev/ipc/ctrlif_s         SELinux protected         Control interface socket
+/dev/ttyACM1              crw-rw-rw- (world)        SELinux blocks shell write
+IPCServer (PID 383)       runs as root              Main VIP IPC daemon
+gm_protokey (PID 845)     runs as root              Security/auth handler
+gm_vehicle_hal            runs as vehicle_network   VHAL → VIP bridge
+
+To access VIP from Android requires:
+  1. Compromise IPCServer, gm_protokey, or gm_vehicle_hal process
+  2. Get SELinux permissive (Y177 downgrade or EEPROM 0x0B40 flag)
+  3. Use a privileged app context with ipc_device access
+
+The IPC protocol uses HDLC framing over Unix domain sockets. Each channel
+(ipc2-ipc20) handles different message types. The ctrlif_s socket appears
+to be the control/management interface.
+
+24.18 STEERING WHEEL / MEDIA CONTROL ACCESS - CRITICAL FINDING
+---------------------------------------------------------------
+
+*** CONFIRMED: ADB input keyevent CONTROLS RADIO ***
+
+Testing revealed that running:
+  adb shell input keyevent KEYCODE_MEDIA_NEXT
+
+Actually changes the radio station forward. This means:
+
+CONTROL               DIRECT ACCESS    ADB/SHELL ACCESS    NOTES
+-------------------------------------------------------------------------------
+Media Next/Prev       NO (signature)   YES - WORKS!        Changes radio station
+Volume Up/Down        YES (standard)   YES                 Normal Android behavior
+Play/Pause            NO (signature)   YES                 Media control
+Call Answer/Hangup    NO (signature)   YES (untested)      Phone integration
+PTT Button            PARTIAL          YES                 See SWC_PTT_APP below
+
+Permission Analysis:
+  - gm.permission.RECEIVE_KEY_EVENT: signature|privileged (third-party blocked)
+  - android.permission.INJECT_EVENTS: signature (third-party blocked)
+
+However, ADB shell bypasses these restrictions because:
+  1. Shell runs with elevated privileges
+  2. input command uses InputManager directly
+  3. No permission check for shell user
+
+SECURITY IMPLICATIONS:
+
+1. Any app with shell/root execution can control media:
+   Runtime.getRuntime().exec("input keyevent KEYCODE_MEDIA_NEXT")
+
+2. Accessibility services with PERFORM_ACTION capability could simulate keys
+
+3. USB devices with HID capabilities could inject key events
+
+4. Remote ADB access (if enabled) provides full media control
+
+POTENTIAL EXPLOITS:
+
+1. PTT Button Hijack (verified writable):
+   adb shell settings put secure com.gm.vac.SWC_PTT_APP com.malicious.app
+
+2. Media Control via Shell Execution:
+   Any app exploiting a shell vulnerability can control radio/media
+
+3. Accessibility Service Attack:
+   Install app with AccessibilityService, user enables it, then:
+   - performGlobalAction(GLOBAL_ACTION_MEDIA_NEXT) may work
+   - dispatchGesture() for complex interactions
+
+4. USB HID Injection:
+   Physical USB device presenting as HID keyboard can send media keys
+
+Apps with INJECT_EVENTS permission (all system apps):
+  - com.android.car
+  - com.gm.* (various)
+  - android (system_server)
+
+Enabled Accessibility Services:
+  - com.android.car/.pm.CarSafetyAccessibilityService (stock)
+
+24.19 VOICE ASSIST / PTT BUTTON - FULL EVENT CHAIN ANALYSIS
+------------------------------------------------------------
+
+Physical button press captured via logcat reveals complete event flow:
+
+CAN FRAME IDENTIFICATION:
+  SWC KEY 1002 = Voice Assist / PTT button on steering wheel
+
+  GMVHAL  (  771): SWC KEY 1002 EVENT 0   <- Button pressed (CAN → VHAL)
+  GMVHAL  (  771): SWC KEY 1002 EVENT 1   <- Button released
+
+KEY CODE MAPPING:
+  Physical Button    → CAN Frame  → Android Key Code
+  Voice Assist/PTT   → 1002       → KEYCODE_VOICE_ASSIST
+
+EVENT ROUTING PATH:
+  1. VIP (RH850) receives CAN frame from steering wheel module
+  2. IPC channel passes to Android side
+  3. gm_vehicle_hal receives via VHAL
+  4. GMCarInputService (PID 1618) translates to Android KeyEvent
+  5. PhoneProjectionService.vrKeyEvent() handles routing
+
+LOGCAT CAPTURE - SHORT PRESS:
+  GMCarInputService( 1618): onKeyEvent(KeyEvent { action=ACTION_DOWN,
+      keyCode=KEYCODE_VOICE_ASSIST, scanCode=0, metaState=0, flags=0x8,
+      repeatCount=0, eventTime=21424594, downTime=21424594, deviceId=-1,
+      source=0x101 })
+  PhoneProjectionService/Binder( 1326): vrKeyEvent() action: 1 checkOnly: false
+  PhoneProjectionService/Binder( 1326): vrKeyEvent() returns 2
+
+LOGCAT CAPTURE - LONG PRESS (triggers Bluetooth popup):
+  PhoneProjectionService/Binder( 1326): vrKeyEvent() action: 2 checkOnly: false
+  PhoneProjectionService/Binder( 1326): No paired phone, forward long PTT to
+      GMSetting: com.gm.hmi.connection.action.evG_Bluetooth
+  GMCarInputService( 1618): Projection consumed the key
+  GMCarInputService( 1618): Projection consume Voice Assist Key long Press
+
+vrKeyEvent() ACTION CODES:
+  action: 1 = Short press (ACTION_DOWN)
+  action: 2 = Long press
+  action: 3 = Release (ACTION_UP)
+  returns: 2 = Event consumed
+
+MEDIA SESSION PRIORITY:
+  MediaSessionStack( 1158): updateMediaButtonSessionIfNeeded, checking
+      uid=1010138, mediaButtonSession=zeno.carlink/CarlinkMediaSession (userId=10)
+
+The Carlink app successfully became the active media button session, meaning
+media keys (next/prev/play/pause) route to it. However, VOICE_ASSIST is NOT
+a media key - it routes through PhoneProjectionService instead.
+
+VOICE BUTTON INTERCEPTION OPTIONS:
+
+1. VoiceInteractionService (requires signature permission):
+   - Set: settings put secure voice_interaction_service com.app/.VoiceService
+   - App needs android.permission.BIND_VOICE_INTERACTION (signature)
+   - Would receive KEYCODE_VOICE_ASSIST events
+
+2. PhoneProjectionService Hook (requires system modification):
+   - PhoneProjectionService checks for paired projection apps
+   - Would need to spoof as Android Auto or CarPlay projection
+
+3. AssistantApplication Override:
+   - Setting: config_defaultAssistant
+   - Requires signature permission
+
+4. Accessibility Service (user must enable):
+   - Can intercept key events globally
+   - onKeyEvent() callback receives all keys
+   - User consent required, may be blocked by GM policy
+
+RELEVANT SETTINGS (from dumpsys):
+  assistant                    = null (not configured)
+  voice_interaction_service    = [empty - writable!]
+  voice_recognition_service    = com.google.android.tts/.GoogleTTSService
+
+SECURITY FINDING:
+  voice_interaction_service setting is WRITABLE via ADB:
+    adb shell settings put secure voice_interaction_service com.app/.Service
+
+  However, without signature permission for BIND_VOICE_INTERACTION, the
+  service will not actually receive events - system validates at bind time.
+
+CARPLAY/ANDROID AUTO INTEGRATION:
+  When a phone is paired via projection (CarPlay/AA), PhoneProjectionService
+  routes voice button to the projection app instead of showing Bluetooth popup.
+  The Carlink adapter that provides CarPlay would need to be recognized as a
+  valid projection target to receive these events.
+
+================================================================================
+END OF SECTION 24 - EXTENDED ADB ENUMERATION
+================================================================================

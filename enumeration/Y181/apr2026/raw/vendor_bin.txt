@@ -1,0 +1,285 @@
+total 608
+drwxr-x--x  3 root shell   8192 2008-12-31 15:00 .
+drwxr-xr-x 17 root shell   4096 2008-12-31 15:00 ..
+-?????????  ? ?    ?          ?                ? 949-errata-fix
+-?????????  ? ?    ?          ?                ? GHSCalibrations
+-?????????  ? ?    ?          ?                ? IPCServer
+-?????????  ? ?    ?          ?                ? Onekey_audio_dump.sh
+-?????????  ? ?    ?          ?                ? Onekey_audio_dump_prepare.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 [ -> toybox_vendor
+-?????????  ? ?    ?          ?                ? abl-user-cmd_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 acpi -> toybox_vendor
+-?????????  ? ?    ?          ?                ? alsa_amixer
+-?????????  ? ?    ?          ?                ? alsa_amixer_32
+-?????????  ? ?    ?          ?                ? alsa_aplay
+-?????????  ? ?    ?          ?                ? alsa_aplay_32
+-?????????  ? ?    ?          ?                ? alsa_arecord
+-?????????  ? ?    ?          ?                ? alsa_arecord_32
+-?????????  ? ?    ?          ?                ? alsa_ctl
+-?????????  ? ?    ?          ?                ? alsa_ctl_32
+-?????????  ? ?    ?          ?                ? alsa_loop
+-?????????  ? ?    ?          ?                ? alsa_loop_32
+-?????????  ? ?    ?          ?                ? applypatch
+-?????????  ? ?    ?          ?                ? audit_listener
+-?????????  ? ?    ?          ?                ? avb_streamhandler_app
+-?????????  ? ?    ?          ?                ? avb_streamhandler_app_32
+-?????????  ? ?    ?          ?                ? avb_streamhandler_client_app
+-?????????  ? ?    ?          ?                ? avb_streamhandler_client_app_32
+-?????????  ? ?    ?          ?                ? awk
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 base64 -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 basename -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 blockdev -> toybox_vendor
+-?????????  ? ?    ?          ?                ? boringssl_self_test32
+-?????????  ? ?    ?          ?                ? boringssl_self_test64
+-?????????  ? ?    ?          ?                ? brctl
+-?????????  ? ?    ?          ?                ? brctl_add.sh
+-?????????  ? ?    ?          ?                ? btcfg.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 cal -> toybox_vendor
+-?????????  ? ?    ?          ?                ? calserviced
+-?????????  ? ?    ?          ?                ? camera_cable_fault_d
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 cat -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 chattr -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 chcon -> toybox_vendor
+-?????????  ? ?    ?          ?                ? check_lowmem.sh
+-?????????  ? ?    ?          ?                ? checkpoint_gc.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 chgrp -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 chmod -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 chown -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 chroot -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 chrt -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 cksum -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 clear -> toybox_vendor
+lrwxr-xr-x  1 root shell     19 2008-12-31 15:00 cmd_fw_update_vendor -> abl-user-cmd_vendor
+lrwxr-xr-x  1 root shell     17 2008-12-31 15:00 cmd_svn_update_vendor -> svn-commit_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 cmp -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 comm -> toybox_vendor
+-?????????  ? ?    ?          ?                ? config_cpuset.sh
+-?????????  ? ?    ?          ?                ? coreu
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 cp -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 cpio -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 cut -> toybox_vendor
+-?????????  ? ?    ?          ?                ? daemon_cl
+-?????????  ? ?    ?          ?                ? daemon_cl_32
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 date -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 dd -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 devmem -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 df -> toybox_vendor
+-?????????  ? ?    ?          ?                ? diagnosticsd
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 diff -> toybox_vendor
+-?????????  ? ?    ?          ?                ? dirana3ctr_test
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 dirname -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 dmesg -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 dos2unix -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 du -> toybox_vendor
+-?????????  ? ?    ?          ?                ? dummy_audiomanagement
+-?????????  ? ?    ?          ?                ? dumpsys
+-?????????  ? ?    ?          ?                ? early_audio_alsa.sh
+-?????????  ? ?    ?          ?                ? early_audio_alsa_avb.sh
+-?????????  ? ?    ?          ?                ? eavbmgr
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 echo -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 egrep -> toybox_vendor
+-?????????  ? ?    ?          ?                ? enable_dab.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 env -> toybox_vendor
+-?????????  ? ?    ?          ?                ? esif_ufd
+-?????????  ? ?    ?          ?                ? eth_check
+-rwxr-xr-x  1 root shell 100328 2008-12-31 15:00 ethctrlmgr
+-rwxr-xr-x  1 root shell 178656 2008-12-31 15:00 ethmvlctrlmgr
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 expand -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 expr -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 fallocate -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 false -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 fgrep -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 file -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 find -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 flock -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 fmt -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 free -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 fsync -> toybox_vendor
+-?????????  ? ?    ?          ?                ? fw_loader
+-?????????  ? ?    ?          ?                ? fw_update.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 getconf -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 getenforce -> toybox_vendor
+lrwxr-xr-x  1 root shell      7 2008-12-31 15:00 getevent -> toolbox
+lrwxr-xr-x  1 root shell      7 2008-12-31 15:00 getprop -> toolbox
+-?????????  ? ?    ?          ?                ? ghs_set_is_virt.sh
+-?????????  ? ?    ?          ?                ? ghslogger
+-?????????  ? ?    ?          ?                ? gm_protokey
+-?????????  ? ?    ?          ?                ? gmloggervendorserviced
+-?????????  ? ?    ?          ?                ? gmvt
+-?????????  ? ?    ?          ?                ? gmvt_client
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 grep -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 groups -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 gunzip -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 gzip -> toybox_vendor
+-?????????  ? ?    ?          ?                ? har_dump_test
+-?????????  ? ?    ?          ?                ? hciattach
+-?????????  ? ?    ?          ?                ? hdcpd
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 head -> toybox_vendor
+-?????????  ? ?    ?          ?                ? healthmonitor
+-?????????  ? ?    ?          ?                ? hostapd_cli_bcm
+-?????????  ? ?    ?          ?                ? hostapd_cli_nxp
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 hostname -> toybox_vendor
+drwxr-x--x  2 root shell   4096 2008-12-31 15:00 hw
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 hwclock -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 i2cdetect -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 i2cdump -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 i2cget -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 i2cset -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 iconv -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 id -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 ifconfig -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 inotifyd -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 insmod -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 install -> toybox_vendor
+-?????????  ? ?    ?          ?                ? intel_reg_tool
+-?????????  ? ?    ?          ?                ? intelstorageproxyd
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 ionice -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 iorenice -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 kill -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 killall -> toybox_vendor
+-?????????  ? ?    ?          ?                ? leoflashutil
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 ln -> toybox_vendor
+-?????????  ? ?    ?          ?                ? load_9098fw.sh
+-?????????  ? ?    ?          ?                ? load_modules.sh
+-?????????  ? ?    ?          ?                ? load_modules2.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 load_policy -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 log -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 logname -> toybox_vendor
+-?????????  ? ?    ?          ?                ? logwrapper
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 losetup -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 ls -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 lsattr -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 lsmod -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 lsof -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 lspci -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 lsusb -> toybox_vendor
+-?????????  ? ?    ?          ?                ? lvds_test
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 md5sum -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 microcom -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mkdir -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mkfifo -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mknod -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mkswap -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mktemp -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 modinfo -> toybox_vendor
+lrwxr-xr-x  1 root shell      7 2008-12-31 15:00 modprobe -> toolbox
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 more -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mount -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mountpoint -> toybox_vendor
+-?????????  ? ?    ?          ?                ? msync
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 mv -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 nc -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 netcat -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 netstat -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 nice -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 nl -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 nohup -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 nproc -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 nsenter -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 od -> toybox_vendor
+-?????????  ? ?    ?          ?                ? pacmd
+-?????????  ? ?    ?          ?                ? pactl
+-?????????  ? ?    ?          ?                ? padump2file
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 paste -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 patch -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 pgrep -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 pidof -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 pkill -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 pmap -> toybox_vendor
+-?????????  ? ?    ?          ?                ? postinstall
+-?????????  ? ?    ?          ?                ? power_hal_helper
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 printenv -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 printf -> toybox_vendor
+-?????????  ? ?    ?          ?                ? probe_sxm
+-?????????  ? ?    ?          ?                ? probe_wireless
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 ps -> toybox_vendor
+-?????????  ? ?    ?          ?                ? psdapp
+-?????????  ? ?    ?          ?                ? pstore-clean
+-?????????  ? ?    ?          ?                ? pulseaudio
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 pwd -> toybox_vendor
+-?????????  ? ?    ?          ?                ? rb_ua
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 readelf -> toybox_vendor
+-?????????  ? ?    ?          ?                ? readhw
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 readlink -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 realpath -> toybox_vendor
+-?????????  ? ?    ?          ?                ? remote_display
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 renice -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 restorecon -> toybox_vendor
+-?????????  ? ?    ?          ?                ? rfkill-init.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 rm -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 rmdir -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 rmmod -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 rtcwake -> toybox_vendor
+-?????????  ? ?    ?          ?                ? rtpolicyd
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 runcon -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sed -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sendevent -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 seq -> toybox_vendor
+-?????????  ? ?    ?          ?                ? set_cpu_affinity_for_spi10.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 setenforce -> toybox_vendor
+lrwxr-xr-x  1 root shell      7 2008-12-31 15:00 setprop -> toolbox
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 setsid -> toybox_vendor
+-rwxr-xr-x  1 root shell 322736 2008-12-31 15:00 sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sha1sum -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sha224sum -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sha256sum -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sha384sum -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sha512sum -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sleep -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sort -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 split -> toybox_vendor
+lrwxr-xr-x  1 root shell      7 2008-12-31 15:00 start -> toolbox
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 stat -> toybox_vendor
+lrwxr-xr-x  1 root shell      7 2008-12-31 15:00 stop -> toolbox
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 strings -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 stty -> toybox_vendor
+-?????????  ? ?    ?          ?                ? svn-commit_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 swapoff -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 swapon -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sync -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 sysctl -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 tac -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 tail -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 tar -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 taskset -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 tee -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 test -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 time -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 timeout -> toybox_vendor
+-?????????  ? ?    ?          ?                ? toolbox
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 top -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 touch -> toybox_vendor
+-?????????  ? ?    ?          ?                ? toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 tr -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 true -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 truncate -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 tty -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 ulimit -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 umount -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 uname -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 uniq -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 unix2dos -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 unlink -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 unshare -> toybox_vendor
+-?????????  ? ?    ?          ?                ? update_ifwi_ab
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 uptime -> toybox_vendor
+-?????????  ? ?    ?          ?                ? usb_otg_switch.sh
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 usleep -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 uudecode -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 uuencode -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 uuidgen -> toybox_vendor
+-?????????  ? ?    ?          ?                ? vehicleaudiocontrol
+-?????????  ? ?    ?          ?                ? vendor.harman.hardware.ame@1.0-service
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 vmstat -> toybox_vendor
+-?????????  ? ?    ?          ?                ? vndservice
+-?????????  ? ?    ?          ?                ? vndservicemanager
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 watch -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 wc -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 which -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 whoami -> toybox_vendor
+-?????????  ? ?    ?          ?                ? wpa_cli_bcm
+-?????????  ? ?    ?          ?                ? wpa_cli_nxp
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 xargs -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 xxd -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 yes -> toybox_vendor
+lrwxr-xr-x  1 root shell     13 2008-12-31 15:00 zcat -> toybox_vendor

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Includes calibrations from the GIS-550 Spec. that are Global B specific.">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>7/1/2016</Date>
+    <Description>Initial release of this caldef file to include Global B specific calibrations from the GIS-550.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef added the Defrost_Label_GlobalB enumeration calibration from the GIS-550</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>1/13/2017</Date>
+    <Description>Within the GIS550_ClimateTouchScreenUI_GlobalB.caldef file made the following updates: Updated the description for the Climate_Application_Available calibration to reflect updates made by GIS-550 specification owner in the GIS-550 per RTC CR#: 1004138 (Mechanism to turn off Climate Quick Status Panes). Also, added the Climate_QuickStatusPane_Display calibration  to reflect updates made by GIS-550 specification owner in the GIS-550 for RTC CR#: 1004138 (Mechanism to turn off Climate Quick Status Panes).</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>12/21/2017</Date>
+    <Description>For the calibration update in RTC CR#: 1560604, added the new calibration called Maximum_FanSpeed in the GIS550_ClimateTouchScreenUI_GlobalB.caldef file. Note this calibration was also added in the GIS-550 Climate Touch Screen UI V5.2 19DEC2017 release.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>1/19/2018</Date>
+    <Description>For the calibration update in RTC CR#: 1561666, added the new calibration called Min_Update_Time in the GIS550_ClimateTouchScreenUI_GlobalB.caldef file for module communication robustness. Note this calibration was also added in the GIS-550 Climate Touch Screen UI V5.2.1 19JAN2018 release.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The Min Update Time ensures that the request can be seen by the recipient of the signal, before it is overwritten by the next request." Name="MIN_UPDATE_TIME" References="GIS-550 Section 5.1.1.2*MY18 Global B Architecture Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_nvzPEP8PEeeDo-Dq14by9g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/19/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>200</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Determines the maximum fan speed the vehicle is capable of in a 0-12 value for Front and Rear Climate. If the vehicle is only capable of fan speeds up to 8 we can use this calibration to make 8 the new 100% within the fan speed HMI displays." Name="Maximum_FanSpeed" References="GIS-550 Section 5.1.1.2*MY18 Global B Architecture Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_6Nd3UOZwEeen_5uNNn90GA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/21/2017</Date>
+      <Description>Initial release</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>12</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>12</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Quick Status Pane is displayed or not. The BCM will always send data, at which point that it is determined that a vehicle has too little content to display to a customer this calibration should be set to FALSE. &#x2022; FA LSE - Front Climate Quick Status Pane not shown to the user upon receipt of Climate data from the BCM.  &#x2022; TRUE - Front Climate Quick Status Pane is shown to the user upon receipt of Climate data from the BCM." Name="Climate_QuickStatusPane_Display" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_m5S78NwnEea9hOtd-fbZ_Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/13/2017</Date>
+      <Description>Initial release of the Climate_QuickStatusPane_Display calibration  to reflect updates made by GIS-550 specification owner in the GIS-550 per RTC CR#: 1004138 (Mechanism to turn off Climate Quick Status Panes).</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines which Windshield Symbol to be displayed in the Front Climate Screen and Climate Quick Status Pane for the &#x201c;Windshield&#x201d; Air Distribution Mode: &#x2022; $00 - 3 Squiggly Arrows or &#x2022; $01 - Single Arrow " Name="Windshield_Symbol_GlobalB" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_kEcIcJ__Eea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_XqkToJ_9Eea-Ao5FQchwtQ</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines which Defrost Label to be displayed in the Front Climate Screen and Climate Quick Status Pane: &#x2022; $00 - ISO only,  &#x2022; $01 - &#x201c;Front&#x201d; plus ISO, or &#x2022; $02 - &#x201c;MAX&#x201d; plus ISO.                                   " Name="Defrost_Label_GlobalB" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Kn-3kEFJEeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_2XAuMEFHEeaX676o0O3GfQ</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Rear Climate Screen is displayed or not. This includes whether a Rear Climate Home Screen Icon is displayed. This is Infotainment internal and is declared in Control Device and consumed: &#x2022; FALSE - Never display Rear Climate Screen. Remove Rear Climate from APP list or &#x2022; TRUE - Rear Climate Screen is enabled. There is a Rear Climate Home Screen Icon. " Name="Rear_Climate_Application_Available" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yyBlgEE8EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen displays the Ionizer status: &#x2022; TRUE - The Front Climate Screen displays the Ionizer status or &#x2022; FALSE - The Front Climate Screen does NOT display the Ionizer status.   " Name="Show_Ionizer_Status" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_fb3pIEE8EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen displays a Rear Window Defogger control and status: &#x2022; TRUE - The Front Climate Screen displays a Rear Window Defogger control and status or &#x2022; FALSE - The Front Climate Screen does NOT display a Rear Window Defogger control and status. " Name="KeHVC_b_RearDefogEnabled" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_B-QUkEE8EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Rear Climate Screen displays a Rear Fan Speed control and status: &#x2022; TRUE - The Rear Climate Screen displays a Rear Fan Speed controls and status or &#x2022; FALSE - The Rear Climate Screen does NOT display a Rear Fan Speed controls and status.  " Name="Rear_Blower_Control_Available" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_b1gb4EE7EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen displays A/C button and status or NOT: &#x2022; None - The Front Climate Screen does NOT display an A/C button and status or &#x2022; NOT Equal to None - The Front Climate Screen displays the A/C as only OFF or ON.  " Name="Air_Conditioning_Compressor_Type" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_5ZprsEE6EeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_p6k18EE3EeaX676o0O3GfQ</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Rear Climate Screen displays Rear Air Distribution: &#x2022; TRUE - The Rear Climate Screen displays Rear Air Distribution Settings or with a Roof option or &#x2022; FALSE - The Rear Climate Screen displays Rear Air Distribution Settings with NO Roof option.  " Name="Air_Distribution_Rear_Roof_Available" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_E9zBIEE3EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen displays A/C as ON or OFF, or A/C as OFF, ECO, or ON: &#x2022; TRUE - The Front Climate Screen displays A/C as OFF, ECO, or ON or &#x2022; FALSE - The Front Climate Screen displays the A/C as only OFF or ON." Name="HVAC_EcoModeEnbld" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_qRbFIEE2EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen displays A/C and Heat buttons or not: &#x2022; TRUE - The Front Climate Screen display A/C and Heat button options or &#x2022; FALSE - The Front Climate Screen displays only the A/C button.  " Name="HiVoltCoolHtrPresent" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_GD0qgEE2EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen has Dual Front Air Distribution: &#x2022; TRUE - The HVAC system is a Dual Front Air Distribution HVAC System or &#x2022; FALSE - The HVAC system is a Single Front Air Distribution HVAC system. " Name="Dual_Front_Air_Distribution" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_qc38oEE1EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen is a Manual or AutoAutomatic: &#x2022; TRUE - The HVAC system is a Manual HVAC System or &#x2022; FALSE - The HVAC system is an Automatic HVAC system. " Name="True_Manual_HVAC_System" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_LGTiYEE1EeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen displays Dual Zone or Single Zone set temperature values: &#x2022; 1 - Single Front Zone or &#x2022; 2 - Dual Front Zone. " Name="KeHVC_Cnt_CfgNumOfFrontZones" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_3bZv8EEyEeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_DgOJgEEvEeaX676o0O3GfQ</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Rear Climate Screen displays Dual Zone, Single Zone, or NO rear set temperature values: &#x2022; 0 - No Rear Temp Zone, &#x2022; 1 - Single Front Zone, or &#x2022; 2 - Dual Front Zone.  " Name="Number_of_Rear_Temp_Zones" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_GJiNwEEyEeaX676o0O3GfQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_PuLesEEwEeaX676o0O3GfQ</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines on which side of the display the Single Zone set temperature display and controls should be shown: &#x2022; TRUE - Display Single Zone set temperature display and controls (if applicable) NOT on the right side of the screen (left side or middle is OK).  &#x2022; FALSE - Display Single Zone set temperature display and controls (if applicable) NOT on the left side of the screen (right side only is OK). " Name="Ke_b_SZ_leftTempInd" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Hc5FUEEtEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front and Rear Climate Screens display the 4-Mode or the Combi Air Distribution Setting touch screen controls: &#x2022; FALSE - Display Combi Air Distribution Setting touch screen controls. &#x2022; TRUE - Display 4-Mode Air Distribution Setting touch screen controls. " Name="Air_Distribution_Control_Discrete_Style" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_zfKoEEErEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Determines whether the Front Climate Screen is displayed or not. This includes whether a Climate Home Screen Icon and the Climate Porch Pane is displayed. This is Infotainment internal and is declared in Control Device and consumed as common cal in Display Devices.  &#x2022; FALSE - Never display Front Climate Screen. Remove Front Climate Application from Home Screen and App Tray; Porch view (Theme A Only) information will be populated from communicated QSP data. If Rear Climate is enabled, show single tab layout for the Rear Climate Application.  &#x2022; TRUE - Front Climate Screen is enabled. Front Climate Application on Home Screen and App Tray will be present; Porch view (Theme A Only) information will be populated from commuicated QSP data. If Rear Climate is enabled show the Dual tab layout for both the Front Climate and Rear Climate Applications." Name="Climate_Application_Available" References="GIS-550" Usage="LOW,MID,HIGH,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_cgTxkEEpEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the description for the Climate_Application_Available calibration to match the description in the latest version GIS-550.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

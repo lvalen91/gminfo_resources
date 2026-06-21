@@ -1,0 +1,41 @@
+=== KEY SECURITY FINDINGS ===
+
+[INFO] Executing: Kernel version
+[OK] Kernel version
+Linux version 4.19.305-240125T145315Z-gf1edde901aa7 (nobody@android-build) (Android (7485623, based on r416183b1) clang version 12.0.7 (https://android.googlesource.com/toolchain/llvm-project c935d99d7cf2016289302412d708641d52d2f7ee), GNU ld (GNU Binutils for Ubuntu) 2.34) #1 SMP PREEMPT Tue Jul 22 07:52:16 EDT 2025
+--
+[INFO] Executing: SELinux status
+[OK] SELinux status
+Enforcing
+--
+[INFO] Executing: SELinux mode
+[OK] SELinux mode
+1
+--
+[INFO] Executing: Verified boot state
+[OK] Verified boot state
+green
+--
+[INFO] Executing: Boot flash locked
+[OK] Boot flash locked
+1
+--
+[ro.debuggable]: [0]
+
+--
+[ro.boot.flash.locked]: [1]
+[ro.boot.force_normal_boot]: [1]
+--
+[ro.debuggable]: [0]
+[ro.frp.pst]: [/dev/block/by-name/persistent]
+--
+[sys.oem_unlock_allowed]: [0]
+[sys.rescue_boot_count]: [1]
+--
+[INFO] Pulling: Kernel version (/proc/version)
+[DENIED] Failed to pull /proc/version
+--
+[INFO] Pulling: SELinux policy (/system/etc/selinux/plat_sepolicy.cil)
+[OK] Pulled plat_sepolicy.cil
+[INFO] Pulling: Vendor SELinux (/vendor/etc/selinux/vendor_sepolicy.cil)
+[OK] Pulled vendor_sepolicy.cil

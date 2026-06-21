@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>09/17/2018</Date>
+    <Description>Inital release of Enumeration definition for GIS1007 Settings GlobalB</Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Unit of Radios Screen Saver timeout" Name="RADIO_SCREEN_SAVER_TIME_UNIT">
+    <EnumID>_WKXo4LqdEei8LOtef1Wx4w</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Minutes" Name="Min">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Seconds" Name="Sec">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Pixel refresher timing unit." Name="PIXEL_REFRESHER_TIMING_UNIT">
+    <EnumID>_HZf1kLqdEei8LOtef1Wx4w</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Unit is Days" Name="Days">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Months" Name="Months">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

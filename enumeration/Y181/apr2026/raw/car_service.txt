@@ -1,0 +1,1071 @@
+*Dump car service*
+*Dump all services*
+*CarFeatureController*
+ mEnabledFeatures:[car_device_policy_service, hvac, storage_monitoring, cabin, demo_mode, car-service-test, vehicle_map_service, vehicle_map_subscriber_service, uxrestriction, com.android.car.user.CarUserNoticeService, car_navigation_service, drivingstate, property, audio, power, projection, diagnostic, car_occupant_zone_service, info, car_bugreport, car_media, app_focus, package, car_watchdog, vendor_extension, car_bluetooth, car_user_service, cluster_service, car_activity_service, android.car.input, car_telemetry_service, sensor]
+ mDefaultEnabledFeaturesFromConfig:[car_navigation_service, cluster_service, com.android.car.user.CarUserNoticeService, diagnostic, storage_monitoring, vehicle_map_service, car_telemetry_service]
+ mDisabledFeaturesFromVhal:[]
+ mAvailableExperimentalFeatures:[]
+ mPendingEnabledFeatures:[]
+ mPendingDisabledFeatures:[]
+*CarPropertyService*
+  There are 32 clients using CarPropertyService.
+  Properties registered: 
+    propId: 0x11200402 is registered by 2 client(s).
+    propId: 0x11200407 is registered by 1 client(s).
+    propId: 0x11400400 is registered by 2 client(s).
+    propId: 0x11400409 is registered by 7 client(s).
+    propId: 0x1140050e is registered by 1 client(s).
+    propId: 0x11400600 is registered by 2 client(s).
+    propId: 0x11400602 is registered by 1 client(s).
+    propId: 0x11600207 is registered by 4 client(s).
+    propId: 0x13200504 is registered by 1 client(s).
+    propId: 0x15200505 is registered by 1 client(s).
+    propId: 0x15200507 is registered by 1 client(s).
+    propId: 0x15200508 is registered by 1 client(s).
+    propId: 0x15200509 is registered by 1 client(s).
+    propId: 0x1520050a is registered by 2 client(s).
+    propId: 0x15200510 is registered by 1 client(s).
+    propId: 0x15400500 is registered by 2 client(s).
+    propId: 0x15400501 is registered by 1 client(s).
+    propId: 0x15410511 is registered by 1 client(s).
+    propId: 0x15600502 is registered by 1 client(s).
+    propId: 0x15600503 is registered by 1 client(s).
+    propId: 0x16400b00 is registered by 1 client(s).
+    propId: 0x2120015e is registered by 3 client(s).
+    propId: 0x21200167 is registered by 1 client(s).
+    propId: 0x21200168 is registered by 1 client(s).
+    propId: 0x212001ba is registered by 1 client(s).
+    propId: 0x21201040 is registered by 1 client(s).
+    propId: 0x21201046 is registered by 1 client(s).
+    propId: 0x21201058 is registered by 3 client(s).
+    propId: 0x2120105c is registered by 3 client(s).
+    propId: 0x21201067 is registered by 1 client(s).
+    propId: 0x21201068 is registered by 4 client(s).
+    propId: 0x2120106c is registered by 2 client(s).
+    propId: 0x212010a9 is registered by 2 client(s).
+    propId: 0x212010dc is registered by 2 client(s).
+    propId: 0x212010dd is registered by 2 client(s).
+    propId: 0x212010e2 is registered by 1 client(s).
+    propId: 0x212010e3 is registered by 1 client(s).
+    propId: 0x212010e4 is registered by 1 client(s).
+    propId: 0x212010e7 is registered by 1 client(s).
+    propId: 0x212010e8 is registered by 1 client(s).
+    propId: 0x212010e9 is registered by 1 client(s).
+    propId: 0x212010f2 is registered by 1 client(s).
+    propId: 0x212010f3 is registered by 1 client(s).
+    propId: 0x212010f4 is registered by 1 client(s).
+    propId: 0x21400101 is registered by 1 client(s).
+    propId: 0x2140014e is registered by 1 client(s).
+    propId: 0x21400150 is registered by 1 client(s).
+    propId: 0x21400151 is registered by 1 client(s).
+    propId: 0x21400155 is registered by 1 client(s).
+    propId: 0x21400157 is registered by 1 client(s).
+    propId: 0x21400158 is registered by 1 client(s).
+    propId: 0x21400166 is registered by 2 client(s).
+    propId: 0x21401007 is registered by 2 client(s).
+    propId: 0x21401010 is registered by 1 client(s).
+    propId: 0x21401019 is registered by 1 client(s).
+    propId: 0x2140101a is registered by 1 client(s).
+    propId: 0x2140101b is registered by 1 client(s).
+    propId: 0x2140102d is registered by 1 client(s).
+    propId: 0x21401030 is registered by 1 client(s).
+    propId: 0x21401033 is registered by 1 client(s).
+    propId: 0x21401036 is registered by 1 client(s).
+    propId: 0x21401039 is registered by 1 client(s).
+    propId: 0x2140103c is registered by 1 client(s).
+    propId: 0x21401045 is registered by 2 client(s).
+    propId: 0x2140104a is registered by 1 client(s).
+    propId: 0x21401054 is registered by 1 client(s).
+    propId: 0x21401084 is registered by 1 client(s).
+    propId: 0x2140108b is registered by 1 client(s).
+    propId: 0x2140108d is registered by 2 client(s).
+    propId: 0x214010a1 is registered by 1 client(s).
+    propId: 0x214010a2 is registered by 1 client(s).
+    propId: 0x214010a6 is registered by 2 client(s).
+    propId: 0x214010af is registered by 2 client(s).
+    propId: 0x214010b2 is registered by 1 client(s).
+    propId: 0x214010d5 is registered by 1 client(s).
+    propId: 0x214010d6 is registered by 1 client(s).
+    propId: 0x214010db is registered by 2 client(s).
+    propId: 0x214010de is registered by 2 client(s).
+    propId: 0x214010df is registered by 2 client(s).
+    propId: 0x214010e1 is registered by 1 client(s).
+    propId: 0x214010ed is registered by 2 client(s).
+    propId: 0x214010f6 is registered by 1 client(s).
+    propId: 0x214010f7 is registered by 1 client(s).
+    propId: 0x21402000 is registered by 2 client(s).
+    propId: 0x21402002 is registered by 2 client(s).
+    propId: 0x21402003 is registered by 2 client(s).
+    propId: 0x21402004 is registered by 2 client(s).
+    propId: 0x21402005 is registered by 2 client(s).
+    propId: 0x21402006 is registered by 2 client(s).
+    propId: 0x21402007 is registered by 2 client(s).
+    propId: 0x21402008 is registered by 2 client(s).
+    propId: 0x21402009 is registered by 2 client(s).
+    propId: 0x2140200a is registered by 2 client(s).
+    propId: 0x2140200b is registered by 2 client(s).
+    propId: 0x2140200c is registered by 2 client(s).
+    propId: 0x2140200d is registered by 2 client(s).
+    propId: 0x2140200e is registered by 2 client(s).
+    propId: 0x2140200f is registered by 2 client(s).
+    propId: 0x21402010 is registered by 2 client(s).
+    propId: 0x21402012 is registered by 2 client(s).
+    propId: 0x21402013 is registered by 2 client(s).
+    propId: 0x21402014 is registered by 2 client(s).
+    propId: 0x21402015 is registered by 2 client(s).
+    propId: 0x21402016 is registered by 2 client(s).
+    propId: 0x21402017 is registered by 2 client(s).
+    propId: 0x21402018 is registered by 2 client(s).
+    propId: 0x21402019 is registered by 2 client(s).
+    propId: 0x2140201a is registered by 2 client(s).
+    propId: 0x2140201b is registered by 2 client(s).
+    propId: 0x2140201c is registered by 2 client(s).
+    propId: 0x2140201d is registered by 2 client(s).
+    propId: 0x2140201e is registered by 2 client(s).
+    propId: 0x2140201f is registered by 2 client(s).
+    propId: 0x21402020 is registered by 2 client(s).
+    propId: 0x21402021 is registered by 2 client(s).
+    propId: 0x21402024 is registered by 2 client(s).
+    propId: 0x21402025 is registered by 2 client(s).
+    propId: 0x21402026 is registered by 2 client(s).
+    propId: 0x21402027 is registered by 2 client(s).
+    propId: 0x21402028 is registered by 2 client(s).
+    propId: 0x21402029 is registered by 2 client(s).
+    propId: 0x2140202a is registered by 2 client(s).
+    propId: 0x2140202b is registered by 2 client(s).
+    propId: 0x2140202c is registered by 2 client(s).
+    propId: 0x2140202d is registered by 2 client(s).
+    propId: 0x2140202e is registered by 2 client(s).
+    propId: 0x2140202f is registered by 2 client(s).
+    propId: 0x21402030 is registered by 2 client(s).
+    propId: 0x21402031 is registered by 2 client(s).
+    propId: 0x21402032 is registered by 2 client(s).
+    propId: 0x21402033 is registered by 2 client(s).
+    propId: 0x2140203d is registered by 2 client(s).
+    propId: 0x2140203e is registered by 2 client(s).
+    propId: 0x2140203f is registered by 2 client(s).
+    propId: 0x21402040 is registered by 2 client(s).
+    propId: 0x21402041 is registered by 2 client(s).
+    propId: 0x2140204c is registered by 2 client(s).
+    propId: 0x2140204d is registered by 2 client(s).
+    propId: 0x2140204e is registered by 2 client(s).
+    propId: 0x2140204f is registered by 2 client(s).
+    propId: 0x21402050 is registered by 2 client(s).
+    propId: 0x21402051 is registered by 2 client(s).
+    propId: 0x21402053 is registered by 2 client(s).
+    propId: 0x21402054 is registered by 2 client(s).
+    propId: 0x21402055 is registered by 2 client(s).
+    propId: 0x21402056 is registered by 2 client(s).
+    propId: 0x21402057 is registered by 2 client(s).
+    propId: 0x21402058 is registered by 2 client(s).
+    propId: 0x21402059 is registered by 2 client(s).
+    propId: 0x2140205b is registered by 2 client(s).
+    propId: 0x2140205e is registered by 2 client(s).
+    propId: 0x2140207e is registered by 2 client(s).
+    propId: 0x2140207f is registered by 2 client(s).
+    propId: 0x21402080 is registered by 2 client(s).
+    propId: 0x21402081 is registered by 2 client(s).
+    propId: 0x21402082 is registered by 2 client(s).
+    propId: 0x21402083 is registered by 2 client(s).
+    propId: 0x21402084 is registered by 2 client(s).
+    propId: 0x2140208d is registered by 2 client(s).
+    propId: 0x21410102 is registered by 2 client(s).
+    propId: 0x2150014f is registered by 1 client(s).
+    propId: 0x21500156 is registered by 1 client(s).
+    propId: 0x2160108c is registered by 1 client(s).
+    propId: 0x216010f5 is registered by 1 client(s).
+    propId: 0x21700152 is registered by 1 client(s).
+    propId: 0x21700159 is registered by 1 client(s).
+    propId: 0x2520011a is registered by 1 client(s).
+  Properties changed by CarPropertyService: 
+    propId: 0x21401059 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@c60983e
+    propId: 0x2140108f areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x21401091 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x21401092 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x21401093 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x21401094 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x21401095 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x21401097 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x21401098 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x2140109a areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x2140109b areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x2140109c areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x2140109d areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x2140109e areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x2140109f areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x214010a0 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x214010a3 areaId: 0x0 by client: com.android.car.CarPropertyService$Client@2e6080a
+    propId: 0x214010a3 areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@420a87b
+    propId: 0x2141014b areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@5d40075
+    propId: 0x2141015d areaId: 0x1000000 by client: com.android.car.CarPropertyService$Client@c60983e
+*OccupantZoneService*
+**mOccupantsConfig**
+ zoneId=0 info=OccupantZoneInfo{zoneId=0 type=0 seat=1}
+**mDisplayConfigs**
+**mAudioZoneIdToOccupantZoneIdMapping**
+**mActiveOccupantConfigs**
+ zoneId=0 config={userId=10 displays={displayId=0 displayType=1} audioZoneId=none}
+mEnableProfileUserAssignmentForMultiDisplay:false
+mEnableSourcePreferred:true
+mSourcePreferredComponents: [ComponentInfo{com.google.android.apps.maps/com.google.android.maps.MapsActivity}]
+*CarUxRestrictionsManagerService*
+UX Restrictions Clients callbacks: 18
+UX Restrictions Clients killed: false
+UX Restrictions Clients broadcasts count: -1
+Port: 0x23 UXR: DO: false UxR: 0 time: 16991016771
+UX Restriction configurations:
+Physical display port: null
+===========================================
+baseline mode UXR:
+-------------------------------------------
+State:unknown num restrictions:1
+Requires DO? true
+Restrictions: 0x1ff
+Speed Range: None
+-------------------------------------------
+State:parked num restrictions:1
+Requires DO? false
+Restrictions: 0x0
+Speed Range: None
+-------------------------------------------
+State:idling num restrictions:1
+Requires DO? true
+Restrictions: 0x10
+Speed Range: None
+-------------------------------------------
+State:moving num restrictions:2
+Requires DO? true
+Restrictions: 0x154
+Speed Range: 0.0 - 2.2
+-------------------------------------------
+Requires DO? true
+Restrictions: 0x1ff
+Speed Range: 2.2 - Infinity
+-------------------------------------------
+===========================================
+passenger mode UXR:
+-------------------------------------------
+State:unknown num restrictions:0
+State:parked num restrictions:0
+State:idling num restrictions:0
+State:moving num restrictions:1
+Requires DO? true
+Restrictions: 0x50
+Speed Range: None
+-------------------------------------------
+Max String length: 160
+Max Cumulative Content Items: 21
+Max Content depth: 3
+===========================================
+UX Restriction change log:
+UX Restriction display info:
+*CarUserService*
+  9 lifecycle listeners for services
+    com.android.car.PerUserCarServiceHelper$$ExternalSyntheticLambda0@ca18d5a
+    com.android.car.CarMediaService$$ExternalSyntheticLambda0@776cb8b
+    com.android.car.CarOccupantZoneService$$ExternalSyntheticLambda0@81b3468
+    com.android.car.pm.CarPackageManagerService$1@dfd3081
+    com.android.car.CarInputService$$ExternalSyntheticLambda0@e5b2526
+    com.android.car.garagemode.GarageMode$4@3849567
+    com.android.car.user.CarUserNoticeService$$ExternalSyntheticLambda0@9a32f14
+    com.android.car.pm.VendorServiceController@4b53bd
+    com.android.car.watchdog.CarWatchdogService$$ExternalSyntheticLambda0@4c46db2
+  1 lifecycle listener for apps
+    uid=10046, pkg=com.android.systemui
+User switch UI receiver com.android.internal.os.IResultReceiver$Stub$Proxy@f5f6698
+User0Unlocked: true
+BackgroundUsersToRestart: [10]
+BackgroundUsersRestarted: []
+Is UX restricted: false
+Start Background Users On Garage Mode=true
+Initial user: UserHandle{10}
+SwitchGuestUserBeforeSleep: true
+PreCreateUserStages: 3
+PreCreationDelayMs: 5000
+MaxRunningUsers: 3
+NumberOfDrivers: 1
+  #0: id=10 NumberPassengers: 0
+EnablePassengerSupport: false
+User HAL: supported=false, timeout=5000ms
+Relevant overlayable properties
+  owner_name=Driver
+  default_guest_name=Guest
+User switch in process=-10000
+Request Id for the user switch in process=0
+ System UI package name=com.android.systemui
+Relevant Global settings
+  android.car.LAST_ACTIVE_USER_ID=10
+  android.car.LAST_ACTIVE_PERSISTENT_USER_ID=10
+InitialUserSetter
+  mNewUserName: Driver
+  mNewGuestName: Guest
+*SystemActivityMonitoringService*
+ Top Tasks per display:
+display id 0: TaskInfoContainer [topActivity=ComponentInfo{com.android.car.developeroptions/com.android.car.developeroptions.CarDevelopmentSettingsDashboardActivity}, taskId=1000975, stackId=1000975, userId=10, displayId=0, position=1
+ Foreground uid-pids:
+uid:1001000, pids:[2206, 5063]
+*PowerManagementService*
+mCurrentState: CpmsState canSleep:false, canPostpone=false, carPowerStateListenerState=6, CpmsState=ON(1)
+mProcessingStartTime: 0
+mLastSleepEntryTime: 0
+mNextWakeupSec: 0
+mShutdownOnNextSuspend: false
+mShutdownOnFinish: false
+mShutdownPollingIntervalMs: 2000
+mShutdownPrepareTimeMs: 900000
+mRebootAfterGarageMode: false
+mSwitchGuestUserBeforeSleep: true
+mCurrentPowerPolicyId: system_power_policy_all_on
+mPendingPowerPolicyId: null
+mCurrentPowerPolicyGroupId: null
+mIsPowerPolicyLocked: false
+mMaxSuspendWaitDurationMs: 180000
+config_maxSuspendWaitDuration: 180000
+# of power policy change listener: 5
+mFactoryResetCallback: null
+Registered power policies:
+  system_power_policy_initial_on(enabledComponents: AUDIO, DISPLAY, CPU | disabledComponents: MEDIA, BLUETOOTH, WIFI, CELLULAR, ETHERNET, PROJECTION, NFC, INPUT, VOICE_INTERACTION, VISUAL_INTERACTION, TRUSTED_DEVICE_DETECTION, LOCATION, MICROPHONE)
+  system_power_policy_all_on(enabledComponents: AUDIO, MEDIA, DISPLAY, BLUETOOTH, WIFI, CELLULAR, ETHERNET, PROJECTION, NFC, INPUT, VOICE_INTERACTION, VISUAL_INTERACTION, TRUSTED_DEVICE_DETECTION, LOCATION, MICROPHONE, CPU | disabledComponents: )
+Power policy groups: none
+Preemptive power policy:
+  system_power_policy_suspend_to_ram(enabledComponents:  | disabledComponents: AUDIO, BLUETOOTH, WIFI, LOCATION, MICROPHONE, CPU)
+  system_power_policy_no_user_interaction(enabledComponents: WIFI, CELLULAR, ETHERNET, TRUSTED_DEVICE_DETECTION, CPU | disabledComponents: AUDIO, MEDIA, DISPLAY, BLUETOOTH, PROJECTION, NFC, INPUT, VOICE_INTERACTION, VISUAL_INTERACTION, LOCATION, MICROPHONE)
+Power components state:
+  AUDIO: on
+  MEDIA: on
+  DISPLAY: on
+  BLUETOOTH: on
+  WIFI: on
+  CELLULAR: on
+  ETHERNET: on
+  PROJECTION: on
+  NFC: on
+  INPUT: on
+  VOICE_INTERACTION: on
+  VISUAL_INTERACTION: on
+  TRUSTED_DEVICE_DETECTION: on
+  LOCATION: on
+  MICROPHONE: on
+  CPU: on
+Components powered off by power policy:
+Components changed by the last policy: AUDIO, MEDIA, DISPLAY, BLUETOOTH, WIFI, CELLULAR, ETHERNET, PROJECTION, NFC, INPUT, VOICE_INTERACTION, VISUAL_INTERACTION, TRUSTED_DEVICE_DETECTION, LOCATION, MICROPHONE, CPU
+Monitoring HW state signal: false
+Silent mode by HW state signal: false
+Forced silent mode: false
+*CarDrivingStateService*
+Driving State Clients callbacks: 9
+Driving State Clients killed: false
+Driving State Clients broadcasts count: -1
+Driving state change log:
+07-17 14:49:52 CarDrivingStateService Boot: changed from -1 to 0
+Current Driving State: 0
+Supported gears:
+Gear:1Gear:2Gear:8Gear:16Gear:32Gear:64Gear:128Gear:256Gear:512Gear:1024Gear:2048Gear:4096Gear:4Gear:4*CarPackageManagerService*
+mEnableActivityBlocking:true
+mPreventTemplatedAppsFromShowingDialog:true
+mTemplateActivityClassName:androidx.car.app.activity.CarAppActivity
+Display Restrictions:
+Display 0 is unrestricted
+ Blocked activity log:
+**System allowlist**
+AppBlockingPackageInfoWrapper [info=AppBlockingPackageInfo [packageName=com.gm.tcps, flags=1, minRevisionCode=0, maxRevisionCode=0, signatures=[android.content.pm.Signature@faeee7a2], activities=[com.gm.tcps.view.activity.ErrorActivity, com.gm.tcps.ViewTermsActivityFromSettings, com.gm.tcps.view.activity.DemoImpNoticeActivity, com.gm.tcps.view.activity.OnStarActivity, com.gm.tcps.view.activity.ViewTermsActivity, com.gm.tcps.view.activity.SkipTermsActivity, com.gm.tcps.view.activity.TermsDetailActivity, com.gm.tcps.view.activity.TermsDeclineActivity, com.gm.tcps.view.activity.DemoActivity, com.gm.tcps.view.activity.EmailActivity, com.gm.tcps.view.activity.CountryActivity]], isMatching=true]
+**Client Policies**
+**Unprocessed policy services**
+**Allowlist string in resource**
+
+**System allowlist string in resource**
+com.android.systemui,com.google.android.permissioncontroller/com.android.packageinstaller.permission.ui.GrantPermissionsActivity,com.android.permissioncontroller/com.android.packageinstaller.permission.ui.GrantPermissionsActivity,android/com.android.internal.app.ResolverActivity,com.android.mtp/com.android.mtp.ReceiverActivity,com.android.server.telecom/com.android.server.telecom.components.UserCallActivity,com.gm.gmbugreport
+**Blocklist string in resource**
+
+**Allowlist map from resource**
+{={}, com.android.permissioncontroller={com.android.packageinstaller.permission.ui.GrantPermissionsActivity}, com.android.mtp={com.android.mtp.ReceiverActivity}, com.android.systemui={}, android={com.android.internal.app.ResolverActivity}, com.gm.gmbugreport={}, com.android.server.telecom={com.android.server.telecom.components.UserCallActivity}, com.google.android.permissioncontroller={com.android.packageinstaller.permission.ui.GrantPermissionsActivity}, com.gm.passengermodeapp={com.gm.passengermodeapp.ActivityBlockingActivity}}
+**Blocklist from resource**
+
+mCurrentDrivingSafetyRegion:android.car.drivingsafetyregion.all
+mTempAllowedActivities:{}
+*Input Service*
+Long-press delay: 400ms
+Call button ends ongoing call: false
+**InputCaptureClientController**
+***Display:1
+****All clients:
+Client{uid:1000,pid:1676,callback:android.car.input.ICarInputCallback$Stub$Proxy@1e49ad6,inputTypes:[I@d075157,flags:1,grantedTypes:[200]}
+****Full capture stack
+**** Per Input stack, input type:200
+Client{uid:1000,pid:1676,callback:android.car.input.ICarInputCallback$Stub$Proxy@1e49ad6,inputTypes:[I@d075157,flags:1,grantedTypes:[200]}
+***Display:2
+mNumKeyEventsDispatched:0,mNumRotaryEventsDispatched:0
+GarageModeInProgress false
+*CarUserNoticeService* mServiceIntent:Intent { cmp=com.google.android.car.setupwizard/.account.ShortNoticeService }, mUserId:10, mUiShown:false, mServiceBound:false, mKeyguardPollingCounter:0, Setting enabled:false, Ignore User: -10000
+**AppFocusService**
+mActiveAppTypes:{}
+ClientInfo{mUid=1010102,mPid=3817,owned={}}
+**CarDemoModeService**
+mDemoMode:false
+*CarAudioService*
+  Configurations:
+    Run in legacy mode? false
+    Persist master mute state? true
+    Use hal ducking signals true
+    Volume context priority list version: 1
+    Volume key event timeout ms: 0
+    Car audio configuration path: /vendor/etc/car_audio_configuration.xml
+  
+  Current State:
+    Master muted? true
+    Audio enabled? true
+  
+  Volume Group Mute Enabled? false
+  CarAudioZone(primary zone:0) isPrimary? true
+    CarVolumeGroup(0)
+      Zone Id(true)
+      Is Muted(false)
+      UserId(10)
+      Persist Volume Group Mute(false)
+      Step size: 100
+      Gain values (min / max / default/ current): 0 6300 1600 1600
+      Gain indexes (min / max / default / current): 0 63 16 16
+      Context: ALARM -> Address: bus5_alarm_out
+      Context: NOTIFICATION -> Address: bus6_notification_out
+      Context: SYSTEM_SOUND -> Address: bus7_system_sound_out
+      CarAudioDeviceInfo Device(bus6_notification_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 1600
+      CarAudioDeviceInfo Device(bus7_system_sound_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 1600
+      CarAudioDeviceInfo Device(bus5_alarm_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 1600
+      
+    CarVolumeGroup(1)
+      Zone Id(true)
+      Is Muted(false)
+      UserId(10)
+      Persist Volume Group Mute(false)
+      Step size: 100
+      Gain values (min / max / default/ current): 0 6300 1300 3100
+      Gain indexes (min / max / default / current): 0 63 13 31
+      Context: NAVIGATION -> Address: bus1_navigation_out
+      CarAudioDeviceInfo Device(bus1_navigation_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 3100
+      
+    CarVolumeGroup(2)
+      Zone Id(true)
+      Is Muted(false)
+      UserId(10)
+      Persist Volume Group Mute(false)
+      Step size: 100
+      Gain values (min / max / default/ current): 0 6300 1300 3500
+      Gain indexes (min / max / default / current): 0 63 13 35
+      Context: VOICE_COMMAND -> Address: bus2_voice_command_out
+      CarAudioDeviceInfo Device(bus2_voice_command_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 3500
+      
+    CarVolumeGroup(3)
+      Zone Id(true)
+      Is Muted(false)
+      UserId(10)
+      Persist Volume Group Mute(false)
+      Step size: 100
+      Gain values (min / max / default/ current): 0 6300 3500 3500
+      Gain indexes (min / max / default / current): 0 63 35 35
+      Context: CALL_RING -> Address: bus3_call_ring_out
+      CarAudioDeviceInfo Device(bus3_call_ring_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 3500
+      
+    CarVolumeGroup(4)
+      Zone Id(true)
+      Is Muted(false)
+      UserId(10)
+      Persist Volume Group Mute(false)
+      Step size: 100
+      Gain values (min / max / default/ current): 0 6300 900 2600
+      Gain indexes (min / max / default / current): 0 63 9 26
+      Context: CALL -> Address: bus4_call_out
+      CarAudioDeviceInfo Device(bus4_call_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 2600
+      
+    CarVolumeGroup(5)
+      Zone Id(true)
+      Is Muted(false)
+      UserId(10)
+      Persist Volume Group Mute(false)
+      Step size: 100
+      Gain values (min / max / default/ current): 0 6300 1200 1200
+      Gain indexes (min / max / default / current): 0 63 12 12
+      Context: MUSIC -> Address: bus0_media_out
+      Context: EMERGENCY -> Address: bus0_media_out
+      Context: SAFETY -> Address: bus0_media_out
+      Context: VEHICLE_STATUS -> Address: bus0_media_out
+      Context: ANNOUNCEMENT -> Address: bus0_media_out
+      CarAudioDeviceInfo Device(bus0_media_out)
+        sample rate / encoding format / channel count: 48000 2 2
+        Gain values (min / max / default/ current): 0 6300 3000 1200
+      
+    Input Audio Device Addresses
+      Device Address(bottom)
+    
+  
+  UserId to Zone Mapping:
+    UserId 10 mapped to zone 0
+  
+  Audio Zone to Occupant Zone Mapping:
+  
+  UID to Zone Mapping:
+  
+  *CarZonesAudioFocus*
+    Delayed Focus Enabled: true
+    Has Focus Callback: false
+    Car Zones Audio Focus Listeners:
+      Zone Id: 0
+        *CarAudioFocus*
+          Is focus restricted? false
+          
+          Reject Navigation on Call: false
+          Current Focus Holders:
+            android.media.AudioManager@75c2ccae.c@620ce3b - USAGE_MEDIA
+              Receives Duck Events: false, Wants Pause Instead of Ducking: false, Is Ducked: false
+          Transient Focus Losers:
+          Queued Delayed Focus: None
+          Focus Events:
+            2026-04-07T14:26:48.716 - onAudioFocusRequest for client android.media.AudioManager@d2f116ccom.android.car.notification.c@9e18335 with gain type GAIN_TRANSIENT_MAY_DUCK resulted in REQUEST_GRANTED
+            2026-04-07T14:26:49.555 - onAudioFocusAbandon for client android.media.AudioManager@d2f116ccom.android.car.notification.c@9e18335
+            2026-04-07T14:29:13.506 - onAudioFocusRequest for client android.media.AudioManager@75c2ccae.c@620ce3b with gain type GAIN resulted in REQUEST_GRANTED
+  
+  *AudioControlWrapperV1*
+  Supported Features - none
+  No HalAudioFocus instance
+  
+*DAY NIGHT POLICY*
+Mode:day
+Forced Mode? false, timestamp of dayNight sensor is: 5529562336
+*FixedActivityService*
+mRunningActivities:{} ,mEventMonitoringActive:false
+mBlockingPresentations:
+**ClusterNavigationService**
+context owner: uid: 0, pid: 0
+**InstrumentClusterService**
+bound with renderer: true
+renderer service: android.car.cluster.renderer.IInstrumentCluster$Stub$Proxy@7305444
+context owner: uid: 0, pid: 0
+mRenderingServiceConfig:com.gm.vmsplugin/.VMSClusterService
+mIInstrumentClusterNavigationFromRenderer:android.car.cluster.renderer.IInstrumentClusterNavigation$Stub$Proxy@9d8c92d
+PerUserCarServiceHelper
+  bound: true
+  2 callbacks
+* CarBluetoothService *
+PerUserCarServiceHelper
+  bound: true
+  2 callbacks
+User ID: 10
+User Proxies: Yes
+BluetoothProfileInhibitManager: null
+Using default policy? Yes
+	CAR.BluetoothDeviceConnectionPolicy:
+		UserId: 10
+**CarProjectionService**
+Registered key event handlers:
+Local-only hotspot reservation: null
+Stable local-only hotspot configuration: false
+Wireless clients: 0
+Current wifi mode: 2
+SoftApCallback: null
+Bound to projection app: false
+Registered Service: null
+Current projection state: 0
+Current projection package: null
+Projection status: {}
+Projection status listeners: [com.android.car.BinderInterfaceContainer$BinderInterface@4678e62, com.android.car.BinderInterfaceContainer$BinderInterface@f45abf3]
+WifiScanner: null
+*CarDiagnosticService*
+**last events for diagnostics**
+freeze frame events: 
+**clients**
+**diagnostic listeners**
+*CarStorageMonitoringService*
+last wear information retrieved: missing
+wear change history: 
+boot I/O stats: uid = 0, runtime = 33078, foreground = bytesRead=128373657, bytesWritten=59501023, bytesReadFromStorage=298061824, bytesWrittenToStorage=16343040, fsyncCalls=158, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1000, runtime = 33078, foreground = bytesRead=54072765, bytesWritten=4601111, bytesReadFromStorage=428163072, bytesWrittenToStorage=5816320, fsyncCalls=232, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001, runtime = 33078, foreground = bytesRead=592892, bytesWritten=45930, bytesReadFromStorage=8884224, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1002, runtime = 33078, foreground = bytesRead=209665, bytesWritten=79850, bytesReadFromStorage=299008, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1003, runtime = 33078, foreground = bytesRead=503700, bytesWritten=2785, bytesReadFromStorage=8630272, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010, runtime = 33078, foreground = bytesRead=2536589, bytesWritten=2537, bytesReadFromStorage=10145792, bytesWrittenToStorage=20480, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1013, runtime = 33078, foreground = bytesRead=1533135, bytesWritten=20854, bytesReadFromStorage=39542784, bytesWrittenToStorage=16384, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1017, runtime = 33078, foreground = bytesRead=347569, bytesWritten=3099, bytesReadFromStorage=7393280, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1019, runtime = 33078, foreground = bytesRead=132500, bytesWritten=44, bytesReadFromStorage=8265728, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1020, runtime = 33078, foreground = bytesRead=902, bytesWritten=5937, bytesReadFromStorage=909312, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1023, runtime = 33078, foreground = bytesRead=393505, bytesWritten=205, bytesReadFromStorage=24576, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1036, runtime = 33078, foreground = bytesRead=626946, bytesWritten=3561978, bytesReadFromStorage=1073152, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1037, runtime = 33078, foreground = bytesRead=196935, bytesWritten=4448806, bytesReadFromStorage=20660224, bytesWrittenToStorage=4468736, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1040, runtime = 33078, foreground = bytesRead=143502, bytesWritten=7818, bytesReadFromStorage=3149824, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1041, runtime = 33078, foreground = bytesRead=3833326, bytesWritten=449862, bytesReadFromStorage=48566272, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1046, runtime = 33078, foreground = bytesRead=347615, bytesWritten=38871, bytesReadFromStorage=42258432, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1053, runtime = 33078, foreground = bytesRead=265491, bytesWritten=422, bytesReadFromStorage=4411392, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1054, runtime = 33078, foreground = bytesRead=318109, bytesWritten=1579, bytesReadFromStorage=720896, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1058, runtime = 33078, foreground = bytesRead=130799, bytesWritten=62, bytesReadFromStorage=139264, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1066, runtime = 33078, foreground = bytesRead=47491, bytesWritten=333, bytesReadFromStorage=1245184, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1067, runtime = 33078, foreground = bytesRead=131895, bytesWritten=56, bytesReadFromStorage=352256, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1068, runtime = 33078, foreground = bytesRead=197030, bytesWritten=1450, bytesReadFromStorage=204800, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1069, runtime = 33078, foreground = bytesRead=359173, bytesWritten=1459, bytesReadFromStorage=65536, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1072, runtime = 33078, foreground = bytesRead=134424, bytesWritten=227, bytesReadFromStorage=1904640, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1076, runtime = 33078, foreground = bytesRead=132655, bytesWritten=0, bytesReadFromStorage=552960, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2000, runtime = 33078, foreground = bytesRead=197083, bytesWritten=857, bytesReadFromStorage=1327104, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2900, runtime = 33078, foreground = bytesRead=1998809, bytesWritten=2294, bytesReadFromStorage=5455872, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2912, runtime = 33078, foreground = bytesRead=447648, bytesWritten=67593, bytesReadFromStorage=18460672, bytesWrittenToStorage=36864, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2920, runtime = 33078, foreground = bytesRead=6939843, bytesWritten=490, bytesReadFromStorage=1122304, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2921, runtime = 33078, foreground = bytesRead=194563, bytesWritten=239, bytesReadFromStorage=466944, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2930, runtime = 33078, foreground = bytesRead=135422, bytesWritten=10730, bytesReadFromStorage=188416, bytesWrittenToStorage=12288, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2995, runtime = 33078, foreground = bytesRead=253212, bytesWritten=141, bytesReadFromStorage=5324800, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 5200, runtime = 33078, foreground = bytesRead=11218625, bytesWritten=1707, bytesReadFromStorage=6025216, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 5201, runtime = 33078, foreground = bytesRead=2407922, bytesWritten=370, bytesReadFromStorage=577536, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 9999, runtime = 33078, foreground = bytesRead=823011, bytesWritten=12624, bytesReadFromStorage=4018176, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10042, runtime = 33078, foreground = bytesRead=18, bytesWritten=230, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=249925, bytesWritten=21484, bytesReadFromStorage=2613248, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10046, runtime = 33078, foreground = bytesRead=408092, bytesWritten=219375, bytesReadFromStorage=24887296, bytesWrittenToStorage=16384, fsyncCalls=1, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10047, runtime = 33078, foreground = bytesRead=221948, bytesWritten=803, bytesReadFromStorage=663552, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=28848, bytesWritten=1472, bytesReadFromStorage=49152, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10052, runtime = 33078, foreground = bytesRead=18, bytesWritten=240, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=423389, bytesWritten=11100, bytesReadFromStorage=3092480, bytesWrittenToStorage=12288, fsyncCalls=1
+uid = 10064, runtime = 33078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=226580, bytesWritten=7464, bytesReadFromStorage=9596928, bytesWrittenToStorage=36864, fsyncCalls=0
+uid = 10066, runtime = 33078, foreground = bytesRead=262620, bytesWritten=2637, bytesReadFromStorage=5685248, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=243244, bytesWritten=25775, bytesReadFromStorage=442368, bytesWrittenToStorage=65536, fsyncCalls=0
+uid = 10069, runtime = 33078, foreground = bytesRead=208763, bytesWritten=3265, bytesReadFromStorage=23220224, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=95232, bytesWritten=2212, bytesReadFromStorage=77824, bytesWrittenToStorage=36864, fsyncCalls=0
+uid = 10074, runtime = 33078, foreground = bytesRead=197014, bytesWritten=510, bytesReadFromStorage=2392064, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=428484, bytesWritten=96722, bytesReadFromStorage=897024, bytesWrittenToStorage=135168, fsyncCalls=0
+uid = 10075, runtime = 33078, foreground = bytesRead=18, bytesWritten=226, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=197044, bytesWritten=1886, bytesReadFromStorage=20901888, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10090, runtime = 33078, foreground = bytesRead=197030, bytesWritten=856, bytesReadFromStorage=679936, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10100, runtime = 33078, foreground = bytesRead=14, bytesWritten=65, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=198199, bytesWritten=981, bytesReadFromStorage=5259264, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10107, runtime = 33078, foreground = bytesRead=231672, bytesWritten=576, bytesReadFromStorage=4161536, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1424779, bytesWritten=5617, bytesReadFromStorage=199553024, bytesWrittenToStorage=81920, fsyncCalls=0
+uid = 10121, runtime = 33078, foreground = bytesRead=932953, bytesWritten=93849, bytesReadFromStorage=5857280, bytesWrittenToStorage=147456, fsyncCalls=0, background = bytesRead=123155, bytesWritten=85756, bytesReadFromStorage=81920, bytesWrittenToStorage=81920, fsyncCalls=0
+uid = 10122, runtime = 33078, foreground = bytesRead=197396, bytesWritten=926, bytesReadFromStorage=1257472, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=56, bytesWritten=56, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001000, runtime = 33078, foreground = bytesRead=5648541, bytesWritten=396719, bytesReadFromStorage=123867136, bytesWrittenToStorage=86016, fsyncCalls=0, background = bytesRead=197022, bytesWritten=753, bytesReadFromStorage=3379200, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001002, runtime = 33078, foreground = bytesRead=2022875, bytesWritten=211016, bytesReadFromStorage=16424960, bytesWrittenToStorage=266240, fsyncCalls=0, background = bytesRead=109537, bytesWritten=263, bytesReadFromStorage=86016, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010044, runtime = 33078, foreground = bytesRead=315324, bytesWritten=975, bytesReadFromStorage=1130496, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=339100, bytesWritten=14998, bytesReadFromStorage=1978368, bytesWrittenToStorage=278528, fsyncCalls=3
+uid = 1010046, runtime = 33078, foreground = bytesRead=2672, bytesWritten=912, bytesReadFromStorage=77824, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=284973, bytesWritten=5236, bytesReadFromStorage=122880, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010052, runtime = 33078, foreground = bytesRead=620080, bytesWritten=8596, bytesReadFromStorage=2396160, bytesWrittenToStorage=12288, fsyncCalls=1, background = bytesRead=40, bytesWritten=13, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010056, runtime = 33078, foreground = bytesRead=18, bytesWritten=147, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1407367, bytesWritten=687, bytesReadFromStorage=2183168, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010069, runtime = 33078, foreground = bytesRead=55, bytesWritten=230, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=208765, bytesWritten=6327, bytesReadFromStorage=528384, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010071, runtime = 33078, foreground = bytesRead=142311, bytesWritten=1002, bytesReadFromStorage=10104832, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=235, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010082, runtime = 33078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=266799, bytesWritten=5483, bytesReadFromStorage=9150464, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010107, runtime = 33078, foreground = bytesRead=540848, bytesWritten=802, bytesReadFromStorage=36864, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=2058039, bytesWritten=30633, bytesReadFromStorage=18714624, bytesWrittenToStorage=28672, fsyncCalls=1
+uid = 1010116, runtime = 33078, foreground = bytesRead=55, bytesWritten=260, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1165035, bytesWritten=122692, bytesReadFromStorage=58916864, bytesWrittenToStorage=417792, fsyncCalls=6
+uid = 1010121, runtime = 33078, foreground = bytesRead=136559, bytesWritten=27506, bytesReadFromStorage=77824, bytesWrittenToStorage=24576, fsyncCalls=0, background = bytesRead=210294, bytesWritten=23141, bytesReadFromStorage=163840, bytesWrittenToStorage=61440, fsyncCalls=0
+uid = 1010122, runtime = 33078, foreground = bytesRead=197380, bytesWritten=585, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010140, runtime = 33078, foreground = bytesRead=1903, bytesWritten=5132, bytesReadFromStorage=1191936, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=198340, bytesWritten=2411, bytesReadFromStorage=13299712, bytesWrittenToStorage=0, fsyncCalls=0
+aggregate I/O stats: uid = 0, runtime = 333078, foreground = bytesRead=1329897216, bytesWritten=287635887, bytesReadFromStorage=298868736, bytesWrittenToStorage=245534720, fsyncCalls=282, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1000, runtime = 333078, foreground = bytesRead=65081968, bytesWritten=10710215, bytesReadFromStorage=451416064, bytesWrittenToStorage=15740928, fsyncCalls=958, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001, runtime = 273078, foreground = bytesRead=622296, bytesWritten=55658, bytesReadFromStorage=8884224, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1002, runtime = 93078, foreground = bytesRead=209666, bytesWritten=79888, bytesReadFromStorage=299008, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1003, runtime = 33078, foreground = bytesRead=503700, bytesWritten=2785, bytesReadFromStorage=8630272, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010, runtime = 213078, foreground = bytesRead=2594797, bytesWritten=2537, bytesReadFromStorage=10145792, bytesWrittenToStorage=20480, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1013, runtime = 213078, foreground = bytesRead=4067084, bytesWritten=38219, bytesReadFromStorage=40243200, bytesWrittenToStorage=16384, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1017, runtime = 213078, foreground = bytesRead=1235566, bytesWritten=609848, bytesReadFromStorage=7393280, bytesWrittenToStorage=663552, fsyncCalls=12, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1019, runtime = 153078, foreground = bytesRead=132652, bytesWritten=44, bytesReadFromStorage=8450048, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1020, runtime = 153078, foreground = bytesRead=902, bytesWritten=8657, bytesReadFromStorage=909312, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1023, runtime = 33078, foreground = bytesRead=393505, bytesWritten=205, bytesReadFromStorage=24576, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1036, runtime = 333078, foreground = bytesRead=702328, bytesWritten=7605666, bytesReadFromStorage=1073152, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1037, runtime = 33078, foreground = bytesRead=196935, bytesWritten=4448806, bytesReadFromStorage=20660224, bytesWrittenToStorage=4468736, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1040, runtime = 93078, foreground = bytesRead=181061, bytesWritten=7818, bytesReadFromStorage=3149824, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1041, runtime = 333078, foreground = bytesRead=8448003, bytesWritten=1935647, bytesReadFromStorage=48566272, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1046, runtime = 93078, foreground = bytesRead=347615, bytesWritten=39262, bytesReadFromStorage=42258432, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1053, runtime = 33078, foreground = bytesRead=265491, bytesWritten=422, bytesReadFromStorage=4411392, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1054, runtime = 333078, foreground = bytesRead=2300951, bytesWritten=1579, bytesReadFromStorage=720896, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1058, runtime = 33078, foreground = bytesRead=130799, bytesWritten=62, bytesReadFromStorage=139264, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1066, runtime = 33078, foreground = bytesRead=47491, bytesWritten=333, bytesReadFromStorage=1245184, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1067, runtime = 33078, foreground = bytesRead=131895, bytesWritten=56, bytesReadFromStorage=352256, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1068, runtime = 93078, foreground = bytesRead=197046, bytesWritten=1466, bytesReadFromStorage=204800, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1069, runtime = 333078, foreground = bytesRead=3620516, bytesWritten=9189, bytesReadFromStorage=65536, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1072, runtime = 33078, foreground = bytesRead=134424, bytesWritten=227, bytesReadFromStorage=1904640, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1076, runtime = 33078, foreground = bytesRead=132655, bytesWritten=0, bytesReadFromStorage=552960, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2000, runtime = 213078, foreground = bytesRead=197083, bytesWritten=857, bytesReadFromStorage=1327104, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=13618579, bytesWritten=2271891, bytesReadFromStorage=4612096, bytesWrittenToStorage=614400, fsyncCalls=0
+uid = 2900, runtime = 333078, foreground = bytesRead=2004233, bytesWritten=2294, bytesReadFromStorage=5455872, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2912, runtime = 333078, foreground = bytesRead=1203308, bytesWritten=210543, bytesReadFromStorage=18460672, bytesWrittenToStorage=335872, fsyncCalls=3, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2920, runtime = 333078, foreground = bytesRead=82598598, bytesWritten=1935, bytesReadFromStorage=1122304, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2921, runtime = 33078, foreground = bytesRead=194563, bytesWritten=239, bytesReadFromStorage=466944, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2930, runtime = 33078, foreground = bytesRead=135422, bytesWritten=10730, bytesReadFromStorage=188416, bytesWrittenToStorage=12288, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2995, runtime = 333078, foreground = bytesRead=759764, bytesWritten=141, bytesReadFromStorage=5324800, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 5200, runtime = 33078, foreground = bytesRead=11218625, bytesWritten=1707, bytesReadFromStorage=6025216, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 5201, runtime = 93078, foreground = bytesRead=2574874, bytesWritten=370, bytesReadFromStorage=614400, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 9999, runtime = 333078, foreground = bytesRead=843040, bytesWritten=21227, bytesReadFromStorage=4018176, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10042, runtime = 93078, foreground = bytesRead=18, bytesWritten=230, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=249941, bytesWritten=21500, bytesReadFromStorage=2613248, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10045, runtime = 120000, foreground = bytesRead=55, bytesWritten=400, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=177742, bytesWritten=812, bytesReadFromStorage=98304, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10046, runtime = 333078, foreground = bytesRead=789245, bytesWritten=427663, bytesReadFromStorage=25956352, bytesWrittenToStorage=32768, fsyncCalls=2, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10047, runtime = 153078, foreground = bytesRead=221948, bytesWritten=803, bytesReadFromStorage=663552, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=41440, bytesWritten=11087, bytesReadFromStorage=57344, bytesWrittenToStorage=28672, fsyncCalls=2
+uid = 10052, runtime = 333078, foreground = bytesRead=18, bytesWritten=240, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=453313, bytesWritten=15152, bytesReadFromStorage=3092480, bytesWrittenToStorage=12288, fsyncCalls=1
+uid = 10054, runtime = 60000, foreground = bytesRead=18, bytesWritten=240, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=548735, bytesWritten=1399, bytesReadFromStorage=57344, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10062, runtime = 60000, foreground = bytesRead=55, bytesWritten=230, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196959, bytesWritten=352, bytesReadFromStorage=6590464, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10064, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=478178, bytesWritten=17048, bytesReadFromStorage=9633792, bytesWrittenToStorage=73728, fsyncCalls=0
+uid = 10066, runtime = 153078, foreground = bytesRead=262620, bytesWritten=2637, bytesReadFromStorage=5685248, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=531744, bytesWritten=32202, bytesReadFromStorage=708608, bytesWrittenToStorage=102400, fsyncCalls=0
+uid = 10069, runtime = 153078, foreground = bytesRead=208763, bytesWritten=3265, bytesReadFromStorage=23220224, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=95248, bytesWritten=2538, bytesReadFromStorage=77824, bytesWrittenToStorage=36864, fsyncCalls=0
+uid = 10074, runtime = 93078, foreground = bytesRead=197014, bytesWritten=510, bytesReadFromStorage=2392064, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=428492, bytesWritten=96730, bytesReadFromStorage=897024, bytesWrittenToStorage=135168, fsyncCalls=0
+uid = 10075, runtime = 93078, foreground = bytesRead=18, bytesWritten=226, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=197060, bytesWritten=2350, bytesReadFromStorage=20901888, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10090, runtime = 153078, foreground = bytesRead=197078, bytesWritten=1645, bytesReadFromStorage=679936, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10100, runtime = 93078, foreground = bytesRead=14, bytesWritten=65, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=198955, bytesWritten=1383, bytesReadFromStorage=5292032, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10107, runtime = 333078, foreground = bytesRead=231672, bytesWritten=576, bytesReadFromStorage=4161536, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=14473647, bytesWritten=1249768, bytesReadFromStorage=274874368, bytesWrittenToStorage=3534848, fsyncCalls=130
+uid = 10120, runtime = 120000, foreground = bytesRead=71, bytesWritten=460, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=534930, bytesWritten=2264, bytesReadFromStorage=6303744, bytesWrittenToStorage=4096, fsyncCalls=0
+uid = 10121, runtime = 273078, foreground = bytesRead=1451876, bytesWritten=507033, bytesReadFromStorage=6262784, bytesWrittenToStorage=675840, fsyncCalls=4, background = bytesRead=123155, bytesWritten=85756, bytesReadFromStorage=81920, bytesWrittenToStorage=81920, fsyncCalls=0
+uid = 10122, runtime = 153078, foreground = bytesRead=197396, bytesWritten=926, bytesReadFromStorage=1257472, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=976, bytesWritten=2456, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001000, runtime = 333078, foreground = bytesRead=10348535, bytesWritten=1431912, bytesReadFromStorage=169476096, bytesWrittenToStorage=126976, fsyncCalls=1, background = bytesRead=197022, bytesWritten=753, bytesReadFromStorage=3379200, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001002, runtime = 333078, foreground = bytesRead=2022947, bytesWritten=229000, bytesReadFromStorage=16424960, bytesWrittenToStorage=266240, fsyncCalls=0, background = bytesRead=109537, bytesWritten=263, bytesReadFromStorage=86016, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1002000, runtime = 60000, foreground = bytesRead=18, bytesWritten=204, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=197089, bytesWritten=811, bytesReadFromStorage=4096, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010044, runtime = 213078, foreground = bytesRead=315324, bytesWritten=975, bytesReadFromStorage=1130496, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=507364, bytesWritten=21158, bytesReadFromStorage=1986560, bytesWrittenToStorage=593920, fsyncCalls=6
+uid = 1010045, runtime = 180000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=177797, bytesWritten=9749, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010046, runtime = 333078, foreground = bytesRead=5359, bytesWritten=7421, bytesReadFromStorage=77824, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=288076, bytesWritten=46700, bytesReadFromStorage=122880, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010047, runtime = 120000, foreground = bytesRead=221964, bytesWritten=1015, bytesReadFromStorage=53248, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=37240, bytesWritten=9832, bytesReadFromStorage=49152, bytesWrittenToStorage=28672, fsyncCalls=2
+uid = 1010052, runtime = 333078, foreground = bytesRead=620080, bytesWritten=8596, bytesReadFromStorage=2396160, bytesWrittenToStorage=12288, fsyncCalls=1, background = bytesRead=30164, bytesWritten=4091, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010054, runtime = 60000, foreground = bytesRead=483140, bytesWritten=1440, bytesReadFromStorage=4739072, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010056, runtime = 93078, foreground = bytesRead=18, bytesWritten=147, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1407383, bytesWritten=703, bytesReadFromStorage=2183168, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010062, runtime = 120000, foreground = bytesRead=55, bytesWritten=394, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196975, bytesWritten=206, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010063, runtime = 60000, foreground = bytesRead=18, bytesWritten=224, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=332566, bytesWritten=712, bytesReadFromStorage=8364032, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010064, runtime = 180000, foreground = bytesRead=214220, bytesWritten=7354, bytesReadFromStorage=73728, bytesWrittenToStorage=36864, fsyncCalls=0, background = bytesRead=8421, bytesWritten=19317, bytesReadFromStorage=57344, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010066, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=763076, bytesWritten=191727, bytesReadFromStorage=471040, bytesWrittenToStorage=212992, fsyncCalls=0
+uid = 1010067, runtime = 60000, foreground = bytesRead=197014, bytesWritten=592, bytesReadFromStorage=6156288, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010069, runtime = 153078, foreground = bytesRead=55, bytesWritten=230, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=208797, bytesWritten=7150, bytesReadFromStorage=528384, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010071, runtime = 153078, foreground = bytesRead=142311, bytesWritten=1002, bytesReadFromStorage=10104832, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=24, bytesWritten=441, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010074, runtime = 60000, foreground = bytesRead=283682, bytesWritten=39540, bytesReadFromStorage=151552, bytesWrittenToStorage=339968, fsyncCalls=2, background = bytesRead=32800, bytesWritten=74200, bytesReadFromStorage=77824, bytesWrittenToStorage=73728, fsyncCalls=0
+uid = 1010075, runtime = 60000, foreground = bytesRead=55, bytesWritten=226, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196967, bytesWritten=1523, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010082, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=266815, bytesWritten=5499, bytesReadFromStorage=9150464, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010090, runtime = 60000, foreground = bytesRead=55, bytesWritten=402, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196959, bytesWritten=297, bytesReadFromStorage=561152, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010100, runtime = 120000, foreground = bytesRead=55, bytesWritten=394, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=198213, bytesWritten=1074, bytesReadFromStorage=53248, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010102, runtime = 300000, foreground = bytesRead=18, bytesWritten=229, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=152331935, bytesWritten=137908, bytesReadFromStorage=83152896, bytesWrittenToStorage=163840, fsyncCalls=1
+uid = 1010107, runtime = 333078, foreground = bytesRead=540848, bytesWritten=802, bytesReadFromStorage=36864, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=19096541, bytesWritten=2079071, bytesReadFromStorage=70045696, bytesWrittenToStorage=4255744, fsyncCalls=84
+uid = 1010116, runtime = 273078, foreground = bytesRead=55, bytesWritten=260, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1303016, bytesWritten=436182, bytesReadFromStorage=59146240, bytesWrittenToStorage=839680, fsyncCalls=31
+uid = 1010120, runtime = 180000, foreground = bytesRead=18, bytesWritten=282, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=267836, bytesWritten=1983, bytesReadFromStorage=28672, bytesWrittenToStorage=4096, fsyncCalls=0
+uid = 1010121, runtime = 153078, foreground = bytesRead=671906, bytesWritten=289894, bytesReadFromStorage=565248, bytesWrittenToStorage=385024, fsyncCalls=2, background = bytesRead=210294, bytesWritten=23141, bytesReadFromStorage=163840, bytesWrittenToStorage=61440, fsyncCalls=0
+uid = 1010122, runtime = 153078, foreground = bytesRead=197380, bytesWritten=585, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=48, bytesWritten=48, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010140, runtime = 273078, foreground = bytesRead=5156, bytesWritten=19671, bytesReadFromStorage=1216512, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=199698, bytesWritten=17940, bytesReadFromStorage=13299712, bytesWrittenToStorage=0, fsyncCalls=0
+I/O stats snapshots: 
+uid = 0, runtime = 93078, foreground = bytesRead=1210148, bytesWritten=2944968, bytesReadFromStorage=647168, bytesWrittenToStorage=13840384, fsyncCalls=106, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1000, runtime = 93078, foreground = bytesRead=5874501, bytesWritten=2894576, bytesReadFromStorage=23064576, bytesWrittenToStorage=4915200, fsyncCalls=175, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001, runtime = 93078, foreground = bytesRead=256, bytesWritten=8865, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1002, runtime = 93078, foreground = bytesRead=1, bytesWritten=38, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010, runtime = 93078, foreground = bytesRead=19776, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1013, runtime = 93078, foreground = bytesRead=2533864, bytesWritten=7637, bytesReadFromStorage=700416, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1017, runtime = 93078, foreground = bytesRead=867189, bytesWritten=606553, bytesReadFromStorage=0, bytesWrittenToStorage=663552, fsyncCalls=12, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1019, runtime = 93078, foreground = bytesRead=144, bytesWritten=0, bytesReadFromStorage=172032, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1020, runtime = 93078, foreground = bytesRead=0, bytesWritten=1813, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1036, runtime = 93078, foreground = bytesRead=5484, bytesWritten=2277894, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1041, runtime = 93078, foreground = bytesRead=884846, bytesWritten=287077, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1054, runtime = 93078, foreground = bytesRead=395806, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1069, runtime = 93078, foreground = bytesRead=2581242, bytesWritten=6158, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2900, runtime = 93078, foreground = bytesRead=1520, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2912, runtime = 93078, foreground = bytesRead=136702, bytesWritten=21544, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2920, runtime = 93078, foreground = bytesRead=14922315, bytesWritten=285, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2995, runtime = 93078, foreground = bytesRead=101858, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 5201, runtime = 93078, foreground = bytesRead=166952, bytesWritten=0, bytesReadFromStorage=36864, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 9999, runtime = 93078, foreground = bytesRead=15037, bytesWritten=8471, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10045, runtime = 60000, foreground = bytesRead=55, bytesWritten=400, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=177726, bytesWritten=579, bytesReadFromStorage=98304, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10046, runtime = 93078, foreground = bytesRead=291958, bytesWritten=123820, bytesReadFromStorage=1069056, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10047, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=12576, bytesWritten=9599, bytesReadFromStorage=8192, bytesWrittenToStorage=28672, fsyncCalls=2
+uid = 10052, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=472, bytesWritten=3594, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10062, runtime = 60000, foreground = bytesRead=55, bytesWritten=230, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196959, bytesWritten=352, bytesReadFromStorage=6590464, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10064, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=251582, bytesWritten=9568, bytesReadFromStorage=36864, bytesWrittenToStorage=36864, fsyncCalls=0
+uid = 10066, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=288484, bytesWritten=6411, bytesReadFromStorage=266240, bytesWrittenToStorage=36864, fsyncCalls=0
+uid = 10069, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=310, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10074, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=8, bytesWritten=8, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10075, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=464, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10090, runtime = 93078, foreground = bytesRead=32, bytesWritten=773, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10100, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=756, bytesWritten=402, bytesReadFromStorage=32768, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10107, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=7810959, bytesWritten=1128254, bytesReadFromStorage=73351168, bytesWrittenToStorage=2904064, fsyncCalls=111
+uid = 10120, runtime = 60000, foreground = bytesRead=71, bytesWritten=460, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=534630, bytesWritten=1563, bytesReadFromStorage=6291456, bytesWrittenToStorage=4096, fsyncCalls=0
+uid = 10121, runtime = 93078, foreground = bytesRead=504631, bytesWritten=404775, bytesReadFromStorage=401408, bytesWrittenToStorage=483328, fsyncCalls=3, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10122, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=904, bytesWritten=2384, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001000, runtime = 93078, foreground = bytesRead=3807768, bytesWritten=398241, bytesReadFromStorage=45408256, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001002, runtime = 93078, foreground = bytesRead=40, bytesWritten=4032, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1002000, runtime = 60000, foreground = bytesRead=18, bytesWritten=204, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=197089, bytesWritten=811, bytesReadFromStorage=4096, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010044, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=90292, bytesWritten=5680, bytesReadFromStorage=8192, bytesWrittenToStorage=270336, fsyncCalls=3
+uid = 1010045, runtime = 60000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=177781, bytesWritten=7452, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010046, runtime = 93078, foreground = bytesRead=1608, bytesWritten=4392, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1327, bytesWritten=8764, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010047, runtime = 60000, foreground = bytesRead=221964, bytesWritten=1015, bytesReadFromStorage=53248, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=37224, bytesWritten=9816, bytesReadFromStorage=49152, bytesWrittenToStorage=28672, fsyncCalls=2
+uid = 1010052, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=432, bytesWritten=3570, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010062, runtime = 60000, foreground = bytesRead=55, bytesWritten=394, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196959, bytesWritten=190, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010064, runtime = 60000, foreground = bytesRead=214220, bytesWritten=7354, bytesReadFromStorage=73728, bytesWrittenToStorage=36864, fsyncCalls=0, background = bytesRead=8405, bytesWritten=17921, bytesReadFromStorage=57344, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010066, runtime = 60000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=763060, bytesWritten=191711, bytesReadFromStorage=471040, bytesWrittenToStorage=212992, fsyncCalls=0
+uid = 1010067, runtime = 60000, foreground = bytesRead=197014, bytesWritten=592, bytesReadFromStorage=6156288, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010069, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=807, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010071, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=8, bytesWritten=190, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010074, runtime = 60000, foreground = bytesRead=283682, bytesWritten=39540, bytesReadFromStorage=151552, bytesWrittenToStorage=339968, fsyncCalls=2, background = bytesRead=32800, bytesWritten=74200, bytesReadFromStorage=77824, bytesWrittenToStorage=73728, fsyncCalls=0
+uid = 1010075, runtime = 60000, foreground = bytesRead=55, bytesWritten=226, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196967, bytesWritten=1523, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010090, runtime = 60000, foreground = bytesRead=55, bytesWritten=402, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=196959, bytesWritten=297, bytesReadFromStorage=561152, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010100, runtime = 60000, foreground = bytesRead=55, bytesWritten=394, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=198197, bytesWritten=1058, bytesReadFromStorage=53248, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010102, runtime = 60000, foreground = bytesRead=18, bytesWritten=229, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=152228155, bytesWritten=117955, bytesReadFromStorage=83152896, bytesWrittenToStorage=163840, fsyncCalls=1
+uid = 1010107, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=8172082, bytesWritten=1756618, bytesReadFromStorage=50999296, bytesWrittenToStorage=3416064, fsyncCalls=70
+uid = 1010116, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=137869, bytesWritten=310364, bytesReadFromStorage=229376, bytesWrittenToStorage=421888, fsyncCalls=25
+uid = 1010120, runtime = 60000, foreground = bytesRead=18, bytesWritten=282, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=267683, bytesWritten=1533, bytesReadFromStorage=16384, bytesWrittenToStorage=4096, fsyncCalls=0
+uid = 1010121, runtime = 93078, foreground = bytesRead=531090, bytesWritten=255539, bytesReadFromStorage=487424, bytesWrittenToStorage=344064, fsyncCalls=2, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010122, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=32, bytesWritten=32, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010140, runtime = 93078, foreground = bytesRead=3253, bytesWritten=14539, bytesReadFromStorage=24576, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=24, bytesWritten=181, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+------
+uid = 0, runtime = 153078, foreground = bytesRead=202289754, bytesWritten=40669379, bytesReadFromStorage=4096, bytesWrittenToStorage=39084032, fsyncCalls=9, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1000, runtime = 153078, foreground = bytesRead=2221980, bytesWritten=393686, bytesReadFromStorage=24576, bytesWrittenToStorage=225280, fsyncCalls=127, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001, runtime = 153078, foreground = bytesRead=8, bytesWritten=228, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010, runtime = 153078, foreground = bytesRead=18648, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1013, runtime = 153078, foreground = bytesRead=85, bytesWritten=8400, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1017, runtime = 153078, foreground = bytesRead=0, bytesWritten=98, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1019, runtime = 153078, foreground = bytesRead=8, bytesWritten=0, bytesReadFromStorage=12288, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1020, runtime = 153078, foreground = bytesRead=0, bytesWritten=907, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1036, runtime = 153078, foreground = bytesRead=62, bytesWritten=302519, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1040, runtime = 93078, foreground = bytesRead=37559, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1041, runtime = 153078, foreground = bytesRead=888337, bytesWritten=291757, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1046, runtime = 93078, foreground = bytesRead=0, bytesWritten=391, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1054, runtime = 153078, foreground = bytesRead=397456, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1069, runtime = 153078, foreground = bytesRead=134578, bytesWritten=306, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2000, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=321674, bytesWritten=14299, bytesReadFromStorage=2342912, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2900, runtime = 153078, foreground = bytesRead=976, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2912, runtime = 153078, foreground = bytesRead=136861, bytesWritten=21732, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2920, runtime = 153078, foreground = bytesRead=15184110, bytesWritten=290, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2995, runtime = 153078, foreground = bytesRead=101851, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 9999, runtime = 153078, foreground = bytesRead=1246, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10046, runtime = 153078, foreground = bytesRead=87707, bytesWritten=23427, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10052, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10107, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1664374, bytesWritten=55282, bytesReadFromStorage=4096, bytesWrittenToStorage=98304, fsyncCalls=3
+uid = 10121, runtime = 153078, foreground = bytesRead=0, bytesWritten=1322, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001000, runtime = 153078, foreground = bytesRead=143756, bytesWritten=64596, bytesReadFromStorage=159744, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001002, runtime = 153078, foreground = bytesRead=0, bytesWritten=3480, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010044, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=8, bytesWritten=8, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010045, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=2064, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010046, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=400, bytesWritten=8200, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010052, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010064, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=1380, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010102, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=51874, bytesWritten=13586, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010107, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=3169382, bytesWritten=54244, bytesReadFromStorage=0, bytesWrittenToStorage=286720, fsyncCalls=6
+uid = 1010116, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=72, bytesWritten=2067, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010120, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=8, bytesWritten=8, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010140, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=631, bytesWritten=7412, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+------
+uid = 0, runtime = 213078, foreground = bytesRead=345428055, bytesWritten=61311043, bytesReadFromStorage=0, bytesWrittenToStorage=58261504, fsyncCalls=3, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1000, runtime = 213078, foreground = bytesRead=813085, bytesWritten=210442, bytesReadFromStorage=4096, bytesWrittenToStorage=65536, fsyncCalls=123, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001, runtime = 213078, foreground = bytesRead=8, bytesWritten=228, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1013, runtime = 213078, foreground = bytesRead=0, bytesWritten=1328, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1036, runtime = 213078, foreground = bytesRead=0, bytesWritten=198872, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1041, runtime = 213078, foreground = bytesRead=885000, bytesWritten=285742, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1054, runtime = 213078, foreground = bytesRead=401377, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1069, runtime = 213078, foreground = bytesRead=60468, bytesWritten=140, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2900, runtime = 213078, foreground = bytesRead=992, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2912, runtime = 213078, foreground = bytesRead=161801, bytesWritten=21816, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2920, runtime = 213078, foreground = bytesRead=15184110, bytesWritten=290, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2995, runtime = 213078, foreground = bytesRead=101343, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 9999, runtime = 213078, foreground = bytesRead=1246, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10046, runtime = 213078, foreground = bytesRead=400, bytesWritten=36309, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10052, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=40, bytesWritten=8, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10107, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1554690, bytesWritten=4358, bytesReadFromStorage=4096, bytesWrittenToStorage=12288, fsyncCalls=0
+uid = 1001000, runtime = 213078, foreground = bytesRead=109598, bytesWritten=25695, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001002, runtime = 213078, foreground = bytesRead=0, bytesWritten=3480, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010046, runtime = 213078, foreground = bytesRead=1079, bytesWritten=2117, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=408, bytesWritten=7910, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010052, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=80, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010102, runtime = 180000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=8, bytesWritten=1573, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010107, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=97736, bytesWritten=103914, bytesReadFromStorage=126976, bytesWrittenToStorage=139264, fsyncCalls=0
+uid = 1010116, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=8, bytesWritten=1027, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010140, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=703, bytesWritten=7872, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+------
+uid = 0, runtime = 273078, foreground = bytesRead=345309583, bytesWritten=62891813, bytesReadFromStorage=126976, bytesWrittenToStorage=60264448, fsyncCalls=3, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1000, runtime = 273078, foreground = bytesRead=1887338, bytesWritten=2466177, bytesReadFromStorage=65536, bytesWrittenToStorage=4698112, fsyncCalls=180, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001, runtime = 273078, foreground = bytesRead=29132, bytesWritten=407, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010, runtime = 213078, foreground = bytesRead=19784, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1017, runtime = 213078, foreground = bytesRead=20808, bytesWritten=98, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1036, runtime = 273078, foreground = bytesRead=64124, bytesWritten=1107619, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1041, runtime = 273078, foreground = bytesRead=921510, bytesWritten=306225, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1054, runtime = 273078, foreground = bytesRead=393893, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1068, runtime = 93078, foreground = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1069, runtime = 273078, foreground = bytesRead=386187, bytesWritten=896, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2000, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1245572, bytesWritten=10650, bytesReadFromStorage=49152, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2900, runtime = 273078, foreground = bytesRead=976, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2912, runtime = 273078, foreground = bytesRead=137196, bytesWritten=22470, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2920, runtime = 273078, foreground = bytesRead=15184110, bytesWritten=290, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2995, runtime = 273078, foreground = bytesRead=100984, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 9999, runtime = 273078, foreground = bytesRead=1254, bytesWritten=132, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10042, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10045, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=233, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10046, runtime = 273078, foreground = bytesRead=896, bytesWritten=16239, bytesReadFromStorage=0, bytesWrittenToStorage=16384, fsyncCalls=1, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10047, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10052, runtime = 273078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=29196, bytesWritten=394, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10054, runtime = 60000, foreground = bytesRead=18, bytesWritten=240, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=548735, bytesWritten=1399, bytesReadFromStorage=57344, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10064, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10066, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10069, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10090, runtime = 153078, foreground = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10107, runtime = 273078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=399227, bytesWritten=56125, bytesReadFromStorage=1961984, bytesWrittenToStorage=425984, fsyncCalls=16
+uid = 10120, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=300, bytesWritten=701, bytesReadFromStorage=12288, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10121, runtime = 213078, foreground = bytesRead=14252, bytesWritten=6888, bytesReadFromStorage=4096, bytesWrittenToStorage=45056, fsyncCalls=1, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10122, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001000, runtime = 273078, foreground = bytesRead=638482, bytesWritten=538085, bytesReadFromStorage=40960, bytesWrittenToStorage=40960, fsyncCalls=1, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001002, runtime = 273078, foreground = bytesRead=32, bytesWritten=3512, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010044, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=77964, bytesWritten=472, bytesReadFromStorage=0, bytesWrittenToStorage=45056, fsyncCalls=0
+uid = 1010045, runtime = 180000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=233, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010046, runtime = 273078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=632, bytesWritten=8454, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010047, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010052, runtime = 273078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=29236, bytesWritten=404, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010054, runtime = 60000, foreground = bytesRead=483140, bytesWritten=1440, bytesReadFromStorage=4739072, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010056, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010062, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010063, runtime = 60000, foreground = bytesRead=18, bytesWritten=224, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=332566, bytesWritten=712, bytesReadFromStorage=8364032, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010064, runtime = 180000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010066, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010069, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010071, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010082, runtime = 93078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010100, runtime = 120000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010102, runtime = 240000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=51898, bytesWritten=3799, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010107, runtime = 273078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=2241104, bytesWritten=27812, bytesReadFromStorage=204800, bytesWrittenToStorage=258048, fsyncCalls=7
+uid = 1010116, runtime = 273078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=32, bytesWritten=32, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010120, runtime = 180000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=145, bytesWritten=442, bytesReadFromStorage=12288, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010121, runtime = 153078, foreground = bytesRead=4257, bytesWritten=6849, bytesReadFromStorage=0, bytesWrittenToStorage=16384, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010122, runtime = 153078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=16, bytesWritten=16, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010140, runtime = 273078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=64, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+------
+uid = 0, runtime = 333078, foreground = bytesRead=307286019, bytesWritten=60317661, bytesReadFromStorage=28672, bytesWrittenToStorage=57741312, fsyncCalls=3, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1000, runtime = 333078, foreground = bytesRead=212299, bytesWritten=144223, bytesReadFromStorage=94208, bytesWrittenToStorage=20480, fsyncCalls=121, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1036, runtime = 333078, foreground = bytesRead=5712, bytesWritten=156784, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1041, runtime = 333078, foreground = bytesRead=1034984, bytesWritten=314984, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1054, runtime = 333078, foreground = bytesRead=394310, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1069, runtime = 333078, foreground = bytesRead=98868, bytesWritten=230, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2000, runtime = 213078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=12051333, bytesWritten=2246942, bytesReadFromStorage=2220032, bytesWrittenToStorage=614400, fsyncCalls=0
+uid = 2900, runtime = 333078, foreground = bytesRead=960, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2912, runtime = 333078, foreground = bytesRead=183100, bytesWritten=55388, bytesReadFromStorage=0, bytesWrittenToStorage=299008, fsyncCalls=3, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2920, runtime = 333078, foreground = bytesRead=15184110, bytesWritten=290, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 2995, runtime = 333078, foreground = bytesRead=100516, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 9999, runtime = 333078, foreground = bytesRead=1246, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10046, runtime = 333078, foreground = bytesRead=192, bytesWritten=8493, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10052, runtime = 333078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=200, bytesWritten=40, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 10107, runtime = 333078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=1619618, bytesWritten=132, bytesReadFromStorage=0, bytesWrittenToStorage=12288, fsyncCalls=0
+uid = 10121, runtime = 273078, foreground = bytesRead=40, bytesWritten=199, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001000, runtime = 333078, foreground = bytesRead=390, bytesWritten=8576, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1001002, runtime = 333078, foreground = bytesRead=0, bytesWritten=3480, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010046, runtime = 333078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=336, bytesWritten=8136, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010052, runtime = 333078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=360, bytesWritten=72, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010102, runtime = 300000, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=0, bytesWritten=995, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0
+uid = 1010107, runtime = 333078, foreground = bytesRead=0, bytesWritten=0, bytesReadFromStorage=0, bytesWrittenToStorage=0, fsyncCalls=0, background = bytesRead=3358198, bytesWritten=105850, bytesReadFromStorage=0, bytesWrittenToStorage=126976, fsyncCalls=0
+last shutdown cost: missing. reason: no historical writes stored at last shutdown
+*CAR.VmsBrokerService*
+mAvailableLayers: VmsAvailableLayers { sequenceNumber = 1, associatedLayers = [VmsAssociatedLayer { vmsLayer = VmsLayer { type = 2005, channel = 10003, version = 1 }, providerIds = [1] }, VmsAssociatedLayer { vmsLayer = VmsLayer { type = 2005, channel = 10002, version = 1 }, providerIds = [1] }] }
+
+mSubscriptionState: VmsSubscriptionState { sequenceNumber = 16, layers = {VmsLayer { type = 1, channel = 1, version = 1 }, VmsLayer { type = 2, channel = 1, version = 1 }, VmsLayer { type = 2, channel = 2, version = 1 }, VmsLayer { type = 3, channel = 1, version = 1 }, VmsLayer { type = 4, channel = 1, version = 1 }, VmsLayer { type = 4, channel = 2, version = 1 }, VmsLayer { type = 5, channel = 1, version = 1 }, VmsLayer { type = 6, channel = 1, version = 1 }, VmsLayer { type = 7, channel = 1, version = 1 }, VmsLayer { type = 7, channel = 2, version = 1 }, VmsLayer { type = 10, channel = 1, version = 1 }, VmsLayer { type = 10, channel = 2, version = 1 }, VmsLayer { type = 13, channel = 1, version = 1 }, VmsLayer { type = 14, channel = 2, version = 1 }, VmsLayer { type = 1, channel = 10002, version = 1 }, VmsLayer { type = 1, channel = 10003, version = 1 }}, associatedLayers = {} }
+
+mClientMap:
+  VmsClient [android.uid.system:1000]
+    UID: 1000
+    Legacy Client: true
+    Monitoring: false
+    Subscriptions:
+      VmsLayer { type = 2, channel = 2, version = 1 }
+      VmsLayer { type = 3, channel = 1, version = 1 }
+      VmsLayer { type = 4, channel = 2, version = 1 }
+      VmsLayer { type = 7, channel = 2, version = 1 }
+      VmsLayer { type = 10, channel = 2, version = 1 }
+      VmsLayer { type = 1, channel = 10002, version = 1 }
+      VmsLayer { type = 1, channel = 10003, version = 1 }
+      VmsLayer { type = 14, channel = 2, version = 1 }
+  VmsClient [android.uid.system:1000]
+    UID: 1000
+    Legacy Client: true
+    Monitoring: false
+    Offerings:
+      Provider [1]
+        VmsLayer { type = 2005, channel = 10002, version = 1 }
+        VmsLayer { type = 2005, channel = 10003, version = 1 }
+  VmsClient [android.uid.system:1000]
+    UID: 1000
+    Legacy Client: true
+    Monitoring: false
+    Subscriptions:
+      VmsLayer { type = 1, channel = 1, version = 1 }
+      VmsLayer { type = 2, channel = 1, version = 1 }
+      VmsLayer { type = 3, channel = 1, version = 1 }
+      VmsLayer { type = 4, channel = 1, version = 1 }
+      VmsLayer { type = 5, channel = 1, version = 1 }
+      VmsLayer { type = 6, channel = 1, version = 1 }
+      VmsLayer { type = 7, channel = 1, version = 1 }
+      VmsLayer { type = 10, channel = 1, version = 1 }
+      VmsLayer { type = 13, channel = 1, version = 1 }
+*CarMediaService*
+  Pending init: false
+  Current playback media component: com.gm.gmaudio.tuner/com.gm.gmaudio.tuner.TunerService
+  Current browse media component: com.gm.gmaudio.tuner/com.gm.gmaudio.tuner.TunerService
+  Current media controller: com.gm.gmaudio.tuner
+  Current browse service extra: com.gm.gmaudio.tuner.TunerService
+  Number of active media sessions (for current user 10): 1
+  Disabled by power policy: false
+  Playback media source history:
+    com.gm.gmaudio.tuner/com.gm.gmaudio.tuner.TunerService
+    zeno.carlink/com.carlink.media.CarlinkMediaBrowserService
+    com.android.bluetooth/com.android.bluetooth.avrcpcontroller.BluetoothMediaBrowserService
+    com.gm.hmi.sxm/com.gm.sxm.api.SxmMediaBrowserService
+    com.gm.domain.server.delayed/com.gm.server.carplay.service.internals.CarPlayMediaService
+  Browse media source history:
+    com.gm.gmaudio.tuner/com.gm.gmaudio.tuner.TunerService
+    zeno.carlink/com.carlink.media.CarlinkMediaBrowserService
+    com.android.bluetooth/com.android.bluetooth.avrcpcontroller.BluetoothMediaBrowserService
+    com.gm.hmi.sxm/com.gm.sxm.api.SxmMediaBrowserService
+    com.gm.domain.server.delayed/com.gm.server.carplay.service.internals.CarPlayMediaService
+  7 shared preferences (saved on directory /data/user/0/com.android.car; last update on 1775600953637 / 2026-04-07 22:29:13.637)
+CarLocationService
+PerUserCarServiceHelper
+  bound: true
+  2 callbacks
+Context: com.android.car.CarService@79103c2
+MAX_LOCATION_INJECTION_ATTEMPTS: 10
+*CarWatchdogService*
+  Current garage mode: GARAGE_MODE_OFF
+  Registered clients
+    Stopped users: none
+  *OveruseConfigurationCache*
+    mSafeToKillSystemPackages: {shared:com.google.android.car.uid.kitchensink}
+    mSafeToKillVendorPackages: {}
+    mVendorPackagePrefixes: []
+    mPackagesByAppCategoryType: 
+    mGenericIoThresholdsByComponent: 
+      Component type: ComponentType.SYSTEM, Threshold: {Foreground bytes: 3221225472, Background bytes: 2147483648, Garage mode bytes: 4294967296}
+      Component type: ComponentType.VENDOR, Threshold: {Foreground bytes: 3221225472, Background bytes: 2147483648, Garage mode bytes: 4294967296}
+      Component type: ComponentType.THIRD_PARTY, Threshold: {Foreground bytes: 3221225472, Background bytes: 2147483648, Garage mode bytes: 4294967296}
+    mIoThresholdsBySystemPackages: 
+      Package name: shared:com.google.android.car.uid.kitchensink, Threshold: {Foreground bytes: 536870912, Background bytes: 536870912, Garage mode bytes: 536870912}
+    mIoThresholdsByVendorPackages: 
+    mIoThresholdsByAppCategoryType: 
+*CarDevicePolicyService*
+HAL_TIMEOUT_MS: 5000
+*CarTelemetryService*
+
+Active Configs
+
+Final Results
+
+Errors
+
+*Dump Vehicle HAL*
+Vehicle HAL Interface: android.hardware.automotive.vehicle@2.0::IVehicle
+**dump HAL services**
+*Power HAL*
+isPowerStateSupported:true, isDeepSleepAllowed:true
+*Input HAL*
+mKeyInputSupported:true
+mRotaryInputSupported:false
+*Diagnostic HAL*
+*VMS HAL*
+VmsProperty: unsupported
+VmsClient: disconnected
+*User HAL*
+DBG: true
+Relevant CarProperties
+  user_hal_timeout=<NOT SET>
+  user_hal_enabled=true
+Vehicle HAL does not support user management
+*Cluster HAL*
+mIsCoreSupported:false
+mIsNavigationStateSupported:false
+*EVSHALSERVICE*
+Use EVS_SERVICE_REQUEST: false
+*ExternalTime HAL*
+Failed dumping: com.android.car.hal.VehicleHal
+java.lang.NullPointerException: Attempt to invoke virtual method 'long java.time.Instant.toEpochMilli()' on a null object reference
+	at com.android.car.hal.TimeHalService.dump(TimeHalService.java:141)
+	at com.android.car.hal.VehicleHal.dump(VehicleHal.java:665)
+	at com.android.car.ICarImpl.dumpAllHals(ICarImpl.java:820)
+	at com.android.car.ICarImpl.dumpIndenting(ICarImpl.java:774)
+	at com.android.car.ICarImpl.dump(ICarImpl.java:765)
+	at android.os.Binder.doDump(Binder.java:887)
+	at android.os.Binder.dump(Binder.java:877)
+	at android.os.Binder.onTransact(Binder.java:813)
+	at android.car.ICar$Stub.onTransact(ICar.java:201)
+	at android.os.Binder.execTransactInternal(Binder.java:1184)
+	at android.os.Binder.execTransact(Binder.java:1143)

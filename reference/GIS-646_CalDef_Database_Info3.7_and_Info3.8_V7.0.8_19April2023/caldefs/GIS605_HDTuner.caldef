@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="Tuner" Description="Calibrations within this caldef are released to support calibrations defined within the GIS-605.">
+  <CalDefFileVersion>9</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>June 27, 2014</Date>
+    <Description>This file contains calibrations used to support HD functionality.  Many of these cals are IBiquity recommended calibrations required for proper HD tuning in the vehicle.</Description>
+    <Author> Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>18Aug2014</Date>
+    <Description>This change comprehends re-allocation of some tuner/HMI cals from the tunerHMI caldef file to this file.  Change impacted in this release are marked with the Version 3 rev history.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on MID and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>December 1, 2014</Date>
+    <Description>Release File Change Log:  Cal Def File Version 4.  December 1, 2014
+Here is a summary of the changes for this release based on reviews with Harman:
+
+1.  HD_AMBandBlendDecisionCarrierNoise.  Range mismatch issue corrected.  Swapped min and max values to align with min and max cal definition.
+
+2.  HD_FMBandBlendDecisionCarrierNoise.  Range mismatch issue corrected.  Swapped min and max values to align with min and max cal definition.
+
+3.  HD_FM_MPSBlendRate.  Range mismatch issue corrected.  Swapped min and max values to align with min and max cal definition.
+
+4.  HD_FM_SPSBlendRate.  Range mismatch issue corrected.  Swapped min and max values to align with min and max cal definition.
+
+5.  HD_AM_BlendRate.  Range mismatch issue corrected.  Swapped min and max values to align with min and max cal definition.
+
+6.  TimeHDServiceLost.  Added this calibration as a Harman recommendation.  Currently there are no plans to transition from an SPS back to MPS after signal lost.  However, is is provided as a backup measure.
+
+7.  TimeHDSyncLoss.  Added this calibration as a Harman recommendation.  This cal defines the time that elapses after loss of MPS signal to transition back to analog.
+
+8. TimeHD_SPSUpdate.  Added this calibration as a Harman recommendation.  This cal defines the time interval to display SPS info after a loss of the SPS signal.
+
+9. TimeHD_SPSInfo.  Added this calibration as a Harman recommendation.  This cal defines the time delay before sending SPS information after selecting an unknown SPS.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>April 13, 2015</Date>
+    <Description>This is the change log for the April 15, 2015 GIS605HD Radio caldef release:&#xD;
+&#xD;
+1.  Delete TimeHDSyncLoss and HD_RadioAvailable as these cals are not required per Harman Assemlba tickets #1640 and # 1638. &#xD;
+&#xD;
+2.  Clarified the definition for HDMetadataHoldTime calibration per Assembla Ticket #1639.  This includes a description update for HD_DropTimer as both these cals apply for HD SPS broadcasts.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>2018-Mar-29</Date>
+    <Description>Adding two cals as per MFL348 MY21 CR 948737 for HD Radio  various User Experience enhancement:  1.) HD_Artist_Experience_Enabled and  2.) HD_Image_Hold_Time.</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>11/22/2019</Date>
+    <Description>Per CR# 2303019, in MY22 GIS-646 Cal DB V6.0.3 deprecating GIS605_HDTuner.caldef file for future use. Starting MY22 Android 9+ platforms, this caldef will not apply as HD Radio is not supported.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration is used to enable/disable the HD Artist Experience feature in the CSM/Tuner and center stack controller. When TRUE the CSM/Tuner shall enable the HD Artist Experience feature including the center stack HMI prompt to allow the user to enable or disable the feature during normal use. When FALSE, the CSM/Tuner shall disable this feature, which includes removing any centerstack HMI control to enable/disable the feature. Only the default image will be displayed by HMI controllers when this calibration is set to FALSE. Therefore, the CSM/Tuner shall always command the display of the default image whenever this calibration is set to FALSE OR the user disables the feature through the centerstack HMI control. The default state for this feature shall be TRUE." Name="HD_Artist_Experience_Enabled" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_jzRFUDPuEee2j-RGaKwwEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2018-Mar-29</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Kiran Soni</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The tuner shall retain the HD station Primary Art Images associated with the last tuned multicast for the time period defined by the calibration HD_IMAGE_HOLD_TIME.  This includes the currently playing song Primary Art Images as well as the subsequent song Primary Art Images, if already received.  This provides the ability to re-transmit the previously received Primary Art Images to HMI controllers should the user switch to a new HD station and then tune back to the previous HD station within the HD_IMAGE_HOLD_TIME.  However, the calibration value shall be determined between GM, the tuner supplier, and Xperi for overall optimization." Name="HD_Image_Hold_Time" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_0PSBcDGhEeeH7MoU92TqRg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2018-Mar-29</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Kiran Soni</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1200</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This cal defines the time delay before sending SPS information after selecting an unknows SPS." Name="TimeHD_SPSInfo" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_QcD2EXoeEeSjYPic2Gk-6g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3600</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This cal defines the time interval to display SPS info after a loss of the SPS signal." Name="TimeHD_SPSUpdate" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>__lwAQXodEeSjYPic2Gk-6g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3600</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration represents the time after which a return to MPS shall be done after SPS is removed.  This is an optional cal and may not be required for GM programs.  Therefore, the default value is set to maximum." Name="TimeHDServiceLost" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_cdaaAHocEeSjYPic2Gk-6g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3600</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="HDMetaDataHoldTime shall provide a time interval in seconds that existing HD SPS metadata remains displayed until replaced with the HD Acquiring Signal message.  This calibration is required to avoid excessive toggling of the HD Acquiring Message in intermittent or varying signal reception areas.  For example, when the SPS HD signal is interrupted, audio is lost (and output is muted) as the tuner begins a reacquisition sequence. During the reacquisition sequence, the tuner shall not send the HD Acquiring message to HMI until this calibration timer expires.  This keeps the HMI display stable showing existing metadata in situations were the signal loss is brief. If the HD SPS signal cannot be reacquired before the value of this calibration expires OR before the HD_DropTimer cal expires (whichever occurs first), then the metadata is removed and the HD Not Available message shall be displayed.  Alternately, if the value of this calibration is selected to be less then the HD_DropTimer cal value and it expires before the SPS signal is reacquired, then then the HD Acquiring message shall be displayed and metadata dropped while the tuner attempts to reacquire the SPS signal.  If it is not successful and the HD_DropTimer cal expires, then the system shall display the HD Not Available HMI message. If successful (digital lock achieved), the new metadata will be displayed and audio played. The default value of this cal shall be 10 seconds." Name="HDMetaDataHoldTime" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9Rg2IScCEeSmb8tw1ZVRMw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The AM_HDBlendThreshold is the quality level value at which the tuner begins to blend in the digital AM audio.  At a quality (Q) level below this cal value the tuner will begin to fallback to the analog AM broadcast. 1 is defined as the lowest quality 4 the highest.  The default value is 3." Name="AM_HDBlendThreshold" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ypG4Ak1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the default value used to enable or disable HD for the FM radio band in the vehicle. The default state shall be TRUE and only overwritten if the user decides to disable HD radio through a centerstack HMI control." Name="HD_SwitchingFMBandOnOffSetting" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_eBqz8WEKEeOeJZIDg-p74A</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is the default value used to enable or disable HD for the AM radio band in the vehicle. The default state shall be TRUE and only overwritten if the user decides to disable HD radio through a centerstack HMI control." Name="HD_SwitchingAMBandOnOffSetting" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqL2EU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Change Log for April 16, 2014 Release" Name="FM_AnalogDigitalBlendTime" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq3yk01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>1281</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>2550</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the digital to analog blend time cal for FM." Name="FM_DigitalAnalogBlendTime" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq3ym01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>765</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>765</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the quality level at which the tuner begins to blend in the digital FM audio for HD MPS broadcasts. At a quality (Q) level below this cal value the tuner will begin to fallback to the analog FM broadcast. 1 is lock analog.  2 Favors Analog. 3 Good Balance.  4.  Some HD Artifacts may be heard. The default value is 3." Name="FM_MPSBlendThreshold" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq3ynU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the quality level at which the tuner begins to blend in the digital FM audio for HD SPS broadcasts. At a quality level below this cal value the tuner will begin to break digital lock. 1 is defined as the lowest quality  5 the highest.  " Name="FM_SPSBlendThreshold" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq3ynk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The DisplayAMCategory cal defines whether the AM Category menu item (HD Only) should be displayed for HD activated radios. This cal only has relevance for HD activated tuners. TRUE means display AM Category and any associated HD stations. FALSE means do not display the AM Category and associated HD stations. The default value is FALSE. The tuner shall also monitor this cal and provide appropriate action to either support or not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on required features for a given market." Name="DisplayAMCategory" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_fIkQIScDEeSmb8tw1ZVRMw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is a calibration for systems that include HD radio diversity antenna processing.  The default state shall be OFF (FALSE) as this is a feature not currently available for Info 3 Programs." Name="HD_MRCOnOff" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TQovwGEJEeOeJZIDg-p74A</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal represents a timer that is activated when the tuner loses an HD SPS broadcast due to signal strength or other signal degradation issues.  If this cal timer expires, it shall trigger a HD NOT AVAILABLE message on the HMI display. The default value is 6 seconds.  This calibration works along with HDMetaDataHoldTime to control the HD information displayed during HD SPS transient and signal loss conditions.  Refer to the HDMetaDataHoldTime cal description for additional details." Name="HD_DropTimer" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq5nwk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Calibration used to activate HD Radio in the CSM.  This calibration enables the hardware and software in the CSM to process HD Radio as an activated feature.  TRUE indicates HD Radio is Activated.  FALSE indicates HD Radio is Not Activated.  The default state of this cal is FALSE (Not Activated).  When set to FALSE, the CSM shall not display any HD related menu items." Name="ActivateHDRadio" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_BbTfIf4IEeOVOfEBmrJfSQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable the HD Blend Decision algorithm.  The default state is TRUE.  When set to TRUE, the CSM shall use the Blend Decision algorithm.  FALSE disables the use of Blend Decision." Name="HD_BlendDecisionActiveAnalogToDigital" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_f7mRYGEHEeOeJZIDg-p74A</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is the HD carrier to noise signal level to enable blending for the AM band." Name="HD_AMBandBlendDecisionCarrierNoise" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xtoLwGELEeOeJZIDg-p74A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>68</Value>
+      <MinValue>40</MinValue>
+      <MaxValue>75</MaxValue>
+      <Units>dB</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the HD carrier to noise signal level to enable blending for the FM band." Name="HD_FMBandBlendDecisionCarrierNoise" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_HIvpgGEMEeOeJZIDg-p74A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>50</MinValue>
+      <MaxValue>75</MaxValue>
+      <Units>dB</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines a range for the blend rate for FM MPS broadcasts." Name="HD_FM_MPSBlendRate" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gswPQGEMEeOeJZIDg-p74A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines a range for controller the blend rate for FM SPS broadcasts." Name="HD_FM_SPSBlendRate" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_2G7R0GEMEeOeJZIDg-p74A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines a range for the blend rate for AM broadcasts." Name="HD_AM_BlendRate" References="GIS-605-10000" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_AKzKgGENEeOeJZIDg-p74A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

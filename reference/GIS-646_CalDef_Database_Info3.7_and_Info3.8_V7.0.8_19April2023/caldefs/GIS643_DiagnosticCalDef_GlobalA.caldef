@@ -1,0 +1,1781 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="HMI" Description="GIS-643 - Low radio Component Diagnostic Specification for Global A">
+  <CalDefFileVersion>11</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>19MAY15</Date>
+    <Description>First release for GIS-643 v1.1</Description>
+    <Author>Sanghyun Ryu</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>21AUG2015</Date>
+    <Description>re-release for GIS 643 v1.1 due to the CalID duplication</Description>
+    <Author>Sanghyun Ryu</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>20150902</Date>
+    <Description>Delete FTBs in ANC mic</Description>
+    <Author>Sanghyun  Ryu</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>02SEP15</Date>
+    <Description>Added B0010 / B124B / B1265</Description>
+    <Author>Sanghyun Ryu</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/26/2016</Date>
+    <Description>Per email agreement/review with Sanghyun Ryu on 3/3/2016, made the following updates: Deleted the DEBOUNCE_TIME CAL (CalID: _sVfOkJjTEeOY6q-k73fxZA) that was incorrected defined as a Boolean type CAL in the previous version of this caldef file, and replacing with a new DEBOUNCE_TIME CAL (CalID: _HKpgcN5hEeW58O1OdVks4w) correctly defined as an Integer. The same correction needed to be made within the GIS-621.caldef file to redefine the CAL Type of the DEBOUNCE_TIME CAL. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>3/2/2016</Date>
+    <Description> Per email agreement/review with Sanghyun Ryu on 3/3/2016, made the following updates: Deleted all DTC_MASK Calibrations for the SWITCHED 14V (REMOTE ENABLE CIRCUIT) DTC (DTC_MASK_B1265_01, DTC_MASK_B1265_02, and DTC_MASK_B1265_04) since the SWITCHED 14V (REMOTE ENABLE CIRCUIT) DTC has been deleted to align with GIS-643 v1.4. Also updated the default values from False to True for all the DTC_MASK calibrations in this caldef file to help reduce CAL override proliferation.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>2015/05/25</Date>
+    <Description>Within the GIS643_DiagnosticCalDefGlobalA.caldef made the following updates: Specification version 1.5: DTC_MASK_B101D_31, DTC_MASK_B101D_34, DTC_MASK_B101D_35, DTC_MASK_B101D_36, DTC_MASK_B101D_39, DTC_MASK_B101D_3B, DTC_MASK_B101D_3C, DTC_MASK_B101E_46, DTC_MASK_B101E_47, DTC_MASK_B395A_08,  DTC_MASK_B395A_72, DTC_MASK_B1265_01, DTC_MASK_B1265_02,  and DTC_MASK_B1265_04. Also, the default values for the  VN_ACTIVATION and  RECOVERY_UNDER_OVER_VOLTAGE, and deleted the MANUFACTURER_ENABLE_COUNTER calibration that was confirmed not to be needed. </Description>
+    <Author>Sanghyun Ryu</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>2016/12/08</Date>
+    <Description>Within GIS643_DiagnosticCalDef_GlobalA.caldef file, per RTC CR#: 1249208 for Spec revision for GIS-643 v1.6 added the following three new calibrations: 1.) DTC_MASK_B395A_3A, 2.) DTC_MASK_B127E_00, and 3.) B127E_06. </Description>
+    <Author>Jihyung Lim</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>12/15/2017</Date>
+    <Description>Per CR#: 1508336, within the GIS643_DiagnosticCalDef_GlobalA.caldef file added one diagnostic enable mask calibration (DTC_MASK_U0020_00) that was missing which the CSM already had included in the CAL Database that the Low Radio also needed to have included in the CAL Database.</Description>
+    <Author>Zachary Lemons</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="U0020_00_LOW SPEED_CAN COMMUNICATION_BUS_PERFORMANCE - Upon handler notification that Source Id 0xFF has failed. Source Id 0xFF is used for all signals that have not yet been associated to a source Id." Name="DTC_MASK_U0020_00" References="GIS-643" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_TOgokO41EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/15/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Zachary Lemons</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC_ENABLE_CRITERIA - The absence of required nodes shall be mapped to a &#x2018;Lost Communication with {physical ECU}&#x2019; Trouble Code. There shall be an additional adjustable debounce time for each DTC, which shall be 2.5 Times the Timout. If a time-out occurs, the corresponding U-code must be stored in the state &#x2018;current&#x2019; and failure debouncing shall begin. If required, back-up values might be used for missing signals. Within the error debounce time the supervising ECU must heal &#x2018;current&#x2019; failures if the corresponding signal appears again.  If healing is not successful within the debounce time, the failure transition to the state &#x2018;history&#x2019;." Name="DEBOUNCE_TIME" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_HKpgcN5hEeW58O1OdVks4w</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/26/2016</Date>
+      <Description>Deleted the DEBOUNCE_TIME CAL (CalID: _sVfOkJjTEeOY6q-k73fxZA) that was incorrected defined as a Boolean type CAL in the previous version of this caldef file, and replacing with a new DEBOUNCE_TIME CAL (CalID: _HKpgcN5hEeW58O1OdVks4w) correctly defined as an Integer. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DTC Enable Criteria.  It is important that the test enable criteria exclude power modes where the Low radio MODULE is not supposed to be fully functional.  If a DTC is enabled in Crank Request this has to be motivated and clearly shown that no false (ghost) codes will be set. For DTC&#x2019;s enabled in Off and Accessory power mode, they shall be linked with a secondary parameter (i.e. system voltage range) that clearly inhibit setting false (ghost) codes in under-voltage conditions" Name="DTC_CRANK_DELAY_TIME" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_NvWtEEfTEeW-6Omy13RgGA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DTC_ENABLE_CRITERIA -Each fault detection algorithm may only be active (test running) in specific vehicle power modes or when a specific Virtual Network is active. All power modes/VN active states where the fault detection algorithm is active shall be specified for each DTC." Name="VN_ACTIVATION" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_1BEY8EfTEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC_ENABLE_CRITERIA - All DTC's should not set within 5 seconds of a under or over voltage condition." Name="RECOVERY_UNDER_OVER_VOLTAGE" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_MQSRkEfUEeW-6Omy13RgGA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/14</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>20160530</Date>
+      <Description>Fixed default value to 9</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>9</Value>
+      <MinValue>9</MinValue>
+      <MaxValue>16</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="TODO - Add a description" Name="DTC_IGN_CYCLE_CTR_MAX" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_dtB1QUfUEeW-6Omy13RgGA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/16/15</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>40</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DID $2F &#x2013; VEHICLEIDENTIFICATIONNUMBER DIGITS 2-17. This DID contains the Vehicle Identification Number.  The data content shall be specified by the vehicle manufacturer.  If the VIN has not yet been programmed into the ECU's permanent memory, those locations shall be either '$00' or '$FF'." Name="DID_MASK_2F" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_pPZsQUfUEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/15/15</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_1_MODEL_YEAR - This byte is an USN value that represents the target model year using the year 1900 as the base year. To represent the 2000 model year, the value of byte 1 would be 100 or ($64). This is derived from 1900 + 100 = 2000. If the module supports multiple model years, then this byte is filled in with $23 (ASCII equivalent to &#x201c;#&#x201d;)." Name="DID_B6_BYTE_1" References="GMW 3110 Appendice C" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_vZJRsUfUEeW-6Omy13RgGA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_2_VEHICLE_MAKE - This byte is the ASCII representation of the Vehicle Make as Identified in the Vehicle Identification Number (VIN). For example, Cadillac = 6 or $36. If the part is used in multiple vehicle makes, then a value of $23 (ASCII &#x201c;#&#x201d;) is used. " Name="DID_B6_BYTE_2" References="GMW 3110 Appendice C" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_v74yYEfUEeW-6Omy13RgGA</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>TODO</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_3_VEHICLE_CAR_LINE - This byte is an ASCII character representing the vehicle car line (e.g., J for Chevy Cavalier). If the module can be used in multiple car lines, then a value of $23 (ASCII &#xfffd;&#xfffd;&#xfffd;#&#xfffd;&#xfffd;&#xfffd;) is used." Name="DID_B6_BYTE_3" References="GMW 3110 Appendice C" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_wYIpgUfUEeW-6Omy13RgGA</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>TODO</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_4_5_ENGINE_RPO - Bytes 4 and 5 contain the ASCII representation of the last two characters of the engine Regular Production Option (RPO). The first character of an engine RPO is constant and is therefore not stored. For the L67 engine, the value for these two bytes would be &#x201c;6&#x201d; = $36, and &#x201c;7&#x201d; = $37. If the module is to be used with multiple engines, then a $23 (ASCII &#x201c;#&#x201d;) is put in both bytes. If the module can be used with any engine type, then $2A (ASCII &#x201c;*&#x201d;) is put in both bytes. " Name="DID_B6_BYTE_4_5" References="GMW 3110 Appendice C" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_zFtqEUfUEeW-6Omy13RgGA</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>TODO</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101D &#x2013; ELECTRONIC CONTROL UNIT HARDWARE" Name="DTC_MASK_B101D_31" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_ElpxYCI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description>update with v1.5</Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101D &#x2013; ELECTRONIC CONTROL UNIT HARDWARE" Name="DTC_MASK_B101D_34" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_IGh3ICI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description>update with v1.5</Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101D &#x2013; ELECTRONIC CONTROL UNIT HARDWARE" Name="DTC_MASK_B101D_35" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_IixuQCI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description></Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101D &#x2013; ELECTRONIC CONTROL UNIT HARDWARE" Name="DTC_MASK_B101D_36" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_JAxR0CI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description></Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101D &#x2013; ELECTRONIC CONTROL UNIT HARDWARE" Name="DTC_MASK_B101D_39" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Gh_HgCLJEeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description></Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101D &#x2013; ELECTRONIC CONTROL UNIT HARDWARE" Name="DTC_MASK_B101D_3B" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Jb68wCI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description></Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101D &#x2013; ELECTRONIC CONTROL UNIT HARDWARE" Name="DTC_MASK_B101D_3C" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_MTp-4CI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description></Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101E &#x2013; ELECTRONIC CONTROL UNIT SOFTWARE" Name="DTC_MASK_B101E_46" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_L2rvACI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description></Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B101E &#x2013; ELECTRONIC CONTROL UNIT SOFTWARE" Name="DTC_MASK_B101E_47" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Fg8U8CI_EeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date></Date>
+      <Description></Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B0010 &#x2013; REVERSE GEAR SIGNAL CIRCUIT" Name="DTC_MASK_B0010_00" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_f6HsQFEGEeW6ofaC2RaMcA</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>02SEP15</Date>
+      <Description>Added for FMVSS</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B124F_41_APPLICATION DOWNLOAD PERFORMANCE. Operational Software/Calibration Set not Programmed - This sub type is used to indicate that only boot software is present in the ECU." Name="DTC_MASK_B124F_41" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_FiGs4UfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B124F_42_APPLICATION DOWNLOAD PERFORMANCE. Calibration Data Set not Programmed - This sub type is used to indicate that operational software is present but calibration data is not." Name="DTC_MASK_B124F_42" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_F31sUUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B124F_44_APPLICATION DOWNLOAD PERFORMANCE.  Security Access not Activated - This sub type is used to indicate that programming was attempted without unlocking the ECU." Name="DTC_MASK_B124F_44" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_GS-JIUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B124F_4A_APPLICATION DOWNLOAD PERFORMANCE. Checksum Error - This sub type is used by the ECU to indicate an incorrect checksum calculation where memory type is not specified." Name="DTC_MASK_B124F_4A" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_HX37sUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1271_00_THEFT PROTECTION ACTIVE. Valid learned VIN in the Low radio does not match the VIN broadcast on the vehicle communication bus" Name="DTC_MASK_B1271_00" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_H0atwUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B0560_08_ENGINE RPM INPUT CIRCUIT - This sub type is used for Tachometer Circuit Signal Invalid is expected." Name="DTC_MASK_B0560_08" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_DNF7YP3pEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1025_01_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1025_01" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_J0YaYEfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1025_02_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1025_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_K1SdwUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1025_04_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1025_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_LXd9wUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1035_01_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1035_01" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_L-4jEUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1035_02_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1035_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_MbEv0UfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1035_04_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1035_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_NbOlQUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1045_01_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1045_01" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_OCwfUUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1045_02_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1045_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_OanlsUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1045_04_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1045_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_PtFTIUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1055_01_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1055_01" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_QLUHQUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1055_02_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1055_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Q4IJ8UfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1055_04_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1055_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_RQxTcUfVEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1277_02_MICROPHONE_1_INPUT_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1277_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Xgp2QUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1277_04_MICROPHONE_1_INPUT_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1277_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_YAyH0UkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127B_2B_REAR CAMERA INPUT SIGNAL CIRCUIT - Missing Reference (No NTSC Sync Pulse Detected)" Name="DTC_MASK_B127B_2B" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Yi9AwUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127C_02_MICROPHONE_2_INPUT_SIGNAL_CIRCUIT - This sub type is used for short to ground." Name="DTC_MASK_B127C_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Wsnu0f3sEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127C_01_MICROPHONE_2_INPUT_SIGNAL_CIRCUIT - This sub type is used for phase detection." Name="DTC_MASK_B127C_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_WSOR0f3sEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B124B &#x2013; UNIVERSAL SERIAL BUS CIRCUIT 1 FTB1 = $00: General Failure Condition" Name="DTC_MASK_B124B_00" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_z6HaYFEHEeW6ofaC2RaMcA</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2015/09/02</Date>
+      <Description>Added</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125A_02_ANTENNA_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B125A_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_bHDVMUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/2/15</Date>
+      <Description>Revised Signal Name to &quot;(Antenna Signal Name AM/FM) (HD)&quot;</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125A_04_ANTENNA_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B125A_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_biqTIUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/2/15</Date>
+      <Description>Revised Signal Name to &quot;(Antenna Signal Name AM/FM) (HD)&quot;</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125C_02_SATILLITE_ANTENNA_SIGNAL - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B125C_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_cLGMIUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B125C &#x2013; SATELLITE ANTENNA CIRCUIT - FTB3 = $04: Open Circuit" Name="DTC_MASK_B125C_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_ccVtIUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125E_02_DIGITAL AUDIO BROADCAST (DAB) ANTENNA  - This sub type is used for short to ground." Name="DTC_MASK_B125E_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_xA9lUf3sEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/2/15</Date>
+      <Description>- Revised Signal Name to XM </Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125E_02_DIGITAL AUDIO BROADCAST (DAB) ANTENNA  - This sub type is used for open circuit." Name="DTC_MASK_B125E_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_7XVjQf3sEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/2/15</Date>
+      <Description>- Revised Signal Name to XM </Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1325_03_CONTROL_MODULE_POWER_CIRCUIT - This sub type is used for failures where the ECU measures a voltage below a specified range but not necessarily a short to ground." Name="DTC_MASK_B1325_03" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_d8BXMUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1325_07_CONTROL_MODULE_POWER_CIRCUIT - This sub type is used for failures where the ECU measures a voltage above a specified range but not necessarily a short to battery." Name="DTC_MASK_B1325_07" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_ejm7oUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127D_02_MICROPHONE_3_INPUT_SIGNAL_CIRCUIT - This sub type is used for short to ground." Name="DTC_MASK_B127D_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_FAjgQf3tEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127DC_01_MICROPHONE_3_INPUT_SIGNAL_CIRCUIT - This sub type is used for phase detection." Name="DTC_MASK_B127D_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_Fou6kf3tEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B126E_01_MICROPHONE_5_INPUT_SIGNAL_CIRCUIT" Name="DTC_MASK_B126E_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_tuy0gf3tEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B126E_01_MICROPHONE_5_INPUT_SIGNAL_CIRCUIT" Name="DTC_MASK_B126E_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_tZqSAf3tEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B126F_01_MICROPHONE_4_INPUT_SIGNAL_CIRCUIT" Name="DTC_MASK_B126F_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_3K90Af3tEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B126F_01_MICROPHONE_4_INPUT_SIGNAL_CIRCUIT" Name="DTC_MASK_B126F_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_284UsP3tEeSpv9MeKXveuQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1287 &#x2013; EXTERNAL AMP CONTROL" Name="DTC_MASK_B1287_01" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_jLoPoEkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1287 &#x2013; EXTERNAL AMP CONTROL" Name="DTC_MASK_B1287_02" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_jvyFkUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1287 &#x2013; EXTERNAL AMP CONTROL" Name="DTC_MASK_B1287_04" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_kEqJYUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B395A &#x2013; REAR VIEW CAMERA (MY19 AND BEYOND)" Name="DTC_MASK_B395A_08" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_jNGgQCGZEeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>2015/05/25</Date>
+      <Description>update with v1.5</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B395A &#x2013; REAR VIEW CAMERA (MY19 AND BEYOND)" Name="DTC_MASK_B395A_72" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_lxxccCGZEeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>2015/05/25</Date>
+      <Description>update with v1.5</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B395A &#x2013; REAR VIEW CAMERA (MY19 AND BEYOND)" Name="DTC_MASK_B395A_3A" References="" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_F8jZMbzaEeaPXMpqa4AT_g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>8</Version>
+      <Date>2016/12/08</Date>
+      <Description>Update to Spec revision GIS-643 v1.6 (initial release of this calibration)</Description>
+      <Author>Jihyung Lim</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1265 &#x2013; SWITCHED 14V (REMOTE ENABLE CIRCUIT)" Name="DTC_MASK_B1265_01" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_nIh0ACGZEeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>2015/05/25</Date>
+      <Description>update with v1.5</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1265 &#x2013; SWITCHED 14V (REMOTE ENABLE CIRCUIT)" Name="DTC_MASK_B1265_02" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_npNfMCGZEeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>2015/05/25</Date>
+      <Description>update with v1.5</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1265 &#x2013; SWITCHED 14V (REMOTE ENABLE CIRCUIT)" Name="DTC_MASK_B1265_04" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_oF73cCGZEeaGAqwaWBM8EQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>2015/05/25</Date>
+      <Description>update with v1.5</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B127E &#x2013; LVDS CIRCUIT FTB $00" Name="DTC_MASK_B127E_00" References="GIS-643 v1.6" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_E0Y7sLw0EeaEUoPx8RDJPQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>8</Version>
+      <Date>2016/12/08</Date>
+      <Description>Update to Spec revision GIS-643 v1.6 (initial release of this calibration)</Description>
+      <Author>Jihyung Lim</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B127E &#x2013; LVDS CIRCUIT FTB $06" Name="DTC_MASK_B127E_06" References="GIS-643 v1.6" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_yXYJYbzZEeaPXMpqa4AT_g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>8</Version>
+      <Date>2016/12/08</Date>
+      <Description>Update to Spec revision GIS-643 v1.6 (initial release of this calibration)</Description>
+      <Author>Jihyung Lim</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0078_00_CONTROL_MODULE_LOW_SPEED_COMMUNIATION" Name="DTC_MASK_U0078_00" References="GIS-621 Section 22.4.3" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_kgo6wUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U184C_00_LOST_COMMUNICATION_WITH_CLUSTER_ON_LOW_SPEED_CAN_BUS" Name="DTC_MASK_U184C_00" References="GIS-621 Section 22.5.3" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_lixGIUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0198_00_LOST_COMMUNICATION_WITH_TELEMATICS_COMMUNICATION_INTERFACE_CONTROL_MODULE_ON_LOW_SPEED_CAN_BUS" Name="DTC_MASK_U0198_00" References="GIS-621 Section 22.5.5" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_mtOHEEkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U184A_00_LOST_COMMUNICATION_WITH_BODY_CONTROL_MODULE_ON_LOW_SPEED_CAN_BUS - CSM detects 3 consecutive parity error of the transmitted headers" Name="DTC_MASK_U184A_00" References="GIS-621 Section 22.5.7" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_nL5AEUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U18AF_00_LOSS_OF_LINK_WITH_TELEMATICS_COMMUNICATION_INTERFACE_CONTROL_MODULE_ON_ETHERNET_BUS - The Ethernet switch is unable to establish a link up with the Navigation Control Module.  This generates a notification to the CSM application that a fault has occurred." Name="DTC_MASK_U18AF_00" References="GIS-610, GIS-612" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_nuTwoUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/19/15</Date>
+      <Description>Initial release of diagnostic trouble code U18AF_00</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Link with Telematics Communication Interface Control Module on Ethernet Bus (TCP) - ~MY18 - FTB: 02 &#x2013; Short to Ground" Name="DTC_MASK_U18AF_02" References="GIS-610, GIS-612" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_oeEZoUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of U18AF_02</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Link with Telematics Communication Interface Control Module on Ethernet Bus (TCP) - ~MY18 - FTB: 04 &#x2013; Open Circuit" Name="DTC_MASK_U18AF_04" References="GIS-610, GIS-612" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_o2KwkUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of U18AF_04</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Link with Telematics Communication Interface Control Module on Ethernet Bus (TCP) - ~MY18 - FTB: 08 &#x2013; Signal Invalid" Name="DTC_MASK_U18AF_08" References="GIS-610, GIS-612" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_oMEDoEkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial Release of U18AF_08</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Link with Telematics Communication Interface Control Module on Ethernet Bus (TCP) - ~MY18 - FTB: 0D &#x2013; Resistance above Threshol" Name="DTC_MASK_U18AF_0D" References="GIS-610, GIS-612" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_pTzHwUkLEeW-6Omy13RgGA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of U18AF_0D</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>21AUG2015</Date>
+      <Description>Fix CalID due to the duplication</Description>
+      <Author>Sanghyun Ryu</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/2/2016</Date>
+      <Description>Updated the default value for this calibration from False to True to reduce CAL override proliferation</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

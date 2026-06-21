@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef was extracted from the use cases defined in the GIS-696 Speech Recognition Architecture Specification">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/28/2016</Date>
+    <Description>Initial release of this caldef file for Low Radio for GIS-696 Speech Recognition use cases.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the LowRadioGIS696_ASR_SSE.caldef, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Tuning Parameter for other speech recognition sessions over Bluetooth narrow-band (non-Apple Siri devices)" Name="SRBTNB_LowRadio" References="GIS-696" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_xKGvgT2ZEeaGEeA8k3J6-w</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/28/2016</Date>
+      <Description>Initial Release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRBTNB_LowRadio.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for all other speech recognition sessions over Bluetooth wideband (non-Apple Siri devices)" Name="SRBTWB_LowRadio" References="GIS-696" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_fDI_kT2YEeaGEeA8k3J6-w</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/28/2016</Date>
+      <Description>Initial Release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRBTWB_LowRadio.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for Android Auto speech recognition session over USB device connection" Name="SRandroidautoUSB_LowRadio" References="GIS-696" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_Otx7sT2NEeaGEeA8k3J6-w</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/28/2016</Date>
+      <Description>Initial Release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRandroidautoUSB_LowRadio.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Paramater for Apple Siri over Bluetooth (includes eyes free and non-eyes free)" Name="SRsiriBT_LowRadio" References="GIS-696" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_2mK28T2WEeaGEeA8k3J6-w</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/28/2016</Date>
+      <Description>Initial Release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRsiriBT_LowRadio.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for Apple CarPlay speech recognition session over USB device connection" Name="SRcarplayUSB_LowRadio" References="GIS-696" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_q1hI0T2VEeaGEeA8k3J6-w</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/28/2016</Date>
+      <Description>Initial Release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>SRcarplayUSB_LowRadio.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

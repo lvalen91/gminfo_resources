@@ -1,0 +1,3 @@
+COMMAND: cat /sys/kernel/debug/usb/devices 2>/dev/null || lsusb 2>/dev/null || echo 'Cannot enumerate USB'
+RESULT: Cannot enumerate USB
+---

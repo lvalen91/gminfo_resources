@@ -1,0 +1,128 @@
+=== VEHICLE NETWORK SCAN RESULTS ===
+Generated: 2026-04-07
+
+====================
+ NETWORK TOPOLOGY
+====================
+
+IVI (Android VM):
+  eth0:  192.168.1.100/24
+  vlan5: 192.168.1.100/24 (service network)
+  vlan4: 172.16.4.100/24  (internal vehicle network)
+  wlan0: dormant (F8:6D:CC:DC:32:D4)
+  
+GHS Hypervisor Bridge:
+  Virtual IP: 192.168.1.1 (not routable, used for VM<->hypervisor IPC)
+  Listens on: 9002, 9016 (bound to ::ffff:192.168.1.1)
+  Connects FROM: 8019-8024 TO Android's 9002/9016
+
+====================
+ LIVE HOSTS
+====================
+
+VLAN5 (192.168.1.0/24):
+  192.168.1.100 - IVI (Android) - MAC: 02:04:00:00:01:00 (locally admin)
+  192.168.1.102 - ECU #1        - MAC: 02:04:00:00:02:00 (locally admin)
+  192.168.1.106 - ECU #2        - MAC: 02:04:00:00:04:00 (locally admin)  
+  192.168.1.112 - ECU #3        - MAC: 02:05:00:00:02:00 (locally admin)
+
+VLAN4 (172.16.4.0/24):
+  172.16.4.100 - IVI (Android)   - MAC: 02:04:00:00:01:00
+  172.16.4.107 - ECU #3 (dual)   - MAC: 02:05:00:00:02:00 (same as .112 on vlan5)
+  172.16.4.112 - ECU #4          - MAC: 10:66:50:0c:ed:d3 (REAL MAC - vendor: possibly Harman/Samsung)
+  172.16.4.14  - ECU #5          - MAC: 02:02:00:00:04:00 (locally admin, stale flag=0x6)
+  172.16.4.1   - Gateway?        - MAC: 02:04:00:00:02:00 (same as 192.168.1.102)
+
+NOTE: 192.168.1.102 and 172.16.4.1 share MAC 02:04:00:00:02:00
+      This is likely the SAME device - a gateway/router bridging both VLANs
+      
+NOTE: 192.168.1.112 and 172.16.4.107 share MAC 02:05:00:00:02:00
+      Also the same device on both VLANs
+
+NOTE: 172.16.4.112 has MAC 10:66:50:0c:ed:d3 (OUI: unknown, possibly telematics/TCU)
+      This is the ONLY real (non-locally-administered) MAC seen
+
+====================
+ OPEN PORTS
+====================
+
+192.168.1.102 (Gateway/Router ECU):
+  TCP 53   - DNS (dnsmasq-2.78)
+  TCP 9003 - Unknown (client-speaks-first, binary protocol)
+  TCP 9005 - Unknown (client-speaks-first, binary protocol)
+  TCP 9010 - Unknown (client-speaks-first, binary protocol)
+  UDP 30490 - SOME/IP Service Discovery (IVI has active connection)
+  TCP 853  - DNS-over-TLS (IVI attempts SYN but connection fails)
+
+192.168.1.112 / 172.16.4.107 (Same ECU, dual-homed):
+  TCP 9010 - Unknown (same as above)
+  TCP 9018 - Unknown
+
+192.168.1.106:
+  TCP 9010 - Unknown
+
+172.16.4.112 (Telematics? Real MAC):
+  No TCP ports found in scan range
+
+172.16.4.14:
+  No TCP ports found in scan range (stale ARP entry)
+
+====================
+ PROTOCOL ANALYSIS
+====================
+
+Port 9010: Present on ALL ECUs. Likely GM proprietary inter-ECU messaging.
+           No banner, no HTTP, no SOME/IP header response. Client-speaks-first.
+           IVI has established connections to this port on multiple ECUs.
+
+Port 9018: Present on ECU at .112/.107. 
+           IVI connects to this from local high ports.
+
+Port 9003: Only on gateway (.102). 
+           IVI connects here - possibly diagnostics bridge.
+
+Port 9005: Only on gateway (.102).
+           IVI connects here - possibly OnStar/telematics proxy.
+
+Port 6363: IVI localhost only - NFD (Named Data Networking) daemon.
+           Responds "ERROR" to malformed input. Used for content-centric networking.
+
+Port 49156: IVI localhost only - Unknown service.
+
+UDP 30490: SOME/IP Service Discovery on gateway (.102).
+           IVI maintains persistent connection.
+
+UDP 5353: mDNS (6 listeners on IVI - multicast DNS for service discovery)
+
+====================
+ IVI LISTENING SERVICES
+====================
+
+TCP 0.0.0.0:6363    - NFD daemon
+TCP 0.0.0.0:49156   - Unknown
+TCP [192.168.1.1]:9002 - GHS bridge service
+TCP [192.168.1.1]:9016 - GHS bridge service
+
+====================
+ KEY FINDINGS
+====================
+
+1. Gateway ECU (192.168.1.102 / 172.16.4.1) runs dnsmasq-2.78
+   - Known CVEs exist for dnsmasq < 2.80 (DNSpooq, CVE-2020-25681 through 25687)
+   - Buffer overflow in DNSSEC validation (if enabled)
+   
+2. SOME/IP Service Discovery active on UDP 30490
+   - Could enumerate all SOME/IP services on the vehicle network
+   - Requires proper SOME/IP client to interact
+
+3. Port 9010 is the universal inter-ECU communication port
+   - Binary protocol, likely GM proprietary
+   - Present on every live ECU
+
+4. 172.16.4.112 has a real (non-locally-administered) MAC: 10:66:50:0c:ed:d3
+   - This suggests an external/physical device, possibly telematics unit
+   - No open TCP ports found - heavily firewalled or different protocol
+
+5. GHS hypervisor bridges to Android via virtual IP 192.168.1.1
+   - Ports 9002/9016 are the hypervisor<->Android IPC channels
+   - External clients connect from 192.168.1.1:8019-8024

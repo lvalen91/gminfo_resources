@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="">
+  <EnumDefFileVersion>9</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/19/2015</Date>
+    <Description>Initial release of this enumdef for ApplicationOrdering enum cals now defined in GIS501_HomeScreenUI.caldef file.</Description>
+    <Author>Samer Khatib</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>4-9-15</Date>
+    <Description>Added MY18 Apps to APplicationOrdering</Description>
+    <Author>Samer Khatib</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/24/2016</Date>
+    <Description>Updated the initial default home screen calibration enumeration sort order positioning to match the HomeScreen icon order shown in the latest version GIS-501. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this enumdef file updated the ApplicationOrdering default homescreen application ordering list to match the updated ordering shown in the GIS-501 Home Screen UI V4 Climate Ordering- Snippit-1 14OCT2016 as a part of the update in RTC CR#: 1112145.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>1/3/2018</Date>
+    <Description>Within the GIS501_HomeScreenUI.enumdef file updated the ApplicationOrdering enumerated value listing for the ApplicationOrdering calibration to include Air Quality for CR#: 1529732.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>09/17/2018</Date>
+    <Description>Per CR#1897606, Updated GIS501_HomeScreenUI.enumdef with enumartions for Vehicle Information, APA, and Owners Manual </Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>10/30/2018</Date>
+    <Description>Per CR#1686594, added PA value to the ApplicationOrdering enumeration in GIS501_HomeScreenUI.enumdef file.</Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>9/28/2020</Date>
+    <Description>Per CR#2620007, adding several new enums</Description>
+    <Author>Greg Lindemann</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>9/17/2021</Date>
+    <Description>Updated the GIS501_HomeScreenUI.enumdef file to add the new PerformanceApp enumeration to the ApplicationOrdering list in support with the new APPLICATION_HOMESCREEN_PERFORMANCEAPP_ENABLED and ApplicationOrdering44 calibrations added in the GIS501_HomeScreenUI.caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>4/19/2023</Date>
+    <Description>Per CR # 3381323 the following enums were added: MapsPlus, Alexa, Spotify, IHeartRadio, Weather</Description>
+    <Author>Andrea Campbell</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="The Default Application ordering" Name="ApplicationOrdering">
+    <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+    <EnumDefinitionVersion>3</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Audio" Name="Audio">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="DMB (LVM)" Name="DMBLVM">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Phone" Name="Phone">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Nav" Name="NAV">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Nav (LVM)" Name="NavLVM">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="WiFiHotspot" Name="WiFiHotspot">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Users" Name="Users">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Settings" Name="Settings">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Apple CarPlay" Name="CarPlay">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MirrorLink (TBD)" Name="MirrorLink">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Android Auto" Name="AndroidAuto">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trailering" Name="Trailering">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Baidu CarLife (Only enabled in China)" Name="BaiduCarLife">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Climate" Name="Climate">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="App Shop (&quot;Collection&quot; for Cadillac, &quot;Shop&quot; for non-Cadillac)" Name="AppShop">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Energy" Name="Energy">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="%Custom Mode% (see GIS-507 section 3.5.5 for naming)" Name="CustomMode">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OnStar Services (if truncation issues, just &quot;Services&quot;)" Name="OnStar">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="PDR (LVM)" Name="PDRLVM">
+      <Value>18</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Video" Name="Video">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Rear Climate" Name="RearClimate">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Ambient/Interior Lighting" Name="AmbientLighting">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Video Recorder LVM" Name="VideoRecorderLVM">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Camera LVM" Name="CameraLVM">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Other Internet applications" Name="OtherInternetApps">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Air Quality" Name="AirQuality">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Vehicle Information" Name="VehicleInformation">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Auto Park Assist" Name="APA">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Owner's Manual" Name="OwnersManual">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Park Assist" Name="PA">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Google Maps" Name="GoogleMaps">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Google Assistant" Name="GoogleAssistant">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Play Store" Name="PlayStore">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Camera" Name="Camera">
+      <Value>33</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Teen Driver " Name="TeenDriver">
+      <Value>34</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Controls" Name="Controls">
+      <Value>35</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Themes" Name="Themes">
+      <Value>36</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Drive Mode" Name="DriveMode">
+      <Value>37</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Tips" Name="Tips">
+      <Value>38</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SVR" Name="SVR">
+      <Value>39</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Super Cruise" Name="SuperCruise">
+      <Value>40</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Off-Road" Name="OffRoad">
+      <Value>41</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Air Down Mode" Name="AirDownMode">
+      <Value>42</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Performance App" Name="PerformanceApp">
+      <Value>43</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MapsPlus app for GAS Alternative" Name="MapsPlus">
+      <Value>44</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Alexa app for GAS Alternative" Name="Alexa">
+      <Value>45</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Spotify app for GAS Alternative" Name="Spotify">
+      <Value>46</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="iHeartRadio app for GAS Alternative" Name="IHeartRadio">
+      <Value>47</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Weather app for GAS Alternative" Name="Weather">
+      <Value>48</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

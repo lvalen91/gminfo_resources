@@ -1,0 +1,3 @@
+COMMAND: cat /proc/cmdline
+RESULT: cat: /proc/cmdline: Permission denied
+---

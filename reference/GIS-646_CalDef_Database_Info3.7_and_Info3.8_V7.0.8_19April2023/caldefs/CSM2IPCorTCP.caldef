@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>23APR14</Date>
+    <Description>Initial version.</Description>
+    <Author>Abdoul Sy</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>24APR14</Date>
+    <Description>Moved VEHICLE_FUEL_TYPE_* cals into Global_Info3.caldef.</Description>
+    <Author>Jonathon Green</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on MID and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2/28/2017</Date>
+    <Description>Within the CSM2IPCorTCP.caldef  file, deleted the following three calibrations: 1.) ENABLE_AUDIONOWPLAYING_SENDTOCLUSTER, 2.) MEDIA_SOURCE_CHANGE_TO_NOW_PLAYING_TIMEOUT, and 3.) ENABLE_STORINGFAVORITES_SHUFFLE_TOGGLE_ENABLE calibrations since the GM User Interface Team (Cody Hansen and Derek Fraser) confirmed these three specific calibration were legacy calibrations used for NGI that are not intended to be used for Info3.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>4/23/2020</Date>
+    <Description>Within CSM2IPCorTCP.caldef file per agreement with Calibration Software PO (Jason Litchfield) and others on the software team, the SOURCECHANGETIMEOUT cal is being removed becasue there were duplicate instances of this cal found within the CalDB. It is also being removed because no one on the infotainment requirements team could identify any requirements linked to this calibration. We believe this cal to have been a legacy cal going back to at least the NGI variant radio that got carried over, and never should have been included in the CalDB for Info3.x.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="DRIVE_SIDE, to comprehend vehicle configuration of Right Hand Drive (RHD) versus Left Hand Drive (LHD) with respect to GMLAN message location of driver front versus passenger front. $0- LHD $1-RHD " Name="DRIVE_SIDE" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_ho8dIMZWEeOt4scp4-kueg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If the SwipeApplication enumeration value has not changed, but the SwipePositionPercent is changing, the CenterStack HMI shall rate limit notifications of changes in the Property to the internal calibration value CLUSTER_SWIPE_APPLICATION_EVENT_MAX_NOTIFY_RATE. This is necessary to limit MOST control channel loading and will generally be in the tens of milliseconds. This calibration value is defined separately within the calibration specification of the module that drives the center stack HMI. For example, this is GIS-321 for an HMIModule equipped system." Name="CLUSTER_SWIPE_APPLICATION_EVENT_MAX_NOTIFY_RATE" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_lbsigMl2EeO1nYYt5aEBRA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

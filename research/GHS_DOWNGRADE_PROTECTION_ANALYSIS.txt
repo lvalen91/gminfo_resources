@@ -1,0 +1,695 @@
+================================================================================
+GHS INTEGRITY DOWNGRADE PROTECTION ANALYSIS
+================================================================================
+Document: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt
+Date: 2024-12-30
+Status: CONFIRMED - Y177 DOWNGRADE BLOCKED BY GHS
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+DOWNGRADE ATTEMPT: Y181 -> Y177
+RESULT: FAILED
+
+Attempted to downgrade from Y181 (W231E-Y181.3.2-SIHM22B-499.3) to Y177
+(W231E-Y177.6.1-SIHM22B-499.2) via USB update. The update was recognized,
+accepted, and partition writes appeared to complete (progress bar), but the
+system rejected the downgrade at boot verification and reverted to Y181.
+
+ROOT CAUSE: GHS INTEGRITY hypervisor performs rollback protection independently
+of Android. The "version check disabled" in the update manifest only affects
+gm_update_engine, not GHS boot-time verification.
+
+================================================================================
+2. OBSERVED BEHAVIOR
+================================================================================
+
+2.1 DOWNGRADE ATTEMPT SEQUENCE
+------------------------------
+1. USB with Y177 package inserted
+2. Radio recognized USB and prompted for "update"
+3. Update accepted by user
+4. System rebooted into recovery mode
+5. Progress bar incremented (partitions being written)
+6. System rebooted multiple times
+7. "Update Failed" screen displayed
+8. Used gm_reboot_normal file to exit error screen
+9. System booted back to UNCHANGED Y181
+
+2.2 KEY OBSERVATION
+-------------------
+The system returned to Y181 completely unchanged. This means:
+- Partitions were written to INACTIVE A/B slot
+- Boot verification FAILED before slot switch committed
+- A/B fallback mechanism reverted to original slot
+- Original Y181 slot was never modified
+
+2.3 COMPARISON WITH OTHER UPDATE SCENARIOS
+------------------------------------------
+| Transition      | Result   | Notes                              |
+|-----------------|----------|------------------------------------|
+| Y181 -> Y181    | SUCCESS  | Same version reinstall works       |
+| Y177 -> Y181    | SUCCESS  | Upgrade works                      |
+| Y181 -> Y177    | FAILURE  | Downgrade blocked                  |
+
+================================================================================
+3. GHS INTEGRITY AS VERIFICATION GATEKEEPER
+================================================================================
+
+3.1 ARCHITECTURE CONFIRMATION
+-----------------------------
+The update mechanism is a two-phase process:
+
+PHASE 1: WRITE (gm_update_engine in Android)
+- Reads manifest from USB
+- Writes raw partition images to inactive A/B slot
+- "version check disabled" in manifest = no version check here
+- Essentially a "dumb pipe" - just copies bytes
+- Does NOT verify or reject based on version
+
+PHASE 2: VERIFY (GHS INTEGRITY at boot)
+- GHS loads BEFORE Android
+- Performs AVB (Android Verified Boot) verification
+- Checks rollback index against stored value
+- REJECTS boot if verification fails
+- Falls back to original slot on failure
+
+This design separates "can we write it" from "can we boot it".
+
+3.2 GHS PERFORMS AVB VERIFICATION (NOT ANDROID)
+-----------------------------------------------
+Evidence from GHS binary (85098662) string analysis:
+
+```
+VMM: Error: vbmeta signing key does not match known valid key
+VMM: vbmeta: image verification failed!
+VMM: %s: no signed boot partition in vbmeta.
+Android image failed verification: verity disabled?
+```
+
+These strings prove GHS validates vbmeta BEFORE starting the Android VM.
+
+3.3 GHS SLOT MANAGEMENT
+-----------------------
+GHS maintains its own slot state and boot failure counting:
+
+```
+GHS: Android and INTEGRITY slot mismatch.  INTEGRITY: %s Android: %s Rebooting...
+GHS: [LIFECYCLE] Android failed to boot (count=%lu)
+```
+
+If GHS detects a slot mismatch or boot failure, it initiates recovery.
+
+================================================================================
+4. ROLLBACK PROTECTION MECHANISM
+================================================================================
+
+4.1 CRITICAL FINDING: GHS HAS EXPLICIT ROLLBACK CHECK
+-----------------------------------------------------
+Found in GHS binary at offset 0x00cf85ac:
+
+```
+VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
+```
+
+This confirms GHS:
+1. Reads rollback index from vbmeta image
+2. Compares against a STORED rollback index
+3. Rejects if image index < stored index
+
+4.2 ROLLBACK INDEX STORAGE: MISC PARTITION
+------------------------------------------
+The stored rollback index is maintained in the misc partition (vda9):
+
+```
+VMM: ERROR: failed to read A/B metadata from 'misc'
+VMM: Warning: A/B metadata: magic number mismatch
+VMM: ERROR: A/B metadata: version on disk too new
+VMM: A/B metadata updated
+misc
+VMM: ERROR: Android boot requires misc partition
+```
+
+Partition mapping:
+- misc = /dev/block/vda9
+- Contains A/B bootloader control structure
+- Includes stored rollback index
+- Updated by GHS after successful boot
+
+4.3 VBMETA ROLLBACK INDEX ANALYSIS
+----------------------------------
+Both Y177 and Y181 vbmeta files have rollback_index = 0:
+
+Y181 vbmeta (86331644) at offset 0x70:
+  0000 0000 0000 0000  (rollback_index = 0)
+
+Y177 vbmeta (86283158) at offset 0x70:
+  0000 0000 0000 0000  (rollback_index = 0)
+
+This indicates GHS maintains its OWN rollback counter in the misc partition,
+independent of the vbmeta.rollback_index field.
+
+4.4 PROPOSED ROLLBACK MECHANISM
+-------------------------------
+Based on evidence, GHS likely operates as follows:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  misc partition (vda9) - Persistent Storage                                 │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  A/B metadata structure containing:                                         │
+│  - Magic number (for validation)                                            │
+│  - Version field                                                            │
+│  - Stored rollback index (GHS's counter)                                    │
+│  - CRC checksum                                                             │
+│  - Boot attempt counters per slot                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Boot Flow:
+1. GHS reads A/B metadata from misc partition
+2. Loads vbmeta from target slot
+3. Compares vbmeta.rollback_index against stored_rollback_index
+4. If vbmeta.rollback_index < stored_rollback_index:
+   → "rollback index is too old" error
+   → Increment boot failure counter
+   → After max failures, switch back to original slot
+5. If verification passes:
+   → Boot Android
+   → On successful boot, update stored_rollback_index in misc
+
+4.5 WHY Y181 REINSTALL WORKS BUT Y177 DOWNGRADE FAILS
+-----------------------------------------------------
+Theory: GHS increments stored_rollback_index based on version comparison,
+not vbmeta.rollback_index value:
+
+Initial state (after Y181 first boot):
+  stored_rollback = some value based on Y181 version
+
+Y181 Reinstall attempt:
+  GHS sees same/equal version → ALLOW
+  (possibly special-cases same version)
+
+Y177 Downgrade attempt:
+  GHS compares Y177 version < Y181 stored version → REJECT
+  "rollback index is too old"
+
+The exact comparison method (version string, build number, etc.) is unclear,
+but the behavior confirms version-aware protection.
+
+================================================================================
+5. GHS BINARY ANALYSIS DETAILS
+================================================================================
+
+5.1 FILE INFORMATION
+--------------------
+File: 85098662 (SOC_HOSTOS)
+Size: 14,929,956 bytes
+Structure:
+  - Offset 0x000: GM package header
+  - Offset 0x220: Intel ipk header ("ipk.")
+  - Offset 0x27C: ELF binary (32-bit x86, statically linked)
+
+5.2 GHS VERSION STRINGS
+-----------------------
+```
+GM Version:       MY22-026
+Core Version:     23739
+Modules Version:  11500
+Secure Boot:      Enabled
+```
+
+Build path references:
+```
+/home/mal/gm_release/MY22-026/final/iot/rtos/libs/gm-i35/rel/work/
+/home/mal/gm_release/MY22-026/final/iot/cust-build_sb/gm-i35/rel/
+```
+
+5.3 RELEVANT ERROR MESSAGES IN GHS
+----------------------------------
+Boot Verification:
+```
+VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
+VMM: Error: vbmeta signing key does not match known valid key
+VMM: vbmeta: image verification failed!
+Android image failed verification: verity disabled?
+VMM: Error: Kernel extends past end of boot image.
+VMM: Error: RAM disk extends past end of boot image.
+```
+
+A/B Metadata:
+```
+VMM: ERROR: failed to read A/B metadata from 'misc'
+VMM: Warning: A/B metadata: magic number mismatch
+VMM: ERROR: A/B metadata: version on disk too new
+VMM: Warning: A/B metatdata CRC failure!
+VMM: A/B metadata updated
+VMM: A/B Boot: ERROR: no valid boot slot
+VMM: A/B Boot: No more remaining attempts for slot %d
+```
+
+Slot Management:
+```
+A/B Boot Slot: boot%s
+GHS: Android and INTEGRITY slot mismatch.  INTEGRITY: %s Android: %s Rebooting...
+VMM: Failed to verify slot %s
+ghs_androidboot.altsloterror=%s
+```
+
+Lifecycle:
+```
+GHS: [LIFECYCLE] Android failed to boot (count=%lu)
+GHS: [LIFECYCLE] Lost Android SoH - rebooting
+GHS: [LIFECYCLE] Booting 'see-dealer' mode
+GHS: [LIFECYCLE] Failed to write Lifecycle settings to EMMC
+```
+
+5.4 GHS CHECKSUM/HASH FUNCTIONS
+-------------------------------
+```
+BSP_CRCCheck
+BSP_SHA1Check
+BSP_CRCFailure
+BSP_SHA1Failure
+__ghs_checksum
+checkSHA1hash
+CRC error in FLASH, failing
+SHA-1 hash error in FLASH, failing
+```
+
+================================================================================
+6. IMPLICATIONS FOR DOWNGRADE ATTEMPTS
+================================================================================
+
+6.1 WHY "VERSION CHECK DISABLED" DOESN'T HELP
+---------------------------------------------
+The manifest flag only affects gm_update_engine:
+
+Manifest (86331663.mnf):
+```
+assert(ui_print("version check disabled "));
+```
+
+This means:
+- gm_update_engine will write ANY version to inactive slot
+- No version comparison during partition write phase
+- GHS verification happens AFTER partitions are written
+- GHS has its own independent version/rollback check
+
+6.2 SECURITY DESIGN RATIONALE
+-----------------------------
+This is a robust security design:
+
+1. UPDATE ENGINE: "I'll write whatever package you give me"
+   - Fast, simple, no validation logic
+   - Can recover from corrupt writes via A/B fallback
+   - Version check disabled = simpler code, fewer bugs
+
+2. GHS HYPERVISOR: "I'll verify before booting and reject old versions"
+   - Single point of enforcement
+   - Cannot be bypassed from Android
+   - Hardware-level trust anchor
+
+Separation of concerns: Write anything, but GHS decides if it boots.
+
+6.3 ATTACK SURFACE ANALYSIS
+---------------------------
+To bypass downgrade protection, would need to:
+
+Option A: Modify misc partition stored_rollback_index
+  - misc partition (vda9) is accessible from Android
+  - BUT: GHS validates CRC and magic number
+  - Would need to understand exact A/B metadata structure
+  - Risk: Corrupt structure = no boot at all
+
+Option B: Modify GHS binary to skip rollback check
+  - GHS (85098662) is TSS signed
+  - Cannot flash modified version via normal update
+  - Would require breaking GM's signing
+
+Option C: Reset misc partition to factory state
+  - If factory reset clears stored_rollback_index
+  - Need to test if factory reset affects this
+  - May require dealer-level reset
+
+Option D: Physical access to eMMC
+  - Direct write to misc partition
+  - Bypass GHS entirely at hardware level
+  - Very invasive
+
+================================================================================
+7. VBMETA COMPARISON: Y177 vs Y181
+================================================================================
+
+7.1 FILE DETAILS
+----------------
+Y177 vbmeta: 86283158.zip (1,689 bytes compressed), 4,096 bytes uncompressed
+Y181 vbmeta: 86331644 (4,096 bytes)
+
+7.2 HEADER COMPARISON (IDENTICAL STRUCTURE)
+-------------------------------------------
+Both files have identical AVB header structure:
+- Magic: AVB0
+- avbtool version: 1.2.0
+- rollback_index: 0 (at offset 0x70)
+
+7.3 BUILD FINGERPRINT DIFFERENCES
+---------------------------------
+Y181: gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys
+Y177: gm/full_gminfo37_gb/gminfo37:12/W231E-Y177.6.1-SIHM22B-499.2/231:user/release-keys
+
+Differences:
+- Y-number: Y181 vs Y177
+- Minor version: 3.2 vs 6.1
+- SIHM version: 499.3 vs 499.2
+
+7.4 HASH DESCRIPTORS
+--------------------
+Hash descriptors differ (expected - different partition contents):
+- product partition hash: different
+- system partition hash: different
+- vendor partition hash: different
+- Partition sizes slightly different
+
+7.5 SIGNING
+-----------
+Both signed with "release-keys" but signatures differ (expected for different content).
+Signing key appears to be the same (both are official GM releases).
+
+================================================================================
+8. PARTITION LAYOUT REFERENCE
+================================================================================
+
+Relevant partitions for downgrade protection:
+
+| Partition      | Device   | Purpose                           |
+|----------------|----------|-----------------------------------|
+| misc           | vda9     | A/B metadata, stored rollback     |
+| vbmeta_a       | vda10    | AVB metadata slot A               |
+| vbmeta_b       | vda11    | AVB metadata slot B               |
+| ghs_isys_a     | vda1     | GHS INTEGRITY hypervisor slot A   |
+| ghs_isys_b     | vda2     | GHS INTEGRITY hypervisor slot B   |
+| ghs_storage    | vda3     | GHS persistent storage            |
+| boot_a         | vda7     | Android boot image slot A         |
+| boot_b         | vda8     | Android boot image slot B         |
+
+================================================================================
+9. REBOOT FILE MECHANISM (EXPANDED)
+================================================================================
+
+9.1 FILENAME-TRIGGERED BEHAVIORS
+--------------------------------
+GM's update system uses empty files with specific names to trigger behaviors.
+This pattern is implemented in gm_update_engine (Android service), NOT in GHS.
+
+Known trigger files:
+| Filename              | Effect                                  |
+|-----------------------|-----------------------------------------|
+| gm_reboot_normal      | Exit "Update Failed" screen, boot normal|
+| gm_usb_ignore_battery | Skip battery level check during update  |
+
+9.2 gm_reboot_normal DETAILS
+----------------------------
+The "gm_reboot_normal" file (base64: Z21fcmVib290X25vcm1hbA==):
+
+- File must be present on USB root directory
+- File content can be empty (0 bytes)
+- Filename triggers recovery to reboot normally
+- Does NOT affect the update result or partition contents
+- Simply exits the error state gracefully
+- NOT found in GHS binary - implemented in Android gm_update_engine
+
+9.3 IMPLEMENTATION LOCATION
+---------------------------
+The filename trigger logic is in the gm_update_engine service:
+
+Evidence from SELinux policy (vendor_sepolicy.cil):
+- gm_update_engine has permissions to read vfat (USB) filesystem
+- gm_update_engine can read/write files on mounted USB
+- Service runs continuously: [init.svc.gm_update_engine]: [running]
+
+The gm_update_engine service polls USB for:
+1. Update package manifests (*.mnf files)
+2. Trigger files (gm_reboot_normal, gm_usb_ignore_battery)
+3. Status/indication files
+
+9.4 SECURITY IMPLICATIONS
+-------------------------
+This mechanism provides a recovery path from failed updates without requiring:
+- Dealer diagnostic tools
+- UART console access
+- Physical disassembly
+
+However, it does NOT bypass:
+- GHS rollback protection (downgrade still blocked)
+- AVB signature verification
+- Secure boot chain
+
+================================================================================
+10. SIGNING KEY EXTRACTION ANALYSIS
+================================================================================
+
+10.1 KEY ARCHITECTURE OVERVIEW
+------------------------------
+The vbmeta signing key used for Android Verified Boot is protected by multiple
+layers of hardware security:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Hardware Root of Trust (Intel CSE - Converged Security Engine)            │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  - CSE IVB Root Key (fused in silicon)                                      │
+│  - CSE Intel Fixed Root Key                                                 │
+│  - CSE BXT IVB Integrity/Confidentiality Keys                               │
+│  - rot.key (Root of Trust key)                                              │
+│  - oem.key (OEM key - GM's signing key)                                     │
+│  - rpmb_key (Replay Protected Memory Block key)                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  GHS INTEGRITY Hypervisor                                                   │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  ELF section: .mr_r_mod_android_key (NOBITS - empty in file)                │
+│  Symbols: __ghsbegin_mr_r_mod_android_key, __ghsend_mr_r_mod_android_key    │
+│  Runtime: Key loaded from bootloader modules at boot                        │
+│  Error strings indicate key validation:                                     │
+│    - "VMM: Error: Android signing key boot module not found"                │
+│    - "VMM: Error: Signing key modulus mismatch"                             │
+│    - "VMM: Error: Signing key exponent mismatch"                            │
+│    - "VMM: Error: vbmeta signing key does not match known valid key"        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Android Verified Boot (vbmeta)                                             │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  - vbmeta contains PUBLIC key hash (not full key)                           │
+│  - rollback_index = 0 in both Y177 and Y181 images                          │
+│  - Signed with "release-keys"                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+10.2 KEY STORAGE LOCATIONS
+--------------------------
+1. SOC Bootloader (85738845 - Intel IPK format):
+   - Contains CSE key management structures
+   - Keys encrypted/protected by Intel hardware
+   - File header: "ipk." (Intel Package)
+
+2. GHS Binary (.mr_r_mod_android_key section):
+   - Section type: NOBITS (size 0x1000, no data in file)
+   - Virtual address: 0x02201000
+   - Key loaded at RUNTIME from bootloader modules
+   - Symbol names present, actual key data NOT in binary
+
+3. Trusty TEE Keymaster:
+   - Implements Android keystore
+   - RSA/EC key generation strings present
+   - Used for application keys, NOT boot verification keys
+
+10.3 KEY EXTRACTION FEASIBILITY
+-------------------------------
+CONCLUSION: KEY EXTRACTION IS NOT FEASIBLE VIA SOFTWARE
+
+Reasons:
+1. PRIVATE KEY NEVER EXPOSED
+   - Only public key used for verification in vbmeta
+   - Private key held by GM's signing infrastructure
+   - GHS only validates, never generates signatures
+
+2. PUBLIC KEY PROTECTED BY HARDWARE
+   - Loaded from Intel CSE protected storage
+   - CSE uses hardware encryption (fused keys)
+   - Cannot be read even with root access
+
+3. MULTIBOOT MODULE ARCHITECTURE
+   - Key delivered via Intel multiboot protocol
+   - Bootloader provides key to GHS at boot
+   - "Android signing key boot module not found" = key not in GHS
+
+4. NO KEY MATERIAL IN UPDATE PACKAGES
+   - Update packages contain signed images
+   - vbmeta contains signature, not signing key
+   - SOC_HOSTOS (GHS) section is empty (NOBITS)
+
+10.4 ATTACK SURFACE ANALYSIS
+-----------------------------
+To forge signed update images, attacker would need:
+
+Option A: Obtain GM's Private Signing Key
+  - Stored in GM's secure build infrastructure
+  - Protected by HSM (Hardware Security Module)
+  - Not present on vehicle or in update packages
+  - INFEASIBLE without insider access
+
+Option B: Compromise Intel CSE
+  - Hardware attacks on CSE subsystem
+  - Would require physical lab equipment
+  - CSE is designed to resist such attacks
+  - EXTREMELY DIFFICULT
+
+Option C: Replace Public Key in Device
+  - Would require modifying misc partition AND bootloader
+  - GHS validates key matches expected value
+  - CRC/magic number validation would detect tampering
+  - Boot would fail with corrupted key storage
+  - HIGH RISK of bricking device
+
+Option D: Find Vulnerability in Signature Verification
+  - GHS binary analysis could reveal bugs
+  - Would require deep reverse engineering
+  - No obvious vulnerabilities found in string analysis
+  - SPECULATIVE - requires extensive research
+
+10.5 OEM PUBLIC KEY EXTRACTED
+-----------------------------
+CRITICAL FINDING: Successfully extracted the OEM RSA-2048 public key from the
+bootloader's .oemkeys ELF section.
+
+Source file: update_packages/Y181/85738845 (SOC Bootloader)
+ELF offset: 0x301288 (embedded ELF inside Intel IPK package)
+Key section: .oemkeys at offset 0xfe8e0 in embedded ELF
+
+Extracted key saved to: analysis/extracted_oem_pubkey.pem
+
+Public-Key: (2048 bit)
+Modulus:
+    00:d8:04:af:e3:d3:84:6c:7e:0d:89:3d:c2:8c:d3:
+    12:55:e9:62:c9:f1:0f:5e:cc:16:72:ab:44:7c:2c:
+    65:4a:94:b5:16:2b:00:bb:06:ef:13:07:53:4c:f9:
+    64:b9:28:7a:1b:84:98:88:d8:67:a4:23:f9:a7:4b:
+    dc:4a:0f:f7:3a:18:ae:54:a8:15:fe:b0:ad:ac:35:
+    da:3b:ad:27:bc:af:e8:d3:2f:37:34:d6:51:2b:6c:
+    5a:27:d7:96:06:af:6b:b8:80:ca:fa:30:b4:b1:85:
+    b3:4d:aa:aa:c3:16:34:1a:b8:e7:c7:fa:f9:09:77:
+    ab:97:93:eb:44:ae:cf:20:bc:f0:80:11:db:23:0c:
+    47:71:b9:6d:d6:7b:60:47:87:16:56:93:b7:c2:2a:
+    9a:b0:4c:01:0c:30:d8:93:87:f0:ed:6e:8b:be:30:
+    5b:f6:a6:af:dd:80:7c:45:5e:8f:91:93:5e:44:fe:
+    b8:82:07:ee:79:ca:bf:31:73:62:58:e3:cd:c4:bc:
+    c2:11:1d:a1:4a:bf:fe:27:7d:a1:f6:35:a3:5e:ca:
+    dc:57:2f:3e:f0:c9:5d:86:6a:f8:af:66:a7:ed:cd:
+    b8:ed:a1:5f:ba:9b:85:1a:d5:09:ae:94:4e:3b:cf:
+    cb:5c:c9:79:80:f7:cc:a6:4a:a8:6a:d8:d3:31:11:f9:f6
+Exponent: 65537 (0x10001)
+
+IMPORTANT: This is the PUBLIC key used to VERIFY signatures.
+The corresponding PRIVATE key (needed to CREATE signatures) is NOT extractable.
+
+Significance:
+1. Can verify authenticity of existing GM-signed images
+2. CANNOT create new signatures or modify images
+3. Confirms signing mechanism uses standard RSA-2048 with SHA-256
+
+10.6 RELEVANT BINARY STRINGS
+----------------------------
+Key-related error messages in GHS (85098662):
+
+Signing verification:
+  VMM: Error: vbmeta signing key does not match known valid key
+  VMM: Error: Failed to load Android signing key
+  VMM: Error: Signing key modulus mismatch
+  VMM: Error: Signing key exponent mismatch
+  VMM: Error: Android signing key boot module not found
+
+Certificate parsing:
+  VMM: Error: Android signature certificate public key info is invalid
+  VMM: Error: Android signature certificate public key info algorithm identifier is invalid
+  VMM: Error: Android signature certificate public key is invalid
+  VMM: Error: Android signature certificate public key tag is invalid
+  VMM: Error: Android signature certificate public key bit string length is invalid
+
+Key module management:
+  current_android_key
+  .mr_r_mod_android_key
+  __ghsbegin_mr_r_mod_android_key
+  __ghsend_mr_r_mod_android_key
+  Insufficient space for additional current_android_keymodule. Skipped.
+
+================================================================================
+11. CONCLUSIONS
+================================================================================
+
+11.1 CONFIRMED FINDINGS
+-----------------------
+1. GHS INTEGRITY hypervisor enforces rollback protection, not Android
+2. "version check disabled" only affects gm_update_engine write phase
+3. GHS stores rollback index in misc partition (vda9)
+4. Both Y177 and Y181 vbmeta have rollback_index = 0
+5. GHS maintains its own rollback counter independent of vbmeta
+6. Downgrade Y181->Y177 is blocked at GHS boot verification
+7. Same-version reinstall (Y181->Y181) is allowed
+8. The SOC_HOSTOS (GHS) binary is IDENTICAL in Y177 and Y181
+9. Signing key extraction via software is NOT FEASIBLE
+10. Keys protected by Intel CSE hardware and loaded at runtime
+11. Filename triggers (gm_reboot_normal) are in gm_update_engine, not GHS
+
+11.2 OPEN QUESTIONS
+-------------------
+1. Exact structure of A/B metadata in misc partition
+2. How GHS determines version ordering (string compare? numeric?)
+3. Does factory reset clear stored rollback index?
+4. Can misc partition be safely modified from Android?
+5. Complete list of filename triggers supported by gm_update_engine
+
+11.3 RECOMMENDED NEXT STEPS
+---------------------------
+1. Dump misc partition via ADB for structure analysis
+2. Test factory reset impact on downgrade protection
+3. Analyze A/B metadata structure in misc partition
+4. Consider UART console access to capture GHS boot logs
+5. Reverse engineer gm_update_engine binary for full trigger list
+
+================================================================================
+APPENDIX A: KEY FILE REFERENCES
+================================================================================
+
+GHS Binary Analysis:
+- Source: update_packages/Y181/85098662
+- ELF offset: 636 bytes into file
+- Architecture: 32-bit x86, statically linked
+- Strings extracted at: /tmp/ghs_elf.bin (temporary)
+
+vbmeta Files:
+- Y181: update_packages/Y181/86331644
+- Y177: update_packages/Y177/86283158.zip
+
+Relevant Documentation:
+- BOOT_CHAIN_ANALYSIS.txt - Boot sequence details
+- UPDATE_PROCESS_ANALYSIS.txt - Update mechanism
+- VIP_CONTROL_ANALYSIS.txt - VIP MCU details
+
+================================================================================
+APPENDIX B: GHS ERROR STRING OFFSETS
+================================================================================
+
+Key strings in GHS binary (85098662):
+
+Offset 0x00cf85ac: "VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu"
+Offset 0x00cf88d3: "rollback_error"
+Offset 0x00cf8520: "VMM: A/B: no boot image for slot %s"
+Offset 0x00cf8657: "VMM: ERROR: A/B metadata: version on disk too new"
+
+Section: .vmm1.rodata (read-only data for VMM module)
+
+================================================================================
+END OF DOCUMENT
+================================================================================

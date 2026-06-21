@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="12/01/2014:  New enumeration definitions for MFC switches and switch indicators.">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>04012015</Date>
+    <Description>Added SeekUp SeekDown states</Description>
+    <Author>John Edens</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10232017</Date>
+    <Description>Replaced &quot;Character&quot; with &quot;Home&quot; per CR1578060</Description>
+    <Author>Borce Dilevski</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>09142018</Date>
+    <Description>Per CR#1500558, Added &quot;VehicleInformation&quot; Enum to GIS652_MultiFunctionController.enumdef</Description>
+    <Author>Borce Dilevski</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="MultiFunctionContollerSwitch">
+    <EnumID>_II940HGqEeSFyvgmDy9KVQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Unused">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Phone">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Navigation">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Favorites">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Volume">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Home">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Back">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SeekUp">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SeekDown">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="VehicleInformation">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="TODO" Name="MultiFunctionControllerSwitchIndicator">
+    <EnumID>_0zLI0HGpEeSFyvgmDy9KVQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Unused">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Volume">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Character">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

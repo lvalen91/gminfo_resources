@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" xsi:schemaLocation="http://www.caltools.gm.com/enumdef enumdef_1.0.xsd">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>31OCT2014</Date>
+    <Description>Mute/Unmute Ramp times used for the calibrations specified in section GIS-604-825.</Description>
+    <Author>Dominic Colella</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="former and current to produce desirable transitions in audio sources. " Name="MutexSinkRampTimeEnums">
+    <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="former and current to produce desirable transitions in audio sources. " Name="K_MUTEX_SINK_RAMP_1">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="former and current to produce desirable transitions in audio sources. " Name="K_MUTEX_SINK_RAMP_2">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="former and current to produce desirable transitions in audio sources. " Name="K_MUTEX_SINK_RAMP_3">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

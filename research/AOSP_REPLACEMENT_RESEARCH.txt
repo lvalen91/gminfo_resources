@@ -1,0 +1,542 @@
+================================================================================
+GM AAOS REPLACEMENT RESEARCH FRAMEWORK
+================================================================================
+Document Version: 1.0
+Created: December 28, 2025
+Purpose: Framework for replacing GM AAOS with custom/stock AOSP implementation
+Target: GM Infotainment 3 (gminfo3.7) CSM Module
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. RESEARCH GOALS AND OBJECTIVES
+2. SYSTEM ARCHITECTURE ANALYSIS
+3. GHS INTEGRITY HYPERVISOR
+4. BOOT CHAIN AND SIGNING REQUIREMENTS
+5. VIP FIRMWARE MANIPULATION VECTORS
+6. VEHICLE INTEGRATION REQUIREMENTS
+7. ATTACK SURFACE PRIORITIZATION
+8. RESEARCH ROADMAP
+
+================================================================================
+1. RESEARCH GOALS AND OBJECTIVES
+================================================================================
+
+1.1 PRIMARY GOAL
+----------------
+Replace GM AAOS entirely with a true AOSP Android Automotive implementation,
+enabling full developer control over the infotainment system.
+
+1.2 ALTERNATIVE GOAL
+--------------------
+If GHS INTEGRITY hypervisor must remain for vehicle functions (turn signal
+chimes, door sounds, camera access via CAN bus), enable GHS to boot a generic
+or locally-compiled AOSP build as its Android guest VM.
+
+1.3 SUCCESS CRITERIA
+--------------------
+- Custom AOSP image boots successfully
+- Vehicle integration functions preserved (chimes, cameras, CAN messages)
+- ADB access without GM restrictions
+- SELinux configurable (permissive or custom policy)
+- No dependence on GM signing infrastructure
+
+1.4 ACCEPTABLE TRADE-OFFS
+-------------------------
+- GHS hypervisor remains if required for vehicle safety functions
+- VIP firmware unchanged if it doesn't block custom Android
+- Some GM services may need reimplementation
+
+================================================================================
+2. SYSTEM ARCHITECTURE ANALYSIS
+================================================================================
+
+2.1 VIRTUALIZATION ARCHITECTURE (CONFIRMED)
+-------------------------------------------
+
++-------------------------------------------------------------------+
+|                     HARDWARE LAYER                                 |
+| +----------------+  +-------------------+  +--------------------+  |
+| | Intel Atom     |  | VIP MCU (RH850)   |  | M24C64 EEPROM     |  |
+| | x7-A3960       |  | Vehicle Interface |  | Security Flags    |  |
+| +-------+--------+  +---------+---------+  +---------+----------+  |
+|         |                     |                      |             |
++---------+---------------------+----------------------+-------------+
+          |                     |                      |
+          v                     | I2C                  |
++-------------------------------------------------------------------+
+|              GHS INTEGRITY HYPERVISOR (Bare Metal)                |
+| +-------------------+  +-------------------+  +------------------+ |
+| | ghs_isys_a/b      |  | ghs_storage       |  | ghs_log          | |
+| | (Hypervisor OS)   |  | (Persistent)      |  | (Logging)        | |
+| +-------------------+  +-------------------+  +------------------+ |
+|                                                                    |
+| Provides: - Power management       - virtio block devices          |
+|           - VM isolation           - virtio console                |
+|           - IPC with VIP           - PCM audio passthrough         |
++----+----------------------------+----------------------------------+
+     |                            |
+     | virtio                     | IPC/HDLC
+     v                            v
++-------------------------------------------------------------------+
+|                     ANDROID GUEST VM                              |
+| +------------------+  +------------------+  +------------------+   |
+| | Linux 4.19.305   |  | Android 12       |  | GM Services      |   |
+| | (Virtualized)    |  | (AAOS)           |  | (Vehicle HAL)    |   |
+| +------------------+  +------------------+  +------------------+   |
+|                                                                    |
+| Block Devices: /dev/block/vdaX (virtio)                           |
+| AVB: System, Vendor, Product protected                            |
+| SELinux: Enforcing (Y181)                                         |
++-------------------------------------------------------------------+
+
+2.2 PARTITION LAYOUT (From Live System)
+---------------------------------------
+| Partition      | Device  | Purpose                    | Signed? |
+|----------------|---------|----------------------------|---------|
+| ghs_isys_a/b   | vda1/2  | GHS INTEGRITY OS           | YES     |
+| ghs_storage    | vda3    | GHS persistent storage     | NO?     |
+| ghs_abl_update | vda4    | GHS ABL update             | YES     |
+| bootloader_a/b | vda5/6  | Intel ABL                  | YES     |
+| boot_a/b       | vda7/8  | Android boot image         | YES     |
+| misc           | vda9    | Boot control               | NO      |
+| vbmeta_a/b     | vda10/11| AVB verification metadata  | YES     |
+| metadata       | vda12   | Android metadata           | NO      |
+| super          | vda13   | Dynamic partitions         | YES     |
+| acpi_a/b       | vda14/15| ACPI tables                | YES?    |
+| acpio_a/b      | vda16/17| ACPI overlay               | YES?    |
+| cert_a/b       | vda18/19| Certificates               | N/A     |
+| persistent     | vda20   | Factory reset protection   | NO      |
+| teedata        | vda21   | TEE data                   | NO      |
+| config         | vda22   | OEM config                 | NO      |
+| calibration    | vda23   | Vehicle calibration        | NO      |
+| ghs_log        | vda24   | GHS logging                | NO      |
+| update_cache   | vda25   | OTA update staging         | NO      |
+| data           | vda26   | User data (encrypted)      | NO      |
+
+2.3 KERNEL VIRTUALIZATION CONFIG (Confirmed)
+--------------------------------------------
+CONFIG_HYPERVISOR_GUEST=y
+CONFIG_GHS_GUEST_COMMS=y
+CONFIG_GHS_PARAVIRTUAL_SUPPORT=y
+CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y
+CONFIG_ANDROID_GM_GHS_MMC=y
+CONFIG_SND_GHS_PCM=y              <-- Chime audio via GHS
+CONFIG_VIRTIO=y
+CONFIG_VIRTIO_BLK=y
+CONFIG_VIRTIO_CONSOLE=y
+CONFIG_VIRTIO_PCI=y
+CONFIG_TRUSTY_VIRTIO=m
+
+================================================================================
+3. GHS INTEGRITY HYPERVISOR
+================================================================================
+
+3.1 GHS INTEGRITY OVERVIEW
+--------------------------
+Green Hills Software INTEGRITY is a real-time operating system (RTOS) with
+separation kernel/hypervisor capabilities. In GM's implementation:
+
+- Runs on bare metal Intel x86
+- Provides hardware partitioning between VMs
+- Manages power states and hardware resources
+- Passes through specific hardware to guest VMs
+- Provides virtio interfaces for storage, console, etc.
+
+3.2 GHS PARTITIONS ANALYSIS
+---------------------------
+ghs_isys_a/b (vda1/2):
+  - Primary GHS INTEGRITY system image
+  - A/B redundancy for updates
+  - Contains hypervisor kernel and configuration
+  - CRITICAL: This is where VM definitions live
+
+ghs_storage (vda3):
+  - Persistent storage for GHS
+  - May contain VM configurations
+  - May contain security policies
+
+ghs_abl_update (vda4):
+  - ABL (Automotive Bootloader) update staging
+  - Used during secure update process
+
+ghs_log (vda24):
+  - GHS runtime logging
+  - May contain useful debug information
+
+3.3 GHS-ANDROID COMMUNICATION
+-----------------------------
+GHS communicates with Android via:
+1. virtio block devices (vdaX) - Storage
+2. virtio console - Serial communication
+3. GHS PCM - Audio passthrough for chimes
+4. IPC channels - State management
+
+From VIP logs:
+  IPC Version: 4.1.0
+  API Version: 0404
+  HDLC Window Size: 5
+  Channels: 12, 14, 17, 18
+
+3.4 GHS SECURITY MODEL
+----------------------
+GHS INTEGRITY uses:
+- Separation kernel architecture
+- Signed boot chain
+- Memory protection between VMs
+- Hardware-backed security
+
+HYPOTHESIS: GHS likely validates Android VM image signature before boot.
+If we can:
+  a) Find GHS signing keys, OR
+  b) Disable GHS signature verification, OR
+  c) Exploit GHS to load unsigned VMs
+Then custom AOSP becomes possible.
+
+================================================================================
+4. BOOT CHAIN AND SIGNING REQUIREMENTS
+================================================================================
+
+4.1 COMPLETE BOOT SEQUENCE
+--------------------------
+1. VIP MCU powers on, reads EEPROM configuration
+2. VIP enables Intel SoC power rails
+3. Intel x86 executes from SPI flash (ABL stage 1)
+4. ABL loads GHS INTEGRITY from ghs_isys partition
+5. GHS initializes hardware, creates VM partitions
+6. GHS loads Android boot image into VM
+7. Android kernel initializes (as virtio guest)
+8. Android boot image contains init.rc
+9. init spawns services including gmprotokey
+10. gmprotokey communicates with VIP for ADB auth
+
+4.2 SIGNING HIERARCHY
+---------------------
+Level 1: VIP Bootloader/App
+  - Signed by GM
+  - Flashed via DPS with VIP_APPLICATION/VIP_BOOTLOADER signature
+
+Level 2: Intel ABL
+  - Signed by Intel/GM
+  - INTEL_ABL signature type
+
+Level 3: GHS INTEGRITY
+  - Signed by GHS/GM
+  - HOST_OS_IMAGE signature type
+
+Level 4: Android Partitions (AVB)
+  - Signed with Android Verified Boot
+  - Keys in vbmeta partition
+  - GSI keys present: q-gsi, r-gsi, s-gsi
+
+4.3 AVB KEYS DISCOVERY
+----------------------
+From fstab, AVB accepts these public keys:
+  /avb/q-gsi.avbpubkey  (Android Q GSI)
+  /avb/r-gsi.avbpubkey  (Android R GSI)
+  /avb/s-gsi.avbpubkey  (Android S GSI)
+
+4.4 GSI/DSU STATUS (December 2025 Testing)
+------------------------------------------
+Developer Options contains a "DSU Loader" / GSI section, BUT it is non-functional.
+
+INFRASTRUCTURE PRESENT:
+  - dynamic_system binder service (#95)
+  - gsid.rc init configuration
+  - ro.treble.enabled = true
+  - ro.vndk.version = 32 (Android 12)
+  - ro.product.first_api_level = 29 (Android 10)
+
+CRITICAL BLOCKER FOUND IN SEPOLICY:
+  (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
+
+  This SELinux rule EXPLICITLY denies GM's update engine access to GSI
+  metadata files. GM has intentionally disabled GSI functionality.
+
+POSSIBLE FAILURE CAUSES:
+  1. SELinux enforcement blocking GSI operations
+  2. GM update_engine lacks GSI metadata permissions
+  3. Network download blocked by GM servers
+  4. GHS hypervisor may not support DSU partition layout
+  5. Insufficient /data space for DSU image
+
+DIAGNOSTIC SCRIPT:
+  Run: scripts/diagnose_gsi.sh
+  This captures logcat/dmesg while attempting GSI download.
+
+ALTERNATIVE GSI APPROACHES:
+  1. Manual GSI flash via fastboot (if accessible)
+  2. Y177 downgrade first (SELinux permissive may help)
+  3. Modify SEPolicy to allow GSI operations
+  4. Direct partition flash via recovery/DPS
+
+4.4 VBMETA STRUCTURE
+--------------------
+vbmeta partition contains:
+- Rollback index (anti-downgrade)
+- Hash descriptors for protected partitions
+- Public keys for verification
+
+If vbmeta could be modified to:
+  a) Add custom signing key, OR
+  b) Set verification mode to "disabled"
+Then AVB bypass becomes possible.
+
+================================================================================
+5. VIP FIRMWARE MANIPULATION VECTORS
+================================================================================
+
+5.1 VIP SECURITY RESPONSIBILITIES
+---------------------------------
+The VIP MCU (RH850) controls:
+- ADB authentication (PROTOKEY/ICUSB)
+- EEPROM security flag verification
+- Power state management
+- CAN bus communication with BCM
+- IPC communication with SoC/GHS
+
+5.2 EEPROM BYPASS (PROVEN WORKING)
+----------------------------------
+Address 0x0440: C3 00 C3 -> 5A FF 5A (ADB Enable)
+Address 0x0A80: FF FF FF -> 5A FF 5A (Backup)
+
+When set to 5A FF 5A:
+- VIP returns all-0xFF seed (bypass mode)
+- ADB authentication passes without GM client
+- PROTOKEY exchange is skipped
+
+LIMITATION: Does not affect GHS/AVB security.
+
+5.3 VIP FIRMWARE EXPLOITATION VECTORS
+-------------------------------------
+1. UART Console (/dev/ttyACM1)
+   - World-readable device
+   - May provide VIP debug access
+   - 74LVC08A gate may be blocking TX
+
+2. VIP Flash via DPS
+   - Requires VIP_APPLICATION signature
+   - No known key bypass
+
+3. VIP JTAG
+   - Physical access to debug port
+   - Could dump/modify firmware
+   - Would enable full RE of PROTOKEY
+
+4. UDS Calibration Override
+   - DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE in CalDef
+   - If accessible, might disable security checks
+
+5.4 POTENTIAL VIP MODIFICATIONS FOR AOSP
+----------------------------------------
+If VIP firmware could be modified:
+- Disable GHS signature verification IPC
+- Always return "authenticated" for PROTOKEY
+- Allow unsigned boot chain
+- Pass through boot control without validation
+
+================================================================================
+6. VEHICLE INTEGRATION REQUIREMENTS
+================================================================================
+
+6.1 FUNCTIONS THAT MUST BE PRESERVED
+------------------------------------
+| Function              | Source        | Dependency           |
+|-----------------------|---------------|----------------------|
+| Turn signal chime     | GHS PCM       | GHS hypervisor       |
+| Door open chime       | GHS PCM       | GHS hypervisor       |
+| Seatbelt chime        | GHS PCM       | VIP + GHS            |
+| Reverse camera        | Video input   | LVDS + calibration   |
+| 360 surround view     | Multi-camera  | LVDS + calibration   |
+| Climate control       | CAN bus       | Vehicle HAL          |
+| Steering wheel buttons| CAN bus       | Vehicle HAL          |
+| Vehicle speed         | CAN bus       | Vehicle HAL          |
+| Gear indicator        | CAN bus       | Vehicle HAL          |
+
+6.2 GM-SPECIFIC ANDROID COMPONENTS
+----------------------------------
+From service enumeration:
+- gm_vehicle_hal: Vehicle HAL implementation
+- gm-location-hal-1_0: Location services
+- gmprotokey: ADB authentication
+- gmlogger: Debug logging
+- gm_update_engine: OTA updates
+
+For custom AOSP, we would need:
+1. Vehicle HAL reimplementation (or use generic VHAL)
+2. Camera HAL for LVDS inputs
+3. Audio HAL for GHS PCM passthrough
+4. CAN bus message parsing
+
+6.3 CALIBRATION DATA REQUIREMENTS
+---------------------------------
+Stored in /mnt/vendor/calibration/:
+- Camera parameters
+- Display calibration
+- Audio tuning
+- Vehicle-specific settings
+
+May need to preserve or recreate for custom AOSP.
+
+================================================================================
+7. ATTACK SURFACE PRIORITIZATION
+================================================================================
+
+7.1 HIGH PRIORITY VECTORS
+-------------------------
+1. GSI BOOT TEST (HIGHEST)
+   - AVB keys include GSI keys
+   - Test if stock Android GSI boots
+   - If successful, provides immediate custom AOSP path
+
+2. Y177 DOWNGRADE (HIGH)
+   - Version check confirmed disabled
+   - Would restore SELinux permissive
+   - Enables more exploration
+
+3. GHS PARTITION ANALYSIS (HIGH)
+   - Dump ghs_isys_a/b partitions
+   - Analyze VM configuration
+   - Find signature verification code
+
+7.2 MEDIUM PRIORITY VECTORS
+---------------------------
+4. VBMETA MODIFICATION
+   - Attempt to disable AVB verification
+   - Would allow unsigned Android images
+
+5. VIP UART EXPLOITATION
+   - Access debug console
+   - May reveal security bypass
+
+6. GHS_LOG ANALYSIS
+   - May contain boot debug info
+   - Could reveal VM loading process
+
+7.3 RESEARCH VECTORS (LONG TERM)
+--------------------------------
+7. VIP JTAG DEBUG
+   - Full firmware extraction
+   - Complete security model RE
+
+8. GHS INTEGRITY RE
+   - Understand VM signing
+   - Find verification bypass
+
+9. Custom GHS VM Image
+   - Create unsigned VM definition
+   - Boot custom AOSP under GHS
+
+================================================================================
+8. RESEARCH ROADMAP
+================================================================================
+
+8.1 PHASE 1: VALIDATION (Immediate)
+-----------------------------------
+[ ] Test Y177 downgrade via DPS
+[ ] Dump ghs_isys_a partition via ADB (may fail)
+[ ] Dump ghs_log partition via ADB
+[ ] Test GSI image boot (if AVB can be bypassed)
+[ ] Analyze /avb/*.avbpubkey files
+[ ] Check for fastboot/bootloader access methods
+
+8.2 PHASE 2: ANALYSIS (Short Term)
+----------------------------------
+[ ] Full GHS partition analysis
+[ ] VIP UART console exploration
+[ ] AVB/vbmeta structure analysis
+[ ] GHS-Android IPC protocol documentation
+[ ] CalDef security override testing
+
+8.3 PHASE 3: EXPLOITATION (Medium Term)
+---------------------------------------
+[ ] AVB bypass development
+[ ] Custom boot image creation
+[ ] GHS VM configuration modification
+[ ] VIP firmware analysis (if JTAG available)
+
+8.4 PHASE 4: INTEGRATION (Long Term)
+------------------------------------
+[ ] Custom AOSP build with GHS support
+[ ] Vehicle HAL reimplementation
+[ ] Camera HAL development
+[ ] Audio HAL for GHS PCM
+[ ] Full vehicle integration testing
+
+================================================================================
+APPENDIX A: KEY COMMANDS FOR RESEARCH
+================================================================================
+
+# Dump partition (requires root or permissive SELinux)
+dd if=/dev/block/vda1 of=/sdcard/ghs_isys_a.img bs=4096
+
+# Check AVB status
+avbtool info_image --image boot_a.img
+
+# Extract vbmeta
+dd if=/dev/block/vda10 of=/sdcard/vbmeta_a.img bs=4096
+
+# Check GHS log
+cat /dev/block/vda24 | strings | less
+
+# List partitions
+ls -la /dev/block/by-name/
+
+# Check for GSI compatibility
+getprop ro.product.first_api_level
+
+================================================================================
+APPENDIX B: ADDITIONAL EEPROM FLAGS (From Previous Analysis)
+================================================================================
+
+From EEPROM_Analysis_Report.md, additional flags that may aid research:
+
+POTENTIAL DEVELOPER/DEBUG FLAGS:
+| Address | Current | Frame | Suspected Purpose |
+|---------|---------|-------|-------------------|
+| 0x0B40  | 0x00    | 0x69  | Developer/Debug mode |
+| 0x0020  | 0x00    | 0x69  | Unknown feature toggle |
+| 0x0B80  | 0x00    | 0xF0  | Unknown feature |
+| 0x0BC0  | 0x00    | 0x69  | Unknown feature |
+| 0x1500  | 0x00    | 0x69  | Unknown feature |
+
+UI FLAGS BLOCK (0x0E80-0x0EAF):
+- 0xE82: Touch input enabled
+- 0xE83: Haptic feedback
+- 0xE84: UI sound effects
+- 0xE85: Transition animations
+- 0xE86: Auto-brightness
+- 0xE87-0xE88: Reserved (potential hidden features)
+
+BOOT/RESET FLAGS:
+- 0x001: Boot state (0x00=virgin, 0x01=normal, 0xFF=corrupted)
+- 0x021: Initialization flag
+
+TESTING PRIORITY FOR AOSP RESEARCH:
+1. 0x0B40 → 0xFF (may enable developer mode)
+2. 0xE87 → 0x01 (may enable hidden feature)
+3. 0xE88 → 0x01 (may enable hidden feature)
+
+================================================================================
+APPENDIX C: CRITICAL FILE LOCATIONS
+================================================================================
+
+GHS Partitions:
+  /dev/block/vda1 - ghs_isys_a
+  /dev/block/vda2 - ghs_isys_b
+  /dev/block/vda3 - ghs_storage
+  /dev/block/vda24 - ghs_log
+
+AVB Keys:
+  /avb/q-gsi.avbpubkey
+  /avb/r-gsi.avbpubkey
+  /avb/s-gsi.avbpubkey
+
+Vehicle Integration:
+  /vendor/lib64/hw/android.hardware.automotive.vehicle*
+  /vendor/etc/vhal/
+  /mnt/vendor/calibration/
+
+================================================================================
+END OF DOCUMENT
+================================================================================

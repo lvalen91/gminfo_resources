@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>1/25/2018</Date>
+    <Description>Within the GIS608_LVDS_I2C.enumdef, deleted the TOUCH_CONTROLLER_ID enumeration.  This is to clean up/complete a previous update where the TOUCH_CONTROLLER_IDENTIFIER enumeration calibration  within the GIS608_LVDS_I2C.caldef  for this was previously removed without deleting this enumeratinon within this enumdef file when it should have been at the time. Note as reference on this, it was previously determined that an enumeration calibration for this would not be needed for this since it was concluded that more than one type of IC for the ICS does not need to be supported.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This enumeration defined the encoder technology used (mechanical or capacitive)" Name="EncoderTechnology">
+    <EnumID>_3V1SAHxPEeaHHOy4fZEGwA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="The encoder technology is mechanical" Name="Mechanical_Encoder_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The encoder technology is capacitive" Name="Capacitive_Encoder_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

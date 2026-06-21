@@ -1,0 +1,37 @@
+intel_tfm_governor 20480 0 - Live 0x0000000000000000
+rfkill_gpio 16384 0 - Live 0x0000000000000000
+bcmdhd 802816 0 - Live 0x0000000000000000 (O)
+hci_uart 20480 0 - Live 0x0000000000000000
+bluetooth 548864 1 hci_uart, Live 0x0000000000000000
+ecdh_generic 40960 1 bluetooth, Live 0x0000000000000000
+snd_usb_audio 233472 0 - Live 0x0000000000000000
+tpm_crb 20480 0 - Live 0x0000000000000000
+tpm 57344 1 tpm_crb, Live 0x0000000000000000
+snd_usbmidi_lib 40960 1 snd_usb_audio, Live 0x0000000000000000
+snd_hwdep 20480 1 snd_usb_audio, Live 0x0000000000000000
+faceplate 16384 2 - Live 0x0000000000000000
+atmel_mxt_ts 36864 0 - Live 0x0000000000000000
+snd_soc_sst_bxt_tdf8532 32768 0 - Live 0x0000000000000000
+snd_soc_tdf8532 16384 0 - Live 0x0000000000000000
+snd_soc_skl 143360 0 - Live 0x0000000000000000
+snd_soc_skl_ipc 77824 1 snd_soc_skl, Live 0x0000000000000000
+snd_soc_sst_ipc 16384 1 snd_soc_skl_ipc, Live 0x0000000000000000
+dwc3_pci 16384 0 - Live 0x0000000000000000
+snd_soc_sst_dsp 28672 1 snd_soc_skl_ipc, Live 0x0000000000000000
+dwc3 102400 0 - Live 0x0000000000000000
+xhci_pci 16384 0 - Live 0x0000000000000000
+snd_hda_ext_core 24576 1 snd_soc_skl, Live 0x0000000000000000
+snd_hda_core 86016 2 snd_soc_skl,snd_hda_ext_core, Live 0x0000000000000000
+mei_me 40960 0 - Live 0x0000000000000000
+xhci_hcd 225280 1 xhci_pci, Live 0x0000000000000000
+mei 106496 1 mei_me, Live 0x0000000000000000
+trusty_timer 16384 0 - Live 0x0000000000000000
+trusty_wall 16384 1 trusty_timer, Live 0x0000000000000000
+ti949_serdes 24576 0 - Live 0x0000000000000000
+trusty_log 16384 0 - Live 0x0000000000000000
+trusty_virtio 20480 0 - Live 0x0000000000000000
+trusty_ipc 24576 4 - Live 0x0000000000000000
+videobuf2_dma_sg 20480 0 - Live 0x0000000000000000
+trusty_mem 16384 2 trusty_wall,trusty_virtio, Live 0x0000000000000000
+trusty 28672 5 trusty_timer,trusty_wall,trusty_log,trusty_virtio,trusty_mem, Live 0x0000000000000000
+igb_avb 208896 1 - Live 0x0000000000000000 (O)

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This enumdef files defines the possible enumeration values defined for the enumeration calibrations in the GIS549_MultifunctionInfotainmentController.caldef file.">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>9/27/2017</Date>
+    <Description>Intial release of this enumdef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This defines the path of the cursor on a keyboard row as the primary rotary control is rotated either clockwise or counterclockwise." Name="Keyboard_Cursor_Control">
+    <EnumID>_HEHIYKNvEeevVeh3fF_jdg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Path A will bookend the MFC keyboard cursor" Name="CalibrationA">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Path B will wrap the MFC keyboard cursor" Name="CalibrationB">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

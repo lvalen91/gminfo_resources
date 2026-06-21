@@ -1,0 +1,478 @@
+================================================================================
+GM AAOS Y177 KERNEL CVE ANALYSIS
+================================================================================
+Analysis Date: 2026-01-04
+Firmware Version: Y177.6.1 GAS
+Kernel Version: 4.19.305-240125T145315Z (SAME as Y181)
+SELinux Runtime: PERMISSIVE (CRITICAL DIFFERENCE FROM Y181)
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. Executive Summary
+2. Y177 vs Y181 Security Comparison
+3. Kernel Configuration Analysis
+4. CVE Exploitability Assessment
+5. Additional Attack Vectors Enabled
+6. Risk Assessment
+7. Recommendations
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+CRITICAL FINDING: Y177 runs SELinux in PERMISSIVE mode at runtime, making it
+VULNERABLE to kernel CVEs that Y181 is protected against.
+
+KEY DIFFERENCES FROM Y181:
++---------------------------+------------------+------------------+
+| Security Feature          | Y177             | Y181             |
++---------------------------+------------------+------------------+
+| SELinux Runtime Mode      | PERMISSIVE       | ENFORCING        |
+| Kernel Version            | 4.19.305         | 4.19.305         |
+| Kernel Build Date         | Jan 25, 2024     | Jan 25, 2024     |
+| Boot Parameters           | enforcing=1*     | enforcing=1*     |
+| Security Patch Level      | ~Feb 2025        | June 2025        |
+| CVE Exploitability        | HIGH             | LOW              |
+| Ramdisk sepolicy MD5      | e9ebb7d8...      | 6b2045bf...      |
++---------------------------+------------------+------------------+
+
+* Both have `enforcing=1` at END of cmdline (last value wins), but Y177's
+  ramdisk does NOT force enforcing mode at runtime like Y181's does.
+
+CONCLUSION: A radio running Y177 IS VULNERABLE to multiple kernel CVEs.
+The SELinux permissive mode removes the primary protection layer that
+blocks exploitation on Y181.
+
+================================================================================
+2. Y177 VS Y181 SECURITY COMPARISON
+================================================================================
+
+2.1 SELINUX ENFORCEMENT
+-----------------------
+Both Y177 and Y181 share the same boot parameters:
+  - enforcing=0 androidboot.selinux=permissive (first in cmdline)
+  - enforcing=1 androidboot.selinux=enforcing (later in cmdline)
+
+HOWEVER, the critical difference is in the RUNTIME behavior:
+  - Y177: System runs in PERMISSIVE mode
+  - Y181: Init overrides to ENFORCING mode before untrusted code executes
+
+This is confirmed in project documentation:
+  - "Y177 runs with SELinux permissive, Y181 forces enforcing"
+  - "SELinux changed from PERMISSIVE (Y177) to ENFORCING (Y181)"
+
+2.2 SELINUX POLICY COMPARISON
+-----------------------------
+The vendor_sepolicy.cil files are nearly IDENTICAL:
+  - Y177: 5,382 lines, 3,582 allow rules
+  - Y181: 5,383 lines, 3,583 allow rules
+  - Difference: 1 line (carservice_app sensor_privacy_service access)
+
+Both contain the SAME neverallow rules:
+  - (neverallow appdomain video_device_32_0 (chr_file (read write)))
+  - (neverallow untrusted_app domain (netlink_socket ...))
+
+BUT: In permissive mode, neverallow rules are LOGGED but NOT ENFORCED!
+
+2.3 KERNEL CONFIGURATION
+------------------------
+Y177 and Y181 use the SAME kernel build:
+  - Version: 4.19.305-240125T145315Z
+  - Compiled: January 25, 2024
+  - Compiler: Android Clang 12.0.7
+
+Identical security-relevant configs:
+  # CONFIG_NF_TABLES is not set       - Blocks CVE-2024-1086
+  # CONFIG_USER_NS is not set         - Blocks namespace exploits
+  # CONFIG_USERFAULTFD is not set     - Increases race condition difficulty
+  CONFIG_USB_VIDEO_CLASS=y            - UVC driver enabled
+  CONFIG_BPF_SYSCALL=y                - BPF enabled
+  CONFIG_USB=y                        - USB subsystem enabled
+
+================================================================================
+3. KERNEL CONFIGURATION ANALYSIS
+================================================================================
+
+3.1 MITIGATIONS ENABLED (SAME AS Y181)
+--------------------------------------
+CONFIG_STACKPROTECTOR=y              - Stack canaries
+CONFIG_STACKPROTECTOR_STRONG=y       - Strong stack protection
+CONFIG_HARDENED_USERCOPY=y           - Bounds checking
+CONFIG_SECURITY_DMESG_RESTRICT=y     - Restricted dmesg
+CONFIG_SECURITY_SELINUX=y            - SELinux compiled in
+
+3.2 ATTACK SURFACE DISABLED (SAME AS Y181)
+------------------------------------------
+# CONFIG_NF_TABLES is not set        - No nf_tables (blocks CVE-2024-1086)
+# CONFIG_USER_NS is not set          - No user namespaces
+# CONFIG_USERFAULTFD is not set      - No userfaultfd
+# CONFIG_IO_URING is not set         - No io_uring
+
+3.3 ATTACK SURFACE ENABLED
+--------------------------
+CONFIG_USB_VIDEO_CLASS=y             - UVC driver (CVE-2024-53104)
+CONFIG_BPF_SYSCALL=y                 - BPF syscall (verifier issues)
+CONFIG_USB=y                         - USB subsystem (CVE-2024-53150/53197)
+CONFIG_I2C_CHARDEV=y                 - I2C character device access
+CONFIG_CAN=y                         - CAN bus support
+
+================================================================================
+4. CVE EXPLOITABILITY ASSESSMENT
+================================================================================
+
+CRITICAL: With SELinux PERMISSIVE, MAC policies do NOT block access.
+All CVEs that are blocked on Y181 become EXPLOITABLE on Y177.
+
+4.1 CVE-2024-53104 (UVC Driver OOB Write)
+-----------------------------------------
+Status on Y181: BLOCKED by SELinux
+Status on Y177: EXPLOITABLE
+
+Reason: With SELinux permissive, the neverallow rule for video_device
+is logged but NOT enforced. Any process can access video devices.
+
+Attack Vector:
+  1. Connect malicious USB video device to Y177 system
+  2. UVC driver parses malformed frame descriptors
+  3. Out-of-bounds write occurs in kernel
+  4. Achieve kernel code execution
+
+Requirements: Physical USB access only
+Difficulty: MEDIUM (POC publicly available)
+
+4.2 CVE-2024-36971 (Network dst_cache UAF)
+------------------------------------------
+Status on Y181: BLOCKED by SELinux
+Status on Y177: EXPLOITABLE
+
+Reason: With SELinux permissive, network socket restrictions are
+not enforced. Local processes can trigger the vulnerability.
+
+Attack Vector:
+  1. Local code execution (ADB shell or app)
+  2. Trigger race condition in dst_cache handling
+  3. Use-after-free leads to kernel memory corruption
+  4. Achieve kernel code execution
+
+Requirements: Local code execution
+Difficulty: HIGH (race condition timing)
+
+4.3 CVE-2024-53150 / CVE-2024-53197 (USB Subsystem)
+---------------------------------------------------
+Status on Y181: BLOCKED by SELinux
+Status on Y177: EXPLOITABLE
+
+Reason: With SELinux permissive, USB device access restrictions
+are not enforced. Used in Cellebrite forensic tool chain.
+
+Attack Vector:
+  1. Connect specially crafted USB device
+  2. Trigger vulnerability in USB subsystem
+  3. Achieve kernel code execution
+
+Requirements: Physical USB access
+Difficulty: MEDIUM (used in real-world attacks)
+
+4.4 BPF Verifier Issues (CVE-2023-2163 and similar)
+---------------------------------------------------
+Status on Y181: BLOCKED by SELinux (CAP_BPF restricted)
+Status on Y177: POTENTIALLY EXPLOITABLE
+
+Reason: While CAP_BPF is still required at kernel level, SELinux
+restrictions on BPF operations are not enforced in permissive mode.
+
+Attack Vector:
+  1. Process with CAP_BPF loads malicious BPF program
+  2. Verifier incorrectly marks unsafe code as safe
+  3. Arbitrary kernel read/write achieved
+
+Requirements: CAP_BPF capability
+Difficulty: HIGH (requires BPF capability)
+
+4.5 CVE EXPLOITABILITY MATRIX
+-----------------------------
+| CVE            | Y181 (Enforcing) | Y177 (Permissive) |
+|----------------|------------------|-------------------|
+| CVE-2024-53104 | BLOCKED          | EXPLOITABLE*      |
+| CVE-2024-36971 | BLOCKED          | EXPLOITABLE       |
+| CVE-2024-53150 | BLOCKED          | EXPLOITABLE*      |
+| CVE-2024-53197 | BLOCKED          | EXPLOITABLE*      |
+| CVE-2024-1086  | N/A (disabled)   | N/A (disabled)    |
+| BPF issues     | BLOCKED          | POTENTIALLY EXPL. |
+
+* Requires physical USB access
+
+================================================================================
+5. ADDITIONAL ATTACK VECTORS ENABLED BY PERMISSIVE MODE
+================================================================================
+
+5.1 I2C DEVICE ACCESS
+---------------------
+Status on Y181: BLOCKED by SELinux
+Status on Y177: ACCESSIBLE
+
+World-writable I2C devices:
+  /dev/i2c-0   crw-rw-rw-   Tuner control
+  /dev/i2c-1   crw-rw-rw-   Tuner control
+  /dev/i2c-2   crw-rw-rw-   AME HAL
+  /dev/i2c-3   crw-rw-rw-   Audio control
+
+On Y177, any process (including shell and untrusted apps) CAN:
+  - Communicate with EEPROM chips
+  - Interact with tuner/audio hardware
+  - Potentially modify VIN, calibration data, ADB flags
+
+5.2 GPIO MANIPULATION
+---------------------
+Status on Y181: BLOCKED by SELinux
+Status on Y177: ACCESSIBLE
+
+World-writable GPIO pins:
+  gpio458   Saturn Reset (external MCU)
+  gpio460   Dirana Bootstate
+  gpio464   Saturn Bootmode
+  gpio466   Dirana Reset
+
+On Y177, any process CAN:
+  - Reset external MCUs
+  - Control boot modes
+  - Cause denial of service
+
+5.3 SERIAL/TTY ACCESS
+---------------------
+Status on Y181: BLOCKED by SELinux for most domains
+Status on Y177: POTENTIALLY ACCESSIBLE
+
+/dev/ttyS1 is the VIP MCU communication channel.
+With SELinux permissive, shell may be able to access this interface
+and communicate directly with the VIP microcontroller.
+
+5.4 BINDER SERVICE ACCESS
+-------------------------
+Status on Y181: Restricted by SELinux
+Status on Y177: Less restricted
+
+Services that may be more accessible in permissive mode:
+  - com.gm.server.obd.OBDService
+  - com.gm.server.diagnostics_service.DiagnosticsService
+  - com.gm.server.update.UpdateService
+  - gm.onstar.OnStarRemoteReflashManager
+
+================================================================================
+6. RISK ASSESSMENT
+================================================================================
+
+6.1 OVERALL RISK: HIGH
+
+Y177 presents significantly higher security risk than Y181 due to:
+  1. SELinux permissive mode removes MAC protection layer
+  2. Kernel CVEs become exploitable
+  3. World-writable hardware interfaces become accessible
+  4. Attack surface is dramatically expanded
+
+6.2 ATTACK SCENARIO COMPARISON
+
+Scenario: Attacker with physical USB access
+
+On Y181 (Enforcing):
+  1. Attacker connects malicious USB device
+  2. SELinux blocks video_device access from exploitation context
+  3. Kernel vulnerability cannot be triggered from unprivileged context
+  4. Attack FAILS
+
+On Y177 (Permissive):
+  1. Attacker connects malicious USB device
+  2. SELinux logs but does NOT block video_device access
+  3. CVE-2024-53104 triggers OOB write in kernel
+  4. Kernel code execution achieved
+  5. Attack SUCCEEDS
+
+6.3 ATTACK SCENARIO: Local exploitation
+
+On Y181 (Enforcing):
+  1. Attacker has ADB shell access
+  2. SELinux blocks access to I2C, GPIO, BPF, network sockets
+  3. Cannot access hardware interfaces
+  4. Cannot trigger kernel vulnerabilities
+  5. Limited to shell context operations
+
+On Y177 (Permissive):
+  1. Attacker has ADB shell access
+  2. SELinux logs but does NOT block access
+  3. Can access /dev/i2c-0,1,2,3 for hardware manipulation
+  4. Can access GPIO pins for MCU control
+  5. Can attempt to trigger CVE-2024-36971 via network operations
+  6. Can potentially communicate with VIP MCU
+
+================================================================================
+7. RECOMMENDATIONS
+================================================================================
+
+7.1 FOR VEHICLE OWNERS/OPERATORS
+--------------------------------
+If your vehicle is running Y177 firmware:
+
+1. DO NOT connect unknown USB devices to the infotainment system
+   - CVE-2024-53104 and CVE-2024-53150/53197 are exploitable via USB
+
+2. Be aware that Y177 has reduced security compared to Y181
+   - Consider requesting firmware update from dealer if available
+
+3. Restrict physical access to USB ports
+   - USB-based attacks are the most practical exploitation vector
+
+7.2 FOR GM/HARMAN
+-----------------
+1. CRITICAL: Backport SELinux enforcement to Y177
+   - The permissive mode is the primary security weakness
+
+2. Patch kernel CVEs even with SELinux permissive
+   - Defense in depth principle
+
+3. Consider kernel upgrade path for Y177 devices
+   - 4.19.305 has multiple known vulnerabilities
+
+4. Implement USB device whitelisting
+   - Restrict which USB devices can interact with the system
+
+7.3 FOR SECURITY RESEARCHERS
+----------------------------
+Y177 is significantly more accessible for security research:
+
+1. ADB shell access provides direct I2C/GPIO access
+2. Kernel CVEs may be triggerable without SELinux bypass
+3. VIP MCU communication may be accessible
+4. Binder services have fewer restrictions
+
+Note: GHS hypervisor rollback protection blocks Y181→Y177 downgrade,
+so accessing Y177 requires a vehicle already running that firmware.
+
+================================================================================
+APPENDIX A: SOURCE FILES ANALYZED
+================================================================================
+
+Y177 Files:
+  /update_packages/Y177/86283154          - Boot image (kernel + ramdisk)
+  /update_packages/Y177/86283156.zip      - Vendor partition
+  /Y177_vendor/etc/selinux/vendor_sepolicy.cil
+  /Y177_vendor/etc/selinux/plat_pub_versioned.cil
+  /Y177_vendor/etc/init/hw/init.bxtp_gm.rc
+
+Documentation Referenced:
+  /documentation/GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt
+  /documentation/VIP_CONTROL_ANALYSIS.txt
+  /documentation/session_summaries/security_assessment_20DEC25.txt
+  /documentation/QUICK_REFERENCE.txt
+
+================================================================================
+APPENDIX B: CVE DETAILS
+================================================================================
+
+CVE-2024-53104 (UVC Driver)
+  CVSS: 7.8 (HIGH)
+  Type: Out-of-bounds write
+  Affected: Linux kernel USB Video Class driver
+  Status: ACTIVELY EXPLOITED (CISA KEV Feb 2025)
+  Y177 Impact: EXPLOITABLE with physical USB access
+
+CVE-2024-36971 (Network)
+  CVSS: 7.8 (HIGH)
+  Type: Use-after-free in dst_cache
+  Affected: Linux kernel network subsystem
+  Status: ACTIVELY EXPLOITED (Aug 2024)
+  Y177 Impact: EXPLOITABLE with local code execution
+
+CVE-2024-53150/53197 (USB)
+  CVSS: 7.8 (HIGH)
+  Type: USB subsystem vulnerabilities
+  Affected: Linux kernel USB subsystem
+  Status: ACTIVELY EXPLOITED (Cellebrite chain, Apr 2025)
+  Y177 Impact: EXPLOITABLE with physical USB access
+
+CVE-2024-1086 (nf_tables)
+  CVSS: 7.8 (HIGH)
+  Type: Use-after-free
+  Affected: Linux kernel nf_tables
+  Status: NOT APPLICABLE - CONFIG_NF_TABLES disabled
+
+================================================================================
+APPENDIX C: WHY Y177 RUNS SELINUX PERMISSIVE (VERIFIED)
+================================================================================
+
+C.1 EVIDENCE OF PERMISSIVE MODE
+-------------------------------
+The Y177 permissive mode is CONFIRMED from multiple sources:
+
+1. gminfo3.7_tech_specs.md (line 247):
+   - Captured from LIVE Y177.6.1 system
+   - Shows: `selinux: permissive`
+   - Same file shows `verified_boot: green_locked`
+
+2. GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt (line 177):
+   - `getenforce (runtime): Permissive [Y177], Enforcing [Y181]`
+
+3. Project documentation consistently states:
+   - "Y177 runs with SELinux permissive, Y181 forces enforcing"
+   - "SELinux changed from PERMISSIVE (Y177) to ENFORCING (Y181)"
+
+C.2 TECHNICAL EXPLANATION
+-------------------------
+Both Y177 and Y181 have IDENTICAL kernel cmdlines with:
+  - `enforcing=0 androidboot.selinux=permissive` (early)
+  - `enforcing=1 androidboot.selinux=enforcing` (late - wins)
+
+However, the RAMDISK SEPOLICY FILES ARE DIFFERENT:
+  - Y177 sepolicy: MD5 e9ebb7d8...
+  - Y181 sepolicy: MD5 6b2045bf...
+
+The precompiled_sepolicy files are also different:
+  - Y177: 689,354 bytes (MD5: bd637075279d1717edf5dc321897162a)
+  - Y181: 689,366 bytes (MD5: c87d13a23cf99f415a719868632698a0)
+
+Despite referencing the SAME platform and product policy hashes:
+  - plat_sepolicy: 648626fbf6b8bf9b98052ee0570922b279e50db27fd0ee5fcadc01977246c8a8
+  - product_sepolicy: 208ed8762a83eb9499c2aec1a56915f62bd6f185d4bae6566a4ea61dcc950f94
+
+C.3 ENFORCEMENT MECHANISM
+-------------------------
+Y181's boot image/ramdisk contains modifications that FORCE enforcing mode:
+  - The init process or first-stage sepolicy calls setenforce(1)
+  - This happens BEFORE untrusted code executes
+  - Neverallow rules prevent any domain from changing the mode
+
+Y177's original boot image does NOT have this modification:
+  - The system boots permissive per the early cmdline parameter
+  - Nothing forces enforcing mode before services start
+  - System runs in permissive mode throughout
+
+C.4 VENDOR POLICY COMPARISON
+----------------------------
+Vendor SELinux policies are NEARLY IDENTICAL:
+  - Y177: 5,382 lines, 3,582 allow rules
+  - Y181: 5,383 lines, 3,583 allow rules
+  - Difference: 1 line (carservice_app sensor_privacy_service)
+
+The vendor init.rc files are also IDENTICAL.
+
+The enforcement difference is controlled at the BOOT IMAGE level, not
+the vendor partition level. This is why:
+  - Vendor policies are the same
+  - Kernel configurations are the same
+  - But runtime SELinux modes are different
+
+C.5 IMPLICATIONS
+----------------
+1. Downgrading Y181→Y177 would restore permissive mode
+   - BLOCKED by GHS hypervisor rollback protection
+
+2. Modifying Y181's boot image could enable permissive mode
+   - BLOCKED by AVB (Android Verified Boot) signature verification
+
+3. Y177 systems in the field remain vulnerable
+   - No over-the-air fix unless GM pushes kernel/boot updates
+   - Users should avoid connecting unknown USB devices
+
+================================================================================
+END OF Y177 CVE ANALYSIS
+================================================================================

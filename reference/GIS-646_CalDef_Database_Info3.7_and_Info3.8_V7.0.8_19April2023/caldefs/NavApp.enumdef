@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>6</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>13OCT14</Date>
+    <Description>Removed invalid characters in EnumValue names and cleaned up names inorder to allow code generation.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>8/13/2015</Date>
+    <Description>Per request from Thiep Nguyen starting for MY18, updated the enumeration names referenced in the ECO_ROUTE_CURVE  CAL more generic versuses calling them out by specific vehicle names.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>4/11/2018</Date>
+    <Description>Per CR# 1346230, added RANGE_PROJECTION_AND_SMART_ROUTING enumeration calibrations.</Description>
+    <Author>Paul Wagner</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>03-21-2019</Date>
+    <Description>Adding an enumeration for the following ENUM calibration HD_MAP_AND_ROUTE_TYPE</Description>
+    <Author>Chalan Munasinghe</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>04-07-2020</Date>
+    <Description>For CR#2363628 Added the following Enumeration Integer Map: EV_ENERGY_MODEL_FEATURE_MAP</Description>
+    <Author>Chalan Munasinghe</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This EV calibration parameter includes a set of Boolean parameters that is configurable to individually Enables/Disables the sending of this data to the VEM Model. If the value is set to &quot;0&quot;: the Nav System will not send the data to the VEM. If the value is set to &quot;1&quot;: the Nav System will send the data to the VEM." Name="EV_ENERGY_MODEL_FEATURE_MAP">
+    <EnumID>_npTjYHkAEeqxUKJdn1c1Ew</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_MASS." Name="EV_MASS">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_BATTERY_LEVEL_WH." Name="EV_BATTERY_LEVEL_WH">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_BATTERY_CAPACITY_WH." Name="EV_BATTERY_CAPACITY_WH">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_HVAC_STATUS." Name="EV_HVAC_STATUS">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_REFERENCE_AIR_DENSITY." Name="EV_REFERENCE_AIR_DENSITY">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_EXTERNAL_TEMP_CELSIUS." Name="EV_EXTERNAL_TEMP_CELSIUS">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_CONSTANT_ROLLING_RESISTANCE_F0." Name="EV_CONSTANT_ROLLING_RESISTANCE_F0">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_LINEAR_ROTATIONAL_LOSSES_F1." Name="EV_LINEAR_ROTATIONAL_LOSSES_F1">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_QUADRATIC_COEFFICIENT_OF_AIR_DRAG_F2." Name="EV_QUADRATIC_COEFFICIENT_OF_AIR_DRAG_F2">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_DRIVETRAIN_POWER_LOSS." Name="EV_DRIVETRAIN_POWER_LOSS">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_BATTERY_LOSSES." Name="EV_BATTERY_LOSSES">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_REGENERATION_RATE_AT_ENERGY_LEVEL." Name="EV_REGENERATION_RATE_AT_ENERGY_LEVEL">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_REGENERATION_RATE_AT_TIME." Name="EV_REGENERATION_RATE_AT_TIME">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_AUXILIARY_DRAIN_AT_TIME." Name="EV_AUXILIARY_DRAIN_AT_TIME">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_AUXILIARY_DRAIN_AT_TEMP." Name="EV_AUXILIARY_DRAIN_AT_TEMP">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_CHARGING_CURVES." Name="EV_CHARGING_CURVES">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_TARGET_BATTERY_LEVEL_WH." Name="EV_TARGET_BATTERY_LEVEL_WH">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This Boolean parameter Enables (i.e. when value = 1)/Disables (i.e. when value = 0) EV_TIME_REMAINING_SECS." Name="EV_TIME_REMAINING_SECS">
+      <Value>17</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="The use case of this calibration is intended to display Super Cruise/Ultra Cruise map and route where applicable. This calibration shall be set to the following: &quot;0=None when SuperCruise or UltraCruise is not applicable&quot;, &#x201c;1=SuperCruise  for RPO: UKL&#x201d;,  and &quot;2=UltraCruise for RPO: UKR&quot;" Name="HD_MAP_AND_ROUTE_TYPE">
+    <EnumID>_lVU7MACGEeqcM4o___siSA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="The use case of this calibration is intended to display Super Cruise/Ultra Cruise map and route where applicable: This calibration shall be set to &quot;0=None when SuperCruise or UltraCruise is not applicable&quot;" Name="None">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The use case of this calibration is intended to display Super Cruise/Ultra Cruise map and route where applicable: &#x201c;1=SuperCruise  for RPO: UKL&#x201d;" Name="SuperCruise">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The use case of this calibration is intended to display Super Cruise/Ultra Cruise map and route where applicable: &quot;2=UltraCruise for RPO: UKR&quot; " Name="UltraCruise">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enum to define the types of POI fuel stations." Name="DEFAULT_POI_FUEL_STATION">
+    <EnumID>_r2OaQMV2EeOEJ-R0VVyC2A</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Gasoline" Name="Gasoline">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Diesel" Name="Diesel">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="E85" Name="E85">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Compressed Natural Gas" Name="CNG">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Liquefied Petroleum Gas " Name="LPG">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="AdBlue" Name="ADBLUE">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BIO Diesel" Name="BIODiesel">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Hydrogen" Name="Hydrogen">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Electric" Name="ChargingType1">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Electric" Name="ChargingType2">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Electric" Name="ChargingDCFast">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enum to identify the types of ECO Route Curves." Name="ECO_ROUTE_CURVE">
+    <EnumID>_ooJzoMTlEeOePMFnmOVt0g</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_5">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_6">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_7">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_8">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_9">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_10">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_11">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_12">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_13">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_14">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="ECO_ROUTE_CURVE_15">
+      <Value>15</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enum to define the types of Range Projection and Smart Routing." Name="RANGE_PROJECTION_AND_SMART_ROUTING">
+    <EnumID>_3XGnwDnVEeefbJ5EEtYQTQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="No Range Projection or Smart Routing" Name="NO_RANGE_PROJECTION_OR_SMART_ROUTING">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="EREV Range Projection and Smart Routing" Name="EREV_RANGE_PROJECTION_AND_SMART_ROUTING">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BEV Range Projection and Smart Routing" Name="BEV_RANGE_PROJECTION_AND_SMART_ROUTING">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

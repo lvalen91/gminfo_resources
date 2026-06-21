@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Used to determine trailering features available">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/9/2016</Date>
+    <Description>Initial release of Trailering Application related enumeration calibrations.</Description>
+    <Author>Frank Bruneel</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>05/03/18</Date>
+    <Description>Updated the GIS539_TrailerAppUI.enumdef file to add the associated enumeration values needed for the new VEHICLE_TYPE enumeration calibration within the GIS539_TrailerAppUI.caldef.</Description>
+    <Author>Emmanuel Oleka</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This calibration defines how the form, behavior, and graphics will change based on the type of vehicle. " Name="VEHICLE_TYPE">
+    <EnumID>_hAG3oE8WEeibCblrVhJh5A</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Full-size Truck" Name="Full_Size_Truck">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SUV" Name="SUV">
+      <Value>0</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This calibration is used to determine whether the Jack-Knife Alerts fea&#xac;ture will be available in MY20. If set to 0, Jackknife HMI will appear. If set to 1, Jackknife HMI will not appear. " Name="JACKKNIFE_FEATURE">
+    <EnumID>_h3QC8KIrEeeTobDqASxMww</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="If set to 0, Jackknife HMI will appear." Name="Jackknife_HMI_1">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="If set to 1, Jackknife HMI will not appear." Name="Jackknife_HMI_2">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This calibration is used to determine whether the Trailer Length Overlay feature will be available in MY20. If set to 0, Trailer Length Overlay HMI will appear. If set to 1, Trailer Length Overlay HMI will not appear " Name="TRAILER_OVERLAY">
+    <EnumID>_v_x5UKIqEeeTobDqASxMww</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="If set to 0, Trailer Length Overlay HMI will appear." Name="Trailer_Length_Overlay_HMI_1">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="If set to 1, Trailer Length Overlay HMI will not appear" Name="Trailer_Length_Overlay_HMI_2">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This calibration is used to determine whether the transparent Trailer feature will be available in MY20. If set to 0, Invisible Trailer HMI will appear. If set to 1, Invisible Trailer HMI will not appear. " Name="TRANSPARENT_TRAILER_FEATURE">
+    <EnumID>_G9ujIKIoEeeTobDqASxMww</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="If set to 0, Invisible Trailer HMI will appear." Name="Invisible_Trailer_HMI_1">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="If set to 1, Invisible Trailer HMI will not appear." Name="Invisible_Trailer_HMI_2">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This calibration is used to determine whether version 1 or version 2 of wireframes should appear for the Adjust Camera Position screen." Name="ADJUST_CAMERA_POSITION">
+    <EnumID>_HBtgsKInEeeTobDqASxMww</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Version 1 of wireframes appears " Name="Wireframes_Version_1">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Version 2 of wireframe appears" Name="Wireframes_Version_2">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This calibration is used to determine which view to show for the camera positioning instructions for transparent trailer setup. If set to 0, wireframes version 1 will appear. If set to 1, wireframes version 2 will appear. If set to 2, wireframes version 3 will appear" Name="POSITION_CAMERA_INSTRUCTIONS">
+    <EnumID>_qWOUAKIjEeeTobDqASxMww</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="If set to 0, wireframes version 1 will appear." Name="Wireframes_Version_1">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="If set to 1, wireframes version 2 will appear." Name="Wireframes_Version_2">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="If set to 2, wireframes version 3 will appear" Name="Wireframes_Version_3">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Used to determine trailering functionality available on the vehicle" Name="TraileringAppType">
+    <EnumID>_e9weAHKtEeWtPcYjqrxpUw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="No Trailering feature. Trailering app is disabled." Name="Disabled">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trailer Light Sequence functionality only. Option selected when Trailering Interface Module is NOT packaged on the vehicle (RPO U1D is NOT packaged)." Name="LITE">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Full Trailering Features. Option selected when Trailering Interface Module is packaged on the vehicle (RPO U1D is packaged)" Name="FULL">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

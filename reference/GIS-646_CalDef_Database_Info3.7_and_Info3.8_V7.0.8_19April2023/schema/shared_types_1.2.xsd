@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- Revision History
+  	Version		Date			Description							Author
+  	1.0		September 2013		Initial Release						Scott Rush
+  	1.1		September 23, 2013	Change base type on IntegerValueType to be xs:int instead of 
+  								xs:short.  xs:short restricts range to 16-bits which is incorrect.
+  								xs:int is full 32-bit signed range and the EMF generator correctly
+  								associated xs:int with a 32-bit Integer object.   		Scott Rush
+  	1.2		
+  	 -->
+
+    <xs:simpleType name="IntegerValueType">
+    	<xs:annotation>
+    		<xs:documentation>
+    			32-bit signed integer value with range: 0x80000000 to 0x7FFFFFFF.
+    		</xs:documentation>
+    	</xs:annotation>
+    	<xs:restriction base="xs:int">
+    		<xs:minInclusive value="-2147483648"></xs:minInclusive>
+    		<xs:maxInclusive value="2147483647"></xs:maxInclusive>
+    	</xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="FloatValueType">
+   	<xs:annotation>
+    		<xs:documentation>
+    			32-bit floating point value with range max=0x1.fffffeP+127f and min=0x0.000002P-126f.
+    		</xs:documentation>
+    	</xs:annotation>
+    	<xs:restriction base="xs:float"></xs:restriction>
+    </xs:simpleType>
+  
+   <xs:simpleType name="BooleanValueType">
+    	<xs:restriction base="xs:boolean">
+    	</xs:restriction>
+    </xs:simpleType>
+   
+    <xs:simpleType name="CalIDType">
+    	<xs:restriction base="xs:string">
+  	</xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="EnumIDType">
+    	<xs:restriction base="xs:string">
+    	</xs:restriction>
+   </xs:simpleType>
+
+    <xs:simpleType name="VersionType">
+    	<xs:restriction base="xs:unsignedShort"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ChangeRecordType">
+    	<xs:sequence>
+    		<xs:element name="Version" type="VersionType"></xs:element>
+    		<xs:element name="Date" type="xs:string"></xs:element>
+    		<xs:element name="Description" type="xs:string"></xs:element>
+    		<xs:element name="Author" type="xs:string"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+   <xs:simpleType name="EnumValueType">
+    	<xs:restriction base="xs:unsignedShort"></xs:restriction>
+    </xs:simpleType>
+  <xs:complexType name="BinaryFileType">
+   	<xs:sequence>
+   		<xs:element name="Filename" type="xs:string" maxOccurs="1"
+   			minOccurs="1">
+   			<xs:annotation>
+   				<xs:documentation>
+   					The name of the file containing the Data bytes
+   					that was imported into the tool.
+   				</xs:documentation>
+   			</xs:annotation>
+   		</xs:element>
+   		<xs:element name="Data" type="xs:base64Binary" maxOccurs="1"
+   			minOccurs="1">
+   		</xs:element>
+   		<xs:element name="Length" type="xs:int" maxOccurs="1"
+   			minOccurs="1">
+   		</xs:element>
+   		<xs:element name="Checksum" type="xs:unsignedLong"
+   			maxOccurs="1" minOccurs="1">
+   			<xs:annotation>
+   				<xs:documentation>
+   					This is the CRC32 checksum of the Data computed
+   					from the raw byte values (not the base64
+   					encoding). It is implemented by Oracle's
+   					java.util.zip.CRC32 class.
+   				</xs:documentation>
+   			</xs:annotation>
+   		</xs:element>
+   	</xs:sequence>
+  </xs:complexType>
+
+  
+ </xs:schema>

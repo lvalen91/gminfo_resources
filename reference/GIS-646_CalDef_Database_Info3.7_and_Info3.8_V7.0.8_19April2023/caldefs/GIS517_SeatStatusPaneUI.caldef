@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/19/15</Date>
+    <Description>Changed Massage_On_off_toggle_button_triggering_display cal from an enum to boolean and added driver workload cal </Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/12/15</Date>
+    <Description>Within the GIS517_SeatSatusPaneUI.caldef, updated the default value for the SeatStatusPaneLockoutDriverWorkload CAL from MediumSpeed to RestrictionsNA since Mark Miller confirmed MediumSpeed is the intended value for this CAL.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>9/3/2015</Date>
+    <Description>Per request from Sanghyun Ryu, updated CAL usage for the following CALs: Massage_On_off_toggle_button_triggering_display, Seat_Status_Pane_Auto_Dismiss_Timer, SeatStatusPaneLockoutDriverWorkload, Animation_of_seat_reference_transition, Activating_Massage_List_Animation, Animation_Transition_Between_Single_And_Dual_User_Views, and SeatStatusPaneLockoutDriverWorkload to not show Low Radio usage.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>3/7/2017</Date>
+    <Description>Within the GIS517_SeatStatusPaneUI.caldef file to support RTC CR#: 1172043, added the new enumeration calibration called SeatSwitch_DisplayType.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Configures the CSM to show the correct Seat Switch Type for the specific program." Name="SeatSwitch_DisplayType" References="GIS-517" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_hTmPMANtEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/7/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_9vwncANlEeeY5LtULEJdNA</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If the Seat status pane is active Display Massage Screen Upon Activation or don't" Name="Massage_On_off_toggle_button_triggering_display" References="GIS-517 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_7bMKoLfyEeSKN7pLHsmKkw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the Massage_On_off_toggle_button_triggering_display CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is the amount of time after inactivity that the display" Name="Seat_Status_Pane_Auto_Dismiss_Timer" References="GIS-517 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_BOkzELmeEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the Seat_Status_Pane_Auto_Dismiss_Timer CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Animation of the seat reference while transitioning between" Name="Animation_of_seat_reference_transition" References="GIS-517 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NTBcYLmeEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/4/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the Animation_of_seat_reference_transition CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When the user highlights the massage feature there is an" Name="Activating_Massage_List_Animation" References="GIS-517 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_syJVsLmeEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the  Activating_Massage_List_Animation CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is an animation that moves and shifts content between" Name="Animation_Transition_Between_Single_And_Dual_User_Views" References="GIS-517 5.1.1.1*MY17" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_4jYvILmeEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the Animation_Transition_Between_Single_And_Dual_User_Views CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When enabled, user is prohibited from interacting with the seat status pane. The massage on off toggle will still function. The CSM will respond to system as if Display Active = False" Name="SeatStatusPaneLockoutDriverWorkload" References="5.5.1.1*MY17 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qfFrQLi1EeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Per request from Mark Miller, updated the default value for the SeatStatusPaneLockoutDriverWorkload Cal from MediumSpeed to RestrictionsNA. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the SeatStatusPaneLockoutDriverWorkload CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

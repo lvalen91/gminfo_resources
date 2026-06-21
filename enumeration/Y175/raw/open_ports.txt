@@ -1,0 +1,27 @@
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program Name
+tcp        0      0 127.0.0.1:53            0.0.0.0:*               LISTEN      -
+tcp        0      0 192.168.5.1:53          0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:7000            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:6363            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:49156           0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.1:6363          127.0.0.1:53178         ESTABLISHED -
+tcp        0      0 127.0.0.1:53178         127.0.0.1:6363          ESTABLISHED -
+tcp        0      0 127.0.0.1:6363          127.0.0.1:53182         ESTABLISHED -
+tcp        0      0 127.0.0.1:53182         127.0.0.1:6363          ESTABLISHED -
+tcp6       0      0 ::1:53                  [::]:*                  LISTEN      -
+tcp6       0      0 fe80::58e4:3ff:fe87::53 [::]:*                  LISTEN      -
+tcp6       0      0 [::]:7000               [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9016 [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9002 [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9010 [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9016 ::ffff:192.168.1.:30461 ESTABLISHED -
+tcp6       0      1 ::ffff:192.168.1.:36510 ::ffff:192.168.1.1:9012 SYN_SENT    -
+tcp6       0      0 ::ffff:192.168.1.:41864 ::ffff:192.168.1.1:9016 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:36110 ::ffff:192.168.1.1:9010 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.1:9002 ::ffff:192.168.1.:65345 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.1:9016 ::ffff:192.168.1.:65373 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:50276 ::ffff:192.168.1.1:9010 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:36498 ::ffff:192.168.1.1:9018 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:46208 ::ffff:192.168.1.1:9010 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:55268 ::ffff:192.168.1.1:9005 ESTABLISHED -

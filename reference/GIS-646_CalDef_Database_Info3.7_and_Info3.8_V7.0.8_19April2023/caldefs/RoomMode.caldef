@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="Audio" Description="Optional Calibration - Supplier Specific. This contains calibrations for RoomModes feature.">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>17APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2/29/2016</Date>
+    <Description>Based on feedback received from Jideok Son, made usage correction to remove Low Radio usage for all of the calibrations within this CalDef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/14/2019</Date>
+    <Description>Uncheck Entry_VCU, VCU. Update description to indicate Optional Calibration-Supplier Specific. </Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This is a supplier-specific calibration. Delay value for each room mode for front left." Name="RoomModeDelayFrontLeftMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_BzdjQcWbEeOaCvydzCgwdA</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Delay value for each room mode for front right." Name="RoomModeDelayFrontRightMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_BeoiwcWbEeOaCvydzCgwdA</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Delay value for each room mode for rear left." Name="RoomModeDelayRearLeftMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_AeoeUcWbEeOaCvydzCgwdA</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Delay value for each room mode for rear right." Name="RoomModeDelayRearRightMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_0G66wMWaEeOaCvydzCgwdA</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.5</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. RoomModes attenuation level for front left" Name="RoomModeLevelAttenuationFrontLeftMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_pHIVUIjyEeOKJbstwtEFKg</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>-12.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. RoomModes attenuation level for front right" Name="RoomModeLevelAttenuationFrontRightMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_1ab6AYjyEeOKJbstwtEFKg</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>-12.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. RoomModes attenuation level for rear left" Name="RoomModeLevelAttenuationRearLeftMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_4DdxwYjyEeOKJbstwtEFKg</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>-12.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. RoomModes attenuation level for rear right" Name="RoomModeLevelAttenuationRearRightMap" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_7YEWEYjyEeOKJbstwtEFKg</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <MinValue>-12.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Enables/Disables the RoomModes feature HMI.  When True, show the feature, when False, hide the entire HMI." Name="RoomModeOptionEnable" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_7my5IIjzEeOKJbstwtEFKg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Enables/Disables the RoomMode Off within the HMI." Name="RoomModeOffEnable" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_39iokYj1EeOKJbstwtEFKg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Enables/Disables the RoomMode Driver within the HMI." Name="RoomModeDriverEnable" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_AicB0Yj2EeOKJbstwtEFKg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/28/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Enables/Disables the RoomMode Front within the HMI." Name="RoomModeFrontEnable" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_DRclwYj2EeOKJbstwtEFKg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Enables/Disables the RoomMode Rear within the HMI." Name="RoomModeRearEnable" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_HhuvMYj2EeOKJbstwtEFKg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. Enables/Disables the RoomMode All within the HMI." Name="RoomModeAllEnable" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_M7OjcYj2EeOKJbstwtEFKg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/29/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is a supplier-specific calibration. This is the factory default setting for the RoomMode." Name="RoomModeDefaultMenuSetting" References="GIS-604-640" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_aroYQIj2EeOKJbstwtEFKg</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/28/2016</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_KKxAQIjxEeOKJbstwtEFKg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

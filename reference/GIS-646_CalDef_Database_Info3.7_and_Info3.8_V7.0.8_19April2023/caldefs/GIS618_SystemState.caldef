@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Contains all calibrations for GIS-618 SystemState specifications">
+  <CalDefFileVersion>14</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>John Edens</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2/27/2015</Date>
+    <Description>Updated to add missing usages on two cals (UPDATE_AVAILABLE_LOCAL_INFOTAINMENT_TIMEOUT and MASTER_OFFMODE_ACTIVE_TIMEOUT) that didn't have usages </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>01JUN15</Date>
+    <Description>Set CRITICAL_STATE_OF_CHARGE_IGNORE default TRUE.</Description>
+    <Author>John Edens</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>June 20, 2016</Date>
+    <Description>Added calibrations needed for GIS-618-880 Suspend To RAM functionality:  SUSPEND_TO_RAM_ENABLE, MAXIMUM_SUSPEND_TIME, MAXIMUM_RESUME_TIME.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>06/22/2016</Date>
+    <Description>Added calibration for GIS-618-490 to add NEW cal for DISABLED_OFFMODE_TIMEOUT</Description>
+    <Author>Younus Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef updated the default value of  the VIN_RELEARN_EN calibration from a value of False to True, to allow for VIN relearn once MEC is set to zero since this capability is needed by the GM Manufacturing Plants.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>10/28/2016</Date>
+    <Description>Added the following four calibrations from GIS-651: 1) GIS-618-492 RSI_ANIMATION_IGNORE ~MY19; 2) GIS-618-494 CLUSTER_ANIMATION_IGNORE ~MY19; 3) GIS-618-496 RSI_HMIREADY_IGNORE ~MY19; 4) GIS-618-498 CLUSTER_HMIREADY IGNORE ~MY19 </Description>
+    <Author>Younus Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>9/20/2017</Date>
+    <Description>For CR# 1476934, within the GIS618_SystemState.caldef: Added the following eight new calibrations: 1.) OFFMODE_ACTIVE_TIMEOUT, 2.) REMOTE_REFLASH_PROGRAMMING_COMPLETE_TIMEOUT, 3.) POWERMODE_FAILURE_TIMEOUT, 4.) POWERMODE_FAILURE_TIMEOUT, 5.) SUSPEND_PREPARATION_TIMEOUT, 6.) SUSPEND_TIME, 7.) RESUME_FAULT_TIMEOUT, and  8.) MAXIMUM_FLUSH_FAULT_TIME introduced in GIS-618 version 2.4. Also, made a Cal Description Only Update for additional clarity for the following Cals: 1.) SUSPEND_TO_RAM_ENABLE and 2.) MAXIMUM_SUSPEND_TIME.</Description>
+    <Author>Younus Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS618_SystemState.caldef file, added GEM usage to all of the calibrations within this caldef, except for the following calibrations within this caldef file: 1.) SUSPEND_PREPARATION_TIMEOUT,  2.) SUSPEND_TIME, 3.) RESUME_FAULT_TIMEOUT, 4.) MAXIMUM_FLUSH_FAULT_TIME, 5.) MAXIMUM_SUSPEND_TIME, 6.) SUSPEND_TO_RAM_ENABLE, and 7.) MAXIMUM_RESUME_TIME.. Note, did not add GEM usage for these seven calibrations since these seven calibraions did not fall within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>12/212017</Date>
+    <Description>Within the GIS618_SystemState.caldef added a new calibration called SHUTDOWN_DELAY_TIMEOUT calibration to address PRTS#: 28629 for MY20 and beyond.  Per CR 1053172, revised UPDATE_AVAILABLE_LOCAL_INFOTAINMENT_TIMEOUT default.</Description>
+    <Author>Younus Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>09/24/2018</Date>
+    <Description>Per CR#1535805, within GIS618_SystemState.caldef the default value of INFOTAINMENT_ACTIVITY_TIMEOUT has been changed from 8 to 30 seconds.</Description>
+    <Author>Younus A. Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>3-17-2021</Date>
+    <Description>Per CR#2901735 made the following updates within the GIS618_SystemState.caldef file: Added the following 8 new cals:  FLUSH_LIMIT_TIME, STR_MIN_TEMP_THRESHOLD, STR_MODE_SOC_MIN_THRESHOLD_1, STR_MODE_SOC_MIN_THRESHOLD_2, STR_MODE_SOC_MIN_THRESHOLD_3, MAX_SUSPEND_TIME_1, MAX_SUSPEND_TIME_2, MAX_SUSPEND_TIME_3</Description>
+    <Author>Younus Syed</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Timeout value used to delay transitioning of System State to Sleep to ensure that the external Amplifier completes playing of &#x201c;Shutdown Animation&#x201d; audio cue before CSM/Low Radio/GEM enters Sleep State" Name="SHUTDOWN_DELAY_TIMEOUT" References="GIS-618-537" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ofo5EOAtEeeOY4lmtLFarg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/13/2017</Date>
+      <Description>Initial release </Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the Timeout value used to force an exit from HMIInactive.Inactive Substate to Sleep State to ensure that the CSM/Low Radio does not remain awake when an event to trigger the transition to the OffModeActive Substate does not occur." Name="OFFMODE_ACTIVE_TIMEOUT" References="GIS-618-525" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_pExQQJ8PEeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the Timeout value used to force an exit from RemoteReflashProgramming.RemoteReflashProgrammingComplete substate" Name="REMOTE_REFLASH_PROGRAMMING_COMPLETE_TIMEOUT" References="GIS-618-530" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_lt0YAJ8OEeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the Timeout value used to force Infotainment Power Mode to change from LAST_KNOWN Vehicle Power Mode to Off in the event of Power Mode Master and Backup Power Mode Master failure." Name="POWERMODE_FAILURE_TIMEOUT" References="GIS-618-535" Usage="LOW,MID,HIGH,GEM,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Es-7sJ8LEeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the timeout value used to assure that upon timer expiration there is no Infotainment activity for the CSM to support and the Infotainment System is now ready to shut down." Name="INFOTAINMENT_ACTIVITY_TIMEOUT" References="GIS-618-536" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_GlteEJ7uEeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>09/24/2018</Date>
+      <Description>Updated INFOTAINMENT_ACTIVITY_TIMEOUT value from 8 to 30 seconds</Description>
+      <Author>Younus A. Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the Timeout value used to monitor Suspend-To-RAM preparation. Upon Timeout VIP will send SUSPEND_P2 request to SOC to start next level of suspension." Name="SUSPEND_PREPARATION_TIMEOUT" References="PLC" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_jwMdUKL2EeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the Timeout value used to monitor Suspend-To-RAM execution. Upon Timeout VIP will continue Suspend operation ignoring the SuspensionCompletion ACK from the SOC." Name="SUSPEND_TIME" References="TBD" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_frBNIKL1EeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>3</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the Timeout value used to monitor Resume status. Started upon starting to resume SOC, and stop upon receiving power level 3 message as Resumption Success ACK. Upon timeout VIP will reset the whole system as SOC failed to resume.  It is implemented by the internal PowerLifeCycle state machine." Name="RESUME_FAULT_TIMEOUT" References="PLC" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_rukMoKL3EeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall define the maximum length of time for a flush cycle to complete before a failsoft full shutdown is performed. It is implemented by the internal PowerLifeCycle state machine." Name="MAXIMUM_FLUSH_FAULT_TIME" References="GIS-618-520" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ivZ-kJ7sEeeKqKPvPjizjg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/20/2017</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>36000</Value>
+      <MinValue>10800</MinValue>
+      <MaxValue>97200</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Used in SystemState Logic state charts to include/exclude the RSI for coordination of visual animation play" Name="RSI_ANIMATION_IGNORE" References="GIS-618-492" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ftQZgJ1REeaPtZlN3j40_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/28/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Used in SystemState Logic state charts to include/exclude the Instrument Panel Cluster for coordination of visual animation play" Name="CLUSTER_ANIMATION_IGNORE" References="GIS-618-494" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JIsyAJ1SEeaPtZlN3j40_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/28/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Used in SystemState Logic state charts to include/exclude the RSI for coordination of HMI initialization" Name="RSI_HMIREADY_IGNORE" References="GIS-618-496" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_q75mwJ1SEeaPtZlN3j40_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/28/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Used in SystemState Logic state charts to include/exclude the Instrument Panel Cluster for coordination of HMI initialization" Name="CLUSTER_HMIREADY_IGNORE" References="GIS-618-498" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_EGKPwJ1TEeaPtZlN3j40_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/28/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value used to force an exit from Disabled State (TheftLock, NoVIN, NoCAL) to Sleep State when the Disabled State is entered while System Power Mode is Off." Name="DISABLED_STATE_OFFMODE_TIMEOUT" References="GIS-618-490" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_rSx-kDftEeauU9tExYHaqA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/22/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value used to force an exit from UpdateAvailable LocalInfotainment whan a remote reflash update is available and the customer does not decide to accept, dismiss or delay the install / download of the update." Name="UPDATE_AVAILABLE_LOCAL_INFOTAINMENT_TIMEOUT" References="GIS-618-485" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_5HqEgHGjEeSgusjZWIuo6A</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>21Dec17</Date>
+      <Description>Per CR 1053172, revised UPDATE_AVAILABLE_LOCAL_INFOTAINMENT_TIMEOUT default to 60 seconds.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value (in minutes) used to force an exit from HMIInactive to Sleep during an off mode active event for fail safe in case OffModeActiveRequest = FALSE was not received." Name="MASTER_OFFMODE_ACTIVE_TIMEOUT" References="GIS-618-480" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JHmvgHGjEeSgusjZWIuo6A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>35</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>480</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Used within state charts in 618 to bypass BatteryStateOfChargeCriticallyLow indication and behavior." Name="CRITICAL_STATE_OF_CHARGE_IGNORE" References="GIS-618-410" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ghWF4LmzEeONt_iAU7Ji9A</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Used to define trigger condition for exiting LocalInfotainment." Name="LOCAL_INFOTAINMENT_CANCEL_MODE" References="GIS-618-420" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_sruYELmzEeONt_iAU7Ji9A</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_rTP-sLmyEeONt_iAU7Ji9A</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="SystemState component sleep background timeout" Name="BACKGROUND_SLEEP_TIMEOUT" References="GIS-618-430" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_3nVKALmzEeONt_iAU7Ji9A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1800</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value used to prevent a battery drain in the event of a software fault that prevents the system from going to Sleep.  Also used to limit maximum time in LocalPhone state." Name="SLEEP_FAULT_TIMEOUT" References="GIS-618-440" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_IXWKkLm0EeONt_iAU7Ji9A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>900</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>7200</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value that automatically terminates VehicleInitiated LocalInfotainment if the user fails to open the door or remove the key for automatic exit. " Name="VEH_INITIATED_LOCAL_INFOTAINMENT_TIMEOUT" References="GIS-618-450" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ffiOILm0EeONt_iAU7Ji9A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>7200</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value for termination of UserInitiated LocalInfotainment." Name="USER_INITIATED_LOCAL_INFOTAINMENT_TIMEOUT" References="GIS-618-460" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_w4eP4Lm0EeONt_iAU7Ji9A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>7200</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value used to trigger the startup animation after evPowerModeOn in AnimationInit and HMIInactive states." Name="STARTUP_DELAY_WAIT_TIMEOUT" References="GIS-618-465" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_C0yrgLm1EeONt_iAU7Ji9A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value used to force an exit in the event of a run-reset in either the CenterStackHMI or the ClusterHMI during the StartupAnimation that would hold the SystemState here indefinitely." Name="STARTUP_FAULT_TIMEOUT" References="GIS-618-470" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_RgQaYLm1EeONt_iAU7Ji9A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value used to limit time allowed for customer to enter the PIN to unlock and gain access to the vehicle storage compartment." Name="LOCAL_VALET_TIMEOUT" References="GIS-618-475" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_fscMQLm1EeONt_iAU7Ji9A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1800</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="As part of the Component-Level TheftLock and VIN Learning Logic, the internal ModuleTheftLockedFlag within a component may only be cleared upon receipt of the evClearVINCPID event.  This event is generated in response to the VIN clearing CPID $FE that is sent to the CSM/Low Radio from a service tool.  Note that clearing back to a NoVIN condition is guarded by the CSM/Low Radio&#x2019;s Internal Manufacturing Enable Counter or MEC as well as a VIN_RELEARN_EN calibration that is used to bypass VIN learning altogether in particular regions where Theftlock is not required but the same end model part number is used for a component. " Name="VIN_RELEARN_EN" References="GIS-618-1810" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_AUJ78LnPEeONt_iAU7Ji9A</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default value of  the VIN_RELEARN_EN calibration from a value of False to True, to allow for VIN relearn once MEC is set to zero since this capability is needed by the GM Manufacturing Plants.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Master switch to enable or disable Suspend to RAM functionality.  Default value must always be False to reduce probability of mis-calibration.This calibration shall allow the CSM to enable or disable Suspend-To-RAM functionality. When this calibration is enabled (i.e. set to a value equal to TRUE), the CSM shall enable the Suspend-To-RAM feature. When this calibration is disabled (i.e. set to a value equal to FALSE), the CSM shall disable the Suspend-To-RAM feature." Name="SUSPEND_TO_RAM_ENABLE" References="GIS-618-510" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_koSLcDb7EeanKtszDwv8Ww</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 20, 2016</Date>
+      <Description>Inital release of this calibration</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/20/2017</Date>
+      <Description>Cal Description Only Update for additional clarity</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Maximum Suspend time for Suspend To RAM feature.  Maximum has been set to 68 hours which simplifies implementation of timer within CSM VIP processor architecture. This calibration shall define the maximum length of time in suspended mode before a full shutdown must be performed in order to preserve vehicle battery capacity. Upon timeout VIP will resume SOC to start Flush-from-Suspend procedure." Name="MAXIMUM_SUSPEND_TIME" References="GIS-618-515" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yTW0UDb7EeanKtszDwv8Ww</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 20, 2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/20/2017</Date>
+      <Description>Cal Description Only Update for additional clarity</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>86400</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>244800</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum allowed time for Resume from Suspended state before the SSTL logic takes failsoft action and resets the main SOC." Name="MAXIMUM_RESUME_TIME" References="GIS-618-520" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_mD70oDb8EeanKtszDwv8Ww</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 20, 2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>4000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the maximum cumulative time in 'Hours' during which the ECU remains in PowerMode On&#xa0;state,&#xa0;across ignition cycles, between periods for which it is suspended, before a&#xa0;Shutdown-with-Reset request is sent to the PLC State Controller." Name="FLUSH_LIMIT_TIME" References="FG.04.03-2.2.26" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_72kLwIbfEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New parameter</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>24</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>48</MaxValue>
+      <Units>hours</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimum Battery Temperature Threshold value used to determine the IsBatteryConditionGood Function outcome." Name="STR_MIN_TEMP_THRESHOLD" References="FG.04.03_2.2.29" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_BO_-IIbiEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New parameter</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>-10</Value>
+      <MinValue>-100</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimum Battery Charge Threshold 1 value used in MAXSUSPEND TIMER VALUE CALCULATION" Name="STR_MODE_SOC_MIN_THRESHOLD_1" References="FG.04.03_2.2.30" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_kPnoQIbiEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New parameter</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>90</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimum Battery Charge Threshold 2&#xa0;value used in MAXSUSPEND TIMER VALUE CALCULATION" Name="STR_MODE_SOC_MIN_THRESHOLD_2" References="FG.04.03_2.2.31" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_L6y9AIbjEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New parameter</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>75</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimum Battery Charge Threshold 3&#xa0;value used in MAXSUSPEND TIMER VALUE CALCULATION" Name="STR_MODE_SOC_MIN_THRESHOLD_3" References="FG.04.03_2.2.32" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_TyKFYIbkEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New addition</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Max Suspend Time 1 corresponding to the Battery Charge Threshold 1 used in MAXSUSPEND TIMER VALUE CALCULATION" Name="MAX_SUSPEND_TIME_1" References="FG.04.03_2.2.33" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_jes2wIbkEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New addition</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>84</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>hours</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Max Suspend Time 2&#xa0;corresponding to the Battery Charge Threshold 2 used in MAXSUSPEND TIMER VALUE CALCULATION" Name="MAX_SUSPEND_TIME_2" References="FG.04.03_2.2.34" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_DuuokIblEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New parameter</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>24</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>hours</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Max Suspend Time 3&#xa0;corresponding to the Battery Charge Threshold 3&#xa0;used in MAXSUSPEND TIMER VALUE CALCULATION" Name="MAX_SUSPEND_TIME_3" References="FG.04.03_2.2.35" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_XtQMgIblEeuBFcojSjsoPw</CalID>
+    <Type>Integer</Type>
+    <Version>15</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3-17-2021</Date>
+      <Description>New parameter</Description>
+      <Author>Younus Syed</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>16</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>hours</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

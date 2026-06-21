@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="System" Description="Calibrations defined in GIS-763 for Infotainment self programming">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>12MAY16</Date>
+    <Description>Initial release of GIS-763 CalDef based on GIS-763 v1.2</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>16Dec16</Date>
+    <Description>Within GIS763_InfotainmentProg_GlobalB.caldef file, revised per CR 1140460: GB OTA Phase 1 - Specification release for OTA to make the following updates: 1.) added the following new calibrations GIS763_WAITING_FOR_VALID_SIGNAL, 2.) Revised the calibration name from GIS763_ImmobilizerECU2_Address to GIS763_Immobilizer2_Address, 3.) Revised the calibration name from GIS763_ImmobilizerECU1_Address to GIS763_Immobilizer1_Address, 4.) changed the default value for GIS763_SigningCertificateSubject calibration, and deleted the GIS763_WAITING_ON_CAN calibration.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6Apr17</Date>
+    <Description>Revised CalDef per CR 1308881.  Changed GIS763_DISPLAY_WAITING_FOR_SERVER_MAX calibration.  Deleted cals no longer required.  Added new WAITING_FOR_ECUs_TO_WAKE per GIS-763 v1.2.2.  Changed CGM_Adress to Gateway.  Changed SigningCertificateSubject to match GIS-763</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibrations in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>10/2/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the GIS763_InfotainmentProg_GlobalB.caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>24May18</Date>
+    <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Diagnostic Address of the CGM" Name="GIS763_Gateway" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_ujAjsB4wEee42-OV6Foa8g</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>69</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>239</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Wait time for ECU Comm" Name="GIS763_WAITING_FOR_ECUS_TO_WAKE" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>__62ucBr9Eeef59Ovi_KeCA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>5</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time to wait for Vehicle state signals" Name="GIS763_WAITING_FOR_VALID_SIGNAL" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_g3cC0cOfEealvqFNubzPbw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>16Dec16</Date>
+      <Description>New cal per CR 1140460</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time to wait for SecurityAccess Unlock" Name="GIS763_WAITING_FOR_SECURE_ACCESS" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_e5SigBelEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>300</MinValue>
+      <MaxValue>3000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Wait time for ECU response for programming support" Name="GIS763_WAITING_FOR_PROGRAMMING_SUPPORT" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_VrIJ0RelEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum time to display the waiting for server response screen" Name="GIS763_DISPLAY_WAITING_FOR_SERVER_MAX" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_I_tnIRelEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6Apr17</Date>
+      <Description>Changed range and default per CR 1308881.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>50</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Minimum time to display the waiting for server response screen" Name="GIS763_DISPLAY_WAITING_FOR_SERVER_MIN" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_9j4dABekEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>3</MinValue>
+      <MaxValue>15</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time to wait for a SecurityAccess Session Key response" Name="GIS763_WAITING_ON_SESSION_KEYS" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_W2_x8RejEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time to wait for a SecurityAccess Seed response" Name="GIS763_WAITING_FOR_SEED" References="GIS-763-8004" Usage="LOW,GEM">
+    <CalID>_M-B-MBeiEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waiting period if USB is taken out in the middle of installation" Name="GIS763_WAITING_FOR_FILE" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_ZgR4cRePEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waiting longer as USB taken out in the middle of installation" Name="GIS763_WAITING_LONG_FOR_FILE" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_Z6OCcRePEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>60</MinValue>
+      <MaxValue>600</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waits this duration for the user to park, if not parked" Name="GIS763_WAITING_FOR_PARKING" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_awF6gRePEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The size in Mega Bytes (MB) of the file that can be received by cllient and verified in RAM before committing to non-volatile memory" Name="GIS763_MAX_OPERATIONAL_PROG_FILE_SIZE" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_bIgagRePEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4000</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waits for this duration for user to consent" Name="GIS763_CONSENT_PROCEED" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_bl-ZoRePEeaGALvd8QRoVA</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>11</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable or disable programming" Name="GIS763_PROGRAMMING_ENABLED" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_cBcNoRePEeaGALvd8QRoVA</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Issuer string of the signing certificate" Name="GIS763_SigningCertificateIssuer" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_cfk7IRePEeaGALvd8QRoVA</CalID>
+    <Type>String</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Subject field of the Code Signing Certificate" Name="GIS763_SigningCertificateSubject" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_dK-BgRePEeaGALvd8QRoVA</CalID>
+    <Type>String</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>16Dec16</Date>
+      <Description>Revised default per CR 1140460</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>11Apr17</Date>
+      <Description>Revised default to match GIS-763 per CR 130881</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>CN=GM Code Signature Server, OU=GM NA INFOTAINMENT, O=GM</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Vehicle Transmission Type" Name="GIS763_VehicleTransmissionType" References="GIS-763-7100" Usage="LOW,GEM">
+    <CalID>_NRzM8Cj0EeaD-IKHJUGm3g</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>24May18</Date>
+      <Description>Removed GLOBALB Architecture and MID/HIGH System Usage per RTC CR 1833569.</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_OyLgkBebEeaGALvd8QRoVA</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,9 @@
+Filesystem       Size Used Avail Use% Mounted on
+tmpfs            2.7G 1.4M  2.6G   1% /dev
+tmpfs            2.7G 276K  2.7G   1% /mnt
+/dev/block/dm-6  2.9G 2.7G  184M  94% /
+/dev/block/dm-7  438M 428M  1.2M 100% /vendor
+/dev/block/dm-8  2.4G 2.2G  184M  93% /product
+tmpfs            2.7G 8.0K  2.7G   1% /apex
+/dev/block/vda26  39G 3.7G   35G  10% /data
+/dev/fuse         39G 3.7G   35G  10% /storage/emulated

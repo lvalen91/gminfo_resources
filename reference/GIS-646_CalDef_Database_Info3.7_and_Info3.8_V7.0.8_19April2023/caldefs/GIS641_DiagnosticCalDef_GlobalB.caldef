@@ -1,0 +1,2961 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef contains calibrations pertient to the GIS-641 (Global B CSM Radio Component Diagnostic Specification) ">
+  <CalDefFileVersion>18</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>5/24/2016</Date>
+    <Description>Inital release of this caldef file.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>9/15/2016</Date>
+    <Description>Deleted the following three calibrations from this caldef file since there were duplicate calibrations for these three calibrations already in this caldef file: 1.) DTC_MASK_U3003_16(CalID: _YorpMB0NEeaksf3dHPIIEA), 2.) DTC_MASK_U3003_17 (CalID: _XNPMoB0SEeaksf3dHPIIEA), and DTC_MASK_B19B1_50 (CalID: _Aco-wCGpEeaY4JYlyGk5Lw).</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>11/18/2016</Date>
+    <Description> Within the GIS641_DiagnosticCalDef_GlobalB.caldef file made the following updates for RTC CR#:1248683: Updated the default value of the DTC_MASK_U240B_00 calibration from a value of True to False. Added the following eight new DTC_MASK calibrations: 1.) DTC_MASK_U3000_56, 2.) DTC_MASK_U1967_81, 3.) DTC_MASK_U1967_84, 4.) DTC_MASK_U1967_85, 5.) DTC_MASK_U1967_89, 6.) DTC_MASK_B1784_12, 7.) DTC_MASK_B1869_86, and 8.) DTC_MASK_B1869_4A. Renamed the DTV_MASK_U3000_53 calibration to DTC_MASK_U3000_53 to correct a typo issue with the way this calibration was initially named. Also, added usage type (MID, HIGH) that was also missing for this DTC_MASK_U3000_53 calibration. And, updated the default value for the DTC_MASK_U3000_53 from a value of False to True. Updated the default value of the DTC_MASK_U0156_00 calibration from a value of False to True. Renamed the DTC_MASK_B174E_11 calibration to DTC_MASK_B1784_11. Renamed the DTC_MASK_B174E_13 calibration to DTC_MASK_B1784_13. Renamed the DTC_MASK_B1981_52 calibration to DTC_MASK_B1964_52. Updated the calibration description for the following four calibrations: 1.) DTC_MASK_U3000_4A, 2.) DTC_MASK_U1967_00, 3.) DTC_MASK_B1964_00, and 4.) DTC_MASK_B1869_82 calibration to reflect the latest description in the latest GIS-641. Deleted the following three calibrations confirmed no longer to be needed and to correspond o the what is reflected in the latest GIS-641 : 1.) DTC_MASH_B1A2B_84, 2.) DTC_MASK_B1A2B_85, and 3.) DTC_MASK_B1A2B_89.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>1/26/2017</Date>
+    <Description>Within the GIS641_DiagnosticCalDef_GlobalB.caldef file, changed the name of the DTC_MASK_U0077_00 DTC mask calibration to DTC_MASK_U007B_00.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/13/2017</Date>
+    <Description>Within GIS641_DiagnosticCalDef_GlobalB.caldef file made the following updates: 1.) RUNNING_RESET default value changed from 0 to 5.  2.) VEHICLE_LOGISTICS_MODE default value changed from false to true. 3.)  Deleted the following calibrations since they have been removed from the current Global B release cadence 133: DTC_MASK_U1967_00, DTC_MASK_U1967_81, DTC_MASK_U1967_84, DTC_MASK_U1967_85, DTC_MASK_U1967_89, DTC_MASK_U007B_00, DTC_MASK_U240B_00, DTC_MASK_U1967_89, DTC_MASK_B1034_11, DTC_MASK_B1034_12, DTC_MASK_B1034_13, DTC_MASK_B1033_11, DTC_MASK_B1033_12, DTC_MASK_B1033_13, DTC_MASK_B1032_11, DTC_MASK_B1032_12, DTC_MASK_B1032_13, DTC_MASK_B1031_11, DTC_MASK_B1031_12, DTC_MASK_B1031_13, DTC_MASK_B1784_01, DTC_MASK_B1784_02, DTC_MASK_B1784_04, DTC_MASK_B1964_52, DTC_MASK_B198E_01, DTC_MASK_B15AF_02, DTC_MASK_B15AF_04, DTC_MASK_B15B0_02, and DTC_MASK_B15B0_04. 4.) Add the following new calibrations to support new Global B DTC reflected in  the current Global B release cadence 133:  DTC_MASK_B1A2B_84, DTC_MASK_B1A2B_85, and DTC_MASK_B1A2B_89, DTC_MASK_U0422_00, DTC_MASK_U0447_00, DTC_MASK_B198E_12, DTC_MASK_B15AF_11, DTC_MASK_B15AF_13, DTC_MASK_B15B0_11, DTC_MASK_B15B0_13, DTC_MASK_U300D_23, and DTC_MASK_U300D_24 to  support current latest Global B Cadence 133. 5.) DTC_MASK_U0156_00, DTC_MASK_B13A7_11, and DTC_MASK_B13A7_13 default values changed from true to false. 6.) The function of the B1618_13 DTC changed from Coaxial Antenna XM Signal &#x2013; Circuit Open ($13) to Voice Recognition Audio Signal Circuit Open as a result the calibration description of the DTC_MASK_B1618_13 calibration was updated accordingly to match. 7.) The function of the B1784_11 DTC changed from Coaxial Antenna XM Signal &#x2013; Circuit Short to Ground ($11) to Coaxial Antenna GPS Signal Circuit Short To Ground DTC_MASK_B1784_11 was updated accordingly to match. 8.) Updated the calibration description for the DTC_MASK_B1784_12 from DTC $B1784_12 - COAXIAL ANTENNA GPS SIGNAL CIRCUIT SHORT TO BATTE to Coaxial Antenna GPS Signal Circuit Short To Battery. 9.) Updated the calibration description for the DTC_MASK_B1784_13 from Coaxial Antenna XM Signal &#x2013; Circuit Open ($13). This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc. to Coaxial Antenna GPS Signal Circuit Open. 10.) Updated the calibration description for the DTC_MASK_B1964_00 from DTC B1964_00 &#x2013; RADIO &#x2013; SYSTEM PRORGRAMMING FAILURE to DTC B1964_00 &#x2013; USB D (+) Serial Data General Failure Condition. 11.) Updated the calibration description for the DTC_MASK_B1965_00 from USB D (+) Serial Data - No Sub Type Information to USB D (+) Serial Data 2 General Failure Condition. 12.) The function of the B1869_29 DTC changed, and as a result the calibration description of the DTC_MASK_B1869_29 was updated accordingly to match. 13.) Changed the name of the DTC_MASK_U0198_00 calibration to DTC_MASK_U0198_00_GlobalB. Changed the name of this calibration needed for Global B too to maintain calibration name uniqueness from the existing DTC_MASK_U0198_00 calibration already being used for Global A., 14.) Changed the name of the DTC_MASK_U0196_00 calibration to DTC_MASK_U0196_00_GlobalB. Changed the name of this calibration needed for Global B too to maintain calibration name uniqueness from the existing DTC_MASK_U0196_00_GlobalB calibration already being used for Global A and  15.) Updated the usage field for all of the calibrations within this CalDef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>1/11/2018</Date>
+    <Description></Description>
+    <Author>Dave Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>1/24/2018</Date>
+    <Description>Made the following DTC updates per CR#: 1568185 to align with DOORs CSM DTC updates made in Release Cadence 138 : Add the following twenty new DTC enable mask calibrations per CR#: 1568185 (Release Cadence  138): 1.) DTC_MASK_B1A62_82, 2.) DTC_MASK_B1A62_86, 3.) DTC_MASK_B1A62_4A,  4.) DTC_MASK_B1236_11, 5..)  DTC_MASK_B1236_13, 6.) DTC_MASK_U1967_00,                                                7.) DTC_MASK_U1967_81, 8.) DTC_MASK_U1967_84, 9.) DTC_MASK_U1967_85, 10.) DTC_MASK_U1967_89,  11.) DTC_MASK__B1B19_00,                                               12.) DTC_MASK_U1133_00, 13.) DTC_MASK_U020C_00,                                               14.) DTC_MASK_B13ED_11, 15.) DTC_MASK_B13ED_13,                                              16.) DTC_MASK_U007B_00, 17.) DTC_MASK_U196E_00,                                               18.) DTC_MASK_U196E_84, 19.) DTC_MASK_U196E_85, and                                        20.) DTC_MASK_U196E_89. Also, deleted the following nine DTC enable mask calibrations since these DTCs are no longer required to be supported: 1.) DTC_MASK_B1869_29 (note: handled by new enable mask DTC_MASK_B1A62_29), 2.) DTC_MASK_B1869_82 (note: handled by new enable mask DTC_MASK_B1A62_82), 3.) DTC_MASK_B1869_86 (note: handled by new enable mask DTC_MASK_B1A62_86), 4.) DTC_MASK_B1869_4A  (note: handled by new enable mask DTC_MASK_B1A62_4A), 5.) DTC_MASK_B198E_11  (note: handled by new enable mask DTC_MASK_B1236_11), 6.) DTC_MASK_B198E_13 (note: handled by new enable mask DTC_MASK_B1236_13) , 7.) DTC_MASK_B198E_12 (note: being deleted and no replacement required) , 8.)  DTC_MASK_B15B0_11 (note: handled instead by existing enable mask DTC_MASK_B15AF_11), and 9.) DTC_MASK_B15B0_13 (note: handled instead by existing enable mask DTC_MASK_B15AF_13).  Also per CR#s:  1425609 and 1499677, added the following two new DTC enable mask calibrations to support these DTCs being moved from the CGM to the CSM: 1.) DTC_MASK_U0140_00 and 2.) DTC_MASK_U1611_00. Also, deleted DTC_MASK_U300D_24 since this DTC for Ignition Switch H/W Input does not need to be supported by the CSM. Deleted existing DTC enable mask DTC_MASK_U0186_00, and replacing with a new enable mask called DTC_MASK_U0186_00_GlobalB with a different CalID to have a uniquely different calibration name from the existing DTC_MASK_U0186_00 enable mask calibration already in the GIS621_DiagnosticCalDef_GlobalA.caldef.</Description>
+    <Author>Dave Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>1/26/2018</Date>
+    <Description>Documentation update only to just show a record in change history version 8 of this caldef of the following three DTC enable mask calibrations being previously removed: 1.) DTC_MASK_B1A2B_84, 2.) DTC_MASK_B1A2B_85, and 3.) DTC_MASK_B1A2B_89. Note, this was previously done in change history version 7 of this caldef, but the documentation of this being done was just previously omitted being shown in change history version 7 of this caldef.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>05/15/2018</Date>
+    <Description>Adding MY21 GB DTC Masks as identified in CR #1820305. The DTC Masks added in this version are DTC_MASK_B13AB_11, DTC_MASK_B13AB_13, DTC_MASK_U160C_00, DTC_MASK_U3000_48,  DTC_MASK_B187F_13, DTC_MASK_B187F_11, DTC_MASK_B186C_13, DTC_MASK_B186C_11 and DTC_MASK_B1236_00</Description>
+    <Author>Arun A Ganesan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>05/02/2019</Date>
+    <Description>Per CR#2225284, Restoring DTC_B174E_11 and DTC_B174E_13 XM Antenna Coaxial Signal for Info 3.5C and Info 3.6</Description>
+    <Author>Arun A Ganesan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>09/25/2019</Date>
+    <Description>Add DTC Masks per CR 2423337</Description>
+    <Author>Arun A Ganesan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>03/16/2020</Date>
+    <Description>Added DTC Masks U160F00 and U013100 for CR 2256126</Description>
+    <Author>Arun A Ganesan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>05/15/2020</Date>
+    <Description>Added and updated DTC Masks for MY23 ARXML/ODX changes per CR 2204550</Description>
+    <Author>Arun A Ganesan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>11/20/2020</Date>
+    <Description>CR 2309370 - Camera Link SerDes Init: Added new cals DTC_MASK_ B1594_11 and DTC_MASK_ B1594_13</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>16</Version>
+    <Date>3/31/2021</Date>
+    <Description>Per CR#2690491 made the following updates within the GIS641_DiagnosticCalDef_GlobalB.caldef file: Added the following 2 new cals:  DTC_MASK_U1617_00,  DTC_MASK_C53D_00</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>17</Version>
+    <Date>9/1/2021</Date>
+    <Description>Per request from Ali Khan, CSM Diagnostic Domain Lead, made the following updates to support CR#:2204550 within the GIS641_DiagnosticCalDef_GlobalB.caldef file: Added the following 2 new cals: (1) DTC_MASK_U1610_00 (Note: Also removed equivalent old DTC_MASK_U160F_00 cal from the Cal Database since this cal is being replaced by this DTC_MASK_U1610_00 cal) and (2) DTC_MASK_ U1650_00 (Note: Also removed equivalent old DTC_MASK_U0155_00 cal from the Cal Database since this cal is being replaced by this DTC_MASK_U1650_00 cal).</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>18</Version>
+    <Date>9/17/2021</Date>
+    <Description>Per request from GM Sustain team,  updated the GIS641_DiagnosticCalDef_GlobalB.caldef file to add back in&#xa0;the DTC_MASK_U160F_00&#xa0;and&#xa0;DTC_MASK_U0155_00 calibrations that were removed in the Info3.7/3.8 Cal DB v7.0.5 release. The GM Sustain team confirmed both of these calibrations are still needed for Info3.7 to support the U160F_00&#xa0; and U0155_00 DTCs that are still in the GB_ODX_22.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>19</Version>
+    <Date>4/19/2023</Date>
+    <Description>Per CR# 3246661 adding new cals DTC_MASK_U018B_00</Description>
+    <Author>Andrea Campbell</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="U018B00 Lost Communication with Virtual Key Module" Name="DTC_MASK_U018B_00" References="GIS-641, GIS-657" Usage="MID,HIGH,GLOBALB">
+    <CalID>_eMUEQN7DEe2Q5N94dNnwHA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/19/2023</Date>
+      <Description>Intial release of diagnostic trouble code MASK</Description>
+      <Author>Andrea Campbell</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="LOST COMMUNICATION WITH INSTRUMENT PANEL CLUSTER.  Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0155_00" References="GIS-641, GIS-657" Usage="MID,HIGH,GLOBALB">
+    <CalID>_vy7BYBzwEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/17/2021</Date>
+      <Description>Added back in&#xa0;the DTC_MASK_U0155_00 calibration that was removed in the Info3.7/3.8 Cal DB v7.0.5 release. The GM Sustain team confirmed this calibration is still needed for Info3.7 to support DTCs U0155_00 that is still in the GB_ODX_22.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for DTC U160F added as part of CR 2256126" Name="DTC_MASK_U160F_00" References="CSM_ODX_RTF" Usage="MID,HIGH,GLOBALB">
+    <CalID>_GW1TMGeTEeq4C5vEE7_83Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>03/16/2020</Date>
+      <Description>DTC Mask for DTC U160F_00 for CR 2256126</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/17/2021</Date>
+      <Description>Added back in&#xa0;the DTC_MASK_U160F_00 calibration that was removed in the Info3.7/3.8 Cal DB v7.0.5 release. The GM Sustain team confirmed this calibration is still needed for Info3.7 to support DTCs U160F_00&#xa0; that is still in the GB_ODX_22.</Description>
+      <Author>Ginnard Kimberough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U1650 00 &#x2013; Lost Communication with Instrument Panel Cluster on CAN Bus 5" Name="DTC_MASK_U1650_00" References="MY23 ODX 159 ODX Section 4.1.2.120" Usage="MID,HIGH,GLOBALB">
+    <CalID>_IkD0MAuJEeyKz5I8WBp0jg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/1/2021</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 2204550 </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U1610 00 &#x2013; Lost Communication with Brake System Control Module 1 on CAN Bus 2" Name="DTC_MASK_U1610_00" References="MY23 ODX 159 ODX Section 4.1.2.113" Usage="MID,HIGH,GLOBALB">
+    <CalID>_6mq-MAuGEeyKz5I8WBp0jg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/1/2021</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 2204550 </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U161500 Lost Communication with External Object Calculating Module/EOCM_HCP1 on CAN Bus 2" Name="DTC_MASK_U1615_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_6yrGMHqbEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U161500 Lost Communication with External Object Calculating Module/EOCM_HCP1 on CAN Bus 2  </Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U161D00 Lost Communication with Brake System Control Module 1 on CAN Bus 2" Name="DTC_MASK_U161D_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_ZgTGkHqbEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U161D00 Lost Communication with Brake System Control Module 1 on CAN Bus 2</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U160D00 Lost Communication with Battery State Manager/Vehicle Integration Control Module on CAN Bus 2" Name="DTC_MASK_U160D_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_da6-gHqaEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U160D00 Lost Communication with Battery State Manager/Vehicle Integration Control Module on CAN Bus 2</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U029300 Lost Communication with Hybrid/EV Powertrain Control Module 1 " Name="DTC_MASK_U0293_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_pAZpUHqZEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U029300 Lost Communication with Hybrid/EV Powertrain Control Module 1 </Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U026500 Lost Communication with Front Camera Module/Front Camera Module High Content" Name="DTC_MASK_U0265_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_IpMqwHqUEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U026500 Lost Communication with Front Camera Module/Front Camera Module High Content</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U115500 Lost Communication with Vehicle Leveling Module" Name="DTC_MASK_U1155_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_EcgW8HqLEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U115500 Lost Communication with Vehicle Leveling Module</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U165200 Lost Communication with Performance Data Recorder Module on CAN Bus 5" Name="DTC_MASK_U1652_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_OcWWIHqJEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U165200 Lost Communication with Performance Data Recorder Module on CAN Bus 5  </Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U164C00 Lost Communication with Multi Function Control Module on CAN Bus 5 " Name="DTC_MASK_U164C_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_JlDsgHqIEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U164C00 Lost Communication with Multi Function Control Module on CAN Bus 5 </Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U164F00 Lost Communication with Telematics Control Platform Module on CAN Bus 5" Name="DTC_MASK_U164F_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_UiCCUHqGEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U164F00 Lost Communication with Telematics Control Platform Module on CAN Bus 5</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U165100 Lost Communication with Audio Amplifier on CAN Bus 5 " Name="DTC_MASK_U1651_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_m2N2QHqEEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U165100 Lost Communication with Audio Amplifier on CAN Bus 5 </Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for MY23 and above DTC U164B00 Lost Communication with Central Gateway Module on CAN Bus 5" Name="DTC_MASK_U164B_00" References="GB_ODX_CSM_Android_GAS_23_23_153 RTF and future cadence ODX RTFs" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_-6nVUHqCEeqQV4Zx8zq3qQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/06/2020</Date>
+      <Description>DTC Mask for MY23 and above DTC U164B00 Lost Communication with Central Gateway Module on CAN Bus 5</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC Mask for DTC U0131_00" Name="DTC_MASK_U0131_00" References="CSM_ODX_RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_60LLgGeWEeq4C5vEE7_83Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>03/16/2020</Date>
+      <Description>DTC Mask for DTC U0131_00 for CR 2256126</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Adding the missing DTC Mask for Infotainment Comm Bus Off DTC" Name="DTC_MASK_U1001_00" References="CSM_ODX_RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_DLNc8N-lEem9Gf7ZC0qqHA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/25/2019</Date>
+      <Description>Adding the missing DTC Mask for Infotainment Comm Bus Off DTC</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Adding the missing DTC Mask for Backup Lamp Circuit Short to Battery" Name="DTC_MASK_B1236_12" References="CSM_ODX_RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_CQP7cN-jEem9Gf7ZC0qqHA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/25/2019</Date>
+      <Description>Adding the missing DTC Mask for Backup Lamp Circuit Short to Battery</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Adding the missing DTC Mask for WCM Invalid Serial Data" Name="DTC_MASK_U196E_81" References="CSM_ODX_RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_EcQSQN-eEem9Gf7ZC0qqHA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/25/2019</Date>
+      <Description>Adding the missing DTC Mask for WCM Invalid Serial Data</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Center Stack Low Voltage Differential Signaling LVDS Signal (+) Circuit Open" Name="DTC_MASK_B1B79_13" References="DTC Mask for LVDS DTC in 152 CSM ODX RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_JG-m4N-cEem9Gf7ZC0qqHA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/25/2019</Date>
+      <Description>DTC Mask for LVDS DTC in 152 CSM ODX RTF</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Center Stack Low Voltage Differential Signaling LVDS Signal (+) Short to Ground" Name="DTC_MASK_B1B79_11" References="DTC Mask for LVDS DTC in 152 CSM ODX RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_p-hWkN-aEem9Gf7ZC0qqHA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/25/2019</Date>
+      <Description>DTC Mask for LVDS DTC in 152 CSM ODX RTF</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B174E_13 XM Antenna Coaxial Signal - Circuit Open" Name="DTC_MASK_B174E_13" References="See CSM ODX RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_HrtmIG0GEemD1sREh6N-PA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/02/2019</Date>
+      <Description>Per CR# 2225284, initial release of this calibration</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B174E_11 XM Antenna Coaxial Signal Short to Ground" Name="DTC_MASK_B174E_11" References="See CSM ODX RTF" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_h03VwG0FEemD1sREh6N-PA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/02/2019</Date>
+      <Description> Per CR# 2225284, initial release of this calibration</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B123600 - Backup Lamp Supply Voltage Circuit General Failure" Name="DTC_MASK_B1236_00" References="See ODX RTF for DTC B123600" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_9iBL0FiAEeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B186C11 - Radio Analog Amplifier Mute Circuit Short to Ground" Name="DTC_MASK_B186C_11" References="See ODX RTF for DTC B186C11" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_XWN_IFiAEeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B186C13 - Radio Analog Amplifier Mute Circuit Open" Name="DTC_MASK_B186C_13" References="See ODX RTF for DTC B186C13" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_yy82gFh_EeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B187F11 - Radio Analog Amplifier Enable Circuit Short to Ground" Name="DTC_MASK_B187F_11" References="See ODX RTF for DTC B187F11" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_DZ4B8Fh_EeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B187F13 - Radio Analog Amplifier Enable Circuit Open" Name="DTC_MASK_B187F_13" References="See ODX RTF for DTC B187F13" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_I025YFh-EeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U300048 - Control Module Supervision Software Failure" Name="DTC_MASK_U3000_48" References="See ODX RTF for DTC U300048" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_y5Wg0Fh8EeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U160C00 - Lost Communication with Park Assist Module" Name="DTC_MASK_U160C_00" References="See ODX RTF for DTC U160C00" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_4qRBcFh6EeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B13AB13 Wifi Antenna Circuit - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B13AB_13" References="See ODX RTF for DTC B13AB13" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_QVEfUFh6EeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B13AB11 Wifi Antenna Circuit - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected. " Name="DTC_MASK_B13AB_11" References="See ODX RTF for DTC B13AB_11 " Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_iG5b0FhyEeicGutz5U5DVw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/15/2018</Date>
+      <Description>Adding DTC Mask per CR #1820305</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U1611_00 - Lost Communication with Engine Control Module on CAN Bus 2" Name="DTC_MASK_U1611_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_K8XIoPocEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1499677</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U161700 &#x2013; Lost Communication with ECP_X2 on CAN Bus 2" Name="DTC_MASK_U1617_00" References="MY23 ODX 157 ODX Section 4.1.2.116" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_z5TVIZJiEeu2q86KTeoKCg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/31/2021</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 2690491 </Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U053D 00 &#x2013; Invalid Data Received from Video Processing Control Module" Name="DTC_MASK_U053D_00" References="MY23 ODX 158 ODX Section 4.1.2.109" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_tTpQ8ZJ8Eeu2q86KTeoKCg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/31/2021</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 2690491 </Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0140_00 - Lost Communication with Body Control Module" Name="DTC_MASK_U0140_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_m63HwPoEEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1499677</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U196E_89 - Wireless Charging Module License Compliance Material Data Transfer Failed" Name="DTC_MASK_U196E_89" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_pTXRoPl_EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U196E_85 - Wireless Charging Module License Compliance Material Signal Above Allowable Range" Name="DTC_MASK_U196E_85" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_SmROoPl_EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U196E_84 - Wireless Charging Module License Compliance Material Signal Below Allowable Range" Name="DTC_MASK_U196E_84" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_DrZx0Pl_EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U196E_00 - Wireless Charging Module License Compliance Material" Name="DTC_MASK_U196E_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_rZcp0Pl-EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U007B_00 - CONTROL MODULE COMMUNICATION CAN BUS 5 OFF" Name="DTC_MASK_U007B_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_GWmCMPl-EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B13ED_13 &#x2013; DIGITAL AUDIO BROADCAST ANTENNA COAXIALSIGNAL &#x2013; CIRCUIT OPEN" Name="DTC_MASK_B13ED_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_yxUrwPl9EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B13ED_11 &#x2013; DIGITAL AUDIO BROADCAST ANTENNA COAXIALSIGNAL &#x2013; SHORT TO GROUND" Name="DTC_MASK_B13ED_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_YxG3sPb3EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U020C_00 &#x2013; LOST COMMUNICATION WITH WIRELESS CHARGER MODULE" Name="DTC_MASK_U020C_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_q-K6gPb2EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U1133_00 - LOST COMMUNICATION WITH PERFORMANCE DATA RECORDER MODULE" Name="DTC_MASK_U1133_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_R6_w8Pb2EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1B19_00 &#x2013; THEFT PROTECTION ACTIVE" Name="DTC_MASK__B1B19_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_2JeKwPb1EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U1967_89 &#x2013; TELEMATICS MODULE LICENSE COMPLIANCE MATERIAL &#x2013; DATA TRANSFER FAILED" Name="DTC_MASK_U1967_89" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_vKpM4Pb0EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U1967_85 &#x2013; TELEMATICS MODULE LICENSE COMPLIANCE MATERIAL &#x2013; SIGNAL ABOVE ALLOWABLE RANGE" Name="DTC_MASK_U1967_85" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_K6GzAPb0EeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U1967_84 &#x2013; TELEMATICS MODULE LICENSE COMPLIANCE MATERIAL &#x2013; SIGNAL BELOW ALLOWABLE RANGE." Name="DTC_MASK_U1967_84" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_KEAt8PbzEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added the following new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U1967_81 &#x2013; TELEMATICS MODULE LICENSE COMPLIANCE MATERIAL &#x2013; INVALID SERIAL DATA RECEIVED." Name="DTC_MASK_U1967_81" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_KyrnQPbyEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U1967_00 &#x2013; TELEMATICS MODULE LICENSE COMPLIANCE MATERIAL - LICENSE COMPLIANCE MATERIAL TAG EQUALS ZERO." Name="DTC_MASK_U1967_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_YVEDoPbxEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Added this new DTC enable mask calibrations per CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Debounce Time shall be 2.5 Times the Timeout (timeout is 2.5 times the nominal periodic rate of the signal." Name="GIS641_DEBOUNCE_TIME" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_R99XEEF_EeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="A DTC will be Enabled 5 seconds after a Power Up Reset" Name="POWER_UP_RESET" References="GB6001 Section 6.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_geEKoBtYEeaVv4YxjvxKoQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="A DTC will be Enabled 5 seconds after a Running Reset" Name="RUNNING_RESET" References="GB6001 Section 6.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_59pjYBtYEeaVv4YxjvxKoQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>RUNNING_RESET default value changed from 0 to 5. Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Vehicle Power Mode(s): Run or Propulsion for 5 seconds." Name="VEHICLE_POWER_MODE" References="GB6001 Section 6.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_CcXjgBtWEeaVv4YxjvxKoQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="5 seconds of a recovery from an under or over voltage condition before a DTC will be set." Name="RECOVERY_FROM_UNDER_OVER_VOLTAGE" References="GB6001 Section 6.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_VyqNUBtXEeaVv4YxjvxKoQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Vehcle Logistics mode must be true to enable or set a DTC" Name="VEHICLE_LOGISTICS_MODE" References="GB6001 Section 6.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_JNS9YBtZEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>VEHICLE_LOGISTICS_MODE default value change false to true.  Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Unable to Authenticate Serial Data Message - $00: No Sub Type Information. Whenever a Message Authentication Code (MAC) results in failed verification, an error counter is incremented for the specific key slot used to verify the MAC except when the conditions to set U1961 92 are present. When the conditions to set U1961 92 are present, the MAC verification failure was caused by Security Peripheral hardware specific errors and not issues with key provisioning." Name="DTC_MASK_U1962_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_xLQcgBtfEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 4 (+) GENERAL FAILURE. The Radio should detect loss of link over Ethernet if the Ethernet Link is down for three seconds both at Wakeup and Normal operation and then report it to the system. FTB: $00 &#x2013; General Failure - Time between Sync updates of &#x2265; 10 seconds occurs devices shall assume a failure of the gPTP Grand Master clock and report a DTC" Name="DTC_MASK_B1A1F_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_tZiMcBthEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 4 (+) SIGNAL INVALID. Loss of Link which is determined by the CSM&#x2019;s Ethernet Switch" Name="DTC_MASK_B1A1F_29" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_P_DZgBtjEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 4 (+) SHORT TO GROUND. Loss of Link with Telematics Communication Interface Control Module on Ethernet Bus (TCP) &#x2013; Circuit Short to Ground ($11) " Name="DTC_MASK_B1A1F_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_faSYcBtjEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 4 (+) CIRCUIT OPEN. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1A1F_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_47Y0IBtjEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 4 (+) CIRCUIT RESISTANCE ABOVE THRESHOLD. This sub type is used for failures, where the control module measures current flow above a specified range." Name="DTC_MASK_B1A1F_1B" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_PWST4BtkEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 7 (+) GENERAL FAILURE.  Time between Sync updates of &#x2265; 10 seconds occurs devices shall assume a failure of the gPTP Grand Master clock and report a DTC" Name="DTC_MASK_B1A25_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_kUi2gBtkEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 7 (+) SIGNAL INVALID.  Loss of Link which is determined by the CSM&#x2019;s Ethernet Switch" Name="DTC_MASK_B1A25_29" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_8rvq4BtkEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 7 (+) SHORT TO GROUND.  This sub type is used for failures where the control module measures ground (battery negative) potential for greater than a specified time period or when some other value less than the low voltage limit DTC Sub Type is measured." Name="DTC_MASK_B1A25_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_nC-WMBtlEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 7 (+) CIRCUIT OPEN. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1A25_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_813awBtlEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 7 (+) CIRCUIT RESISTANCE ABOVE THRESHOLD.  This sub type is used for failures, where the control module infers a circuit resistance above a specified range." Name="DTC_MASK_B1A25_1B" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_S0WEQBtmEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 6 (+) GENERAL FAILURE. Time between Sync updates of &#x2265; 10 seconds occurs devices shall assume a failure of the gPTP Grand Master clock and report a DTC" Name="DTC_MASK_B1A23_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_kNdFIBtmEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 6 (+) SIGNAL INVALID.  Loss of Link which is determined by the CSM&#x2019;s Ethernet Switch" Name="DTC_MASK_B1A23_29" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_9CByABtmEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 6 (+) SHORT TO GROUND.  This sub type is used for failures where the control module measures ground (battery negative) potential for greater than a specified time period or when some other value less than the low voltage limit DTC Sub Type is measured." Name="DTC_MASK_B1A23_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_QAEwYBtnEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 6 (+) CIRCUIT OPEN.  This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1A23_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_HQZOABtoEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 6 (+) CIRCUIT RESISTANCE ABOVE.  This sub type is used for failures, where the control module infers a circuit resistance above a specified range." Name="DTC_MASK_B1A23_1B" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_e7WAYBtoEeaVv4YxjvxKoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 5 (+) GENERAL FAILURE.  Time between Sync updates of &#x2265; 10 seconds occurs devices shall assume a failure of the gPTP Grand Master clock and report a DTC" Name="DTC_MASK_B1A21_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_HOK8QBtvEeaxbuf3pg26XA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 5 (+) SIGNAL INVALID.  Loss of Link which is determined by the CSM&#x2019;s Ethernet Switch" Name="DTC_MASK_B1A21_29" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_3wJfUBt_Eeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 5 (+) SHORT TO GROUND.  This sub type is used for failures where the control module measures ground (battery negative) potential for greater than a specified time period or when some other value less than the low voltage limit DTC Sub Type is measured." Name="DTC_MASK_B1A21_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_GvSYIBuAEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 5 (+) CIRCUIT OPEN.  Loss of Link with Rear Audio Control Module on Ethernet Bus (RSI) &#x2013; Circuit Open ($13)" Name="DTC_MASK_B1A21_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ZUR9UBuAEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 5 (+) CIRCUIT RESISTANCE ABOVE THRESHOLD. This sub type is used for failures, where the control module infers a circuit resistance above a specified range." Name="DTC_MASK_B1A21_1B" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_rGNG0BuAEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 2 (+) GENERAL FAILURE. Time between Sync updates of &#x2265; 10 seconds occurs devices shall assume a failure of the gPTP Grand Master clock and report a DTC" Name="DTC_MASK_B1A1B_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_5-gX0BuAEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 2 (+) SIGNAL INVALID. Loss of Link which is determined by the CSM&#x2019;s Ethernet Switch" Name="DTC_MASK_B1A1B_29" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_QN7K4BuCEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 2 (+) SHORT TO GROUND.  This sub type is used for failures where the control module measures ground (battery negative) potential for greater than a specified time period or when some other value less than the low voltage limit DTC Sub Type is measured." Name="DTC_MASK_B1A1B_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_w75qsBuHEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 2 (+) CIRCUIT OPEN. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1A1B_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_kEQNYBuIEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="ETHERNET BUS 2 (+) CIRCUIT RESISTANCE ABOVE THRESHOLD. This sub type is used for failures, where the control module infers a circuit resistance above a specified range." Name="DTC_MASK_B1A1B_1B" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_vZ0XcBuIEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Battery Voltage - Circuit Voltage Below Threshold.  Supply Voltage &lt; 9 volts" Name="DTC_MASK_U3003_16" References="GIS-641, GIS-657" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_BJ2DgBuJEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Battery Voltage - Circuit Voltage Above Threshold.. Supply Voltage > 16 volts" Name="DTC_MASK_U3003_17" References="GIS-641, GIS-657" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_V4wikBuJEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; General Checksum Failure. Downloaded File is read out from the Flash memory and the CRC is checked. Failure if CRC-Checksum is erroneous" Name="DTC_MASK_U3000_41" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_jKs5wBuJEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; General Memory Failure. ECU Hardware Performance general memory failure - RAM" Name="DTC_MASK_U3000_42" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_xWN9QBuJEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Special Memory Failure." Name="DTC_MASK_U3000_43" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_S4kSkBuKEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Data Memory Failure. Control module to indicates data (or working) memory failure for embedded systems using FLASH memory. This is equivalent to RAM in RAM/ROM/EEPROM embedded systems." Name="DTC_MASK_U3000_44" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_0XybYBuKEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Program Memory Failure. the control module to indicate a program memory failure for embedded systems using FLASH memory. This is equivalent to ROM in RAM/ROM/EEPROM embedded systems." Name="DTC_MASK_U3000_45" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_cdFgUBuLEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Calibration / Parameter Memory Failure.  the control module to indicate a calibration / parameter memory failure for embedded systems using FLASH memory. This is equivalent to EEPROM in RAM/ROM/EEPROM embedded systems." Name="DTC_MASK_U3000_46" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_n6sMEBuLEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Watchdog / Safety &#x3bc;C Failure. the control module to indicate a watchdog / safety &#x3bc;C failure, or a failure in the execution of operational software." Name="DTC_MASK_U3000_47" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_8oZxQBuLEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Internal Electronic Failure. Internal Electronic Failure of J5, J6, VIP, Broadcom ECUs" Name="DTC_MASK_U3000_49" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_2Fb-EBuMEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U3000_4A &#x2013; CONTROL MODULE - INCORRECT COMPONENT INSTALLED - This sub type is used by the control module to indicate a mismatch between the hardware connected to the control module and the hardware expected by the control module " Name="DTC_MASK_U3000_4A" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_-dJJACGkEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/24/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/18/16</Date>
+      <Description>Updated the calibration description for the DTC_MASK_U3000_4A calibration to reflect the latest description in the latest GIS-641.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Invalid / Incompatible Configuration. Control Module &#x2013; Invalid / Incompatible Configuration" Name="DTC_MASK_U3000_4B" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_BMJXUBuOEeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="$U3000_56 - CONTROL MODULE - INVALID / INCOMPATIBLE CONFIGURATION - To have a set up that is not supported by the currently installed hardware/software. Telematics Connectivity Platform, External Amplifier, Performance Data Recorder, Rear Seat Infotainment, Rear Seat Controls, Heads Up Display, Multi-Function Controller." Name="DTC_MASK_U3000_56" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_tU51oK2REea5juYrttHRpA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/18/16</Date>
+      <Description>Initial release of DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module &#x2013; Invalid / Incompatible Software Component.  The CSM has determined the wrong Calibration Definition Override Files has been Downloaded." Name="DTC_MASK_U3000_57" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_g_cCcBuREeajdf13YwffCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CONTROL MODULE - NOT PROGRAMMED. This sub type is used by the control module to indicate that programming is required." Name="DTC_MASK_U3000_51" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_TujRICGlEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/24/16</Date>
+      <Description>Official release of troube code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CONTROL MODULE &#x2013; CONTROL MODULE NOT ACTIVATED. This sub type is used by the control module to indicate that some portion of the program has not been enabled." Name="DTC_MASK_U3000_52" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_m6fhkCGlEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/24/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CONTROL MODULE &#x2013; DEACTIVATED. This sub type is used by the control module to indicate that that some portion of the program has been disabled." Name="DTC_MASK_U3000_53" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_6a0toCGlEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/24/16</Date>
+      <Description>Initial release of DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/18/16</Date>
+      <Description>Renamed the DTV_MASK_U3000_53 calibration to DTC_MASK_U3000_53 to correct a typo issue with the way this calibration was initially named. Also, added usage type (MID, HIGH) that was also missing for this DTC_MASK_U3000_53 calibration. And, updated the default value for the DTC_MASK_U3000_53 from a value of False to True.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module - Control Module Missing Calibration. This sub type is used by the control module to indicate that Calibration Overrides have not been uploaded" Name="DTC_MASK_U3000_54" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_MOj1ACGmEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/24/16</Date>
+      <Description>Official release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CONTROL MODULE &#x2013; CONTROL MODULE NOT CONFIGURED. This sub type is used by the control module to indicate the need to enter (program) the sub system option content or the vehicle option content." Name="DTC_MASK_U3000_55" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_qeTfMCGoEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="KEY TABLE NOT PROVISIONED. 1) Monitored continuously while CAN frames are being transmitted and received. " Name="DTC_MASK_U1960_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_UuOooCGpEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Security Peripheral Performance &#x2013; Performance or Incorrect Operation. 1) If a request to the security peripheral to generate a Message Authentication Code (MAC) does not result in a response within a set amount of time*, the security peripheral is considered to have failed due to an internal error. " Name="DTC_MASK_U1961_92" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Lpli4CGqEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="LOST COMMUNICATION WITH CENTRAL GATEWAY MODULE. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0146_00" References="GIS-641, GIS-657" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ewbJsBzwEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>04/06/2020</Date>
+      <Description>Changed default value to false since CGM DTC number is changing in MY23</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Low Volume Module &#x2013; No Sub Type Information. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0259_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_-_GQoBzwEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with HVAC Control Module &#x2013; No Sub Type Information. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0164_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_MLVocBzxEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with HVAC Display - Rear &#x2013; No Sub Type Information. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0165_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_fEQ2QBzxEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Audio Amplifier &#x2013; No Sub Type Information.  Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0186_00_GlobalB" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_s5BDsAEUEeiDo-Dq14by9g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/24/2018</Date>
+      <Description>Deleted DTC_MASK_U300D_24 since this DTC for Ignition Switch H/W Input does not need to be supported by the CSM. Deleted existing DTC enable mask DTC_MASK_U0186_00, and replacing with a new enable mask called DTC_MASK_U0186_00_GlobalB with a different CalID to have a uniquely different calibration name from the existing DTC_MASK_U0186_00 enable mask calibration already in the GIS621_DiagnosticCalDef_GlobalA.caldef.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Rear Seat Infotainment Module &#x2013; No Sub Type Information. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0196_00_GlobalB" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_zM67sBzzEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Changed the name of the DTC_MASK_U0196_00 calibration to DTC_MASK_U0196_00_GlobalB. Changed the name of this calibration needed for Global B too to maintain calibration name uniqueness from the existing DTC_MASK_U0196_00_GlobalB calibration already being used for Global A. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool. </Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Telematics Communication Interface Control Module &#x2013; No Sub Type Information.  Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC" Name="DTC_MASK_U0198_00_GlobalB" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Cby5oBz0Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Changed the name of the DTC_MASK_U0198_00 calibration to DTC_MASK_U0198_00_GlobalB. Changed the name of this calibration needed for Global B too to maintain calibration name uniqueness from the existing DTC_MASK_U0198_00 calibration already being used for Global A. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Info Display Module/Infotainment Faceplate Control  Module &#x2013; No Sub Type Information.  Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0257_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Sr1ZoBz0Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Camera Module - Rear &#x2013; No Sub Type Information. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0264_00" References="GIS-641, GIS-657" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_huwmQBz0Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Multi-Function Controller &#x2013; No Sub Type Information.  Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0256_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Td5TQBz1Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Instrument Panel Cluster Module - Auxiliary.  Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_U0156_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ylUeQBz1Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/18/2016</Date>
+      <Description>Updated the default value of the DTC_MASK_U0156_00 calibration from a value of False to True.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/17</Date>
+      <Description>Default changed to False. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Heads Up Display &#x2013; No Sub Type Information.  Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC. " Name="DTC_MASK_U0158_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_QJWAABz6Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0499_00 &#x2013; Invalid Data Received From Telematics Control Module.  The License Compliance Materials Service shall trigger a Diagnostic Trouble Code and LCM Data Message indicates the Master Download Retry Counter = 0" Name="DTC_MASK_U0499_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_6AEAQBzvEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U042200 - Invalid Data Received from Body Control Module" Name="DTC_MASK_U0422_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_jbqXIFBJEeeUbv7Muw4AWA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/13/17</Date>
+      <Description>Initial Release of DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Invalid Data Received from Telematics Module - No Sub Type Information. Upon receipt of a monitored signal which is indicated as invalid on consecutive receptions or for 500 ms (whichever is longer)" Name="DTC_MASK_U0557_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_m719sCGrEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U044700 - Invalid Data Received from Central Gateway Module" Name="DTC_MASK_U0447_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_DpV_kFBKEeeUbv7Muw4AWA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/13/17</Date>
+      <Description>Initial Release of DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="LEFT FRONT SPEAKER (+) (1) CIRCUIT SHORT TO GROUND. This sub type is used for failures where the control module measures ground (battery negative) potential." Name="DTC_MASK_B1960_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ufm_MCGtEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker (+) (1) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured.." Name="DTC_MASK_B1960_12" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_DGVyoCGuEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial Release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker (+) (1) Circuit Open. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1960_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_kFxysCGvEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker (+) (1) Circuit Short To Ground. This sub type is used for failures where the control module measures ground (battery negative) potential" Name="DTC_MASK_B1961_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_MTVe8CG0EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial Release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker (+) (1) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured." Name="DTC_MASK_B1961_12" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_jFluwCG0EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker (+) (1) Circuit Open. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1961_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Gqr-8CG1EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Rear Speaker (+) Circuit Short To Ground. This sub type is used for failures where the control module measures ground (battery negative) potential." Name="DTC_MASK_B1962_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ZtlBECG1EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Rear Speaker (+) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured." Name="DTC_MASK_B1962_12" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_uULRoCG1EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial Release of DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Rear Speaker (+) Circuit Open. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1962_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ML_HgCG5EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Rear Speaker (+) Circuit Short To Ground. This sub type is used for failures where the control module measures ground (battery negative) potential" Name="DTC_MASK_B1963_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_gTK4MCG5EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code.</Description>
+      <Author> David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Rear Speaker (+) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured." Name="DTC_MASK_B1963_12" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_zYmQ8CG5EeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Rear Speaker (+) Circuit Open.  This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc.." Name="DTC_MASK_B1963_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_DOegUCHBEeaY4JYlyGk5Lw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/24/16</Date>
+      <Description>Initial release of diagnostic trouble code.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Cellular Telephone Microphone &#x2013; Circuit Short to Ground ($11). B1114_11: Failure Type byte indicates Short to Ground." Name="DTC_MASK_B1114_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_993UwBz-Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Cellular Telephone Microphone &#x2013; Circuit Short to Ground ($11).  The short to ground threshold is based on a resistance of at most 15 ohms short to a ground offset of at most 0.5V." Name="DTC_MASK_B1114_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_avIgsBz_Eeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Microphone (+) Signal Circuit &#x2013; Circuit Short to Ground ($11). " Name="DTC_MASK_B1A36_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ZeF6IB0AEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Microphone (+) Signal Circuit &#x2013; Circuit Open ($13). Failure Type byte indicates Circuit Open." Name="DTC_MASK_B1A36_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_5tOpMB0CEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna RF Signal &#x2013; Circuit Short to Ground ($11). This sub type is used for failures where the control module measures ground (battery negative) potential" Name="DTC_MASK_B1737_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_l0FfEB0DEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna RF Signal &#x2013; Circuit Open ($13). This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1737_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_IpzgwB0EEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna RF Signal 2 &#x2013; Circuit Short to Ground ($11).  This sub type is used for failures where the control module measures ground (battery negative) potential" Name="DTC_MASK_B13A7_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_cO0_kB0EEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Default changed to False. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna 2 Signal Circuit &#x2013; Circuit Open ($13). This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B13A7_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_N6AK4B0LEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Default changed to False. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Voice Recognition Audio Signal Circuit Short To Ground ($11). This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc." Name="DTC_MASK_B1618_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_fmYtEB0LEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Voice Recognition Audio Signal Circuit Open" Name="DTC_MASK_B1618_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_8YEIsB0LEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>The function of the B1618_13 DTC changed from Coaxial Antenna XM Signal &#x2013; Circuit Open ($13) to Voice Recognition Audio Signal Circuit Open as a result the calibration description of the DTC_MASK_B1618_13 calibration was updated accordingly to match. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Coaxial Antenna GPS Signal Circuit Short To Ground" Name="DTC_MASK_B1784_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_YrPqcB0MEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/18/2016</Date>
+      <Description>Renamed the DTC_MASK_B174E_11 calibration to DTC_MASK_B1784_11.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>The function of the B1784_11 DTC changed from Coaxial Antenna XM Signal &#x2013; Circuit Short to Ground ($11) to Coaxial Antenna GPS Signal Circuit Short To Ground DTC_MASK_B1784_11 was updated accordingly to match. Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool. </Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Coaxial Antenna GPS Signal Circuit Short To Battery" Name="DTC_MASK_B1784_12" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_PhvUkK2hEeaJBLbnDl1Utw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/18/16</Date>
+      <Description>Initial release of DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/14/2017</Date>
+      <Description>Updated the calibration description for the DTC_MASK_B1784_12 from DTC $B1784_12 - COAXIAL ANTENNA GPS SIGNAL CIRCUIT SHORT TO BATTE to Coaxial Antenna GPS Signal Circuit Short To Battery. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Coaxial Antenna GPS Signal Circuit Open" Name="DTC_MASK_B1784_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_HRdesB0NEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/18/2016</Date>
+      <Description>Renamed the DTC_MASK_B174E_13 calibration to DTC_MASK_B1784_13.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the calibration description for the DTC_MASK_B1784_13 from Coaxial Antenna XM Signal &#x2013; Circuit Open ($13). This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc. to Coaxial Antenna GPS Signal Circuit Open. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool. </Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1964_00 &#x2013; USB D (+) Serial Data General Failure Condition  - Failure Type byte indicates MD Digital Signature Mismatch or LIC Digital Signature Mismatch or security access not activated" Name="DTC_MASK_B1964_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_pUJHoB0SEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/18/16</Date>
+      <Description>Updated the calibration description for the DTC_MASK_B1964_00 calibration to reflect the latest description in the latest GIS-641.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/17</Date>
+      <Description>Updated the calibration description for the DTC_MASK_B1964_00 from DTC B1964_00 &#x2013; RADIO &#x2013; SYSTEM PRORGRAMMING FAILURE to DTC B1964_00 &#x2013; USB D (+) Serial Data General Failure Condition. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="USB D (+) Serial Data 2 General Failure Condition. FTB1 = $00:  Failure Type byte indicates The General Fault Condition can be a product of any one of the following: Bus Undervoltage Lockout, 1.HVBUS Overvoltage Protection, 2. HVBUS Short-to-Ground, 3. FVBUS Overcurrent Protection, 4. HVD+ and HVD-  Overvoltage Protection" Name="DTC_MASK_B1965_00" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_GHnBEB0VEeaksf3dHPIIEA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/17</Date>
+      <Description>Updated the calibration description for the DTC_MASK_B1965_00 from USB D (+) Serial Data - No Sub Type Information to USB D (+) Serial Data 2 General Failure Condition. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool. </Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1A62_82 - REAR VISION CAMERA SIGNAL - ALIVE / SEQUENCE COUNTER INCORRECT / NOT UPDATED" Name="DTC_MASK_B1A62_82" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_uTtYIPbkEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/11/2018</Date>
+      <Description>Initial release of this DTC per RTC CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1A62_86 - REAR VISION CAMERA - SIGNAL INVALID" Name="DTC_MASK_B1A62_86" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_A6ZJ8fbmEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/11/2018</Date>
+      <Description>Initial release of this DTC per RTC CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1A62_4A - REAR VISION CAMERA SIGNAL WRONG CAMERA INSTALLED DIAGNOSTIC STATUS" Name="DTC_MASK_B1A62_4A" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_DfsGUfboEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/11/2018</Date>
+      <Description>Initial release of this DTC per RTC CR#: 1568185.</Description>
+      <Author>Dave Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Backup Lamp Supply Voltage &#x2013; Short to Ground. This sub type is used for failures where the control module measures ground (battery negative) potential in when HS GMLAN Message VehcileMovementState message = &#x201c;Reverse&#x201d;" Name="DTC_MASK_B1236_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_d9SKAfbpEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/11/2018</Date>
+      <Description>Initial release of this DTC per RTC CR#: 1568185.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="BACKUP LAMP SUPPLY VOLTAGE &#x2013; OPEN CIRCUIT.  This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state when HS GMLAN Message VehcileMovementState message = &#x201c;Reverse&#x201d;" Name="DTC_MASK_B1236_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_uDhYUfbqEeeJ-4EGVvY9Kg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/11/2018</Date>
+      <Description>Initial release of this DTC per RTC CR#: 1568185.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B15AF_11 &#x2013; HUMAN MACHINE INTERFACE LOW VOLTAGE DIFFERENTIAL SIGNALING LVDS SIGNAL - SHORT TO GROUND. The control module measures ground (battery negative) potential." Name="DTC_MASK_B15AF_11" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_PW6AYFDuEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/13/17</Date>
+      <Description>Initial release of this DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/11/2018</Date>
+      <Description>Updated function description per RTC CR#: 1568185</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>09/25/2019</Date>
+      <Description>Changing default to false since B1BA9 is replacing this</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B15AF_13 &#x2013; HUMAN MACHINE INTERFACE LOW VOLTAGE DIFFERENTIAL SIGNALING LVDS SIGNAL &#x2013; OPEN CIRCUIT." Name="DTC_MASK_B15AF_13" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_rPzZ4FDuEeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/13/17</Date>
+      <Description>Initial release of this DTC</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/11/2018</Date>
+      <Description>Updated function description per RTC CR#: 1568185</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>09/25/2019</Date>
+      <Description>Changing default to false since B1BA9 is replacing this</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Radio System Programming Failure. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC." Name="DTC_MASK_B19B1_50" References="GIS-641" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_j6Y2oB3AEeanrKLO7JQoLQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/20/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Mask to for DTC B1584_13" Name="DTC_MASK_B1594_13" References="2309370 - Camera Link SerDes Init" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_GjMk4BzlEeumObnnB0oIhw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/20/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Mask to for DTC B1584_11" Name="DTC_MASK_B1594_11" References="2309370 - Camera Link SerDes Init" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_6F7L4BzkEeumObnnB0oIhw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/20/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

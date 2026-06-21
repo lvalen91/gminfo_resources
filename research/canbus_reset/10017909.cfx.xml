@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Config Version="1.0">
+	<Text Id="881">Reset ECU</Text>
+	<Action Id="2068">
+		<Text Id="881">Reset ECU</Text>		
+	</Action>
+</Config>

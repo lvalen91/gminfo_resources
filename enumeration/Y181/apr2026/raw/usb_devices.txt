@@ -1,0 +1,1 @@
+cat: /sys/bus/usb/devices/*/product: Permission denied

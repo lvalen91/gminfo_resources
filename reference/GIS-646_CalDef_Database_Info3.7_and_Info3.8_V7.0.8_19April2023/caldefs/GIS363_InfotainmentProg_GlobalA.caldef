@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="System" Description="Calibrations defined in GIS363 for Infotainment self programming">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10NOV14</Date>
+    <Description>Initial release of GIS-363 CalDef based on GIS-363 v5.2</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>18MAY15</Date>
+    <Description>Updated SigningCertificate CAL defaults.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2JUN16</Date>
+    <Description>Revised WAITING_ON_GMLAN and SigningCertificateSubject defaults</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS363_InfotainmentProg.caldef file to GIS363_InfotainmentProg_GlobalA.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef files that conatin Global A specific calibrations</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Used to determine if the park brake status needs to be included in vehicle state determination" Name="VehicleTransmissionType" References="GIS-363-7200" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_9IMDMHANEeSxfJQ8kHz6XA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_FbXhsHALEeScl-WC6VhZAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Programming completion to reset timer" Name="PROGRAMMING_COMPLETE" References="GIS-363-7100" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_CAMq0HV7EeSQW5y6o58B-A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waiting period if USB is taken out in the middle of installation" Name="WAITING_FOR_FILE" References="GIS-363-7100" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_2TZQAHV7EeSQW5y6o58B-A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waiting longer as USB taken out in the middle of installation" Name="WAITING_LONG_FOR_FILE" References="GIS-363-7100" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_D-T9UXV7EeSQW5y6o58B-A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>60</MinValue>
+      <MaxValue>600</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waiting this duration for response from CAN network" Name="WAITING_ON_GMLAN" References="GIS-363-7100" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_FRQL4XV7EeSQW5y6o58B-A</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2Jun16</Date>
+      <Description>Revised default to 200msec per S. Sarkar</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>20</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waits this duration for the user to park, if not parked" Name="WAITING_FOR_PARKING" References="GIS-363-7100" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_GOcz8XV7EeSQW5y6o58B-A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The size in Mega Bytes (MB) of the file that can be received by cllient and verified in RAM before committing to non-volatile memory" Name="MAX_OPERATIONAL_PROG_FILE_SIZE" References="GIS-363-7100" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_HLaygXV7EeSQW5y6o58B-A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>4000</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waits for this duration for user to consent" Name="CONSENT_PROCEED" References="GIS-363-7200" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_I7vgoXV7EeSQW5y6o58B-A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>11</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable or disable programming" Name="PROGRAMMING_ENABLED" References="GIS-363-7200" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_KQIgsHV7EeSQW5y6o58B-A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Issuer string of the signing certificate" Name="SigningCertificateIssuer" References="GIS-363-7200" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_LFn-QXV7EeSQW5y6o58B-A</CalID>
+    <Type>String</Type>
+    <Version>2</Version>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Subject field of the Code Signing Certificate" Name="SigningCertificateSubject" References="GIS-363-7200" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_MOfq0XV7EeSQW5y6o58B-A</CalID>
+    <Type>String</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2Jun16</Date>
+      <Description>Revised default per GIS-363 v5.4.4</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC</StringValue>
+    </String>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

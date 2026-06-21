@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.caltools.gm.com/enumdef" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.caltools.gm.com/enumdef">
+   <!-- Revision History
+  	Version		Date			Description									Author
+  	1.0		September 2013		Initial Release								Scott Rush
+  	1.1     October 2013        Corrected error in ChangeRecorType.Date		Scott Rush
+  								field that was set to xs:date instead of
+  								an xs:string.  The xs:date type was changed
+  								in the .caldef and .calovride schemas but
+  								was missed here.
+   	 -->
+     <xs:element name="EnumDefinitionFile">
+ 		<xs:complexType>
+ 			<xs:sequence>
+				<xs:element name="EnumDefFileVersion" type="VersionType"
+ 					maxOccurs="1" minOccurs="1">
+ 				</xs:element>
+ 				<xs:element name="EnumDefFileChangeRecord" type="ChangeRecordType"
+ 					maxOccurs="unbounded" minOccurs="0">
+ 				</xs:element>
+  				<xs:element name="EnumDefinition"
+ 					type="EnumDefinitionType" maxOccurs="unbounded" minOccurs="0">
+ 				</xs:element>
+   			</xs:sequence>
+     		<xs:attribute name="Description" type="xs:string" use="optional"></xs:attribute>
+ 		</xs:complexType>
+   </xs:element>
+
+   <xs:complexType name="ChangeRecordType">
+    	<xs:sequence>
+    		<xs:element name="Version" type="VersionType"></xs:element>
+    		<xs:element name="Date" type="xs:string"></xs:element>
+    		<xs:element name="Description" type="xs:string"></xs:element>
+    		<xs:element name="Author" type="xs:string"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="EnumDefinitionType">
+    	<xs:sequence>
+    		<xs:element name="EnumID" type="EnumIDType" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+  			<xs:element name="EnumDefinitionVersion" type="VersionType"
+    			maxOccurs="1" minOccurs="1">
+    		</xs:element>
+    		<xs:element name="EnumValueDefinition"
+    			type="EnumValueDefinitionType" maxOccurs="unbounded"
+    			minOccurs="1">
+    		</xs:element>
+    	</xs:sequence>
+    	<xs:attribute name="Name" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="Description" type="xs:string"></xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="EnumValueDefinitionType">
+     	<xs:sequence>
+   			<xs:element name="Value" type="EnumValueType"  maxOccurs="1" minOccurs="1"></xs:element>
+   		</xs:sequence>
+    	<xs:attribute name="Name" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="Description" type="xs:string"></xs:attribute>
+    </xs:complexType>
+    
+
+    <xs:simpleType name="EnumValueType">
+    	<xs:restriction base="xs:unsignedShort"></xs:restriction>
+    </xs:simpleType>
+
+   <xs:simpleType name="EnumIDType">
+    	<xs:restriction base="xs:string">
+    	</xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="VersionType">
+    	<xs:restriction base="xs:unsignedShort"></xs:restriction>
+    </xs:simpleType>
+ 
+ </xs:schema>

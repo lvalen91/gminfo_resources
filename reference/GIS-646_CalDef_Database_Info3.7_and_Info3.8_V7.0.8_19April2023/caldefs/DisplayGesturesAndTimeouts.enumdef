@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/24/2015</Date>
+    <Description>Just revised change history on ENABLE_REVEALONAPPROACH cal to just show it's applicable to GIS-500</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>7/10/2015</Date>
+    <Description>For the ENABLE_REVEALONAPPROACH enumeration CAL, updated the enumeration value for the MAP_ONLY enumeration from a value of 3 to 2, and removed Default (Value = $FF) from the enumeration selection list for this CAL since it's been confirmed this not needed.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="GIS-500" Name="ENABLE_REVEALONAPPROACH">
+    <EnumID>_yquoqk1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="OFF">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="ON">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="MAP_ONLY">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

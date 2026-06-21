@@ -1,0 +1,502 @@
+--------- beginning of main
+04-07 14:30:11.288  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:11.288  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:11.288  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:11.314  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:11.315  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 0)
+04-07 14:30:11.315  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 0)(Has Call Session : true)
+04-07 14:30:11.315  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:11.315  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:11.315  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:11.315  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:11.315  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:11.315  1154  2979 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:11.315  1154  2979 D SensorPrivacyService: onCallSessionStatus callSession: 0, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:11.316  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:11.316  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:11.316  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:11.316  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:11.316  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:11.316  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:11.317  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:11.317  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:13.155   387   387 W IPC     : IPC: IPC channel statistics:
+04-07 14:30:13.155   387   387 W IPC     : IPC: 	Flow control channel (FlowCtrol status: TX - XON RX - XON),  Msg cnt: rx 0 / tx 24 
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-2:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 7|0|2|12 / RX 320|0|5|1275 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-3:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1927|0|12|9679 / RX 57273|0|255|1955772 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-4:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 37257|0|39|450754 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-5:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 3|0|9|27 / RX 315|0|9|2835 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-6:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1|0|2|2 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-7:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 24|0|9|195 / RX 48|0|29|545 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-8:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 17|0|154|1175 / RX 16|0|2|32 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-9:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1|0|1|1 / RX 1|0|17|17 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-10:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.155   387   387 W IPC     : IPC: CH-11:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-12:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 2|0|4|7 : (XOFF|XON):TX 0|1 / RX 0|1
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-13:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 6|0|2|12 / RX 6|0|26|100 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-14:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 318|0|6|1895 / RX 2|0|14|28 : (XOFF|XON):TX 0|1 / RX 0|1
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-15:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-16:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 2|0|2|3 / RX 318|0|4|1268 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-17:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 305|0|8|2440 : (XOFF|XON):TX 0|1 / RX 0|1
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-18:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-19:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1|0|2|2 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.156   387   387 W IPC     : IPC: CH-20:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 104|0|256|13466 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:13.545  1328  1823 I java_diagnostics: DiagConnectedResourceAccessImpl.readLineFromFile(357)	Connected Diag: The path is /proc/stat	(pool-2-thread-1)
+04-07 14:30:13.567  1328  1823 I java_diagnostics: DiagConnectedResourceAccessImpl.readLineFromFile(357)	Connected Diag: The path is /proc/stat	(pool-2-thread-1)
+04-07 14:30:13.570  1328  1823 I java_diagnostics: DiagConnectedResourceAccessImpl.readLineFromFile(357)	Connected Diag: The path is /sys/class/thermal/thermal_zone0/temp	(pool-2-thread-1)
+04-07 14:30:13.572  1328  1823 I java_diagnostics: DiagConnectedResourceAccessImpl.updateData(259)	Connected Diag: CPU Usage is 22, CPU Index is 2; RAM Usage is 37, RAM Index is 3; Temperature is 37, Temperature Index is 4	(pool-2-thread-1)
+04-07 14:30:13.785  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:13.785  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 8)
+04-07 14:30:13.786  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 8)(Has Call Session : true)
+04-07 14:30:13.786  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:13.786  1154  2979 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:13.786  1154  2979 D SensorPrivacyService: onCallSessionStatus callSession: 8, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:13.787  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:13.787  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:13.787  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:13.787  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:13.786  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:13.787  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:13.787  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:13.787  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:13.787  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:13.788  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:13.788  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:13.788  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:14.131  1154  1391 D UsbDeviceDescriptor:   1 configs
+--------- beginning of system
+04-07 14:30:14.133  1154  1391 I ActivityManager: Broadcast intent Intent { act=android.hardware.usb.action.USB_DEVICE_ATTACHED flg=0x11000010 (has extras) } on foreground queue
+04-07 14:30:14.133  1154  1391 I ActivityManager: Broadcast intent Intent { act=android.hardware.usb.action.USB_DEVICE_ATTACHED flg=0x11000010 (has extras) } on foreground queue
+04-07 14:30:14.134  1154  1391 E UsbProfileGroupSettingsManager: Default USB handling package (android.car.usb.handler) not found  for user UserHandle{10}
+04-07 14:30:14.158  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.158  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.158   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.158   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.5/idProduct
+04-07 14:30:14.159   608   608 I Media_RDMService:: read file successful:length=5, [0105]
+04-07 14:30:14.159  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.159  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.159   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.159   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/idProduct
+04-07 14:30:14.159   608   608 I Media_RDMService:: read file successful:length=5, [1521]
+04-07 14:30:14.159  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.159  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.159   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.159   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/idVendor
+04-07 14:30:14.159   608   608 I Media_RDMService:: read file successful:length=5, [1314]
+04-07 14:30:14.160  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.160  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.161   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.161   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/serial
+04-07 14:30:14.162   608   608 I Media_RDMService:: read file successful:length=17, [0123456789FEDCBA]
+04-07 14:30:14.162  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.162  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.162   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.162   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/busnum
+04-07 14:30:14.162   608   608 I Media_RDMService:: read file successful:length=2, [1]
+04-07 14:30:14.162  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.163  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.163   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.163   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/devnum
+04-07 14:30:14.163   608   608 I Media_RDMService:: read file successful:length=3, [17]
+04-07 14:30:14.163  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.163  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.163   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.163   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/manufacturer
+04-07 14:30:14.163   608   608 I Media_RDMService:: read file successful:length=25, [Magic Communication Tec.]
+04-07 14:30:14.164  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.164  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.164   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.164   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/product
+04-07 14:30:14.164   608   608 I Media_RDMService:: read file successful:length=9, [Auto Box]
+04-07 14:30:14.166  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.166  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.166   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.166   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/busnum
+04-07 14:30:14.166   608   608 I Media_RDMService:: read file successful:length=2, [1]
+04-07 14:30:14.166  2411 13060 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:14.166  2411 13060 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:14.167   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:14.167   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4/devnum
+04-07 14:30:14.167   608   608 I Media_RDMService:: read file successful:length=2, [6]
+04-07 14:30:14.291  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:14.292  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 0)
+04-07 14:30:14.292  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 0)(Has Call Session : true)
+04-07 14:30:14.292  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:14.292  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:14.292  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:14.292  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:14.292  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:14.293  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 0, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:14.292  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:14.293  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:14.293  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:14.293  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:14.293  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:14.293  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:14.294  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:14.294  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:14.295  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:14.838  1154  1252 I ActivityManager: Broadcast intent Intent { act=android.os.action.POWER_SAVE_TEMP_WHITELIST_CHANGED flg=0x40000010 } on background queue
+04-07 14:30:15.480   775  1229 I GMLoggerService|Archiver: Creating compressed file:  /data/gmlogger/81-kernel.log_2026_4_7_14_30_15.gz
+04-07 14:30:15.656  2015  2115 D TransportRuntime.SQLiteEventStore: Storing event with priority=DEFAULT, name=GEO_VMS_SDK_COUNTERS for destination cct
+04-07 14:30:15.672  2015  2115 D TransportRuntime.JobInfoScheduler: Upload for context TransportContext(cct, DEFAULT, MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9mb3JtYXQ9anNvbl9wcm90bzNc) is already scheduled. Returning...
+04-07 14:30:15.685   775  1229 I GMLoggerService|Archiver: File compression successful.
+04-07 14:30:16.013 13078 13078 W cat     : type=1400 audit(0.0:97): avc: denied { read } for name="partitions" dev="proc" ino=4026532106 scontext=u:r:shell:s0 tcontext=u:object_r:proc:s0 tclass=file permissive=0
+04-07 14:30:16.072 13082 13082 W df      : type=1400 audit(0.0:98): avc: denied { getattr } for path="/metadata" dev="vda12" ino=2 scontext=u:r:shell:s0 tcontext=u:object_r:metadata_file:s0 tclass=dir permissive=0
+04-07 14:30:16.072 13082 13082 W df      : type=1400 audit(0.0:99): avc: denied { getattr } for path="/linkerconfig" dev="tmpfs" ino=9726 scontext=u:r:shell:s0 tcontext=u:object_r:linkerconfig_file:s0 tclass=dir permissive=0
+04-07 14:30:16.074 13082 13082 W df      : type=1400 audit(0.0:100): avc: denied { getattr } for path="/linkerconfig" dev="tmpfs" ino=9726 scontext=u:r:shell:s0 tcontext=u:object_r:linkerconfig_file:s0 tclass=dir permissive=0
+04-07 14:30:16.074 13082 13082 W df      : type=1400 audit(0.0:101): avc: denied { search } for name="vendor" dev="tmpfs" ino=9228 scontext=u:r:shell:s0 tcontext=u:object_r:mnt_vendor_file:s0 tclass=dir permissive=0
+04-07 14:30:16.074 13082 13082 W df      : type=1400 audit(0.0:102): avc: denied { search } for name="vendor" dev="tmpfs" ino=9228 scontext=u:r:shell:s0 tcontext=u:object_r:mnt_vendor_file:s0 tclass=dir permissive=0
+04-07 14:30:16.074 13082 13082 W df      : type=1400 audit(0.0:103): avc: denied { getattr } for path="/update_cache" dev="vda25" ino=2 scontext=u:r:shell:s0 tcontext=u:object_r:update_cache_file:s0 tclass=dir permissive=0
+04-07 14:30:16.074 13082 13082 W df      : type=1400 audit(0.0:104): avc: denied { search } for name="vendor" dev="tmpfs" ino=9228 scontext=u:r:shell:s0 tcontext=u:object_r:mnt_vendor_file:s0 tclass=dir permissive=0
+04-07 14:30:16.074 13082 13082 W df      : type=1400 audit(0.0:105): avc: denied { search } for name="vendor" dev="tmpfs" ino=9228 scontext=u:r:shell:s0 tcontext=u:object_r:mnt_vendor_file:s0 tclass=dir permissive=0
+04-07 14:30:16.785  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:16.787  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 8)
+04-07 14:30:16.787  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 8)(Has Call Session : true)
+04-07 14:30:16.788  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:16.788  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:16.788  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:16.788  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:16.788  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:16.788  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:16.788  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:16.788  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 8, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:16.788  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:16.788  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:16.789  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:16.789  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:16.789  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:16.789  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:16.790  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:17.161 13149 13149 W find    : type=1400 audit(0.0:328): avc: denied { getattr } for path="/system/lib64/bootstrap" dev="dm-6" ino=3065 scontext=u:r:shell:s0 tcontext=u:object_r:system_bootstrap_lib_file:s0 tclass=dir permissive=0
+04-07 14:30:17.251 13149 13149 W find    : type=1400 audit(0.0:329): avc: denied { getattr } for path="/system/etc/selinux/plat_hwservice_contexts" dev="dm-6" ino=1986 scontext=u:r:shell:s0 tcontext=u:object_r:hwservice_contexts_file:s0 tclass=file permissive=0
+04-07 14:30:17.251 13149 13149 W find    : type=1400 audit(0.0:330): avc: denied { getattr } for path="/system/etc/selinux/plat_mac_permissions.xml" dev="dm-6" ino=1988 scontext=u:r:shell:s0 tcontext=u:object_r:mac_perms_file:s0 tclass=file permissive=0
+04-07 14:30:17.252 13149 13149 W find    : type=1400 audit(0.0:331): avc: denied { getattr } for path="/system/bin/RDMS" dev="dm-6" ino=1201 scontext=u:r:shell:s0 tcontext=u:object_r:gm_carplay_exec:s0 tclass=file permissive=0
+04-07 14:30:17.252 13149 13149 W find    : type=1400 audit(0.0:332): avc: denied { getattr } for path="/system/bin/android.frameworks.automotive.display@1.0-service" dev="dm-6" ino=1208 scontext=u:r:shell:s0 tcontext=u:object_r:automotive_display_service_exec:s0 tclass=file permissive=0
+04-07 14:30:17.294  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:17.295  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 0)
+04-07 14:30:17.295  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 0)(Has Call Session : true)
+04-07 14:30:17.295  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:17.295  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:17.295  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 0, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:17.296  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:17.296  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:17.296  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:17.297  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:17.297  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:17.297  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:17.297  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:17.297  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:17.298  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:17.298  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:17.298  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:17.299  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:19.612  1154  1183 W ProcessCpuTracker: Failed to stat(/proc/13277): android.system.ErrnoException: stat failed: ENOENT (No such file or directory)
+04-07 14:30:19.612  1154  1183 W ProcessCpuTracker: Skipping unknown process pid 13277
+04-07 14:30:19.613  1154  1183 W ProcessCpuTracker: Failed to stat(/proc/13278): android.system.ErrnoException: stat failed: ENOENT (No such file or directory)
+04-07 14:30:19.613  1154  1183 W ProcessCpuTracker: Skipping unknown process pid 13278
+04-07 14:30:19.785  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:19.786  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 8)
+04-07 14:30:19.786  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 8)(Has Call Session : true)
+04-07 14:30:19.786  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:19.786  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:19.786  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:19.786  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:19.786  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:19.786  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 8, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:19.787  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:19.787  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:19.787  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:19.787  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:19.787  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:19.787  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:19.787  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:19.787  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:19.788  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:19.796  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:19.796  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 0)
+04-07 14:30:19.797  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 0)(Has Call Session : true)
+04-07 14:30:19.797  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:19.797  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:19.797  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:19.797  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:19.797  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:19.797  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 0, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:19.797  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:19.797  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:19.797  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:19.797  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:19.798  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:19.798  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:19.798  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:19.798  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:19.799  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:21.045   775  1229 I GMLoggerService|Archiver: Creating compressed file:  /data/gmlogger/82-kernel.log_2026_4_7_14_30_21.gz
+04-07 14:30:21.194   775  1229 I GMLoggerService|Archiver: File compression successful.
+04-07 14:30:22.918  3817 13388 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:22.919  3817 13388 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:22.919  3817 13388 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:22.920  3817 13388 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:22.920  3817 13388 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:22.923  3817 13388 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:23.162   387   387 W IPC     : IPC: IPC channel statistics:
+04-07 14:30:23.162   387   387 W IPC     : IPC: 	Flow control channel (FlowCtrol status: TX - XON RX - XON),  Msg cnt: rx 0 / tx 24 
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-2:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 7|0|2|12 / RX 330|0|5|1315 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-3:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1987|0|12|9979 / RX 59015|0|255|2017451 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-4:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 38436|0|39|465051 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-5:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 3|0|9|27 / RX 325|0|9|2925 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-6:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1|0|2|2 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-7:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 24|0|9|195 / RX 48|0|29|545 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-8:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 17|0|154|1175 / RX 16|0|2|32 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-9:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1|0|1|1 / RX 1|0|17|17 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-10:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-11:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-12:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 2|0|4|7 : (XOFF|XON):TX 0|1 / RX 0|1
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-13:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 6|0|2|12 / RX 6|0|26|100 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-14:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 328|0|6|1955 / RX 2|0|14|28 : (XOFF|XON):TX 0|1 / RX 0|1
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-15:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-16:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 2|0|2|3 / RX 328|0|4|1308 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-17:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 315|0|8|2520 : (XOFF|XON):TX 0|1 / RX 0|1
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-18:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-19:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 1|0|2|2 / RX 0|0|0|0 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.162   387   387 W IPC     : IPC: CH-20:(TX:XON RX:XON): Msgs(cnt|pend|size|nbytes): TX 0|0|0|0 / RX 104|0|256|13466 : (XOFF|XON):TX 0|1 / RX 0|0
+04-07 14:30:23.285  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:23.285  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 8)
+04-07 14:30:23.285  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 8)(Has Call Session : true)
+04-07 14:30:23.286  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:23.286  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 8, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:23.286  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:23.287  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:23.287  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:23.287  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:23.287  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:23.287  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:23.287  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:23.287  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:23.288  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:23.288  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:23.288  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:23.288  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:23.289  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:23.305  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:23.305  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 0)
+04-07 14:30:23.305  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 0)(Has Call Session : true)
+04-07 14:30:23.306  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:23.306  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:23.306  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 0, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:23.306  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:23.306  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:23.307  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:23.307  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:23.306  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:23.307  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:23.307  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:23.307  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:23.307  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:23.307  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:23.308  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:23.308  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:23.793  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{d3bc7aa #u10a74/291 com.android.statementservice/androidx.work.impl.background.systemjob.SystemJobService u=10 s=1010074 NET satisfied:0x3400000 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.793  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{9dc6828 #u10a74/0 com.android.statementservice/androidx.work.impl.background.systemjob.SystemJobService u=10 s=1010074 NET IDLE satisfied:0x3400000 unsatisfied:0x10000004} would not be ready.
+04-07 14:30:23.794  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{8d51bdd #u0a74/0 com.android.statementservice/androidx.work.impl.background.systemjob.SystemJobService u=0 s=10074 NET IDLE satisfied:0x3400000 unsatisfied:0x10000004} would not be ready.
+04-07 14:30:23.794  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{174f80d #u0a74/304 com.android.statementservice/androidx.work.impl.background.systemjob.SystemJobService u=0 s=10074 NET satisfied:0x3400000 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.795  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{f4f210c #1000/100001 com.google.android.gms.people/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 NET STORENOTLOW PERSISTED satisfied:0x3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.795  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{f131003 #1000/-1161878598 com.gm.vmsplugin/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService u=0 s=1000 TIME=-4m38s133ms:none NET satisfied:0x83400000 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.795  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{c42b213 #1000/100015 com.google.android.gms.games.background/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 TIME=-4m59s968ms:-4m59s968ms NET STORENOTLOW PERIODIC PERSISTED satisfied:0xc3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.795  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{c0aea55 #1000/100006 subscribedfeeds/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 NET STORENOTLOW PERSISTED satisfied:0x3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.795  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{bf1fb76 #1000/100008 com.google.android.gms.people/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 TIME=-4m59s968ms:-4m59s968ms NET STORENOTLOW PERIODIC PERSISTED satisfied:0xc3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.796  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{917555b #1000/100003 com.google.android.gms.games/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 NET STORENOTLOW PERSISTED satisfied:0x3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.796  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{80d35e4 #1000/100018 com.google.android.gms.games/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 TIME=-4m59s969ms:-4m59s969ms NET STORENOTLOW PERIODIC PERSISTED satisfied:0xc3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.796  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{6639a4d #1000/100017 com.google.android.location.reporting/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 TIME=-4m59s969ms:-4m59s969ms NET STORENOTLOW PERIODIC PERSISTED satisfied:0xc3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.796  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{5fa5902 #1000/100022 com.google.android.gms.reminders/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 TIME=-4m59s969ms:-4m59s969ms NET STORENOTLOW PERIODIC PERSISTED satisfied:0xc3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.796  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{590985e #1000/100004 com.google.android.gms.chromesync/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 NET STORENOTLOW PERSISTED satisfied:0x3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.797  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{3ea3577 #1000/100024 subscribedfeeds/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 TIME=-4m59s969ms:-4m59s969ms NET STORENOTLOW PERIODIC PERSISTED satisfied:0xc3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.797  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{3b1b43f #1000/100002 com.google.android.gms.games.background/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 NET STORENOTLOW PERSISTED satisfied:0x3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:23.797  1154  1154 I JobScheduler.Connectivity: evaluateStateLocked finds job JobStatus{55bde5 #1000/100005 com.google.android.gms.reminders/com.google/<EMAIL_REDACTED>:android u=0 s=1010107 NET STORENOTLOW PERSISTED satisfied:0x3400008 unsatisfied:0x10000000} would not be ready.
+04-07 14:30:25.270  1154  1391 I ActivityManager: Broadcast intent Intent { act=android.hardware.usb.action.USB_DEVICE_DETACHED flg=0x1000010 (has extras) } on background queue
+04-07 14:30:25.270  1154  1391 I ActivityManager: Broadcast intent Intent { act=android.hardware.usb.action.USB_DEVICE_DETACHED flg=0x1000010 (has extras) } on background queue
+04-07 14:30:25.785  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:25.786  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 8)
+04-07 14:30:25.786  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 8)(Has Call Session : true)
+04-07 14:30:25.787  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:25.787  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:25.787  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:25.787  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 8, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:25.787  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:25.787  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:25.787  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:25.787  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:25.787  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:25.788  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:25.788  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:25.788  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:25.788  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:25.788  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:25.788  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:26.297  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:26.297  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 0)
+04-07 14:30:26.298  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:26.298  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 0)(Has Call Session : true)
+04-07 14:30:26.299  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:26.299  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:26.299  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 0, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:26.299  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:26.299  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:26.299  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:26.299  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:26.299  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:26.299  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:26.300  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:26.300  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:26.300  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:26.300  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:26.300  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:26.641   775  1229 I GMLoggerService|Archiver: Creating compressed file:  /data/gmlogger/83-kernel.log_2026_4_7_14_30_26.gz
+04-07 14:30:26.831   775  1229 I GMLoggerService|Archiver: File compression successful.
+04-07 14:30:28.785  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:28.786  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 8)
+04-07 14:30:28.787  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 8)(Has Call Session : true)
+04-07 14:30:28.787  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:28.787  1154  1628 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:28.787  1154  1628 D SensorPrivacyService: onCallSessionStatus callSession: 8, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:28.787  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:28.787  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:28.787  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:28.788  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:28.788  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:28.788  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:28.788  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:28.788  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 8)
+04-07 14:30:28.789  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:28.789  1328  2944 D OnStarCallingService: getCallSession
+04-07 14:30:28.789  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:28.789  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:28.828  3817  3817 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:28.828  3817  3817 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:28.938  3817  3817 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:28.939  3817  3817 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:28.947  3405 10544 W CCTBackstopTask: Backstop checks have failed.
+04-07 14:30:28.952  1154  1391 D UsbDeviceDescriptor:   1 configs
+04-07 14:30:28.956  1154  1391 I ActivityManager: Broadcast intent Intent { act=android.hardware.usb.action.USB_DEVICE_ATTACHED flg=0x11000010 (has extras) } on foreground queue
+04-07 14:30:28.956  1154  1391 I ActivityManager: Broadcast intent Intent { act=android.hardware.usb.action.USB_DEVICE_ATTACHED flg=0x11000010 (has extras) } on foreground queue
+04-07 14:30:28.956  1154  1391 E UsbProfileGroupSettingsManager: Default USB handling package (android.car.usb.handler) not found  for user UserHandle{10}
+04-07 14:30:28.978  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.978  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.978   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.979   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.5/idProduct
+04-07 14:30:28.979   608   608 I Media_RDMService:: read file successful:length=5, [0105]
+04-07 14:30:28.979  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.979  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.979   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.979   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/idProduct
+04-07 14:30:28.980   608   608 I Media_RDMService:: read file successful:length=5, [1521]
+04-07 14:30:28.981  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.981  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.982   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.982   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/idVendor
+04-07 14:30:28.982   608   608 I Media_RDMService:: read file successful:length=5, [1314]
+04-07 14:30:28.982  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.982  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.983   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.983   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/serial
+04-07 14:30:28.983   608   608 I Media_RDMService:: read file successful:length=17, [0123456789FEDCBA]
+04-07 14:30:28.983  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.983  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.983   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.983   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/busnum
+04-07 14:30:28.983   608   608 I Media_RDMService:: read file successful:length=2, [1]
+04-07 14:30:28.984  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.984  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.984   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.984   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/devnum
+04-07 14:30:28.984   608   608 I Media_RDMService:: read file successful:length=3, [18]
+04-07 14:30:28.984  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.984  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.984   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.984   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/manufacturer
+04-07 14:30:28.984   608   608 I Media_RDMService:: read file successful:length=25, [Magic Communication Tec.]
+04-07 14:30:28.985  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.985  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.985   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.985   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/product
+04-07 14:30:28.985   608   608 I Media_RDMService:: read file successful:length=9, [Auto Box]
+04-07 14:30:28.987  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.987  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.987   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.987   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4.2/busnum
+04-07 14:30:28.987   608   608 I Media_RDMService:: read file successful:length=2, [1]
+04-07 14:30:28.989  2411 13479 I Media_RDMService:: RDMSJNI: readFile
+04-07 14:30:28.989  2411 13479 I Media_RDMService:: BpRDMService::readFile
+04-07 14:30:28.989   608   608 I Media_RDMService:: BnRDMService: READ_FILE
+04-07 14:30:28.989   608   608 I Media_RDMService:: read file: /sys/bus/usb/devices/1-1.4/devnum
+04-07 14:30:28.989   608   608 I Media_RDMService:: read file successful:length=2, [6]
+04-07 14:30:29.054   537 13480 D resolv  : GetAddrInfoHandler::run: {100 786532 100 983140 1010107 0}
+04-07 14:30:29.054   537 13480 D resolv  : resolv_getaddrinfo: explore_fqdn(): ai_family=2 ai_socktype=1 ai_protocol=6
+04-07 14:30:29.055   537 13481 D resolv  : doQuery: (1, 1)
+04-07 14:30:29.055   537 13481 D resolv  : res_nmkquery: (QUERY, IN, A)
+04-07 14:30:29.055   537 13481 D resolv  : res_nsend
+04-07 14:30:29.055   537 13481 I resolv  : resolv_cache_lookup: lookup
+04-07 14:30:29.055   537 13481 I resolv  : resolv_cache_lookup: NOT IN CACHE (STALE ENTRY 0x711d9d2c0730DISCARDED)
+04-07 14:30:29.055   537 13481 I resolv  : _cache_remove_p: entry 16 removed (count=12)
+04-07 14:30:29.055   537 13481 I resolv  : resolv_populate_res_for_net: netid=100
+04-07 14:30:29.055   537 13481 I resolv  : res_stats_usable_server: NS stats: S 19 + E 0 + T 0 + I 0 = 19, rtt = 89, min_samples = 8
+04-07 14:30:29.055   537 13481 I resolv  : res_stats_usable_server: success rate 100
+04-07 14:30:29.055   537 13481 D resolv  : res_nsend: Querying server (# 1) address = 192.168.1.102:53
+04-07 14:30:29.056   537 13481 D resolv  : send_dg: new DG socket
+04-07 14:30:29.056   537 13481 I resolv  : get_timeout: using timeout of 5000 msec
+04-07 14:30:29.056   537 13481 I resolv  : retrying_poll: 54 retrying_poll
+04-07 14:30:29.173   537 13481 I resolv  : retrying_poll: 54 retrying_poll returning 1
+04-07 14:30:29.173   537 13481 I resolv  : res_nsend: used send_dg 101 terrno: 0
+04-07 14:30:29.173   537 13481 I resolv  : res_stats_set_sample: rcode = 0, sec = 117
+04-07 14:30:29.173   537 13481 I resolv  : res_cache_add_stats_sample_locked: adding sample to stats, next = 19, count = 19
+04-07 14:30:29.173   537 13481 D resolv  : res_nsend: got answer:
+04-07 14:30:29.173   537 13481 I resolv  : answer_getTTL: TTL = 263
+04-07 14:30:29.173   537 13481 I resolv  : _cache_add_p: entry 20 added (count=13)
+04-07 14:30:29.173   537 13481 I resolv  : cache_dump_mru_locked: MRU LIST (13):  20 19 10 17 18 6 12 15 14 13 8 11 7
+04-07 14:30:29.173   537 13481 D resolv  : doQuery: rcode=0, ancount=4
+04-07 14:30:29.214  2302  6943 W CCTBackstopTask: Backstop checks have failed.
+04-07 14:30:29.256   537 13482 D resolv  : GetAddrInfoHandler::run: {100 786532 100 983140 10107 0}
+04-07 14:30:29.256   537 13482 D resolv  : resolv_getaddrinfo: explore_fqdn(): ai_family=2 ai_socktype=1 ai_protocol=6
+04-07 14:30:29.257   537 13483 D resolv  : doQuery: (1, 1)
+04-07 14:30:29.257   537 13483 D resolv  : res_nmkquery: (QUERY, IN, A)
+04-07 14:30:29.257   537 13483 D resolv  : res_nsend
+04-07 14:30:29.257   537 13483 I resolv  : resolv_cache_lookup: lookup
+04-07 14:30:29.257   537 13483 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0x711d9d2c0730
+04-07 14:30:29.257   537 13483 D resolv  : doQuery: rcode=0, ancount=4
+04-07 14:30:29.295  1328  1864 D nfsa.client.invoke: /192.168.1.102:9005: fire CallSession(2271) Status
+04-07 14:30:29.295  1328  1875 D gm.onstar: IOnStarPhoneFSAClientListener->onCallSessionStatus->(Call Session Type : 0)
+04-07 14:30:29.296  1328  1875 D gm.onstar: IOnStarCallingServiceEvents->onCallSessionStatus->NOT HANDLED->(Call Session : 0)(Has Call Session : true)
+04-07 14:30:29.296  1327  1343 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:29.296  2651  2749 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:29.296  2348  2997 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:29.296  1393  1420 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:29.296  1393  1420 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:29.296  2370  3144 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:29.297  1154  1169 D OnStar.OnStarCallingManager: Event->onCallSessionStatus->(Call Session : 0)
+04-07 14:30:29.297  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:29.297  1154  1169 D SensorPrivacyService: onCallSessionStatus callSession: 0, hasCallSession: true, mIsEmergencyCallOnStatus: false
+04-07 14:30:29.297  2370  2370 D OnStar.OnStarCallingManager: getCallSession
+04-07 14:30:29.297  1393  1420 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:29.297  1328  2944 D OnStarCallingService: getCallState
+04-07 14:30:29.298  1328  1642 D OnStarCallingService: getCallSession
+04-07 14:30:29.298  2370  2370 D OnStar.OnStarCallingManager: getCallState
+04-07 14:30:29.299  1328  1642 D OnStarCallingService: getCallState
+04-07 14:30:29.410  3405  4630 E chromium: [0407/143029.410090:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:29.465  2302  4127 E chromium: [0407/143029.465477:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:29.500  3817  3817 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:29.500  3817  3817 W ProxyAndroidLoggerBackend: Too many Flogger logs received before configuration. Dropping old logs.
+04-07 14:30:29.606  3405  4630 E chromium: [0407/143029.605971:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:29.639  3405  4630 E chromium: [0407/143029.639282:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:29.659  2302  4127 E chromium: [0407/143029.659129:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:29.709  2302  4127 E chromium: [0407/143029.709558:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:29.837  3405  4630 E chromium: [0407/143029.837597:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:29.934  2302  4127 E chromium: [0407/143029.934219:ERROR:ssl_client_socket_impl.cc(877)] handshake failed; returned -1, SSL error code 1, net_error -100
+04-07 14:30:31.015   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=android.service.gatekeeper.IGateKeeperService scontext=u:r:shell:s0 tcontext=u:object_r:gatekeeper_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.031   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=dnsresolver scontext=u:r:shell:s0 tcontext=u:object_r:dnsresolver_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.045   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=incident scontext=u:r:shell:s0 tcontext=u:object_r:incident_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.048   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=installd scontext=u:r:shell:s0 tcontext=u:object_r:installd_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.066   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=netd scontext=u:r:shell:s0 tcontext=u:object_r:netd_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.100   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=suspend_control scontext=u:r:shell:s0 tcontext=u:object_r:system_suspend_control_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.100   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=suspend_control_internal scontext=u:r:shell:s0 tcontext=u:object_r:system_suspend_control_internal_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.113   225   225 E SELinux : avc:  denied  { find } for pid=13503 uid=2000 name=vold scontext=u:r:shell:s0 tcontext=u:object_r:vold_service:s0 tclass=service_manager permissive=0
+04-07 14:30:31.357  1372  1382 I com.android.ca: Background young concurrent copying GC freed 203082(5988KB) AllocSpace objects, 22(736KB) LOS objects, 30% free, 11MB/16MB, paused 1.188ms,33us total 105.099ms

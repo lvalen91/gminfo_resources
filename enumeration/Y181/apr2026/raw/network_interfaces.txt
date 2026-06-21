@@ -1,0 +1,51 @@
+vlan5     Link encap:UNSPEC  
+          inet addr:192.168.1.100  Bcast:255.255.255.255  Mask:255.255.255.0 
+          inet6 addr: fe80::4:ff:fe00:100/64 Scope: Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:2181 errors:0 dropped:0 overruns:0 frame:0 
+          TX packets:2710 errors:0 dropped:0 overruns:0 carrier:0 
+          collisions:0 txqueuelen:1000 
+          RX bytes:141495 TX bytes:428226 
+
+eth0      Link encap:UNSPEC    Driver igb_avb
+          inet addr:192.168.1.100  Bcast:192.168.1.255  Mask:255.255.255.0 
+          inet6 addr: fe80::4:ff:fe00:100/64 Scope: Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:180769 errors:0 dropped:0 overruns:1 frame:0 
+          TX packets:167436 errors:0 dropped:0 overruns:0 carrier:0 
+          collisions:0 txqueuelen:1000 
+          RX bytes:30825512 TX bytes:29396118 
+
+lo        Link encap:UNSPEC  
+          inet addr:127.0.0.1  Mask:255.0.0.0 
+          inet6 addr: ::1/128 Scope: Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:367 errors:0 dropped:0 overruns:0 frame:0 
+          TX packets:367 errors:0 dropped:0 overruns:0 carrier:0 
+          collisions:0 txqueuelen:1000 
+          RX bytes:22903 TX bytes:22903 
+
+vlan4     Link encap:UNSPEC  
+          inet addr:172.16.4.100  Bcast:255.255.255.255  Mask:255.255.255.0 
+          inet6 addr: fe80::4:ff:fe00:100/64 Scope: Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:16751 errors:0 dropped:0 overruns:0 frame:0 
+          TX packets:818 errors:0 dropped:0 overruns:0 carrier:0 
+          collisions:0 txqueuelen:1000 
+          RX bytes:1645284 TX bytes:46144 
+
+wlan0     Link encap:UNSPEC  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0 
+          TX packets:0 errors:0 dropped:2 overruns:0 carrier:0 
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 TX bytes:0 
+
+dummy0    Link encap:UNSPEC  
+          inet6 addr: fe80::708e:a7ff:fe0c:71d7/64 Scope: Link
+          UP BROADCAST RUNNING NOARP  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0 
+          TX packets:15 errors:0 dropped:0 overruns:0 carrier:0 
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 TX bytes:1294 
+

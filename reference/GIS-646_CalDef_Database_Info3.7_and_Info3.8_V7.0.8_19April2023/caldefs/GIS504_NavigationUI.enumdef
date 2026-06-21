@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="For displaying appropriate ordering of dealer locations" Name="CarBrand">
+    <EnumID>_-y_CgN8mEeSAdoeK2ksMLw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Chevrolet" Name="CarBrand_Chevy">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Cadillac" Name="CarBrand_Cadillac">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GMC" Name="CarBrand_GMC">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Buick" Name="CarBrand_Buick">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Opel" Name="CarBrand_Opel">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Holden" Name="CarBrand_Holden">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Vauxhaull" Name="CarBrand_Vauxhaull">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Other" Name="CarBrand_other">
+      <Value>7</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="For showing proper type of fuel for Gas Station POIs" Name="FuelType">
+    <EnumID>_1nzsYN8mEeSAdoeK2ksMLw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Unleaded" Name="FuelType_Unleaded">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Diesel" Name="FuelType_Diesel">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Electric vehicle" Name="FuelType_EV">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

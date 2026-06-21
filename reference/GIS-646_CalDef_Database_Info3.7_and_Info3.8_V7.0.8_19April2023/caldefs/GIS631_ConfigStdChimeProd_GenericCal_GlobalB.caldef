@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="Chime" Description="Collection of the general calibrations for the Global B Chime Producer Subsystem.  Also referenced by GIS-604 for Global A Info3 usages.">
+  <CalDefFileVersion>10</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>01NOV2013</Date>
+    <Description>Initial Release</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>28JAN2014</Date>
+    <Description>Added K_TURN_SIGNAL_LEVEL_DB calibration for both Global B and Global A Info3.  This cal was missing from all of Info3 specifications and is needed to implement the turn-signal click-clack fixed level functionality.</Description>
+    <Author>Dominic Collela</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>28JAN2014</Date>
+    <Description>Added K_REAR_CHIME_BOOST calibration.  This cal had been ref</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Scott Rush</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated K_DRIVER_POSITION, K_DEFAULT_CHIME_THEME, K_TURN_SIGNAL_LEVEL_DB and K_REAR_CHIME_BOOST cals in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>4/28/15</Date>
+    <Description>Per request from Sanghyun Ryu added usage of Low Radio back in for three cals ( 1. K_DRIVER_POSITION, 2. K_TURN_SIGNAL_LEVEL_DB, and 3. K_REAR_CHIME_BOOST) in this caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS631_ConfigStdChimeProd_GenericCal.caldef file to GIS631_ConfigStdChimeProd_GenericCal_GlobalB.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef files that conatin Global B specific calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>23MAY2017</Date>
+    <Description>Updated &quot;Usage&quot; field to support new &quot;Global A/Global B&quot; categorization.</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS631_ConfigStdChimeProd_GenericCal_GlobalB.caldef, added GEM usage to the following three calibrations in this caldef: 1.)  K_DRIVER_POSITION, 2.) K_TURN_SIGNAL_LEVEL_DB, and 3.) K_REAR_CHIME_BOOST. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>23JAN2018</Date>
+    <Description>Per CR 1629546 added the new enum - K Valid Chime Locations</Description>
+    <Author>S Kolachalama</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description=" calibration and requirements to ensure chime audio is heard by the available speakers in the vehicle" Name="K_VALID_CHIME_LOCATIONS" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_TBENgACAEeilUYhcBNABVA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>23JAN2018</Date>
+      <Description>Initial Release </Description>
+      <Author>S Kolachalama</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_Y99fMAB_EeilUYhcBNABVA</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Used to determine driver position." Name="K_DRIVER_POSITION" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_IjO0EDK1EeOTaf4sNtLf_w</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated K_DRIVER_POSITION cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/28/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated K_DRIVER_POSITION cal to add usage of Low Radio back in for this cal.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>23MAY2017</Date>
+      <Description>Updated &quot;Usage&quot; field to support new &quot;Global A/Global B&quot; categorization.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_xkPIwDK0EeOTaf4sNtLf_w</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="A calibration that specifies which Chime Theme location to use as the Chime Subsystem default theme. " Name="K_DEFAULT_CHIME_THEME" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_mh-fwDK1EeOTaf4sNtLf_w</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated K_DEFAULT_CHIME_THEME cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>23MAY2017</Date>
+      <Description>Updated &quot;Usage&quot; field to support new &quot;Global A/Global B&quot; categorization.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_V6DEMDK1EeOTaf4sNtLf_w</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This is the fixed level of the turn-signal ('click-clack') sound per GIS-604." Name="K_TURN_SIGNAL_LEVEL_DB" References="GIS-604-735 and GIS-631" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Trd-4YhLEeO2nca4zzuiVA</CalID>
+    <Type>Float</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>28JAN2014</Date>
+      <Description>Added in revision 2 of the caldef coincident with Revision 1.1 of GIS-604</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated K_TURN_SIGNAL_LEVEL_DB cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/28/15</Date>
+      <Description>Per request from Sanghyun Ryu updated K_TURN_SIGNAL_LEVEL_DB cal to add usage of Low Radio back in for this cal.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>23MAY2017</Date>
+      <Description>Updated &quot;Usage&quot; field to support new &quot;Global A/Global B&quot; categorization.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>-40.0</Value>
+      <MinValue>-127.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="This is the boost of the rear chime speaker outputs as defined in both GIS-604 and GIS-631." Name="K_REAR_CHIME_BOOST" References="GIS-604-570 and GIS-631" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_1xmJ8Ig7EeO2nca4zzuiVA</CalID>
+    <Type>Float</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>28JAN2014</Date>
+      <Description>Added in revision 2 of the caldef coincident with Revision 1.1 of GIS-604</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated K_REAR_CHIME_BOOST cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>4/28/15</Date>
+      <Description>Per request from Sanghyun Ryu updated K_REAR_CHIME_BOOST cal to add usage of Low Radio back in for this cal.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>23MAY2017</Date>
+      <Description>Updated &quot;Usage&quot; field to support new &quot;Global A/Global B&quot; categorization.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>6.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>18.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

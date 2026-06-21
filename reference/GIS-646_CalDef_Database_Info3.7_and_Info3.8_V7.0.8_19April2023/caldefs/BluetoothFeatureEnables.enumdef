@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/19/2015</Date>
+    <Description>Updated MICROPHONE_1_CONFIG  to remove ANALOG_PASSTHROUGH_SINGLE_ENDED and MOST_PASSTHROUGH as there no longer needed settings. Also updated the naming convention for the following the two setttings names from ANALOG_PASSTHROUGH_DIFFERENTIAL to ANALOG_PASSTHROUGH_DIFFERENTIAL_FROM_TCP, and the setting previously called ANALOG_BALANCED_WITH_PHANTOM_VOLTAGE to ANALOG_DIRECT_CONNECT_TO_CSM for clarity of actual function.  And, removed MICROPHONE_2_CONFIG since Mic 2 can be set up as boolean type cal instead of enum type cal. Added ANC_MIC_CONFIG enum, and removed PHONE_SUPPORT enum as it was confirmed not to be needed.</Description>
+    <Author>Bassam Shahmurad</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="ANC_MIC_CONFIG">
+    <EnumID>_T8628LiWEeS-LYW3rxjCRA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="ANC Microphone Disabled" Name="DISABLED">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enable left front ANC_MIC" Name="LEFT_FRONT">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enable right front ANC_MIC" Name="RIGHT_FRONT">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enable left rear ANC_MIC" Name="LEFT_REAR">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enable right rear ANC_MIC" Name="RIGHT_REAR">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enable center ANC_MIC" Name="CENTER">
+      <Value>5</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Name="MICROPHONE_1_CONFIG">
+    <EnumID>_yrQ0LE1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Microphone 1 input disabled" Name="DISABLED">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Microphone 1 input from TCP" Name="ANALOG_PASSTHROUGH_DIFFERENTIAL_FROM_TCP">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Microphone 1 input to CSM" Name="ANALOG_DIRECT_CONNECT_TO_CSM">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,3 @@
+COMMAND: cat /proc/partitions
+RESULT: cat: /proc/partitions: Permission denied
+---

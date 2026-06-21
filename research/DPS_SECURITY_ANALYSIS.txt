@@ -1,0 +1,492 @@
+================================================================================
+DPS (DEVELOPMENT PROGRAMMING SYSTEM) SECURITY ANALYSIS
+================================================================================
+Created: December 28, 2025
+Purpose: Evaluate DPS capabilities for security feature manipulation
+Target:  GM Infotainment 3 (gminfo3.7/3.8) CSM Module
+================================================================================
+
+EXECUTIVE SUMMARY
+-----------------
+DPS is designed for authorized ECU programming within GM's security framework.
+Without signing keys or SBAT server access, DPS has LIMITED utility for
+disabling security features. The critical ADB/debug EEPROM flags exist in a
+memory region NOT accessible via DPS calibration paths.
+
+================================================================================
+SECTION 1: DPS ARCHITECTURE
+================================================================================
+
+1.1 COMMUNICATION PATH
+----------------------
+                    +-------------+
+                    |   DPS PC    |
+                    | (Windows)   |
+                    +------+------+
+                           |
+                    +------v------+
+                    | J2534 Pass- |
+                    | Thru Device |
+                    +------+------+
+                           |
+            +--------------v--------------+
+            |     CAN/GMLAN Network       |
+            +-------------+---------------+
+                          |
+         +----------------v-----------------+
+         |        VIP MCU (RH850)           |
+         |   +---------------------------+  |
+         |   | UDS Protocol Handler      |  |
+         |   +---------------------------+  |
+         |   | Module Flash Manager      |  |
+         |   +---------------------------+  |
+         |   | Calibration Handler       |  |
+         |   +---------------------------+  |
+         +----------------+-----------------+
+                          |
+         +----------------v-----------------+
+         |       Target Memory Regions      |
+         | +-------------+ +-------------+  |
+         | | Module Flash| | I2C EEPROM  |  |
+         | | (via UDS)   | | (Direct)    |  |
+         | +-------------+ +-------------+  |
+         +----------------------------------+
+
+1.2 DPS DATA FLOW FOR CALIBRATION
+---------------------------------
+1. DPS loads calibration file (.cfx)
+2. File associated with Module ID (Blob ID mapping)
+3. UDS Request Download (Service $34) to VIP
+4. VIP authenticates via SecurityAccess (Service $27)
+5. Data transferred via Transfer Data (Service $36)
+6. VIP writes to designated Module flash region
+7. Transfer Exit (Service $37) completes operation
+
+1.3 EEPROM DATA FLOW (NOT VIA DPS)
+----------------------------------
+1. VIP firmware reads/writes I2C bus directly
+2. M24C64 EEPROM at I2C address 0x50
+3. No UDS/CAN involvement
+4. Raw address access (0x0000-0x1FFF)
+
+KEY INSIGHT: These are fundamentally different paths. DPS cannot reach
+             raw EEPROM addresses because there's no UDS mapping for them.
+
+================================================================================
+SECTION 2: DPS FILE TYPES AND CAPABILITIES
+================================================================================
+
+2.1 UTILITY FILES (Blob ID: 0)
+------------------------------
+Extension:  .dll (despite name, not Windows DLL)
+Purpose:    Contains interpreter opcodes for update process
+Location:   SPSToolBridge.LOG references as "Blob ID: 0"
+
+Example from log:
+  Blob name: 10011000.dll, Blob ID: 0, Blob Size: 234283
+
+Structure (suspected):
+  [Header]           - Version, target info
+  [Interpreter Code] - Op-codes for update sequence
+  [ECU Routines]     - Module-specific operations
+
+RESEARCH QUESTION: Could custom utility file include EEPROM write opcodes?
+
+2.2 CALIBRATION FILES (Various Blob IDs)
+----------------------------------------
+Extension:  .cfx
+Purpose:    Configuration/calibration data for specific modules
+Example:    Blob name: 10000001.cfx, Blob ID: 1, Blob Size: 124
+
+These map to specific Module IDs and write to predefined memory regions
+within that module's address space.
+
+2.3 UPDATE MANIFESTS
+--------------------
+Extension:  .mnf
+Purpose:    Script controlling update sequence
+Contains:   gmext.* function calls for partition operations
+
+Key functions observed:
+  gmext.write_emmc_image()
+  gmext.extract_emmc_image()
+  gmext.extract_logical_partition()
+  gmext.update_ecu()
+  gmext.switch_slot()
+
+2.4 SIGNATURE FILES
+-------------------
+Extension:  .smd
+Purpose:    Cryptographic signatures for package validation
+
+================================================================================
+SECTION 3: CALDEF DATABASE ANALYSIS
+================================================================================
+
+The CalDef database (GIS-646 v7.0.8) defines calibration parameters but
+does NOT directly enable modification. It's a specification, not a tool.
+
+3.1 SECURITY-RELEVANT CALIBRATIONS IDENTIFIED
+----------------------------------------------
+
+DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE (SFS2)
+  Type:    Boolean
+  Default: FALSE
+  Effect:  Bypasses MEC (Manufacturing Enable Counter) checks
+  IF SET TRUE: Device registration proceeds regardless of MEC state
+
+  RESEARCH: Find which Module ID contains this calibration
+            Test if DPS can modify via calibration file
+
+GIS763_PROGRAMMING_ENABLED (GIS763)
+  Type:    Boolean
+  Default: TRUE
+  Effect:  Master programming enable switch
+
+  RESEARCH: If set FALSE, would it block all programming?
+
+EXPIRATION_ENFORCEMENT (SFS2)
+  Type:    Boolean
+  Default: TRUE
+  Effect:  Certificate expiration validation
+
+  RESEARCH: If set FALSE, would it accept expired certificates?
+
+3.2 CALDEF STRUCTURE
+--------------------
+Each calibration has:
+  - CalID (unique identifier)
+  - Type (Boolean, Integer, String, Enumeration)
+  - Default value
+  - Reference (GIS specification)
+  - Usage (LOW, MID, HIGH, GLOBALA, GLOBALB, VCU, etc.)
+
+The "Usage" field indicates which vehicle/radio tiers use the calibration,
+NOT which Module ID contains it.
+
+3.3 CALDEF LIMITATIONS
+----------------------
+- CalDef files define WHAT calibrations exist
+- They do NOT tell us:
+  - Which Module ID contains each calibration
+  - Binary format of calibration storage
+  - How to create valid .cfx files
+  - Whether calibrations are signed
+
+================================================================================
+SECTION 4: SECURITY ACCESS (SERVICE $27)
+================================================================================
+
+4.1 SEED-KEY MECHANISM
+----------------------
+UDS SecurityAccess sequence:
+1. Tester sends: $27 $01 (Request Seed, Level 1)
+2. ECU responds: $67 $01 [Seed bytes]
+3. Tester calculates Key from Seed using algorithm
+4. Tester sends: $27 $02 [Key bytes]
+5. ECU validates Key
+6. If valid: $67 $02 (Positive response, unlocked)
+   If invalid: $7F $27 $35 (Invalid Key NRC)
+
+4.2 SECURITY LEVELS
+-------------------
+Level 1/2:   Basic diagnostics
+Level 3/4:   Extended diagnostics
+Level 5/6:   Calibration access
+Level 7+:    Programming/reflash
+
+Each level requires different algorithm or key derivation.
+
+4.3 ALGORITHM STATUS
+--------------------
+GM uses proprietary seed-key algorithms. Status:
+  - No public algorithm documentation
+  - DPS relies on GM backend for key calculation
+  - Standalone DPS cannot unlock without GM connection
+
+4.3.1 SEED FORMAT DISCOVERY (December 2025)
+-------------------------------------------
+Analysis of DPS logs revealed the complete 32-byte seed structure:
+
+NORMAL STATE (Y177update_CSM.Txt - security active):
+  Response: 67 01 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC
+                  6F 52 95 6C BB B0 78 A1 90 53 99 B8 B5 71 93
+
+  Structure:
+    Bytes 0-15:  ECUID (fixed device identifier)
+    Bytes 16-31: Random Challenge (changes each request)
+
+  ECUID = $004B41DC0000160006104145610114AC
+
+BYPASSED STATE (A11_CSM_x80.Txt - EEPROM modified):
+  Response: 67 01 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+                  FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+
+  All 32 bytes return 0xFF when EEPROM bypass is active.
+  This is a clear indicator the VIP is NOT performing real security.
+
+MEC COUNTER OBSERVATIONS:
+  - Normal state (Y177): MEC = 0 (development/unlocked)
+  - Bypassed state:      MEC = 244 (production/locked)
+
+ALGORITHM RESEARCH INSIGHT:
+  The seed-key algorithm must:
+  1. Process the 16-byte ECUID as a fixed device identifier
+  2. Apply cryptographic transformation to 16-byte random challenge
+  3. Produce correct 32-byte response key
+
+  Having ECUID + multiple Challenge samples could enable algorithm RE.
+
+4.4 PROTOKEY (VIP-BCM SEED EXCHANGE)
+------------------------------------
+PROTOKEY is a separate seed-key system for ADB authentication:
+
+1. SoC requests ADB access via IPC to VIP
+2. VIP sends GMLAN message to BCM requesting seeds
+3. BCM responds with 8-byte seed values (Seed 0, 1, 2)
+4. VIP calculates expected key
+5. VIP returns authentication status to SoC
+
+On bench (no BCM):
+  Seeds return as: 00 00 00 00 00 00 00 00
+  Checksum: 524289 (0x80001) - error indication
+  Status: 3 (authentication failed)
+
+EEPROM bypass (0x0440 = 5A FF 5A) skips this exchange entirely.
+
+================================================================================
+SECTION 5: SBAT (SECURITY BYPASS AUTHORIZATION TICKETS)
+================================================================================
+
+5.1 SBAT OVERVIEW
+-----------------
+Purpose:     Authorized temporary security bypass
+Issuer:      GM Cyber SBAT Ticket Server
+Duration:    Time-limited (typically 24 hours)
+Scope:       Specific ECU and operation
+
+5.2 SBAT WORKFLOW
+-----------------
+1. Technician requests bypass via GM tool
+2. Request sent to GM SBAT server with:
+   - Dealer credentials
+   - ECU identification
+   - Requested operation
+3. Server validates request
+4. Server issues encrypted ticket
+5. Ticket loaded to ECU
+6. ECU enters bypass mode for duration
+
+5.3 SBAT INDICATORS (from DPS User Guide)
+-----------------------------------------
+SBI (Security Bypass Indicator) values:
+  $4444 = Bypass Inactive (normal production)
+  $0080 = Bypass Active (authorized bypass)
+
+5.4 SBAT LIMITATIONS FOR RESEARCH
+---------------------------------
+- Requires valid GM dealer credentials
+- Server validates against vehicle database
+- Cannot forge tickets without server keys
+- Tickets are ECU-specific (VIN bound)
+
+================================================================================
+SECTION 6: DOWNGRADE ATTACK VECTOR
+================================================================================
+
+6.1 VERSION CHECK STATUS
+------------------------
+From Y181 manifest (86331663.mnf):
+  ui_print("version check disabled")
+
+This means:
+  - No firmware version comparison during update
+  - Older firmware can be flashed
+  - Y177 (SELinux permissive) could potentially replace Y181
+
+6.2 POTENTIAL BLOCKERS
+----------------------
+1. AVB Rollback Index
+   - Verified Boot tracks rollback counter
+   - May prevent booting older firmware
+   - Status: UNKNOWN - requires testing
+
+2. VIP Version Check
+   - VIP may reject downgrade independently
+   - Could check internal version counter
+   - Status: UNKNOWN - requires testing
+
+3. Partition Compatibility
+   - Dynamic partition sizes may differ
+   - May cause boot failures
+   - Status: UNKNOWN - requires testing
+
+6.3 DOWNGRADE TEST PROCEDURE
+----------------------------
+1. Create DPS archive from Y177 update package:
+   - Copy Y177 files to staging directory
+   - Create Vit2File.vit with correct references
+   - Package with appropriate manifest
+
+2. Flash using DPS:
+   - Connect via J2534
+   - Select custom archive
+   - Execute programming sequence
+
+3. Verify result:
+   - Check getenforce output
+   - Verify SELinux mode
+   - Test ADB access
+
+================================================================================
+SECTION 7: DPS VERDICT - CAN IT DISABLE SECURITY?
+================================================================================
+
+7.1 DEFINITIVE NO
+-----------------
+DPS CANNOT directly disable these security features:
+
+1. ADB Authentication (EEPROM 0x0440/0x0A80)
+   - These addresses not in any Module calibration space
+   - No UDS mapping exists
+   - Requires physical I2C access
+
+2. AVB (Android Verified Boot)
+   - Partitions are cryptographically signed
+   - DPS cannot produce valid signatures
+   - Requires Google/GM signing keys
+
+3. SELinux Mode (in Y181)
+   - Controlled by init.rc in system partition
+   - System partition is AVB protected
+   - Cannot modify without breaking boot
+
+7.2 MAYBE/CONDITIONAL
+---------------------
+DPS MIGHT help with:
+
+1. Firmware Downgrade
+   - Version check disabled
+   - If AVB rollback allows, Y177 could be flashed
+   - Would restore SELinux permissive
+   - REQUIRES: Downgrade test
+
+2. Calibration Modification
+   - If security calibrations are in unsigned Module
+   - If we identify correct Module ID
+   - If .cfx format can be reverse engineered
+   - REQUIRES: Module mapping research
+
+3. Custom Utility Files
+   - If utility files are not signed
+   - If opcode format is documented
+   - If EEPROM write opcodes exist
+   - REQUIRES: Utility file RE
+
+7.3 RECOMMENDED APPROACH
+------------------------
+Given DPS limitations, optimal strategy:
+
+PRIMARY PATH (proven):
+  Physical EEPROM modification for ADB bypass
+
+SECONDARY PATH (if downgrade works):
+  Y177 flash via DPS -> SELinux permissive -> Explore further
+
+RESEARCH PATH:
+  1. Test Y177 downgrade feasibility
+  2. Map CalDef entries to Module IDs
+  3. Analyze utility file format
+  4. Monitor SBAT ecosystem for vulnerabilities
+
+================================================================================
+SECTION 8: PRACTICAL DPS USAGE
+================================================================================
+
+8.1 READING ECU STATE
+---------------------
+DPS "Get Controller Info" can read:
+
+DID $90 (0x90): VIN
+DID $98 (0x98): Repair Shop Code/Date
+DID $99 (0x99): Programming Date
+DID $B4 (0xB4): Traceability (part numbers, build info)
+DID $F0 (0xF0): Secure Programming Data
+  - PSI (Programming Support Information)
+  - PEC (Programming Error Code)
+  - BIS (Boot Status)
+  - SBI (Security Bypass Indicator)
+  - ECUID
+
+Use this to verify:
+  - Current security state
+  - Bypass ticket status
+  - Programming history
+
+8.2 CREATING SPAT ARCHIVES
+--------------------------
+From CameraLoops documentation:
+
+1. Obtain SPSToolBridge.LOG from SPS session
+2. Extract Blob name/ID mappings
+3. Gather required files:
+   - Utility file (Blob ID:0)
+   - Calibration files (various IDs)
+   - Manifest
+   - Signature
+4. Create Vit2File.vit index
+5. Package into .zip archive
+6. Import into DPS SPAT
+
+8.3 FLASHING UNSIGNED MODULES
+-----------------------------
+Modules that may accept unsigned updates:
+
+| Module ID | Name       | Sign Type | Risk Level |
+|-----------|------------|-----------|------------|
+| 28        | SXM        | NONE      | Low        |
+| 29        | GPS        | NONE      | Low        |
+| 51        | Tuner      | NONE      | Low        |
+| 52        | EthSwitch  | NONE      | Low        |
+| 24        | SOC_Utils  | NONE      | Medium     |
+
+These could be used to:
+  - Test DPS flash capability
+  - Understand update process
+  - Potentially inject modified firmware
+
+================================================================================
+SECTION 9: CONCLUSIONS
+================================================================================
+
+9.1 BOTTOM LINE
+---------------
+DPS is a professional ECU programming tool designed to work within GM's
+security infrastructure. For security research purposes:
+
+  - It provides valuable READ capabilities (DIDs, state info)
+  - It CANNOT bypass the core security mechanisms
+  - The EEPROM modification is a separate attack surface
+  - Downgrade attacks are the most promising DPS-based vector
+
+9.2 RECOMMENDED RESEARCH PRIORITIES
+-----------------------------------
+1. [HIGH]   Test Y177 downgrade via DPS
+2. [MEDIUM] Map CalDef entries to Module IDs
+3. [MEDIUM] Analyze utility file opcode format
+4. [LOW]    Monitor GM security advisories/patches
+5. [LOW]    Investigate SBAT ticket format
+
+9.3 ALTERNATIVE APPROACHES
+--------------------------
+If DPS proves insufficient:
+
+1. Physical EEPROM modification (proven working)
+2. VIP JTAG debugging (firmware analysis)
+3. CAN bus fuzzing (protocol vulnerabilities)
+4. Network service exploitation (ports 7000, 6363)
+5. UART console access (/dev/ttyACM1)
+
+================================================================================
+END OF ANALYSIS
+================================================================================

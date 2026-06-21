@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>3</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/25/2015</Date>
+    <Description>Updated DSPModeEnums to remove DSP_MODE 4 =4 through DSP_MODE 4 =4 as they were defined as RESERVED, and these RESERVED values were confirmed by Dominic Colella to not be needed for MY17 or MY18.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>9/3/2015</Date>
+    <Description>Since ATC functionality has been removed from the radio, removed ATC enumeration CAL previously shown in this Enum file.  </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/7/2019</Date>
+    <Description>Updated/Corrected description for each DSP mode value in this enumdef file to make it more generic. </Description>
+    <Author>Christine Marzan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="When an amplifier supports DSP modes, this calibration defines the default DSP HMI settings." Name="DSPModeEnums">
+    <EnumID>_nLzgMMY_EeOsIMxD3Xbm-Q</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Driver position " Name="DSP_MODE_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Center position" Name="DSP_MODE_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Rear position" Name="DSP_MODE_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Normal" Name="DSP_MODE_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

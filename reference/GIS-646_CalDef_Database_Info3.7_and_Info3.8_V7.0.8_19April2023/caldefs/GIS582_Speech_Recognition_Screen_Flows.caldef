@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/30/2015</Date>
+    <Description>Added the following new CALs that have been confirmed to be needed to this CalDef file: 1.) Genre_Artist_Playlist_Slot_T1Threshold, 2.) Album_Slot_T2_Threshold, 3.) Album_Slot_T1_Threshold, 4.) SongType_Slot_T2_Threshold, and 5.) SongType_Slot_T1_Threshold; added SR_ENABLE_RDSSTATION for ASR control of FM station names </Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>3/3/2016</Date>
+    <Description>Within this caldef file for MY18 and beyond, added five new calibrations ( 1.) SR_ENABLE_RDSSTATION, 2.) Maximum_Size_Contact_Downloading, and 3.) Maximum_Size_Contact_User_Adding, 4.) PLEASE_WAIT_ACTIVE_TIMER, and 5.) SR_Min_Inter_Prompt_Time ) for SSE tuning thresholds.  </Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/1/2016</Date>
+    <Description>Deleted previous SR_ENABLE_STATIC_TEXT_DISPLAY calibration (CalID:_NBSgMLhXEeSVLJ5Lfed1uw) since this EnumInger map calibration was tied to an enumberation in the LanguageAndRegionalizationGlobalA.enumdef that is no longer being used. Created a new SR_ENABLE_STATIC_TEXT_DISPLAY calibration (CalID:_HwHJID-1EealxNeJxc3hmA) to a new enumeration in the GIS582_Speech_Recognition_Screen_Flows.enumdef file for use with this calibration. </Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>1/3/2018</Date>
+    <Description>Per CR#: 1652991, updated the SR_ENABLE_STATIC_TEXT_DISPLAY enumeration calibration within the GIS582_Speech_Recognition_Screen_Flows.caldef and GIS582_Speech_Recognition_Screen_Flows.enumdef to add an enumeration (PORTUGUESE_BRAZILIAN) for the Brazilian Portuguese language, since Brazilian Portugese is a required Speech Rec. language for MY19 and beyond.</Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Is the system to display Speech Recognition screen 'Static' text on the CSM and/or Cluster displays, or just images and dynamic text? If Static text is NOT allowed (for a language) on the display, then the static screen text does not need to be localized for the language. If static text is disabled for a language, then only dynamic text from list screens (like NBEst lists and Disambiguation lists) will be displayed. Other screens will only show icons indicating the SR session state for listening window. Static text allowed on neither display = 0, Static text allowed on CSM = 1, Static text allowed on Cluster = 2, Static text allowed on Both = 3. " Name="SR_ENABLE_STATIC_TEXT_DISPLAY" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_HwHJID-1EealxNeJxc3hmA</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/3/2018</Date>
+      <Description>Added an enumeration (PORTUGUESE_BRAZILIAN) for the Brazilian Portuguese language, since Brazilian Portugese is a required Speech Rec. language for MY19 and beyond.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_Abrg8D-vEeaIX5pSk5aPDw</EnumID>
+      <MinValue>0</MinValue>
+      <MaxValue>3</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>3</Value>
+      </Entry>
+      <Entry>
+        <Key>31</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>32</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>10</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>19</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>6</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>15</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>7</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>23</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>5</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>16</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>13</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>14</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>17</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>40</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>24</Key>
+        <Value>0</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="Enable ASR control of FM Radio station names" Name="SR_ENABLE_RDSSTATION" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_4dGwoMwaEeWqIrwFgmZCRA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/3/2016</Date>
+      <Description>Adding this new calibration for MY18 for SSE tuning thresholds.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Maximum size of contact list that system can download from bluetooth phone" Name="Maximum_Size_Contact_Downloading" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_eH-GULlKEeWXKMilPSy1vg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/3/2016</Date>
+      <Description>Adding this new calibration for MY18 for SSE tuning thresholds.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3500</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum size of contact list that user can added to radios by themslves" Name="Maximum_Size_Contact_User_Adding" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TH_KsLlKEeWXKMilPSy1vg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/3/2016</Date>
+      <Description>Adding this new calibration for MY18 for SSE tuning thresholds.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>500</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The media type first threshold (T1) represents the amount of songs above which direct access by speech to that type of content is not allowed at the top level of the interface, but access to the content is still allowed if the user first speaks a command which indicates the type of content they desire, then they will be asked to identify the song or album explicitly. " Name="Genre_Artist_Playlist_Slot_T1Threshold" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ygLh4H88EeWMmJGlhCyCXg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2015</Date>
+      <Description>Initial release of this CAL</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>12000</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>30000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The second threshold (T2) represents the amount of albums above which direct access by speech to that type of content is not allowed at any level of the interface." Name="Album_Slot_T2_Threshold" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_exFhEH88EeWMmJGlhCyCXg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2015</Date>
+      <Description>Initial release of this CAL</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>24000</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>30000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The album type first threshold (T1) represents the amount of songs above which direct access by speech to that type of content is not allowed at the top level of the interface, but access to the content is still allowed if the user first speaks a command which indicates the type of content they desire, then they will be asked to identify the album explicitly. " Name="Album_Slot_T1_Threshold" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_J54BoH88EeWMmJGlhCyCXg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2015</Date>
+      <Description>Initial release of this CAL</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>12000</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>30000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The second threshold (T2) represents the amount of songs above which direct access by speech to that type of content is not allowed at any level of the interface." Name="SongType_Slot_T2_Threshold" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_nZyRsH87EeWMmJGlhCyCXg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2015</Date>
+      <Description>Inital release of this CAL</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>24000</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>30000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The song type first threshold (T1) represents the amount of songs above which direct access by speech to that type of content is not allowed at the top level of the interface, but access to the content is still allowed if the user first speaks a command which indicates the type of content they desire, then they will be asked to identify the song explicitly. " Name="SongType_Slot_T1_Threshold" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_F458AH87EeWMmJGlhCyCXg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2015</Date>
+      <Description>Initial release of this CAL</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>12000</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>30000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable/Disable Early Speaker Voice Barge In Mode" Name="SR_ENABLE_VOICE_BARGE_IN" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_S_6EUL6lEeSZ1vwKpTGxag</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_fkkHILPCEeS4cegre0A1WQ</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of OnStar domain" Name="SR_ENABLE_ONSTAR" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_z8o0YbewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of IApps domain" Name="SR_ENABLE_IAPPS" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_tsH4kbewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of XM Radio domain" Name="SR_ENABLE_XMRADIO" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_pfECQbewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of DAB Radio domain" Name="SR_ENABLE_DABRADIO" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_k7H9AbewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of HD Radio domain" Name="SR_ENABLE_HDRADIO" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gFKTobewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of Audio domain" Name="SR_ENABLE_AUDIO" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_5uh6gbewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of Phone domain" Name="SR_ENABLE_PHONE" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XGCcgLewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable SR control of Navigation domain" Name="SR_ENABLE_NAV" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_IUGSMLewEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Maximum Number of consecutive timeouts before SR session abort." Name="SR_MAX_LCRS" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_WgTHoLevEeSVLJ5Lfed1uw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>6</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time prior to the end of TTS prompt playback that the Early Speak BargeIn listening window opens." Name="SR_EARLY_SPEAK_TIME" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_uURvoLeuEeSVLJ5Lfed1uw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>200</MinValue>
+      <MaxValue>1500</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="System allows SR screen text (both Static and Dynamic) on the CSM when the SR session was originated on the SWC." Name="SR_ENABLE_CSM_DISPLAY" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_H6qJYLeuEeSVLJ5Lfed1uw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Maximum Number of consecutive timeouts before SR session abort." Name="SR_MAX_TIMEOUTS" References="GIS 582 Section 1.1.6.3" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_nWMjULO1EeS4cegre0A1WQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>6</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum Time After start of speech for BargeIn until the TTS Prompt is stopped." Name="SR_MAX_VBI_PROMPT_STOP" References="GIS 582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_wBpE8LO_EeS4cegre0A1WQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>600</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum time that systems will wait for ASR results before playing the prompt of &quot;please wait&quot; to users" Name="PLEASE_WAIT_ACTIVE_TIMER" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_L8iVMIPXEeWMQP73BwB68g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/3/2016</Date>
+      <Description>Adding this new calibration for MY18 for SSE tuning thresholds.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2000</Value>
+      <MinValue>1000</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The recognition feedback prompt will not be played before a minimum inter-prompt delay expires after the processing prompt. The current speech screen will display the &#x2018;processing&#x2019; graphic from the end of user speech until the system recognition response to reinforce the fact that the system is processing the user input." Name="SR_Min_Inter_Prompt_Time" References="GIS-582" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Pue80IPXEeWMQP73BwB68g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/3/2016</Date>
+      <Description>Adding this new calibration for MY18 for SSE tuning thresholds.</Description>
+      <Author>Xufang Zhao</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1500</Value>
+      <MinValue>1000</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

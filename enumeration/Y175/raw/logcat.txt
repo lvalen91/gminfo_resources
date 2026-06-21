@@ -1,0 +1,202 @@
+--------- beginning of main
+01-17 08:19:12.152   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.153   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365101, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 12, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.156   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670352000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.162   316   319 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.162   316   319 E GPTP    : *** Unsuccessful Sync timestamp
+01-17 08:19:12.164   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BE6] T[2]HSU(30B) fq 97500, fs -8, hwQ 30, pQ 0, afQ 0 trdAfQ 0, mp 99, ofs 0, adj 113, bw 72, dev 27, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.165 13746 13746 W mount   : type=1400 audit(0.0:327795): avc: denied { getattr } for path="/metadata" dev="vda12" ino=2 scontext=u:r:shell:s0 tcontext=u:object_r:metadata_file:s0 tclass=dir permissive=0
+01-17 08:19:12.166 13746 13746 W mount   : type=1400 audit(0.0:327796): avc: denied { getattr } for path="/linkerconfig" dev="tmpfs" ino=6821 scontext=u:r:shell:s0 tcontext=u:object_r:linkerconfig_file:s0 tclass=dir permissive=0
+01-17 08:19:12.166 13746 13746 W mount   : type=1400 audit(0.0:327797): avc: denied { getattr } for path="/linkerconfig" dev="tmpfs" ino=6821 scontext=u:r:shell:s0 tcontext=u:object_r:linkerconfig_file:s0 tclass=dir permissive=0
+01-17 08:19:12.170 13746 13746 W mount   : type=1400 audit(0.0:327798): avc: denied { search } for name="vendor" dev="tmpfs" ino=6325 scontext=u:r:shell:s0 tcontext=u:object_r:mnt_vendor_file:s0 tclass=dir permissive=0
+01-17 08:19:12.170 13746 13746 W mount   : type=1400 audit(0.0:327799): avc: denied { search } for name="vendor" dev="tmpfs" ino=6325 scontext=u:r:shell:s0 tcontext=u:object_r:mnt_vendor_file:s0 tclass=dir permissive=0
+01-17 08:19:12.188   602   602 D GM_LOCATION: WHEEL T 365136 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.195  1381  1902 D nfsa.transport.in: /192.168.1.112:9010: Heartbeat( 100 ) Status, clientHandle = 0, service = 1001.9, 23 bytes
+01-17 08:19:12.203   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BE7] T[2]HSU(30B) fq 96100, fs -8, hwQ 93, pQ 0, afQ 0 trdAfQ 0, mp 114, ofs 0, adj 83, bw 55, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.210  1381  2044 D FSANetCommsClient: CGMFSAClient RX QSize is: 0, funcID: 100, ID: 100
+01-17 08:19:12.211  1381  2044 D FSAIStateOfHealthClient: CGMFSAClient FSA: handle heartbeat 181
+01-17 08:19:12.219  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365153665110 < nextUpdateTimeNanos: 365852234139
+--------- beginning of system
+01-17 08:19:12.222  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.223  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.223  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.223  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.225  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.226   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.226   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.226  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.226  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.226  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.240   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BE8] T[2]HSU(30B) fq 89900, fs -8, hwQ 80, pQ 0, afQ 0 trdAfQ 0, mp 111, ofs 0, adj 101, bw 55, dev 25, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.249   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.252   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365198, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 12, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.252   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670352000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.261  2765  2765 D CarPlay_PlayerManager: onCinemoEvent(): CINEMO_EC_GRAPH_STATUS
+01-17 08:19:12.276   338   364 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010236304623497 raw 362460619100 dt 126127600 draw 126114861 newFactor 1.0001010 avg 1.0000906 ac 0.1
+01-17 08:19:12.278   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BE9] T[2]HSU(30B) fq 100300, fs -8, hwQ 49, pQ 0, afQ 0 trdAfQ 0, mp 138, ofs 0, adj 101, bw 72, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.290   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.290   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.290   602   602 D GM_LOCATION: WHEEL T 365237 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.316  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365251511055 < nextUpdateTimeNanos: 365852234139
+01-17 08:19:12.316  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365251511055 < nextUpdateTimeNanos: 365253665110
+01-17 08:19:12.322   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BEA] T[2]HSU(30B) fq 88500, fs -8, hwQ 64, pQ 0, afQ 0 trdAfQ 0, mp 121, ofs 0, adj 105, bw 55, dev 28, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.323  4963  4963 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365251511055 < nextUpdateTimeNanos: 365253665110
+01-17 08:19:12.352   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.353   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365301, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 13, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.353   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670353000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.354   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.354   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.360   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BEB] T[2]HSU(30B) fq 89100, fs -8, hwQ 38, pQ 0, afQ 0 trdAfQ 0, mp 114, ofs 0, adj 111, bw 55, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.386   602   602 D GM_LOCATION: WHEEL T 365335 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.398   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BEC] T[2]HSU(30B) fq 103700, fs -8, hwQ 115, pQ 0, afQ 0 trdAfQ 0, mp 103, ofs 0, adj 84, bw 55, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.402   338   365 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010236430818825 raw 362586804612 dt 126195328 draw 126185512 newFactor 1.0000778 avg 1.0000893 ac 0.1
+01-17 08:19:12.413   876   918 I lvds_device: I2C read data :0x05 size : 1
+01-17 08:19:12.413   876   918 I lvds_device: FAULT DETECT REGISTER : 5
+01-17 08:19:12.413   876   918 I lvds_device: updateRvcStatus to 1
+01-17 08:19:12.413   876   918 D lvds_device: buf[0] : 0x2a
+01-17 08:19:12.413   876   918 D lvds_device: buf[1] : 0x01
+01-17 08:19:12.414  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365352662323 < nextUpdateTimeNanos: 365852234139
+01-17 08:19:12.418   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.418   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.418  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.419  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.419  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.419  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.422  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.422  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.422  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.422  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.437   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BED] T[2]HSU(30B) fq 97700, fs -8, hwQ 93, pQ 0, afQ 0 trdAfQ 0, mp 108, ofs 0, adj 98, bw 55, dev 29, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.451   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.452   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365400, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 13, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.452   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670353000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.475   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BEE] T[2]HSU(30B) fq 98500, fs -8, hwQ 55, pQ 0, afQ 0 trdAfQ 0, mp 120, ofs 0, adj 107, bw 72, dev 29, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.482   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.482   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.486   602   602 D GM_LOCATION: WHEEL T 365435 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.511   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BEF] T[2]HSU(30B) fq 95900, fs -8, hwQ 87, pQ 0, afQ 0 trdAfQ 0, mp 117, ofs 0, adj 94, bw 55, dev 25, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.515  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365451615282 < nextUpdateTimeNanos: 365452662323
+01-17 08:19:12.516  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365451615282 < nextUpdateTimeNanos: 365852234139
+01-17 08:19:12.517  4963  4963 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365451615282 < nextUpdateTimeNanos: 365452662323
+01-17 08:19:12.527   338   364 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010236556428153 raw 362712402580 dt 125609328 draw 125597968 newFactor 1.0000904 avg 1.0000894 ac 0.1
+01-17 08:19:12.546   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.546   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.552   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF0] T[2]HSU(30B) fq 88100, fs -8, hwQ 59, pQ 0, afQ 0 trdAfQ 0, mp 131, ofs 0, adj 77, bw 55, dev 25, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.554   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.554   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365502, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 13, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.554   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670353000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.568  1381  1902 D nfsa.transport.in: /192.168.1.102:9005: Heartbeat( 100 ) Status, clientHandle = 0, service = 1016.1, 23 bytes
+01-17 08:19:12.586   602   602 D GM_LOCATION: WHEEL T 365535 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.588   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF1] T[2]HSU(30B) fq 91700, fs -8, hwQ 85, pQ 0, afQ 0 trdAfQ 0, mp 93, ofs 0, adj 100, bw 72, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.610   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.610   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.615  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365553008957 < nextUpdateTimeNanos: 365852234139
+01-17 08:19:12.619  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.619  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.620  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.620  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.621  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.624  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.624  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.624  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.626   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF2] T[2]HSU(30B) fq 104700, fs -8, hwQ 102, pQ 0, afQ 0 trdAfQ 0, mp 99, ofs 0, adj 96, bw 55, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.648   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.649   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365597, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 13, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.649   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670353000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.664   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF3] T[2]HSU(30B) fq 97100, fs -8, hwQ 106, pQ 0, afQ 0 trdAfQ 0, mp 89, ofs 0, adj 95, bw 55, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.674   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.674   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.703   602   602 D GM_LOCATION: WHEEL T 365652 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.703   871   907 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:428] Wait timeout: file descriptor is not ready for reading
+01-17 08:19:12.710   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF4] T[2]HSU(30B) fq 98900, fs -8, hwQ 25, pQ 0, afQ 0 trdAfQ 0, mp 110, ofs 0, adj 114, bw 72, dev 29, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.718  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365651526829 < nextUpdateTimeNanos: 365852234139
+01-17 08:19:12.719  4963  4963 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365651526829 < nextUpdateTimeNanos: 365653008957
+01-17 08:19:12.722  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365651526829 < nextUpdateTimeNanos: 365653008957
+01-17 08:19:12.723   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF5] T[1]HSU(309) fq 87700, fs -6, hwQ 97, pQ 0, afQ 0 trdAfQ 0, mp 96, ofs 0, adj 97, bw 55, dev 24, agc 0, stp 0, ant 0, fs1 -99, fs2 -99, hl 5E115
+01-17 08:19:12.738   316   319 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.738   316   319 E GPTP    : *** Unsuccessful Sync timestamp
+01-17 08:19:12.752   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.753   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365701, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 13, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.753   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670353000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.761   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF6] T[2]HSU(30B) fq 104900, fs -8, hwQ 46, pQ 0, afQ 0 trdAfQ 0, mp 141, ofs 0, adj 92, bw 55, dev 25, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.786   602   602 D GM_LOCATION: WHEEL T 365735 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.799   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF7] T[2]HSU(30B) fq 103500, fs -8, hwQ 127, pQ 0, afQ 0 trdAfQ 0, mp 77, ofs 0, adj 90, bw 55, dev 23, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.800   599   934 D ethctrlmgr: readDataFromEthCtrlSrvr(): client select timeout
+01-17 08:19:12.802   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.802   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.816  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365751788163 < nextUpdateTimeNanos: 365852234139
+01-17 08:19:12.820  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.820  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.820  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.820  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.823  1426  1440 D CAR.HalClient: Returning status: OK
+01-17 08:19:12.823  1381  1381 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5812227288, mValue=0}
+01-17 08:19:12.823  1381  1381 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+01-17 08:19:12.823  1381  1381 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+01-17 08:19:12.837   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF8] T[2]HSU(30B) fq 91900, fs -8, hwQ 21, pQ 0, afQ 0 trdAfQ 0, mp 122, ofs 0, adj 115, bw 72, dev 28, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.849   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.850   876   921 D IPCutils: select() timed out
+01-17 08:19:12.851   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365798, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 13, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.851   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670353000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.866   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.866   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.875   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BF9] T[2]HSU(30B) fq 96700, fs -8, hwQ 111, pQ 0, afQ 0 trdAfQ 0, mp 105, ofs 0, adj 89, bw 55, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.887   602   602 D GM_LOCATION: WHEEL T 365835 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.888   572   665 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 1000 for CH-8:
+01-17 08:19:12.888   572   665 D pal_common: [CommIPC] isReadDataAvailable:[CommIPC.cpp:192] Timeout is expired.
+01-17 08:19:12.888   572   665 W pal_calibrations: [IpcCalibration] read:[Ipc.cpp:45] Timeout is expired in IPC Calibrations channel, repeat waiting
+01-17 08:19:12.888   572   665 W pal_calibrations: [calibrationsCore] mainWorkerThread:[palCalibrationCore.cpp:192] Warning caught in worker body: Timeout expired
+01-17 08:19:12.888   572   665 D pal_calibrations: [IpcCalibration] read:[Ipc.cpp:37] Wait data start
+01-17 08:19:12.888   572   665 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 0 for CH-8:
+01-17 08:19:12.898   876   921 I IPCutils: --> 0xb1 0x40 0xb3 0x32 0x2e 0xee 0xff 0xff
+01-17 08:19:12.898   876   921 I lvds_device: setAuxBrightness MSB :0xff LSB: 0xff
+01-17 08:19:12.898   876   921 D lvds_device: buf[0] : 0x22
+01-17 08:19:12.898   876   921 D lvds_device: buf[1] : 0xff
+01-17 08:19:12.898   876   921 D lvds_device: buf[2] : 0xff
+01-17 08:19:12.899   876   921 D lvds_device: buf[0] : 0x24
+01-17 08:19:12.899   876   921 D lvds_device: buf[1] : 0xff
+01-17 08:19:12.899   876   921 D lvds_device: buf[2] : 0xff
+01-17 08:19:12.900   876   921 D lvds_device: buf[0] : 0x26
+01-17 08:19:12.900   876   921 D lvds_device: buf[1] : 0xff
+01-17 08:19:12.900   876   921 D lvds_device: buf[2] : 0xff
+01-17 08:19:12.900   876   921 D lvds_device: buf[0] : 0x28
+01-17 08:19:12.900   876   921 D lvds_device: buf[1] : 0xff
+01-17 08:19:12.900   876   921 D lvds_device: buf[2] : 0xff
+01-17 08:19:12.912   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BFA] T[2]HSU(30B) fq 91100, fs -8, hwQ 93, pQ 0, afQ 0 trdAfQ 0, mp 114, ofs 0, adj 84, bw 55, dev 24, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.913  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365851524122 < nextUpdateTimeNanos: 365852234139
+01-17 08:19:12.914  1381  1381 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365851524122 < nextUpdateTimeNanos: 365851788163
+01-17 08:19:12.914  4963  4963 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 365851524122 < nextUpdateTimeNanos: 365851788163
+01-17 08:19:12.920   590   607 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:428] Wait timeout: file descriptor is not ready for reading
+01-17 08:19:12.930   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.930   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:12.946   590   605 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:428] Wait timeout: file descriptor is not ready for reading
+01-17 08:19:12.948   590   612 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:428] Wait timeout: file descriptor is not ready for reading
+01-17 08:19:12.949   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BFB] T[2]HSU(30B) fq 98700, fs -8, hwQ 102, pQ 0, afQ 0 trdAfQ 0, mp 108, ofs 0, adj 96, bw 55, dev 25, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.950   590   613 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 1000 for CH-16:
+01-17 08:19:12.950   590   613 D pal_common: [CommIPC] isReadDataAvailable:[CommIPC.cpp:192] Timeout is expired.
+01-17 08:19:12.950   590   613 D plmanager: [SWUpdate:SysState] listenerLoop:[IncommingMessageListener.cpp:88] Nothing to read
+01-17 08:19:12.950   590   605 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:446] CH-2: FRAME is received --> 40 07 00 00
+01-17 08:19:12.950   590   613 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 0 for CH-16:
+01-17 08:19:12.950   590   605 D pal_common: [CommIPC] receiveIPCFrames:[CommIPC.cpp:384] Put data in the queue. Now queue size is 1
+01-17 08:19:12.950   590   608 D PLSS_PMPAL: [PM] pm_mgr_parse_message:[pal_pm_mgr.cpp:285] Message type=0x40 from channel 2
+01-17 08:19:12.950   590   608 I PLSS_PMSvc: onSystemState: ACCESSORY(7) (extra: 0)
+01-17 08:19:12.951   590   612 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:446] CH-16: FRAME is received --> 40 07 00 00
+01-17 08:19:12.951   590   612 D pal_common: [CommIPC] receiveIPCFrames:[CommIPC.cpp:384] Put data in the queue. Now queue size is 1
+01-17 08:19:12.951   590   613 D pal_common: [IPCWrapper] receiveMessage:[IPCWrapper.cpp:48] 4 bytes read
+01-17 08:19:12.951   590   613 D plmanager: [SWUpdate:SysState] listenerLoop:[IncommingMessageListener.cpp:97] get IPC message. size: 4; tag: 40
+01-17 08:19:12.951   590   613 D plmanager: [SWUpdate:SysState] listenerLoop:[IncommingMessageListener.cpp:105] No callback for that tag
+01-17 08:19:12.951   590   613 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 0 for CH-16:
+01-17 08:19:12.955   596   621 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:446] CH-5: FRAME is received --> EA 07 01 11 11 13 0D 00 00
+01-17 08:19:12.955   596   621 D pal_common: [CommIPC] receiveIPCFrames:[CommIPC.cpp:384] Put data in the queue. Now queue size is 1
+01-17 08:19:12.955   596   622 D pal_tod : [TOD:IMPL] DoWork:[PalTodBridge.cpp:437] RTC message received.
+01-17 08:19:12.955   596   622 D pal_tod : [TOD:IMPL] DoWork:[PalTodBridge.cpp:440] RTC message received length->9
+01-17 08:19:12.955   596   622 D pal_tod : [TOD:IMPL] ParseMessage:[PalTodBridge.cpp:312] RTC message length is 9 Content: {EA 07 01 11 11 13 0D 00 00 }
+01-17 08:19:12.957   627   627 D NAVD    : Gnss::updateGnssSatellites, Total satellites : 10, UsedInFix : 8
+01-17 08:19:12.958   602   602 D GM_LOCATION: GNSSHighRateLocation: {.mTimestamp = 365906, .mGpsTow = 0, .mUTCTime = {.timestamp = 0, .year = 2026, .month = 0, .day = 17, .hour = 17, .minute = 19, .second = 13, .ms = 0, .scale = GNSS_TIME_SCALE_UTC, .leapSeconds = 0, .validityBits = 3}, .mDRSource = GNSS_DR_EXTERNAL, .mFixType = _3D, .mFixTypeBits = GNSS_FIX_TYPE_STANDALONE (0x8), .mLatitude = <GPS_REDACTED>, .mLongitude = <GPS_REDACTED>, .mHeightEllipsoid = <GPS_REDACTED>, .mHeightMSL = <GPS_REDACTED>, .mGroundSpeed = 0.000000, .mSpeed = 0.000000, .mHeadingMotion = 0.000000, .mHeadingVehicle = 0.000000, .mHorizontalAccuracy = 2.500000, .mVerticalAccuracy = 3.900000, .mSpeedAccuracy = 0.100000, .mHeadingAccuracy = 1.110000, .mNavATT = {.iTOW = 0, .version = 0, .roll = 0.000000, .pitch = 0.000000, .heading = 0.000000, .accRoll = 0.000000, .accPitch = 0.000000, .accHeading = 0.000000}, .mValidityBits = 16215}
+01-17 08:19:12.958   602   602 D GM_LOCATION: GNSS T 0 UTC 1768670353000 LAT <GPS_REDACTED> LON <GPS_REDACTED> ALT <GPS_REDACTED> MPS 0.000000 HDG 0.000000 FIX 3 SRC 1
+01-17 08:19:12.963  2290  2333 D nfsa.transport.in: /192.168.1.102:9010: Heartbeat( 100 ) Status, clientHandle = 0, service = 1001.2, 23 bytes
+01-17 08:19:12.987   602   602 D GM_LOCATION: WHEEL T 365936 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+01-17 08:19:12.988   910  1071 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00002BFC] T[2]HSU(30B) fq 92700, fs -8, hwQ 49, pQ 0, afQ 0 trdAfQ 0, mp 138, ofs 0, adj 91, bw 55, dev 25, agc 0, stp 0, ant 1, fs1 -99, fs2 -99, hl 5EECB57
+01-17 08:19:12.994   316   321 E GPTP    : Error (TX) timestamping PDelay request, error=-72	
+01-17 08:19:12.994   316   321 E GPTP    : TX timestamp version mismatch: 255/0
+01-17 08:19:13.006  2724  2936 I okh     : #audio# timestamps: received(frame@4491594) vs expected(frame@4491520) [CONTEXT ratelimit_period="500 MILLISECONDS" ]

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Defines enumeration values for enumeration calibrations defined in the GIS-040/GIS-640">
+  <EnumDefFileVersion>7</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>13OCT14</Date>
+    <Description>Prefixed various enum value names with non-numeric strings to allow code generation.  Removed invalid space characters in names.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2/20/2015</Date>
+    <Description>On behalf of Mohannad Murad, made the folllowing updates: Added description in for the K_UPA_TYPE cal, and descriptions for the two possilbe values (FOUR_ZONE_UPA and EIGHT_ZONE_UPA) for this cal. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>June 13, 2016</Date>
+    <Description>Added  RVS_FEATURE_AVAIL_SMART_TOW enumeration with the possible enumeration options needed for this calibration that are shown in GIS-040.</Description>
+    <Author>Evelyn Job</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date> June 14, 2016</Date>
+    <Description>Added  K_HITCH_VIEW_ZOOM_LEVEL enumeration with the possible enumeration options needed for the K_HITCH_VIEW_ZOOM_LEVEL enumeration calibration shown in GIS-040.</Description>
+    <Author>Evelyn Job</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>August 3 2018</Date>
+    <Description>CR 1872570 add Display Screen Size Enumeration for MY21 Info 3.5C</Description>
+    <Author>Evelyn Job</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>15APR19</Date>
+    <Description>Per CR#2184611, added new enumeration to RVS_PRESNT_STATUS enum of PRESENT_SVPMPLUS_CAMERA_PROCESSING_MODULE to support the addition of Super Cruise within FrontRearCameraStatic.enumdef </Description>
+    <Author>Jason Heitman</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Number of pixel size of the display " Name="DISPLAY_SCREEN_SIZE">
+    <EnumID>_03BhwJciEeitB75KcJS-AQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="DISPLAY_SCREEN_SIZE_2940x816_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DISPLAY_SCREEN_SIZE_RESERVED_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DISPLAY_SCREEN_SIZE_RESERVED_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DISPLAY_SCREEN_SIZE_RESERVED_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Amount to zoom for Hitch View" Name="K_HITCH_VIEW_ZOOM_LEVEL">
+    <EnumID>_e_QkUDGTEeaQb-3G3BglBA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="0:zoom_x1" Name="K_HITCH_VIEW_ZOOM_LEVEL_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="1:zoom_x2" Name="K_HITCH_VIEW_ZOOM_LEVEL_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="2:zoom_x3 " Name="K_HITCH_VIEW_ZOOM_LEVEL_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="NO_RVS_FEATURE_AVAIL_SMART_TOW=0; HAS_RVS_FEATURE_AVAIL_SMART_TOW=1" Name="RVS_FEATURE_AVAIL_SMART_TOW">
+    <EnumID>_wcwSACwZEeaQhflu2B0O3Q</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="0=no Smart Tow feature" Name="NO_RVS_FEATURE_AVAIL_SMART_TOW">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="1=has Smart Tow feature" Name="HAS_RVS_FEATURE_AVAIL_SMART_TOW">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="NO_RVS_FEATURE=0; HAS_RVS_FEATURE=1" Name="RVS_FEATURE_AVAIL_VIDEO">
+    <EnumID>_vqv9MIChEeSxycHQa8aWRQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="RVS not present on this vehicle" Name="NO_RVS_FEATURE">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="RVS feature is present on this vehicle." Name="HAS_RVS_FEATURE">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="The SBX shall utilize a calibration to determine which type of UPA module the radio is interfacing with.  The calibration K_UPA_TYPE will determine if the LS_GMLAN zone information will range from 0-4 or 0-8. Accomodates 8 zone UPA that is available with Global-A." Name="K_UPA_TYPE">
+    <EnumID>_yrBjkU1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="If  K_UPA_TYPE = $0 , this is a 4 zone system.  LS-GMLAN zone data will support 0,1,2,3,4 as valid zone information.  Zone information greater than or equal to 5 should be ignored and treated as a Zone 0. Note reference, GIS-040 for futher definition of this UPA type." Name="FOUR_ZONE_UPA">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="If K_UPA_TYPE = $1 , this is an 8 zone system. LS-GMLAN zone data will support 0,1,2,3,4,5,6,7,8 as valid zone information.  Zone information greater than or equal to 9 should be ignored and treated as a Zone 0. Note: reference, GIS-040 for futher definition of this UPA type." Name="EIGHT_ZONE_UPA">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="NONE=0; STATIC=1; DYNAMIC=2" Name="RVS_FEATURE_AVAIL_GUIDELINES">
+    <EnumID>_yr-l1U1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Name="NONE">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STATIC">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="DYNAMIC">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="DISPLAY SIZE 640 BY 480=1; 320 BY 240 =2; 480 BY 272 =3; 800 BY 480 =4" Name="RVS_DISPLAY_IMAGE_SIZE">
+    <EnumID>_yr-l6k1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="UNINITIALIZED">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SIZE_640_BY_480">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SIZE_320_BY_240">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SIZE_480_BY_272">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SIZE_800_BY_480">
+      <Value>4</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="UNUSED=0; ONE METER=1; TWO METER =2" Name="RVS_OVLAY_DELTA_DIST_MARKS">
+    <EnumID>_yr_M4U1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="UNUSED">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="ONE_METER">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="TWO_METERS">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="ABSENT=0; HAS RVS ONLY=1; PRESENT VPM CAMER PROCESSING MODULE = 2" Name="RVS_PRESENT_STATUS">
+    <EnumID>_ysAbAU1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="ABSENT">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="PRESENT_GEN1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="PRESENT_VPM_CAMERA_PROCESSING_MODULE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SVPM+ Present in the vehicle" Name="PRESENT_SVPMPLUS_CAMERA_PROCESSING_MODULE">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="NO RVS FEATURE AVAIL RCTA SYMBOLS=0; HAS RVS FEATURE AVAIL RCTA SYMBOLS = 1" Name="RVS_FEATURE_AVAIL_RCTA_SYMBOLS">
+    <EnumID>_9SK7sCwNEeaQhflu2B0O3Q</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="NO_RVS_FEATURE_AVAIL_RCTA_SYMBOLS">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="HAS_RVS_FEATURE_AVAIL_RCTA_SYMBOLS">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>09/17/2018</Date>
+    <Description>Per CR#1912236, initial release of GIS1000_UIFrameworkWidgets.enumdef with Help enumeration.</Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Help" Name="Help">
+    <EnumID>_gnLHQLtTEei-5bHnoORlAg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Audio Help" Name="Audio">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Navigation Help" Name="Navigation">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Phone Help" Name="Phone">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Vehicle Information Help" Name="VehicleInformation">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Rear Climate Help" Name="RearClimate">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Apple CarPlay help" Name="AppleCarPlay">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Android Auto Help" Name="AndroidAuto">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Users Help" Name="Users">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Air Quality Help" Name="AirQuality">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Settings Help" Name="Settings">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trailering Help" Name="Trailering">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Apps Help" Name="Apps">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="OnStar Help " Name="OnStar">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Camera Help" Name="Camera">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SiriusXM Help" Name="SiriusXM">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Video Help" Name="Video">
+      <Value>16</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

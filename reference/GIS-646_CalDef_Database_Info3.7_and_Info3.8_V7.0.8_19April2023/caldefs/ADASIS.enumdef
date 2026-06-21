@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Enumdef file for enumeration type calibrations defined within the ADASIS.caldef file">
+  <EnumDefFileVersion>5</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2016-06-14</Date>
+    <Description>Updated the possible enumeration values for the ADASIS_SUPPORT enumeration. Made this update to support the various options that can be calibrated regarding the level of detail the ADASIS horizon provider should provide. NAVILINK_ONLY disables ADASIS and enables NAVILINK. All other options enable ADASIS where it can be selected how many sub-path information should be provided together with the Most Probable Path (MPP) information. &quot;Disabled&quot; (former '0') changed to NAVILINK_ONLY: The option 'NAVILINK_ONLY' will disable ADASIS and enable NAVILINK. </Description>
+    <Author>Andreas Klein</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2016-08-19</Date>
+    <Description>Update made to the ADASIS_SUPPORT enumeration values.</Description>
+    <Author>Andreas Klein</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Name="ADASIS_SUPPORT">
+    <EnumID>_ypAKUE1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Disables ADASIS." Name="ADASIS_DISABLED">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enables provision of Most Probable Path (MPP) only." Name="MPP_ONLY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enables provision of Most Probable Path (MPP) with stubs. " Name="MPP_WITH_STUBS">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enables provision of Most Probable Path (MPP) with first level sub-paths.  " Name="MPP_WITH_FIRST_LEVEL_SUB_PATHS">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enables provision of Most Probable Path (MPP) with several sub-path levels." Name="FULL_HORIZON">
+      <Value>4</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

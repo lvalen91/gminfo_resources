@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" xsi:schemaLocation="http://www.caltools.gm.com/enumdef enumdef_1.0.xsd">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>13OCT14</Date>
+    <Description>Replaced enum value names starting with a number to start with an alpha character in order to support code generation.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Name="HYBRID_SYSTEM_HMI">
+    <EnumID>_yq7c-k1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Name="NO_HYBRID_CONTENT">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="EREV_ELR">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="EREV_VOLT_GEN2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="EREV_VOLT_GEN1">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FOUR_MODERWD">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BASPLUS">
+      <Value>64</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="TWO_MODEFWD">
+      <Value>96</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BASPLUS_RWDGEN3">
+      <Value>112</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BASPLUS_FWDGEN3">
+      <Value>128</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="PHEV_OMEGA">
+      <Value>144</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Name="TODC_VOLTAGE_DISPLAY">
+    <EnumID>_ysF6mk1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Name="TODC_120V_AND_240V">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="TODC_120V_ONLY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="TODC_220V_ONLY">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="TODC_230V_ONLY">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="TODC_240V_ONLY">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="TODC_TEXT_ONLY">
+      <Value>5</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

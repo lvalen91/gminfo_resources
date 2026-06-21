@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This file contains the mute/unmute ramp calibrations implemented within the CSM, Low Radio, and remote Amplifier as defined in GIS-604-650.">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>28JAN2013</Date>
+    <Description>Initial release coincident with 1.1 update of GIS-604</Description>
+    <Author>Dominic Collela</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/24/2016</Date>
+    <Description>Within this caldef file made the following calibration default value updates as discussed with Dominic Colella: K_MUTEX_SINK_RAMP_1 - Default value changed from 100 to 50 msec, K_MUTEX_SINK_RAMP_2 - Default value changed from 200 to 50 msec, and K_MUTEX_SINK_RAMP_3 - Default value changed from 400 to 50 msec. As reference, the rationale for making these default value updates are also noted in Assembla#: 2415. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>10/2/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the MuteUnmuteRampTimes.caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="In order to allow flexibility when using the mute/unmute function, three(3) calibratible ramp parameters are usable by the Audio Manager when commanding the Amplifier to mute or unmute the Mutex Sink.  The ramp parameters are calibrations provided in the Audio Manager as numeric values between 0 and 1275 ms with a resolution of 5 ms.  The calibrations shall be implemented within either the CSM or Low Radio depending on system configuration.  The usage of the ramp rates shall be configurable according to which sources are former and current to produce desirable transitions in audio sources. " Name="K_MUTEX_SINK_RAMP_3" References="GIS-604-655" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ZJXTsIOlEeOYAdh1BRO4Xw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated calibration default value to 50 msec.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1275</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>5.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="In order to allow flexibility when using the mute/unmute function, three(3) calibratible ramp parameters are usable by the Audio Manager when commanding the Amplifier to mute or unmute the Mutex Sink.  The ramp parameters are calibrations provided in the Audio Manager as numeric values between 0 and 1275 ms with a resolution of 5 ms.  The calibrations shall be implemented within either the CSM or Low Radio depending on system configuration.  The usage of the ramp rates shall be configurable according to which sources are former and current to produce desirable transitions in audio sources. " Name="K_MUTEX_SINK_RAMP_2" References="GIS-604-655" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_VW7j4YOlEeOYAdh1BRO4Xw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated calibration default value to 50 msec.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1275</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>5.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="In order to allow flexibility when using the mute/unmute function, three(3) calibratible ramp parameters are usable by the Audio Manager when commanding the Amplifier to mute or unmute the Mutex Sink.  The ramp parameters are calibrations provided in the Audio Manager as numeric values between 0 and 1275 ms with a resolution of 5 ms.  The calibrations shall be implemented within either the CSM or Low Radio depending on system configuration.  The usage of the ramp rates shall be configurable according to which sources are former and current to produce desirable transitions in audio sources. " Name="K_MUTEX_SINK_RAMP_1" References="GIS-604-655" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_DM6DcIOlEeOYAdh1BRO4Xw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated calibration default value to 50 msec.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1275</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>5.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

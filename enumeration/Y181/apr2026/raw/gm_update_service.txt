@@ -1,0 +1,276 @@
+BEGIN---UpdateService-FSAConnector
+mRequestHistory=[]
+mTimedoutRequests=[]
+mRequests=[]
+mConnected=true
+END---UpdateService-FSAConnector
+BEGIN---UpdateService-SystemStateManager
+UpdateService-SystemStateManager mCurrentSystemState=STATE_PROPULSION
+UpdateService-SystemStateManager mOffModeActive=false
+UpdateService-SystemStateManager mRemoteReflashRequested=false
+UpdateService-SystemStateManager mRemindLater=false
+UpdateService-SystemStateManager mActivatedPNs=0 {}
+UpdateService-SystemStateManager mActivatedPNStatus=0 {}
+UpdateService-SystemStateManager mVotedPNStatus=0 {}
+END---UpdateService-SystemStateManager
+BEGIN---UpdateService-USBNotifier
+mEnabled=true
+mDevelopmentBuild=false
+mListeners=[com.gm.server.update.USBUpdateSource$1@d4237f8]
+mMountPaths=[]
+mNotifyUnmount=true
+UpdateService-USBNotifierHandler (com.gm.server.update.USBNotifier$MyHandler) {40f94d1} @ 778784
+UpdateService-USBNotifier  Looper (UpdateService-USBNotifier, tid 88) {4a03b36}
+UpdateService-USBNotifier    (Total messages: 0, polling=true, quitting=false)
+END---UpdateService-USBNotifier
+BEGIN---UpdateService-PersistStore Packages
+sql = SELECT uuid,SourceType,State,DDVersion,CampaignId,Language,Title,ReleaseNotes,UserInstrunction,SuccessMessage,FailureMessage,CCMessage,ConfirmationMessage,Version,Size,RemindLater,RemindLaterExpirationTime,UserNotified,DownloadInteractionType,DownloadIgnitionNumber,DownloadIgnitionRemain,DownloadReminderDelay,DownloadEnableChunk,DownloadChunkSize,DownloadInterChunkDelay,DownloadCheckBattery,DownloadProgressPercentage,UpdateEstimatedInstallationDuration,UpdateMaxInstallationDuration,UpdateInteractionType,UpdateIgnitionNumber,UpdateIgnitionRemain,UpdateCheckBattery,UpdateBatteryPower,UpdateAutoInstallWarnDuration,UpdateMADAIDuration,UpdateMADAITimerStatus,UpdateMADAIExpirationTime,UpdateRemindDelay,UpdateProgressDisplayInIPC,UpdateDisableProgressBar,UpdateScheduled,UpdateScheduleTime,UpdateProgressPercentage,UpdateFilePath,UpdateContainerType,UpdateInVehicleOff,UpdateCompleteStatus,ScheduleUnhappenReason,UpdateSelf,ExpectedPNVersions,UpdateNotStartReason,UpdateFailReason,UpdateAttemptRemain,UpdateMADAIResendRetryRemain,UpdateMADAIStartAttemptRemain,AlarmId,ScheduleReminderNotified,UpdateScheduleSystemTime,DownloadUserPaused,DownloadNotNotifiedReason,UpdateViewMessage,ScheduledViewMessage,InstallViewMessage FROM Packages
+rows = 0
+END---UpdateService-PersistStore Packages
+BEGIN---UpdateService-PersistStore Results
+sql = SELECT uuid,Result,Notified,CampaignId,Title,Version,Size,InstallDate,ReleaseNote,SuccessMessage,FailureMessage,SelfUpdate FROM UpdateResults
+rows = 9
+d40a2178-95ed-4f83-bbd6-d48e43e96f40|0|true|/mnt/media_rw/4FE0-161D/85759595.mnf|85759595.mnf|SIHM22B-00383.01|2974|1746918989966|null|null|null|true
+7ae616e3-db19-48ea-b108-718cedf6aaa6|0|true|/update_cache/update/4FE0-161D/85759595.mnf|85759595.mnf|SIHM22B-00383.01|2974|1746919883357|null|null|null|true
+76c94cee-da74-4951-b7fa-05c09a9fca25|0|true|/update_cache/update/2254-2F6F/86283147.mnf|86283147.mnf|SIHM22B-00499.02|3074|1754528693261|null|null|null|true
+99a4f592-7aad-4985-87e8-9f7bd441f385|0|true|/update_cache/update/2254-2F6F/85874101.mnf|85874101.mnf|SIHM22B-00526|1|1754529823004|null|null|null|true
+f1c5d845-be64-4526-a818-48a447f9d3ac|5|true|pV7JR1D0EfCc7u7uCvix7Qcmp|GM Update N25-250552|null|5|1755370905111|•   Improvements to OnStar through enhancements for charging, Super Cruise, remote start, and collision notification.
+•   Fixes to address connectivity issues.
+
+During the update process, your radio may stay on up to 5 minutes after you exit the vehicle. This is expected behavior when an update package is onboard the vehicle. Do not service your vehicle during installation.|Your vehicle software update has been successfully installed.  Thank you.|The software update was not successful. If the error persists, please contact your dealer for assistance.|false
+ecb79e0c-a88f-4c1f-a6cd-99958c8957ca|0|true|/update_cache/update/74A7-12EF/86331663.mnf|86331663.mnf|SIHM22B-00499.03|3078|1761767022760|null|null|null|true
+5445d15e-3a18-43d5-923f-a5a1210078c4|0|true|/update_cache/update/3FD6-14E9/85874101.mnf|85874101.mnf|SIHM22B-00526|1|1765231570860|null|null|null|true
+56c2e289-a7e8-4d93-8f49-83c75babda3b|1|true|/update_cache/update/8B68-14EE/86283147.mnf|86283147.mnf|SIHM22B-00499.02|3074|1767153497438|null|null|null|true
+97d0249b-4c3a-442a-b75f-81e8f9486528|0|true|/update_cache/update/14C064B7C064A12A/86331663.mnf|86331663.mnf|SIHM22B-00499.03|3078|1770752755583|null|null|null|true
+END---UpdateService-PersistStore Results
+BEGIN---UpdateService-PersistStore NameValues
+sql = SELECT Name,Value FROM NameValues
+rows = 6
+DownloadInBackground|false
+WiFiPreferred|false
+LastCheckUpdateTime|1759239808969
+OTAAvailable|
+ReflashCounter|8
+ProgrammingStatus|UpdateStatusData [Tue Feb 10 10:36:52 GMT-09:00 2026
+Id=1b7d45d2-5f98-4cef-aee6-f03f04fc0835
+DateTime=1770752212473
+Status=1
+Percentage=99
+ErrorCode=0
+ProgrammingType=15
+PackageType=1
+ModuleId=0
+ModulePartNumber=0
+ModuleDLS=
+ManifestPartNumber=86331663
+ManifestVersion=SIHM22B-00499.03
+]
+version=5
+END---UpdateService-PersistStore NameValues
+BEGIN---UpdateService-UpdateSourceManager
+BEGIN---UpdateService-OTAUpdateSource
+BEGIN-All Packages---UpdateService-OTAUpdateSource
+END-All Packages---UpdateService-OTAUpdateSource
+---StateMachine---
+UpdateService-OTAStateMachine:
+ total records=15
+ rec[0]: time=07-22 03:45:43.721 processed=<null> org=InitialState dest=<null> what=EVT_CONNECTION_LOST
+ rec[1]: time=07-22 03:45:43.727 processed=<null> org=InitialState dest=<null> what=EVT_SYSTEM_STATE_CHANGED
+ rec[2]: time=07-22 03:45:43.728 processed=<null> org=InitialState dest=<null> what=EVT_POWERMODE_ON
+ rec[3]: time=07-22 03:45:43.746 processed=<null> org=InitialState dest=<null> what=EVT_CONNECTION_LOST
+ rec[4]: time=07-22 03:45:44.025 processed=OTADefaultState org=InitialState dest=<null> what=EVT_CONNECTION_CONNECTED
+ rec[5]: time=07-22 03:45:44.351 processed=<null> org=InitialState dest=<null> what=EVT_NOT_PROGRAMMING
+ rec[6]: time=07-22 03:45:45.190 processed=<null> org=InitialState dest=<null> what=EVT_SYSTEM_STATE_CHANGED
+ rec[7]: time=07-22 03:45:48.707 processed=InitialState org=InitialState dest=IdleState what=CMD_STARTUP_STATE_TIMER
+ rec[8]: time=07-22 03:45:48.724 processed=DefaultState org=IdleState dest=<null> what=EVT_LOG_FLUSH
+ rec[9]: time=04-07 14:25:28.793 processed=<null> org=IdleState dest=<null> what=EVT_SYSTEM_TIME_CHANGED
+ rec[10]: time=04-07 14:25:31.144 processed=<null> org=IdleState dest=<null> what=EVT_LOCKED_BOOT_COMPLETED
+ rec[11]: time=04-07 14:25:46.949 processed=<null> org=IdleState dest=<null> what=EVT_LOCKED_BOOT_COMPLETED
+ rec[12]: time=04-07 14:25:47.924 processed=<null> org=IdleState dest=<null> what=EVT_INITIAL_USER_LOGIN
+ rec[13]: time=04-07 14:25:47.924 processed=OTADefaultState org=IdleState dest=<null> what=EVT_USER_SWITCH
+ rec[14]: time=04-07 14:25:47.924 processed=<null> org=IdleState dest=<null> what=EVT_BOOT_COMPLETED
+curState=IdleState
+---StateMachine---
+mActive=false
+mRequestActivation=false
+mPowerModeOnId=8c14ff3f-7707-4f7b-89ee-8a626ca97065
+mPowerModeOn=true
+END---UpdateService-OTAUpdateSource
+BEGIN---UpdateService-USBUpdateSource
+BEGIN-All Packages---UpdateService-USBUpdateSource
+END-All Packages---UpdateService-USBUpdateSource
+---StateMachine---
+UpdateService-USBStateMachine:
+ total records=10
+ rec[0]: time=07-22 03:45:43.755 processed=<null> org=InitialState dest=<null> what=EVT_SYSTEM_STATE_CHANGED
+ rec[1]: time=07-22 03:45:43.757 processed=<null> org=InitialState dest=<null> what=EVT_POWERMODE_ON
+ rec[2]: time=07-22 03:45:45.195 processed=<null> org=InitialState dest=<null> what=EVT_SYSTEM_STATE_CHANGED
+ rec[3]: time=07-22 03:45:48.753 processed=InitialState org=InitialState dest=IdleState what=CMD_STARTUP_STATE_TIMER
+ rec[4]: time=04-07 14:25:28.792 processed=<null> org=IdleState dest=<null> what=EVT_SYSTEM_TIME_CHANGED
+ rec[5]: time=04-07 14:25:31.148 processed=<null> org=IdleState dest=<null> what=EVT_LOCKED_BOOT_COMPLETED
+ rec[6]: time=04-07 14:25:46.955 processed=<null> org=IdleState dest=<null> what=EVT_LOCKED_BOOT_COMPLETED
+ rec[7]: time=04-07 14:25:47.932 processed=<null> org=IdleState dest=<null> what=EVT_INITIAL_USER_LOGIN
+ rec[8]: time=04-07 14:25:47.932 processed=<null> org=IdleState dest=<null> what=EVT_USER_SWITCH
+ rec[9]: time=04-07 14:25:47.932 processed=<null> org=IdleState dest=<null> what=EVT_BOOT_COMPLETED
+curState=IdleState
+---StateMachine---
+mActive=false
+mRequestActivation=false
+mPowerModeOnId=937082d7-8492-409c-a942-e8e10f5c6351
+mPowerModeOn=true
+END---UpdateService-USBUpdateSource
+BEGIN---UpdateService-OBPUpdateSource
+BEGIN-All Packages---UpdateService-OBPUpdateSource
+END-All Packages---UpdateService-OBPUpdateSource
+---StateMachine---
+UpdateService-OBPStateMachine:
+ total records=10
+ rec[0]: time=07-22 03:45:43.798 processed=<null> org=InitialState dest=<null> what=EVT_SYSTEM_STATE_CHANGED
+ rec[1]: time=07-22 03:45:43.798 processed=<null> org=InitialState dest=<null> what=EVT_POWERMODE_ON
+ rec[2]: time=07-22 03:45:45.208 processed=<null> org=InitialState dest=<null> what=EVT_SYSTEM_STATE_CHANGED
+ rec[3]: time=07-22 03:45:48.762 processed=InitialState org=InitialState dest=IdleState what=CMD_STARTUP_STATE_TIMER
+ rec[4]: time=04-07 14:25:28.798 processed=<null> org=IdleState dest=<null> what=EVT_SYSTEM_TIME_CHANGED
+ rec[5]: time=04-07 14:25:31.152 processed=<null> org=IdleState dest=<null> what=EVT_LOCKED_BOOT_COMPLETED
+ rec[6]: time=04-07 14:25:46.958 processed=<null> org=IdleState dest=<null> what=EVT_LOCKED_BOOT_COMPLETED
+ rec[7]: time=04-07 14:25:47.939 processed=<null> org=IdleState dest=<null> what=EVT_INITIAL_USER_LOGIN
+ rec[8]: time=04-07 14:25:47.939 processed=<null> org=IdleState dest=<null> what=EVT_USER_SWITCH
+ rec[9]: time=04-07 14:25:47.939 processed=<null> org=IdleState dest=<null> what=EVT_BOOT_COMPLETED
+curState=IdleState
+---StateMachine---
+mActive=false
+mRequestActivation=false
+mPowerModeOnId=652b62ba-c4bd-4b03-843a-f43d4626b529
+mPowerModeOn=true
+END---UpdateService-OBPUpdateSource
+END---UpdateService-UpdateSourceManager
+BEGIN---GMLANProxy
+AutoTrans=true
+EngineRun=true
+VehicleOff=false
+VehicleParked=true
+ShiftParked=true
+ParkBrakeOn=false
+PassiveEntry=true
+UpdateAvail=false
+RemoteVehicleStartEngRunning=false
+ElectricParkBrakeStatus=RELEASED
+RemoteReflashPowerReadiness=6.375
+SystemPowerMode=RUN
+VIN=XXXXXXXXXXXXXXXXX
+GMLANProxyHandler (gm.update.vdata.GMLANProxy$GMLANProxyHandler) {127ad0d} @ 778815
+GMLANProxy  Looper (GMLANProxy, tid 84) {9acd4c2}
+GMLANProxy    (Total messages: 0, polling=true, quitting=false)
+END---GMLANProxy
+BEGIN---UpdateService-InstallRunner
+mRunning=false
+mRunningInstaller=null
+mUpdateStatus=-1UpdateStatusCode [STATUS_CODE_IDLE]
+mProgress=0
+mPostProgramming=false
+mInstallers=[]
+mPackage=null
+mErrors=[]
+mExternalProgress=0
+mStoredUpdateStatusData=UpdateStatusData [Tue Feb 10 10:36:52 AKST 2026
+Id=1b7d45d2-5f98-4cef-aee6-f03f04fc0835
+DateTime=1770752212473
+Status=1
+Percentage=99
+ErrorCode=0
+ProgrammingType=15
+PackageType=1
+ModuleId=0
+ModulePartNumber=0
+ModuleDLS=
+ManifestPartNumber=86331663
+ManifestVersion=SIHM22B-00499.03
+]
+UpdateStatusData=UpdateStatusData [Tue Feb 10 10:36:52 AKST 2026
+Id=1b7d45d2-5f98-4cef-aee6-f03f04fc0835
+DateTime=1770752212473
+Status=1
+Percentage=99
+ErrorCode=0
+ProgrammingType=15
+PackageType=1
+ModuleId=0
+ModulePartNumber=0
+ModuleDLS=
+ManifestPartNumber=86331663
+ManifestVersion=SIHM22B-00499.03
+]
+mFailureInfo=null
+END---UpdateService-InstallRunner
+BEGIN---UpdateService-NetworkTracker
+NAMFSAClient [mNetworkStatus=[]]
+mClientState=SERVICE_FOUND_MONITORING_HEARTBEAT
+OnStartRegistered=false
+mNetworkAvailable=false
+isNetworkAvailable=false
+hasNetwork=false
+END---UpdateService-NetworkTracker
+BEGIN---Others
+Non-System UserLogin=true
+EcuId data=NULL
+EcuId str=NULL
+Calibrations USB [
+mMaxOperationalProgFileSize=5000
+mSigningCertificateIssuer=CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC
+mUSBProgrammingEnabled=true
+mConsentProceed=11
+mWaitingLongForFile=5
+mWaitingForFile=30
+mWaitingForParking=10]
+Calibrations OTA [
+mVehicleTransmissionType=AutomaticTrans
+mScheduledUpdateReminder=60
+mRemoteReflashDisplayTime=15
+mWaitVehicleConditionTimeout=10
+mWaitInstallStartTimeout=10
+mScheduleAllowedDelta=60
+mCCEnableCancelButton=true
+mDisplayWaitingForServerMinimum=3
+mDisplayWaitingForServerMaximum=180
+mTestToolPresentInactivityTimer=60
+mScheduleUpdateMinDelay=60
+mScheduleUpdateMaxDelay=86400
+mBackOfficeServerEnabled=true]
+SBI=false
+MEC=-1
+mLastErrorText=null
+FIDM FCID: 0x54FF
+  Display ID: 4
+  SW Version: 6
+  HW Version: 5
+  HW Part No: 86807879.AA
+HWConfig:
+Value: B1020260
+ Variant: GB-UNKNOWN-HIGH
+ HD: false
+ AMP: true
+ SXM: true
+ DAB: false
+ GPS: false
+ Gyro+Accel: false
+ Gyro: false
+ Accel: false
+VIN=XXXXXXXXXXXXXXXXX
+CurrentSecureTime: Tue Apr 07 14:37:53 AKDT 2026
+CGMDeviceInfo=UpdateService-DeviceInformationCGM state=SERVICE_FOUND_MONITORING_HEARTBEAT
+mLastQueryTimestamp=Tue Jul 22 03:45:44 AKDT 2025
+DeviceInfoStatus=[
+CompanyName=
+ProductName=
+ProductPartNumber=
+ProductSerialNumber=
+ProductSoftwarePartNumber=
+]
+BuildInfo=[
+
+]
+ResetInfo=[
+]
+
+CSMFCID=0x54f3[FCID [54f3 MY22 CAN_GB SEC_HS REGION_ANY GAS_YES]]
+ICSFCID=0x54ff[FCID [54ff MY22 CAN_GB SEC_HS REGION_ANY GAS_ANY]]
+END---Others

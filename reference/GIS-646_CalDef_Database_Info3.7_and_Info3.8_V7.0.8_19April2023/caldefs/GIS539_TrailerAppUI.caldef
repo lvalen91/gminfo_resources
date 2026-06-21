@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This CalDef is intended to contain Trailering Application related calibrations.">
+  <CalDefFileVersion>10</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/9/2016</Date>
+    <Description>Initial release of Trailering Application related calibrations.</Description>
+    <Author>Frank Bruneel</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef file added seven driver workload calibrations (PlusNewTrailerDriverWorkload, EditTrailerButtonDriverWorkload, PlusChecklistItemDriverWorkload, EditCustomChecklistItemDriverWorkload, EditMaintenanceReminderButtonDriverWorkload, PlusCustomReminderDriverWorkload, and SubviewofChecklistDriverWorkload) from the GIS-539</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>3/2/2017</Date>
+    <Description>With the GIS539_TrailerAppUI.caldef file added the following nine new driver workload calibrations to support RTC CR#: 1337272: 1.) TrailerDetectedDriverWorkload, 2.) DiagnoseDriverWorkload, 3.) StartLightTestDriverWorkload, 4.) PlusNewMaintenanceReminderDriverWorkload, 5.) TirePressureSetupDriverWorkload, 6.) EditMileageDriverWorkload, 7.) ChecklistDriverWorkload, 8.) GuestTrailerDriverWorkload, and 9.) Tow_HaulLearnDriverWorkload. Also, updated the default value of the following six driver workload calibrations: 1.) PlusChecklistItemDriverWorkload, 2.)EditCustomChecklistItemDriverWorkload, 3.) EditMaintenanceReminderButtonDriverWorkload, 4.) PlusCustomReminderDriverWorkload, 5.) EditTrailerButtonDriverWorkload, and 6.) PlusNewTrailerDriverWorkload calibrations from a default value of LowSpeed = Trigger Level Value of 2  to Medium Speed = Trigger Level Value of 3 to match the default value update shown in the latest version GIS-539 for these calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>3/7/2017</Date>
+    <Description>Within the GIS539_TrailerAppUI.caldef, added usage of Low Radio for the TraileringAppType calibration, now that it is confirmed this calibration is also needed for Low Radio.  This also reflects the usage shown in the latest GIS-739 Spec. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>9/26/2017</Date>
+    <Description>Within the GIS539_TrailerAppUI.caldef file added the following twenty one calibrations added to the GIS-539 for MY20 under CR#:  1108899: 1.) TRAILER_HEIGHT_MAX, 2.) TRAILER_HEIGHT_MIN,  3.) OVERLAY_MAX_LENGTH, 4.) TRAILER_CAMERA_ANGLE, 5.) CAMERA_ADJUSTMENT_AMOUNT,  6.) TRAILER_MIN_WIDTH, 7.) TRAILER_MAX_WIDTH, 8.) TRAILER_MIN_HITCHING_LENGTH,  9.) TRAILER_MAX_HITCHING_LENGTH, 10.) TRAILER_MIN_LENGTH,  11.) TRANSPARENT_TRAILER_MAX_LENGTH, 12.) POSITION_CAMERA_INSTRUCTIONS, 13.) TRAILER_OVERLAY, 14.) TRANSPARENT_TRAILER_FEATURE, 15.) JACKKNIFE_FEATURE, 16.) ADJUST_CAMERA_POSITION, 17.) TrailerLengthOverlayDriverWorkload,  18.) TrailerLengthOverlaySettingDriverWorkload, 19.) CalibrationUnsuccessfulDriverWorkload, 20.) SetUpViewDriverWorkload, and 21.) EnterTrailerDimensionsDriverWorkload. Also within the GIS539_TrailerAppUI.caldef  file, added GEM usage to the TraileringAppType calibration. Since it fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>05/03/2018</Date>
+    <Description>For MY21 per CR#:996123, CR#1340146, CR#1340019, CR#1337594, and CR#1777319, added the following seven calibrations within the GIS-539_TrailerAppUI.caldef: 1) REAR_TRAILER_GUIDELINES_ENABLED 2) LOAD_MONITORING_ENABLED 3) ESBZA_FEATURE_ENABLED 4) VEHICLE_TYPE 5) WeightLimitLearnMoreDriverWorkload 6) LoadRatingsDriverWorkload 7) LoadViewIssueDriverWorkload</Description>
+    <Author>Emmanuel Oleka</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>9/28/2020</Date>
+    <Description>Per CR#2640865, adding new cal GCWR</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>11/03/2020</Date>
+    <Description>Per CR#2337061 made the following updates within the GIS539_TrailerAppUI.caldef file: Added the following 2 cals: 1.) INTERIOR_TRAILER_CAMERA_ENABLED and 2.) REAR_TRAILER_CAMERA_ENABLED</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This cal is used to determine whether the Rear Trailer Camera feature will be enabled or disabled.  True = Rear Trailer Camera HMI will appear.  False = Rear Trailer Camera HMI will not appear" Name="REAR_TRAILER_CAMERA_ENABLED" References="CR#2337061 - MFL955_23MY Updated scope BT1XX Trailering App Experience" Usage="MID,HIGH,GLOBALB">
+    <CalID>_W6lMEB4vEeuVRpAUhp1aqw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/03/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used to determine whether the Interior Trailer Camera feature will be enabled or disabled.  True = Interior Trailer Camera HMI will appear.  False = Interior Trailer Camera HMI will not appear" Name="INTERIOR_TRAILER_CAMERA_ENABLED" References="CR#2337061 - MFL955_23MY Updated scope BT1XX Trailering App Experience" Usage="MID,HIGH,GLOBALB">
+    <CalID>_wRZKsB4sEeuVRpAUhp1aqw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/03/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="GCWR is the total allowable weight of the completely loaded vehicle and trailer including any fuel, passengers, cargo, equipment, and accessories." Name="GCWR" References="Trailering App System Decomposition - 2.3.1.7" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_MW8e0ATAEeuhM_xpS7qcsA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>99999</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>99999</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine whether the Rear Trailer Camera Guidelines feature will be enabled or disabled. If set to True, Rear Trailer Camera Guidelines HMI menu item will appear. If set to False, Rear Trailer Camera Guidelines HMI menu item will not appear" Name="REAR_TRAILER_GUIDELINES_ENABLED" References="GIS-539 5.1.1.3 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ZkVlcE8dEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/03/2018</Date>
+      <Description>Initial release of this calibration for MY21</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine whether the Load Monitoring feature will be enabled or disabled. If set to True, Load Monitoring HMI load status indicator, setting menu item, and weight limit full screen notification will appear. If set to False, Load Monitoring HMI load status indicator, setting menu item, and weight limit full screen notification will not appear" Name="LOAD_MONITORING_ENABLED" References="GIS-539 5.1.1.3 calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9zNA0E8cEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/03/2018</Date>
+      <Description>Initial release of this calibration for MY21</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine whether the Side Blind Zone Alert feature will be enabled or disabled. If set to True, ESBZA HMI menu item will appear. If set to False, ESBZA HMI menu item will not appear" Name="ESBZA_FEATURE_ENABLED" References="GIS-539 5.1.1.3 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_a7644E8cEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/03/2018</Date>
+      <Description>Initial release of this calibration for MY21</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines how the form, behavior, and graphics will change based on the type of vehicle. " Name="VEHICLE_TYPE" References="GIS-539 5.1.1.3 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_jYXTAE8XEeibCblrVhJh5A</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/03/2018</Date>
+      <Description>Initial release of this calibration for MY21 </Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_hAG3oE8WEeibCblrVhJh5A</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from inter&#xac;acting with the Learn More button on the Weight Limit Alert set&#xac;ting view. If user is already in the Learn More view and a lockout behavior is triggered, the view will change to the Weight Limit Alert setting view. " Name="WeightLimitLearnMoreDriverWorkload" References="GIS-539 5.5.1.3 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>__mBN0E8SEeibCblrVhJh5A</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/03/2018</Date>
+      <Description>Initial release of this calibration for MY21</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from inter&#xac;acting with the View Load Ratings button on the Load Status view. If user is already in the Load Ratings view and a lockout behavior is triggered, the view will change to the Load Status view. " Name="LoadRatingsDriverWorkload" References="GIS-539 5.5.1.3 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ffL7oE8PEeibCblrVhJh5A</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/03/2018</Date>
+      <Description>Initial release of this Calibration for MY21</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the View Issue button on the Load Status view. If user is already in the Issue view and a lockout behavior is trig&#xac;gered, the view will change to the Load Status view. " Name="LoadViewIssueDriverWorkload" References="GIS-539 5.5.1.3 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_IDvsQE8MEeibCblrVhJh5A</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/03/2018</Date>
+      <Description>Initial release of this calibration for MY21</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the maximum height for a trailer that can use the transparent trailer feature. " Name="TRAILER_HEIGHT_MAX" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_tWR_QKMhEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>36</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the minimum height for a trailer that can use the transparent trailer feature. " Name="TRAILER_HEIGHT_MIN" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_IimcEKMhEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>36</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the maximum length for a trailer that can use the trailer length overlay feature. " Name="OVERLAY_MAX_LENGTH" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_iDWu8KMgEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>480</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine the degrees to which the user needs to adjust the camera to work with the transparent trailer feature. " Name="TRAILER_CAMERA_ANGLE" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_0gnw8KMfEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>35</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>80</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches the user can adjust the outside camera to work with the transparent trailer feature. " Name="CAMERA_ADJUSTMENT_AMOUNT" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_5f1SYKMeEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>80</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the minimum hitching length for a trailer that can use the transparent trailer feature. " Name="TRAILER_MIN_WIDTH" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_HVw2gKMWEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>36</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the maximum hitching length for a trailer that can use the transparent trailer feature. " Name="TRAILER_MAX_WIDTH" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_dWD6YKMVEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>108</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>500</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the minimum hitching length for a trailer that can use the transparent trailer feature. " Name="TRAILER_MIN_HITCHING_LENGTH" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_sNEnYKMUEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>36</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the maximum hitching length for a trailer that can use the transparent trailer feature." Name="TRAILER_MAX_HITCHING_LENGTH" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_M3rHQKMTEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>420</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the minimum length for a trailer that can use the transparent trailer feature." Name="TRAILER_MIN_LENGTH" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NOZz8KMNEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>72</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine how many inches is the maximum length for a trailer that can use the transparent trailer feature. " Name="TRANSPARENT_TRAILER_MAX_LENGTH" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_SDyrAKMMEeevVeh3fF_jdg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>480</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Trailer Length Overlay screen if the user has not created any trailer profiles. If user is already on the Trailer Length Overlay screen or in the Profile Wizard flow, the view will change back to the top level Settings view. " Name="TrailerLengthOverlayDriverWorkload" References="GIS-539 5.5.1.2*MY20 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_3Dm_AKMHEeevVeh3fF_jdg</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from acessing the Enter Trailer Length screen, either by pressing the toggle when no lengths have been entered or by pressing on any list items on the Trailer Length Overlay screen. If user is al&#xac;ready in the Enter Trailer Length view, the view will change back to the Trailer Length Overlay Setting view. " Name="TrailerLengthOverlaySettingDriverWorkload" References="GIS-539 5.5.1.2*MY20 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NiQLwKMHEeevVeh3fF_jdg</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the Calibration Unsuccessful or &#x201c;?&#x201d; button on the Camera Status view. If user is already on the &#x201c;Adjust Camera Position&#x201d; screen and a lockout behavior is triggered, the view will change to the Camera Status view. " Name="CalibrationUnsuccessfulDriverWorkload" References="GIS-539 5.5.1.2*MY20 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_lisicKMGEeevVeh3fF_jdg</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from inter&#xac;acting with the Set Up View button on the Camera Status view. If user is already in the Set Up View flow and a lockout behavior is triggered, the view will change to the Camera Status view. " Name="SetUpViewDriverWorkload" References="GIS-539 5.5.1.2*MY20 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zwyOQKMFEeevVeh3fF_jdg</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from inter&#xac;acting with the Enter Trailer Dimensions button on the Camera Status view. If user is already in the Enter Trailer Dimensions flow and a lockout behavior is triggered, the view will change to the Camera Status view. " Name="EnterTrailerDimensionsDriverWorkload" References="GIS-539 5.5.1.2*MY20 Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TpFdoKI3EeeTobDqASxMww</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine which view to show for the camera positioning instructions for transparent trailer setup. If set to 0, wireframes version 1 will appear. If set to 1, wireframes version 2 will appear. If set to 2, wireframes version 3 will appear" Name="POSITION_CAMERA_INSTRUCTIONS" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xbhdkKI1EeeTobDqASxMww</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_qWOUAKIjEeeTobDqASxMww</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine whether the Trailer Length Overlay feature will be available in MY20. If set to 0, Trailer Length Overlay HMI will appear. If set to 1, Trailer Length Overlay HMI will not appear " Name="TRAILER_OVERLAY" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_S--bkKI1EeeTobDqASxMww</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_v_x5UKIqEeeTobDqASxMww</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine whether the transparent Trailer feature will be available in MY20. If set to 0, Invisible Trailer HMI will appear. If set to 1, Invisible Trailer HMI will not appear. " Name="TRANSPARENT_TRAILER_FEATURE" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_g-SrkKI0EeeTobDqASxMww</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_G9ujIKIoEeeTobDqASxMww</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine whether the Jack-Knife Alerts feature will be available in MY20. If set to 0, Jackknife HMI will appear. If set to 1, Jackknife HMI will not appear. " Name="JACKKNIFE_FEATURE" References="GIS_539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_AtEcYKIzEeeTobDqASxMww</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_h3QC8KIrEeeTobDqASxMww</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to determine whether version 1 or version 2 of wireframes should appear for the Adjust Camera Position screen." Name="ADJUST_CAMERA_POSITION" References="GIS-539 5.1.1.2*MY20 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_JNMxwKIwEeeTobDqASxMww</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/26/2017</Date>
+      <Description>Initial release of this calibration for MY20</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_HBtgsKInEeeTobDqASxMww</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Tow/Haul Learn More screen. If user is already in the Tow/Haul Learn More view, the view will change back to the Tow/Haul Setting view.  " Name="Tow_HaulLearnDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>__yZ-EAAXEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Guest Trailer Info screen. If user is already in the Guest Trailer Info view, the view will change back to the Trailers view. " Name="GuestTrailerDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xSU1QAAWEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Checklist view. If user is already in the Checklist view, the view will change back to the Status view." Name="ChecklistDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_dr16sAASEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Edit Mileage screen. If user is already in the Edit Mileage view, the view will change back to the Trailers Status view.  " Name="EditMileageDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_IYDbsAAMEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Tire Pressure Setup. If user is already in the Tire Pressure Setup screens, the view will change back to the Trailers Status view." Name="TirePressureSetupDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zLnIkAAKEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the + New Maintenance Reminder screens. If user is already in process of adding a new maintenance reminder, the view will change back to the Maintenance Status view." Name="PlusNewMaintenanceReminderDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_7P16MAAJEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Light Test view. If user is already in the Light Test view, the view will change back to the Connections Status view. " Name="StartLightTestDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_r1m2QAAIEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing the Diagnose view. If user is already in the Diagnose view, the view will change back to the Connections Status view. " Name="DiagnoseDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Ms544AAIEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from being on the Trailer Detected screen. If user is already on the Trailer Detected view, No Trailer/Accessory will be chosen as the trailer profile and user will return to the previous screen they were on.  " Name="TrailerDetectedDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_tuBGMAAEEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/2/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from accessing any subview of the Checklist view. If user is already in a subview of the Checklist view, the view change back to the Checklist view." Name="SubviewofChecklistDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TmrrsJ8yEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the + Custom Reminder button on the Maintenance Reminders menu. If user is already in any subview by way of the + Custom Reminder button and a lockout behavior is triggered, the view will change to the Maintenance Reminders menu." Name="PlusCustomReminderDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RHnBMJ8yEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2017</Date>
+      <Description>Updated the default value of the PlusCustomReminderDriverWorkload calibration from a default value of LowSpeed = Trigger Level Value of 2  to Medium Speed = Trigger Level Value of 3 to match the default value update shown in the latest version GIS-539 for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggerd, the user is prohibited from interacting with the edit buttons on the Maintenance Reminder menu. If user is already in the Edit %item% Reminder view via the Status view or in any subview of it and a lockout behavior is triggered, the view will change to the Maintenance Reminders menu." Name="EditMaintenanceReminderButtonDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_N2tRIJ8yEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2017</Date>
+      <Description>Updated the default value of the EditMaintenanceReminderButtonDriverWorkload  calibration from a default value of LowSpeed = Trigger Level Value of 2  to Medium Speed = Trigger Level Value of 3 to match the default value update shown in the latest version GIS-539 for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from pressing a custom checklist item on the Checklist view. If user is already in Edit Checklist Item view and a lockout behavior is triggered, the view will change to the top level of the Checklist view." Name="EditCustomChecklistItemDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LCmKwJ8yEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2017</Date>
+      <Description>Updated the default value of the EditCustomChecklistItemDriverWorkload  calibration from a default value of LowSpeed = Trigger Level Value of 2  to Medium Speed = Trigger Level Value of 3 to match the default value update shown in the latest version GIS-539 for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the + Checklist Item button on the Checklist view. If user is already in New Checklist Item view and a lockout behavior is triggered, the view will change to the top level of the Checklist view.  " Name="PlusChecklistItemDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_IWbfcJ8yEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2017</Date>
+      <Description>Updated the default value of the PlusChecklistItemDriverWorkload  calibration from a default value of LowSpeed = Trigger Level Value of 2  to Medium Speed = Trigger Level Value of 3 to match the default value update shown in the latest version GIS-539 for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the edit buttons connected with each trailer profile on the Trailers view. If user is already on any subview of the Trailers view and a lockout behavior is triggered, the view will change to the top level of the Trailers view.   " Name="EditTrailerButtonDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_FWmRQJ8yEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2017</Date>
+      <Description>Updated the default value of the EditTrailerButtonDriverWorkload calibration from a default value of LowSpeed = Trigger Level Value of 2  to Medium Speed = Trigger Level Value of 3 to match the default value update shown in the latest version GIS-539 for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="If lockout behavior is triggered, the user is prohibited from interacting with the +New Trailer button from the Trailers view. If user is in the Wizard, profile will be saved and view will transtion to the Status view. " Name="PlusNewTrailerDriverWorkload" References="GIS-539 5.5.1.1*Driver Workload Restriction Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_2vjIUJ8xEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/2/2017</Date>
+      <Description>Updated the default value of the PlusNewTrailerDriverWorkload calibration from a default value of LowSpeed = Trigger Level Value of 2  to Medium Speed = Trigger Level Value of 3 to match the default value update shown in the latest version GIS-539 for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used to determine how often the Maintenance Due Notification is displayed based on ignition counts. Upon reaching the reminder number, the notification shall be displayed on the next ignition  cycle. " Name="MaintenanceRemind_Me" References="GIS-539 &amp; GIS-739" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zxCooC8LEeaOBpLH5QxSHQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/9/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Frank Bruneel</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration turns the Trailering App app on or off on the home screen for light or heavy duty truck in North American Region. This cal is used to determine trailering functionality available on the vehicle. If set to 0, trailer app is disabled. If set to 1, trailer app contains Trailer Light Sequence functionality only. Option selected when Trailering Interface Module is NOT packaged on the vehicle (RPO U1D is NOT packaged). If set to 2, trailer app contains full Trailering Features. Option selected when Trailering Interface Module is packaged on the vehicle (RPO U1D is packaged) " Name="TraileringAppType" References="GIS-539 &amp; GIS-739" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_1ucVoHKvEeWtPcYjqrxpUw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/9/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Frank Bruneel</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/7/2017</Date>
+      <Description>Added usage of Low Radio for the TraileringAppType calibration, now that it is confirmed this calibration is also needed for Low Radio. This also reflects the usage shown in the latest GIS-739 Spec. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/26/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_e9weAHKtEeWtPcYjqrxpUw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

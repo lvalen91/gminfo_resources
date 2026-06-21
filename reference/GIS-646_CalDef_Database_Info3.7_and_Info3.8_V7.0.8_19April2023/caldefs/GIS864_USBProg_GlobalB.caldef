@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10Apr18</Date>
+    <Description>Initial Release of this calibration for MY21</Description>
+    <Author>James Forsmark</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The size in Mega Bytes (MB) of the file that can be received by cllient and verified in RAM before committing to non-volatile memory" Name="GIS864_MaxOperationalProgFileSize" References="GIS-864-7000" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_N4hfgCFzEeiRaJ4r_1tWTw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>5000</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>8000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Issuer string of the signing certificate" Name="GIS864_SigningCertificateIssuer" References="GIS-864-7000" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ICREUCFTEeiRaJ4r_1tWTw</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="Enable or disable USB programming" Name="GIS864_USBProgrammingEnabled" References="GIS-864-7000" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ULEUECFREeiRaJ4r_1tWTw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Waits for this duration for user to consent" Name="GIS864_ConsentProceed" References="GIS-864-7000" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_-5iQICFQEeiRaJ4r_1tWTw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>11</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waiting longer as USB taken out in the middle of installation" Name="GIS864_WaitingLongForFile" References="GIS-864-7000" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_xIrvYCFQEeiRaJ4r_1tWTw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>minutes</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waiting period if USB is taken out in the middle of installation" Name="GIS864_WaitingForFile" References="GIS-864-7000" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>__-kbACFPEeiRaJ4r_1tWTw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Waits this duration for the user to park, if not parked" Name="GIS864_WaitingForParking" References="GIS-864-7000" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_MRPf0CFLEeiRaJ4r_1tWTw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

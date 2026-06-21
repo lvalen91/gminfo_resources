@@ -1,0 +1,30 @@
+total 0
+drwxr-xr-x 2 root root  580 2011-11-11 02:11 .
+drwxr-xr-x 6 root root 1500 2011-11-11 02:11 ..
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 acpi_a -> /dev/block/vda14
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 acpi_b -> /dev/block/vda15
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 acpio_a -> /dev/block/vda16
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 acpio_b -> /dev/block/vda17
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 boot_a -> /dev/block/vda7
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 boot_b -> /dev/block/vda8
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 bootloader_a -> /dev/block/vda5
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 bootloader_b -> /dev/block/vda6
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 calibration -> /dev/block/vda23
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 cert_a -> /dev/block/vda18
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 cert_b -> /dev/block/vda19
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 config -> /dev/block/vda22
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 data -> /dev/block/vda26
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 ghs_abl_update -> /dev/block/vda4
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 ghs_isys_a -> /dev/block/vda1
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 ghs_isys_b -> /dev/block/vda2
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 ghs_log -> /dev/block/vda24
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 ghs_storage -> /dev/block/vda3
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 metadata -> /dev/block/vda12
+lrwxrwxrwx 1 root root   15 2011-11-11 02:11 misc -> /dev/block/vda9
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 persistent -> /dev/block/vda20
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 super -> /dev/block/vda13
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 teedata -> /dev/block/vda21
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 update_cache -> /dev/block/vda25
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 vbmeta_a -> /dev/block/vda10
+lrwxrwxrwx 1 root root   16 2011-11-11 02:11 vbmeta_b -> /dev/block/vda11
+lrwxrwxrwx 1 root root   14 2011-11-11 02:11 vda -> /dev/block/vda

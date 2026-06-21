@@ -1,0 +1,385 @@
+================================================================================
+CALDEF DATABASE AND VIP CALIBRATION SYSTEM ANALYSIS
+================================================================================
+Document Version: 1.0
+Created: December 28, 2025
+Purpose: Map CalDef entries to system components and analyze VIP calibration
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. EXECUTIVE SUMMARY
+2. CRITICAL FINDING: TWO SEPARATE CALIBRATION SYSTEMS
+3. ANDROID-SIDE CALIBRATIONS (CalDef Database)
+4. VIP-SIDE CALIBRATIONS (Firmware)
+5. VIP CALIBRATION INDEX SYSTEM
+6. SECURITY-RELEVANT CALIBRATIONS
+7. EXPLOITATION ANALYSIS
+8. RESEARCH PRIORITIES
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+After comprehensive analysis of the GIS-646 CalDef Database and VIP log files,
+a critical architectural insight has been discovered:
+
+  THE GM AAOS SYSTEM HAS TWO COMPLETELY SEPARATE CALIBRATION SYSTEMS:
+
+  1. CalDef Database Calibrations -> Android/SoC software (Palto)
+  2. VIP Firmware Calibrations -> VIP MCU (RH850)
+
+The EEPROM security flags (0x0440, 0x0A80 for ADB) are controlled by VIP
+firmware, NOT by CalDef calibrations. Therefore, modifying CalDef calibrations
+via DPS calibration files (.cfx) CANNOT affect EEPROM security flags.
+
+================================================================================
+2. CRITICAL FINDING: TWO SEPARATE CALIBRATION SYSTEMS
+================================================================================
+
+2.1 ARCHITECTURAL DIAGRAM
+-------------------------
+```
++------------------------------------------------------------------+
+|                         ANDROID/SOC                               |
+|                                                                    |
+|  +----------------------------+   +----------------------------+   |
+|  | CalDef Calibrations       |   | Palto Software             |   |
+|  | (SFS2, GIS763, etc.)      |-->| - Security Extensions      |   |
+|  | Stored in: system/vendor  |   | - Programming HMI          |   |
+|  | Access: OTA, USB update   |   | - Certificate validation   |   |
+|  +----------------------------+   +----------------------------+   |
+|                                                                    |
++------------------------------------------------------------------+
+                              | IPC
+                              v
++------------------------------------------------------------------+
+|                          VIP MCU                                  |
+|                                                                    |
+|  +----------------------------+   +----------------------------+   |
+|  | VIP Calibrations          |   | Security Functions         |   |
+|  | (cal_vin_relearn_en, etc.)|-->| - PROTOKEY/ADB auth        |   |
+|  | Stored in: VIP Flash/NVM  |   | - EEPROM flag checks       |   |
+|  | Access: DPS flash only    |   | - Boot security            |   |
+|  +----------------------------+   +----------------------------+   |
+|              |                                                     |
+|              v                                                     |
+|  +----------------------------+                                    |
+|  | EEPROM (M24C64)           |                                    |
+|  | - 0x0440: ADB flag        |                                    |
+|  | - 0x0A80: Backup flag     |                                    |
+|  | - Direct I2C access only  |                                    |
+|  +----------------------------+                                    |
++------------------------------------------------------------------+
+```
+
+2.2 IMPLICATION
+---------------
+CalDef calibrations like DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE affect
+Android software behavior (MEC check bypass for registration), but DO NOT
+affect VIP's EEPROM security flag validation.
+
+The PROTOKEY/ADB authentication is handled by VIP firmware reading EEPROM
+flags directly via I2C - this is completely independent of CalDef.
+
+================================================================================
+3. ANDROID-SIDE CALIBRATIONS (CalDef Database)
+================================================================================
+
+Source: GIS-646 CalDef Database v7.0.8 (April 2023)
+Location: /misc/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/
+
+3.1 SECURITY-RELEVANT CALDEFS
+-----------------------------
+
+A) DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE (SFS2)
+   File:    SFS2_SecurityExtensionsFRD.caldef
+   Type:    Boolean
+   Default: FALSE
+   Effect:  Bypasses MEC check for device registration
+   Scope:   Android Palto software (NOT VIP)
+
+   IF TRUE:  Device registration proceeds regardless of MEC state
+   IF FALSE: Registration waits for MEC == 0
+
+   IMPORTANT: This does NOT affect ADB authentication!
+              ADB auth is VIP firmware (PROTOKEY + EEPROM flags)
+
+B) EXPIRATION_ENFORCEMENT (SFS2)
+   File:    SFS2_SecurityExtensionsFRD.caldef
+   Type:    Boolean
+   Default: TRUE
+   Effect:  Controls certificate expiration validation
+   Scope:   Android TCS library
+
+   IF FALSE: May accept expired certificates
+   IF TRUE:  Enforces certificate expiration (normal mode only)
+
+C) GIS763_PROGRAMMING_ENABLED (GIS763)
+   File:    GIS763_InfotainmentProg_GlobalB.caldef
+   Type:    Boolean
+   Default: TRUE
+   Effect:  Master programming enable switch
+   Scope:   Android update subsystem
+
+D) GIS763_SigningCertificateIssuer (GIS763)
+   Type:    String
+   Default: "CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC"
+   Effect:  Expected certificate issuer for signature validation
+
+E) GIS763_SigningCertificateSubject (GIS763)
+   Type:    String
+   Default: "CN=GM Code Signature Server, OU=GM NA INFOTAINMENT, O=GM"
+   Effect:  Expected certificate subject for code signing
+
+3.2 OTHER CALDEF FILES (100+ files)
+-----------------------------------
+Categories:
+- UI/HMI calibrations (GIS500-599)
+- Audio calibrations (GIS604, etc.)
+- Diagnostic calibrations (GIS621, GIS641, etc.)
+- Tuner calibrations (GIS653, GIS655)
+- Navigation calibrations (GIS628)
+- Security logging (SFS22)
+
+None of these directly control VIP/EEPROM security behavior.
+
+================================================================================
+4. VIP-SIDE CALIBRATIONS (Firmware)
+================================================================================
+
+Source: VIP UART log (VIP_log_2B.174.4.1_10JUL24.txt)
+Firmware Version: 2B.174.4.1 (Build 24Mar22-0256)
+
+4.1 VIP CALIBRATION VALUES (from boot log)
+------------------------------------------
+| Calibration Name                              | Value |
+|-----------------------------------------------|-------|
+| cal_critical_state_of_charge_ignore           | 1     |
+| cal_vin_relearn_en                            | 1     |
+| cal_local_infotainment_cancel_mode            | 0     |
+| cal_background_sleep_timeout_sec              | 10    |
+| cal_sleep_fault_timeout_sec                   | 900   |
+| cal_veh_initiated_local_infotainment_timeout  | 600   |
+| cal_user_initiated_local_infotainment_timeout | 600   |
+| cal_startup_delay_wait_timeout_msec           | 200   |
+| cal_startup_fault_timeout_sec                 | 15    |
+| cal_local_valet_timeout_sec                   | 30    |
+| cal_master_offmode_active_timeout_min         | 35    |
+| cal_update_available_local_infotainment_sec   | 60    |
+| cal_cluster_animation_ignore                  | 0     |
+| cal_cluster_hmiready_ignore                   | 0     |
+| cal_rsi_animation_ignore                      | 1     |
+| cal_rsi_hmiready_ignore                       | 1     |
+| cal_disabled_state_offmode_timeout_sec        | 30    |
+| cal_remote_reflash_programming_complete_sec   | 30    |
+| cal_infotainment_activity_timeout_sec         | 30    |
+| cal_offmode_active_timeout_sec                | 30    |
+| cal_powermode_failure_timeout_sec             | 60    |
+| cal_shutdown_animation_failsafe_timeout       | 15    |
+| cal_suspend_to_ram_en                         | 1     |
+| cal_maximum_flush_fault_time                  | 36000 |
+| cal_flush_limit_time                          | 24    |
+| cal_str_min_temp_threshold                    | -10   |
+| cal_str_mode_soc_min_threshold_1              | 90    |
+| cal_str_mode_soc_min_threshold_2              | 75    |
+| cal_str_mode_soc_min_threshold_3              | 60    |
+| cal_max_suspend_time_1                        | 84    |
+| cal_max_suspend_time_2                        | 24    |
+| cal_max_suspend_time_3                        | 16    |
+
+4.2 VIP CALIBRATION STORAGE
+---------------------------
+These calibrations are stored in VIP internal flash/NVM.
+They can ONLY be modified by:
+1. Flashing new VIP_APP firmware via DPS (signed)
+2. Potentially via VIP JTAG debugging (physical access)
+
+DPS cannot modify these calibrations without replacing VIP firmware.
+
+================================================================================
+5. VIP CALIBRATION INDEX SYSTEM
+================================================================================
+
+The VIP serves calibration data to the SoC via IPC on every boot.
+This is SEPARATE from the CalDef database.
+
+5.1 CALIBRATION GROUPS TRANSMITTED TO SOC
+-----------------------------------------
+| Index | IPC Length | Data Length | Suspected Purpose        |
+|-------|------------|-------------|--------------------------|
+| 0     | 154        | 150         | System configuration     |
+| 1     | 128        | 124         | Audio/chime config       |
+| 2     | 17         | 13          | Microphone config        |
+| 3     | 21         | 17          | DTC mask                 |
+| 4     | 48         | 44          | Unknown                  |
+| 5     | 48         | 44          | Unknown                  |
+| 6     | 88         | 84          | Unknown                  |
+| 7     | 88         | 84          | Unknown                  |
+| 8     | 88         | 84          | Unknown                  |
+| 9     | 88         | 84          | Unknown                  |
+| 10    | 88         | 84          | Unknown                  |
+| 11    | 88         | 84          | Unknown                  |
+| 12    | 88         | 84          | Unknown                  |
+| 13    | 88         | 84          | Unknown                  |
+| 14    | 50         | 46          | Unknown                  |
+
+5.2 VIP LOG EVIDENCE
+--------------------
+[J6_CDD] Cal override request received from SOC
+[J6_CDD] Calibration_Request_CalGroup: GetCal Index = X message.
+[J6_CDD] Got Cal Response: Ipclength = Y, Index = X, Status = 1, length = Z.
+[J6_CDD] One Boot Calibration, Cal readindex - X
+
+5.3 CRITICAL OBSERVATION
+------------------------
+The SoC requests calibration data from VIP via IPC.
+VIP reads this data from its internal storage and sends to SoC.
+
+This is a ONE-WAY flow: VIP -> SoC
+The SoC cannot write calibration data back to VIP via IPC.
+
+================================================================================
+6. SECURITY-RELEVANT CALIBRATIONS
+================================================================================
+
+6.1 WHAT CONTROLS ADB ACCESS?
+-----------------------------
+ADB access is controlled by:
+
+1. EEPROM Flag 0x0440: Primary ADB enable (5A FF 5A = enabled)
+2. EEPROM Flag 0x0A80: Backup ADB enable (5A FF 5A = enabled)
+3. VIP PROTOKEY module: Validates BCM seeds for ADB auth
+
+When EEPROM flags are set to bypass:
+- VIP returns 0xFF seed (all bytes) instead of real challenge
+- PROTOKEY validation is skipped
+- ADB access is granted without authentication
+
+6.2 WHAT CALDEF CALIBRATIONS AFFECT?
+------------------------------------
+| Calibration | Affects | Does NOT Affect |
+|-------------|---------|-----------------|
+| DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE | Device registration | ADB auth |
+| EXPIRATION_ENFORCEMENT | Certificate validation | ADB auth |
+| GIS763_PROGRAMMING_ENABLED | OTA/USB programming | ADB auth |
+| SECURITY_EVENT_LOGGING_ENABLED | Security logging | ADB auth |
+
+NONE of the CalDef calibrations affect ADB authentication.
+
+================================================================================
+7. EXPLOITATION ANALYSIS
+================================================================================
+
+7.1 CAN DPS CALIBRATION FILES ENABLE ADB?
+-----------------------------------------
+ANSWER: NO
+
+DPS calibration files (.cfx) modify Android/SoC calibrations.
+These calibrations do not control VIP EEPROM access.
+Therefore, creating custom .cfx files cannot enable ADB.
+
+7.2 CAN DPS MODIFY VIP CALIBRATIONS?
+------------------------------------
+ANSWER: ONLY VIA VIP FIRMWARE FLASH
+
+VIP calibrations are embedded in VIP_APP firmware.
+To modify them, you would need to:
+1. Extract VIP firmware
+2. Modify calibration values
+3. Re-sign firmware (requires GM signing keys)
+4. Flash via DPS
+
+Without GM signing keys, VIP firmware modification is blocked.
+
+7.3 REMAINING ATTACK VECTORS
+----------------------------
+1. PHYSICAL EEPROM MODIFICATION (Proven working)
+   - Direct I2C access to M24C64
+   - Modify 0x0440 and 0x0A80
+
+2. Y177 FIRMWARE DOWNGRADE
+   - SELinux permissive in Y177
+   - More exploration possible
+   - Requires testing AVB rollback
+
+3. VIP UTILITY FILE ANALYSIS
+   - If utility files contain I2C opcodes
+   - Could potentially write EEPROM via DPS
+   - Requires reverse engineering .dll format
+
+4. VIP UART CONSOLE
+   - /dev/ttyACM1 accessible
+   - May accept debug commands
+   - May require bypassing 74LVC08A gate
+
+5. VIP JTAG
+   - Physical debug access
+   - Full firmware dump/modify
+   - Requires hardware probing
+
+================================================================================
+8. RESEARCH PRIORITIES
+================================================================================
+
+8.1 HIGH PRIORITY
+-----------------
+[1] TEST Y177 DOWNGRADE
+    - Version check disabled
+    - SELinux permissive enables more exploration
+    - Test AVB rollback behavior
+
+[2] EEPROM FLAG EXPLORATION
+    - Test 0x0B40 (suspected developer mode)
+    - Map other security-related flags
+    - Document flag persistence
+
+8.2 MEDIUM PRIORITY
+-------------------
+[3] UTILITY FILE REVERSE ENGINEERING
+    - Analyze .dll opcode format
+    - Determine if I2C write opcodes exist
+    - Could enable EEPROM writes via DPS
+
+[4] VIP UART CONSOLE
+    - Probe /dev/ttyACM1 for commands
+    - Check if debug mode exists
+    - Bypass 74LVC08A if needed
+
+8.3 LOW PRIORITY
+----------------
+[5] VIP FIRMWARE ANALYSIS
+    - JTAG extraction
+    - Analyze security check code
+    - Identify bypass points
+
+[6] CALDEF EXPLOITATION
+    - EXPIRATION_ENFORCEMENT = FALSE
+    - May allow expired certs
+    - Limited security impact
+
+================================================================================
+APPENDIX: FILE REFERENCES
+================================================================================
+
+CalDef Database:
+  /misc/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/
+
+Key CalDef Files:
+  - SFS2_SecurityExtensionsFRD.caldef (security extensions)
+  - GIS763_InfotainmentProg_GlobalB.caldef (programming control)
+  - SFS22_SecurityEventLoggingFRD.caldef (security logging)
+  - GIS618_SystemState.caldef (system state, VIN relearn)
+  - GIS641_DiagnosticCalDef_GlobalB.caldef (diagnostics)
+
+VIP Log:
+  /logs/VIP_log_2B.174.4.1_10JUL24.txt
+
+Related Documentation:
+  - DPS_AND_MODIFICATION_LANDSCAPE.txt
+  - DPS_SECURITY_ANALYSIS.txt
+  - GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt
+
+================================================================================
+END OF DOCUMENT
+================================================================================

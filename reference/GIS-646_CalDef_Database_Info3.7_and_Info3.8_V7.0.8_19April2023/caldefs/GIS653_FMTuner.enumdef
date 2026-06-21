@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This enumdef contains the enumerated values to support the FMTuner.caldef file.">
+  <EnumDefFileVersion>7</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>14OCT14</Date>
+    <Description>Removed spaces from enumdefs to allow code generation.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>December 1 2014</Date>
+    <Description>Release File Change Log:  Cal Def File Version 3.  December 1, 2014
+Here is a summary of the changes for this release:
+
+1.  FM_StepSize.  Modified step size enumerated values so that the value matches the definition for the enumeration to avoid confusion.  This means FM_StepSize_1 = enum value of 1 instead of 0.
+
+2.  FM_RangeDefinition.  Modified step size enumerated values so that the value matches the definition for the enumeration to avoid confusion.  This means FM_RangeDefinition_1 = enum value of 1 instead of 0.
+
+3.  FM_SeekThreshold.  Modified step size enumerated values so that the value matches the definition for the enumeration to avoid confusion.  This means FM_SeekThreshold_1 = enum value of 1 instead of 0.
+
+4.  FM_AutostoreThreshold.  Deleted this enumerated value as Autostore is no longer supported on Info 3 programs.
+
+5.  FM_HighCutSelection.  Added this enumerated value as it is required to satisfy GMW16273.
+
+6.  FM_SoftMuteLevels.  Modified step size enumerated values so that the value matches the definition for the enumeration to avoid confusion.  This means FM_SoftMute1 = enum value of 1 instead of 0.
+
+7.  FM_SeparationSelection.  Added this enumerated value as it is required to satisfy GMW16273.
+
+8.  FM_LimitingSelection.  Added this enumerated value as it is required to satisfy GMW16273. 
+
+9. FM_Range.  Added FM Range 7 to the FM_Range_Definition enumdef to support upcoming Brazilian frequency range.
+
+10. FM_RDSInformationRegion.  Deleted this enumeration as it is redundant with the RDS_Config enumeration.
+
+</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>09Feb2015</Date>
+    <Description>The following changes have been made to this GIS-653 FM Tuner enumdef file:
+      1.  Added a 4th enum value to FM_StepSize to address missing value defined in GMW16273.
+
+      2. Added definitions to the enums throughout the file to ensure each enum has a definition.  Some enums only had the default value included This is for completeness of the file.
+
+    </Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>June 25, 2015</Date>
+    <Description>The following changes have been made to this release:  1.  Deleted FM_Step Size as this will be defined only as an integer in the cadef file.  Delete FM_Range_Definition as individual upper and lower frequency limits will be used instead as defined in the  FMTuner.caldef file.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>5NOV2015</Date>
+    <Description>This change is to modify the description of RDS_CONFIG enum definitions to provide more flexibility in tailoring this feature for given vehicle markets.  Please refer to Assembla ticket 2077 for addditonal information.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>2016-Jun-15</Date>
+    <Description>Cleanup of cals as per CR#1096165. Added cal enum: SS_REG_AF_Switching_Speed.  Removed RDS_CONFIG.</Description>
+    <Author>Kiran Soni</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>05/10/2018</Date>
+    <Description>GMW16273 related changes. Per CR#1768009. 1. Deleted FM_LimitingSelection, FM_SoftMuteLevels - previous tables modified or no longer exists in updated version of GMW. 2. Updated FM_HighCutSelection descriptions for enum selection 1-5, Updated FM_SeparationSelection description, Updated FM_Seek_Threshold 1- 4 enum, keep Seek_C as-is</Description>
+    <Author>Christine Marzan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This is a supplier specific calibration parameter for adjusting the AF switching speed. Semantics: For regional automatic switching 3 different setups adjustable: slow (0), normal (1), fast(2)" Name="SS_REG_AF_Switching_Speed">
+    <EnumID>_2KdnQDDxEeaZz-7aTBi2gQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Slow" Name="SS_REG_AF_Switching_Speed_Slow">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Normal" Name="SS_REG_AF_Switching_Speed_Normal">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Fast" Name="SS_REG_AF_Switching_Speed_Fast">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This enumeration is defined to establish the FM Separation Settings for a single global performance configuration, with the exception of Korea. The specific filter values are defined in GMW16273. Revised as per Updated GMW16273 May 2018." Name="FM_SeparationSelection">
+    <EnumID>_yeDtEHokEeSjYPic2Gk-6g</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Description="All Regions Minus Korea" Name="FM_SeparationSelection_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Korea 1 kHz" Name="FM_SeparationSelection_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Korea 10 kHz" Name="FM_SeparationSelection_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="FM_SeparationSelection_4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enum that defines FM signal threshold to support Seek operations. The values for the enums 1-4 are no longer defined in GMW16273 May 2018 update. SeekC (SeekC_high and SeekC_low) is still valid." Name="FM_Seek_Threshold">
+    <EnumID>_EmSUAM8OEeOJMb1_-vq54w</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Reserved" Name="FM_Seek_Threshold_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved" Name="FM_Seek_Threshold_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved" Name="FM_Seek_Threshold_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved" Name="FM_Seek_Threshold_4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="FM_Seek_Threshold_C" Name="FM_Seek_Threshold_C">
+      <Value>5</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This enumeration is defined to establish the high cut frequency filters for a single global performance configuration, with the exception of Korea.  The specific filter values are defined in GMW16273. Updated to GMW16273 May2018 " Name="FM_HighCutSelection">
+    <EnumID>_0X0dUHofEeSjYPic2Gk-6g</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="All Regions Minus Korea" Name="FM_HighCut_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Korea" Name="FM_HighCut_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="FM_HighCut_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="FM_HighCut_4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="FM_HighCut_5">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="High cut disabled" Name="FM_HighCutOff">
+      <Value>6</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

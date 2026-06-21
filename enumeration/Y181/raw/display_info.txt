@@ -1,0 +1,100 @@
+DISPLAY MANAGER (dumpsys display)
+  mOnlyCode=false
+  mSafeMode=false
+  mPendingTraversal=false
+  mViewports=[DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='local:4615537251352926243', physicalPort=35, orientation=0, logicalFrame=Rect(0, 0 - 2400, 960), physicalFrame=Rect(0, 0 - 2400, 960), deviceWidth=2400, deviceHeight=960}]
+  mDefaultDisplayDefaultColorMode=0
+  mWifiDisplayScanRequestCount=0
+  mStableDisplaySize=Point(2400, 960)
+  mMinimumBrightnessCurve=[(0.0, 0.0), (2000.0, 50.0), (4000.0, 90.0)]
+
+
+Display States: size=1
+  Display Id=0
+  Display State=ON
+  Display Brightness=0.05
+  Display SdrBrightness=0.05
+
+Display Adapters: size=3
+  LocalDisplayAdapter
+  VirtualDisplayAdapter
+  OverlayDisplayAdapter
+    mCurrentOverlaySetting=
+    mOverlays: size=0
+
+Display Devices: size=1
+  DisplayDeviceInfo{"Built-in Screen": uniqueId="local:4615537251352926243", 2400 x 960, modeId 1, defaultModeId 1, supportedModes [{id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}], colorMode 0, supportedColorModes [0], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[], mMaxLuminance=500.0, mMaxAverageLuminance=500.0, mMinLuminance=0.0}, allmSupported false, gameContentTypeSupported false, density 200, 192.911 x 193.523 dpi, appVsyncOff 2500000, presDeadline 14666268, touch INTERNAL, rotation 0, type INTERNAL, address {port=35, model=0x400daead0a7958}, deviceProductInfo DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}, state ON, frameRateOverride , brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.39763778, FLAG_DEFAULT_DISPLAY, FLAG_ROTATES_WITH_CONTENT, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS}
+    mAdapter=LocalDisplayAdapter
+    mUniqueId=local:4615537251352926243
+    mDisplayToken=android.os.BinderProxy@4e32bac
+    mCurrentLayerStack=0
+    mCurrentFlags=1
+    mCurrentOrientation=0
+    mCurrentLayerStackRect=Rect(0, 0 - 2400, 960)
+    mCurrentDisplayRect=Rect(0, 0 - 2400, 960)
+    mCurrentSurface=null
+    mPhysicalDisplayId=4615537251352926243
+    mDisplayModeSpecs={baseModeId=1 allowGroupSwitching=false primaryRefreshRateRange=[0 60] appRequestRefreshRateRange=[0 Infinity]}
+    mDisplayModeSpecsInvalid=false
+    mActiveModeId=1
+    mActiveColorMode=0
+    mDefaultModeId=1
+    mState=ON
+    mBrightnessState=0.05
+    mBacklightAdapter=BacklightAdapter [useSurfaceControl=false (force_anyway? false), backlight=null]
+    mAllmSupported=false
+    mAllmRequested=false
+    mGameContentTypeSupported=false
+    mGameContentTypeRequested=false
+    mStaticDisplayInfo=StaticDisplayInfo{isInternal=true, density=1.25, secure=true, deviceProductInfo=DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}}
+    mSfDisplayModes=
+      DisplayMode{id=0, width=2400, height=960, xDpi=192.911, yDpi=193.523, refreshRate=60.001434, appVsyncOffsetNanos=2500000, presentationDeadlineNanos=14666268, group=-1}
+    mActiveSfDisplayMode=DisplayMode{id=0, width=2400, height=960, xDpi=192.911, yDpi=193.523, refreshRate=60.001434, appVsyncOffsetNanos=2500000, presentationDeadlineNanos=14666268, group=-1}
+    mSupportedModes=
+      DisplayModeRecord{mMode={id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}}
+    mSupportedColorModes=[0]
+    mDisplayDeviceConfig=DisplayDeviceConfig{mLoadedFrom=<config.xml>, mBacklight=null, mNits=null, mRawBacklight=null, mRawNits=null, mBrightness=null, mBrightnessToBacklightSpline=MonotoneCubicSpline{[(0.0, 0.0: 1.0), (1.0, 1.0: 1.0)]}, mBacklightToBrightnessSpline=MonotoneCubicSpline{[(0.0, 0.0: 1.0), (1.0, 1.0: 1.0)]}, mBacklightMinimum=0.035433073, mBacklightMaximum=1.0, mBrightnessDefault=0.39763778, mQuirks=null, isHbmEnabled=false, mHbmData=null, mBrightnessRampFastDecrease=0.70472443, mBrightnessRampFastIncrease=0.70472443, mBrightnessRampSlowDecrease=0.23228346, mBrightnessRampSlowIncrease=0.23228346, mScreenDarkeningMinThreshold=0.0, mScreenBrighteningMinThreshold=0.0, mAmbientLuxDarkeningMinThreshold=0.0, mAmbientLuxBrighteningMinThreshold=0.0, mAmbientLightSensor=Sensor{type: , name: , refreshRateRange: [0.0, Infinity]} , mProximitySensor=Sensor{type: , name: , refreshRateRange: [0.0, Infinity]} , mRefreshRateLimitations= []}
+
+LogicalDisplayMapper:
+  mSingleDisplayDemoMode=false
+  mCurrentLayout=[{addr: {port=35, model=0x400daead0a7958}, dispId: 0(ON)}]
+  mDeviceStateOnWhichToWakeUp=-1
+  
+  Logical Displays: size=1
+  Display 0:
+    mDisplayId=0
+    mPhase=1
+    mLayerStack=0
+    mHasContent=true
+    mDesiredDisplayModeSpecs={baseModeId=1 allowGroupSwitching=false primaryRefreshRateRange=[0 60] appRequestRefreshRateRange=[0 Infinity]}
+    mRequestedColorMode=0
+    mDisplayOffset=(0, 0)
+    mDisplayScalingDisabled=false
+    mPrimaryDisplayDevice=Built-in Screen
+    mBaseDisplayInfo=DisplayInfo{"Built-in Screen", displayId 0", displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_TRUSTED, real 2400 x 960, largest app 2400 x 960, smallest app 2400 x 960, appVsyncOff 2500000, presDeadline 14666268, mode 1, defaultMode 1, modes [{id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[], mMaxLuminance=500.0, mMaxAverageLuminance=500.0, mMinLuminance=0.0}, userDisabledHdrTypes [], minimalPostProcessingSupported false, rotation 0, state ON, type INTERNAL, uniqueId "local:4615537251352926243", app 2400 x 960, density 200 (192.911 x 193.523) dpi, layerStack 0, colorMode 0, supportedColorModes [0], address {port=35, model=0x400daead0a7958}, deviceProductInfo DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}, removeMode 0, refreshRateOverride 0.0, brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.39763778}
+    mOverrideDisplayInfo=DisplayInfo{"Built-in Screen", displayId 0", displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_TRUSTED, real 2400 x 960, largest app 1416 x 2116, smallest app 960 x 865, appVsyncOff 2500000, presDeadline 14666268, mode 1, defaultMode 1, modes [{id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[], mMaxLuminance=500.0, mMaxAverageLuminance=500.0, mMinLuminance=0.0}, userDisabledHdrTypes [], minimalPostProcessingSupported false, rotation 0, state ON, type INTERNAL, uniqueId "local:4615537251352926243", app 1416 x 960, density 200 (192.911 x 193.523) dpi, layerStack 0, colorMode 0, supportedColorModes [0], address {port=35, model=0x400daead0a7958}, deviceProductInfo DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}, removeMode 0, refreshRateOverride 0.0, brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.39763778}
+    mRequestedMinimalPostProcessing=false
+    mFrameRateOverrides=[]
+    mPendingFrameRateOverrideUids={}
+  
+  DeviceStateToLayoutMap:
+    Registered Layouts:
+    state(-1): [{addr: {port=35, model=0x400daead0a7958}, dispId: 0(ON)}]
+
+Callbacks: size=17
+  0: mPid=1160, mWifiDisplayScanRequested=false
+  1: mPid=1384, mWifiDisplayScanRequested=false
+  2: mPid=1416, mWifiDisplayScanRequested=false
+  3: mPid=1726, mWifiDisplayScanRequested=false
+  4: mPid=1963, mWifiDisplayScanRequested=false
+  5: mPid=2265, mWifiDisplayScanRequested=false
+  6: mPid=2303, mWifiDisplayScanRequested=false
+  7: mPid=2426, mWifiDisplayScanRequested=false
+  8: mPid=2765, mWifiDisplayScanRequested=false
+  9: mPid=2814, mWifiDisplayScanRequested=false
+  10: mPid=3305, mWifiDisplayScanRequested=false
+  11: mPid=3397, mWifiDisplayScanRequested=false
+  12: mPid=3466, mWifiDisplayScanRequested=false
+  13: mPid=3622, mWifiDisplayScanRequested=false
+  14: mPid=3671, mWifiDisplayScanRequested=false
+  15: mPid=6584, mWifiDisplayScanRequested=false

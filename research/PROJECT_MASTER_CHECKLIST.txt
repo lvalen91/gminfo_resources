@@ -1,0 +1,403 @@
+================================================================================
+GM AAOS SECURITY RESEARCH - MASTER PROJECT CHECKLIST
+================================================================================
+Document Version: 1.0
+Created: December 28, 2025
+Purpose: Complete inventory and status of all project files and research areas
+================================================================================
+
+PROJECT STATISTICS
+------------------
+Total Files: 437
+Total Directories: 35+
+Last Updated: December 28, 2025
+
+================================================================================
+DIRECTORY STRUCTURE AND FILE INVENTORY
+================================================================================
+
+/gm_aaos/
+├── analysis/                    [EXAMINED]
+│   └── adb_Y181/
+│       ├── gm_enum_20251220_081558/
+│       │   ├── raw/                     # 40+ raw data files
+│       │   │   ├── all_properties.txt   # Full getprop dump
+│       │   │   ├── partitions.txt       # A/B partition layout
+│       │   │   ├── fstab.txt            # Mount configuration
+│       │   │   ├── kernel_config.txt    # Kernel options
+│       │   │   └── [35+ other files]
+│       │   ├── pulled_files/
+│       │   │   ├── plat_sepolicy.cil    # Platform SEPolicy
+│       │   │   └── vendor_sepolicy.cil  # Vendor SEPolicy
+│       │   ├── enumeration_report.txt   # Full enum report (370KB)
+│       │   └── security_check.txt
+│       ├── fastboot_enum_*.txt          # Fastboot attempts
+│       └── security_check.txt
+│
+├── documentation/               [CREATED/MAINTAINED]
+│   ├── GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt  # Master research doc
+│   ├── QUICK_REFERENCE.txt                       # Quick ref card
+│   ├── DPS_SECURITY_ANALYSIS.txt                 # DPS analysis
+│   ├── DPS_AND_MODIFICATION_LANDSCAPE.txt        # Full DPS/mod vectors
+│   ├── CALDEF_VIP_CALIBRATION_ANALYSIS.txt       # CalDef mapping
+│   ├── AOSP_REPLACEMENT_RESEARCH.txt             # AOSP/GSI research
+│   ├── PROJECT_MASTER_CHECKLIST.txt              # This file
+│   ├── misc/
+│   │   └── gminfo3.7_tech_specs.md               # Hardware specs
+│   └── session_summaries/
+│       ├── security_assessment_20DEC25.txt
+│       └── project_research_20DEC25_0917.txt
+│
+├── DPS/                         [EXAMINED]
+│   ├── dps_user_guide.pdf                        # GM DPS User Guide
+│   ├── cameraloopsRU/
+│   │   ├── [Courses] DPS Archive creation.pdf    # Archive creation guide
+│   │   └── [Courses] IPC Cluster activation.html
+│   └── GM VCAP Interpreter v4.5.7.2/
+│       ├── VCAP_interpreter_v1.3.pdf             # VCAP format docs
+│       ├── VCAP_Interpreter_Standalone_*.pdf
+│       ├── DPS Type4 VCAP creator file/
+│       │   ├── Read me!.pdf
+│       │   └── Type4_VCAP_CameraLoops_com.zip
+│       └── GM VCAP Interpreter v4.5.7.2/
+│           └── Application Files/                 # VCAP Interpreter app
+│
+├── EEPROM/                      [EXAMINED - CRITICAL]
+│   ├── EEPROM_Analysis_Report.md                 # Comprehensive analysis
+│   ├── gm_csm/
+│   │   ├── Y181/
+│   │   │   └── ADB_enabled.bin                   # Working bypass dump
+│   │   ├── old/
+│   │   │   ├── gm_csm_stock.bin
+│   │   │   ├── gm_csm_stock_modified.bin
+│   │   │   └── gm_csm_debugging.bin
+│   │   └── BRICKED_Y177_SN<SN_REDACTED>_*.bin        # Bricked unit dump
+│   └── old_VIP/
+│       └── side_B_K1_P1.txt                      # VIP dump notes
+│
+├── logs/                        [EXAMINED]
+│   └── VIP_log_2B.174.4.1_10JUL24.txt            # VIP UART console log
+│
+├── misc/                        [EXAMINED]
+│   ├── A11_CSM_x80.Txt                           # DPS log (EEPROM bypass)
+│   ├── A11_CSM.ProgramLog.Txt
+│   ├── Y177update_CSM.Txt                        # DPS log (normal state)
+│   ├── Y177_CSM.png                              # Screenshot
+│   ├── DPS_Radio_Info.png                        # Screenshot
+│   ├── dps_user_guide.pdf
+│   ├── GIS-646_CalDef_Database_*.zip             # CalDef database
+│   ├── GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/
+│   │   ├── caldefs/                              # 100+ caldef files
+│   │   │   ├── SFS2_SecurityExtensionsFRD.caldef # Security calibrations
+│   │   │   ├── GIS763_InfotainmentProg_GlobalB.caldef
+│   │   │   └── [100+ other caldefs]
+│   │   ├── revision_log/
+│   │   └── schema/
+│   └── DPS_Archive_Creator_V2/
+│       ├── SPSToolBridge.txt                     # Blob ID mappings
+│       ├── tis2web.txt
+│       └── bin/
+│
+├── pictures/                    [NOT EXAMINED]
+│   └── [Hardware photos, screenshots]
+│
+├── scripts/                     [EXAMINED]
+│   ├── gm_aaos_enum.sh                           # Main enumeration script
+│   ├── quick_security_check.sh                   # Security check
+│   ├── diagnose_gsi.sh                           # GSI diagnostic
+│   ├── fastboot_enum.sh                          # Fastboot enumeration
+│   ├── adb_keepalive.sh                          # ADB keepalive
+│   ├── find_adb_disable.sh                       # Find ADB disable points
+│   └── recover_bricked_module.sh                 # Recovery script
+│
+├── serial_flash/                [EXAMINED - EMPTY]
+│   └── dump/                                     # Empty - for flash dumps
+│
+└── update_packages/             [EXAMINED]
+    ├── Y177/                                     # Y177 update package (~3GB)
+    │   ├── 86283152                              # SOC_SYSTEM (1.5GB)
+    │   ├── 86283160                              # SOC_PRODUCT (1.4GB)
+    │   ├── 86283151                              # VIP_APP
+    │   ├── 85098662                              # SOC_HOSTOS (GHS)
+    │   ├── 86283163.mnf                          # Manifest
+    │   ├── delivery_manifest.csv
+    │   └── [other modules]
+    ├── Y181/                                     # Y181 update package (~3GB)
+    │   ├── 86331654                              # SOC_SYSTEM (1.5GB)
+    │   ├── 86331636                              # SOC_PRODUCT (1.4GB)
+    │   ├── 86331656                              # VIP_APP
+    │   ├── 86331663.mnf                          # Manifest
+    │   ├── delivery_manifest.csv
+    │   └── [other modules]
+    └── data_wipe_update/                         # Factory reset package
+        ├── 85142410.bin
+        ├── 85874101.mnf
+        └── [calibration files]
+
+================================================================================
+GSI / A-B PARTITION ANALYSIS
+================================================================================
+
+QUESTION: Does the device support GSI/A-B partitions?
+
+ANSWER: YES - The device fully supports A/B partitions, Treble, and GSI
+        architecturally. The blocker is SOFTWARE, not hardware.
+
+CONFIRMED SUPPORT:
+------------------
+[X] A/B Partitions (from partitions.txt):
+    - boot_a / boot_b (vda7/vda8)
+    - bootloader_a / bootloader_b (vda5/vda6)
+    - vbmeta_a / vbmeta_b (vda10/vda11)
+    - ghs_isys_a / ghs_isys_b (vda1/vda2)
+    - acpi_a / acpi_b, acpio_a / acpio_b
+    - cert_a / cert_b
+
+[X] Dynamic Partitions (from properties):
+    - ro.boot.dynamic_partitions = true
+    - super partition at /dev/block/vda13
+
+[X] Currently on Slot A:
+    - ro.boot.slot_suffix = _a
+
+[X] Treble Support:
+    - ro.treble.enabled = true
+    - VNDK version 32 (Android 12)
+    - First API level 29 (Android 10)
+
+[X] GSI Keys Present (from fstab):
+    - avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey
+
+WHY GSI DOESN'T WORK:
+--------------------
+1. SEPolicy Blocker:
+   - dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search))
+   - GM explicitly blocked GSI in SELinux policy
+
+2. GHS Hypervisor:
+   - Android runs as VM under GHS INTEGRITY
+   - GHS controls boot chain, not Android bootloader
+   - No standard fastboot/recovery access
+
+3. VIP Security:
+   - VIP MCU controls boot flags via EEPROM
+   - PROTOKEY authentication required for ADB
+   - All security checks happen before Android
+
+PARTITION LAYOUT:
+----------------
+| Partition      | Device   | Purpose                        |
+|----------------|----------|--------------------------------|
+| ghs_isys_a/b   | vda1/2   | GHS INTEGRITY hypervisor       |
+| ghs_storage    | vda3     | GHS persistent storage         |
+| ghs_abl_update | vda4     | GHS ABL updates                |
+| bootloader_a/b | vda5/6   | Intel ABL bootloader           |
+| boot_a/b       | vda7/8   | Android boot images            |
+| misc           | vda9     | Android misc partition         |
+| vbmeta_a/b     | vda10/11 | Verified boot metadata         |
+| metadata       | vda12    | Android metadata               |
+| super          | vda13    | Dynamic partitions (system/vendor/product) |
+| acpi_a/b       | vda14/15 | ACPI tables                    |
+| acpio_a/b      | vda16/17 | ACPI overlays                  |
+| cert_a/b       | vda18/19 | Certificates                   |
+| persistent     | vda20    | Persistent data                |
+| teedata        | vda21    | TEE data                       |
+| config         | vda22    | OEM config                     |
+| calibration    | vda23    | Calibration data               |
+| ghs_log        | vda24    | GHS logs                       |
+| update_cache   | vda25    | Update staging                 |
+| data           | vda26    | Android userdata               |
+
+================================================================================
+KEY FILES PREVIOUSLY OVERLOOKED
+================================================================================
+
+1. EEPROM_Analysis_Report.md (500 lines)
+   - Complete EEPROM memory map
+   - All feature flags documented
+   - UI flags at 0x0E80-0x0EAF
+   - Hidden menu key combinations
+   - CRC locations: 0x16E0, 0x19E0, 0x1A80, 0x1B40
+
+2. A11_CSM_x80.Txt vs Y177update_CSM.Txt
+   - Shows exact difference between bypassed and normal state
+   - Bypassed: Seed = 0xFF (32 bytes), MEC = 244
+   - Normal: Seed = ECUID+Challenge, MEC = 0
+
+3. delivery_manifest.csv (Y177/Y181)
+   - Complete module ID and signing information
+   - Confirms which modules are signed (TSS) vs unsigned (NONE)
+
+4. VIP_log_2B.174.4.1_10JUL24.txt
+   - Full VIP boot sequence
+   - Calibration index system (0-14)
+   - PROTOKEY authentication flow
+
+================================================================================
+MODULE SIGNING STATUS (from delivery_manifest.csv)
+================================================================================
+
+| Module ID | Name        | Sign Type | Can Flash Without Keys? |
+|-----------|-------------|-----------|-------------------------|
+| 1         | VIP_APP     | TSS       | NO                      |
+| 21        | SOC_HOSTOS  | TSS       | NO (GHS hypervisor)     |
+| 22        | SOC_SYSTEM  | TSS       | NO                      |
+| 23        | SOC_BOOT    | NONE      | YES                     |
+| 24        | SOC_UTILS   | NONE      | YES                     |
+| 26        | SOC_VENDOR  | TSS       | NO                      |
+| 28        | SXM         | NONE      | YES                     |
+| 29        | GPS         | NONE      | YES                     |
+| 51        | TUNER       | NONE      | YES                     |
+| 52        | ETH_SWITCH  | NONE      | YES                     |
+| 55        | SOC_ACPIO   | NONE      | YES                     |
+| 56        | SOC_VBMETA  | NONE      | YES (but breaks AVB)    |
+| 57        | SOC_PRODUCT | NONE      | YES                     |
+| 71        | VIP_BOOT    | NONE      | YES                     |
+| 72        | SOC_ABL     | NONE      | YES (Intel ABL)         |
+
+CRITICAL INSIGHT: VIP_BOOT (Module 71) is UNSIGNED!
+Potential vector for VIP modification if custom bootloader created.
+
+================================================================================
+EEPROM FLAGS SUMMARY (from EEPROM_Analysis_Report.md)
+================================================================================
+
+CONFIRMED WORKING:
+| Address | Purpose          | Bypass Value | Notes               |
+|---------|------------------|--------------|---------------------|
+| 0x0440  | ADB Security #1  | 5A FF 5A     | Primary flag        |
+| 0x0A80  | ADB Security #2  | 5A FF 5A     | Backup flag         |
+
+UNTESTED CANDIDATES:
+| Address | Purpose          | Current | Test Value | Risk    |
+|---------|------------------|---------|------------|---------|
+| 0x0020  | Unknown toggle   | 0x00    | 0xFF       | LOW     |
+| 0x0B40  | Developer mode?  | 0x00    | 0xFF       | MEDIUM  |
+| 0x0E87  | Reserved UI #1   | 0x00    | 0x01       | LOW     |
+| 0x0E88  | Reserved UI #2   | 0x00    | 0x01       | LOW     |
+| 0x0C00  | Unknown (ON)     | 0x01    | -          | -       |
+
+CRC LOCATIONS:
+- 0x16E0: Primary CRC
+- 0x19E0: Secondary CRC
+- 0x1A80: Config CRC
+- 0x1B40: Data CRC
+
+** CRITICAL FINDING: CRC NOT ENFORCED AT BOOT **
+VIN set to all 0xFF: Module booted normally - no reset, no errors.
+CRC may only be validated during OTA/SPS programming operations.
+
+================================================================================
+RESEARCH STATUS CHECKLIST
+================================================================================
+
+COMPLETED:
+[X] EEPROM ADB bypass documented and working
+[X] VIP log analysis complete
+[X] CalDef database analyzed
+[X] DPS capabilities documented
+[X] Module signing status mapped
+[X] A/B partition structure documented
+[X] GSI blocker identified (SEPolicy)
+[X] Seed format decoded (ECUID + Challenge)
+[X] Project directory fully inventoried
+[X] VIP_BOOT and SOC_ABL internal security analyzed
+[X] CRC enforcement behavior documented (NOT enforced at boot!)
+[X] IS25LP016 SPI flash identified (secondary storage chip)
+[X] OTA EEPROM restoration behavior documented
+[X] I2C bus permissions mapped (i2c-0/i2c-1 world-accessible)
+[X] VIP_CONTROL_ANALYSIS.txt comprehensive document created
+
+COMPLETED (2024-12-30):
+[X] Y177 downgrade testing - BLOCKED BY GHS ROLLBACK PROTECTION
+    - USB update was accepted and partitions were written
+    - GHS hypervisor rejected at boot verification
+    - A/B fallback returned system to unchanged Y181
+    - Root cause: GHS maintains rollback index in misc partition
+    - See: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt
+[X] GHS partition analysis (SOC_HOSTOS binary 85098662)
+    - Extracted and analyzed ELF binary
+    - Found rollback protection strings in VMM code
+    - Confirmed GHS performs AVB verification before Android boot
+
+IN PROGRESS:
+[ ] I2C EEPROM bus mapping (determine which bus connects to EEPROM)
+[ ] Harman checksum algorithm reverse engineering
+[ ] misc partition (vda9) structure analysis for rollback bypass
+
+NOT STARTED:
+[ ] EEPROM 0x0B40 developer mode testing (safe - CRC not enforced)
+[ ] VIP UART console command exploration
+[ ] VIP JTAG firmware extraction
+[ ] Manual GSI flash attempt (bypassing DSU)
+[ ] Custom VIP_BOOT creation (unsigned module)
+[ ] Network service exploitation (ports 7000, 6363)
+[ ] Utility file opcode reverse engineering
+[ ] Factory reset impact on GHS rollback counter
+
+================================================================================
+PRIORITY ACTION ITEMS (UPDATED 2024-12-30)
+================================================================================
+
+1. [CRITICAL] Analyze misc partition (vda9) structure
+   - Contains GHS rollback index that blocks downgrades
+   - Need to understand A/B metadata format
+   - If modifiable from ADB: potential downgrade bypass
+   - Risk: CRC validation may cause boot failure
+
+2. [CRITICAL] Map I2C EEPROM bus connection
+   - /dev/i2c-0 and /dev/i2c-1 are world-accessible
+   - If EEPROM on these buses: SOFTWARE-ONLY bypass possible!
+   - Must work on Y181 (Y177 downgrade not possible)
+   - Could eliminate need for physical EEPROM modification
+
+3. [HIGH] Reverse engineer Harman checksum algorithm
+   - Required for VIP_BOOT modification
+   - Extract from RH850 binary in Ghidra
+   - Software-based = bypassable
+
+4. [HIGH] Test factory reset impact on GHS rollback
+   - If factory reset clears misc partition rollback index
+   - May enable downgrade after reset
+   - Need to test dealer-level reset options
+
+5. [MEDIUM] Test EEPROM 0x0B40 flag
+   - Suspected developer mode
+   - CRC NOT enforced at boot - safe to test!
+   - May enable additional features
+
+6. [MEDIUM] Explore VIP_BOOT modification
+   - Module 71 is UNSIGNED (but has internal validation)
+   - Could modify VIP boot behavior
+   - Requires Harman checksum RE first
+
+NOTE: Y177 downgrade is NO LONGER VIABLE via USB/DPS update.
+GHS hypervisor enforces rollback protection at boot verification.
+See: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt for details.
+
+7. [LOW] VIP UART console
+   - /dev/ttyACM1 is accessible
+   - May have debug commands
+   - 74LVC08A gate may block TX
+
+================================================================================
+HARDWARE COMPONENTS IDENTIFIED
+================================================================================
+
+| Component   | Chip          | Package  | Purpose                    |
+|-------------|---------------|----------|----------------------------|
+| I2C EEPROM  | ST M24C64     | TSSOP8   | Security flags, VIN, config|
+| SPI Flash   | ISSI IS25LP016| SOIC8    | Logs, backup (non-critical)|
+| VIP MCU     | RH850/P1M-E   | -        | Security gatekeeper        |
+| SoC         | Intel Atom x7 | -        | Android execution          |
+
+SPI Flash Details (IS25LP016):
+  - Location: Opposite side of PCB from EEPROM
+  - Markings: IS25LP016, DNL3, 2243, P3A368L2
+  - Size: 16Mbit (2MB)
+  - Critical: NO - module likely boots without it
+  - Recovery: Blank chip may self-populate via OTA/SPS
+
+================================================================================
+END OF CHECKLIST
+================================================================================

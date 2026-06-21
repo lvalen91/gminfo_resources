@@ -1,0 +1,1003 @@
+[SS_SWC] 
+
+
+
+*****************************************
+[SS_SWC] VIP Application Version: 2B.175.1.5
+[SS_SWC]     Build Date:  24Apr23-2202
+[SS_SWC]     Bolo Version: B2.9C.01.01 (23Jul28-1212)
+[SS_SWC]     ARXML Version: 22.22.158[SS_SWC] 
+[SS_SWC] *****************************************
+[000123][I][SS_SWC] STBC_WUF0WUF0 = 0x0, wakeup_factor = 0x0.
+[000124][I][SS_SWC] RESCTLRESF = 0x0,  reset_factor = 0x201.
+[000124][I][SS_SWC] HwVariant = 56, HwSubVariant = 0
+[000124][I][SS_SWC] cal_critical_state_of_charge_ignore = 1
+[000124][I][SS_SWC] cal_vin_relearn_en = 1
+[000125][I][SS_SWC] cal_local_infotainment_cancel_mode = 0
+[000125][I][SS_SWC] cal_background_sleep_timeout_sec = 10
+[000125][I][SS_SWC] cal_sleep_fault_timeout_sec = 900
+[000126][I][SS_SWC] cal_veh_initiated_local_infotainment_timeout_sec = 600
+[000126][I][SS_SWC] cal_user_initiated_local_infotainment_timeout_sec = 600
+[000126][I][SS_SWC] cal_startup_delay_wait_timeout_msec = 200
+[000127][I][SS_SWC] cal_startup_fault_timeout_sec = 15
+[000128][I][IPC_S] IPCCORE: Device 0 Connected
+[000128][I][IPC_S] IPC: IPC-Version: 4.1.0  
+[000128][I][IPC_S] IPC: API-Version: 0404
+[000128][I][IPC_S] HDLC: Init: Success: WindowSize-5, Reset State-0
+[000129][I][IPC_S] HDLC: Init: IFRAME Timeout-50, UFRAME Timeout-20
+[000133][I][IPC_S] IPCS Init Completed
+[000134][I][SS_SWC] cal_local_valet_timeout_sec = 30
+[000134][I][SS_SWC] cal_master_offmode_active_timeout_min = 35
+[000135][I][SS_SWC] cal_update_available_local_infotainment_timeout_sec = 60
+[000135][I][SS_SWC] cal_cluster_animation_ignore = 0
+[000136][I][SS_SWC] cal_cluster_hmiready_ignore = 0
+[000136][I][SS_SWC] cal_rsi_animation_ignore = 1
+[000136][I][SS_SWC] cal_rsi_hmiready_ignore = 1
+[000136][I][SS_SWC] cal_disabled_state_offmode_timeout_sec = 30
+[000137][I][SS_SWC] cal_remote_reflash_programming_complete_timeout_sec = 30
+[000137][I][SS_SWC] cal_infotainment_activity_timeout_sec = 30
+[000137][I][SS_SWC] cal_offmode_active_timeout_sec = 30
+[000137][I][SS_SWC] cal_powermode_failure_timeout_sec = 60
+[000138][I][SS_SWC] cal_shutdown_animation_failsafe_timeout = 15
+[000138][I][SS_SWC] cal_suspend_to_ram_en = 1
+[000139][I][SS_SWC] cal_maximum_flush_fault_time = 36000
+[000139][I][SS_SWC] cal_flush_limit_time = 24
+[000139][I][SS_SWC] cal_str_min_temp_threshold = -10
+[000139][I][SS_SWC] cal_str_mode_soc_min_threshold_1 = 90
+[000139][I][SS_SWC] cal_str_mode_soc_min_threshold_2 = 75
+[000141][I][SS_SWC] cal_str_mode_soc_min_threshold_3 = 60
+[000141][I][SS_SWC] cal_max_suspend_time_1 = 84
+[000141][I][SS_SWC] cal_max_suspend_time_2 = 24
+[000141][I][SS_SWC] cal_max_suspend_time_3 = 16
+[000141][I][SS_SWC] ss_timer_value[SS_STARTUP_DELAY_WAIT] = 20
+[000142][I][SS_SWC] ss_timer_value[SS_STARTUP_FAULT_TIMER] = 1500
+[000142][I][SS_LOG] Persistent data checksum is valid: 41
+[000142][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[000143][I][SS_LOG] Storing SSTL persistent data
+[000143][I][SS_LOG] SystemState=Sleep (0x0)
+[000143][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[000143][I][SS_LOG] DeactivatePNs
+[000144][I][SS_SWC] InfotainmentPN deactivated.
+[000144][I][SS_LOG] st=BackgroundSleepTimeout
+[WAKE_TIMER_LOG] 
+ IsAlarmExpiredPending = 0 
+[WAKE_TIMER_LOG] 
+ TAUJ0CDR3 = 0	!! TAUJ0CNT3 = -1	 and Timer_Load_Val_Sec[3] = 0
+[000145][I][SS_SWC] alarm_timer_load_val = 0
+[000145][I][J6_CDD] Update Alarm msg_buffer[0] = ef	: msg_buffer[1] = 0	: msg_buffer[2] = 0	: msg_buffer[3] = 2	: msg_buffer[4] = 0	: msg_buffer[5] = 0	: msg_buffer[6] = 0	: msg_buffer[7] = 0	: msg_buffer[8] = 1	:
+[000146][I][J6_CDD] IPC_ID_NotifyAlarmStatus - Unable to Transmit Notify Update Alarm Status
+[000146][I][SS_SWC] AME Suspend Disable Status: 0
+[000147][I][SS_SWC] WakeUpType: SYSPWR_WAKEUP_FROM_SHUTDOWN ...
+[000147][I][SS_SWC] S2R Failure count <Power On: 0, Power Off: 0>
+[000147][I][PLC] evt = BSM_COMPLETION_EVENT
+[000148][I][PLC] OnEntry_Startup
+[000148][I][PLC] ex tr; dst st = CSM_Startup
+[000148][I][PLC] st = CSM_Startup
+[000148][I][PLC] Get_OverTempFlagStatus = 0
+[000149][I][PLC] Get_OverTempFlagStatus = 0
+[000149][I][PLC] 
+Over_Temp_Set = 0
+[000149][I][PLC] Rte_Pim_PLC_BootCounter_PIM - Nvm_ErrorStatus is = 0
+[000149][I][PLC] Rte_Pim_PLC_BootCounter_PIM is :4067
+[000149][I][PLC] plc_timer_value for SoC SOH Timeout = 1500
+[000151][I][PLC] plc_timer_value for Shutdown Timeout = 3500
+[000152][I][PLC] plc_timer_value for Startup Timeout = 6000
+[000152][I][PLC] plc_timer_value for Unmount Timeout = 800
+[000153][I][PLC] plc_timer_value for Tx PN Deactivation Timeout = 300
+[000153][I][PLC] plc_timer_value for Emergency Unmount Timeout = 100
+[000153][I][PLC] plc_timer_value for Hypervisor Startup Timeout = 300
+[000154][I][PROTOKEY] ICUSB module enabled
+[000154][I][LSWTCH_SWC] IO_IOC_LEO_RESET: LOW
+[000155][I][ELMOS_IC] Awaiting Hardware Part Number...
+[000155][I][RTC] Defaulting RTC dd/mm/yy hh:mm:ss - 23 /4 /2024  0:0:0
+[000157][I][J6_CDD] Unable to Transmit RTE Date/Time
+[000159][I][LSWTCH_SWC] IO_IOC_LEO_RESET: HIGH
+[000159][I][GYROACCL] Gyro ID - 0xff
+[000159][I][GYROACCL] Gyro Device Not present
+[000164][I][GYROACCL] Accel ID - 0xff
+[000164][I][GYROACCL] Accel Device not present
+[000219][I][DTC] ampCalReadResult = 1
+[000241][I][PROTOKEY] Receives invalid seed [1] from BCM
+[000251][I][PROTOKEY] Receives invalid seed [2] from BCM
+[000278][I][NAV] Cals read successfully: GNSS_DR_SRC=0, VEHYAW=0, CSMGYR=1, CSMACCL=1
+[000321][I][J6_CDD] FrtPedtrnClsnMtgnAudAttnReqd_AI is 1
+[000321][I][J6_CDD] FrwdClsnAlrtImntAlrtAudAttnReqd_AI is 1
+[000322][I][J6_CDD] LDWCtrlAudAttnReqd_AI is 1
+[000322][I][SS_SWC] InfotainmentActivationRequest availabilty is 1 
+[000371][I][DTC] Calibration value read successfully. MICROPHONE_1_CONFIG = 1
+[000371][I][DTC] Calibration value read successfully. ENABLE_MICROPHONE_2 = 1
+[000372][I][IOHWAB_MIC] The status of Microphone 2 will be monitored.
+[000380][I][SS_LOG] evt=evInfotainmentActivity
+[000380][I][SS_LOG] is_infotainment_activity_timer_active = true
+[000381][I][SS_SWC] InfotainmentPN activated.
+[000381][I][SS_LOG] SystemState=AnimationInit (0x1)
+[000381][I][SS_SWC] backlight cfg = off
+[000381][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[000381][I][SS_LOG] isAnimationReady = false
+[000382][I][SS_LOG] st=NormalInit
+[000522][I][J6_CDD] FrwdClsnAlrtImntAlrtAudAttnReqd_AI is 3
+[000523][I][J6_CDD] LDWCtrlAudAttnReqd_AI is 3
+[000565][I][LSWTCH_SWC] Revision id buffer: 0xAB
+[000565][I][LSWTCH_SWC] cmd_idx = 0
+[000565][I][LSWTCH_SWC] status_byte[0] = 0
+[000566][I][LSWTCH_SWC] cmd_idx = 1
+[000567][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[000567][I][LSWTCH_SWC] cmd_idx = 2
+[000567][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[000568][I][LSWTCH_SWC] cmd_idx = 3
+[000568][I][LSWTCH_SWC] status_byte[2] = 0	status_byte[3] = 0
+[000568][I][LSWTCH_SWC] LEO_FIRMWARE is not running
+[000576][I][LSWTCH_SWC] IOC initialized switch Configuration in the absence of LEO firmware
+[000577][I][LSWTCH_SWC] IO_IOC_LEO_RESET: LOW
+[000582][I][LSWTCH_SWC] IO_IOC_LEO_RESET: HIGH
+[000621][I][IOHWAB_MIC] Microphone 2 status changed: Disabled -> Connected. ADC Voltage = 171
+[000657][I][J6_CDD] cal_rvc_present_status_Control = 2 with retrun value =0
+[000657][I][J6_CDD] Read RVS_STATUS cal from NVM is complete :
+[000660][I][DTC] Reading DTC_MASK_GB calibration group...
+[000660][I][DTC] DTC_MASK_GB calibration group read successfully.
+[000661][I][AMP_MGR_SWC] Ampcal = 3
+[000669][I][IOHWAB_E_AMP] External Amplifier enabled.
+[000669][I][AMP_MGR_SWC] Ext Amp Enable Driven HIGH 
+[000670][I][IOHWAB_E_AMP] External Amplifier unmuted.
+[000670][I][AMC_LOG] evt=BSM_COMPLETION_EVENT
+[000670][I][IOHWAB_E_AMP] External Amplifier muted.
+[000670][I][AMC_LOG] st=Muted_On
+[000686][I][IPC_S] UFRAME RESET, receive payload 0
+[000686][I][IPC_S] UFRAME ACK, send payload 0
+[000687][I][IPC_S] IFRAME Rx  0: Rx 0, Exp 1, 0
+[000687][I][IPC_S] IPCCORE: Communication switched on, Device 0
+[000688][I][IPC_S] RR ACK Tx  0: Exp 1
+[000688][I][IPC_S] IPCCLIENT: FlowCtrl Send to SOC (RX states: 0x001FFFFF)
+[000688][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 12)
+[000689][I][IPC_S] IPCCLIENT: Client Changed (ch:12, old:0, new:1, 0)
+[000689][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 14)
+[000690][I][IPC_S] IPCCLIENT: Client Changed (ch:14, old:0, new:1, 0)
+[000690][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 17)
+[000690][I][IPC_S] IPCCLIENT: Client Changed (ch:17, old:0, new:1, 0)
+[000691][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 18)
+[000691][I][IPC_S] IPCCLIENT: Client Changed (ch:18, old:0, new:1, 0)
+[000727][I][IPC_S] IFRAME Rx  1: Rx 1, Exp 2, 0
+[000728][I][IPC_S] IFRAME Rx  2: Rx 2, Exp 3, 0
+[000728][I][IPC_S] RR ACK Tx  1: Exp 3
+[000729][I][J6_CDD] Power Level = 1
+[000729][I][IPC_S] RR ACK Tx  2: Exp 3
+[000729][I][IPC_S] IFRAME Rx  3: Rx 3, Exp 4, 0
+[000730][I][J6_CDD] SendLastBootReason Transmitted over Channel[14]-0x33
+[000730][I][IPC_S] RR ACK Tx  3: Exp 4
+[000730][I][J6_CDD] SendLastBootReason Request Received
+[000731][I][IPC_S] IFRAME Rx  4: Rx 4, Exp 0, 0
+[000731][E][J6_CDD] Unknown PLC/SysState Message (0x66) received from J6
+[000732][I][IPC_S] RR ACK Tx  4: Exp 0
+[000732][I][PLC] IPC RX: New Power Level 1 received from SoC
+[000821][I][ELMOS_IC] Hardware Part Number received (-1325268384).
+[000822][E][UBLOX] UBLOX is not supported in the current hardware
+[000872][I][ELMOS_IC] DAB is not supported by the hardware.
+[000872][I][ELMOS_IC] Initializing the ELMOS E522.40...
+[000873][I][ELMOS_IC] FM2/DAB antenna (A1) overcurrent threshold set to 0xFE
+[000873][I][ELMOS_IC] FM2/DAB antenna (A1) open load threshold set to 0x19
+[000874][I][ELMOS_IC] AM/FM antenna (A2) overcurrent threshold set to 0xFE
+[000874][I][ELMOS_IC] AM/FM antenna (A2) open load threshold set to 0x19
+[000875][I][ELMOS_IC] The ELMOS E522.40 has been initialized.
+[000946][I][SS_SWC] IPC Animation Status = 1
+[000947][I][SS_LOG] isAnimationReady = false
+[000987][I][LSWTCH_SWC] Revision id buffer: 0xAB
+[000987][I][LSWTCH_SWC] cmd_idx = 0
+[000987][I][LSWTCH_SWC] status_byte[0] = 0
+[000988][I][LSWTCH_SWC] cmd_idx = 1
+[000988][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[000988][I][LSWTCH_SWC] cmd_idx = 2
+[000989][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[000990][I][LSWTCH_SWC] cmd_idx = 3
+[000990][I][LSWTCH_SWC] status_byte[2] = 0	status_byte[3] = 0
+[000990][I][LSWTCH_SWC] LEO_FIRMWARE is not running
+[000999][I][LSWTCH_SWC] IOC initialized switch Configuration in the absence of LEO firmware
+[001000][I][LSWTCH_SWC] IO_IOC_LEO_RESET: LOW
+[001005][I][LSWTCH_SWC] IO_IOC_LEO_RESET: HIGH
+[001127][I][J6_CDD] Unable to Transmit RTE Date/Time
+[001231][I][PROTOKEY] Receives invalid seed [1] from BCM
+[001235][I][UBLOX] Change the VIP UART BR to 115200 bps
+[001251][I][PROTOKEY] Receives invalid seed [2] from BCM
+[001284][I][IPC_S] IFRAME Rx  5: Rx 0, Exp 1, 0
+[001284][I][J6_CDD] Power Level = 2
+[001285][I][IPC_S] RR ACK Tx  5: Exp 1
+[001285][I][IPC_S] IFRAME Rx  6: Rx 1, Exp 2, 0
+[001285][I][PLC] IPC RX: New Power Level 2 received from SoC
+[001286][I][IPC_S] RR ACK Tx  6: Exp 2
+[001286][I][IPC_S] IFRAME Rx  7: Rx 2, Exp 3, 0
+[001287][I][IPC_S] RR ACK Tx  7: Exp 3
+[001287][I][IPC_S] IFRAME Rx  8: Rx 3, Exp 4, 0
+[001287][I][J6_CDD] ENM_GB_ASTC_ChimSnkLvl.ASTC_ChimSnkLvl      ::c9
+[001288][I][IPC_S] RR ACK Tx  8: Exp 4
+[001335][I][SBAT] keyNBID = 0x0000.
+[001335][I][SBAT] appNBID = 0x0001.
+[001335][I][SBAT] ECU_ID: = 0x00 0x26 0x42 0x25 0x00 0x00 0x16 0x00 0x06 0x10 0x41 0x45 0x61 0x01 0x14 0xAC.
+[001337][I][SBAT] First 10 bytes of SBAT =  0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00.
+[001338][I][SBAT] SbaTicketValidation validation failed: 0x0 
+[001341][I][J6_CDD] FrtPedtrnClsnMtgnAudAttnReqd_AI is 3
+[001342][I][SS_SWC] InfotainmentActivationRequest is available 
+[001393][I][ELMOS_IC] Antenna 1 (AM/FM) open circuit status changed: 0 -> 1
+[001394][I][ELMOS_IC] ERR = 0x28, A1 = [0x03, 0x00, 0x9C], A2 = [0x02, 0x00, 0x9B]
+[001394][I][ELMOS_IC] Antenna 2 (FM2/DAB) open circuit status changed: 0 -> 1
+[001395][I][ELMOS_IC] ERR = 0x28, A1 = [0x03, 0x00, 0x9C], A2 = [0x02, 0x00, 0x9B]
+[001425][I][LSWTCH_SWC] Revision id buffer: 0xAB
+[001425][I][LSWTCH_SWC] cmd_idx = 0
+[001426][I][LSWTCH_SWC] status_byte[0] = 0
+[001427][I][LSWTCH_SWC] cmd_idx = 1
+[001427][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[001427][I][LSWTCH_SWC] cmd_idx = 2
+[001428][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[001428][I][LSWTCH_SWC] cmd_idx = 3
+[001428][I][LSWTCH_SWC] status_byte[2] = 0	status_byte[3] = 0
+[001428][I][LSWTCH_SWC] LEO_FIRMWARE is not running
+[001438][I][LSWTCH_SWC] IOC initialized switch Configuration in the absence of LEO firmware
+[001438][I][LSWTCH_SWC] IO_IOC_LEO_RESET: LOW
+[001443][I][LSWTCH_SWC] IO_IOC_LEO_RESET: HIGH
+[001728][I][IPC_S] IFRAME Rx  9: Rx 4, Exp 0, 0
+[001728][I][IPC_S] RR ACK Tx  9: Exp 0
+[001791][I][SS_SWC] CAN Event: IPC HMI Ready = 1
+[001848][I][LSWTCH_SWC] Revision id buffer: 0xAB
+[001848][I][LSWTCH_SWC] cmd_idx = 0
+[001848][I][LSWTCH_SWC] status_byte[0] = 0
+[001849][I][LSWTCH_SWC] cmd_idx = 1
+[001849][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[001850][I][LSWTCH_SWC] cmd_idx = 2
+[001850][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[001851][I][LSWTCH_SWC] cmd_idx = 3
+[001851][I][LSWTCH_SWC] status_byte[2] = 0	status_byte[3] = 0
+[001852][I][LSWTCH_SWC] LEO_FIRMWARE is not running
+[001860][I][LSWTCH_SWC] IOC initialized switch Configuration in the absence of LEO firmware
+[001860][I][LSWTCH_SWC] IO_IOC_LEO_RESET: LOW
+[001865][I][LSWTCH_SWC] IO_IOC_LEO_RESET: HIGH
+[002142][I][J6_CDD] Unable to Transmit RTE Date/Time
+[002236][I][PROTOKEY] Receives invalid seed [1] from BCM
+[002251][I][PROTOKEY] Receives invalid seed [2] from BCM
+[002270][I][LSWTCH_SWC] Revision id buffer: 0xAB
+[002270][I][LSWTCH_SWC] cmd_idx = 0
+[002270][I][LSWTCH_SWC] status_byte[0] = 0
+[002271][I][LSWTCH_SWC] cmd_idx = 1
+[002272][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[002272][I][LSWTCH_SWC] cmd_idx = 2
+[002272][I][LSWTCH_SWC] status_byte[0] = 0	status_byte[1] = 0
+[002273][I][LSWTCH_SWC] cmd_idx = 3
+[002273][I][LSWTCH_SWC] status_byte[2] = 0	status_byte[3] = 0
+[002273][I][LSWTCH_SWC] LEO_FIRMWARE is not running
+[002282][I][LSWTCH_SWC] IOC initialized switch Configuration in the absence of LEO firmware
+[002282][E][LSWTCH_SWC] Leo switch Initialization failed with retries = 5
+[002283][I][LSWTCH_SWC] Leo switch ISet to COnfigured:
+[002305][I][LSWTCH_SWC] Link loss notification sent successfully
+[002345][I][LSWTCH_SWC] Link loss notification sent successfully
+[002555][I][LSWTCH_SWC] Link loss notification sent successfully
+[002791][I][UBLOX] POLL UBX_CFG_PRT - Failed to read u-blox UART BR 115200 bps after 15 times request
+[002792][I][UBLOX] Change the VIP UART BR to 9600 bps
+[002948][I][J6_CDD] IOC_Main_Temp : 2617
+[002948][I][J6_CDD] SOC_Amp_Temp : 2376
+[003105][I][LSWTCH_SWC] Link loss notification sent successfully
+[003142][I][J6_CDD] Unable to Transmit RTE Date/Time
+[003236][I][PROTOKEY] Receives invalid seed [1] from BCM
+[003257][I][PROTOKEY] Receives invalid seed [2] from BCM
+[003437][I][LSWTCH_SWC] Link loss notification sent successfully
+[004110][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 1)
+[004110][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 2)
+[004111][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 3)
+[004111][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 4)
+[004111][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 5)
+[004111][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 6)
+[004112][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 7)
+[004112][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 8)
+[004112][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 9)
+[004113][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 10)
+[004113][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 11)
+[004113][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 13)
+[004114][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 15)
+[004114][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 16)
+[004114][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 19)
+[004115][I][IPC_S] IPCCLIENT: TX Flow Ctrl State (XON, ch: 20)
+[004142][I][J6_CDD] Unable to Transmit RTE Date/Time
+[004236][I][PROTOKEY] Receives invalid seed [1] from BCM
+[004257][I][PROTOKEY] Receives invalid seed [2] from BCM
+[004479][I][UBLOX] POLL UBX_CFG_PRT - Failed to read u-blox UART BR 9600 bps after 15 times request
+[004480][I][UBLOX] u-blox UART BR unknown
+[005141][I][J6_CDD] Unable to Transmit RTE Date/Time
+[005236][I][PROTOKEY] Receives invalid seed [1] from BCM
+[005257][I][PROTOKEY] Receives invalid seed [2] from BCM
+[005628][I][IPC_S] IPCCLIENT: Client Changed (ch:2, old:0, new:1, 0)
+[005633][I][J6_CDD] Power Level = 3
+[005634][I][J6_CDD] SendLastBootReason Transmitted over Channel[14]-0x33
+[005635][I][J6_CDD] SendLastBootReason Request Received
+[005636][I][IPC_S] IPCCLIENT: Client Changed (ch:16, old:0, new:1, 0)
+[005636][I][J6_CDD] RequestSuspendToRAMFeature - Enable S2R.
+[005637][I][J6_CDD] Power Level = 4
+[005637][I][PLC] IPC RX: New Power Level 3 received from SoC
+[005638][I][PLC] IPC RX: New Power Level 4 received from SoC
+[005638][I][PLC] evt = evSoC_StartupComplete
+[005638][I][PLC] isResetPending = false
+[005638][I][PLC] isShutdownPending = false
+[005639][I][PLC] OnExit_Startup
+[005639][I][PLC] ex tr; dst st = PLC_J1
+[005639][I][PLC] ex tr; dst st = CSM_On
+[005639][I][PLC] st = CSM_On
+[005642][I][J6_CDD] Transmitted MEC Value - 0xff
+[005643][I][J6_CDD] Send HW Partnum 0x60 0x2 0x2 0xb1
+[005660][I][IPC_S] IPCCLIENT: Client Changed (ch:5, old:0, new:1, 0)
+[005782][I][IPC_S] IPCCLIENT: Client Changed (ch:19, old:0, new:1, 0)
+[005783][I][IPC_S] IPCCLIENT: Client Changed (ch:19, old:1, new:0, 0)
+[005784][I][J6_CDD] ReportEthernetState - ethernet_status_ready is 1
+[005841][I][IPC_S] IPCCLIENT: Client Changed (ch:7, old:0, new:1, 0)
+[005881][I][J6_CDD] ReportCalibrationState- 2
+[005881][I][SS_SWC] calState Rcvd 2
+[005881][I][SS_LOG] Storing SSTL persistent data
+[005894][I][IPC_S] IPCCLIENT: Client Changed (ch:8, old:0, new:1, 0)
+[005901][I][J6_CDD] Cal override request received from SOC
+[005904][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 0 message.
+[005938][I][J6_CDD] Got Cal Response: Ipclength = 154, Index = 0, Status = 1, length = 150.
+[005939][I][J6_CDD] One Boot Calibration , Cal readindex - 0
+[005976][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 1 message.
+[005996][I][J6_CDD] Got Cal Response: Ipclength = 128, Index = 1, Status = 1, length = 124.
+[005997][I][J6_CDD] One Boot Calibration , Cal readindex - 1
+[006062][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 2 message.
+[006067][I][J6_CDD] Got Cal Response: Ipclength = 17, Index = 2, Status = 1, length = 13.
+[006067][I][J6_CDD] One Boot Calibration , Cal readindex - 2
+[006114][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 3 message.
+[006120][I][J6_CDD] Got Cal Response: Ipclength = 21, Index = 3, Status = 1, length = 17.
+[006121][I][J6_CDD] One Boot Calibration , Cal readindex - 3
+[006143][I][J6_CDD] IPC_ID_NotifyAlarmStatus - Transmitted Notify Alarm Status
+[006145][I][J6_CDD] DATE_TIME Received Message ID is = 7e8, length is =9, msg[8]:Alarm Type = 0
+[006147][I][RTC] setting RTC dd/mm/yy hh:mm:ss - 27 /6 /2024  2:14:34
+[006158][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 4 message.
+[006161][I][J6_CDD] Got Cal Response: Ipclength = 48, Index = 4, Status = 1, length = 44.
+[006162][I][J6_CDD] One Boot Calibration , Cal readindex - 4
+[006208][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 5 message.
+[006211][I][J6_CDD] Got Cal Response: Ipclength = 48, Index = 5, Status = 1, length = 44.
+[006212][I][J6_CDD] One Boot Calibration , Cal readindex - 5
+[006236][I][PROTOKEY] Receives invalid seed [1] from BCM
+[006256][I][PROTOKEY] Receives invalid seed [2] from BCM
+[006258][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 6 message.
+[006261][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 6, Status = 1, length = 84.
+[006262][I][J6_CDD] One Boot Calibration , Cal readindex - 6
+[006318][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 7 message.
+[006322][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 7, Status = 1, length = 84.
+[006323][I][J6_CDD] One Boot Calibration , Cal readindex - 7
+[006378][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 8 message.
+[006382][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 8, Status = 1, length = 84.
+[006382][I][J6_CDD] One Boot Calibration , Cal readindex - 8
+[006440][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 9 message.
+[006444][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 9, Status = 1, length = 84.
+[006445][I][J6_CDD] One Boot Calibration , Cal readindex - 9
+[006502][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 10 message.
+[006506][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 10, Status = 1, length = 84.
+[006506][I][J6_CDD] One Boot Calibration , Cal readindex - 10
+[006562][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 11 message.
+[006566][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 11, Status = 1, length = 84.
+[006567][I][J6_CDD] One Boot Calibration , Cal readindex - 11
+[006624][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 12 message.
+[006629][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 12, Status = 1, length = 84.
+[006630][I][J6_CDD] One Boot Calibration , Cal readindex - 12
+[006686][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 13 message.
+[006690][I][J6_CDD] Got Cal Response: Ipclength = 88, Index = 13, Status = 1, length = 84.
+[006690][I][J6_CDD] One Boot Calibration , Cal readindex - 13
+[006746][I][J6_CDD] Calibration_Request_CalGroup: GetCal Index = 14 message.
+[006753][I][J6_CDD] Got Cal Response: Ipclength = 50, Index = 14, Status = 1, length = 46.
+[006754][I][J6_CDD] One Boot Calibration , Cal readindex - 14
+[006754][I][J6_CDD] Calibrations download response successfully sent to SOC - 1
+[006757][I][J6_CDD] ReportAnimationState
+[006757][I][SS_SWC] CSM Animation state = 0
+[006987][I][IPC_S] IPCCLIENT: Client Changed (ch:3, old:0, new:1, 0)
+[007051][I][IPC_S] IPCCLIENT: Client Changed (ch:4, old:0, new:1, 0)
+[007241][I][PROTOKEY] Receives invalid seed [1] from BCM
+[007262][I][PROTOKEY] Receives invalid seed [2] from BCM
+[007428][I][IPC_S] IPCCLIENT: Client Changed (ch:9, old:0, new:1, 0)
+[007442][I][PROTOKEY] No Seed 0 received or cached
+[007442][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[007443][I][PROTOKEY] No Seed 1 received or cached
+[007443][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[007444][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[007519][I][IPC_S] IPCCLIENT: Client Changed (ch:6, old:0, new:1, 0)
+[007552][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[007553][I][J6_CDD] 	Item number = 0xF1A0
+[007553][E][J6_CDD] Invalid IPC message recieved on DIAG channel
+[007566][I][IPC_S] IPCCLIENT: Client Changed (ch:10, old:0, new:1, 0)
+[007584][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[007588][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[007588][I][J6_CDD] 	Item number = 0xF1A0
+[007589][I][J6_CDD] FACEPLATE_BUTTON_STATUS: 0 
+[007624][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[007651][I][IPC_S] IPCCLIENT: Client Changed (ch:20, old:0, new:1, 0)
+[008241][I][PROTOKEY] Receives invalid seed [1] from BCM
+[008262][I][PROTOKEY] Receives invalid seed [2] from BCM
+[008443][I][PROTOKEY] No Seed 0 received or cached
+[008443][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[008444][I][PROTOKEY] No Seed 1 received or cached
+[008445][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[008445][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[009039][I][J6_CDD] Amp state AMP_IPC_UNMUTE Request received
+[009040][I][AMP_MGR_SWC] Amp_Ext Req:1, ENBL:1, MUTE:1 
+[009040][I][AMC_LOG] evt=evUnmuteRequest
+[009042][I][IOHWAB_E_AMP] External Amplifier unmuted.
+[009042][I][J6_CDD] Just sent AMP_STATUS to SoC with status=08, overTempLevel=00
+[009043][I][AMC_LOG] st=Unmuted
+[009051][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_ChimSnkLvl      ::201
+[009052][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_MtxSnkMut       ::1
+[009052][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_MtxSnkRmpTm     ::2
+[009072][I][J6_CDD] ENM_GB_ASTC_ChimSnkLvl.ASTC_ChimSnkLvl      ::c9
+[009103][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_ChimSnkLvl      ::201
+[009104][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_MtxSnkMut       ::1
+[009104][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_MtxSnkRmpTm     ::0
+[009114][I][J6_CDD] ReportAnimationState
+[009115][I][SS_SWC] CSM Animation state = 1
+[009115][I][SS_LOG] evt=evCenterStackAnimationReady
+[009115][I][SS_LOG] st=NormalInit
+[009115][I][SS_LOG] isAnimationReady = true
+[009115][I][SS_LOG] evt=evAnimationReady
+[009116][I][SS_LOG] SystemState=HmiInactive (0x3)
+[009116][I][SS_SWC] IBSRwBatSOC_Processed == 7900
+[009116][I][SS_SWC] OATP_OtsAirTmpCrValAuth_Processed == 2100
+[009116][I][SS_SWC] IBSRwBatSOC_Processed == 7900
+[009117][I][SS_SWC] OATP_OtsAirTmpCrValAuth_Processed == 2100
+[009117][I][SS_SWC] isSuspendToRAMAllowed = 0x3F
+[009117][I][SS_SWC] HMIInactive: Requesting Shutdown
+[009118][I][RTC_CDD] Clear RTC Alarm request
+[009119][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[009120][I][SS_LOG] isInfotainmentActive = 0x02
+[009121][I][SS_SWC] backlight cfg = off
+[009121][I][SS_LOG] st=InfotainmentActive
+[009241][I][PROTOKEY] Receives invalid seed [1] from BCM
+[009262][I][PROTOKEY] Receives invalid seed [2] from BCM
+[009444][I][PROTOKEY] No Seed 0 received or cached
+[009444][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[009445][I][PROTOKEY] No Seed 1 received or cached
+[009445][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[009447][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[010144][I][PLC] BRR = [RstRsn=0x33, SoCReqType=0, RetRsn=0, UnqBtCnt=4066, RstFctr=0x201]
+[010241][I][PROTOKEY] Receives invalid seed [1] from BCM
+[010261][I][PROTOKEY] Receives invalid seed [2] from BCM
+[010445][I][PROTOKEY] No Seed 0 received or cached
+[010445][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[010446][I][PROTOKEY] No Seed 1 received or cached
+[010446][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[010447][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[011241][I][PROTOKEY] Receives invalid seed [1] from BCM
+[011261][I][PROTOKEY] Receives invalid seed [2] from BCM
+[011445][I][PROTOKEY] No Seed 0 received or cached
+[011445][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[011446][I][PROTOKEY] No Seed 1 received or cached
+[011447][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[011447][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[012241][I][PROTOKEY] Receives invalid seed [1] from BCM
+[012261][I][PROTOKEY] Receives invalid seed [2] from BCM
+[012445][I][PROTOKEY] No Seed 0 received or cached
+[012447][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[012448][I][PROTOKEY] No Seed 1 received or cached
+[012448][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[012449][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[013247][I][PROTOKEY] Receives invalid seed [1] from BCM
+[013268][I][PROTOKEY] Receives invalid seed [2] from BCM
+[013447][I][PROTOKEY] No Seed 0 received or cached
+[013448][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[013448][I][PROTOKEY] No Seed 1 received or cached
+[013448][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[013449][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[014247][I][PROTOKEY] Receives invalid seed [1] from BCM
+[014268][I][PROTOKEY] Receives invalid seed [2] from BCM
+[014447][I][PROTOKEY] No Seed 0 received or cached
+[014448][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[014448][I][PROTOKEY] No Seed 1 received or cached
+[014448][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[014449][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[015246][I][PROTOKEY] Receives invalid seed [1] from BCM
+[015267][I][PROTOKEY] Receives invalid seed [2] from BCM
+[015447][I][PROTOKEY] No Seed 0 received or cached
+[015448][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[015448][I][PROTOKEY] No Seed 1 received or cached
+[015448][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[015449][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[016247][I][PROTOKEY] Receives invalid seed [1] from BCM
+[016268][I][PROTOKEY] Receives invalid seed [2] from BCM
+[016448][I][PROTOKEY] No Seed 0 received or cached
+[016448][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[016448][I][PROTOKEY] No Seed 1 received or cached
+[016449][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[016450][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[017247][I][PROTOKEY] Receives invalid seed [1] from BCM
+[017267][I][PROTOKEY] Receives invalid seed [2] from BCM
+[017448][I][PROTOKEY] No Seed 0 received or cached
+[017448][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[017449][I][PROTOKEY] No Seed 1 received or cached
+[017450][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[017450][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[018251][I][PROTOKEY] Receives invalid seed [1] from BCM
+[018337][I][J6_CDD] FrtPedtrnClsnMtgnAudAttnReqd_AI is 0
+[018449][I][PROTOKEY] No Seed 0 received or cached
+[018449][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[018450][I][PROTOKEY] No Seed 1 received or cached
+[018450][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[018451][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[019191][I][J6_CDD] DATE_TIME Received Message ID is = 7e8, length is =9, msg[8]:Alarm Type = 0
+[019192][I][RTC] setting RTC dd/mm/yy hh:mm:ss - 27 /6 /2024  2:14:46
+[019450][I][PROTOKEY] No Seed 0 received or cached
+[019450][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[019451][I][PROTOKEY] No Seed 1 received or cached
+[019451][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[019452][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[020450][I][PROTOKEY] No Seed 0 received or cached
+[020451][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[020452][I][PROTOKEY] No Seed 1 received or cached
+[020452][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[020453][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[020512][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[020512][I][J6_CDD] 	Item number = 0xF0F3
+[020544][I][J6_CDD]  Transmitted Response for DID: 0xF0F3
+[020555][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[020555][I][J6_CDD] 	Item number = 0xF190
+[020594][I][J6_CDD]  Transmitted Response for DID: 0xF190
+[020601][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[020602][I][J6_CDD] 	Item number = 0xF0B4
+[020754][I][J6_CDD]  Transmitted Response for DID: 0xF0B4
+[020759][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[020759][I][J6_CDD] 	Item number = 0xF1CB
+[020794][I][J6_CDD]  Transmitted Response for DID: 0xF1CB
+[020800][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[020800][I][J6_CDD] 	Item number = 0xF1DB
+[020835][I][J6_CDD]  Transmitted Response for DID: 0xF1DB
+[020839][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[020839][I][J6_CDD] 	Item number = 0xF1CC
+[020874][I][J6_CDD]  Transmitted Response for DID: 0xF1CC
+[020879][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[020880][I][J6_CDD] 	Item number = 0xF1DC
+[020914][I][J6_CDD]  Transmitted Response for DID: 0xF1DC
+[021451][I][PROTOKEY] No Seed 0 received or cached
+[021452][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[021452][I][PROTOKEY] No Seed 1 received or cached
+[021452][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[021453][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[021457][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[021457][I][J6_CDD] 	Item number = 0xF1A0
+[021494][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[021528][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[021528][I][J6_CDD] 	Item number = 0xF1A0
+[021560][I][J6_CDD] IPC_ID_ReportPNStatus- Received!
+[021564][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[021588][I][J6_CDD] ReportCenterStackHMIReady
+[021588][I][SS_LOG] evt=evCenterStackHMIReady
+[021589][I][SS_LOG] st=InfotainmentActive
+[021589][I][SS_LOG] evt=evHMIReady
+[021589][I][SS_LOG] st=InfotainmentActive
+[021733][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:0, new:1, 0)
+[021878][I][J6_CDD] RemoteReflashProgrammingCPID_00 Request Received
+[021878][I][SS_LOG] evt=evRemoteReflashProgrammingEnd
+[021879][I][SS_LOG] st=InfotainmentActive
+[022282][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[022282][I][J6_CDD] 	Item number = 0xF1A0
+[022314][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[022452][I][PROTOKEY] No Seed 0 received or cached
+[022452][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[022452][I][PROTOKEY] No Seed 1 received or cached
+[022452][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[022453][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[022741][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:1, new:0, 0)
+[022749][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:0, new:1, 0)
+[022919][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[022919][I][J6_CDD] 	Item number = 0xF1DB
+[022955][I][J6_CDD]  Transmitted Response for DID: 0xF1DB
+[022959][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[022959][I][J6_CDD] 	Item number = 0xF1DC
+[022994][I][J6_CDD]  Transmitted Response for DID: 0xF1DC
+[023452][I][PROTOKEY] No Seed 0 received or cached
+[023452][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[023453][I][PROTOKEY] No Seed 1 received or cached
+[023453][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[023453][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[023518][I][J6_CDD] Current Value - Rte_Cdd_J6_CddJ6_LngSelSignal_PIM :0
+[023761][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:1, new:0, 0)
+[023775][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:0, new:1, 0)
+[024452][I][PROTOKEY] No Seed 0 received or cached
+[024453][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[024453][I][PROTOKEY] No Seed 1 received or cached
+[024453][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[024454][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[024790][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:1, new:0, 0)
+[024811][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:0, new:1, 0)
+[025003][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[025003][I][J6_CDD] 	Item number = 0xF1DB
+[025035][I][J6_CDD]  Transmitted Response for DID: 0xF1DB
+[025039][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[025039][I][J6_CDD] 	Item number = 0xF1DC
+[025074][I][J6_CDD]  Transmitted Response for DID: 0xF1DC
+[025453][I][PROTOKEY] No Seed 0 received or cached
+[025453][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[025455][I][PROTOKEY] No Seed 1 received or cached
+[025455][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[025456][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[025827][I][IPC_S] IPCCLIENT: Client Changed (ch:13, old:1, new:0, 0)
+[026454][I][PROTOKEY] No Seed 0 received or cached
+[026455][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[026455][I][PROTOKEY] No Seed 1 received or cached
+[026455][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[026457][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[026528][I][J6_CDD] Current Value - Rte_Pim_CddJ6_TimeDispFormatSignal_PIM :0
+[026580][I][J6_CDD] Current Value - Rte_Cdd_J6_CddJ6_LngSelSignal_PIM :0
+[026696][I][J6_CDD] RequestOffModeActivation Request Received
+[027078][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[027079][I][J6_CDD] 	Item number = 0xF1DB
+[027114][I][J6_CDD]  Transmitted Response for DID: 0xF1DB
+[027139][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[027139][I][J6_CDD] 	Item number = 0xF1DC
+[027175][I][J6_CDD]  Transmitted Response for DID: 0xF1DC
+[027455][I][PROTOKEY] No Seed 0 received or cached
+[027455][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[027456][I][PROTOKEY] No Seed 1 received or cached
+[027457][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[027457][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[028455][I][PROTOKEY] No Seed 0 received or cached
+[028456][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[028457][I][PROTOKEY] No Seed 1 received or cached
+[028457][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[028458][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[029313][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[029313][I][J6_CDD] 	Item number = 0xF1A0
+[029344][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[029456][I][PROTOKEY] No Seed 0 received or cached
+[029457][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[029457][I][PROTOKEY] No Seed 1 received or cached
+[029457][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[029458][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[030404][I][SS_LOG] evt=evINFOTAINMENT_ACTIVITY_TIMEOUT
+[030404][I][SS_LOG] isInfotainmentActive = 0x00
+[030404][I][SS_LOG] Storing SSTL persistent data
+[030405][I][SS_LOG] SystemState=Sleep (0x0)
+[030405][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[030406][I][SS_LOG] DeactivatePNs
+[030406][I][SS_SWC] InfotainmentPN deactivated.
+[030406][I][SS_LOG] st=BackgroundSleepTimeout
+[030457][I][PROTOKEY] No Seed 0 received or cached
+[030457][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[030457][I][PROTOKEY] No Seed 1 received or cached
+[030458][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[030458][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[031457][I][PROTOKEY] No Seed 0 received or cached
+[031457][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[031457][I][PROTOKEY] No Seed 1 received or cached
+[031458][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[031458][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[032457][I][PROTOKEY] No Seed 0 received or cached
+[032457][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[032458][I][PROTOKEY] No Seed 1 received or cached
+[032458][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[032459][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[032951][I][J6_CDD] IOC_Main_Temp : 2606
+[032952][I][J6_CDD] SOC_Amp_Temp : 2348
+[033214][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[033214][I][J6_CDD] 	Item number = 0xF1A0
+[033244][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[033457][I][PROTOKEY] No Seed 0 received or cached
+[033458][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[033458][I][PROTOKEY] No Seed 1 received or cached
+[033458][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[033459][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[034459][I][PROTOKEY] No Seed 0 received or cached
+[034459][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[034459][I][PROTOKEY] No Seed 1 received or cached
+[034460][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[034460][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[035458][I][PROTOKEY] No Seed 0 received or cached
+[035459][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[035459][I][PROTOKEY] No Seed 1 received or cached
+[035459][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[035460][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[036460][I][PROTOKEY] No Seed 0 received or cached
+[036460][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[036461][I][PROTOKEY] No Seed 1 received or cached
+[036461][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[036462][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[037461][I][PROTOKEY] No Seed 0 received or cached
+[037461][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[037462][I][PROTOKEY] No Seed 1 received or cached
+[037462][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[037463][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[038462][I][PROTOKEY] No Seed 0 received or cached
+[038462][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[038463][I][PROTOKEY] No Seed 1 received or cached
+[038463][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[038463][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[039462][I][PROTOKEY] No Seed 0 received or cached
+[039462][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[039462][I][PROTOKEY] No Seed 1 received or cached
+[039463][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[039463][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[040404][I][SS_LOG] evt=evBACKGROUND_SLEEP_TIMEOUT
+[040404][I][RTC_CDD] Clear RTC Alarm request
+[040404][I][SS_SWC] backlight cfg = off
+[040405][I][SS_LOG] DeactivatePNs
+[040405][I][SS_SWC] InfotainmentPN deactivated.
+[040405][I][SS_LOG] Shutdown OnEntry
+[040405][I][SS_LOG] st=Shutdown
+[040405][I][PLC] Shutdown command received
+[040462][I][PROTOKEY] No Seed 0 received or cached
+[040463][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[040463][I][PROTOKEY] No Seed 1 received or cached
+[040463][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[040464][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[041463][I][PROTOKEY] No Seed 0 received or cached
+[041463][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[041463][I][PROTOKEY] No Seed 1 received or cached
+[041464][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[041465][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[042463][I][PROTOKEY] No Seed 0 received or cached
+[042464][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[042464][I][PROTOKEY] No Seed 1 received or cached
+[042465][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[042465][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[043255][I][LSWTCH_SWC] Link loss notification sent successfully
+[043464][I][PROTOKEY] No Seed 0 received or cached
+[043465][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[043465][I][PROTOKEY] No Seed 1 received or cached
+[043465][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[043466][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[044465][I][PROTOKEY] No Seed 0 received or cached
+[044465][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[044466][I][PROTOKEY] No Seed 1 received or cached
+[044467][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[044467][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[045466][I][PROTOKEY] No Seed 0 received or cached
+[045467][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[045467][I][PROTOKEY] No Seed 1 received or cached
+[045468][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[045468][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[045737][I][SS_SWC] InfotainmentActivationRequest availabilty is 0 
+[046467][I][PROTOKEY] No Seed 0 received or cached
+[046467][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[046467][I][PROTOKEY] No Seed 1 received or cached
+[046468][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[046468][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[047467][I][PROTOKEY] No Seed 0 received or cached
+[047467][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[047467][I][PROTOKEY] No Seed 1 received or cached
+[047468][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[047468][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[048467][I][PROTOKEY] No Seed 0 received or cached
+[048467][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[048468][I][PROTOKEY] No Seed 1 received or cached
+[048468][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[048469][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[049467][I][PROTOKEY] No Seed 0 received or cached
+[049468][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[049468][I][PROTOKEY] No Seed 1 received or cached
+[049468][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[049469][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[050468][I][PROTOKEY] No Seed 0 received or cached
+[050469][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[050469][I][PROTOKEY] No Seed 1 received or cached
+[050469][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[050470][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[051469][I][PROTOKEY] No Seed 0 received or cached
+[051469][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[051469][I][PROTOKEY] No Seed 1 received or cached
+[051470][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[051470][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[052469][I][PROTOKEY] No Seed 0 received or cached
+[052469][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[052470][I][PROTOKEY] No Seed 1 received or cached
+[052470][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[052471][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[053470][I][PROTOKEY] No Seed 0 received or cached
+[053470][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[053471][I][PROTOKEY] No Seed 1 received or cached
+[053471][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[053472][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[054471][I][PROTOKEY] No Seed 0 received or cached
+[054471][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[054472][I][PROTOKEY] No Seed 1 received or cached
+[054472][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[054473][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[055471][I][PROTOKEY] No Seed 0 received or cached
+[055472][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[055472][I][PROTOKEY] No Seed 1 received or cached
+[055472][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[055473][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[056472][I][PROTOKEY] No Seed 0 received or cached
+[056472][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[056472][I][PROTOKEY] No Seed 1 received or cached
+[056473][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[056473][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[057472][I][PROTOKEY] No Seed 0 received or cached
+[057472][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[057473][I][PROTOKEY] No Seed 1 received or cached
+[057473][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[057474][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[058473][I][PROTOKEY] No Seed 0 received or cached
+[058473][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[058473][I][PROTOKEY] No Seed 1 received or cached
+[058474][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[058475][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[058486][I][SS_LOG] evt=evInfotainmentActivity
+[058487][I][SS_LOG] OnExit_Sleep_Shutdown, aborting shutdown!
+[058487][I][SS_LOG] is_infotainment_activity_timer_active = true
+[058487][I][SS_SWC] InfotainmentPN activated.
+[058487][I][SS_LOG] SystemState=AnimationInit (0x1)
+[058488][I][SS_SWC] backlight cfg = off
+[058489][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[058489][I][SS_LOG] isAnimationReady = true
+[058489][I][SS_LOG] SystemState=HmiInactive (0x3)
+[058490][I][SS_SWC] IBSRwBatSOC_Processed == 7900
+[058490][I][SS_SWC] OATP_OtsAirTmpCrValAuth_Processed == 2100
+[058490][I][SS_SWC] IBSRwBatSOC_Processed == 7900
+[058490][I][SS_SWC] OATP_OtsAirTmpCrValAuth_Processed == 2100
+[058491][I][SS_SWC] isSuspendToRAMAllowed = 0x3F
+[058491][I][SS_SWC] HMIInactive: Requesting Shutdown
+[058491][I][PLC] evt = evStartupRequest
+[058492][I][RTC_CDD] Clear RTC Alarm request
+[058492][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[058493][I][SS_LOG] isInfotainmentActive = 0x02
+[058493][I][SS_SWC] backlight cfg = off
+[058493][I][SS_LOG] st=InfotainmentActive
+[058494][I][PLC] st = CSM_On
+[058496][I][J6_CDD] Current Value - Rte_Cdd_J6_CddJ6_LngSelSignal_PIM :0
+[058507][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[058508][I][J6_CDD] 	Item number = 0xF1A0
+[058538][I][SS_SWC] InfotainmentActivationRequest availabilty is 1 
+[058544][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[058555][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[058556][I][J6_CDD] 	Item number = 0xF1A0
+[058595][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[058648][I][PROTOKEY] Receives invalid seed [2] from BCM
+[058739][I][J6_CDD] FrtPedtrnClsnMtgnAudAttnReqd_AI is 1
+[058740][I][SS_SWC] InfotainmentActivationRequest is available 
+[058877][I][LSWTCH_SWC] Link loss notification sent successfully
+[058940][I][J6_CDD] FrtPedtrnClsnMtgnAudAttnReqd_AI is 3
+[059473][I][PROTOKEY] No Seed 0 received or cached
+[059474][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[059475][I][PROTOKEY] No Seed 1 received or cached
+[059475][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[059478][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[059587][I][LSWTCH_SWC] Link loss notification sent successfully
+[059611][I][PROTOKEY] Receives invalid seed [1] from BCM
+[059642][I][PROTOKEY] Receives invalid seed [2] from BCM
+[060144][I][J6_CDD] RTC Date/Time : 2024/6/27 2:15:26
+[060475][I][PROTOKEY] No Seed 0 received or cached
+[060476][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[060477][I][PROTOKEY] No Seed 1 received or cached
+[060477][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[060478][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[060611][I][PROTOKEY] Receives invalid seed [1] from BCM
+[060642][I][PROTOKEY] Receives invalid seed [2] from BCM
+[060931][I][J6_CDD] ENM_GB_ASTC_ChimSnkLvl.ASTC_ChimSnkLvl      ::c1
+[061475][I][PROTOKEY] No Seed 0 received or cached
+[061476][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[061477][I][PROTOKEY] No Seed 1 received or cached
+[061477][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[061478][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[061617][I][PROTOKEY] Receives invalid seed [1] from BCM
+[061642][I][PROTOKEY] Receives invalid seed [2] from BCM
+[062475][I][PROTOKEY] No Seed 0 received or cached
+[062476][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[062477][I][PROTOKEY] No Seed 1 received or cached
+[062477][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[062478][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[062617][I][PROTOKEY] Receives invalid seed [1] from BCM
+[062648][I][PROTOKEY] Receives invalid seed [2] from BCM
+[062954][I][J6_CDD] IOC_Main_Temp : 2587
+[062955][I][J6_CDD] SOC_Amp_Temp : 2282
+[063478][I][PROTOKEY] No Seed 0 received or cached
+[063478][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[063479][I][PROTOKEY] No Seed 1 received or cached
+[063479][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[063480][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[063621][I][PROTOKEY] Receives invalid seed [1] from BCM
+[063648][I][PROTOKEY] Receives invalid seed [2] from BCM
+[064477][I][PROTOKEY] No Seed 0 received or cached
+[064478][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[064478][I][PROTOKEY] No Seed 1 received or cached
+[064478][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[064479][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[064621][I][PROTOKEY] Receives invalid seed [1] from BCM
+[064648][I][PROTOKEY] Receives invalid seed [2] from BCM
+[065478][I][PROTOKEY] No Seed 0 received or cached
+[065478][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[065478][I][PROTOKEY] No Seed 1 received or cached
+[065479][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[065480][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[065621][I][PROTOKEY] Receives invalid seed [1] from BCM
+[065647][I][PROTOKEY] Receives invalid seed [2] from BCM
+[066478][I][PROTOKEY] No Seed 0 received or cached
+[066479][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[066479][I][PROTOKEY] No Seed 1 received or cached
+[066480][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[066481][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[066621][I][PROTOKEY] Receives invalid seed [1] from BCM
+[066652][I][PROTOKEY] Receives invalid seed [2] from BCM
+[066751][I][SS_LOG] evt=evInfotainmentActivity
+[066751][I][SS_LOG] is_infotainment_activity_timer_active = true
+[066752][I][SS_LOG] st=InfotainmentActive
+[067271][I][SS_SWC] CAN Event: Key/ID Device Present = true
+[067284][I][SS_LOG] evt=evPowerModeOn
+[067284][I][SS_LOG] st=StartupDelayWait
+[067432][I][J6_CDD] ENM_GB_ASTC_ChimSnkLvl.ASTC_ChimSnkLvl      ::c1
+[067474][I][SS_LOG] evt=evSTARTUP_DELAY_WAIT
+[067474][I][J6_CDD] PlayAnimation Transmitted over Channel[2]-3
+[067475][I][J6_CDD] PlayAnimation Transmitted over Channel[16]-3
+[067476][I][SS_LOG] SystemState=HmiInit (0x2)
+[067476][I][SS_LOG] evt=BSM_COMPLETION_EVENT
+[067477][I][SS_SWC] backlight cfg = on
+[067478][I][SS_LOG] st=FullOperationStartup
+[067481][I][PROTOKEY] No Seed 0 received or cached
+[067482][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[067482][I][J6_CDD] ReportCenterStackHMIReady
+[067483][I][PROTOKEY] No Seed 1 received or cached
+[067483][I][PROTOKEY] Returning Seed 2 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[067483][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[067508][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[067509][I][J6_CDD] 	Item number = 0xF1A0
+[067545][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[067606][I][SS_SWC] IPC Animation Status = 3
+[067607][I][SS_LOG] isAnimationReady = true
+[067607][I][SS_LOG] evt=evAnimationReady
+[067608][I][SS_LOG] isAnimationComplete = false
+[067608][I][SS_LOG] st=FullOperationStartup
+[067621][I][PROTOKEY] Receives invalid seed [1] from BCM
+[067652][I][PROTOKEY] Cached Seed 2 value is 1a 6a 09 41 a7 37 f7 67 Checksum is 181338891
+[068481][I][PROTOKEY] No Seed 0 received or cached
+[068481][I][PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
+[068482][I][PROTOKEY] Seed 2 taken from GMLAN
+[068482][I][PROTOKEY] Returning Seed 2 value is 1a 6a 09 41 a7 37 f7 67 Checksum is 181338891
+[068483][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 3
+[068621][I][PROTOKEY] Cached Seed 1 value is 10 7d 9e 16 90 67 ed 8e Checksum is 233964468
+[068796][I][J6_CDD] ReportAnimationState
+[068797][I][SS_SWC] CSM Animation state = 1
+[068797][I][SS_LOG] evt=evCenterStackAnimationReady
+[068798][I][SS_LOG] st=FullOperationStartup
+[068798][I][SS_LOG] isAnimationReady = true
+[068798][I][SS_LOG] evt=evAnimationReady
+[068798][I][SS_LOG] isAnimationComplete = false
+[068798][I][SS_LOG] st=FullOperationStartup
+[069481][I][PROTOKEY] Seed 1 taken from GMLAN
+[069482][I][PROTOKEY] Returning Seed 1 value is 10 7d 9e 16 90 67 ed 8e Checksum is 233964468
+[069482][I][PROTOKEY] Seed 2 taken from GMLAN
+[069482][I][PROTOKEY] Returning Seed 2 value is 1a 6a 09 41 a7 37 f7 67 Checksum is 181338891
+[069483][I][J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is 1
+[069608][I][SS_SWC] IPC Animation Status = 1
+[069608][I][SS_LOG] isAnimationReady = true
+[069608][I][SS_LOG] evt=evAnimationReady
+[069609][I][SS_LOG] isAnimationComplete = true
+[069609][I][SS_SWC] backlight cfg = on
+[069610][I][SS_LOG] SystemState=Accessory (0x7)
+[069610][I][SS_LOG] st=Accessory
+[069620][I][J6_CDD] Current Value - Rte_Cdd_J6_CddJ6_LngSelSignal_PIM :0
+[069869][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[069870][I][J6_CDD] 	Item number = 0xF1A0
+[069905][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[072237][I][ELMOS_IC] Antenna 1 (AM/FM) open circuit fault active.
+[072237][I][ELMOS_IC] Antenna 2 (FM2/DAB) open circuit fault active.
+[072238][I][ELMOS_IC] ERR = 0x28, A1 = [0x03, 0x01, 0x9C], A2 = [0x03, 0x00, 0x9B]
+[072636][I][J6_CDD] DATE_TIME Received Message ID is = 7ea, length is =9, msg[8]:Alarm Type = 0
+[072649][I][RTC] setting RTC dd/mm/yy hh:mm:ss - 17 /1 /2026  17:14:19
+[073731][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[073732][I][J6_CDD] 	Item number = 0xF1A0
+[073765][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[076002][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[076003][I][J6_CDD] 	Item number = 0xF1A0
+[076036][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[077679][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_ChimSnkLvl      ::193
+[077679][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_MtxSnkMut       ::0
+[077680][I][J6_CDD] AmpSetTonCtrl_UserDefined_Data.ASTC_MtxSnkRmpTm     ::2
+[082319][I][J6_CDD] Current Value - Rte_Cdd_J6_CddJ6_LngSelSignal_PIM :0
+[086680][I][J6_CDD] Current Value - Rte_Cdd_J6_CddJ6_LngSelSignal_PIM :0
+[092957][I][J6_CDD] IOC_Main_Temp : 2564
+[092957][I][J6_CDD] SOC_Amp_Temp : 2235
+[096744][I][SS_LOG] evt=evINFOTAINMENT_ACTIVITY_TIMEOUT
+[096744][I][SS_LOG] st=Accessory
+[121146][I][J6_CDD] RTC Date/Time : 2026/1/17 17:15:7
+[122960][I][J6_CDD] IOC_Main_Temp : 2505
+[122960][I][J6_CDD] SOC_Amp_Temp : 2140
+[125249][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[125249][I][J6_CDD] 	Item number = 0xF1A0
+[125284][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[127625][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[127625][I][J6_CDD] 	Item number = 0xF1A0
+[127655][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[129119][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[129120][I][J6_CDD] 	Item number = 0xF1A0
+[129155][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[140965][I][J6_CDD] 	SID = 0x9 ISID = 0x0
+[140965][I][J6_CDD] 	Item number = 0xF1A0
+[141005][I][J6_CDD]  Transmitted Response for DID: 0xF1A0
+[152962][I][J6_CDD] IOC_Main_Temp : 2453
+[152963][I][J6_CDD] SOC_Amp_Temp : 2064

@@ -1,0 +1,30 @@
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program Name
+tcp        0      0 127.0.0.1:53            0.0.0.0:*               LISTEN      -
+tcp        0      0 192.168.5.1:53          0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:7000            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:6363            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:49156           0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.1:6363          127.0.0.1:37710         ESTABLISHED -
+tcp        0      0 127.0.0.1:37700         127.0.0.1:6363          ESTABLISHED -
+tcp        0      0 127.0.0.1:37710         127.0.0.1:6363          ESTABLISHED -
+tcp        0      0 127.0.0.1:6363          127.0.0.1:37700         ESTABLISHED -
+tcp6       0      0 ::1:53                  [::]:*                  LISTEN      -
+tcp6       0      0 fe80::f86d:ccff:fe1c:53 [::]:*                  LISTEN      -
+tcp6       0      0 [::]:7000               [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9016 [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9002 [::]:*                  LISTEN      -
+tcp6       0      0 ::ffff:192.168.1.1:9010 [::]:*                  LISTEN      -
+tcp6       0      1 ::ffff:192.168.1.:48750 ::ffff:192.168.1.1:9012 SYN_SENT    -
+tcp6       0      0 ::ffff:192.168.1.1:9016 ::ffff:192.168.1.1:6880 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:41814 ::ffff:192.168.1.1:9016 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:34508 ::ffff:192.168.1.1:9005 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.1:9016 ::ffff:192.168.1.:65432 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:34894 ::ffff:192.168.1.1:9010 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:49308 ::ffff:142.251.46.2:443 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.1:9002 ::ffff:192.168.1.:65353 ESTABLISHED -
+tcp6       0      1 ::ffff:192.168.1.:42074 ::ffff:142.251.46.2:443 SYN_SENT    -
+tcp6       0      0 ::ffff:192.168.1.1:9016 ::ffff:192.168.1.:41814 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:48660 ::ffff:192.168.1.1:9010 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:54654 ::ffff:192.168.1.1:9010 ESTABLISHED -
+tcp6       0      0 ::ffff:192.168.1.:34772 ::ffff:192.168.1.1:9018 ESTABLISHED -

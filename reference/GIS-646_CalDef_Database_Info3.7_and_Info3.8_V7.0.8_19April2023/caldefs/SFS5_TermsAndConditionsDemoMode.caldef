@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Contains calibrations for the TermsAndConditions and DemoMode functionality specified by SFS-5 and implemented within the TermsAndConditionsApp.   The calibrations within this file will generaly be &quot;policy&quot; calibrations that will generall be the same for all vehicles.">
+  <CalDefFileVersion>5</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated PAPI_DEMO_MODE_CONFIRM_SOLD_INTERVAL, TERMS_AND_CONDITIONS_BYPASS_LIMIT_COUNT, PAPI_DEMO_MODE_QUERY_CYCLE_INTERVAL cals in this caldef to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2/26/2016</Date>
+    <Description>Within this caldef file,per request from Vinay Kapadia updated the default value of the TERMS_AND_CONDITIONS_BYPASS_LIMIT_COUNT CAL from 3 to 5 for MY18</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This is the number of IGN cycles after moving from demo mode to sold mode when the Demo Mode shall be confirmed with the server on every IGN cycle. After this number of IGN cycles, the vehicle transitions into full sold mode and only checks the demo mode state every PAPI_DEMO_MODE_QUERY_CYCLE_INTERVAL IGN cycles" Name="PAPI_DEMO_MODE_CONFIRM_SOLD_INTERVAL" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_h5XCgLncEeS-LYW3rxjCRA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated PAPI_DEMO_MODE_CONFIRM_SOLD_INTERVAL to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>45</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The limit for the Bypass Counter defined in SFS-5.  If the TermsAndConditionsDialog counter exceeds this value, then Decline Terms action will be taken" Name="TERMS_AND_CONDITIONS_BYPASS_LIMIT_COUNT" References="SFS-5, GIS-524" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XYCagKyDEeSfFJuD6NTKhw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated TERMS_AND_CONDITIONS_BYPASS_LIMIT_COUNT to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2/26/2016</Date>
+      <Description>Per request from Vinay Kapadia updated the default value of this CAL from 3 to 5 for MY18</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Sleep cycle interval between calls to pAPI to determine pAPI web demo mode status.  If set to 1, a pAPI call to query demo mode status is made on each system initialization.  If set to 2, a call is made every other sleep cycle and so on." Name="PAPI_DEMO_MODE_QUERY_CYCLE_INTERVAL" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Gr3isKyEEeSfFJuD6NTKhw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated PAPI_DEMO_MODE_QUERY_CYCLE_INTERVAL to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>1000000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

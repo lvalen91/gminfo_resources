@@ -1,0 +1,454 @@
+================================================================================
+GM AAOS Y181 SECURITY ANALYSIS (CONSOLIDATED)
+================================================================================
+Target: GM Infotainment Unit (gminfo37 / CSM Module)
+Build: W231E-Y181.3.2-SIHM22B-499.3 (Android 12)
+Analysis Date: 2026-01-04
+Platform: Intel Atom x7-A3960 Broxton + Renesas RH850 VIP (Harman)
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. Executive Summary
+2. Hardware Architecture
+3. Boot Chain & GHS Hypervisor
+4. Security Architecture
+5. Attack Surface
+6. VIP MCU Security Controls
+7. Third-Party App Restrictions
+8. Verified Vulnerabilities
+9. Downgrade Protection
+10. Recommendations
+11. Evidence Sources
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+This analysis consolidates findings from multiple research efforts on the GM
+Android Automotive OS Y181 infotainment system (CSM - Cockpit System Module).
+
+VERIFIED SECURITY POSTURE:
+- SELinux: ENFORCING at runtime (boot params permissive, overridden by init)
+- Verified Boot: Enabled, green state, locked vbmeta
+- File Encryption: AES-256-XTS file-based encryption
+- ADB: Secure mode (ro.adb.secure=1), requires authorization
+- GHS Hypervisor: Enforces rollback protection (blocks Y177 downgrade)
+
+KEY SECURITY FINDINGS:
+
+BLOCKED ATTACK VECTORS:
+- Firmware downgrade Y181→Y177: BLOCKED by GHS hypervisor rollback protection
+- Direct I2C/GPIO access: BLOCKED by SELinux (world-writable DAC overridden)
+- Third-party Vehicle HAL access: BLOCKED (untrusted_app excluded)
+- GSI installation: BLOCKED by SELinux dontaudit rule
+
+CONFIRMED VULNERABILITIES (Ranked by exploitability):
+
+HIGH RISK:
+1. Network services on 0.0.0.0 (ports 6363, 7000, 49156)
+2. IPC Server runs as root with VIP MCU serial access
+3. World-writable directories (/data/gmauth, /data/gmbugreport)
+
+MEDIUM RISK:
+4. IOMMU disabled (requires physical access)
+5. ADB TCP 5555 configured but NOT listening
+6. VIP boot failure bypass (3 consecutive failures disables checks)
+
+LOW RISK:
+7. I2C/GPIO 666 permissions (SELinux protected)
+8. EEPROM CRC not enforced at boot (tested with corrupted VIN)
+
+================================================================================
+2. HARDWARE ARCHITECTURE
+================================================================================
+
+2.1 DUAL-PROCESSOR DESIGN
+-------------------------
+The CSM module contains two processors communicating via SPI-IPC/HDLC:
+
+| Processor | Chip              | Function                          |
+|-----------|-------------------|-----------------------------------|
+| Main SoC  | Intel Atom x7-A3960 | Android AAOS, Display, Audio    |
+| VIP MCU   | Renesas RH850/P1M-E | Power mgmt, CAN, Amp, Security  |
+
+2.2 TWO-MODULE ARCHITECTURE
+---------------------------
+| Module | Name                    | Function                       |
+|--------|-------------------------|--------------------------------|
+| A11    | CSM (Cockpit System)    | Main compute (Atom + VIP)      |
+| A22    | Radio Control           | Display + touch digitizer      |
+
+2.3 KEY HARDWARE COMPONENTS
+---------------------------
+| Chip              | Function                    | Security Relevance    |
+|-------------------|-----------------------------|-----------------------|
+| Intel Atom x7-A3960| Main SoC                   | Runs Android          |
+| Renesas TM52176   | VIP MCU                     | Security gatekeeper   |
+| ST M24C64         | I2C EEPROM (8KB)            | ADB bypass flags      |
+| IS25LP016         | SPI Flash (2MB)             | Logs, non-critical    |
+| NXP TJA1145T      | CAN transceiver             | Vehicle network       |
+
+2.4 MEMORY MAP
+--------------
+EEPROM (M24C64) Security-Relevant Regions:
+| Address     | Purpose                    | CRC Protected? |
+|-------------|----------------------------|----------------|
+| 0x0440-045F | ADB BYPASS FLAGS (PRIMARY) | NO             |
+| 0x0A80-0AFF | ADB BYPASS FLAGS (BACKUP)  | NO             |
+| 0x05C0-05D1 | VIN                        | YES (not enforced at boot) |
+| 0x16E0      | Primary CRC                | N/A            |
+
+================================================================================
+3. BOOT CHAIN & GHS HYPERVISOR
+================================================================================
+
+3.1 BOOT SEQUENCE
+-----------------
+Stage 1: VIP MCU (RH850) initializes, reads EEPROM security flags
+Stage 2: Intel ABL (Automotive Boot Loader) starts
+Stage 3: GHS INTEGRITY hypervisor loads, performs AVB verification
+Stage 4: Android VM starts under GHS control
+
+3.2 GHS INTEGRITY HYPERVISOR
+----------------------------
+GHS INTEGRITY is a Type-1 hypervisor that:
+- Runs BEFORE Android loads
+- Performs Android Verified Boot (AVB) verification
+- Enforces ROLLBACK PROTECTION independently of Android
+- Controls slot switching for A/B updates
+- Manages Android lifecycle (boot failure counting)
+
+Key GHS error messages (from binary 85098662):
+- "VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu"
+- "VMM: Error: vbmeta signing key does not match known valid key"
+- "GHS: [LIFECYCLE] Android failed to boot (count=%lu)"
+
+3.3 ROLLBACK PROTECTION MECHANISM
+---------------------------------
+GHS stores rollback index in misc partition (vda9), NOT in vbmeta.
+Both Y177 and Y181 have vbmeta.rollback_index = 0.
+GHS maintains its OWN counter and rejects older versions.
+
+TESTED: Y181→Y177 downgrade via USB update
+RESULT: FAILED - Partitions written but GHS rejected at boot verification
+
+3.4 UPDATE PROCESS SEPARATION
+-----------------------------
+PHASE 1 (gm_update_engine): Writes any package to inactive slot
+  - "version check disabled" only affects this phase
+  - No version validation during write
+
+PHASE 2 (GHS at boot): Verifies and decides if new slot boots
+  - Independent rollback check
+  - Falls back to original slot on failure
+
+================================================================================
+4. SECURITY ARCHITECTURE
+================================================================================
+
+4.1 SELINUX STATUS
+------------------
+BOOT PARAMETERS: enforcing=0 androidboot.selinux=permissive
+RUNTIME STATUS: ENFORCING
+
+Init overrides boot parameters before untrusted code executes.
+Neverallow rules prevent any domain from calling setenforce.
+
+4.2 GM-SPECIFIC SELINUX DOMAINS
+-------------------------------
+Process Domains:
+- gm_vnd_IPCServer: VIP communication (root privileges)
+- gm_diagnosticsd: OBD-II diagnostics
+- gm_update_engine: OTA updates
+- gm_vehicle_hal: Vehicle HAL implementation
+- gm_protokey: ADB authentication service
+
+4.3 VEHICLE HAL ACCESS
+----------------------
+hal_vehicle_client membership (vendor_sepolicy.cil:196):
+- system_server, gmConnectionService, camerad, plmanager
+- gm_vnd_vehicleaudiocontrol, gm_vehiclepanel
+- evs_bxt_app, kitchensink_app, hal_broadcastradio_harman
+
+NOT INCLUDED: untrusted_app, platform_app, priv_app
+Third-party apps CANNOT directly access Vehicle HAL.
+
+4.4 DPS SECURITY ARCHITECTURE
+-----------------------------
+GM's DPS (Diagnostic Programming System) uses server-based key provisioning:
+
+1. S84.dll: Contains AES-CMAC algorithm (Crypto++ library)
+2. IECS.dll: Communicates with GM key server via HTTPS+mTLS
+3. Master key: Held ONLY on GM servers, not in DLLs
+
+DPS CANNOT:
+- Write to EEPROM security addresses (0x0440, 0x0A80)
+- Access EEPROM via I2C directly
+- Flash TSS-signed modules without GM keys
+- Bypass AVB protection
+
+================================================================================
+5. ATTACK SURFACE
+================================================================================
+
+5.1 NETWORK SERVICES (VERIFIED)
+-------------------------------
+External interfaces (0.0.0.0):
+| Port  | Risk   | Notes                              |
+|-------|--------|------------------------------------|
+| 6363  | HIGH   | GMVT service                       |
+| 7000  | HIGH   | Unknown                            |
+| 49156 | HIGH   | Unknown                            |
+
+Internal network (192.168.1.1):
+| Port  | Risk   | Notes                              |
+|-------|--------|------------------------------------|
+| 9002  | MEDIUM | Internal VLAN service              |
+| 9005  | MEDIUM | Internal VLAN service              |
+| 9010  | MEDIUM | Internal VLAN service              |
+| 9012  | MEDIUM | Internal VLAN service              |
+| 9016  | MEDIUM | Internal VLAN service              |
+| 9018  | MEDIUM | Internal VLAN service              |
+
+ADB TCP 5555: Configured in init.rc but NOT actively listening.
+
+5.2 NETWORK INTERFACES
+----------------------
+- eth0: Vehicle network (192.168.1.100/24)
+- vlan4@eth0: Segregated network (172.16.4.100/24)
+- br0: WiFi hotspot bridge (192.168.5.1/24)
+- wlan0/1/2: WiFi interfaces
+
+5.3 IPC CHANNELS (VERIFIED)
+---------------------------
+IPC Server (/vendor/etc/ipc4.cfg):
+- Serial: /dev/ttyS1 at 1Mbps
+- UID/GID: root/root
+- 20 IPC channels to VIP MCU
+
+Channel assignments:
+- Channel 1-2: PROTOKEY / Security
+- Channel 3-5: J6_CDD Diagnostics
+- Channel 6-8: Power Level Control
+- Channel 9-12: Calibration updates
+
+5.4 I2C/GPIO ACCESS (CORRECTED)
+-------------------------------
+DAC: 666 (world-writable)
+MAC: SELinux BLOCKS shell, untrusted_app
+
+I2C buses 0 and 1 are world-accessible at DAC level, but:
+- SELinux blocks on Y181 (enforcing)
+- May work on Y177 (permissive) - but Y177 downgrade blocked
+
+5.5 BINDER SERVICES
+-------------------
+Total: 245 binder services
+High-value GM services:
+- com.gm.server.obd.OBDService
+- com.gm.server.diagnostics_service.DiagnosticsService
+- com.gm.server.update.UpdateService
+- gm.onstar.OnStarRemoteReflashManager
+
+================================================================================
+6. VIP MCU SECURITY CONTROLS
+================================================================================
+
+6.1 ADB BYPASS MECHANISM (CONFIRMED)
+------------------------------------
+VIP controls ADB authentication via EEPROM flags:
+
+NORMAL STATE:
+  EEPROM 0x0440: C3 00 C3 (frame=Calibration, value=secured)
+  Result: VIP requests seed from BCM, returns ECUID+Challenge
+  ADB requires GM Secure Client authentication
+
+BYPASSED STATE:
+  EEPROM 0x0440: 5A FF 5A (frame=Security, value=bypass)
+  EEPROM 0x0A80: 5A FF 5A (backup flag)
+  Result: VIP returns 0xFF seed (32 bytes of 0xFF)
+  ADB accessible with standard platform-tools
+
+6.2 MEC COUNTER BEHAVIOR
+------------------------
+MEC (Manufacturing Enable Counter) affects hypervisor timeout:
+- MEC=0: VIP monitors GHS startup, resets on failure
+- MEC≠0 (e.g., 207): VIP IGNORES hypervisor startup failures
+
+6.3 THREE CONSECUTIVE FAILURES
+------------------------------
+After 3 consecutive boot failures:
+- Hypervisor startup timer DISABLED
+- CSM reset for SoC-only reset DISABLED
+- System continues without normal checks
+
+Potential attack: Force 3 failures to bypass boot validation
+
+6.4 VIP CALIBRATION VARIABLES
+-----------------------------
+VIP reads 30+ calibration values from EEPROM:
+- cal_suspend_to_ram_en: Enable S2R
+- cal_vin_relearn_en: VIN relearn mode
+- cal_startup_fault_timeout_sec: Boot fault timeout
+- cal_cluster_hmiready_ignore: Skip UI initialization
+
+6.5 SBAT COUNTERS
+-----------------
+SBAT (Secure Boot Authentication Table) counters in VIP NVM:
+- keyNBID: Key rollback counter
+- appNBID: Application rollback counter
+
+6.6 ICUSB KEY STATES
+--------------------
+Four distinct key states:
+1. No keys (virgin)
+2. Master key only
+3. Unlock key only
+4. Both keys provisioned
+
+6.7 CRC ENFORCEMENT (CRITICAL FINDING)
+--------------------------------------
+TESTED: VIN field (0x5C0-0x5D1) set to all 0xFF
+RESULT: Module booted normally!
+
+CRC is NOT enforced at boot time. CRC validation occurs only during:
+- OTA/SPS programming
+- DPS calibration writes
+- Dealer service modes
+
+This significantly expands safe EEPROM modification space.
+
+================================================================================
+7. THIRD-PARTY APP RESTRICTIONS
+================================================================================
+
+7.1 SELINUX RESTRICTIONS
+------------------------
+untrusted_app CANNOT:
+- Access vndbinder_device
+- Use vndservice_manager (add/find/list)
+- Access hwservice_manager (add)
+- Read/write graphics_device
+- Access debugfs
+- Create netlink sockets
+
+7.2 VEHICLE API RESTRICTIONS
+----------------------------
+Third-party apps CANNOT directly:
+- Communicate with Vehicle HAL
+- Access CAN bus
+- Read raw vehicle properties
+
+All access MUST go through CarService with permission checks.
+
+7.3 GSI BLOCKER
+---------------
+Exact rule in vendor_sepolicy.cil:2672:
+  (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
+
+This prevents DSU (Dynamic System Updates) / GSI installation.
+
+================================================================================
+8. VERIFIED VULNERABILITIES
+================================================================================
+
++------------------------------+--------+--------+---------------------------+
+| Finding                      | Orig   | Actual | Evidence                  |
++------------------------------+--------+--------+---------------------------+
+| Network 0.0.0.0 binding      | 7.5    | 7.5    | open_ports.txt            |
+| IPC Server as root           | 8.4    | 8.4    | ipc4.cfg                  |
+| World-writable directories   | 6.0    | 6.0    | init.rc grep              |
+| IOMMU disabled               | 8.5    | 5.5    | Physical access required  |
+| ADB TCP 5555                 | 9.8    | 4.0    | Not listening at runtime  |
+| I2C world-writable           | 8.8    | 2.0    | SELinux blocks access     |
+| GPIO world-writable          | 7.1    | 2.0    | SELinux blocks access     |
+| SELinux permissive           | 9.8    | 2.0    | Runtime is Enforcing      |
+| 3x boot failure bypass       | N/A    | 5.0    | Disables validation       |
++------------------------------+--------+--------+---------------------------+
+
+================================================================================
+9. DOWNGRADE PROTECTION
+================================================================================
+
+9.1 FIRMWARE SIGNING
+--------------------
+Module signing status (from delivery_manifest.csv):
+
+UNSIGNED (no TSS signature, but internal validation):
+| Module | Name        | Internal Validation           |
+|--------|-------------|-------------------------------|
+| 71     | VIP_BOOT    | Harman checksum, SHA-256      |
+| 72     | SOC_ABL     | Intel CSE (hardware fused)    |
+| 23     | SOC_BOOT    | Unknown                       |
+| 24     | SOC_UTILS   | Unknown                       |
+
+Note: VIP_BOOT has internal Harman checksum - cannot flash modified
+firmware without reverse engineering the checksum algorithm.
+
+9.2 OEM PUBLIC KEY
+------------------
+RSA-2048 OEM public key extracted from bootloader (85738845).
+Can VERIFY signatures but CANNOT create new ones.
+Private key held by GM's HSM infrastructure.
+
+9.3 OTA BEHAVIOR
+----------------
+OTA updates actively restore EEPROM security flags:
+- Security flags at 0x0440/0x0A80 reset to secured state
+- EEPROM modifications must be re-applied after updates
+
+================================================================================
+10. RECOMMENDATIONS
+================================================================================
+
+HIGH PRIORITY:
+1. Bind network services to specific interfaces, not 0.0.0.0
+2. Review IPC Server privilege requirements (root → least privilege)
+3. Restrict world-writable directories to 0770
+
+MEDIUM PRIORITY:
+4. Enable IOMMU (remove intel_iommu=off from cmdline)
+5. Review dontaudit rules hiding security violations
+6. Audit 3x boot failure bypass behavior
+7. Review MEC counter security implications
+
+LOW PRIORITY:
+8. Disable KALLSYMS_ALL to prevent kernel symbol exposure
+9. Document vehicle HAL access matrix formally
+10. Consider hardware-based EEPROM write protection
+
+================================================================================
+11. EVIDENCE SOURCES
+================================================================================
+
+A. Runtime Data (ADB Enumeration):
+   gm_aaos/analysis/adb_Y181/gm_enum_20251220_081558/raw/
+   - selinux_status.txt, open_ports.txt, all_properties.txt
+
+B. SELinux Policy:
+   pulled_files/vendor_sepolicy.cil, plat_sepolicy.cil
+
+C. Extracted Partitions:
+   gm_aaos/extracted_partitions/vendor_extracted/etc/
+
+D. Prior Research Documentation:
+   gm_aaos/documentation/
+   - VIP_CONTROL_ANALYSIS.txt
+   - GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt
+   - DPS_SECURITY_ANALYSIS.txt
+   - DOCUMENTATION_REVIEW_AND_CORRECTIONS.txt
+
+E. DPS Security Analysis:
+   gm_dps/
+   - security_dlls/S84_ANALYSIS_LOG.md
+   - VIP_BOOT_CONTROL_ANALYSIS.md
+
+F. Hardware Research:
+   gm_pi/
+   - 00_PROJECT_SUMMARY.md
+   - 08_HARDWARE_CHIPS.md
+
+================================================================================
+END OF CONSOLIDATED ANALYSIS
+================================================================================

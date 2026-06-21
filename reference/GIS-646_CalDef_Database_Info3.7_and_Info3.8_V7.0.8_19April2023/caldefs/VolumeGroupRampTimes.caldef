@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup.">
+  <CalDefFileVersion>5</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>31OCT2014</Date>
+    <Description>Music Ramp Times for volume groups, GIS-604-825.</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the VolumeGroupRampTimes.caldef file, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/13/2019</Date>
+    <Description>Per CR#2060763 AOSP transition, in MY22 GIS-646 Cal DB V6.0.3 to deprecate, will uncheck MID/HIGH, VCU for all calibrations in this caldef file. Replacement MID/HIGH, VCU calibrations can be found in AOSPVolumeGroupRampTimes.caldef.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_VOL_GROUP_VOICE_CALL" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_w7t1AWX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_VOL_GROUP_RING" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_wQBMoWX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_VOL_GROUP_MUSIC" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_wbD_AGX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_VOL_GROUP_MUSIC" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_AsowEWX3EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_VOL_GROUP_VOICE_CALL" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>__y0zMWX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_VOL_GROUP_AUDIO_CUE" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_v9w_AWX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_VOL_GROUP_EMERGENCY_PHONE" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_vr0TYWX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_VOL_GROUP_RDS_TRAFFIC" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_vY7zoGX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_VOL_GROUP_PROMPT" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_gsnwMGX2EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_VOL_GROUP_RING" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ARZlkWX3EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_VOL_GROUP_AUDIO_CUE" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_A9M7oWX3EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_VOL_GROUP_EMERGENCY_PHONE" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_BTCowWX3EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_VOL_GROUP_RDS_TRAFFIC" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_Bqk_AWX3EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times in GIS-604-650 are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_VOL_GROUP_PROMPT" References="GIS-604-825 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_B-ahAWX3EeSy4KUHhd_sAg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

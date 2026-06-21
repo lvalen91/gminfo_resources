@@ -1,0 +1,62 @@
+openjdk version "25.0.2" 2026-01-20 LTS
+OpenJDK Runtime Environment Temurin-25.0.2+10 (build 25.0.2+10-LTS)
+OpenJDK 64-Bit Server VM Temurin-25.0.2+10 (build 25.0.2+10-LTS, mixed mode)
+INFO  Using log config file: jar:file:/Applications/ghidra_12.0_PUBLIC/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /Users/zeno/Library/ghidra/ghidra_12.0_PUBLIC/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /Users/zeno/Library/ghidra/ghidra_12.0_PUBLIC/preferences (Preferences)  
+INFO  Loading previous preferences: /Users/zeno/Library/ghidra/ghidra_11.3.2_PUBLIC/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (470 ms) (ClassSearcher)  
+INFO  Initializing SSL Context (SSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (ApplicationTrustManagerFactory)  
+INFO  Headless startup complete (873 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 58 extension points (18 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Applications/ghidra_12.0_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /Users/zeno/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/Decompiler/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Processors/Atmel/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/FunctionID/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Processors/PIC/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/PDB/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Processors/DATA/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/VersionTracking/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Processors/8051/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/Base/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Debug/Debugger/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/BytePatterns/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/Jython/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/PyGhidra/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/FileFormats/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Processors/JVM/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/BSim/ghidra_scripts
+    /Applications/ghidra_12.0_PUBLIC/Ghidra/Features/DecompilerDependent/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/ghidra_elk/elk_proj (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/ghidra_elk/elk_proj (HeadlessProject)  
+INFO  REPORT: Processing project file: /elk_inner.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: /tmp/avb_audit.py  (HeadlessAnalyzer)  
+ERROR REPORT SCRIPT ERROR: /tmp/avb_audit.py : Ghidra was not started with PyGhidra. Python is not available (HeadlessAnalyzer) ghidra.app.script.GhidraScriptLoadException: Ghidra was not started with PyGhidra. Python is not available
+	at ghidra.pyghidra.PyGhidraScriptProvider.getScriptInstance(PyGhidraScriptProvider.java:75)
+	at ghidra.app.util.headless.HeadlessAnalyzer.runScriptsList(HeadlessAnalyzer.java:924)
+	at ghidra.app.util.headless.HeadlessAnalyzer.analyzeProgram(HeadlessAnalyzer.java:1086)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processFileNoImport(HeadlessAnalyzer.java:1184)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processFolderNoImport(HeadlessAnalyzer.java:1356)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1385)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:459)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+ 
+INFO  REPORT: Save succeeded for processed file: /elk_inner.elf (HeadlessAnalyzer)  

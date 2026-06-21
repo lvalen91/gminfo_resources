@@ -1,0 +1,498 @@
+DPS Version: 4.56.0000     Date:  02/18/24
+--------------------------------------------------------
+Request Method                      Standard
+ECU Address/ID  $                   80
+VIN                                 XXXXXXXXXXXXXXXXX
+Software Module Identifier          
+  MOD          Module ID   AC
+    71          85056831   AA
+    72          85738845   AB
+    01          86283151   CM
+    21          85098662   BM
+    02          87863250   AA
+    03          84517309   AA
+    04          85045371   AA
+    05          87846416   AB
+    06          87846371   AA
+    07          85783460   AA
+    08          87846432   AA
+    09          87846376   AA
+    10          87846368   AA
+    11          87846390   AB
+    12          85102312   AB
+    13          87846384   AB
+    14          84517418   AA
+    15          87846380   AA
+    22          86283152   HP
+    23          86283154   HP
+    24          86283164   HP
+    26          86283156   HP
+    28          85843750   AC
+    29          00000000   AA
+    51          00000000   AA
+    52          85759612   AA
+    53          00000000   AA
+    54          00000000   AA
+    55          86283162   HP
+    56          86283158   HP
+    57          86283160   HP
+    81          84961617   AA
+                                    
+  Seed		Key
+  $004B41DC0000160006104145610114AC6F52956CBBB078A1905399B8B57193
+System Name or Engine Type          
+                                    
+Base Model Number                   84999439
+End Model Number                    85086705
+                                    
+                                    
+Diagnostic Data Identifier          
+Repair Shop Code or SN              <SN_REDACTED>
+Programming Date                    2025-05-02
+Manufacturers Enable Counter        0
+Programming Status                  00 : fully programmed
+Secure Programming Data             
+   Desc			Data
+    PSI			$020003000400050006000700...
+    PEC			$0000   No Errors
+    BIS			$0000   Boot Status OK
+    SBI			$0000   Bypass Inactive
+    ECUID		$004B41DC0000160006104145610114AC
+    SBAT		$0000000000000000000000000000000000000000000000000000...
+Mfg Traceability Chars              <SN_REDACTED>
+CVPPS                               7310500000000X
+DUNS Identification                 588352398
+MAC Configuration Data              $000000000000
+
+***** Vehicle Communications Data Log(s) *****
+
+Verify that power to the controller is on,
+   and that all connections are secure.
+Select calibration.
+Press the "Program" button to program the controller.
+Error: Access to the security validation facility failed. 
+Initializing Get Controller Info Session - v4.56.0000
+>> C:\Program Files (x86)\GM\J2534Wrapper\J2534Wrapper.dll v1.6.12.0
+>> C:\Program Files (x86)\Bosch\VTX-VCI\VCI Software (GM)\Products\MDI 2\Dynamic Link Libraries\BVTX4J32.dll
+>> Firmware Version: 9.1.2375.152, DLL Version: 9.1.2375.107, API Version: 04.04
+>>   Arch: GM VIP/SDV1 (GB) -- CAN 2.0 
+>> Setup Base Mapping Matrix
+>> Determine subnet configuration
+>> Available subnets:    LS-CAN 
+>>   Link:   CAN7:   LS-CAN (L)
+>> DiagnosticSessionControl ($10) Service with sub-func. extendedDiagnosticSession ($03)
+  01:00:17.953<[...L] 14 DA 45 F2 02 10 03 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:00:17.953>[...L] 14 DA 45 F2 02 10 03 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:00:17.953>[...L] 14 DA F2 45 06 50 03 00 64 01 F4 55 [0012] Can29BitId 
+>> RoutineControl ($31) Service with RID wakeUpNetworks ($020E)
+  01:00:17.969<[...L] 14 DA 45 F2 07 31 01 02 0E FF FF FF [0012] Can29BitId FramePad 
+  01:00:17.969>[...L] 14 DA 45 F2 07 31 01 02 0E FF FF FF [0012] Can29BitId TxMsgType 
+  01:00:17.969>[...L] 14 DA F2 45 07 71 01 02 0E FF FF FF [0012] Can29BitId 
+  01:00:18.000<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+>> MixedFormatFrames supported
+>> Gateway: ReadDataByIdentifier ($22) ECUID ($F0F3)
+  01:00:18.141<[...L] 14 DA 45 F2 22 F0 F3 [0007] Can29BitId FramePad 
+  01:00:18.156>[...L] 10 DB FE F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:18.156>[...L] 14 DA 45 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:18.156>[...L] 14 DA F2 45 [0004] Can29BitId StartOfMessage 
+  01:00:18.156>[...L] 14 DA F2 45 62 F0 F3 00 23 C7 48 00 00 12 00 0B 10 49 54 25 01 14 A6 [0023] Can29BitId 
+>> Gateway: Check Programming Dependencies ($31) RID ($FF01)
+  01:00:18.156<[...L] 14 DA 45 F2 31 01 FF 01 [0008] Can29BitId FramePad 
+  01:00:18.156>[...L] 14 DA 45 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:18.172>[...L] 14 DA F2 45 [0004] Can29BitId StartOfMessage 
+  01:00:18.172>[...L] 14 DA F2 45 71 01 FF 01 00 FE FE 81 01 [0013] Can29BitId 
+>> ProgrammedState - CANID $14DAF245:  fully programmed  ($00)
+>> Gateway Wake-up Enabled!
+>> Wait for ECUs to Wake-up!
+  01:00:19.297<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:00:19.328>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:00:20.110<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:00:20.141>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:00:20.922<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:00:20.953>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:00:21.735<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:00:21.766>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:00:21.766<[...L] 10 DB FE F2 03 22 F1 B0 00 00 00 00 [0012] Can29BitId FramePad 
+  01:00:21.766>[...L] 10 DB FE F2 03 22 F1 B0 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:00:21.766>[...L] 14 5A F2 80 04 62 F1 B0 80 55 55 55 [0012] Can29BitId 
+  01:00:21.766>[...L] 14 5A F2 68 04 62 F1 B0 68 55 55 55 [0012] Can29BitId 
+  01:00:21.766>[...L] 14 1A F2 59 04 62 F1 B0 59 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 5A F2 97 04 62 F1 B0 97 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 1A F2 31 04 62 F1 B0 31 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 DA F2 45 04 62 F1 B0 45 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 1A F2 6D 04 62 F1 B0 6D 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 4A F2 A4 04 62 F1 B0 A4 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 2A F2 41 04 62 F1 B0 41 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 2A F2 18 04 62 F1 B0 18 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 4A F2 75 04 62 F1 B0 75 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 2A F2 40 04 62 F1 B0 40 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 5A F2 60 04 62 F1 B0 60 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 4A F2 BA 04 62 F1 B0 BA 55 55 55 [0012] Can29BitId 
+  01:00:21.781>[...L] 14 5A F2 BE 04 62 F1 B0 BE 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 1A F2 BF 04 62 F1 B0 BF 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 4A F2 B9 04 62 F1 B0 B9 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 1A F2 58 04 62 F1 B0 58 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 2A F2 11 04 62 F1 B0 11 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 2A F2 28 04 62 F1 B0 28 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 4A F2 A8 04 62 F1 B0 A8 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 2A F2 1A 04 62 F1 B0 1A 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 2A F2 BD 04 62 F1 B0 BD 55 55 55 [0012] Can29BitId 
+  01:00:21.797>[...L] 14 5A F2 81 04 62 F1 B0 81 55 55 55 [0012] Can29BitId 
+  01:00:22.860<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:00:22.891>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+>> Mapping Matrix:
+>> ECU 0x11 on LS-CAN (ReqCANId: 0x14DA11F2, RspCANId: 0x142AF211)
+>> ECU 0x18 on LS-CAN (ReqCANId: 0x14DA18F2, RspCANId: 0x142AF218)
+>> ECU 0x1A on LS-CAN (ReqCANId: 0x14DA1AF2, RspCANId: 0x142AF21A)
+>> ECU 0x28 on LS-CAN (ReqCANId: 0x14DA28F2, RspCANId: 0x142AF228)
+>> ECU 0x31 on LS-CAN (ReqCANId: 0x14DA31F2, RspCANId: 0x141AF231)
+>> ECU 0x40 on LS-CAN (ReqCANId: 0x14DA40F2, RspCANId: 0x142AF240)
+>> ECU 0x41 on LS-CAN (ReqCANId: 0x14DA41F2, RspCANId: 0x142AF241)
+>> ECU 0x45 on LS-CAN (ReqCANId: 0x14DA45F2, RspCANId: 0x14DAF245)
+>> ECU 0x58 on LS-CAN (ReqCANId: 0x14DA58F2, RspCANId: 0x141AF258)
+>> ECU 0x59 on LS-CAN (ReqCANId: 0x14DA59F2, RspCANId: 0x141AF259)
+>> ECU 0x60 on LS-CAN (ReqCANId: 0x14DA60F2, RspCANId: 0x145AF260)
+>> ECU 0x68 on LS-CAN (ReqCANId: 0x14DA68F2, RspCANId: 0x145AF268)
+>> ECU 0x6D on LS-CAN (ReqCANId: 0x14DA6DF2, RspCANId: 0x141AF26D)
+>> ECU 0x75 on LS-CAN (ReqCANId: 0x14DA75F2, RspCANId: 0x144AF275)
+>> ECU 0x80 on LS-CAN (ReqCANId: 0x14DA80F2, RspCANId: 0x145AF280)
+>> ECU 0x81 on LS-CAN (ReqCANId: 0x14DA81F2, RspCANId: 0x145AF281)
+>> ECU 0x97 on LS-CAN (ReqCANId: 0x14DA97F2, RspCANId: 0x145AF297)
+>> ECU 0xA4 on LS-CAN (ReqCANId: 0x14DAA4F2, RspCANId: 0x144AF2A4)
+>> ECU 0xA8 on LS-CAN (ReqCANId: 0x14DAA8F2, RspCANId: 0x144AF2A8)
+>> ECU 0xB9 on LS-CAN (ReqCANId: 0x14DAB9F2, RspCANId: 0x144AF2B9)
+>> ECU 0xBA on LS-CAN (ReqCANId: 0x14DABAF2, RspCANId: 0x144AF2BA)
+>> ECU 0xBD on LS-CAN (ReqCANId: 0x14DABDF2, RspCANId: 0x142AF2BD)
+>> ECU 0xBE on LS-CAN (ReqCANId: 0x14DABEF2, RspCANId: 0x145AF2BE)
+>> ECU 0xBF on LS-CAN (ReqCANId: 0x14DABFF2, RspCANId: 0x141AF2BF)
+>> Found 24 Expected ECUs
+  01:00:23.375<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+>> MixedFormatFrames supported
+  01:00:23.547<[...L] 14 DA 80 F2 10 03 [0006] Can29BitId FramePad 
+  01:00:23.547>[...L] 10 DB FE F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.547>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.547>[...L] 14 5A F2 80 50 03 00 64 01 F4 [0010] Can29BitId 
+  01:00:23.547<[...L] 14 DA 80 F2 27 01 [0006] Can29BitId FramePad 
+  01:00:23.547>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.563>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:23.578>[...L] 14 5A F2 80 67 01 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC B0 C4 7B 
+	F4 0C 0E BF DE 8F FC 12 9A 34 4B A4 [0037] Can29BitId 
+  01:00:23.578<[...L] 14 DA 80 F2 22 F1 90 [0007] Can29BitId FramePad 
+  01:00:23.578>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.610>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:23.610>[...L] 14 5A F2 80 62 F1 90 XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX [0024] Can29BitId 
+  01:00:23.610<[...L] 14 DA 80 F2 22 F1 CB [0007] Can29BitId FramePad 
+  01:00:23.610>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.641>[...L] 14 5A F2 80 62 F1 CB 05 12 51 F1 [0011] Can29BitId 
+  01:00:23.656<[...L] 14 DA 80 F2 22 F1 CC [0007] Can29BitId FramePad 
+  01:00:23.656>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.688>[...L] 14 5A F2 80 62 F1 CC 05 10 FD 0F [0011] Can29BitId 
+  01:00:23.688<[...L] 14 DA 80 F2 22 F1 80 [0007] Can29BitId FramePad 
+  01:00:23.688>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.703>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:23.703>[...L] 14 5A F2 80 62 F1 80 02 47 05 11 DD 3F 41 41 48 05 1C 45 5D 41 42 [0022] Can29BitId 
+  01:00:23.703<[...L] 14 DA 80 F2 22 F1 81 [0007] Can29BitId FramePad 
+  01:00:23.703>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.719>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:23.719>[...L] 14 5A F2 80 62 F1 81 02 01 05 24 93 8F 43 4D 15 05 12 80 A6 42 4D [0022] Can29BitId 
+  01:00:23.719<[...L] 14 DA 80 F2 22 F1 82 [0007] Can29BitId FramePad 
+  01:00:23.719>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.750>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:23.766>[...L] 14 5A F2 80 62 F1 82 1C 02 05 3C AF D2 41 41 03 05 09 A1 BD 41 41 04 05 11 
+	B0 7B 41 41 05 05 3C 6E 10 41 42 06 05 3C 6D E3 41 41 07 05 1C F3 A4 41 
+	41 08 05 3C 6E 20 41 41 09 05 3C 6D E8 41 41 0A 05 3C 6D E0 41 41 0B 05 
+	3C 6D F6 41 42 0C 05 12 8E E8 41 42 0D 05 3C 6D F0 41 42 0E 05 09 A2 2A 
+	41 41 0F 05 3C 6D EC 41 41 16 05 24 93 90 48 50 17 05 24 93 92 48 50 18 
+	05 24 93 9C 48 50 1A 05 24 93 94 48 50 1C 05 1D DF 26 41 43 1D 00 00 00 
+	00 41 41 33 00 00 00 00 41 41 34 05 1C 96 7C 41 41 35 00 00 00 00 41 41 
+	36 00 00 00 00 41 41 37 05 24 93 9A 48 50 38 05 24 93 96 48 50 39 05 24 
+	93 98 48 50 51 05 10 69 51 41 41 [0204] Can29BitId 
+  01:00:23.766<[...L] 14 DA 80 F2 22 F1 97 [0007] Can29BitId FramePad 
+  01:00:23.766>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.766>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:00:23.766<[...L] 14 DA 80 F2 22 F1 98 [0007] Can29BitId FramePad 
+  01:00:23.781>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.813>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:23.813>[...L] 14 5A F2 80 62 F1 98 XX XX XX XX XX XX XX XX XX XX [0017] Can29BitId 
+  01:00:23.813<[...L] 14 DA 80 F2 22 F1 99 [0007] Can29BitId FramePad 
+  01:00:23.813>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.844>[...L] 14 5A F2 80 62 F1 99 20 25 05 02 [0011] Can29BitId 
+  01:00:23.844<[...L] 14 DA 80 F2 22 F0 9A [0007] Can29BitId FramePad 
+  01:00:23.844>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.875>[...L] 14 5A F2 80 7F 22 22 [0007] Can29BitId 
+  01:00:23.891<[...L] 14 DA 80 F2 22 F1 A0 [0007] Can29BitId FramePad 
+  01:00:23.891>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:23.891>[...L] 14 5A F2 80 62 F1 A0 00 [0008] Can29BitId 
+  01:00:23.891<[...L] 14 DA 80 F2 22 F0 F0 [0007] Can29BitId FramePad 
+  01:00:23.891>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.000>[...L] 14 5A F2 80 7F 22 78 [0007] Can29BitId 
+  01:00:24.125>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.141>[...L] 14 5A F2 80 62 F0 F0 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0A 00 
+	0B 00 0C 00 0D 00 0E 00 0F 00 [0035] Can29BitId 
+  01:00:24.141<[...L] 14 DA 80 F2 22 F0 F1 [0007] Can29BitId FramePad 
+  01:00:24.141>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.141>[...L] 14 5A F2 80 62 F0 F1 00 00 [0009] Can29BitId 
+  01:00:24.156<[...L] 14 DA 80 F2 22 F0 F2 [0007] Can29BitId FramePad 
+  01:00:24.156>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.156>[...L] 14 5A F2 80 62 F0 F2 00 00 [0009] Can29BitId 
+  01:00:24.172<[...L] 14 DA 80 F2 22 F0 F3 [0007] Can29BitId FramePad 
+  01:00:24.172>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.203>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.219>[...L] 14 5A F2 80 62 F0 F3 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC [0023] Can29BitId 
+  01:00:24.219<[...L] 14 DA 80 F2 22 E0 B2 [0007] Can29BitId FramePad 
+  01:00:24.219>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.235>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:00:24.235<[...L] 14 DA 80 F2 22 F0 F4 [0007] Can29BitId FramePad 
+  01:00:24.235>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.297>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.360>[...L] 14 5A F2 80 62 F0 F4 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 .. [0829] Can29BitId 
+  01:00:24.360<[...L] 14 DA 80 F2 22 F0 F8 [0007] Can29BitId FramePad 
+  01:00:24.360>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.360>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:00:24.375<[...L] 14 DA 80 F2 22 E0 B5 [0007] Can29BitId FramePad 
+  01:00:24.375>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.375>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:00:24.391<[...L] 14 DA 80 F2 31 01 FF 01 [0008] Can29BitId FramePad 
+  01:00:24.391>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.406>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.422>[...L] 14 5A F2 80 71 01 FF 01 00 86 86 02 00 [0013] Can29BitId 
+  01:00:24.422<[...L] 14 DA 80 F2 22 F0 B4 [0007] Can29BitId FramePad 
+  01:00:24.422>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.516>[...L] 14 5A F2 80 7F 22 78 [0007] Can29BitId 
+  01:00:24.547>[...L] 10 DB FE F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.578>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.578>[...L] 14 5A F2 80 62 F0 B4 XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX [0023] Can29BitId 
+  01:00:24.578<[...L] 14 DA 80 F2 22 F0 AB [0007] Can29BitId FramePad 
+  01:00:24.594>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.625>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.625>[...L] 14 5A F2 80 62 F0 AB 37 33 31 30 35 30 30 30 30 30 30 30 30 58 [0021] Can29BitId 
+  01:00:24.625<[...L] 14 DA 80 F2 22 F0 B3 [0007] Can29BitId FramePad 
+  01:00:24.625>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.625>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.641>[...L] 14 5A F2 80 62 F0 B3 35 38 38 33 35 32 33 39 38 [0016] Can29BitId 
+  01:00:24.641<[...L] 14 DA 80 F2 22 F0 81 [0007] Can29BitId FramePad 
+  01:00:24.641>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:00:24.641>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:00:24.641>[...L] 14 5A F2 80 62 F0 81 00 00 00 00 00 00 [0013] Can29BitId 
+Error: Access to the security validation facility failed. 
+Initializing Get Controller Info Session - v4.56.0000
+Error: Access to the security validation facility failed. 
+Initializing Get Controller Info Session - v4.56.0000
+>> C:\Program Files (x86)\GM\J2534Wrapper\J2534Wrapper.dll v1.6.12.0
+>> C:\Program Files (x86)\Bosch\VTX-VCI\VCI Software (GM)\Products\MDI 2\Dynamic Link Libraries\BVTX4J32.dll
+>> Firmware Version: 9.1.2375.152, DLL Version: 9.1.2375.107, API Version: 04.04
+>>   Arch: GM VIP/SDV1 (GB) -- CAN 2.0 
+>> Setup Base Mapping Matrix
+>> Determine subnet configuration
+>> Available subnets:    LS-CAN 
+>>   Link:   CAN7:   LS-CAN (L)
+>> DiagnosticSessionControl ($10) Service with sub-func. extendedDiagnosticSession ($03)
+  01:02:45.860<[...L] 14 DA 45 F2 02 10 03 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:02:45.860>[...L] 14 DA 45 F2 02 10 03 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:02:45.875>[...L] 14 DA F2 45 06 50 03 00 64 01 F4 55 [0012] Can29BitId 
+>> RoutineControl ($31) Service with RID wakeUpNetworks ($020E)
+  01:02:45.875<[...L] 14 DA 45 F2 07 31 01 02 0E FF FF FF [0012] Can29BitId FramePad 
+  01:02:45.875>[...L] 14 DA 45 F2 07 31 01 02 0E FF FF FF [0012] Can29BitId TxMsgType 
+  01:02:45.875>[...L] 14 DA F2 45 07 71 01 02 0E FF FF FF [0012] Can29BitId 
+  01:02:45.906<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+>> MixedFormatFrames supported
+>> Gateway: ReadDataByIdentifier ($22) ECUID ($F0F3)
+  01:02:46.063<[...L] 14 DA 45 F2 22 F0 F3 [0007] Can29BitId FramePad 
+  01:02:46.063>[...L] 10 DB FE F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:46.063>[...L] 14 DA 45 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:46.063>[...L] 14 DA F2 45 [0004] Can29BitId StartOfMessage 
+  01:02:46.063>[...L] 14 DA F2 45 62 F0 F3 00 23 C7 48 00 00 12 00 0B 10 49 54 25 01 14 A6 [0023] Can29BitId 
+>> Gateway: Check Programming Dependencies ($31) RID ($FF01)
+  01:02:46.078<[...L] 14 DA 45 F2 31 01 FF 01 [0008] Can29BitId FramePad 
+  01:02:46.078>[...L] 14 DA 45 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:46.078>[...L] 14 DA F2 45 [0004] Can29BitId StartOfMessage 
+  01:02:46.078>[...L] 14 DA F2 45 71 01 FF 01 00 FE 7E 81 01 [0013] Can29BitId 
+>> ProgrammedState - CANID $14DAF245:  fully programmed  ($00)
+>> Gateway Wake-up Enabled!
+>> Wait for ECUs to Wake-up!
+  01:02:47.219<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:02:47.250>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:02:48.031<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:02:48.063>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:02:48.844<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:02:48.875>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:02:49.656<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:02:49.688>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:02:49.688<[...L] 10 DB FE F2 03 22 F1 B0 00 00 00 00 [0012] Can29BitId FramePad 
+  01:02:49.688>[...L] 10 DB FE F2 03 22 F1 B0 00 00 00 00 [0012] Can29BitId TxMsgType 
+  01:02:49.688>[...L] 14 5A F2 60 04 62 F1 B0 60 55 55 55 [0012] Can29BitId 
+  01:02:49.688>[...L] 14 5A F2 68 04 62 F1 B0 68 55 55 55 [0012] Can29BitId 
+  01:02:49.688>[...L] 14 1A F2 59 04 62 F1 B0 59 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 2A F2 28 04 62 F1 B0 28 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 2A F2 40 04 62 F1 B0 40 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 4A F2 B9 04 62 F1 B0 B9 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 2A F2 18 04 62 F1 B0 18 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 2A F2 41 04 62 F1 B0 41 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 2A F2 11 04 62 F1 B0 11 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 1A F2 58 04 62 F1 B0 58 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 5A F2 80 04 62 F1 B0 80 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 4A F2 BA 04 62 F1 B0 BA 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 4A F2 75 04 62 F1 B0 75 55 55 55 [0012] Can29BitId 
+  01:02:49.703>[...L] 14 1A F2 31 04 62 F1 B0 31 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 4A F2 A4 04 62 F1 B0 A4 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 1A F2 BF 04 62 F1 B0 BF 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 DA F2 45 04 62 F1 B0 45 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 4A F2 A8 04 62 F1 B0 A8 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 5A F2 97 04 62 F1 B0 97 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 5A F2 BE 04 62 F1 B0 BE 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 2A F2 1A 04 62 F1 B0 1A 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 5A F2 81 04 62 F1 B0 81 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 2A F2 BD 04 62 F1 B0 BD 55 55 55 [0012] Can29BitId 
+  01:02:49.719>[...L] 14 1A F2 6D 04 62 F1 B0 6D 55 55 55 [0012] Can29BitId 
+  01:02:50.766<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+  01:02:50.797>[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId TxMsgType 
+>> Mapping Matrix:
+>> ECU 0x11 on LS-CAN (ReqCANId: 0x14DA11F2, RspCANId: 0x142AF211)
+>> ECU 0x18 on LS-CAN (ReqCANId: 0x14DA18F2, RspCANId: 0x142AF218)
+>> ECU 0x1A on LS-CAN (ReqCANId: 0x14DA1AF2, RspCANId: 0x142AF21A)
+>> ECU 0x28 on LS-CAN (ReqCANId: 0x14DA28F2, RspCANId: 0x142AF228)
+>> ECU 0x31 on LS-CAN (ReqCANId: 0x14DA31F2, RspCANId: 0x141AF231)
+>> ECU 0x40 on LS-CAN (ReqCANId: 0x14DA40F2, RspCANId: 0x142AF240)
+>> ECU 0x41 on LS-CAN (ReqCANId: 0x14DA41F2, RspCANId: 0x142AF241)
+>> ECU 0x45 on LS-CAN (ReqCANId: 0x14DA45F2, RspCANId: 0x14DAF245)
+>> ECU 0x58 on LS-CAN (ReqCANId: 0x14DA58F2, RspCANId: 0x141AF258)
+>> ECU 0x59 on LS-CAN (ReqCANId: 0x14DA59F2, RspCANId: 0x141AF259)
+>> ECU 0x60 on LS-CAN (ReqCANId: 0x14DA60F2, RspCANId: 0x145AF260)
+>> ECU 0x68 on LS-CAN (ReqCANId: 0x14DA68F2, RspCANId: 0x145AF268)
+>> ECU 0x6D on LS-CAN (ReqCANId: 0x14DA6DF2, RspCANId: 0x141AF26D)
+>> ECU 0x75 on LS-CAN (ReqCANId: 0x14DA75F2, RspCANId: 0x144AF275)
+>> ECU 0x80 on LS-CAN (ReqCANId: 0x14DA80F2, RspCANId: 0x145AF280)
+>> ECU 0x81 on LS-CAN (ReqCANId: 0x14DA81F2, RspCANId: 0x145AF281)
+>> ECU 0x97 on LS-CAN (ReqCANId: 0x14DA97F2, RspCANId: 0x145AF297)
+>> ECU 0xA4 on LS-CAN (ReqCANId: 0x14DAA4F2, RspCANId: 0x144AF2A4)
+>> ECU 0xA8 on LS-CAN (ReqCANId: 0x14DAA8F2, RspCANId: 0x144AF2A8)
+>> ECU 0xB9 on LS-CAN (ReqCANId: 0x14DAB9F2, RspCANId: 0x144AF2B9)
+>> ECU 0xBA on LS-CAN (ReqCANId: 0x14DABAF2, RspCANId: 0x144AF2BA)
+>> ECU 0xBD on LS-CAN (ReqCANId: 0x14DABDF2, RspCANId: 0x142AF2BD)
+>> ECU 0xBE on LS-CAN (ReqCANId: 0x14DABEF2, RspCANId: 0x145AF2BE)
+>> ECU 0xBF on LS-CAN (ReqCANId: 0x14DABFF2, RspCANId: 0x141AF2BF)
+>> Found 24 Expected ECUs
+  01:02:51.297<[...L] 10 DB FE F2 02 3E 80 00 00 00 00 00 [0012] Can29BitId FramePad 
+>> MixedFormatFrames supported
+  01:02:51.438<[...L] 14 DA 80 F2 10 03 [0006] Can29BitId FramePad 
+  01:02:51.438>[...L] 10 DB FE F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.438>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.438>[...L] 14 5A F2 80 50 03 00 64 01 F4 [0010] Can29BitId 
+  01:02:51.453<[...L] 14 DA 80 F2 27 01 [0006] Can29BitId FramePad 
+  01:02:51.453>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.453>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.453>[...L] 14 5A F2 80 67 01 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC 6F 52 95 
+	6C BB B0 78 A1 90 53 99 B8 B5 71 93 [0037] Can29BitId 
+  01:02:51.453<[...L] 14 DA 80 F2 22 F1 90 [0007] Can29BitId FramePad 
+  01:02:51.453>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.500>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.500>[...L] 14 5A F2 80 62 F1 90 XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX [0024] Can29BitId 
+  01:02:51.500<[...L] 14 DA 80 F2 22 F1 CB [0007] Can29BitId FramePad 
+  01:02:51.500>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.531>[...L] 14 5A F2 80 62 F1 CB 05 12 51 F1 [0011] Can29BitId 
+  01:02:51.531<[...L] 14 DA 80 F2 22 F1 CC [0007] Can29BitId FramePad 
+  01:02:51.531>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.563>[...L] 14 5A F2 80 62 F1 CC 05 10 FD 0F [0011] Can29BitId 
+  01:02:51.578<[...L] 14 DA 80 F2 22 F1 80 [0007] Can29BitId FramePad 
+  01:02:51.578>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.578>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.578>[...L] 14 5A F2 80 62 F1 80 02 47 05 11 DD 3F 41 41 48 05 1C 45 5D 41 42 [0022] Can29BitId 
+  01:02:51.578<[...L] 14 DA 80 F2 22 F1 81 [0007] Can29BitId FramePad 
+  01:02:51.578>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.594>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.594>[...L] 14 5A F2 80 62 F1 81 02 01 05 24 93 8F 43 4D 15 05 12 80 A6 42 4D [0022] Can29BitId 
+  01:02:51.594<[...L] 14 DA 80 F2 22 F1 82 [0007] Can29BitId FramePad 
+  01:02:51.594>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.625>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.625>[...L] 14 5A F2 80 62 F1 82 1C 02 05 3C AF D2 41 41 03 05 09 A1 BD 41 41 04 05 11 
+	B0 7B 41 41 05 05 3C 6E 10 41 42 06 05 3C 6D E3 41 41 07 05 1C F3 A4 41 
+	41 08 05 3C 6E 20 41 41 09 05 3C 6D E8 41 41 0A 05 3C 6D E0 41 41 0B 05 
+	3C 6D F6 41 42 0C 05 12 8E E8 41 42 0D 05 3C 6D F0 41 42 0E 05 09 A2 2A 
+	41 41 0F 05 3C 6D EC 41 41 16 05 24 93 90 48 50 17 05 24 93 92 48 50 18 
+	05 24 93 9C 48 50 1A 05 24 93 94 48 50 1C 05 1D DF 26 41 43 1D 00 00 00 
+	00 41 41 33 00 00 00 00 41 41 34 05 1C 96 7C 41 41 35 00 00 00 00 41 41 
+	36 00 00 00 00 41 41 37 05 24 93 9A 48 50 38 05 24 93 96 48 50 39 05 24 
+	93 98 48 50 51 05 10 69 51 41 41 [0204] Can29BitId 
+  01:02:51.625<[...L] 14 DA 80 F2 22 F1 97 [0007] Can29BitId FramePad 
+  01:02:51.625>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.641>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:02:51.641<[...L] 14 DA 80 F2 22 F1 98 [0007] Can29BitId FramePad 
+  01:02:51.641>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.672>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.688>[...L] 14 5A F2 80 62 F1 98 XX XX XX XX XX XX XX XX XX XX [0017] Can29BitId 
+  01:02:51.688<[...L] 14 DA 80 F2 22 F1 99 [0007] Can29BitId FramePad 
+  01:02:51.688>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.719>[...L] 14 5A F2 80 62 F1 99 20 25 05 02 [0011] Can29BitId 
+  01:02:51.719<[...L] 14 DA 80 F2 22 F0 9A [0007] Can29BitId FramePad 
+  01:02:51.719>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.750>[...L] 14 5A F2 80 7F 22 22 [0007] Can29BitId 
+  01:02:51.750<[...L] 14 DA 80 F2 22 F1 A0 [0007] Can29BitId FramePad 
+  01:02:51.750>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.750>[...L] 14 5A F2 80 62 F1 A0 00 [0008] Can29BitId 
+  01:02:51.766<[...L] 14 DA 80 F2 22 F0 F0 [0007] Can29BitId FramePad 
+  01:02:51.766>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.781>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.781>[...L] 14 5A F2 80 62 F0 F0 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0A 00 
+	0B 00 0C 00 0D 00 0E 00 0F 00 [0035] Can29BitId 
+  01:02:51.781<[...L] 14 DA 80 F2 22 F0 F1 [0007] Can29BitId FramePad 
+  01:02:51.781>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.797>[...L] 14 5A F2 80 62 F0 F1 00 00 [0009] Can29BitId 
+  01:02:51.797<[...L] 14 DA 80 F2 22 F0 F2 [0007] Can29BitId FramePad 
+  01:02:51.797>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.797>[...L] 14 5A F2 80 62 F0 F2 00 00 [0009] Can29BitId 
+  01:02:51.797<[...L] 14 DA 80 F2 22 F0 F3 [0007] Can29BitId FramePad 
+  01:02:51.797>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.828>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.844>[...L] 14 5A F2 80 62 F0 F3 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC [0023] Can29BitId 
+  01:02:51.844<[...L] 14 DA 80 F2 22 E0 B2 [0007] Can29BitId FramePad 
+  01:02:51.844>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.844>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:02:51.844<[...L] 14 DA 80 F2 22 F0 F4 [0007] Can29BitId FramePad 
+  01:02:51.844>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.922>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:51.953>[...L] 14 5A F2 80 62 F0 F4 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 .. [0829] Can29BitId 
+  01:02:51.969<[...L] 14 DA 80 F2 22 F0 F8 [0007] Can29BitId FramePad 
+  01:02:51.969>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.969>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:02:51.969<[...L] 14 DA 80 F2 22 E0 B5 [0007] Can29BitId FramePad 
+  01:02:51.985>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:51.985>[...L] 14 5A F2 80 7F 22 31 [0007] Can29BitId 
+  01:02:51.985<[...L] 14 DA 80 F2 31 01 FF 01 [0008] Can29BitId FramePad 
+  01:02:51.985>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:52.016>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:52.016>[...L] 14 5A F2 80 71 01 FF 01 00 86 06 03 00 [0013] Can29BitId 
+  01:02:52.031<[...L] 14 DA 80 F2 22 F0 B4 [0007] Can29BitId FramePad 
+  01:02:52.031>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:52.125>[...L] 14 5A F2 80 7F 22 78 [0007] Can29BitId 
+  01:02:52.188>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:52.188>[...L] 14 5A F2 80 62 F0 B4 XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX [0023] Can29BitId 
+  01:02:52.188<[...L] 14 DA 80 F2 22 F0 AB [0007] Can29BitId FramePad 
+  01:02:52.188>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:52.219>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:52.219>[...L] 14 5A F2 80 62 F0 AB 37 33 31 30 35 30 30 30 30 30 30 30 30 58 [0021] Can29BitId 
+  01:02:52.235<[...L] 14 DA 80 F2 22 F0 B3 [0007] Can29BitId FramePad 
+  01:02:52.235>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:52.235>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:52.235>[...L] 14 5A F2 80 62 F0 B3 35 38 38 33 35 32 33 39 38 [0016] Can29BitId 
+  01:02:52.250<[...L] 14 DA 80 F2 22 F0 81 [0007] Can29BitId FramePad 
+  01:02:52.250>[...L] 14 DA 80 F2 [0004] Can29BitId TxDone TxMsgType 
+  01:02:52.250>[...L] 14 5A F2 80 [0004] Can29BitId StartOfMessage 
+  01:02:52.250>[...L] 14 5A F2 80 62 F0 81 00 00 00 00 00 00 [0013] Can29BitId 

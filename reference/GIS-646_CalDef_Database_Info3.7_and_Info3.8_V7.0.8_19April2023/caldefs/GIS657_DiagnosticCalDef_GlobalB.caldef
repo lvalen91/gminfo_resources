@@ -1,0 +1,1687 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef contains calibrations pertient to the GIS-657 (Global B Low Radio Component Diagnostic Specification) ">
+  <CalDefFileVersion>5</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/13/2016</Date>
+    <Description>Inital release of this caldef file for GIS-657 (Global B Low Radio Component Diagnostic Specification) calibrations. </Description>
+    <Author>Sarath Yyllapantul</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/18/2017</Date>
+    <Description>Within the GIS657_DiagnosticCalDef_GlobalB.caldef file added usage of GEM to all of the calibrations within this caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>June 11th, 2018</Date>
+    <Description>Made the following DTC enable mask calibration additions and deletions for CR#: 1699469 within the GIS657_DiagnosticCalDef_GlobalB.caldef file to reflect to the Low Radio DTC masks in the  latest 140 ODX file for Global B/GEM: Added the following 103 DTC enable mask calibrations: 1.) DTC_MASK_P0602_00, 2.) DTC_MASK_B1033_11, 3.) DTC_MASK_B1033_12, 4.) DTC_MASK_B1033_13, 5.) DTC_MASK_B1034_11, 6.) DTC_MASK_B1034_12, 7.) DTC_MASK_B1034_13, 8.) DTC_MASK_B1114_11, 9.) DTC_MASK_B1114_13, 10.) DTC_MASK_B1236_11, 11.) DTC_MASK_B1236_12, 12.)  DTC_MASK_B1236_13, 13.) DTC_MASK_B1274_11, 14.) DTC_MASK_B1274_12, 15.) DTC_MASK_B1274_13, 16.) DTC_MASK_B1274_25, 17.) DTC_MASK_B1274_28, 18.) DTC_MASK_B137B_11, 19.) DTC_MASK_B137B_12, 20.) DTC_MASK_B137B_13, 21.) DTC_MASK_B137B_25, 22.) DTC_MASK_B137B_28, 23.) DTC_MASK_B137C_11, 24.) DTC_MASK_B137C_12, 25.) DTC_MASK_B137C_13, 26.) DTC_MASK_B137C_25, 27.) DTC_MASK_B137C_28, 28.) DTC_MASK_B137D_11, 29.) DTC_MASK_B137D_12, 30.) DTC_MASK_B137D_13, 31.) DTC_MASK_B137D_25, 32.) DTC_MASK_B137D_28, 33.) DTC_MASK_B13A7_11, 34.) DTC_MASK_B13A7_13, 35.) DTC_MASK_B13AB_11, 36.) DTC_MASK_B13AB_13, 37.) DTC_MASK_B13ED_11, 38.) DTC_MASK_B13ED_13, 39.) DTC_MASK_B15AF_11, 40.) DTC_MASK_B15AF_13, 41.) DTC_MASK_B1737_11, 42.) DTC_MASK_B1737_13, 43.) DTC_MASK_B1960_11, 44.) DTC_MASK_B1960_12, 45.) DTC_MASK_B1960_13, 46.) DTC_MASK_B1961_11, 47.) DTC_MASK_B1961_12, 48.) DTC_MASK_B1961_13, 49.) DTC_MASK_B1962_11, 50.) DTC_MASK_B1962_12, 51.) DTC_MASK_B1962_13, 52.) DTC_MASK_B1963_11, 53.) DTC_MASK_B1963_12, 54.) DTC_MASK_B1963_13, 55.) DTC_MASK_B1964_00, 56.) DTC_MASK_B1965_00, 57.) DTC_MASK_B19B1_52, 58.) DTC_MASK_B1A36_11, 59.) DTC_MASK_B1A36_13, 60.) DTC_MASK_B1A62_4A, 61.) DTC_MASK_B1A62_82, 62.) DTC_MASK_B1A62_86, 63.) DTC_MASK_B1ABD_00, 64.) DTC_MASK_U0101_00, 65.) DTC_MASK_U0140_00, 66.) DTC_MASK_U0155_00, 67.) DTC_MASK_U0164_00, 68.) DTC_MASK_U0198_00_GlobalB, 69.) DTC_MASK_U020C_00, 70.) DTC_MASK_U0264_00, 71.) DTC_MASK_U1008_11, 72.) DTC_MASK_U1008_13, 73.) DTC_MASK_U1008_1B, 74.) DTC_MASK_U1008_29, 75.) DTC_MASK_U1611_00, 76.) DTC_MASK_U1818_00, 77.) DTC_MASK_U1967_00, 78.) DTC_MASK_U1967_81, 79.) DTC_MASK_U1967_84, 80.) DTC_MASK_U1967_85, 81.) DTC_MASK_U1967_89, 82.) DTC_MASK_U196E_00, 83.) DTC_MASK_U196E_84, 84.) DTC_MASK_U196E_85, 85.) DTC_MASK_U196E_89, 86.) DTC_MASK_U3000_41, 87.) DTC_MASK_U3000_42, 88.) DTC_MASK_U3000_43, 89.) DTC_MASK_U3000_44, 90.) DTC_MASK_U3000_45, 91.) DTC_MASK_U3000_46, 92.) DTC_MASK_U3000_47, 93.) DTC_MASK_U3000_48, 94.) DTC_MASK_U3000_49, 95.) DTC_MASK_U3000_4A, 96.) DTC_MASK_U3000_4B, 97.) DTC_MASK_U3000_51, 98.) DTC_MASK_U3000_52, 99.) DTC_MASK_U3000_53, 100.) DTC_MASK_U3000_54, 101.) DTC_MASK_U3000_55, 102.) DTC_MASK_U3000_56, and 103.) DTC_MASK_U3000_57. Also, deleted the following 4 DTC enable mask calibrations no longer required: 1.) DTC_MASK_U1962_00, 2.) DTC_MASK_B1A2B_85, 3.) DTC_MASK_B1A2B_89, and 4.) DTC_MASK_B1A2B_84.</Description>
+    <Author>Jeff Pawloski</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Debounce Time shall be 2.5 Times the Timeout (timeout is 2.5 times the nominal periodic rate of the signal." Name="GIS657_DEBOUNCE_TIME" References="GIS-657" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_1Q5AkEF8EeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="A DTC will be Enabled 5 seconds after a Power Up Reset" Name="POWER_UP_RESET" References="GB6001 Section 6.1.1" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ZNweQUGCEeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="A DTC will be Enabled 5 seconds after a Running Reset" Name="RUNNING_RESET" References="GB6001 Section 6.1.1" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_kB0dwUGCEeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2018</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Vehicle Power Mode(s): Run or Propulsion for 5 seconds." Name="VEHICLE_POWER_MODE" References="GB6001 Section 6.1.1" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_uy9sIUGCEeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="5 seconds of a recovery from an under or over voltage condition before a DTC will be set." Name="RECOVERY_FROM_UNDER_OVER_VOLTAGE" References="GB6001 Section 6.1.1" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_y4ySAUGCEeaX676o0O3GfQ</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Vehcle Logistics mode must be true to enable or set a DTC" Name="VEHICLE_LOGISTICS_MODE" References="GB6001 Section 6.1.1" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_FVIRgUGDEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Not Programmed" Name="DTC_MASK_P0602_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ygRlQG1_EeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker Signal (-) (1) Circuit Short To Ground" Name="DTC_MASK_B1033_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_T9HAEG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker Signal (-) (1) Circuit Short To Battery" Name="DTC_MASK_B1033_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_VuYJYG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker Signal (-) (1) Circuit Open" Name="DTC_MASK_B1033_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_W4E8YG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker Signal (-) (1) Circuit Short To Ground" Name="DTC_MASK_B1034_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_YlC0gG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker Signal (-) (1) Circuit Short To Battery" Name="DTC_MASK_B1034_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_dTlnQG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker Signal (-) (1) Circuit Open" Name="DTC_MASK_B1034_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_eiDlgG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Cellular Telephone Microphone Signal Circuit &#x2013; Circuit Short to Ground" Name="DTC_MASK_B1114_11" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_xUpDIG2AEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Cellular Telephone Microphone Signal Circuit Open Diagnostic Status" Name="DTC_MASK_B1114_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_HUciUG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Backup Lamp Supply Voltage Circuit Short to Ground" Name="DTC_MASK_B1236_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_njOEAG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Backup Lamp Supply Voltage Short to Battery" Name="DTC_MASK_B1236_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_pDsYQG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Backup Lamp Supply Voltage Circuit Open" Name="DTC_MASK_B1236_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_qjBdAG2OEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 4 Signal  Circuit Short To Ground" Name="DTC_MASK_B1274_11" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_JvfBYG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 4 Signal Circuit Short To Battery" Name="DTC_MASK_B1274_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_MS71kG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 4 Signal  Circuit Open" Name="DTC_MASK_B1274_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_N83n0G2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 4 Signal  Shape" Name="DTC_MASK_B1274_25" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_QvQP4G2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 4 Signal Bias Level Out of Range" Name="DTC_MASK_B1274_28" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_T_ss8G2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 1 Signal Circuit Short To Ground" Name="DTC_MASK_B137B_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_V5m04G2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 1 Signal  Circuit Short To Battery" Name="DTC_MASK_B137B_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_YyE20G2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 1 Signal  Circuit Open" Name="DTC_MASK_B137B_13" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_K7iUEG2dEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 1 Signal Shape" Name="DTC_MASK_B137B_25" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_b5xnkG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 1 Signal   Bias Level Out of Range" Name="DTC_MASK_B137B_28" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_g9c80G2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 2 Signal Circuit Short To Ground" Name="DTC_MASK_B137C_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_lINtEG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 2 Signal Circuit Short To Battery" Name="DTC_MASK_B137C_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_nZLqIG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="NoiseReductionMicrophone3SignalCircuitOpen" Name="DTC_MASK_B137C_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_qkyqgG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 2 Signal Shape" Name="DTC_MASK_B137C_25" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_tFH5QG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 2 Signal Bias Level Out of Range" Name="DTC_MASK_B137C_28" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_xfaTQG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 3 Signal Circuit Short To Ground" Name="DTC_MASK_B137D_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_4aq1MG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 3 Signal Circuit Short to Battery" Name="DTC_MASK_B137D_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_8mO2sG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 3 Signal Circuit Open" Name="DTC_MASK_B137D_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>__PbGgG2BEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 3 Signal Signal Shape" Name="DTC_MASK_B137D_25" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_BNfVsG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Noise Reduction Microphone 3 Signal Signal Bias Level Out of Range" Name="DTC_MASK_B137D_28" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_DJ27wG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna RF Signal 2 Circuit Short To Ground" Name="DTC_MASK_B13A7_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_xvDJYG2PEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna RF Signal 2 Circuit Open" Name="DTC_MASK_B13A7_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_1_IegG2PEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="WiFi Antenna Coaxial Signal Circuit Short to Ground" Name="DTC_MASK_B13AB_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_Ep5yMG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="WiFi Antenna Coaxial Signal Open Circuit" Name="DTC_MASK_B13AB_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_LyvdIG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Digital Audio Broadcast Antenna Coaxial Signal Circuit Short To Ground" Name="DTC_MASK_B13ED_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_NtIGMG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Digital Audio Broadcast Antenna Coaxial Signal  Circuit Open" Name="DTC_MASK_B13ED_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>__0bvsG2PEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Human Machine Interface Low Voltage Differential Signaling LVDS Signal (+) Short to Ground" Name="DTC_MASK_B15AF_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_VhZTwG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="HumanMachineInterfaceLowVoltageDifferentialSignalingLVDSSignal(+)CircuitOpen" Name="DTC_MASK_B15AF_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ZQy9sG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna RF Signal Circuit Short To Ground" Name="DTC_MASK_B1737_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ddFaIG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Antenna RF Signal Circuit Open" Name="DTC_MASK_B1737_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_fWRwYG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker (+) (1) Circuit Short To Ground" Name="DTC_MASK_B1960_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ihz4QG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker (+) (1)Circuit Short To Battery" Name="DTC_MASK_B1960_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_kEOtQG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Front Speaker (+) (1) Circuit Open" Name="DTC_MASK_B1960_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_lZBV8G2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker (+) (1) Circuit Short To Ground" Name="DTC_MASK_B1961_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_nDRRQG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker (+) (1) Circuit Short To Battery" Name="DTC_MASK_B1961_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ov-DoG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Front Speaker (+) (1) Circuit Open" Name="DTC_MASK_B1961_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_qHoaIG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Rear Speaker (+) Circuit Short To Ground" Name="DTC_MASK_B1962_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_rNen4G2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Rear Speaker (+) Circuit Short To Battery" Name="DTC_MASK_B1962_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ugtTMG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Left Rear Speaker (+) Circuit Open" Name="DTC_MASK_B1962_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ssoGcG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Rear Speaker (+) Circuit Short To Ground" Name="DTC_MASK_B1963_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_yxP7UG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Rear Speaker (+) Circuit Short To Battery" Name="DTC_MASK_B1963_12" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_0fdJkG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Right Rear Speaker (+) Circuit Open" Name="DTC_MASK_B1963_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_2K1tUG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="USB D (+) Serial Data General Failure Condition " Name="DTC_MASK_B1964_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_44XDgG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="USB D (+) Serial Data 2 General Failure Condition" Name="DTC_MASK_B1965_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_6CX_kG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Radio System Not Activated" Name="DTC_MASK_B19B1_52" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>__LnxUG2REeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Microphone (+) Signal Circuit &#x2013; Circuit Short to Ground" Name="DTC_MASK_B1A36_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_gpPK4G2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Microphone (+) Signal Circuit &#x2013; Circuit Open " Name="DTC_MASK_B1A36_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_jbMVIG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Rear Vision Camera Incorrect Component Installed" Name="DTC_MASK_B1A62_4A" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_dyW0oG2TEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Rear Vision Camera  Alive Sequence Counter Incorrect Not Updated" Name="DTC_MASK_B1A62_82" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_peBaQG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Rear Vision Camera Signal Invalid" Name="DTC_MASK_B1A62_86" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_syFzEG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Active Noise Cancellation System Performance Diagnostic Status" Name="DTC_MASK_B1ABD_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_wTZ9sG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Communication CAN Bus 5 Off" Name="DTC_MASK_U007B_00" References="GIS-657" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_3mN7sTGCEeaGHbLZ_E5e_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/13/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>Sarath Yyllapantul</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Transmission Control Module" Name="DTC_MASK_U0101_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_ivK_0G2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Body Control Module" Name="DTC_MASK_U0140_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_mLn4kG2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Central Gateway Module" Name="DTC_MASK_U0146_00" References="GIS-657" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_JqOaETGLEeaGHbLZ_E5e_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/13/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>Sarath Yyllapantul</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Instrument Panel Cluster" Name="DTC_MASK_U0155_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_s-qSoG2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with HVAC Control Module Front" Name="DTC_MASK_U0164_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_uh1VkG2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Telematics Module" Name="DTC_MASK_U0198_00_GlobalB" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_wA3fYG2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Wireless Charger Module" Name="DTC_MASK_U020C_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_055D0G2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Camera Module Rear" Name="DTC_MASK_U0264_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_zz96YG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Ethernet Link Short to Ground" Name="DTC_MASK_U1008_11" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_2fOC4G2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Ethernet Link Circuit Open" Name="DTC_MASK_U1008_13" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_4XJ04G2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Ethernet Link Circuit Resistance above Threshold" Name="DTC_MASK_U1008_1B" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_HH1vEG2UEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Ethernet Link Signal Invalid" Name="DTC_MASK_U1008_29" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_5wNSgG2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Engine Control Module on CAN Bus 2" Name="DTC_MASK_U1611_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_-uqwkG2GEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lost Communication with Engine Control Module on CAN Bus 3" Name="DTC_MASK_U1818_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_Q4_L8G2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Key Table Not Provisioned" Name="DTC_MASK_U1960_00" References="GIS-657" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_RAu4ITGMEeaGHbLZ_E5e_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/13/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>Sarath Yyllapantul</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Security Peripheral Performance &#x2013; Performance or Incorrect Operation" Name="DTC_MASK_U1961_92" References="GIS-657" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_bjz1UTGMEeaGHbLZ_E5e_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/13/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>Sarath Yyllapantul</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Telematics Module License Compliance Material " Name="DTC_MASK_U1967_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_UpV4IG2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Telematics Module License Compliance Material Invalid Serial Data Received" Name="DTC_MASK_U1967_81" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_Wc3EMG2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Telematics Module License Compliance Material Signal Below Allowable Range " Name="DTC_MASK_U1967_84" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_YD1CAG2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Telematics Module License Compliance Material Signal Above Allowable Range" Name="DTC_MASK_U1967_85" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_bQaSwG2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Telematics Module License Compliance Material Data Transfer Failure " Name="DTC_MASK_U1967_89" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_dz_p0G2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Wireless Charging Module License Compliance Material" Name="DTC_MASK_U196E_00" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_finu0G2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Wireless Charging Module License Compliance Material Signal Below Allowable Range" Name="DTC_MASK_U196E_84" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_hbVj8G2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Wireless Charging Module License Compliance Material Signal Above Allowable Range" Name="DTC_MASK_U196E_85" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_kc-wAG2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Wireless Charging Module License Compliance Material Data Transfer Failed" Name="DTC_MASK_U196E_89" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_nS7CYG2HEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module General Checksum Failure" Name="DTC_MASK_U3000_41" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_LOeLEG2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module General Memory Failure" Name="DTC_MASK_U3000_42" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_M1FjkG2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Special Memory Failure" Name="DTC_MASK_U3000_43" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_OpdrQG2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Data Memory Failure" Name="DTC_MASK_U3000_44" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_QF3-4G2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Program Memory Failure" Name="DTC_MASK_U3000_45" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_RFqA4G2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Calibration / Parameter Memory Failure" Name="DTC_MASK_U3000_46" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_S2K8QG2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Watchdog and Safety Microcontroller Failure " Name="DTC_MASK_U3000_47" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_Uh7TcG2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Supervision Software Failure" Name="DTC_MASK_U3000_48" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_H1xw8G2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Internal Electronic Failure " Name="DTC_MASK_U3000_49" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_GSpKQG2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Incorrect Component Installed" Name="DTC_MASK_U3000_4A" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_Dl6eQG2FEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Over Temperature" Name="DTC_MASK_U3000_4B" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_9F2VcG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Not Programmed" Name="DTC_MASK_U3000_51" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>__nhoAG2CEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Not Activated" Name="DTC_MASK_U3000_52" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_BIr4wG2DEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Deactivated" Name="DTC_MASK_U3000_53" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_CkIjEG2DEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Missing Calibration" Name="DTC_MASK_U3000_54" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_GD4ncG2DEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Not Configured" Name="DTC_MASK_U3000_55" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_JHeUQG2DEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Invalid Incompatible Configuration" Name="DTC_MASK_U3000_56" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_KftSgG2DEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Control Module Invalid Incompatible Software Component " Name="DTC_MASK_U3000_57" References="" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_LhhU0G2DEeiyU4c4ukQ8DA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>June 11th, 2018</Date>
+      <Description>First release of this DTC Mask calibration</Description>
+      <Author>Jeff Pawloski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Battery Voltage - Circuit Voltage Below Threshold" Name="DTC_MASK_U3003_16" References="GIS-657" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_sbaroTGMEeaGHbLZ_E5e_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/13/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>Sarath Yyllapantul</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Battery Voltage - Circuit Voltage Above Threshold" Name="DTC_MASK_U3003_17" References="GIS-657" Usage="LOW,GEM,GLOBALB,ENTRY_VCU">
+    <CalID>_01ZOUTGMEeaGHbLZ_E5e_w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06/13/16</Date>
+      <Description>Official release of diagnostic trouble code</Description>
+      <Author>Sarath Yyllapantul</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2017</Date>
+      <Description>Added usage of GEM for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

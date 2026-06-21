@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/9/16</Date>
+    <Description>Initial release of this enumdef file to support the new enumeration ADC_HF_MIC_CONFIG calibration added in this release.</Description>
+    <Author>Rafael Hernandez</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="ADC GAIN specified  in GIS-681-2200 " Name="ADC_INPUT_RANGE_CONFIG">
+    <EnumID>_RrtD0C6DEeagOIUA_sAOZg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Differential 2 Vrms Input" Name="ADC_INPUT_RANGE_2_Vrms_DIFF">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Differential 1 Vrms input" Name="ADC_INPUT_RANGE_1_Vrms_DIFF">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="High Common Mode 2 Vrms" Name="ADC_INPUT_RANGE_2_Vrms_SINGLE_END">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="High Common Mode 1 Vrms" Name="ADC_INPUT_RANGE_1_Vrms_SINGLE_END">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="High Common Mode .5 Vrms" Name="ADC_INPUT_RANGE_500_mVrms_SINGLE_END">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="High Common Mode 1.25 Vrms" Name="ADC_INPUT_RANGE_1_25_Vrms_SINGLE_END">
+      <Value>5</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

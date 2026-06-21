@@ -1,0 +1,217 @@
+======================================================================
+1. AVB vbmeta (86331644)
+======================================================================
+magic=b'AVB0' libavb=1.0 algo=1 flags=0 rb_idx=0 rb_loc=0
+auth_blk=320 aux_blk=2752
+hash off=0 sz=32; sig off=32 sz=256; pk off=2208 sz=520; desc off=0 sz=2208
+release=avbtool 1.2.0
+
+VBMeta signing pubkey: 2048-bit RSA, n0inv=0x65df9fb5
+  n SHA256: 23a56e7389fac81150bda147c2389a1692d6275fb90936d64b537d3febde0070
+  n head:   beef8eeeeb25b877efd3b050d2e6bb8f
+
+Descriptors:
+
+[+0x0000] tag=0 (PROPERTY) bytes=136
+  PROP b'com.android.build.boot.fingerprint' = b'gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys'
+
+[+0x0098] tag=0 (PROPERTY) bytes=56
+  PROP b'com.android.build.boot.os_version' = b'12'
+
+[+0x00e0] tag=0 (PROPERTY) bytes=144
+  PROP b'com.android.build.product.fingerprint' = b'gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys'
+
+[+0x0180] tag=0 (PROPERTY) bytes=56
+  PROP b'com.android.build.product.os_version' = b'12'
+
+[+0x01c8] tag=0 (PROPERTY) bytes=72
+  PROP b'com.android.build.product.security_patch' = b'2025-06-05'
+
+[+0x0220] tag=0 (PROPERTY) bytes=136
+  PROP b'com.android.build.system.fingerprint' = b'gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys'
+
+[+0x02b8] tag=0 (PROPERTY) bytes=56
+  PROP b'com.android.build.system.os_version' = b'12'
+
+[+0x0300] tag=0 (PROPERTY) bytes=72
+  PROP b'com.android.build.system.security_patch' = b'2025-06-05'
+
+[+0x0358] tag=0 (PROPERTY) bytes=136
+  PROP b'com.android.build.vendor.fingerprint' = b'gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys'
+
+[+0x03f0] tag=0 (PROPERTY) bytes=56
+  PROP b'com.android.build.vendor.os_version' = b'12'
+
+[+0x0438] tag=2 (HASH) bytes=192
+  HASH partition='acpio' img_sz=1225 alg=sha256 flags=0
+    salt=3cea20e7cd1133d661fd05913a1132dfeb094ec8d42e76cafb8eea805a4f887d  digest=5d21ab11ed60cfb7f4ace29287736a785be4e4cc6ba5c16ec886cded6bf831d3
+
+[+0x0508] tag=2 (HASH) bytes=184
+  HASH partition='boot' img_sz=36362240 alg=sha256 flags=0
+    salt=355bbd200c0903592e0ae2f65242e2f657fa9e7e27f441405dffb33e52faa242  digest=d382308c379cb004ff725e6bfbcf24b3d8f49b8bfc8c3517b99afdf590059d7f
+
+[+0x05d0] tag=1 (HASHTREE) bytes=224
+  HASHTREE partition='product' dm-verity v1 img_sz=2657943552 tree_off=2657943552 tree_sz=20934656
+    data_blk=4096 hash_blk=4096 fec_n=2 fec_off=2678878208 fec_sz=21184512 alg=sha1 flags=0
+    salt=5553078f1192fec603d15a22de956411e9ee090f3883792fdc476fbc43d32b9e  root=17d0026d514990016df2ce2ecd3ecd0c65636560
+
+[+0x06c0] tag=1 (HASHTREE) bytes=224
+  HASHTREE partition='system' dm-verity v1 img_sz=3177332736 tree_off=3177332736 tree_sz=25026560
+    data_blk=4096 hash_blk=4096 fec_n=2 fec_off=3202359296 fec_sz=25321472 alg=sha1 flags=0
+    salt=5553078f1192fec603d15a22de956411e9ee090f3883792fdc476fbc43d32b9e  root=a172ecc7ec5d93bacfbb59d436ec07b2c349af83
+
+[+0x07b0] tag=1 (HASHTREE) bytes=224
+  HASHTREE partition='vendor' dm-verity v1 img_sz=459464704 tree_off=459464704 tree_sz=3624960
+    data_blk=4096 hash_blk=4096 fec_n=2 fec_off=463089664 fec_sz=3661824 alg=sha1 flags=0
+    salt=5553078f1192fec603d15a22de956411e9ee090f3883792fdc476fbc43d32b9e  root=43cae2f08ab169995f66d2cf6e808b1e7bdd730f
+
+Chain partitions total: 0
+
+======================================================================
+2. ACPI tables (86331630)
+======================================================================
+first16: 41435049000004c90000002000000020 ascii=b'ACPI\x00\x00\x04\xc9\x00\x00\x00 \x00\x00\x00 '
+Tables found: 1
+  @0x000040 SSDT len=1161 rev=1 OEM=b'INTEL ' TID=b'android\x00' OEMrev=4096 CID=b'INTL'
+_HID occurrences (raw nibbles, first 30): 1
+ACPI/PNP HID candidates: 1
+  ANDR0001
+
+======================================================================
+3. SOC_UTILS (86331623)
+======================================================================
+first32=69706b2e0003080000000000000060001c000000000060004cd89735aa550000 ascii=b'ipk.\x00\x03\x08\x00\x00\x00\x00\x00\x00\x00`\x00\x1c\x00\x00\x00\x00\x00`\x00L\xd8\x975\xaaU\x00\x00' size=9252612
+  LZMA sig at: ['0x723a', '0x7284', '0x7317', '0x18186', '0x18ec6', '0x21175', '0x2b179', '0x340f5']
+  XZ sig at: ['0xc5478']
+  SquashFS sig at: ['0x30a022', '0x30a9e4', '0x7d9336', '0x7d9cf8']
+  gzip sig at: ['0xbb84', '0xcfa2', '0x2573e', '0x2b2a9', '0x2f382', '0x30461', '0x37247', '0x3a7c8']
+  bzip2 sig at: ['0xd1ab3']
+  ELF sig at: ['0x98d63', '0x301288', '0x7d022c']
+  AndroidBoot sig at: ['0x3ead87', '0x8ba08d']
+  AVB sig at: ['0x3f8ec7', '0x8c81cb']
+Early strings:
+  ?SMIPSMIP.man
+  smip.met
+
+======================================================================
+5. RSA-1024 SubjectPublicKeyInfo blobs in ghs_integrity.elf
+======================================================================
+
+offset=14607467 len=162 sha256=9f09e6e690f8d0474b5b7096ea7da9e3d316d889649443c2d8bf5c831f0f6b69
+Public-Key: (1024 bit)
+Modulus:
+    00:c0:83:23:dc:56:88:1b:b8:30:20:69:f5:b0:85:
+    61:c6:ee:be:7f:05:e2:f5:a8:42:04:8a:be:8b:47:
+    be:76:fe:ae:f2:5c:f2:9b:2a:fa:32:00:14:16:01:
+    42:99:89:a1:5f:cf:c6:81:5e:b3:63:58:3c:2f:d2:
+    f2:0b:e4:98:32:83:dd:81:4b:16:d7:e1:85:41:7a:
+    e5:4a:bc:29:6a:3a:6d:b5:c0:04:08:3b:68:c5:56:
+    c1:f0:23:39:91:64:19:86:4d:50:b7:4d:40:ae:ca:
+    48:4c:77:35:6c:89:5a:0c:27:5a:bf:ac:49:9d:5d:
+    7d:23:62:f2:9c:5e:02:e8:71
+Exponent: 65537 (0x10001)
+
+  PEM saved /tmp/ghs_pubkey_14607467.pem
+
+offset=14607489 len=140 sha256=cd588e777870beb6e376523e6d25f1704bb62ff7de423ddfea3e72667fd0a5d5
+Public-Key: (1024 bit)
+Modulus:
+    00:c0:83:23:dc:56:88:1b:b8:30:20:69:f5:b0:85:
+    61:c6:ee:be:7f:05:e2:f5:a8:42:04:8a:be:8b:47:
+    be:76:fe:ae:f2:5c:f2:9b:2a:fa:32:00:14:16:01:
+    42:99:89:a1:5f:cf:c6:81:5e:b3:63:58:3c:2f:d2:
+    f2:0b:e4:98:32:83:dd:81:4b:16:d7:e1:85:41:7a:
+    e5:4a:bc:29:6a:3a:6d:b5:c0:04:08:3b:68:c5:56:
+    c1:f0:23:39:91:64:19:86:4d:50:b7:4d:40:ae:ca:
+    48:4c:77:35:6c:89:5a:0c:27:5a:bf:ac:49:9d:5d:
+    7d:23:62:f2:9c:5e:02:e8:71
+Exponent: 65537 (0x10001)
+
+  PEM saved /tmp/ghs_pubkey_14607489.pem
+
+offset=14608153 len=162 sha256=f2c4746f545946c100e72297f8f946344d7052f03a2f694221f9c893b0e6f711
+Public-Key: (1024 bit)
+Modulus:
+    00:a2:6b:ad:eb:6e:2e:44:61:ef:d5:0e:82:e6:b7:
+    94:d1:75:23:1f:77:9b:63:91:63:ff:f7:aa:ff:0b:
+    72:47:4e:c0:2c:43:ec:33:7c:d7:ac:ed:40:3e:8c:
+    28:a0:66:d5:f7:87:0b:33:97:de:0e:b8:4e:13:40:
+    ab:af:a5:27:bf:95:69:a0:31:db:06:52:65:f8:44:
+    59:57:61:f0:bb:f2:17:4b:b7:41:80:64:c0:28:0e:
+    8f:52:77:8e:db:d2:47:b6:45:e9:19:c8:e9:8b:c3:
+    db:c2:91:3f:d7:d7:50:c4:1d:35:66:f9:57:e4:97:
+    96:0b:09:ac:ce:92:35:85:9b
+Exponent: 65537 (0x10001)
+
+  PEM saved /tmp/ghs_pubkey_14608153.pem
+
+offset=14608175 len=140 sha256=3a00ceafc295ae1d78d9eaab73c1efaedea0a49dea592ac4c0f756d8151aa892
+Public-Key: (1024 bit)
+Modulus:
+    00:a2:6b:ad:eb:6e:2e:44:61:ef:d5:0e:82:e6:b7:
+    94:d1:75:23:1f:77:9b:63:91:63:ff:f7:aa:ff:0b:
+    72:47:4e:c0:2c:43:ec:33:7c:d7:ac:ed:40:3e:8c:
+    28:a0:66:d5:f7:87:0b:33:97:de:0e:b8:4e:13:40:
+    ab:af:a5:27:bf:95:69:a0:31:db:06:52:65:f8:44:
+    59:57:61:f0:bb:f2:17:4b:b7:41:80:64:c0:28:0e:
+    8f:52:77:8e:db:d2:47:b6:45:e9:19:c8:e9:8b:c3:
+    db:c2:91:3f:d7:d7:50:c4:1d:35:66:f9:57:e4:97:
+    96:0b:09:ac:ce:92:35:85:9b
+Exponent: 65537 (0x10001)
+
+  PEM saved /tmp/ghs_pubkey_14608175.pem
+
+======================================================================
+6. Property contexts
+======================================================================
+Y181 lines=170 Y177 lines=170
+
+Specific properties:
+  vendor.gm.security.state   u:object_r:vendor_gm_security_state_prop:s0 exact string
+  persist.vendor.safemode    u:object_r:persist_vendor_safemode_prop:s0
+  # AndroidS add persist/ro.vendor.safemode to record whether it is in safemode
+  ro.vendor.safemode    u:object_r:ro_vendor_safemode_prop:s0
+  persist.vendor.harman.wireless     u:object_r:persist_vendor_harman_wireless_prop:s0
+  vendor.spi_change_cpu     u:object_r:vendor_spi_change_cpu_prop:s0
+
+Properties matching debug/safemode/engineering/bypass/etc.:
+  # GM protokey
+  vendor.gm.security.state   u:object_r:vendor_gm_security_state_prop:s0 exact string
+  # USB debug property
+  # Used for disable UxR property on test key build
+  # AndroidS add persist/ro.vendor.safemode to record whether it is in safemode
+  persist.vendor.safemode    u:object_r:persist_vendor_safemode_prop:s0
+  ro.vendor.safemode    u:object_r:ro_vendor_safemode_prop:s0
+  vendor.camera.hal.debug   u:object_r:vendor_camera_hal_debug_prop:s0
+  vendor.kernel.version      u:object_r:vendor_intel_debug_prop:s0
+  vendor.spi_change_cpu     u:object_r:vendor_spi_change_cpu_prop:s0
+  persist.vendor.harman.wireless     u:object_r:persist_vendor_harman_wireless_prop:s0
+
+Unique property contexts: 80; top 15:
+     5 u:object_r:vendor_audiohal_prop:s0
+     4 u:object_r:hlogutil_prop:s0
+     4 u:object_r:vendor_avb_prop:s0
+     2 u:object_r:vendor_gm_brand_prop:s0
+     2 u:object_r:vendor_ota_prop:s0
+     1 u:object_r:pulseaudio_status_prop:s0
+     1 u:object_r:audiohal_dump_prop:s0
+     1 u:object_r:audiodump_status_prop:s0
+     1 u:object_r:vendor_eavbmgr_suspend_prop:s0
+     1 u:object_r:init_svc_vendor_gptp_a_prop:s0
+     1 u:object_r:vendor_harman_eavb_status_prop:s0
+     1 u:object_r:exported_rvc_prop:s0
+     1 u:object_r:exported_calibration_prop:s0
+     1 u:object_r:persist_pm_bfc_prop:s0
+     1 u:object_r:vendor_gm_security_state_prop:s0
+
+======================================================================
+7. SELinux precompiled_sepolicy
+======================================================================
+size=689366 magic=8cff7cf9
+  type/word 'su': 0 occurrences (first [])
+  type/word 'sudaemon': 0 occurrences (first [])
+  type/word 'kernel': 0 occurrences (first [])
+  type/word 'init': 0 occurrences (first [])
+  type/word 'shell': 0 occurrences (first [])
+  type/word 'adbd': 0 occurrences (first [])
+  type/word 'permissive': 0 occurrences (first [])
