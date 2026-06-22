@@ -11,6 +11,11 @@
 
 GM AAOS uses the **CINEMO** multimedia framework for CarPlay and media processing. CINEMO is developed by Harman/Samsung (NME = Native Media Engine) and provides a complete AV pipeline separate from Android's MediaCodec/Stagefright.
 
+> **Terminology:** the `NvdecSW` library and `Cinemo/nvdec/H264DEC` / `NmeCreateCodecNvdecSW()` /
+> `NvdecError_*` symbols below are **Cinemo's own internal names** for its **software** H.264
+> decoder — **not** NVIDIA's hardware NVDEC. gminfo37 has an Intel HD Graphics 505 GPU and no
+> NVIDIA silicon.
+
 ---
 
 ## Library Inventory

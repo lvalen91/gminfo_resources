@@ -6,6 +6,24 @@ Created: December 28, 2025
 Purpose: Complete documentation of boot chain from power-on to Android
 ================================================================================
 
+--------------------------------------------------------------------------------
+ROLE NOTE (added during doc review; original content below is UNCHANGED):
+This document is the BINARY-FORENSIC EVIDENCE BASE for the boot chain -- it is the
+sole source for module file numbers, header magics (1NMH/1SHG), payload hashes, ABL
+build metadata, the Intel CSE key list, SVN anti-rollback strings, /dev/flash/* paths,
+CONFIG_GHS_* flags, the full embedded kernel cmdline, and recovery SEPolicy types.
+It is NOT superseded. The architectural analysis built on this evidence lives in
+research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md and platform/boot_chain.md; the documents are
+complementary.
+Two interpretive expansions in the body below were later refined:
+  - "MEC (Message Authentication Counter)" -> correct expansion is MANUFACTURING ERROR
+    COUNTER.
+  - "SBAT (Secure Boot Authorization Ticket)" -> full expansion is UNCONFIRMED; the
+    keyNBID/appNBID generation-number scheme matches the UEFI "Secure Boot Advanced
+    Targeting" revocation model (leading interpretation, not verified from a string).
+The body text is preserved verbatim for archival fidelity.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. BOOT CHAIN OVERVIEW

@@ -7,6 +7,14 @@ Analysis Date: 2026-01-04
 Platform: Intel Atom x7-A3960 Broxton + Renesas RH850 VIP (Harman)
 ================================================================================
 
+> Companion: GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt is the broad reference (full EEPROM
+> map, DPS/VCAP/SPAT, seed/ECUID bytes, the CalDef database, 24-ECU CAN map, update-package
+> structure, research directions). This document is the verified/corrected Y181 posture and
+> supersedes several of the compendium's values (downgrade-blocked, CRC-not-enforced-at-boot,
+> AVB rollback mechanism, SELinux severity re-ratings) -- see the compendium's header note.
+> The two are complementary and kept separate.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. Executive Summary

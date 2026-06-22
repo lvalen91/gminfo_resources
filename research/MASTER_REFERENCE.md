@@ -23,13 +23,13 @@
 | eMMC | 64GB | Samsung KLMCG4JEUD |
 | RAM | 8GB LPDDR4 (~6GB to guest) | Shared with GPU |
 | EEPROM | ST M24C64 8KB | I2C, security flags |
-| SPI Flash | IS25LP016 2MB | Logs/backup (non-critical) |
+| SPI Flash | IS25LP016D 2MB | **BCM89551 Ethernet-switch firmware** (corrected per `hardware/teardown.md`, dump-confirmed — NOT logs/backup). Separate 8MB IS25WP064A = Apollo Lake IFWI/TXE boot flash. |
 
 ### 1.3 Connectivity
 
 | Interface | Details |
 |-----------|---------|
-| Ethernet | Intel I211, 1Gbps, VLANs 4/5 |
+| Ethernet | Intel **I210 (WGI210CL)**, 1Gbps, VLANs 4/5 (physical part per `hardware/teardown.md`; "I211" was an unverified near-twin reading) |
 | WiFi | Broadcom BCM, 802.11ac dual-band |
 | Bluetooth | 5.0, HFP/A2DP/AVRCP/PBAP/MAP |
 | CAN Bus | Via VIP MCU (RH850) |
@@ -78,7 +78,7 @@ Intel CSE (hardware root) → Intel ABL → GHS INTEGRITY → Android
 | boot_a/b | vda7/8 | 128MB | Android boot |
 | misc | vda9 | 1MB | A/B metadata, rollback index |
 | vbmeta_a/b | vda10/11 | 64KB | AVB metadata |
-| super | vda21 | 8.6GB | system/vendor/product |
+| super | vda13 | 8.6GB | system/vendor/product (corrected: was "vda21" — vda21 is teedata; super=vda13 per teardown.md/AOSP_REPLACEMENT/BOOT_CHAIN + the live enum) |
 
 ---
 

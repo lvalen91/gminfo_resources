@@ -3,6 +3,15 @@
 **Date:** 2026-01-05
 **Purpose:** Document critical differences between Y177 and Y181 VIP firmware that explain the EEPROM bypass behavior
 
+> Companion doc: `VIP_CONTROL_ANALYSIS.txt` covers the broader EEPROM/board/DPS attack
+> surface (full 8 KB EEPROM memory map, CRC locations + "CRC not enforced at boot", framing
+> bytes, world-accessible `/dev/i2c`, IS25LP016 SPI flash, ECUID/MEC/SBAT, DPS can/cannot
+> limits). This document is the focused VIP firmware binary-diff; the two are complementary.
+> EEPROM bypass values cross-checked against the shipped bins: `0x0441`/`0x0A81` value→`0xFF`,
+> `0x0B41` value→`0x01` (this doc's "0x0B40: 6900 → 6901" is correct). Note the *framing*
+> byte does not always become `5A` — the Y181 stock/modified bins keep `F0` @0x440 and `C3`
+> @0x0A80; only the value byte changes. Locate each byte by offset, not framing value.
+
 ---
 
 ## Executive Summary

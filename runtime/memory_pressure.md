@@ -11,8 +11,10 @@
 ## System Memory
 
 - 8GB LPDDR4 physical (~6GB allocated to Android guest)
-- 5.66GB visible to kernel (~604MB reserved by GHS hypervisor)
-- Available at boot: ~3.1GB (debloated) vs ~2.5GB (factory)
+- 5.66GB visible to kernel (~604MB reserved by GHS hypervisor); `MemTotal` ~5,663,424 KB (varies slightly per capture)
+- **`SwapTotal: 0` — no swap.** The LMK/OOM killer is the only relief valve under pressure.
+- Available at boot: ~3.1GB (debloated) vs ~2.5GB (factory); load avg ~5-7 (debloated) / higher on factory
+- Full debloat-vs-factory study: see [`analysis/debloat_vs_factory_analysis.md`](../analysis/debloat_vs_factory_analysis.md)
 
 ## LMK (Low Memory Killer)
 
@@ -38,6 +40,29 @@
 - Google Services: ~443MB acting as LMK cushion
 - CarLink memory: 76.6MB idle, 127.2MB peak, 38.6MB post-trim; NEVER killed by LMK
 - Factory: 8 ALSA underruns, 4 Davey! events (worst 225s!); debloated: 0 underruns, 0 Davey!
+
+## Streaming Session Resource Profile
+
+Measured on the IHU during an active third-party CarPlay-adapter streaming session
+(test rig; the adapter's own hardware/firmware is documented separately at
+https://github.com/lvalen91/CPC200-CCPA_resources). Captured Feb 2026; source phone iPhone 18,4, iOS 26.4 beta
+(build 23E5207q), CarPlay source version 940.19.1.
+
+**Thread architecture (zeno.carlink during streaming):**
+
+| Thread | Priority | Nice | CPU% |
+|--------|----------|------|------|
+| AudioPlayback | 1 (RT) | -19 | 3.8 |
+| USB-ReadLoop | 10 (RT) | -10 | 5.7 |
+| H264-Feeder | 16 | -4 | 3.8 |
+| MediaCodec_loop | 10 (RT) | -10 | 1.9 |
+| CodecLooper | 4 | -16 | 1.9 |
+
+- Process: 58MB PSS / 178MB RSS, oom_adj 0 (foreground), 33-39 threads.
+- AudioFlinger write latency (`bus0_media_out`): avg 69.6ms, std 3.0ms, min 57.4ms, max 118.5ms.
+- System CPU during streaming: system_server 51%, pulseaudio 21%, surfaceflinger 16%, avb_streamhandler 14%.
+- Connection reliability over the session corpus: 147/155 successful (94.8%), ~4s connect time,
+  AirPlay video latency ~75ms, CPU 31-33°C.
 
 ## Crash Analysis
 

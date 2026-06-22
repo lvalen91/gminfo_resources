@@ -7,6 +7,18 @@ Kernel Version: 4.19.305-240125T145315Z (SAME as Y181)
 SELinux Runtime: PERMISSIVE (CRITICAL DIFFERENCE FROM Y181)
 ================================================================================
 
+--------------------------------------------------------------------------------
+SUPERSEDED -- consolidated into KERNEL_CVE_ANALYSIS.txt (Appendix E "Y177 (PERMISSIVE)
+DELTA"). The shared kernel/CVE/config bulk is the same as the Y181 doc (which is the
+superset); this file's UNIQUE Y177 content -- the Y177-vs-Y181 comparison table, the
+inverted exploitability matrix, the world-writable /dev/i2c-0..3 + gpio458/460/464/466 +
+/dev/ttyS1 vectors, the binder services, the ramdisk/precompiled sepolicy MD5s & sizes,
+the setenforce(1) enforcement-mechanism explanation, the boot-image 86283154 source, and
+the Y177 risk/recommendations -- was migrated verbatim to that file's Appendix E and
+verified present. Retained unmodified below as archival history; do not edit. Use
+KERNEL_CVE_ANALYSIS.txt as the live source.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. Executive Summary

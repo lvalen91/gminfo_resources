@@ -27,6 +27,14 @@
 
 Broadcom BCM8953x managed switch. Switch port assignments:
 
+> **⚠ Switch-vendor discrepancy (unresolved).** This doc records a Broadcom
+> BCM8953x, but the firmware module inventory reports `ETHERNET_SWITCH` part
+> `85759612.AA` = **`MVL88Q5050_globalB_…`** — `MVL` = **Marvell 88Q5050**
+> (an automotive 1000BASE-T1 switch). Either the unit has two switch stages
+> (e.g. a Broadcom host NIC/PHY + a Marvell backbone switch), or one of these
+> attributions is wrong. Flagged, not resolved — the firmware string is from the
+> `dumpsys UpdateService pn version` inventory; the BCM8953x label predates it.
+
 | Port | Connected Node |
 |------|---------------|
 | 0 | RSI |
@@ -47,13 +55,32 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 | 192.168.1.107 | CGM Host |
 | 192.168.1.112 | CGM_ETH |
 
-### VLAN 4 — EOCM Network (172.16.4.x/24)
+### VLAN 4 — VCS / EOCM Network (172.16.4.x/24)
 
-| Address | Node |
-|---------|------|
-| 172.16.4.12 | EOCM_HCP_SECONDARY |
-| 172.16.4.13 | EOCM_HCB |
-| 172.16.4.15 | EOCM_HCP_HOST |
+| Address | Node | Notes |
+|---------|------|-------|
+| 172.16.4.100 | VCU_AGVM / Android (vlan4 face) | this device |
+| 172.16.4.14 | **ACP (Application Control Processor)** | permanent ARP, no ping — hypervisor/control partition |
+| 172.16.4.107 | RTOS partition | active, TTL=255; symmetric 49156↔49156 to diagnosticsd |
+| 172.16.4.112 | CGM_OTA (vlan4 face) | active, TTL=64 (Bosch JuP1, Linux) |
+| 172.16.4.12 | EOCM_HCP_SECONDARY / EOCM_HCP_2 | code-referenced |
+| 172.16.4.13 | EOCM_HCB | code-referenced |
+| 172.16.4.15 | EOCM_HCP_HOST / EOCM_HCP_1 | code-referenced |
+| 172.16.4.1, .104, .110 | additional vlan4 ECUs | code-referenced, not live on bench |
+
+> **Partition identity — canonical source.** The authoritative partition map is
+> the FSA **DeviceInformation** service (serviceId 1001), whose `instanceId`
+> field enumerates: 1=CSM(.100), 2=TCP(.102), 3=AMP(.103), 4=RSI1(.104),
+> 5=RSI2(.105), 6=IPC(.106), 7=CGM(.112), 8=LOWRADIO(.108); PDR=.110. See
+> [`platform/fsa_protocol.md`](fsa_protocol.md). The VLAN-5 switch-port table
+> above (`.101 ADB`, `.107 CGM Host`) reflects the switch/host view; the
+> DeviceInformation map reflects the service-addressable partitions — both are
+> retained as observed.
+>
+> **Code-referenced VCU-variant subnets** (unreachable on bench, 100% loss):
+> `192.168.118.1`=VCU_AGVM, `192.168.118.2`=IPC; `172.16.5.x` (new in VCU
+> variant). See [`projection/cluster_navigation.md`](../projection/cluster_navigation.md)
+> for the VCU/CIP inter-VM topology.
 
 ---
 
@@ -61,12 +88,17 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 
 | Bind Address | Port | Protocol | Purpose |
 |-------------|------|----------|---------|
-| 0.0.0.0 | 6363 | TCP | Unknown (loopback connections observed) |
-| 0.0.0.0 | 49156 | TCP | Unknown |
-| 192.168.1.1 | 9002 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
-| 192.168.1.1 | 9016 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
+| 0.0.0.0 / 127.0.0.1 | 6363 | TCP | **AVB audio daemon** (uid=1041 audioserver) — init-owned listen socket, text IPC bus for AVB audio routing; arbitrary data → `"ERROR"`. Low value. (Was "Unknown".) |
+| 0.0.0.0 | 7000 | TCP | **AirPlay/AirTunes 320.17.8** (Cinemo `libNmeCarPlay` r14), br0/192.168.5.1, uid=1001000. `GET /` → `404; Server: AirTunes/320.17.8`. CarPlay audio bridge — see [`audio/carplay_audio_pipeline.md`](../audio/carplay_audio_pipeline.md). (Was mislabeled "ADB"; ADB is port 5555.) |
+| 0.0.0.0 | 49156 | TCP | **diagnosticsd UDS-over-TCP bridge** (root, PID 599). Bridges GM Ethernet Diagnostics to RTOS `172.16.4.107:49156`. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). (Was "Unknown".) |
+| 192.168.1.100 | 9002 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
+| 192.168.1.100 | 9010 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
+| 192.168.1.100 | 9016 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
+| 127.0.0.1 / 192.168.5.1 | 53 | TCP/UDP | dnsmasq (loopback + br0 WiFi-AP side) |
 
-> Verified against `open_ports.txt` (apr2026): only **9002/9016** listen, bound to **192.168.1.1** (the GHS bridge), not 192.168.1.100. Port **9010** is an *outbound* client connection to remote ECUs, not a listener — removed. Port **7000** (ADB) appeared LISTEN only in the initial Y181 capture and was gone by apr2026 (transient). DNS (dnsmasq, TCP/UDP 53) runs on the **gateway ECU 192.168.1.102**, not the IHU.
+> **Re-verified against live `enumeration/Y181/jun2026/` capture.** 9002/9010/9016 listen bound to the IHU's own **192.168.1.100** (IPv6-mapped IPv4), *not* 192.168.1.1 — the guest has no `.1` interface or route. **7000 (ADB) is listening** (`0.0.0.0:7000` + `*:7000`), and **9010 is a listener**, not outbound-only. DNS (dnsmasq, TCP/UDP 53) is served locally on **127.0.0.1** and **192.168.5.1 (br0, the WiFi-AP bridge)**.
+>
+> The earlier apr2026 note (only 9002/9016 @ .1; 9010 outbound; 7000 gone; DNS on .102) reflected one snapshot and is **withdrawn** — listener set varies with projection-session state; the Jun-2026 live set above supersedes it.
 
 ---
 
@@ -111,10 +143,14 @@ The VIP MCU communicates with the Intel SoC via a dedicated UART link using HDLC
 | Device | VID | PID | Notes |
 |--------|-----|-----|-------|
 | GM IHU (iAP) | 0x2996 | 0x0120 | iAP2 USB role |
-| GM IHU (proprietary) | 0x2996 | 0x0105 | GM proprietary |
-| GM IHU (hub) | 0x2996 | 0x0132 | USB hub |
+| **Aptiv H2H (Head-to-Head) Bridge** | 0x2996 | 0x0105 | Cross-ECU USB bridge (CSM↔other ECU); kernel driver **`dabridge`** (GM custom); controlled via `/sys/bus/usb/drivers/dabridge/bridgeport`; `RDMSADBHandler` writes `1-6.3` here on ADB_Enable. (= the "GM proprietary" 0x0105 entry.) |
+| **GM V10 E2 PD USB Hub** | 0x2996 | 0x0132 | USB hub; its presence **blocks** `RDMSADBHandler.ADB_Disable` (peripheral→host role reversal fails, ADB recovers). (= the "USB hub" 0x0132 entry.) |
 | CPC200 adapter | 0x1314 | 0x1521 | manufacturer="Magic Communication Tec.", product="Auto Box" |
 | dabr_udc | — | — | USB device controller for gadget mode |
+
+VID `0x2996` (decimal 10646) = **Aptiv / Delphi Technologies**. The H2H bridge +
+PD hub + `RDMSADBHandler` Binder service (#66) form the ADB-over-H2H routing
+path — see [`research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md).
 
 ### USB Gadget
 
@@ -126,9 +162,17 @@ The `dabr_udc.0` device controller supports USB gadget mode via FunctionFS. The 
 
 ---
 
-## NFSA (Network Function Service Architecture)
+## NFSA / FSA (Feature Service Architecture)
 
-NFSA provides the vehicle-internal network communication layer between the IHU and other vehicle computing nodes over VLAN 5. The IHU participates as both server and client across 6 ports:
+> **Full protocol spec:** [`platform/fsa_protocol.md`](fsa_protocol.md) — wire
+> format (20-byte BE header, magic `0x5AA5`, protobuf payload), opTypes,
+> functionIDs, the connection handshake, the complete **service catalog** (port
+> → serviceId → partition), recovered protobuf field tables, and live service
+> sessions (RemoteModuleHMI, NetworkAccessManager, DeviceInformation,
+> DisplaysCoordination). GM's code names this `com.gm.fsa.service` / `com.gm.nfsa.*`
+> — "NFSA" here and "FSA" there are the same protocol.
+
+NFSA/FSA provides the vehicle-internal network communication layer between the IHU and other vehicle computing nodes over VLAN 5. The IHU participates as both server and client across 6 ports:
 
 ### IHU as Server (listening)
 

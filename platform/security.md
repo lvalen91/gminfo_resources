@@ -317,9 +317,9 @@ Both Y177 CVEs are exploitable due to SELinux being in permissive mode, which re
 
 | Bind Address | Port | Risk | Notes |
 |--------------|------|------|-------|
-| `0.0.0.0` | 6363 | **HIGH** | Binds all interfaces, accessible from USB network |
-| `0.0.0.0` | 7000 | **HIGH** | Binds all interfaces |
-| `0.0.0.0` | 49156 | **HIGH** | Binds all interfaces |
+| `0.0.0.0` | 6363 | LOW | **AVB audio daemon** (uid=1041), init-owned text IPC bus; arbitrary input → `"ERROR"`. Binds all interfaces but low value. |
+| `0.0.0.0` | 7000 | MEDIUM | **AirPlay/AirTunes 320.17.8** (Cinemo libNmeCarPlay r14), CarPlay audio bridge on br0. (Not ADB.) |
+| `0.0.0.0` | 49156 | **HIGH** | **diagnosticsd** root UDS-over-TCP bridge — full caps, no seccomp. App-layer UDS trust only (no OS peer check); 0x27 SecurityAccess gate. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). |
 
 ### IPC / Serial
 
@@ -363,6 +363,17 @@ These GPIOs control MCU reset and boot mode pins. World-writable access means an
 
 - **CSM (Cluster/Switch Module):** CAN address `0x80`
 - **CGM (Central Gateway Module):** CAN address `0x45`
+
+> These UDS services are reachable two ways: over **CAN/DPS** (see
+> [`diagnostics/dps/`](../diagnostics/dps/)) and over **Ethernet/TCP** via the
+> root `diagnosticsd` daemon on port 49156 (GM Ethernet diag address `0x0084`,
+> 8-byte header). The Ethernet path's wire format, tester-ID/SecurityAccess
+> trust tiers, and a confirmed (unprivileged) generalReject probe are documented
+> in [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md).
+> Related shell-side surface (Binder UpdateService, kernel KASLR, GM Secure ADB
+> `adbd` auth) is in
+> [`research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md),
+> and the OTA/signing gate in [`platform/ota_update_stack.md`](ota_update_stack.md).
 
 ---
 

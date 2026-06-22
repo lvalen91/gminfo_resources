@@ -5,6 +5,21 @@ Generated: December 20, 2025
 Purpose: Comprehensive summary for continuation in new Claude sessions
 ================================================================================
 
+--------------------------------------------------------------------------------
+ARCHIVAL SESSION LOG (Dec 20 2025) -- retained as history; body UNCHANGED. Several
+hypotheses here were later RESOLVED/REFUTED. Do NOT trust the following as current:
+  - "EEPROM 0x0B40/0x0B41 controls SELinux/debug mode" (L256, 341-346, 544, 571-576, 633):
+    WRONG. SELinux mode is set by the kernel cmdline (Y181 Enforcing / Y177 permissive),
+    NOT by EEPROM. 0x0B41->0x01 is part of the VERIFIED EEPROM ADB-UNLOCK set (alongside
+    0x0441/0x0A81/0x1A01->0xFF); its independent function (debug / verbose logging) is a
+    hypothesis, not SELinux control.
+  - "Y177 downgrade may be possible" (L347-356, 438-451, 638): WRONG. Y181->Y177 is BLOCKED
+    by the GHS hypervisor rollback counter (misc / vda9); tested FAILED.
+  - "RAM: 6GB DDR3L" (L55-56): WRONG. 8GB LPDDR4 (4x Micron MT53E512M32D2DS-053), ~5.66GB
+    kernel-visible.
+For current verified facts see VERIFICATION.md and research/MASTER_REFERENCE.md.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. PROJECT OVERVIEW

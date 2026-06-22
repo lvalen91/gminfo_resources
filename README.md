@@ -11,7 +11,7 @@ Canonical reference for the **GM Info 3.7** (`gminfo37`) infotainment system —
 
 ```
 gminfo_resources/
-├── platform/          Hardware specs, boot chain, security, networking, firmware versions, tech specs
+├── platform/          Hardware specs, boot chain, security, networking, FSA protocol, OTA stack, firmware versions, tech specs
 ├── hardware/          Physical teardown, BOM, photos, EEPROM/IFWI analysis
 ├── eeprom/            EEPROM mod guide, analysis reports, undocumented flags, .bin dumps
 │   ├── bins/          EEPROM binary dumps (stock, modified, ADB-enabled, bricked Y177)
@@ -19,7 +19,7 @@ gminfo_resources/
 ├── enumeration/       ADB + fastboot enumeration by firmware build
 │   ├── Y175/          Jan 2026 enum, VIP UART log, SELinux policy
 │   └── Y181/          Dec 2025 enum + Apr 2026 enum (apr2026/), fastboot enums
-├── diagnostics/       DPS session logs, CAN bus traces
+├── diagnostics/       DPS session logs, CAN bus traces, Ethernet UDS (diagnosticsd :49156)
 │   └── dps/           A11 Radio (ECU 0x80) DPS 4.56 logs
 ├── research/          Deep-dive analysis docs, decompiled artifacts, scripts, reports
 │   ├── MASTER_REFERENCE.md, INVENTORY.md, 17 docs/research + Y177/Y181 VIP/GHS analyses
@@ -96,6 +96,10 @@ Framing bytes at ±1 vary per firmware version — locate by offset, not pattern
 | [`platform/boot_chain.md`](platform/boot_chain.md) | 5-phase boot, GHS tasks, A/B metadata, misc partition |
 | [`platform/firmware_versions.md`](platform/firmware_versions.md) | Y175/Y177/Y181 diff, DPS/CalDef |
 | [`platform/networking.md`](platform/networking.md) | Ethernet topology, VIP IPC channels, open ports, UART |
+| [`platform/fsa_protocol.md`](platform/fsa_protocol.md) | GM FSA/NFSA protocol: wire format (magic `0x5AA5`), service catalog, protobuf defs, live service sessions (RemoteModuleHMI/NAM/DeviceInfo/DisplaysCoordination) |
+| [`platform/ota_update_stack.md`](platform/ota_update_stack.md) | UpdateService Binder map, SWU state machine, Y181 package format/signing (TSS/GPD CA), OTA engine, USB install path |
+| [`diagnostics/ethernet_uds_diagnosticsd.md`](diagnostics/ethernet_uds_diagnosticsd.md) | Root `diagnosticsd` UDS-over-TCP on :49156 — GM 8-byte wire format, UDS dispatch, tester/SecurityAccess trust tiers |
+| [`research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](research/security/SHELL_ACCESS_ESCALATION_Jun2026.md) | uid=2000 Binder access map, kernel extraction + KASLR slide, GM Secure ADB `adbd` auth, escalation gate inventory |
 | [`analysis/platform_faq.md`](analysis/platform_faq.md) | Evidence-backed FAQ (APK decompilation, logcat, ADB) |
 | [`projection/cpc200_integration.md`](projection/cpc200_integration.md) | CPC200-CCPA wireless adapter integration |
 | [`video/cinemo_nme_framework.md`](video/cinemo_nme_framework.md) | CINEMO/NME CarPlay framework architecture |

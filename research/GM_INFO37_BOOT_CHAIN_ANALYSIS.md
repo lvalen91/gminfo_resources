@@ -5,6 +5,13 @@
 **Vehicle:** 2024/2025 Chevrolet Silverado 2500 HD (T1XX Platform)
 **Firmware Version:** Y181 (Primary Analysis), Y177 (Comparison)
 
+> Companion document: the binary-forensic evidence base (module file numbers, header
+> magics `1NMH`/`1SHG`, payload hashes, ABL build metadata, CSE key list, SVN
+> anti-rollback strings, `/dev/flash/*` paths, `CONFIG_GHS_*` flags, full embedded kernel
+> cmdline, recovery SEPolicy types) lives in `research/BOOT_CHAIN_ANALYSIS.txt`. This
+> document holds the architectural analysis built on that evidence; the two are
+> complementary (neither supersedes the other).
+
 ---
 
 ## Table of Contents
@@ -148,10 +155,16 @@ VIP_APP Module Init:
 ├── IPC_S      - Inter-Processor Communication Server
 ├── AMP_MGR_SWC - Audio Amplifier Manager
 ├── PROTOKEY   - Security key management
-├── SBAT       - Secure Boot Authentication Table
+├── SBAT       - Secure Boot anti-rollback (keyNBID/appNBID generation numbers)
 ├── IOHWAB_MIC - Microphone Hardware Abstraction
 └── NAV        - Navigation/GNSS interface
 ```
+
+> SBAT full expansion is **unconfirmed** from firmware strings. The keyNBID/appNBID
+> generation-number scheme matches the UEFI/shim "Secure Boot Advanced Targeting"
+> revocation model (per-component generation numbers that revoke outdated/vulnerable
+> components), which is the leading interpretation. Earlier docs guessed "Authorization
+> Ticket" / "Authentication Table"; treat any full expansion as unverified.
 
 ### 4.4 EEPROM Read (M24C64)
 
@@ -823,7 +836,7 @@ POWER ON (T=0ms)
 | **VIP_APP Security** | Function @ 0xb67d0 | Y177=stubbed | Y181=implemented |
 | **EEPROM SBI Flags** | None (no CRC) | Yes (hardware) | I2C accessible |
 | **Intel CSE** | Hardware root of trust | No | OTP fuses |
-| **SOC_ABL** | Intel Secure Boot | No | Signed by Intel/GM |
+| **SOC_ABL** | Intel Secure Boot | No | Sign Type NONE (not GM TSS-signed); verified by/with Intel CSE secure boot |
 | **GHS Signature** | ABL validation | No | Hardware enforced |
 | **AVB vbmeta** | RSA-4096/SHA-256 | No | Without signing key |
 | **A/B Metadata** | CRC32 only | Potentially | Weak integrity |

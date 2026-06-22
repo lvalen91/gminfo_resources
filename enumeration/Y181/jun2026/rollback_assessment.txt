@@ -1,0 +1,28 @@
+=== ROLLBACK/DOWNGRADE ASSESSMENT ===
+
+Current Build:
+gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys
+
+Security Patch Level:
+2025-06-05
+
+Build Date (UTC):
+1753184729
+
+AVB Rollback Index:
+
+
+OEM Unlock Status:
+  sys.oem_unlock_allowed: 0
+  ro.oem_unlock_supported: 
+
+Verified Boot State:
+  State: green
+  Locked: 1
+
+=== DOWNGRADE RISK ASSESSMENT ===
+
+If AVB rollback index is set and > 0, downgrade may fail at boot.
+If OEM unlock is disallowed, cannot unlock bootloader to bypass.
+Check if Y177 package has matching or lower rollback index.
+

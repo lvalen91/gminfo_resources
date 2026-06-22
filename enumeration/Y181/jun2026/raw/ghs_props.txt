@@ -1,0 +1,2 @@
+[init.svc.ghs_cal]: [running]
+[ro.boot.trustyimpl]: [-ghs]

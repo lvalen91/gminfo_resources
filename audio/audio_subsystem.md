@@ -120,9 +120,9 @@ All output buses share common configuration:
 | Format | AUDIO_FORMAT_PCM_16_BIT |
 | Sample Rate | 48000 Hz |
 | Channel Mask | AUDIO_CHANNEL_OUT_STEREO |
-| **Bus Gain Range** | **0 to +63 dB** |
-| **Bus Default Gain** | **+30 dB** |
-| Step Size | 1 dB (100 mB) |
+| **Bus Gain Range** | **0 to 6300 mdB (0 to +63 dB)** |
+| **Bus Default Gain** | **per-bus — NOT a uniform +30 dB** (see live table below) |
+| Step Size | 100 mdB (1 dB) — 63 steps |
 
 > **Speaker device gain model (distinct from bus gain):** The Speaker output device uses an attenuation model: -128 dB to 0 dB, default -30 dB, 1 dB steps. Bus outputs use amplification (0 to +63 dB), while the Speaker device uses attenuation (-128 to 0 dB).
 
@@ -146,6 +146,36 @@ Most buses use the default 384-frame HAL buffer (8ms @ 48kHz). Two buses use red
 | bus2_voice_command_out | 192 frames | 4ms (low-latency for Siri/Assistant) |
 | bus4_call_out | 192 frames | 4ms (low-latency for voice calls) |
 | All others | 384 frames | 8ms (standard) |
+
+### Live per-bus gain & VolumeGroup table (Jun-2026 capture — authoritative)
+
+From `car_service.txt` (lines 419–513) + POTATO CarAudioService boot dump. These are the real
+per-bus defaults; the "+30 dB" figure above was an oversimplification. The **AudioContext** column
+shows that bus0 (VolumeGroup 5) carries more than MEDIA/GAME/UNKNOWN — it also carries EMERGENCY,
+SAFETY, VEHICLE_STATUS and ANNOUNCEMENT (migrated from automotive_audio.md):
+
+| Bus | Android VolumeGroup | AudioContext(s) | Gain range (mdB) | Default | At-capture |
+|-----|---------------------|-----------------|------------------|---------|-----------|
+| bus0_media_out        | 5 | MUSIC, EMERGENCY, SAFETY, VEHICLE_STATUS, ANNOUNCEMENT | 0–6300 | 1200 | 1200 |
+| bus1_navigation_out   | 1 | NAVIGATION                | 0–6300 | 1300 | 3100 |
+| bus2_voice_command_out| 2 | VOICE_COMMAND             | 0–6300 | 1300 | 3500 |
+| bus3_call_ring_out    | 3 | CALL_RING                 | 0–6300 | 3500 | 3500 |
+| bus4_call_out         | 4 | CALL (+ VOICE_COMMUNICATION_SIGNALLING) | 0–6300 | 900 | 2600 |
+| bus5_alarm_out        | 0 | ALARM                     | 0–6300 | 1600 | 1600 |
+| bus6_notification_out | 0 | NOTIFICATION (5 variants) | 0–6300 | 1600 | 1600 |
+| bus7_system_sound_out | 0 | SYSTEM_SOUND              | 0–6300 | 1600 | 1600 |
+
+All buses: 48000 Hz PCM_16_BIT stereo; 100 mdB step. VolumeGroups 0–5 here are the **Android
+CarAudio VolumeGroup IDs** (`CarAudioManager.getVolumeGroupCount()` = 6) — NOT the Harman VAC
+hardware vgroup numbers (CALL=1, RING=2, MUSIC=3, VOICE_COMMAND=4, PROMPT=5, SYSTEM=6, which map to
+CSM amplifier channels). OEM audio_policy_volumes curve points (from automotive_audio.md):
+`oem_traffic_anouncement` -42/-28/-14/0 dB; `oem_adas_3` -24/-16/-8/0 dB.
+
+**Low-latency caveat (from platform_faq §5):** although the HAL exposes a FastMixer and "low-latency"
+192-frame buses, `AUDIO_OUTPUT_FLAG_FAST` is DENIED by AudioFlinger for third-party apps, so
+`PERFORMANCE_MODE_LOW_LATENCY` is unusable — GM AAOS uses `PERFORMANCE_MODE_NONE`. Mix period 8 ms;
+output latency ~24 ms. **ECNR HAL absent:** `vendor.gm.audio@1.0::IECNRControl` is genuinely missing
+from the image (fails repeatedly at boot, expected — does not affect audio output).
 
 ### Harman SSE Configuration
 

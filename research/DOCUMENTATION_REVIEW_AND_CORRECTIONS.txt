@@ -6,6 +6,27 @@ Created: December 28, 2025
 Purpose: Identify errors, missing information, and improvements in project docs
 ================================================================================
 
+--------------------------------------------------------------------------------
+SUPERSEDED / ARCHIVAL (Dec 28 2025) -- retained as history; body UNCHANGED. This was an
+errata pass against GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt; its corrections have since
+been ABSORBED into the live docs. Its unique content was verified preserved before
+archiving:
+  - Full 11-bus i2c DAC permission table -> migrated to DPS_AND_MODIFICATION_LANDSCAPE.txt
+    section 3.1.1 (with the live device-binding map).
+  - Exact GSI blocker rule (vendor_sepolicy.cil:2672 dontaudit gm_update_engine
+    gsi_metadata_file_32_0) -> in AOSP_REPLACEMENT_RESEARCH.txt + security/GM_AAOS_Y181_
+    SECURITY_ANALYSIS.txt.
+  - GHS CONFIG_GHS_* kernel flags -> in UPDATE_PROCESS_ANALYSIS.txt / BOOT_CHAIN_ANALYSIS.txt
+    / AOSP_REPLACEMENT_RESEARCH.txt. Internal ports 9002-9018 -> in GM_AAOS_Y181_SECURITY_
+    ANALYSIS.txt. Multi-user config (number_pre_created_users / systemuser.headless /
+    user_hal_enabled) -> in enumeration/Y181/raw/all_properties.txt.
+  - The VIP_BOOT/frame-byte/ports errata are reflected across MASTER_REFERENCE.md/QUICK_
+    REFERENCE.txt.
+DO NOT trust this file's stale "Y177 downgrade / AVB rollback status unknown" (around
+L361-365): Y181->Y177 is BLOCKED by the GHS rollback counter (misc/vda9). Canonical meta
+set: MASTER_REFERENCE.md + INVENTORY.md + README.md + QUICK_REFERENCE.txt.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. CRITICAL ERRORS FOUND

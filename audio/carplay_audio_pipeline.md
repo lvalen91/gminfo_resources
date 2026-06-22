@@ -116,6 +116,10 @@ GM AAOS implements CarPlay audio through a multi-layer architecture:
                     └─────────────────┘
 ```
 
+> Note: "CSM = Cabin Sound Manager" (above) is an UNCONFIRMED expansion. CSM is used unexpanded
+> elsewhere in the corpus; the external DSP/amplifier is the NXP TDF8532 / Dirana3 reached over
+> Ethernet AVB. Treat the "Cabin Sound Manager" gloss as tentative.
+
 ---
 
 ## Audio Format Support
@@ -134,6 +138,11 @@ GM AAOS implements CarPlay audio through a multi-layer architecture:
 | AAC-ELD/44100/2 | 44.1 kHz | Stereo | FaceTime audio |
 | AAC-ELD/48000/1 | 48 kHz | Mono | High-quality voice |
 | AAC-ELD/48000/2 | 48 kHz | Stereo | FaceTime audio |
+
+> Stream identifiers observed during third-party CarPlay-adapter streaming: media =
+> AAC-LC 48 kHz stereo reported as `type 102` / `audioFormat 8388608`; Siri = AAC-ELD
+> (`aot=39`) 16 kHz mono, 480 frames/packet (no adapter mic — uplink uses the IHU mic via
+> Harman AEC/NS/AGC).
 
 #### Opus Formats (Voice Assistant)
 

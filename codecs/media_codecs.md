@@ -6,6 +6,23 @@
 
 ---
 
+> **SUPERSEDED / ARCHIVAL** — consolidated into [`video/video_codecs.md`](../video/video_codecs.md)
+> (the canonical codec registry). Body retained UNCHANGED as history. Its unique items were
+> migrated first (verified): the **HW-encoder fps benchmarks** (`OMX.Intel.hw_ve.h264`/`.h265`),
+> the **OMX.google mpeg4/h263 SW encoders**, the **vendor "ProfileBaseline:Level51" copy-paste-error
+> note**, the G.711/AV1 notes, and the codec source-file provenance are now in `video_codecs.md`.
+> The Codec2 **HEVC SW-decode fps** table and the `max-video-encoder-input-buffers=9` Setting are
+> preserved in [`video/software_rendering.md`](../video/software_rendering.md) (not video_codecs.md).
+> Its **audio** codec tables (this file's lines ~86–109) live in [`audio/audio_codecs.md`](../audio/audio_codecs.md)
+> — never video-codec content; treat audio_codecs.md as canonical for audio. NOTE: a few audio-ENCODER
+> values here disagree with audio_codecs.md (this file: AAC enc 8–960 Kbps, Opus enc 0.5–512 Kbps
+> complexity 0–10; audio_codecs.md: AAC 8–512, Opus 6–510) — those audio_codecs.md figures are the
+> canonical ones; this file's are retained below as the original capture. Live ground truth (Jun-2026):
+> both OMX.Intel HW video decoders AND the c2.android SW video decoders are present; the HW video
+> decoder set is `OMX.Intel.hw_vd.{h264,h265,vp8,vp9}` (+`.secure`).
+
+---
+
 ## Overview
 
 This document details the media rendering capabilities of the GM infotainment unit. The device features Intel hardware-accelerated video codecs with full 4K60 support, complemented by Google software codecs for broader format compatibility.

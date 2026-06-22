@@ -52,7 +52,9 @@ Frame Types:
 Y177: SELinux PERMISSIVE, Patch Feb 2025
 Y181: SELinux ENFORCING,  Patch Jun 2025
 
-OTA Version Check: DISABLED (downgrade possible)
+OTA Version Check: part-number check disabled in manifest -- but DOWNGRADE IS BLOCKED.
+  (CORRECTION: Y181->Y177 is blocked at boot by the GHS hypervisor rollback counter in
+  misc/vda9; tested FAILED. The disabled check only affects the inactive-slot write phase.)
 
 === KEY CALIBRATIONS ===
 
@@ -265,7 +267,7 @@ Best Attack Path: VIP_BOOT modification to bypass EEPROM checks
 2. [CRITICAL] Reverse engineer Harman checksum algorithm
 3. [HIGH] Analyze VIP_BOOT signed header validation
 4. [HIGH] Map RH850 binary structure (EEPROM reading code)
-5. [MEDIUM] Y177 downgrade test (SELinux permissive + I2C access)
+5. [DONE/DEAD] Y177 downgrade test -- BLOCKED by GHS rollback counter (misc/vda9); not viable
 6. [LOW] EEPROM 0x0B40 flag testing (CRC not enforced - safe to test)
 7. [LOW] SOC_ABL Intel CSE research (likely dead end)
 

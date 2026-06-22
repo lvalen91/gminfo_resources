@@ -34,6 +34,23 @@ This EEPROM dump is from a **GM Infotainment 3 with Google Built-In** (RPO Code:
 - **OS:** Android Automotive 10-12
 - **Display:** 13.4" HD Touchscreen
 
+> CORRECTION (added during review; original values above left for archival fidelity): the
+> Dec-2025 spec block is stale. Ground truth — GPU = Intel **HD 505** (not 500); RAM = **8 GB
+> LPDDR4** physical, ~6 GB to the Android guest (not 6 GB); OS = **Android Automotive 12
+> (API 32)** (not "10-12"); Storage = 64 GB **Samsung KLMCG4JEUD** eMMC; Display = 2400×960
+> **Chimei Innolux DD134IA-01B**. See `hardware/teardown.md` and `VERIFICATION.md`.
+>
+> EEPROM doc set (all retained, complementary): this report = full 8 KB map + calibration/UI
+> tables; `eeprom/README.md` = the hands-on flip procedure (minipro/XGecu); `eeprom/EEPROM_
+> UNDOCUMENTED_FLAGS_ANALYSIS.md` = undocumented-flag RE + CalGroup marker rotation + 0xb67d0;
+> `hardware/teardown.md` §EEPROM = consolidated headlines + extra structured-region readings.
+> Unresolved interpretation conflicts with teardown.md (same bytes, different meaning, not
+> settleable from bytes alone): **0x1A80** (here "config CRC" vs teardown "MEC NVM value"),
+> **0x1B60** (here "block CRC" vs teardown "reflash/programming counters" — the latter aligns
+> with the UNDOCUMENTED_FLAGS §13.7 CRC-version-counter finding), **0x05A0** (here "Serial
+> Number" vs teardown "Calibration file ID"; the bytes are the `7310500000000X` CVPPS value).
+> These remain UNVERIFIED — do not treat either reading as confirmed.
+
 ---
 
 ## Memory Map Overview

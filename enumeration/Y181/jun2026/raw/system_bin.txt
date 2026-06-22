@@ -1,0 +1,100 @@
+total 12448
+drwxr-x--x  4 root shell    8192 2008-12-31 15:00 .
+drwxr-xr-x 15 root root     4096 2008-12-31 15:00 ..
+-?????????  ? ?    ?           ?                ? RDMS
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 [ -> toybox
+-rwxr-xr-x  1 root shell  117920 2008-12-31 15:00 abb
+-rwxr-xr-x  1 root shell     128 2008-12-31 15:00 abx
+-rwxr-xr-x  1 root shell     128 2008-12-31 15:00 abx2xml
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 acpi -> toybox
+-rwxr-xr-x  1 root shell     207 2008-12-31 15:00 am
+-?????????  ? ?    ?           ?                ? android.frameworks.automotive.display@1.0-service
+-?????????  ? ?    ?           ?                ? android.frameworks.automotive.mediaPlayer@1.0-service
+-?????????  ? ?    ?           ?                ? animengine
+-?????????  ? ?    ?           ?                ? apexd
+lrwxr-xr-x  1 root shell      13 2008-12-31 15:00 app_process -> app_process64
+-rwxr-xr-x  1 root shell   11876 2008-12-31 15:00 app_process32
+-rwxr-xr-x  1 root shell   14352 2008-12-31 15:00 app_process64
+-rwxr-xr-x  1 root shell      33 2008-12-31 15:00 appops
+-rwxr-xr-x  1 root shell     141 2008-12-31 15:00 appwidget
+-rwxr-xr-x  1 root shell   66896 2008-12-31 15:00 atrace
+-?????????  ? ?    ?           ?                ? audioserver
+-?????????  ? ?    ?           ?                ? auditctl
+-rwxr-xr-x  1 root shell  173256 2008-12-31 15:00 avbctl
+-rwxr-xr-x  1 root shell   37040 2008-12-31 15:00 aw690_mlanevent
+-rwxr-xr-x  1 root shell  313424 2008-12-31 15:00 aw690_mlanutl
+-rwxr-xr-x  1 root shell  258368 2008-12-31 15:00 aw690_uaputl
+-rwxr-xr-x  1 root shell  140608 2008-12-31 15:00 awk
+-rwxr-xr-x  1 root shell   24384 2008-12-31 15:00 badblocks
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 base64 -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 basename -> toybox
+-rwxr-xr-x  1 root shell   87088 2008-12-31 15:00 bc
+-rwxr-xr-x  1 root shell   41944 2008-12-31 15:00 bcc
+-?????????  ? ?    ?           ?                ? blank_screen
+-?????????  ? ?    ?           ?                ? blkid
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 blockdev -> toybox
+-rwxr-xr-x  1 root shell     126 2008-12-31 15:00 bmgr
+-?????????  ? ?    ?           ?                ? bootanimation
+-?????????  ? ?    ?           ?                ? bootstat
+drwxr-x--x  2 root shell    4096 2008-12-31 15:00 bootstrap
+-?????????  ? ?    ?           ?                ? boringssl_self_test32
+-?????????  ? ?    ?           ?                ? boringssl_self_test64
+-?????????  ? ?    ?           ?                ? bpfloader
+-rwxr-xr-x  1 root shell     173 2008-12-31 15:00 bu
+-rwxr-xr-x  1 root shell    4520 2008-12-31 15:00 bugreport
+-rwxr-xr-x  1 root shell    8128 2008-12-31 15:00 bugreportz
+lrwxr-xr-x  1 root shell       5 2008-12-31 15:00 bunzip2 -> bzip2
+lrwxr-xr-x  1 root shell       5 2008-12-31 15:00 bzcat -> bzip2
+-rwxr-xr-x  1 root shell   98048 2008-12-31 15:00 bzip2
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cal -> toybox
+-?????????  ? ?    ?           ?                ? carbugreportd
+-?????????  ? ?    ?           ?                ? carplay.sh
+-?????????  ? ?    ?           ?                ? carpowerpolicyd
+-?????????  ? ?    ?           ?                ? carwatchdogd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cat -> toybox
+-?????????  ? ?    ?           ?                ? charger
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chattr -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chcon -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chgrp -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chmod -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chown -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chroot -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 chrt -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cksum -> toybox
+-?????????  ? ?    ?           ?                ? clatd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 clear -> toybox
+-rwxr-xr-x  1 root shell   45672 2008-12-31 15:00 cmd
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cmp -> toybox
+-?????????  ? ?    ?           ?                ? com.android.car.procfsinspector
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 comm -> toybox
+-rwxr-xr-x  1 root shell     135 2008-12-31 15:00 content
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cp -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cpio -> toybox
+-?????????  ? ?    ?           ?                ? credstore
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 cut -> toybox
+lrwxr-xr-x  1 root shell      34 2008-12-31 15:00 dalvikvm -> /apex/com.android.art/bin/dalvikvm
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 date -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dd -> toybox
+-rwxr-xr-x  1 root shell   10272 2008-12-31 15:00 debuggerd
+lrwxr-xr-x  1 root shell       9 2008-12-31 15:00 defrag.f2fs -> fsck.f2fs
+-rwxr-xr-x  1 root shell      40 2008-12-31 15:00 device_config
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 devmem -> toybox
+lrwxr-xr-x  1 root shell      35 2008-12-31 15:00 dex2oat -> /apex/com.android.art/bin/dex2oat64
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 df -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 diff -> toybox
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dirname -> toybox
+lrwxr-xr-x  1 root shell      16 2008-12-31 15:00 disable-verity -> set-verity-state
+-rwxr-xr-x  1 root shell   61168 2008-12-31 15:00 dmabuf_dump
+-rwxr-xr-x  1 root shell   93976 2008-12-31 15:00 dmctl
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dmesg -> toybox
+-?????????  ? ?    ?           ?                ? dnsmasq
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 dos2unix -> toybox
+-rwxr-xr-x  1 root shell      81 2008-12-31 15:00 dpm
+-?????????  ? ?    ?           ?                ? drmserver
+lrwxr-xr-x  1 root shell       6 2008-12-31 15:00 du -> toybox
+lrwxr-xr-x  1 root shell       9 2008-12-31 15:00 dump.f2fs -> fsck.f2fs
+-?????????  ? ?    ?           ?                ? dump_frozen.sh
+-?????????  ? ?    ?           ?                ? dumpstate
+-rwxr-xr-x  1 root shell   39528 2008-12-31 15:00 dumpsys
+-rwxr-xr-x  1 root shell   10664 2008-12-31 15:00 e2freefrag
+-?????????  ? ?    ?           ?                ? e2fsck

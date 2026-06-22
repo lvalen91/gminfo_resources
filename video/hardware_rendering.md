@@ -37,7 +37,7 @@
 | Platform Codename | Apollo Lake (Broxton) |
 | Driver | Mesa Intel 21.1.5 |
 | OpenGL ES Version | 3.2 (196610 = 0x30002) |
-| Vulkan Version | 1.0.64 (4198400 = 0x400040) |
+| Vulkan Version | 1.1.0 (4198400 = 0x401000 = VK_MAKE_VERSION(1,1,0); live Jun-2026 `vkjson`) |
 | Vulkan Compute | Supported (Level 1) |
 
 ---
@@ -124,7 +124,7 @@ ro.board.platform=broxton
 
 | Property | Value |
 |----------|-------|
-| Vulkan API Version | 1.0.64 |
+| Vulkan API Version | 1.1.0 (raw 4198400; live Jun-2026) |
 | Feature Level | android.hardware.vulkan.level=1 |
 | Compute Support | android.hardware.vulkan.compute |
 | DEQP Level | 132383489 |

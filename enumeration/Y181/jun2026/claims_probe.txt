@@ -1,0 +1,129 @@
+############ CLAIM-REINFORCEMENT PROBE  Sun Jun 21 07:13:51 AKDT 2026 ############
+===[HW] CPU model / cores (claim: Goldmont 4-core) ===
+model name	: IoT CPU 1.0
+4
+===[HW] ABI (claim: x86_64) ===
+x86_64
+x86_64
+===[HW] RAM total (claim: 8GB phys / ~6GB guest / 5.66GB kernel-visible) ===
+MemTotal:        5663432 kB
+===[HW] GLES version prop (claim: 196610 = 3.2) ===
+196610
+===[HW] eMMC model (claim: KLMCG4JEUD 64GB) ===
+-- sda(ufs?)--
+===[DISPLAY] panel name/res/density (claim: DD134IA-01B 2400x960@60 d200, maker CMN/Chimei Innolux) ===
+  mViewports=[DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='local:4615537251352926243', physicalPort=35, orientation=0, logicalFrame=Rect(0, 0 - 2400, 960), physicalFrame=Rect(0, 0 - 2400, 960), deviceWidth=2400, deviceHeight=960}]
+  mStableDisplaySize=Point(2400, 960)
+  DisplayDeviceInfo{"Built-in Screen": uniqueId="local:4615537251352926243", 2400 x 960, modeId 1, defaultModeId 1, supportedModes [{id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}], colorMode 0, supportedColorModes [0], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[], mMaxLuminance=500.0, mMaxAverageLuminance=500.0, mMinLuminance=0.0}, allmSupported false, gameContentTypeSupported false, density 200, 192.911 x 193.523 dpi, appVsyncOff 2500000, presDeadline 14666268, touch INTERNAL, rotation 0, type INTERNAL, address {port=35, model=0x400daead0a7958}, deviceProductInfo DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}, state ON, frameRateOverride , brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.39763778, FLAG_DEFAULT_DISPLAY, FLAG_ROTATES_WITH_CONTENT, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS}
+    mCurrentLayerStackRect=Rect(0, 0 - 2400, 960)
+    mCurrentDisplayRect=Rect(0, 0 - 2400, 960)
+    mDisplayModeSpecs={baseModeId=1 allowGroupSwitching=false primaryRefreshRateRange=[0 60] appRequestRefreshRateRange=[0 Infinity]}
+    mStaticDisplayInfo=StaticDisplayInfo{isInternal=true, density=1.25, secure=true, deviceProductInfo=DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}}
+      DisplayMode{id=0, width=2400, height=960, xDpi=192.911, yDpi=193.523, refreshRate=60.001434, appVsyncOffsetNanos=2500000, presentationDeadlineNanos=14666268, group=-1}
+    mActiveSfDisplayMode=DisplayMode{id=0, width=2400, height=960, xDpi=192.911, yDpi=193.523, refreshRate=60.001434, appVsyncOffsetNanos=2500000, presentationDeadlineNanos=14666268, group=-1}
+      DisplayModeRecord{mMode={id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}}
+    mDisplayDeviceConfig=DisplayDeviceConfig{mLoadedFrom=<config.xml>, mBacklight=null, mNits=null, mRawBacklight=null, mRawNits=null, mBrightness=null, mBrightnessToBacklightSpline=MonotoneCubicSpline{[(0.0, 0.0: 1.0), (1.0, 1.0: 1.0)]}, mBacklightToBrightnessSpline=MonotoneCubicSpline{[(0.0, 0.0: 1.0), (1.0, 1.0: 1.0)]}, mBacklightMinimum=0.035433073, mBacklightMaximum=1.0, mBrightnessDefault=0.39763778, mQuirks=null, isHbmEnabled=false, mHbmData=null, mBrightnessRampFastDecrease=0.70472443, mBrightnessRampFastIncrease=0.70472443, mBrightnessRampSlowDecrease=0.23228346, mBrightnessRampSlowIncrease=0.23228346, mScreenDarkeningMinThreshold=0.0, mScreenBrighteningMinThreshold=0.0, mAmbientLuxDarkeningMinThreshold=0.0, mAmbientLuxBrighteningMinThreshold=0.0, mAmbientLightSensor=Sensor{type: , name: , refreshRateRange: [0.0, Infinity]} , mProximitySensor=Sensor{type: , name: , refreshRateRange: [0.0, Infinity]} , mRefreshRateLimitations= []}
+    mDesiredDisplayModeSpecs={baseModeId=1 allowGroupSwitching=false primaryRefreshRateRange=[0 60] appRequestRefreshRateRange=[0 Infinity]}
+    mBaseDisplayInfo=DisplayInfo{"Built-in Screen", displayId 0", displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_TRUSTED, real 2400 x 960, largest app 2400 x 960, smallest app 2400 x 960, appVsyncOff 2500000, presDeadline 14666268, mode 1, defaultMode 1, modes [{id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[], mMaxLuminance=500.0, mMaxAverageLuminance=500.0, mMinLuminance=0.0}, userDisabledHdrTypes [], minimalPostProcessingSupported false, rotation 0, state ON, type INTERNAL, uniqueId "local:4615537251352926243", app 2400 x 960, density 200 (192.911 x 193.523) dpi, layerStack 0, colorMode 0, supportedColorModes [0], address {port=35, model=0x400daead0a7958}, deviceProductInfo DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}, removeMode 0, refreshRateOverride 0.0, brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.39763778}
+    mOverrideDisplayInfo=DisplayInfo{"Built-in Screen", displayId 0", displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_TRUSTED, real 2400 x 960, largest app 1416 x 2116, smallest app 960 x 865, appVsyncOff 2500000, presDeadline 14666268, mode 1, defaultMode 1, modes [{id=1, width=2400, height=960, fps=60.001434, alternativeRefreshRates=[]}], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[], mMaxLuminance=500.0, mMaxAverageLuminance=500.0, mMinLuminance=0.0}, userDisabledHdrTypes [], minimalPostProcessingSupported false, rotation 0, state ON, type INTERNAL, uniqueId "local:4615537251352926243", app 1416 x 960, density 200 (192.911 x 193.523) dpi, layerStack 0, colorMode 0, supportedColorModes [0], address {port=35, model=0x400daead0a7958}, deviceProductInfo DeviceProductInfo{name=DD134IA-01B, manufacturerPnpId=CMN, productId=41268, modelYear=null, manufactureDate=ManufactureDate{week=36, year=2020}, connectionToSinkType=0}, removeMode 0, refreshRateOverride 0.0, brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.39763778}
+    mFrameRateOverrides=[]
+    mPendingFrameRateOverrideUids={}
+  mSpline=MonotoneCubicSpline{[(0.0, 0.23228346: 0.0031496063), (50.0, 0.38976377: 0.0018022079), (300.0, 0.5472441: 5.6855363E-4), (720.0, 0.78346455: 3.5810954E-4), (2000.0, 0.98031497: 1.5378938E-4)]}
+  width*height=2400*960
+  mFrameRate=0.0
+      StableDisplayWidth=2400
+===[AUDIO] CarAudioService bus count (claim: 8 buses bus0-bus7, 6 VolumeGroups) ===
+bus0_
+bus1_
+bus2_
+bus3_
+bus4_
+bus5_
+bus6_
+bus7_
+6
+        sample rate / encoding format / channel count: 48000 2 2
+        sample rate / encoding format / channel count: 48000 2 2
+        sample rate / encoding format / channel count: 48000 2 2
+        sample rate / encoding format / channel count: 48000 2 2
+        sample rate / encoding format / channel count: 48000 2 2
+===[VIDEO] codecs (claim: OMX.Intel.hw_vd.h264 present; c2.android.* SW video ABSENT) ===
+  Decoder "OMX.Intel.hw_vd.h264" supports
+  Decoder "OMX.Intel.hw_vd.h264.secure" supports
+  Decoder "c2.android.avc.decoder" supports
+  Decoder "OMX.Intel.hw_vd.h265" supports
+  Decoder "OMX.Intel.hw_vd.h265.secure" supports
+  Decoder "c2.android.hevc.decoder" supports
+  Decoder "OMX.Intel.hw_vd.vp8" supports
+  Decoder "c2.android.vp8.decoder" supports
+  Decoder "OMX.Intel.hw_vd.vp9" supports
+  Decoder "c2.android.vp9.decoder" supports
+--- list_codecs ---
+/vendor/etc/media_codecs.xml
+/vendor/etc/media_codecs_google_audio.xml
+/vendor/etc/media_codecs_google_video.xml
+/vendor/etc/media_codecs_performance.xml
+===[VHAL] property counts (claim: 535 total = 49 SYSTEM + 486 VENDOR) ===
+0
+===[CLUSTER] VMS plugin (claim: com.gm.vmsplugin/.VMSClusterService, channels 10002/10003, mIsCoreSupported:false) ===
+display id 0: TaskInfoContainer [topActivity=ComponentInfo{zeno.carlink/com.carlink.MainActivity}, taskId=1000349, stackId=1000349, userId=10, displayId=0, position=2
+mRenderingServiceConfig:com.gm.vmsplugin/.VMSClusterService
+mAvailableLayers: VmsAvailableLayers { sequenceNumber = 1, associatedLayers = [VmsAssociatedLayer { vmsLayer = VmsLayer { type = 2005, channel = 10003, version = 1 }, providerIds = [1] }, VmsAssociatedLayer { vmsLayer = VmsLayer { type = 2005, channel = 10002, version = 1 }, providerIds = [1] }] }
+mSubscriptionState: VmsSubscriptionState { sequenceNumber = 16, layers = {VmsLayer { type = 1, channel = 1, version = 1 }, VmsLayer { type = 2, channel = 1, version = 1 }, VmsLayer { type = 2, channel = 2, version = 1 }, VmsLayer { type = 3, channel = 1, version = 1 }, VmsLayer { type = 4, channel = 1, version = 1 }, VmsLayer { type = 4, channel = 2, version = 1 }, VmsLayer { type = 5, channel = 1, version = 1 }, VmsLayer { type = 6, channel = 1, version = 1 }, VmsLayer { type = 7, channel = 1, version = 1 }, VmsLayer { type = 7, channel = 2, version = 1 }, VmsLayer { type = 10, channel = 1, version = 1 }, VmsLayer { type = 10, channel = 2, version = 1 }, VmsLayer { type = 13, channel = 1, version = 1 }, VmsLayer { type = 14, channel = 2, version = 1 }, VmsLayer { type = 1, channel = 10002, version = 1 }, VmsLayer { type = 1, channel = 10003, version = 1 }}, associatedLayers = {} }
+      VmsLayer { type = 1, channel = 10002, version = 1 }
+      VmsLayer { type = 1, channel = 10003, version = 1 }
+        VmsLayer { type = 2005, channel = 10002, version = 1 }
+        VmsLayer { type = 2005, channel = 10003, version = 1 }
+mIsCoreSupported:false
+===[SEC] verified boot (claim: green/locked/sha256, oem_unlock=0) ===
+green
+1
+sha256
+locked
+0
+
+===[NET] listening ports (claim: 6363/49156/9002/9016) + gateway 192.168.1.1 / DNS .102 ===
+LISTEN      0      0      0.0.0.0:49156              0.0.0.0:*                  
+LISTEN      0      0      127.0.0.1:53                 0.0.0.0:*                  
+LISTEN      0      0      192.168.5.1:53                 0.0.0.0:*                  
+LISTEN      0      0      0.0.0.0:7000               0.0.0.0:*                  
+LISTEN      0      0      0.0.0.0:6363               0.0.0.0:*                  
+LISTEN      0      0       [::ffff:192.168.1.100]:9002                     *:*                  
+LISTEN      0      0       [::ffff:192.168.1.100]:9010                     *:*                  
+LISTEN      0      0        [::1]:53                       *:*                  
+LISTEN      0      0      [fe80::f86d:ccff:fe1c:32d4]:53                       *:*                  
+LISTEN      0      0            *:7000                     *:*                  
+LISTEN      0      0       [::ffff:192.168.1.100]:9016                     *:*                  
+    inet 127.0.0.1/8 scope host lo
+    link/ether c2:7b:06:3e:bb:8c brd ff:ff:ff:ff:ff:ff
+7: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 02:04:00:00:01:00 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.100/24 brd 192.168.1.255 scope global eth0
+8: vlan5@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 02:04:00:00:01:00 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.100/24 brd 255.255.255.255 scope global vlan5
+9: vlan4@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 02:04:00:00:01:00 brd ff:ff:ff:ff:ff:ff
+    inet 172.16.4.100/24 brd 255.255.255.255 scope global vlan4
+    link/ether fa:6d:cc:1c:32:d4 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.5.1/24 brd 192.168.5.255 scope global br0
+15: wlan0: <NO-CARRIER,BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state DORMANT group default qlen 1000
+    link/ether f8:6d:cc:dc:32:d4 brd ff:ff:ff:ff:ff:ff
+16: wlan1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master br0 state UP group default qlen 1000
+    link/ether fa:6d:cc:1c:32:d4 brd ff:ff:ff:ff:ff:ff
+17: wlan2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master br0 state UP group default qlen 1000
+    link/ether fa:6d:cc:7c:32:d4 brd ff:ff:ff:ff:ff:ff
+-- dns --
+[init.svc.mdnsd]: [running]
+===[USB] role-switch nodes (claim: vendor.sys.usb.role, dabridge, intel_xhci role) ===
+[sys.dabridge.dev.portnum]: [1-6.3]
+[sys.dabridge.host.portnum]: [1-6.0]
+dabr_udc.0
+dwc3.0.auto
+===[KERNEL] version (claim: 4.19.305 / 4.19.283) ===
+4.19.305-240125T145315Z-gf1edde901aa7
+#1 SMP PREEMPT Tue Jul 22 07:52:16 EDT 2025
+===[GHS/VIP] presence (claim: GHS INTEGRITY guest, VIP V850) ===
+[init.svc.ghs_cal]: [running]
+[ro.boot.trustyimpl]: [-ghs]
+############ END ############

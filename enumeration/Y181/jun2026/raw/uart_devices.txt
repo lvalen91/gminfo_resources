@@ -1,0 +1,5 @@
+crw-rw-rw- 1 root      root      166,   1 2011-11-11 02:11 /dev/ttyACM1
+crw-rw---- 1 bluetooth bluetooth   4,  64 2026-06-21 07:06 /dev/ttyS0
+crw------- 1 root      root        4,  65 2011-11-11 02:11 /dev/ttyS1
+crw------- 1 root      root        4,  66 2011-11-11 02:11 /dev/ttyS2
+crw------- 1 root      root        4,  67 2011-11-11 02:11 /dev/ttyS3

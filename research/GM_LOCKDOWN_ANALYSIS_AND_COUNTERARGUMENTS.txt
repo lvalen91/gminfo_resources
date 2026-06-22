@@ -6,6 +6,12 @@
 DOCUMENT PURPOSE: Analysis of GM's device lockdown practices, privacy concerns,
 and anticipated manufacturer counter-arguments with rebuttals.
 
+RELATED (rights/remote/AOSP trio -- kept separate, complementary): this is the
+rights/legal pillar. For the TECHNICAL substantiation of the remote-access/telematics
+claims used here (independent OnStar remote start, the security-event telemetry endpoint),
+see GM_REMOTE_ACCESS_ANALYSIS.txt; for the lockdown MECHANISMS cited in section 3
+(AVB/dm-verity/locked bootloader/GHS), see AOSP_REPLACEMENT_RESEARCH.txt section 4.
+
 ================================================================================
                     SECTION 1: THE CORE ISSUE
 ================================================================================

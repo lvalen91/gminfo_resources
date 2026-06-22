@@ -6,6 +6,19 @@ Purpose: Evaluate DPS capabilities for security feature manipulation
 Target:  GM Infotainment 3 (gminfo3.7/3.8) CSM Module
 ================================================================================
 
+--------------------------------------------------------------------------------
+SUPERSEDED -- consolidated into DPS_AND_MODIFICATION_LANDSCAPE.txt (which now spans
+DPS + memory + I2C + modification landscape + the DPS security forensics from this
+file). This document's unique content -- the 32-byte seed / ECUID
+$004B41DC0000160006104145610114AC, the all-FF bypassed seed, MEC 0/244, PROTOKEY
+bench values (checksum 524289), SBI $4444/$0080 + the SBAT ticket workflow, the DID
+list ($90/$98/$99/$B4/$F0), the .mnf/.smd + gmext.* detail, the security CalDef
+defaults, the downgrade blockers + 86331663.mnf source, SPAT-archive creation, the
+52/24 unsigned-module rows, and the ports 7000/6363 -- was migrated verbatim into
+that file's Section 7, and verified present. Retained unmodified below as archival
+history; do not edit. Use DPS_AND_MODIFICATION_LANDSCAPE.txt as the live source.
+--------------------------------------------------------------------------------
+
 EXECUTIVE SUMMARY
 -----------------
 DPS is designed for authorized ECU programming within GM's security framework.

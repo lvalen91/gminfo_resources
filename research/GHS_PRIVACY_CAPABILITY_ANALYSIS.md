@@ -1,5 +1,12 @@
 # GHS INTEGRITY Hypervisor Privacy Capability Analysis
 
+> **SUPERSEDED — consolidated into `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` § 15
+> "Privacy Capability Assessment".** This document's full content (evidence strings, the
+> cross-boundary data-flow diagram, the privacy-risk severity table, and the "Important
+> Caveats" — incl. *"Technical capability ≠ Active surveillance"* and *"No evidence of
+> exfiltration"*) was migrated there verbatim and verified present. Retained unmodified
+> below as archival history; do not edit. Use the COMPREHENSIVE doc as the live source.
+
 **Date:** 2026-01-05
 **Binary Analyzed:** SOC_HOSTOS (85098662)
 **OS Version:** INTEGRITY IoT 2020.18.19

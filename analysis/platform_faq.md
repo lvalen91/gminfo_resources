@@ -108,7 +108,7 @@ Users can change the display mode from the app's settings without reinstalling.
 
 ## 4. Why does video use OMX.Intel.hw_vd.h264 specifically?
 
-**gminfo37 has no software H.264 decoder.** The 12 `c2.android.*` software codecs are absent from this image. Only `OMX.Intel.hw_*` hardware decoders are available (VPU-backed).
+**The app deliberately selects the hardware decoder.** Live Jun-2026 capture confirms `c2.android.{avc,hevc,vp8,vp9}.decoder` software decoders *are* registered (`/vendor/etc/media_codecs_google_video.xml` present) alongside `OMX.Intel.hw_vd.*` — so the earlier "no SW H.264 decoder / 12 c2.android absent" statement is **incorrect** and withdrawn. The reason video lands on `OMX.Intel.hw_vd.h264` is the discovery logic below: it queries `REGULAR_CODECS` and filters on `isHardwareAccelerated`, which excludes the c2.android SW decoders by design (VPU-backed HW path preferred for latency/power).
 
 `PlatformDetector` discovers the decoder at runtime (`PlatformDetector.detectHardwareH264Decoder()`, lines 282–300):
 ```kotlin
@@ -415,7 +415,7 @@ Representative meminfo (20260505_222110, active streaming session — verified v
 | Y177 → Y181 audio behavior change | Audio/codec config is identical between Y177 and Y181. Only SELinux enforcement differs. |
 | `isBroxton` detecting gminfo37 | Always `false`. Use `isGmInfo37()` or `isGmAaos()` instead. |
 | 12 audio buses | **8 buses** confirmed (bus0–bus7 only; no bus8+ in `car_audio_configuration.xml`). VolumeGroup count is 6 (VG0–VG5), not 12. |
-| Vulkan in use | Vulkan 1.0.64 driver exists but zero runtime usage observed. GLES 3.2 only. |
+| Vulkan in use | Vulkan **1.1.0** driver exists (raw 4198400; live Jun-2026 — earlier "1.0.64" was a decode slip) but zero runtime usage observed. GLES 3.2 only. |
 
 ---
 

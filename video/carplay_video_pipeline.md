@@ -10,9 +10,15 @@
 
 ## Executive Summary
 
-GM AAOS implements CarPlay video projection using the **CINEMO** multimedia framework (developed by Harman/Samsung). The video pipeline receives H.264 streams via AirPlay protocol, processes NAL units through a software-based **NVIDIA NVDEC** decoder, and renders to Android native windows via EGL surfaces.
+GM AAOS implements CarPlay video projection using the **CINEMO** multimedia framework (developed by Harman/Samsung). The video pipeline receives H.264 streams via AirPlay protocol, processes NAL units through Cinemo's **software** H.264 decoder module (named `NvdecSW`), and renders to Android native windows via EGL surfaces.
 
-**Key Finding:** Despite having Intel hardware H.264 decoder (`OMX.Intel.hw_vd.h264`), CarPlay video uses a **software decoder** path through CINEMO's NVDEC libraries for AirPlay-specific NAL unit handling and timing synchronization.
+**Key Finding:** Despite having an Intel hardware H.264 decoder (`OMX.Intel.hw_vd.h264`), CarPlay video uses a **software decoder** path through CINEMO's `NvdecSW` library for AirPlay-specific NAL unit handling and timing synchronization.
+
+> **Terminology — "NVDEC" in this document:** the names `NvdecSW`, `Cinemo/nvdec/H264DEC`,
+> `NmeCreateCodecNvdecSW()`, and `NvdecError_*` are **Cinemo NME's own internal module/symbol
+> names** for its **software** H.264 decoder. This is **NOT** NVIDIA's hardware NVDEC — gminfo37
+> has an Intel HD Graphics 505 GPU and **no NVIDIA silicon**. Read every "NVDEC" below as
+> "Cinemo's `NvdecSW` software decoder."
 
 ---
 
@@ -69,7 +75,7 @@ GM AAOS implements CarPlay video projection using the **CINEMO** multimedia fram
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                   libNmeVideoSW.so (646 KB)                                  │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  NVIDIA NVDEC Software H.264 Decoder                                │    │
+│  │  Cinemo NvdecSW Software H.264 Decoder (NOT NVIDIA hardware)       │    │
 │  │  Module: Cinemo/nvdec/H264DEC                                       │    │
 │  │  UUID: abce2648-0ba7-11ea-8d71-362b9e155667#F_VIDEO_H264*SW         │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
@@ -122,7 +128,7 @@ GM AAOS implements CarPlay video projection using the **CINEMO** multimedia fram
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    SurfaceFlinger + HWC 2.3                                  │
+│                    SurfaceFlinger + HWC 2.1                                  │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  iahwcomposer (Intel Automotive HWC)                                │    │
 │  │  - DEVICE composition (hardware overlay)                            │    │

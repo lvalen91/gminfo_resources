@@ -44,7 +44,7 @@ gpu:
   max_displays: 3
   interfaces: [DP, eDP, HDMI_1.4]
   opengl_es: 3.2
-  vulkan: 1.1.128
+  vulkan: 1.1.128   # Y177 snapshot value; Y181 live (Jun-2026) reports API version Vulkan 1.1.0 (raw 4198400 = 0x401000). 1.1.128 is likely a driver/conformance build, not the API version. Vulkan unused at runtime (GLES 3.2 backend).
   directx: 12.1
   secure_playback: true
 

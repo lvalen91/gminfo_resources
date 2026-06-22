@@ -4,7 +4,7 @@
 **Platform:** Intel Apollo Lake (Broxton)
 **Android Version:** 12 (API 32)
 **Research Date:** February 2026
-**Evidence:** 241MB logcat (Feb 11-19, 2026), 4.7MB metrics (30 captures), 45MB CPC200 logs
+**Evidence:** 3.7GB logcat corpus (Feb 11-19, 2026, ~27-29 files), 4.7MB metrics (30 captures), 45MB CPC200 logs
 
 ---
 
@@ -21,9 +21,9 @@ This directory documents runtime behavior observed from 3.8GB of captured logs c
 
 ## Key Findings
 
-- Zero crashes in 241MB logcat (no ANR, no native crashes, no Java fatal exceptions)
-- 462 SELinux denials (CBC, RVC, SXM — no USB/CarPlay denials)
-- 3350% thrashing ratio during boot, but stable during runtime
+- **Crashes DO occur:** 12 FATAL EXCEPTION events across the 3.7GB corpus (3 distinct bugs — see [memory_pressure.md](memory_pressure.md) / [known_issues.md](known_issues.md)). *(An earlier "zero crashes" claim was scoped to a 241MB subset and is withdrawn.)*
+- **7,811 SELinux denials** total across the 3.7GB corpus, 25 files (CBC, RVC, SXM — no USB/CarPlay denials). *(The earlier "462" was a single-file count.)*
+- 3,700% max thrashing ratio (`com.gm.teenmode`) during boot; stable during runtime — see [memory_pressure.md](memory_pressure.md)
 - CPC200 wireless CarPlay: 94.8% connection success rate (147/155)
 
 ## Contents

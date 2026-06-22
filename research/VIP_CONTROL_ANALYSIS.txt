@@ -8,6 +8,25 @@ Purpose: Comprehensive analysis of VIP control scope, EEPROM modification,
          CRC protection boundaries, and DPS capabilities/limitations
 ================================================================================
 
+--------------------------------------------------------------------------------
+CROSS-REFERENCE & VERIFIED-VALUE NOTES (added during doc review; body below unchanged):
+- The open question in this doc's "VIP FIRMWARE MODIFICATION (RESEARCH NEEDED)" section is
+  ANSWERED in research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md: the VIP_APP security function
+  at 0x000b67d0 is a 4-byte stub in Y177 vs a 906-byte full implementation in Y181 -- that
+  firmware change (not SELinux mode alone) is why the EEPROM bypass works on Y177 but not
+  Y181. See that doc for the binary diff. This doc covers the complementary EEPROM/board/DPS
+  surface.
+- EEPROM values corrected against the shipped bins (eeprom/Y181_stock.bin / Y181_modified.bin):
+    * Debug-mode bypass writes 0x0B41 = 0x01 (verified: Y181_modified.bin 0xB40 = 69 01 69).
+      This doc's "0x0B40 -> 69 FF" entry was SUSPECTED/UNTESTED and is WRONG -- the value
+      byte is 0x01, not 0xFF.
+    * 0x0A80 (backup SBI) stock value is firmware-state-dependent: FF FF FF (uninitialized)
+      in older dumps, but C3 00 C3 (initialized/locked) in the Y181 stock dump -- GM began
+      actively initializing the backup SBI in Y181.
+    * Framing/marker bytes vary by firmware (Y181 stock uses F0 @0x440, C3 @0x0A80). Locate
+      each security byte by OFFSET, not by framing value.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. EXECUTIVE SUMMARY

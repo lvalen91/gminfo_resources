@@ -76,6 +76,18 @@ being relied on or reported.
 path. The FSA-direct route is, per this *unverified* analysis, a dead end for an unprivileged app. No code or
 behavior should change based on this section until it is externally verified.
 
+> **✅ 2026-06-21 PARTIAL LIVE CONFIRMATION (Info 3.7 / Silverado, not CT5/VCU).** A live ADB-shell FSA
+> session on the gminfo37 backbone (192.168.1.0/24) substantiates several of the above hypotheses **on the
+> Info 3.7 platform** (the CT5/VCU `192.168.118.x` topology remains static-only): RemoteModuleHMI is
+> serviceId **1007** with the AAOS guest as the **server** (`192.168.1.100:9002`) and the **IPC as the
+> client** (`192.168.1.106:65343 → :9002`, ESTABLISHED) — matching the "renderer consumes, AAOS authors"
+> shape. The wire layer is **unauthenticated** (20-byte header, magic `0x5AA5`, length only); from an
+> unprivileged shell a fake-IPC session completed `rmIdentification` (fn706), `getServerAppList` (fn705),
+> and `clientFocus` (fn712) successfully. Full wire format, the RemoteModuleHMI function table, and the
+> session transcript are in [`platform/fsa_protocol.md`](../platform/fsa_protocol.md). This confirms
+> *reachability + no-auth* on Info 3.7; it does **not** establish a glyph-injection path (the maneuver
+> layer is enum-typed with no bitmap field, as documented above).
+
 Verified extraction artifacts: `/Users/zeno/Downloads/misc/GM_research/gm_aaos/_cluster_authority_analysis/{ct5_templateshost,ct5_vmsplugin,ct5_openhooks,silverado}/`. The `/tmp/gm_extract/...` paths cited later in this doc are from the original (now-deleted) scratch extraction; the firmware-verified equivalents live under the path above.
 
 ### Both platforms have an ECU-side glyph library
@@ -202,6 +214,8 @@ mempalace cross-references:
 This document describes how navigation turn-by-turn data flows from projection sources (CarPlay, Android Auto) and built-in navigation (Google Maps) to the vehicle instrument cluster display. The cluster shows basic directions including turn arrows, street names, and distance to the next turn.
 
 > **2026-05-03 NOTE on the original Silverado-only architecture below:** The pipeline diagrams and component map below describe Silverado AAOS 12 (Info 3.7) specifically. The VCU/CIP platform on AAOS 14 (CT5 and equivalent EVs/newer ICE vehicles) uses the same upstream (carlink → Templates Host → AAOS framework) but diverges inside `VMSPlugin` (system app) where AAOS 14 added enum forwarding alongside the URI. See addendum above for the corrected understanding. The original Silverado architecture below remains accurate for AAOS 12 / Info 3.7.
+>
+> **Service-name + platform reconciliation (added during doc review):** the live Jun-2026 Y181 (Info 3.7) enumeration shows the cluster nav-forwarding service as `com.gm.vmsplugin/.VMSClusterService` (channels 10002/10003, `mIsCoreSupported:false`). The older body below names a `clusterService [gm.cluster.IClusterHmi]` / `com.gm.cluster` (PID 2094, ClusterService.apk) — this may be a distinct HMI-rendering component or superseded naming; treat `com.gm.vmsplugin/.VMSClusterService` as the current nav-data path. Platform naming: the HIGH/CT5 variant is **VCUNH1 (Qualcomm 8195)** (per `cluster_maneuver_mapping.md` + live); the headline "VCUNM1 (8155)" is the base variant — do not conflate the two.
 
 ---
 

@@ -7,6 +7,19 @@
 
 ---
 
+> **SUPERSEDED / ARCHIVAL** — consolidated into [`audio_subsystem.md`](audio_subsystem.md), the
+> canonical audio doc. Body retained UNCHANGED as history. Its two unique-and-correct items were
+> migrated first (verified): (a) the expanded per-bus Routed Audio Usages — bus0 also carries
+> EMERGENCY / SAFETY / VEHICLE_STATUS / ANNOUNCEMENT, bus4 VOICE_COMMUNICATION_SIGNALLING, bus6 the
+> notification variants — now in `audio_subsystem.md`'s live per-bus gain/VG table; and (b) the OEM
+> volume-group curve points (`oem_traffic_anouncement` -42/-28/-14/0, `oem_adas_3` -24/-16/-8/0).
+> DO NOT trust this file's **11-volume-group** model (there are **6** Android CarAudio VolumeGroups,
+> VG0–VG5) or its listing of bus8/11/12/13 as ordinary output buses (those are Harman-HAL-internal
+> routing-graph nodes — only bus0–bus7 are CarAudioService buses). Live ground truth: 8 buses,
+> 6 VolumeGroups, 48 kHz — see `audio_subsystem.md` and `analysis/platform_faq.md` §6.
+
+---
+
 ## Android Automotive Audio Overview
 
 This system implements the Android Automotive OS (AAOS) multi-zone audio architecture, providing dedicated audio buses for different audio contexts. This enables sophisticated audio mixing and ducking managed by an external DSP/amplifier.

@@ -7,6 +7,13 @@ Purpose: Framework for replacing GM AAOS with custom/stock AOSP implementation
 Target: GM Infotainment 3 (gminfo3.7) CSM Module
 ================================================================================
 
+RELATED (rights/remote/AOSP trio -- kept separate, complementary): this is the
+replacement/attack roadmap. For the remote-access/telematics surface see
+GM_REMOTE_ACCESS_ANALYSIS.txt (its section 5.4 calibration security-reset RE-LOCKS the
+EEPROM 0x0440 bypass set in section 5.2 here); for the rights/legal framing see
+GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt. NOTE: the Y177-downgrade vector in
+sections 4.4/7.2 is corrected in-place -- it is BLOCKED by the GHS rollback counter.
+
 TABLE OF CONTENTS
 -----------------
 1. RESEARCH GOALS AND OBJECTIVES
@@ -250,8 +257,11 @@ INFRASTRUCTURE PRESENT:
 CRITICAL BLOCKER FOUND IN SEPOLICY:
   (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
 
-  This SELinux rule EXPLICITLY denies GM's update engine access to GSI
-  metadata files. GM has intentionally disabled GSI functionality.
+  This SELinux rule SUPPRESSES THE AUDIT LOG for gm_update_engine accessing GSI
+  metadata (a `dontaudit` rule hides the denial from logs; it does NOT itself grant
+  or deny access). GSI being disabled is INFERRED from the other evidence below
+  (ro.treble.enabled, dynamic_system service, network/space prerequisites), not from
+  this rule alone.
 
 POSSIBLE FAILURE CAUSES:
   1. SELinux enforcement blocking GSI operations
@@ -281,6 +291,10 @@ If vbmeta could be modified to:
   a) Add custom signing key, OR
   b) Set verification mode to "disabled"
 Then AVB bypass becomes possible.
+NOTE: even a successful AVB bypass would NOT enable a Y177 downgrade — the GHS
+hypervisor enforces its OWN rollback counter (stored in misc / vda9, NOT in vbmeta)
+and rejects an older image at boot independently of AVB. Both vbmeta.rollback_index
+values are 0; the enforcing counter is the GHS one.
 
 ================================================================================
 5. VIP FIRMWARE MANIPULATION VECTORS
@@ -393,6 +407,11 @@ May need to preserve or recreate for custom AOSP.
    - Version check confirmed disabled
    - Would restore SELinux permissive
    - Enables more exploration
+   *** CORRECTION (verified since): this vector is DEAD. The "version check disabled"
+       flag only affects the inactive-slot WRITE phase. Y181->Y177 downgrade is BLOCKED
+       at boot by the GHS hypervisor's independent rollback counter (in misc / vda9),
+       confirmed FAILED on test. See GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt and
+       UPDATE_PROCESS_ANALYSIS.txt. Demote from the active roadmap. ***
 
 3. GHS PARTITION ANALYSIS (HIGH)
    - Dump ghs_isys_a/b partitions

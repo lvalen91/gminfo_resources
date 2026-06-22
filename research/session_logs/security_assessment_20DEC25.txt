@@ -6,6 +6,25 @@ Analyst: Claude (Security Research / Android Engineering)
 Target: GM Infotainment 3 (IOK) - gminfo3.7/3.8 CSM Module
 ================================================================================
 
+--------------------------------------------------------------------------------
+ARCHIVAL SESSION LOG (Dec 20 2025, "v2.4") -- retained as history; body UNCHANGED. This
+log holds load-bearing UNIQUE captures (VIP UART IDs, PROTOKEY seeds, the board component
+map, sepolicy MD5s, the partition->vda map, reflash history, media/PTT control) AND several
+hypotheses since RESOLVED/REFUTED. Do NOT trust the following as current:
+  - "EEPROM 0x0B40/0x0B41 controls debug/SELinux mode" (L51, 88-97, 193-198, 266-272,
+    336-345, 479-485, 746-751, 1285-1287, 1810-1813, 2354): WRONG. SELinux is kernel-cmdline
+    enforced (Y181 Enforcing); 0x0B41->0x01 is part of the verified ADB-UNLOCK set, NOT a
+    SELinux control. (This doc's own section 15.1, L813-836, already self-corrects it.)
+  - "Y177 downgrade possible / known working path" (L50, 110, 183-191, 219, 274-282,
+    347-349, 968-972, 1805-1808): WRONG. BLOCKED by the GHS rollback counter (misc / vda9);
+    tested FAILED.
+  - "SELinux is software/EEPROM-controlled" framing (L57-69, 350-355): misleading -- the
+    cmdline carries duplicate enforcing=0 then enforcing=1 (last value wins); see L817-822.
+  - Section 15.1 L821-822 "Both Y177 and Y181 boot ENFORCING by design" contradicts the rest
+    of this doc and the verified posture: Y177 runs PERMISSIVE, Y181 ENFORCING.
+For current verified facts see VERIFICATION.md and the research/ docs.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. EXECUTIVE SUMMARY

@@ -5,6 +5,11 @@
 **Size:** 14,929,320 bytes (extracted ELF)
 **Format:** ELF 32-bit LSB executable, Intel 80386, statically linked, stripped
 
+> Companion doc: `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` covers boot/update/recovery
+> mechanics in depth (BCB/misc byte layout, USB/protokey/capsule trigger files,
+> See-Dealer/ELK/Diagnostic boot modes, Lifecycle SoH handshake) — complementary to this
+> RE inventory. The former `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` is consolidated here in §15.
+
 ---
 
 ## 1. System Overview
@@ -499,7 +504,7 @@ Details:
 Attack Vector: A/B metadata, BCB manipulation
 Risk Level: MEDIUM-HIGH
 Details:
-  - "VMM: Warning: A/B metadata CRC failure!" (CRC-only?)
+  - "VMM: Warning: A/B metatdata CRC failure!" (CRC-only; "metatdata" sic — verbatim binary string, confirmed in decompiled ghs_str.txt)
   - "VMM: Warning: A/B metadata: magic number mismatch"
   - misc partition manipulation
   - Recovery mode triggering
@@ -653,6 +658,150 @@ Details:
 3. Network traffic can be sent without Android awareness
 4. Physical inspection of serial UART may reveal more
 5. Camera covers recommended for non-safety cameras
+
+---
+
+## 15. Privacy Capability Assessment (consolidated)
+
+> Consolidated **verbatim** from the former standalone document
+> `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` (now archived/superseded). §13 above carried the
+> capability tables; this section adds the privacy-specific evidence strings, the
+> cross-boundary data-flow diagram, the privacy-risk severity ratings, and the
+> interpretive caveats that §13 did not contain.
+
+### 15.1 Evidence strings
+
+Camera capture functions:
+```
+[Recovery] StartCapture failed with Error %d, IPU status %d
+Camera Capture Expected Heartbeat
+Capturemsg. Id:0x%x
+IpuDebugStats: polls = %d, rawFrames = %d, dewarpedFrames = %d
+snapshot-dbg
+SnapshotDev
+```
+Camera display connections:
+```
+ConnToCamera_Display          - Camera to display connection
+ConnToVMM_Display             - VMM display passthrough
+ConnToCamera_Capture          - Camera capture connection
+FirstFrameToGPU               - Frame routing to GPU
+```
+Network functions:
+```
+TCPIPEntry                    - TCP/IP entry point
+InitLibSocket                 - Socket initialization
+EthernetSendARP               - ARP packet sending
+EthernetCheckARP              - ARP checking
+ProtocolWritePacket           - Protocol-level write
+```
+WiFi passthrough: `gm_wifi_passthru.c`, `GmWifi`, `gm_wifi_driver_init`, `gm_wifi_driver_match`.
+Ethernet passthrough: `gm_eth_passthru.c`, `i82544_transmitter_configure` (Intel NIC configuration).
+VMM guest memory: `ReadGuestMemory`, `WriteGuestMemory`, `ReadGuestVirtualAddress`, `WriteGuestLMA`, `DirectCopyIntoVAS`, `VMM_GuestRamOffsetToHostPAddr`, `XhcVc_SetGuestMemoryMap`, `XhcVc_SetGuestMemoryOffset`, `HandleGuestVaddrCmd`, `VMM_SetVirtioBufferAddr`.
+Audio: `gm_audio_passthru.c`, `AudioServer: Enabled`, `[AUDIO] Audio DSP Firmware`, `Hda_WriteBdlsForStream`.
+Display: `ConnToVMM_Display`, `ConnToDisplayI2C`, `GPU_InitialTask`, `ConnToGPU`, `SCREEN_RESOLUTION`, `DisplayI2C`, `display-dbg`.
+IPC messages:
+```
+- Blocking Guest Temperature Request Control IPC Message
+- Blocking Guest AMP Control IPC Message
+Cache IPC msg: Index=%u, toVip=%u, clientMask=0x%02x
+IPC Channels Opened
+Got IPC msg on invalid channel: %u
+Sending cached IPC message on CH%02u
+```
+HECI / CSE: `Intel HECI`, `GHS: Error: Failed to send connect message to HECI client`, `GHS: Error: Failed to send disconnect message to HECI client`, `cseseed_iodevice.c`, `CseSeed_Init`, `CseSeed (Intel CSE)`.
+Security: `Secure Boot: Enabled`, `AttestationSeedList`, `keymaster_ipc.cpp`, `trusty/app/keymaster`.
+
+**Security-purpose implication:** The security features are designed to protect GM's code from inspection/modification, not to protect user privacy.
+
+**Memory-access implication:** GHS can read ANY data from Android's memory - including photos, messages, authentication tokens, and encryption keys. It can also modify Android's memory without Android's knowledge.
+
+### 15.2 Cross-boundary data-flow
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    CROSS-BOUNDARY DATA FLOW PATH                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  CAMERAS                                                             │
+│     │                                                                │
+│     └──► Intel IPU4 (GHS Direct Control)                            │
+│              │                                                       │
+│              ├──► Normal: Display to user via Android app            │
+│              │                                                       │
+│              └──► Covert: GHS can capture frames independently       │
+│                      │                                               │
+│                      ▼                                               │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │                 GHS INTEGRITY HYPERVISOR                      │   │
+│  │                                                               │   │
+│  │   Camera Capture ──► Frame Buffer ──► TCP/IP Stack            │   │
+│  │                                            │                   │   │
+│  │   Audio Capture ───► Audio Buffer ─────────┤                   │   │
+│  │                                            │                   │   │
+│  │   Screen Capture ─► Display Buffer ────────┤                   │   │
+│  │                                            │                   │   │
+│  │   Guest Memory ───► RAM Contents ──────────┤                   │   │
+│  │                                            ▼                   │   │
+│  │                                   KETH_WritePacket             │   │
+│  │                                            │                   │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+│                                               │                      │
+│                                               ▼                      │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │                    NETWORK INTERFACES                         │   │
+│  │   • WiFi (gm_wifi_passthru) ────────────┐                     │   │
+│  │   • Ethernet (gm_eth_passthru) ─────────┤                     │   │
+│  │   • Intel HECI (Management Engine) ─────┤                     │   │
+│  │                                         ▼                     │   │
+│  │                              REMOTE SERVER                    │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+│                                                                      │
+│  ANDROID (GUEST VM) - NO VISIBILITY INTO GHS OPERATIONS             │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 15.3 Privacy risk severity ratings
+
+| Capability | Evidence | Privacy Risk |
+|------------|----------|--------------|
+| **Camera Capture** | Intel IPU4 driver, StartCapture, Heartbeat | CRITICAL |
+| **Independent Networking** | kethernet TCP/IP stack, KETH_WritePacket | CRITICAL |
+| **Guest Memory Access** | ReadGuestMemory, WriteGuestMemory | CRITICAL |
+| **Audio Access** | gm_audio_passthru, Audio DSP | HIGH |
+| **Screen Access** | ConnToVMM_Display, GPU connections | HIGH |
+| **Covert Communication** | Intel HECI, IPC channels | HIGH |
+| **WiFi Control** | gm_wifi_passthru, direct driver | HIGH |
+| **Snapshot Capability** | snapshot-dbg, SnapshotDev | MEDIUM |
+
+### 15.4 Conclusion
+
+What GM Can Do (Technically):
+1. **Capture camera feeds** without Android's knowledge using direct IPU4 access
+2. **Transmit data remotely** via the independent TCP/IP stack (kethernet)
+3. **Read all Android memory** including messages, photos, and credentials
+4. **Record audio** via direct audio hardware access
+5. **Capture screen contents** via display/GPU connections
+6. **Communicate covertly** with remote servers via Intel HECI or dedicated network stack
+
+What Prevents Detection:
+1. GHS operates BELOW Android - Android cannot inspect GHS operations
+2. GHS has its own network stack - traffic is invisible to Android
+3. Secure boot prevents modification or inspection of GHS code
+4. Intel Management Engine provides another covert channel
+
+**Important Caveats:**
+1. **Technical capability ≠ Active surveillance** - Having the capability doesn't prove GM is using it
+2. **No evidence of exfiltration** - The analysis shows capability, not active data collection
+3. **Legal constraints** - GM would face significant legal liability for unauthorized surveillance
+4. **Legitimate uses** - Many capabilities are needed for features like backup camera, safety systems
+
+Recommendations for Users Concerned About Privacy:
+1. Assume the vehicle can access all sensors and data
+2. The infotainment system should be treated as untrusted for sensitive activities
+3. GM's privacy policy should be reviewed for data collection disclosures
+4. Consider physical camera covers for non-safety-critical cameras
 
 ---
 

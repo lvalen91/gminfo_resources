@@ -8,6 +8,30 @@ Platform: GM Infotainment 3 (IOK) - gminfo3.7/3.8 CSM Module
 Target Firmware: Y177 (SIHM22B-499.2) / Y181 (SIHM22B-499.3)
 ================================================================================
 
+--------------------------------------------------------------------------------
+CORRECTIONS / CROSS-REFERENCE (added during doc review; body below is UNCHANGED):
+This is the BROAD reference (EEPROM map, DPS/VCAP/SPAT, seed/ECUID bytes, CalDef DB,
+24-ECU CAN map, update packages, research paths). The newer VERIFIED Y181 posture is in
+security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt, which CORRECTS several values below -- treat
+these as SUPERSEDED:
+  - DOWNGRADE: this doc says "version check disabled => downgrade possible / may restore
+    Y177 permissive". SUPERSEDED -- Y181->Y177 is BLOCKED by the GHS hypervisor rollback
+    counter (tested FAILED; "version check disabled" only affects the inactive-slot WRITE
+    phase, not GHS boot verification). GHS counter lives in misc (vda9); vbmeta.rollback_
+    index = 0 on both builds.
+  - EEPROM CRC: this doc implies CRCs must be recalculated or the VIP rejects the config.
+    SUPERSEDED at the BOOT path -- CRC is NOT enforced at boot (tested: VIN 0x5C0-0x5D1 set
+    all-0xFF still booted normally). CRC validation applies only to OTA/SPS/DPS/dealer writes.
+  - AVB rollback "status unknown" here is RESOLVED: GHS keeps its own rollback counter in
+    misc (vda9).
+  - SELinux "permissive": runtime is ENFORCING on Y181. The Y181 doc re-rates the paper
+    severities (SELinux-permissive 9.8 -> actual 2.0; ADB-5555 9.8 -> 4.0; I2C/GPIO
+    8.8/7.1 -> 2.0; IOMMU 8.5 -> 5.5).
+  - Port 6363 (here "NDN/ICN? UNEXPLORED") = GMVT service per the Y181 doc.
+  - VIP part number: UNCERTAIN -- this doc says RH850/P1M-E; the Y181 doc says both
+    RH850/P1M-E and TM52176. Verify before relying on either.
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1.  EXECUTIVE SUMMARY

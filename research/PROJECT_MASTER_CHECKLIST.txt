@@ -6,6 +6,24 @@ Created: December 28, 2025
 Purpose: Complete inventory and status of all project files and research areas
 ================================================================================
 
+--------------------------------------------------------------------------------
+SUPERSEDED / ARCHIVAL (Dec 28 2025) -- retained as history; body UNCHANGED. Do NOT use
+this as a live index:
+  - The entire file tree below is rooted at "/gm_aaos/" and is DANGLING -- the repo was
+    reorganized; those paths no longer exist (e.g. documentation/ -> research/, EEPROM/ ->
+    eeprom/; scripts/diagnose_gsi.sh does not exist). For the CURRENT repo layout see the
+    top-level README.md; for the live artifact inventory see research/INVENTORY.md.
+  - Its technical content is preserved elsewhere (verified before archiving): the
+    partition->vda map is in hardware/teardown.md + AOSP_REPLACEMENT_RESEARCH.txt +
+    BOOT_CHAIN_ANALYSIS.txt (note: super=vda13, not vda21); the GSI fstab avb_keys
+    (q/r/s-gsi.avbpubkey) and GSI architecture checklist are in AOSP_REPLACEMENT_RESEARCH.txt
+    / UPDATE_PROCESS_ANALYSIS.txt / QUICK_REFERENCE.txt. Module-signing, EEPROM-flag and
+    hardware rows are in MASTER_REFERENCE.md.
+  - Its downgrade-BLOCKED finding (correct) is also in MASTER_REFERENCE.md / README.md.
+Canonical meta set: MASTER_REFERENCE.md (reference) + INVENTORY.md (artifacts) + README.md
+(landing) + QUICK_REFERENCE.txt (cheatsheet).
+--------------------------------------------------------------------------------
+
 PROJECT STATISTICS
 ------------------
 Total Files: 437

@@ -80,7 +80,7 @@
 ### Strengths
 - Full Android Automotive multi-zone audio architecture
 - Harman-tuned preprocessing for vehicle acoustics
-- 14 dedicated output buses for audio routing
+- 8 CarAudioService output buses (bus0–bus7); bus8/11/12/13 are Harman-HAL-internal routing nodes, not app-targetable
 - External DSP handles mixing and ducking
 - Low-latency 8ms mix period
 - Comprehensive audio effects library
@@ -151,7 +151,7 @@ Voice:
 
 ### Below-HAL Audio Architecture
 
-Audio from the 14 AudioFlinger buses passes through several layers below the Android HAL barrier:
+Audio from the 8 CarAudioService output buses (plus the Harman-HAL-internal routing nodes) passes through several layers below the Android HAL barrier:
 
 | Layer | Component | Detail |
 |-------|-----------|--------|

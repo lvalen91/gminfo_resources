@@ -14,6 +14,7 @@ TABLE OF CONTENTS
 4. ALL POTENTIAL MODIFICATION POINTS
 5. DPS-ACCESSIBLE VS NON-ACCESSIBLE MEMORY
 6. EXPLOITATION STRATEGY
+7. DPS SECURITY FORENSICS (consolidated from DPS_SECURITY_ANALYSIS.txt)
 
 ================================================================================
 1. DPS (DEVELOPMENT PROGRAMMING SYSTEM) EXPLAINED
@@ -161,6 +162,62 @@ The VIP has persistent storage separate from EEPROM. This stores:
 | GYRO | Sensor | Unknown | Gyroscope (not present) |
 | ACCEL | Sensor | Unknown | Accelerometer (not present) |
 | MIC ADC | ADC | Unknown | Microphone sensing |
+
+3.1.1 LIVE SoC I2C BUS MAP (ADB, 2026-06-21 — gminfo37 Y181.3.2)
+----------------------------------------------------------------
+The table above is the VIP MCU's I2C view (from VIP log). The SoC (Android) side has
+its OWN 11 buses (i2c-0..i2c-10). Live `ls /sys/bus/i2c/devices` on the running radio
+(uid 2000 shell) shows these BOUND SoC-side devices:
+
+| Bus-Addr   | Driver            | Device                                          |
+|------------|-------------------|-------------------------------------------------|
+| 7-000c     | ti949             | TI DS90UB949 FPD-Link III display serializer    |
+| 7-0012     | faceplate_control | Faceplate buttons/knobs (confirms 0x12 above)   |
+| 7-0028     | nxp7120           | NXP device (audio/sensor)                        |
+| 7-004b     | atmel_mxt_ts      | maXTouch touch controller (confirms 0x4B above) |
+| INT34C3:00 | tdf8532-codec     | NXP TDF8532 audio amplifier                     |
+| /dev/i2c-3 | (SELinux label dirana3_device) | Dirana3 audio DSP control bus (owner audioserver) |
+
+Bus controllers: Synopsys DesignWare (PCH) for the peripheral buses; Intel i915 gmbus
+for the display buses (i2c-8/9/10).
+
+IMPORTANT: the M24C64 EEPROM (0x50) and ELMOS E522.40 are on the **VIP MCU's** I2C, NOT
+these SoC buses -- they do not appear in the Android i2c tree (VIP firmware owns that
+bus). The SoC i2c buses above host display/touch/audio/faceplate only.
+
+ACCESS (live-verified): i2c-0/1/2/3 are DAC 0666 (world-rw), BUT SELinux Enforcing blocks
+the shell domain from opening i2c_device. Kernel avc on probe attempt:
+  avc: denied { read } for name="i2c-1" scontext=u:r:shell:s0
+       tcontext=u:object_r:i2c_device:s0 tclass=chr_file permissive=0
+So i2cdetect/i2cget from a non-root ADB shell fail on every bus. Domains that MAY open
+i2c_device (from sepolicy): ame_hal_service, bluetooth, camerad, dirana_config,
+early_evs, gm_vehiclepanel, hal_audio_default, hal_broadcastradio_*, hmshell.
+
+FULL 11-BUS DAC PERMISSION LISTING (consolidated from DOCUMENTATION_REVIEW_AND_
+CORRECTIONS.txt; `ls -l /dev/i2c-*`, major 89):
+  crw-rw-rw- root:root               /dev/i2c-0   <-- WORLD ACCESSIBLE (DAC; SELinux-gated)
+  crw-rw-rw- root:root               /dev/i2c-1   <-- WORLD ACCESSIBLE (DAC; SELinux-gated)
+  crw-rw-rw- system:system          /dev/i2c-2   <-- SYSTEM
+  crw-rw-rw- audioserver:audioserver/dev/i2c-3   <-- AUDIO (dirana3_device)
+  crw------- root:root               /dev/i2c-4
+  crw------- root:root               /dev/i2c-5
+  crw------- root:root               /dev/i2c-6
+  crw-rw---- system:system          /dev/i2c-7   <-- touch/HMI bus (maXTouch 0x4B etc.)
+  crw------- root:root               /dev/i2c-8
+  crw------- root:root               /dev/i2c-9
+  crw------- root:root               /dev/i2c-10
+NOTE: the EEPROM (0x50) is NOT on i2c-0/1 (or any SoC bus) -- it is on the VIP MCU's i2c
+(see IMPORTANT note below). The world-rw DAC on i2c-0/1/2/3 is the Y177-permissive attack
+surface (see security/KERNEL_CVE_ANALYSIS.txt Appendix E); on Y181 SELinux blocks it.
+
+APPLE MFi (native OEM CarPlay) -- OPEN QUESTION: No Apple-CP/MFi i2c device is bound on
+the SoC i2c, and NO carplay/iAP/ffsd/MFi SELinux domain accesses i2c_device. So the
+radio's native-CarPlay MFi authentication is NOT a discrete SoC-i2c IC reached by a
+CarPlay userspace domain here -- it is either behind a kernel driver, folded into another
+allowed domain, or handled over the USB/FunctionFS (ffsd) path. Bus/address UNCONFIRMED;
+do not assume 0x10/0x11. (Distinct from the CCPA *adapter's* clone CP at i2c-1:0x11,
+documented in the separate CPC200-CCPA repo.) Settle via root i2cdetect per bus or RE of
+GMCarPlaySrc's native libs for how it performs Apple authentication.
 
 3.2 EEPROM STRUCTURE (M24C64)
 -----------------------------
@@ -368,6 +425,108 @@ If these are in VIP-accessible calibration indexes, DPS could write them.
 3. What debug commands does VIP UART accept?
 4. Is there a manufacturing/engineering mode in VIP?
 5. Can GHS partition be modified without bricking?
+
+================================================================================
+7. DPS SECURITY FORENSICS (consolidated from DPS_SECURITY_ANALYSIS.txt)
+================================================================================
+The companion document DPS_SECURITY_ANALYSIS.txt was merged into this file. Its
+unique security-forensics content is preserved verbatim below.
+
+7.1 SEED FORMAT / ECUID (32-byte UDS $27 seed, Dec 2025)
+--------------------------------------------------------
+NORMAL STATE (Y177update_CSM.Txt - security active):
+  Response: 67 01 00 4B 41 DC 00 00 16 00 06 10 41 45 61 01 14 AC
+                  6F 52 95 6C BB B0 78 A1 90 53 99 B8 B5 71 93
+  Structure: Bytes 0-15 = ECUID (fixed device identifier);
+             Bytes 16-31 = Random Challenge (changes each request)
+  ECUID = $004B41DC0000160006104145610114AC
+
+BYPASSED STATE (A11_CSM_x80.Txt - EEPROM modified):
+  Response: 67 01 FF FF FF FF ... (all 32 bytes 0xFF)
+  All-FF when EEPROM bypass is active => VIP is NOT performing real security.
+
+MEC counter: Normal (Y177) = 0 (development/unlocked); Bypassed = 244 (production/locked).
+
+Seed-key mechanism (UDS SecurityAccess $27): $27 $01 (request seed, level 1) ->
+$67 $01 [seed]; tester computes key; $27 $02 [key]; valid -> $67 $02; invalid ->
+$7F $27 $35 (Invalid Key NRC). Algorithm is GM-proprietary (no public docs); DPS
+relies on the GM backend for key calculation -- standalone DPS cannot unlock. Having
+the ECUID plus multiple challenge samples could enable algorithm reverse-engineering.
+
+7.2 PROTOKEY BENCH VALUES
+-------------------------
+On bench (no BCM): seeds 00 00 00 00 00 00 00 00; Checksum 524289 (0x80001) = error
+indication; Status 3 (authentication failed). The EEPROM bypass (0x0440 = 5A FF 5A =
+ADB enabled / security check bypassed) skips this exchange entirely.
+
+7.3 SBI / SBAT (Security Bypass Authorization Tickets)
+------------------------------------------------------
+SBI (Security Bypass Indicator): $4444 = Bypass Inactive (normal production);
+$0080 = Bypass Active (authorized bypass).
+SBAT: issued by the GM Cyber SBAT Ticket Server; time-limited (typically 24 hours);
+ECU-specific (VIN bound); cannot be forged without server keys. Workflow: technician
+requests via GM tool -> request (dealer credentials + ECU ID + operation) to GM SBAT
+server -> server validates -> encrypted ticket issued -> loaded to ECU -> ECU enters
+bypass mode for the duration.
+
+7.4 DID LIST (DPS "Get Controller Info")
+----------------------------------------
+DID $90 = VIN; $98 = Repair Shop Code/Date; $99 = Programming Date; $B4 = Traceability
+(part numbers, build info); $F0 = Secure Programming Data (PSI = Programming Support
+Information, PEC = Programming Error Code, BIS = Boot Status, SBI, ECUID).
+
+7.5 DPS FILE TYPES (extras: manifest / signature / utility blobs)
+-----------------------------------------------------------------
+.mnf update manifest -> contains gmext.* function calls: gmext.write_emmc_image(),
+gmext.extract_emmc_image(), gmext.extract_logical_partition(), gmext.update_ecu(),
+gmext.switch_slot(). .smd = cryptographic signature for package validation.
+Blob examples (from SPSToolBridge.LOG): utility "Blob name: 10011000.dll, Blob ID: 0,
+Blob Size: 234283"; calibration "10000001.cfx, Blob ID: 1, Blob Size: 124".
+
+7.6 SECURITY-RELEVANT CALDEF CALIBRATIONS (detail)
+--------------------------------------------------
+DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE (SFS2): Boolean, default FALSE; if set TRUE,
+bypasses MEC (Manufacturing Enable Counter) checks (device registration proceeds
+regardless of MEC state).
+GIS763_PROGRAMMING_ENABLED (GIS763): Boolean, default TRUE; master programming-enable switch.
+EXPIRATION_ENFORCEMENT (SFS2): Boolean, default TRUE; certificate expiration validation.
+(Full CalDef/VIP-calibration analysis is in CALDEF_VIP_CALIBRATION_ANALYSIS.txt.)
+
+7.7 DOWNGRADE: version-check-disabled source + blockers
+-------------------------------------------------------
+"version check disabled" originates in the Y181 manifest 86331663.mnf
+(ui_print("version check disabled")). Potential blockers (each originally "requires
+testing"): (1) AVB Rollback Index; (2) VIP independent version check; (3) partition-size
+compatibility. NOTE: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt + UPDATE_PROCESS_ANALYSIS.txt
+now CONFIRM Y181->Y177 is BLOCKED by the GHS rollback counter in misc.
+
+7.8 SPAT ARCHIVE CREATION (CameraLoops method)
+----------------------------------------------
+1. Obtain SPSToolBridge.LOG from an SPS session; 2. extract Blob name/ID mappings;
+3. gather utility file (Blob ID 0) + calibration files + manifest + signature;
+4. create Vit2File.vit index; 5. package into a .zip archive; 6. import into DPS SPAT.
+
+7.9 UNSIGNED-MODULE TABLE (extends the 28/29/51 list in section 1.6)
+-------------------------------------------------------------------
+| Module ID | Name      | Sign Type | Risk Level |
+| 28        | SXM       | NONE      | Low        |
+| 29        | GPS       | NONE      | Low        |
+| 51        | Tuner     | NONE      | Low        |
+| 52        | EthSwitch | NONE      | Low        |
+| 24        | SOC_Utils | NONE      | Medium     |
+
+7.10 ALTERNATIVE ATTACK SURFACES
+--------------------------------
+Physical EEPROM modification (proven working); VIP JTAG debugging (firmware analysis);
+CAN bus fuzzing (protocol vulnerabilities); network service exploitation (ports 7000,
+6363); UART console access (/dev/ttyACM1).
+
+7.11 DPS CANNOT MODIFY SELINUX MODE (Y181)
+------------------------------------------
+SELinux mode in Y181 is controlled by init.rc in the system partition; that partition
+is AVB-protected, so it cannot be modified without breaking boot. The only DPS-based
+route to permissive SELinux is therefore a Y177 downgrade -- which is now CONFIRMED
+blocked by the GHS rollback counter (see section 7.7).
 
 ================================================================================
 APPENDIX: VIP LOG EVIDENCE

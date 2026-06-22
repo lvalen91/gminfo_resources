@@ -535,5 +535,106 @@ Untrusted_app capabilities:
   - Sandboxed execution environment
 
 ================================================================================
+APPENDIX E: Y177 (PERMISSIVE) DELTA -- consolidated from Y177_KERNEL_CVE_ANALYSIS.txt
+================================================================================
+The same kernel (4.19.305-240125T145315Z, Clang 12.0.7), CVE catalog, and CONFIG flags
+above apply to Y177 -- EXCEPT Y177 runs SELinux PERMISSIVE at runtime, which inverts the
+exploitability verdicts. Firmware: Y177.6.1 GAS. Y177-unique content migrated below.
+
+E.1 Y177 vs Y181 SECURITY COMPARISON
+------------------------------------
+| Security Feature      | Y177          | Y181          |
+| SELinux Runtime Mode  | PERMISSIVE    | ENFORCING     |
+| Kernel Version        | 4.19.305      | 4.19.305      |
+| Kernel Build Date     | Jan 25, 2024  | Jan 25, 2024  |
+| Boot Parameters       | enforcing=1*  | enforcing=1*  |
+| Security Patch Level  | ~Feb 2025     | June 2025     |   <-- real per-build delta, keep both
+| CVE Exploitability    | HIGH          | LOW           |
+| Ramdisk sepolicy MD5  | e9ebb7d8...   | 6b2045bf...   |
+* Both have enforcing=1 at END of cmdline (last value wins), but Y177's ramdisk does NOT
+  force enforcing at runtime like Y181's does.
+
+Policy near-identical: Y177 vendor_sepolicy.cil = 5,382 lines / 3,582 allow rules;
+Y181 = 5,383 lines / 3,583 allow rules; difference = 1 line (carservice_app
+sensor_privacy_service). Vendor init.rc files are IDENTICAL. In permissive mode,
+neverallow rules are LOGGED but NOT ENFORCED.
+(Neverallow label note: the Y177 source cites `video_device_32_0`; the Y181 body above
+cites `video_device` -- UNCERTAIN which is canonical; flagged for verification.)
+
+E.2 Y177-ONLY ENABLED CONFIGS
+-----------------------------
+CONFIG_I2C_CHARDEV=y  - I2C character device access
+CONFIG_CAN=y          - CAN bus support
+
+E.3 CVE EXPLOITABILITY (Y181 Enforcing vs Y177 Permissive)
+----------------------------------------------------------
+| CVE            | Y181 (Enforcing) | Y177 (Permissive) |
+| CVE-2024-53104 | BLOCKED          | EXPLOITABLE*      |
+| CVE-2024-36971 | BLOCKED          | EXPLOITABLE       |
+| CVE-2024-53150 | BLOCKED          | EXPLOITABLE*      |
+| CVE-2024-53197 | BLOCKED          | EXPLOITABLE*      |
+| CVE-2024-1086  | N/A (disabled)   | N/A (disabled)    |
+| BPF issues     | BLOCKED          | POTENTIALLY EXPL. |
+* Requires physical USB access. On Y177 the neverallow rules (video_device etc.) are
+  logged but not enforced, so any process can reach the vulnerable drivers.
+
+E.4 ADDITIONAL ATTACK VECTORS ENABLED BY PERMISSIVE MODE
+--------------------------------------------------------
+World-writable I2C devices (accessible on Y177; SELinux-blocked on Y181):
+  /dev/i2c-0  crw-rw-rw-  Tuner control
+  /dev/i2c-1  crw-rw-rw-  Tuner control
+  /dev/i2c-2  crw-rw-rw-  AME HAL
+  /dev/i2c-3  crw-rw-rw-  Audio control
+  => communicate with EEPROM chips and tuner/audio hardware; potentially modify VIN,
+     calibration data, ADB flags.
+World-writable GPIO: gpio458 Saturn Reset (external MCU); gpio460 Dirana Bootstate;
+  gpio464 Saturn Bootmode; gpio466 Dirana Reset => reset external MCUs, control boot
+  modes, DoS.
+Serial: /dev/ttyS1 is the VIP MCU communication channel; permissive shell may access it
+  to talk directly to the VIP microcontroller.
+Binder services more accessible in permissive: com.gm.server.obd.OBDService;
+  com.gm.server.diagnostics_service.DiagnosticsService; com.gm.server.update.UpdateService;
+  gm.onstar.OnStarRemoteReflashManager.
+
+  LIVE CONFIRMATION (ADB, 2026-06-21, Y181): /dev/i2c-0/1/2/3 are DAC 0666 (world-rw) but
+  on Y181 SELinux Enforcing blocks the shell domain (kernel avc: denied { read } ...
+  scontext=u:r:shell:s0 tcontext=u:object_r:i2c_device:s0 ... permissive=0). On Y177
+  permissive the same world-rw nodes are reachable -- this empirically confirms the flip.
+
+E.5 WHY Y177 RUNS PERMISSIVE (enforcement mechanism)
+----------------------------------------------------
+Both builds have identical cmdlines (enforcing=0 ...permissive early; enforcing=1
+...enforcing late). The difference is the RAMDISK SEPOLICY:
+  Ramdisk sepolicy MD5: Y177 e9ebb7d8... / Y181 6b2045bf...
+  precompiled_sepolicy: Y177 689,354 bytes (MD5 bd637075279d1717edf5dc321897162a);
+                        Y181 689,366 bytes (MD5 c87d13a23cf99f415a719868632698a0)
+  Shared policy hashes:
+    plat_sepolicy    648626fbf6b8bf9b98052ee0570922b279e50db27fd0ee5fcadc01977246c8a8
+    product_sepolicy 208ed8762a83eb9499c2aec1a56915f62bd6f185d4bae6566a4ea61dcc950f94
+Y181's boot image/ramdisk forces enforcing (init/first-stage sepolicy calls setenforce(1)
+before untrusted code runs; neverallow prevents a mode change). Y177's original boot image
+does NOT -- it boots permissive per the early cmdline. The enforcement difference is at the
+BOOT IMAGE level, not the vendor partition (vendor policies/configs are the same).
+
+E.6 PERMISSIVE EVIDENCE SOURCES + Y177 SOURCE FILES
+---------------------------------------------------
+Permissive confirmed: gminfo3.7_tech_specs.md:247 (live Y177.6.1: "selinux: permissive",
+"verified_boot: green_locked"); GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt:177
+("getenforce (runtime): Permissive [Y177], Enforcing [Y181]").
+Y177 source files: /update_packages/Y177/86283154 (boot image: kernel+ramdisk);
+86283156.zip (vendor partition); Y177_vendor/etc/selinux/vendor_sepolicy.cil;
+plat_pub_versioned.cil; init.bxtp_gm.rc.
+
+E.7 Y177 RISK + RECOMMENDATIONS
+-------------------------------
+Overall Y177 risk HIGH (permissive removes the MAC layer; kernel CVEs become exploitable;
+world-writable i2c/gpio/serial become accessible). Owners: do not connect unknown USB
+devices; request a firmware update; restrict USB-port access. GM/Harman: backport SELinux
+enforcement to Y177; patch kernel CVEs; kernel upgrade path; USB device whitelisting.
+Researchers: Y177 gives direct i2c/gpio/VIP-UART access and fewer binder restrictions.
+Downgrade Y181->Y177 is BLOCKED by GHS rollback (and AVB), so accessing Y177 requires a
+vehicle already running it.
+
+================================================================================
 END OF CVE ANALYSIS
 ================================================================================

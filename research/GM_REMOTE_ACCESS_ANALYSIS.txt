@@ -6,6 +6,12 @@
 DISCLAIMER: This analysis is for educational and security research purposes.
 Findings are based on static firmware analysis of GM AAOS (Android Automotive).
 
+RELATED (rights/remote/AOSP trio -- kept separate, complementary):
+  - GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt -- the rights/legal framing of the same
+    telemetry & lockdown surface described here.
+  - AOSP_REPLACEMENT_RESEARCH.txt -- the replacement/attack roadmap; its EEPROM 0x0440/0x0A80
+    "ADB enable" is the bypass that this doc's section 5.4 calibration security-reset re-locks.
+
 ================================================================================
                          EXECUTIVE SUMMARY
 ================================================================================
@@ -201,7 +207,10 @@ GM Cloud Endpoints (from CalDef analysis):
 Enabled Features (CalDef defaults):
   - GIS768_Remote_Reflash_Feature = TRUE
   - GIS768_OMADM_Feature = TRUE
-  - GIS768_IgnoreCurrentPartNumberCheck = TRUE  <-- Can bypass version!
+  - GIS768_IgnoreCurrentPartNumberCheck = TRUE  <-- bypasses GM's PART-NUMBER check only
+       (CORRECTION: this does NOT enable a real downgrade. Rollback is enforced BELOW the
+       Android update layer by the GHS hypervisor's rollback counter in misc/vda9; Y181->Y177
+       was tested and FAILED. A part-number-check flag != AVB/GHS rollback bypass.)
   - SECURITY_EVENT_LOGGING_ENABLED = TRUE
   - BACK_OFFICE_SERVER_ENABLED = TRUE
 
@@ -263,6 +272,11 @@ A11 radio removed. This confirms telematics has independent:
   - Cellular modem
   - CAN bus connection
   - Command execution capability
+[NOTE: this table is derived from STATIC firmware analysis and is consistent with
+ OnStar's known design (telematics/CGM is independent of the AAOS infotainment radio).
+ Runtime execution of remote commands was not directly observed in this analysis -- treat
+ the "YES" cells as strong static-analysis inferences, not bench-verified behavior. See the
+ disclaimer at the end of this document.]
 
 ================================================================================
               SECTION 7: COMPLETE REMOTE ACCESS CHAIN
@@ -456,8 +470,10 @@ This multi-layered access confirms GHS can control display independently.
 6. A11 and Telematics share internal Ethernet network - data can
    flow between them
 
-7. GIS768_IgnoreCurrentPartNumberCheck = TRUE allows bypassing
-   version validation on updates
+7. GIS768_IgnoreCurrentPartNumberCheck = TRUE bypasses the part-number check
+   on updates ONLY -- it does NOT enable a firmware downgrade. The actual
+   anti-rollback is the GHS hypervisor's rollback counter (misc/vda9), which
+   blocks Y181->Y177 at boot (tested FAILED). See section 5.4 correction above.
 
 8. Calibration files now include security reset payloads as
    defense-in-depth against EEPROM modifications

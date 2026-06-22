@@ -22,7 +22,7 @@
 | GPU Driver | Intel iHD driver 2.0.0 (GLES backend — Vulkan driver exists but NOT used at runtime) |
 | RAM | 8 GB LPDDR4 physical (4× Micron MT53E512M32D2DS-053, teardown-verified); ~6 GB allocated to the Android guest — 5,663,432 kB / 5.40 GB kernel-visible; ~604 MB reserved by GHS hypervisor. No swap (SwapTotal=0). Committed_AS: ~76 GB virtual (heavy overcommit) |
 | Storage | 64GB Samsung KLMCG4JEUD eMMC |
-| SPI Flash | IS25LP016 SPI NOR, 16Mbit/2MB, SOIC8, Quad SPI 3.3V, week 43/2022. Purpose: crash/diagnostic logs or calibration backup |
+| SPI Flash | IS25LP016D SPI NOR, 16Mbit/2MB, SOIC8, Quad SPI 3.3V, week 43/2022. Purpose: **BCM89551 Ethernet-switch firmware** (corrected per `hardware/teardown.md`, confirmed via partial dump — NOT "logs/backup"). NOTE: a separate **8MB IS25WP064A** (BGA) is the Apollo Lake IFWI/TXE boot flash (Flash Descriptor, TXE 3.0, UEFI, Boot Guard v2) — see teardown. |
 | Display | Chimei Innolux DD134IA-01B, 2400x960 @ 60Hz, ~13.4" |
 | Display DPI | Physical: xDpi=192.911 yDpi=193.523; system lcd_density=200 (xhdpi) |
 | Touchscreen | Atmel maXTouch, 16-point multitouch, I2C bus 7 @ 0x4B |
@@ -32,7 +32,7 @@
 | Hypervisor | GHS INTEGRITY IoT 2020.18.19 MY22-026 (Type-1 bare-metal) |
 | WiFi | Broadcom BCM (802.11ac), driver `dhd` |
 | Bluetooth | 5.0 |
-| Ethernet | Intel I211, 1Gbps, gPTP master |
+| Ethernet | Intel **I210 (WGI210CL rev A3)**, 1Gbps, gPTP master (physical part per `hardware/teardown.md`; previously labeled "I211" — unverified near-twin reading. Kernel uses a custom `igb_avb` driver; mainline `igb`/`CONFIG_IGB` is disabled per the Jun-2026 capture) |
 | Audio HAL | Harman "Titan" HarmanAudioControl (vendor.hardware.audio@5.0), Dirana3 amplifier plugin, speakerNum=4, micNum=0 |
 | Audio Transport | Ethernet AVB to NXP TDF8532 codec → external amplifier (CSM) |
 | GPS | u-blox receiver, GPS+DR fusion, UART to GENIVI pipeline |

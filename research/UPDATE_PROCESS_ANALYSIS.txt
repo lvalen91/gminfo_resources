@@ -31,7 +31,10 @@ KEY FINDINGS:
   - A/B slot switching is used for seamless updates
   - AVB (Android Verified Boot) protects signed partitions
   - Several modules are UNSIGNED but protected by other mechanisms
-  - Y177 downgrade is UNVERIFIED (version check disabled but AVB status unknown)
+  - Y177 downgrade is CONFIRMED BLOCKED by the GHS rollback check (see Section 6.1;
+    the manifest "version check disabled" only affects gm_update_engine's write phase,
+    not GHS boot-time verification) [corrected: this summary line previously read
+    "UNVERIFIED", contradicting the Section 6.1 test result]
 
 ================================================================================
 2. UPDATE PROCESS ARCHITECTURE

@@ -536,7 +536,7 @@ pcm.pcmEcall_p       { type pulse; device combined }
 | bus4_call_out | Phone call audio | Yes | Yes |
 | bus5_alarm_out | Alarms | No | No |
 | bus6_notification_out | Notifications | Yes | Yes |
-| bus7_system_out | System sounds | No | No |
+| bus7_system_sound_out | System sounds | No | No |
 
 ### Input Buses (from microphone)
 

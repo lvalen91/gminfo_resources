@@ -6,6 +6,17 @@ Created: December 28, 2025
 Purpose: Map CalDef entries to system components and analyze VIP calibration
 ================================================================================
 
+--------------------------------------------------------------------------------
+RELATED: DPS_AND_MODIFICATION_LANDSCAPE.txt is the consolidated DPS doc (DPS + memory
++ I2C + modification landscape + DPS security forensics). This file is the dedicated
+CalDef / VIP-calibration reference -- the two-calibration-systems thesis (CalDef=Android
+vs VIP-cal=RH850), the full cal_* value table, the VIP cal-index 0-14 map, the GIS763
+signing-cert strings, and the caldef filename/category lists live here. The two are
+complementary (kept separate by design). Note: where 0x0440/0x0A80 "5A FF 5A" is
+described here as "enabled", the DPS doc phrases it as "bypass" -- same effect (ADB
+enabled = the VIP security check is bypassed).
+--------------------------------------------------------------------------------
+
 TABLE OF CONTENTS
 -----------------
 1. EXECUTIVE SUMMARY
@@ -88,6 +99,21 @@ flags directly via I2C - this is completely independent of CalDef.
 
 Source: GIS-646 CalDef Database v7.0.8 (April 2023)
 Location: /misc/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/
+
+3.0 CALDEF RECORD STRUCTURE (migrated from DPS_SECURITY_ANALYSIS.txt)
+---------------------------------------------------------------------
+Each calibration record has:
+  - CalID (unique identifier)
+  - Type (Boolean, Integer, String, Enumeration)
+  - Default value
+  - Reference (GIS specification)
+  - Usage (LOW, MID, HIGH, GLOBALA, GLOBALB, VCU, etc.)
+The "Usage" field indicates which vehicle/radio tiers use the calibration, NOT which
+Module ID contains it.
+
+CalDef limitations: CalDef files define WHAT calibrations exist; they do NOT tell us
+which Module ID contains each calibration, the binary format of calibration storage,
+how to create valid .cfx files, or whether calibrations are signed.
 
 3.1 SECURITY-RELEVANT CALDEFS
 -----------------------------

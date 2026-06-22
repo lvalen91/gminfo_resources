@@ -4,7 +4,12 @@ Every factual claim in this repo was cross-checked (8 parallel verification pass
 ground-truth sources: the **POTATO** ADB/logcat/metrics corpus, the **Y181/Y177 update
 packages** (partition manifests + decompiled ELK/GHS/VMM/VIP artifacts), the **EEPROM `.bin`
 dumps**, the **DPS session logs**, the **SELinux policy CIL**, decompiled **GMSystemUI**, and
-the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026).
+the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y181 Jun-2026 live**).
+
+> **Jun-2026 live update:** a fresh capture against the running radio (`enumeration/Y181/jun2026/`,
+> same Y181.3.2 firmware) reinforced 16 claims, closed 3 "unverifiable" gaps (GPU, touch 0x4B, virtio guest),
+> and **withdrew two earlier corrections** (c2.android codecs, networking) — see those rows below and
+> `enumeration/Y181/jun2026/CLAIMS_VERIFICATION.md`.
 
 Bottom line: the bulk of the repo verified **CONFIRMED**. The errors found are listed below;
 the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was out of scope
@@ -23,7 +28,7 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 | VHAL: RANGE_REMAINING | "not present (ICE)" | **present** (0x11600308) |
 | VHAL: FUEL_LEVEL_LOW | 0x11600308 | correct ID **0x11200405** (0x11600308 is RANGE_REMAINING) |
 | VHAL: HVAC | "standard HVAC IDs ALL ABSENT, GM non-standard" | **standard AOSP HVAC IDs present** (0x15400500/501 fan, 0x15600502/503 temp); CarHvacManager fan/temp works |
-| Networking ports | 9002/9010/9016 @ 192.168.1.100; 7000 ADB | only **9002/9016 @ 192.168.1.1** (GHS bridge); 9010 is outbound; 7000 transient (gone by Apr-2026); DNS on gateway .102 |
+| Networking ports | 9002/9010/9016 @ 192.168.1.100; 7000 ADB | **RE-CONFIRMED to original by live Jun-2026 capture**: guest IP is **192.168.1.100** (eth0/vlan5; no `.1` iface or route in guest), with **9002/9010/9016 + 7000 + 6363 + 49156 all LISTENING**. The earlier "9002/9016 @ .1, 9010 outbound, 7000 gone" correction was a single-dump artifact (state varies by projection session) and is withdrawn. WiFi-AP side: `br0 192.168.5.1/24` serves DNS :53; vlan4 `172.16.4.100`. |
 | CAN tester ID | Req 0x14DA80**F1** / Rsp 0x145AF1**80** | captured DPS session uses **F2** (0x14DA80F2 / 0x145AF280); F1 = generic OBD tester address |
 | EEPROM unlock guide | only 0x441/0xa81 documented | added **0x1A01→0xFF** and **0x0B41→0x01** (all 4 bytes the Y181 mod actually flips) |
 | 0x0A00/0x0B00 ref counts | 871/311 stated as fact | flagged: 871 vs 854 / 311 vs 305 across passes; RE-sourced, not dump-reproducible |
@@ -44,7 +49,9 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
   DPS shows `SBI $0000 Bypass Inactive`, all-FF seed; all bins 8192 B.
 - **Audio:** exactly 8 buses, 6 VolumeGroups, 48 kHz/8 ms period, FAST flag denied to 3P,
   ECNR HAL absent, HalAudioFocus unsupported — all from car_service.txt + POTATO logcat.
-- **Video/display:** OMX.Intel.hw_vd.h264 (the 12 c2.android.* SW video codecs are absent),
+- **Video/display:** OMX.Intel.hw_vd.h264 (HW path) **coexisting with c2.android.* SW video decoders** —
+  live Jun-2026 `dumpsys media.player` lists `c2.android.{avc,hevc,vp8,vp9}.decoder` and
+  `/vendor/etc/media_codecs_google_video.xml` is present, so the earlier "12 c2.android.* absent" claim is **withdrawn**;
   window geometry T:118/L:189/CardView/1416×842 verbatim in logcat, keyframe 2.5 s/30 s,
   Intel VPU workaround marker, iahwcomposer explicit-sync, no HDR/VRR.
 - **VHAL/cluster:** 535 props (49 SYSTEM + 486 VENDOR), Cluster HAL mIsCoreSupported:false →
@@ -58,19 +65,28 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 
 ## Unverifiable from available sources (not wrong — just not independently evidenced)
 
-GPU "HD 505/18 EU/Mesa 21.1.5" and Vulkan "1.0.64" (no GL dump); EEPROM I²C 0x50/touch 0x4B
-(i2c dump has no address grid); VIP stub @0xb67d0 4 B→906 B and Y177 permissive (no Y177 ADB
-dump — RE-sourced); `libNmeVideoSW.so` name (partition `strings` only); 4-port USB topology /
-OTG-ID-pin (ALLData schematics).
+EEPROM I²C **0x50** (no raw read — `/dev/i2c-7` is `system:system 0660`, shell can't open);
+VIP stub @0xb67d0 4 B→906 B and Y177 permissive (no Y177 ADB dump — RE-sourced);
+`libNmeVideoSW.so` name (partition `strings` only); 4-port USB topology / OTG-ID-pin (ALLData schematics).
+
+**Resolved by live Jun-2026 ADB capture** (`enumeration/Y181/jun2026/`):
+- GPU **"HD 505 / Mesa 21.1.5"** → CONFIRMED via `SurfaceFlinger` GLES dump:
+  `Mesa Intel(R) HD Graphics 505 (APL 3), OpenGL ES 3.2 Mesa 21.1.5 (git-4bdd81676b)`.
+- Touch controller **I²C 0x4B** → CONFIRMED: `/sys/bus/i2c/devices/7-004b` bound (bus 7 also exposes 0x0c/0x12/0x28).
+- Virtualized GHS guest → CONFIRMED: guest block device is `vda` (virtio-blk), no `mmcblk*` (eMMC sits behind the hypervisor).
+- Vulkan **"1.0.64"** → CORRECTED to **1.1.0**: the raw value `4198400` (identical in repo dump and live `vkjson`)
+  decodes to `0x401000` = `VK_MAKE_VERSION(1,1,0)`. "1.0.64" was a decode slip (1.0.64 would be `4194368`/`0x400040`).
+  Source docs updated (`video/README.md`, `video/hardware_rendering.md`, `analysis/platform_faq.md`).
 
 ## Recommended but not yet applied (judgment calls / lower priority)
 
 - **Provenance hedging:** label Y177-permissive + VIP-stub as RE-sourced in `firmware_versions.md`
   & README (FAQ §12 already does); `boot_chain.md:136` AB0 magic comment says "AVB0" (should be
   `\0AB0`); rollback "separate GHS counter in misc" is inference (the *block* is field-observed).
-- **Video codec tables:** `video/video_codecs.md`, `video/software_rendering.md`,
-  `codecs/media_codecs.md` still present the 12 c2.android.* SW video codecs as available —
-  annotate as absent on this image (only OMX.Intel HW video exists).
+- ~~**Video codec tables:** annotate the c2.android.* SW video codecs as absent.~~ **WITHDRAWN** —
+  live Jun-2026 confirms `c2.android.{avc,hevc,vp8,vp9}.decoder` ARE registered (+ `media_codecs_google_video.xml`).
+  The codec tables in `video/video_codecs.md`, `video/software_rendering.md`, `codecs/media_codecs.md`
+  presenting them as available are **correct**; OMX.Intel HW and c2.android SW decoders coexist.
 - **`video/carplay_video_pipeline.md` / `cinemo_nme_framework.md`:** "NVIDIA NVDEC" SW decoder on
   an Intel platform is dubious → "Cinemo NME software H.264 decoder".
 - **FAQ §19 fine-points:** the whitelist keys on activity `…applecarplay…AppleCarPlayProjection

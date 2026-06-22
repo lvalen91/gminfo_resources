@@ -20,6 +20,12 @@ GM AAOS implements **fundamentally different architectures** for CarPlay and And
 | **Libraries** | libNme*.so (~17.5 MB) | Standard AOSP | Standard AOSP |
 | **Authentication** | Apple MFi (iAP2) | CPC200 handles MFi | Google certificates |
 
+> Note: "Software (NVDEC)" for native CarPlay = Cinemo NME's own `NvdecSW` **software** H.264 decoder
+> module — NOT NVIDIA hardware (gminfo37 has an Intel HD Graphics 505 GPU, no NVIDIA silicon). See
+> `video/carplay_video_pipeline.md`. Adapter-internal mechanics (CPC200 MFi handling, AAC→PCM, AirPlay
+> termination) are documented in the separate CPC200-CCPA repo; this doc covers the native-vs-adapter
+> *comparison*.
+
 ---
 
 ## Video Pipeline Comparison

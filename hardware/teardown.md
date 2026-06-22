@@ -501,6 +501,12 @@ Intel A3960 GPU (HD Graphics 505)
   LT3899 (Backlight LED Driver)
 ```
 
+> **Runtime-identified components** (not read at physical teardown — cross-ref `platform/hardware.md`; confirmed by the live Jun-2026 Y181 capture):
+> - **Display panel:** Chimei Innolux (CMN) **DD134IA-01B**, 2400x960 @ 60Hz, density 200, ~13.4" (from EDID; the teardown captured resolution only — no panel maker/model was read off the assembly).
+> - **Touch controller:** Atmel **maXTouch** on i2c bus 7 @ **0x4B** (from runtime i2c enumeration; not present in the board BOM above).
+> - **GPU driver stack:** Mesa **21.1.5**, OpenGL ES **3.2**, Vulkan **1.1.0** (runtime; the BOM lists the HD 505 silicon only, no driver/API versions).
+> - **Ethernet MAC:** the chip is physically marked **WGI210CL = Intel I210** rev A3 (BOM line: "Ethernet MAC"); some curated docs (`platform/hardware.md`, `MASTER_REFERENCE.md`, the Y177 `tech_specs`) label it **"I211"** — an unverified near-twin reading; the physical part marking says **I210**.
+
 Camera input:
 ```
 Camera(s)

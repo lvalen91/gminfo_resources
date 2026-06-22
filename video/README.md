@@ -33,7 +33,7 @@
 | GPU | Intel HD Graphics 505 (Apollo Lake) |
 | Display | 2400x960 @ 60Hz (DD134IA-01B) |
 | OpenGL ES | 3.2 (Mesa 21.1.5) |
-| Vulkan | 1.0.64 (exists but NOT used at runtime — GLES backend only) |
+| Vulkan | 1.1.0 (raw 4198400; live Jun-2026) — exists but NOT used at runtime, GLES backend only |
 
 ### Video Capabilities at a Glance
 

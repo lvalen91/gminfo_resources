@@ -182,6 +182,10 @@ This document provides detailed specifications for all video codecs available on
 - Performance point: 3840x2160 @ 60 fps
 - Windows Media Video compatibility
 
+> Boot-time note: MediaCodec logs `Cannot find role for decoder of type video/x-ms-wmv`
+> during codec enumeration on this image — a VC-1 role/registration mismatch in the vendor
+> config. Observed harmless (VC-1 is not used in the CarPlay/projection path).
+
 ---
 
 ## Hardware Video Encoders (Intel)
@@ -485,6 +489,44 @@ This document provides detailed specifications for all video codecs available on
 | 0x15 | YUV420SemiPlanar (NV12) | Alternate |
 | 0x14 | YUV420PackedPlanar | Legacy |
 | 0x27 | YUV420PackedSemiPlanar | Legacy |
+
+---
+
+## Hardware Encoder Performance (benchmarks — consolidated from codecs/media_codecs.md)
+
+Measured frame rates for the Intel hardware encoders:
+
+**OMX.Intel.hw_ve.h264:**
+
+| Resolution | FPS Range |
+|------------|-----------|
+| 320x240 | 260-300 |
+| 720x480 | 140-160 |
+| 1280x720 | 75-110 |
+| 1920x1080 | 50-55 |
+
+**OMX.Intel.hw_ve.h265:**
+
+| Resolution | FPS Range |
+|------------|-----------|
+| 320x240 | 100-180 |
+| 720x480 | 120-160 |
+| 1280x720 | 70-90 |
+| 1920x1080 | 35-45 |
+| 3840x2160 | 10-14 |
+
+### OMX.google SW encoders for MPEG-4 / H.263 (consolidated from media_codecs.md)
+
+| Codec Name | MIME Type | Max Resolution | Max Bitrate | Profile/Level |
+|------------|-----------|----------------|-------------|---------------|
+| `OMX.google.mpeg4.encoder` | video/mp4v-es | 176x144 | 64 Kbps | ProfileCore : Level2 |
+| `OMX.google.h263.encoder` | video/3gpp | 176x144 | 128 Kbps | ProfileBaseline : Level45 |
+
+**Notes (from media_codecs.md):**
+- G.711 (A-law/u-law): OMX implementations support **1 channel only**; Codec2 (`c2.android`) variants support up to 6 channels.
+- All Intel HW decoder entries in the vendor `media_codecs.xml` carry the comment "ProfileBaseline : Level51" even for H.265/VC-1 decoders — this is a **copy-paste error in the vendor config**, not actual profile/level support.
+- AV1 SW decoding (`c2.android.av1.decoder`) is available but impractical above 720p on this CPU (<30 fps at 1080p).
+- Codec source files: `/system/etc/media_codecs.xml`, `/system/etc/media_codecs_google_video.xml`, `/system/etc/media_codecs_google_audio.xml`.
 
 ---
 

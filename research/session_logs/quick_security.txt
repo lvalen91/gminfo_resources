@@ -1,4 +1,9 @@
 === GM AAOS Quick Security Check ===
+# ARCHIVAL (raw output of quick_security_check.sh, Dec 2025). NOTE: this snapshot is of
+# firmware W213E-Y175.5.2 (kernel 4.19.283, bootloader 2121-1) -- an EARLIER build than the
+# Y181/Y177 work elsewhere; it confirms Y175 was ALREADY SELinux Enforcing. The line below
+# "[+] No rollback index detected - downgrade MAY be possible" is WRONG for Y181: Y181->Y177
+# is BLOCKED by the GHS hypervisor rollback counter (misc/vda9).
 
 [*] Device: gminfo37
 [*] Build:  W213E-Y175.5.2-SIHM22B-383.1

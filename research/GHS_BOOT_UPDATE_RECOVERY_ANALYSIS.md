@@ -5,6 +5,11 @@
 **OS Version:** INTEGRITY IoT 2020.18.19
 **Platform:** Intel Apollo Lake (Broxton) / GM-i35
 
+> Companion doc: `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` is the full GHS reverse-engineering
+> inventory (tasks, IPC, VMM, drivers, attack surface, and the consolidated privacy
+> assessment in its §15). This document focuses on boot/update/recovery; the two are
+> complementary (neither supersedes the other).
+
 ---
 
 ## 1. GHS Boot Process

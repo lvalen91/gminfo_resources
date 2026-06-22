@@ -1,0 +1,202 @@
+--------- beginning of main
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4C3 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x524 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4AE count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x25F count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4A5 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x56A count 9, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4A8 count 26, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x5CE count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x509 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4AA count 2, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x53F count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4E1 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x20D count 1683, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x515 count 5, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x42A count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4E2 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x26A count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4B9 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4B8 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x269 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0xB5 count 10, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x541 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4E0 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4A9 count 356, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4A6 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x56B count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x493 count 1, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4D5 count 4, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x494 count 5, duplicate 0
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x263 not handled, count 11
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x43B not handled, count 1415
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x432 not handled, count 355
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x434 not handled, count 355
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x5A1 not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x433 not handled, count 355
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x430 not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x55F not handled, count 10
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4B1 not handled, count 4
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x53B not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x507 not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x26D not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x468 not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x48E not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x2D not handled, count 7
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x458 not handled, count 4
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x528 not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x46B not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x46E not handled, count 5
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x561 not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x48B not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x48F not handled, count 1
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x4A3 not handled, count 2
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x442 not handled, count 356
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x481 not handled, count 4
+06-21 07:13:03.697   767   799 I VHAL-STATS: Frame 0x23B not handled, count 3533
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x4CD not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x4B5 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x2C not handled, count 15
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x457 not handled, count 4
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x404 not handled, count 4195
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x436 not handled, count 356
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x8C not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x4B7 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x37 not handled, count 108
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x4CE not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x483 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x578 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x2A not handled, count 35204
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x455 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x463 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x25E not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x16 not handled, count 28298
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x41C not handled, count 1416
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x47D not handled, count 5
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x533 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x562 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x44D not handled, count 356
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x53E not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x47C not handled, count 2
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x538 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x262 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x467 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x461 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x523 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x48D not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x45E not handled, count 5
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x22A not handled, count 1417
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x4AF not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x453 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x28 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x544 not handled, count 4
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x4E3 not handled, count 1
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x414 not handled, count 356
+06-21 07:13:03.698   767   799 I VHAL-STATS: Frame 0x475 not handled, count 2
+06-21 07:13:03.698   767   799 I VHAL-STATS: Total frame count 143194, duplicate 0, unhandled 78194
+06-21 07:13:03.719   883  1007 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00001CA8] T[2]HSU(309) fq 90700, fs 41, hwQ 255, pQ 91, afQ 233 trdAfQ 235, mp 13, ofs 0, adj 10, bw 193, dev 13, agc 0, stp 1, ant 1, fs1 -99, fs2 -99, hl FECCED
+06-21 07:13:03.736   601   601 D GM_LOCATION: WHEEL T 425318 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+06-21 07:13:03.751  1480  1480 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 425324745858 < nextUpdateTimeNanos: 425824720081
+06-21 07:13:03.751   339   372 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010296417044495 raw 422701154610 dt 125929280 draw 125916988 newFactor 1.0000976 avg 1.0000912 ac 0.1
+--------- beginning of system
+06-21 07:13:03.752  1525  3207 D CAR.HalClient: Returning status: OK
+06-21 07:13:03.753  1480  1480 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5494228872, mValue=0}
+06-21 07:13:03.753  1480  1480 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+06-21 07:13:03.753  1480  1480 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+06-21 07:13:03.754  1525  3207 D CAR.HalClient: Returning status: OK
+06-21 07:13:03.755  1480  1480 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5494228872, mValue=0}
+06-21 07:13:03.755  1480  1480 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+06-21 07:13:03.755  1480  1480 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+06-21 07:13:03.815   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_modules_CNonRdsModule_result: [00001CA9] CNonRdsModule[2]-timeout(2501ms): freq=90700, vals=8, slowStop=1, fs=41(-32767), slowPrjQual=92(55), prjQ 91(55) hwQual=255(160) nonRDS confirmed!
+06-21 07:13:03.816   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_CFreqCheck_fsmRelated: [00001CAA] FC[2,1]-resume: freq= 91500kHz/FCM90/0x0, ASP 13/9F, here 0ms, hp=0
+06-21 07:13:03.836   601   601 D GM_LOCATION: WHEEL T 425418 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+06-21 07:13:03.845   850   863 D pal_common: [CommIPC] getFrame:[CommIPC.cpp:428] Wait timeout: file descriptor is not ready for reading
+06-21 07:13:03.854  1480  1480 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 425424735750 < nextUpdateTimeNanos: 425824720081
+06-21 07:13:03.854  1480  1480 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 425424735750 < nextUpdateTimeNanos: 425424745858
+06-21 07:13:03.856   854   869 I lvds_device: updateRvcStatus to 1
+06-21 07:13:03.856   854   869 D lvds_device: buf[0] : 0x2a
+06-21 07:13:03.856   854   869 D lvds_device: buf[1] : 0x01
+06-21 07:13:03.871   883  1007 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00001CAB] T[2]HSU(30B) fq 91500, fs 38, hwQ 255, pQ 88, afQ 225 trdAfQ 227, mp 10, ofs 1375, adj 23, bw 194, dev 30, agc 0, stp 1, ant 1, fs1 -99, fs2 -99, hl FECCEC
+06-21 07:13:03.877   339   373 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010296543064383 raw 422827163927 dt 126019888 draw 126009317 newFactor 1.0000839 avg 1.0000905 ac 0.1
+06-21 07:13:03.923   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_modules_CPsModule_result: [00001CAC] CPsModule[2]::checkPsOfPi(): freq= 91500, PI=0x4190/3: db knows PSName: "Evergree"/1, ages:620787<1200000ms.
+06-21 07:13:03.923   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_modules_CPiModule_result: [00001CAD] CPiModule[2]::updateStatus(CPiDecoder): freq= 91500, decPi=0x4190/3, dbPi=0x4190/3, checkTime=52ms, hp=0.
+06-21 07:13:03.924   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_CFreqCheck_fsmRelated: [00001CAE] FC[2,1]-resume: freq=101100kHz/FCM90/0x0, ASP 13/9F, here 0ms, hp=0
+06-21 07:13:03.932   585   655 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 1000 for CH-8:
+06-21 07:13:03.932   585   655 D pal_common: [CommIPC] isReadDataAvailable:[CommIPC.cpp:192] Timeout is expired.
+06-21 07:13:03.933   585   655 W pal_calibrations: [IpcCalibration] read:[Ipc.cpp:45] Timeout is expired in IPC Calibrations channel, repeat waiting
+06-21 07:13:03.933   585   655 W pal_calibrations: [calibrationsCore] mainWorkerThread:[palCalibrationCore.cpp:192] Warning caught in worker body: Timeout expired
+06-21 07:13:03.933   585   655 D pal_calibrations: [IpcCalibration] read:[Ipc.cpp:37] Wait data start
+06-21 07:13:03.933   585   655 D pal_common: [CommIPC] operator():[CommIPC.cpp:184] Spurious wake-up in wait_for(); timeout requested=1000 and woke-up after 0 for CH-8:
+06-21 07:13:03.936   601   601 D GM_LOCATION: WHEEL T 425518 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+06-21 07:13:03.938 13228 13228 W ls      : type=1400 audit(0.0:251868): avc: denied { getattr } for path="/proc/fb" dev="proc" ino=4026532005 scontext=u:r:shell:s0 tcontext=u:object_r:proc:s0 tclass=file permissive=0
+06-21 07:13:03.938 13228 13228 W ls      : type=1400 audit(0.0:251869): avc: denied { getattr } for path="/proc/dma" dev="proc" ino=4026532083 scontext=u:r:shell:s0 tcontext=u:object_r:proc:s0 tclass=file permissive=0
+06-21 07:13:03.938 13228 13228 W ls      : type=1400 audit(0.0:251870): avc: denied { getattr } for path="/proc/keys" dev="proc" ino=4026532102 scontext=u:r:shell:s0 tcontext=u:object_r:proc_keys:s0 tclass=file permissive=0
+06-21 07:13:03.938 13228 13228 W ls      : type=1400 audit(0.0:251871): avc: denied { getattr } for path="/proc/kmsg" dev="proc" ino=4026532049 scontext=u:r:shell:s0 tcontext=u:object_r:proc_kmsg:s0 tclass=file permissive=0
+06-21 07:13:03.938 13228 13228 W ls      : type=1400 audit(0.0:251872): avc: denied { getattr } for path="/proc/misc" dev="proc" ino=4026532013 scontext=u:r:shell:s0 tcontext=u:object_r:proc_misc:s0 tclass=file permissive=0
+06-21 07:13:03.954  1480  1480 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 425524803706 < nextUpdateTimeNanos: 425824720081
+06-21 07:13:03.955  1525  3207 D CAR.HalClient: Returning status: OK
+06-21 07:13:03.956  1480  1480 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5494228872, mValue=0}
+06-21 07:13:03.956  1480  1480 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+06-21 07:13:03.956  1480  1480 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+06-21 07:13:03.957  1525  3207 D CAR.HalClient: Returning status: OK
+06-21 07:13:03.958  1480  1480 D CameraPropertyHelper: getPropertyData: CarPropertyValue{mPropertyId=0x21401045, mAreaId=0x0, mStatus=0, mTimestamp=5494228872, mValue=0}
+06-21 07:13:03.958  1480  1480 D SafetyCamera_VehicleProxy: VehicleMotionMovement : 0
+06-21 07:13:03.958  1480  1480 D SafetyCamera_CameraStates: getVehicleMovementValue : 0
+06-21 07:13:03.980   883  1007 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00001CAF] T[2]HSU(30B) fq 101100, fs 58, hwQ 255, pQ 100, afQ 255 trdAfQ 255, mp 2, ofs 125, adj 3, bw 194, dev 29, agc 0, stp 1, ant 1, fs1 -99, fs2 -99, hl FECCEC
+06-21 07:13:04.003   339   372 W _PTP    : IasLibPtpDaemon::getRealLocalTime(889): coeff update raw:  lt 1321010296669002015 raw 422953090029 dt 125937632 draw 125926102 newFactor 1.0000916 avg 1.0000906 ac 0.1
+06-21 07:13:04.006  1525  3207 D CAR.HalClient: Returning status: OK
+06-21 07:13:04.008  1525  3207 D CAR.HalClient: Returning status: OK
+06-21 07:13:04.010  1478  1725 D TimeOfDay: CachedTimeOfDayCalibrations.isRdsSourceAvailable(53)	TimeOfDay:CachedTimeOfDayCalibrations: isRdsSourceAvailable: available: false	(pool-2-thread-1)
+06-21 07:13:04.012  1478  1725 D TimeOfDay: TimeOfDayCalibrations.isRdsSourceAvailable(58)	TimeOfDay:TimeOfDayCalibrations: isRdsSourceAvailable: RDS source availability: false	(pool-2-thread-1)
+06-21 07:13:04.027  1480 13108 D com.gm.fsa.service.FSAServiceConnectedClient: read the inputsream  read cnt : -1
+06-21 07:13:04.028  1480 13108 W com.gm.fsa.service.FSAServiceConnectedClient: FSA: Read Header size 20, readTotal bytes : 0. [-1:socket is dead.]
+06-21 07:13:04.028  1480 13108 I com.gm.fsa.service.FSAServiceConnectedClient: FSA: call onClientDeath() after socketRead()
+06-21 07:13:04.028  1480 13108 D FSANetCommsService9016: FSA: onClientDeath /192.168.1.112
+06-21 07:13:04.028  1480 13108 D FSAProperty: Removed Subscriber with property id 100 with ip com.gm.fsa.service.FSAServiceConnectedClient@bacfdc1
+06-21 07:13:04.028  1480 13108 D FSAServicePropertyHandler: FSA: removed subscription for ip /192.168.1.112, fktId 100
+06-21 07:13:04.028  1480 13108 D FSAServicePropertyHandler: FSA: no subscription to remove for fktId 2607
+06-21 07:13:04.028  1480 13108 D FSAServiceEventHandler: FSA: clearing event subscriptions
+06-21 07:13:04.028  1480 13108 D FSAServiceEventHandler: FSA: no subscription to remove for fktId 112
+06-21 07:13:04.028  1480 13108 D FSAServiceEventHandler: FSA: removed subscription for ip /192.168.1.112, fktId 111
+06-21 07:13:04.028  1480 13108 D NAMFsaMessenger: onNetworkStatusSubscriberChanged ip: /192.168.1.112 subscriptionStatus: false
+06-21 07:13:04.028  1480 13108 D FSAServiceEventHandler: FSA: removed subscription for ip /192.168.1.112, fktId 2604
+06-21 07:13:04.028  1480 13108 D FSAServiceEventHandler: FSA: no subscription to remove for fktId 2605
+06-21 07:13:04.028  1480 13108 D FSAServiceEventHandler: FSA: no subscription to remove for fktId 2610
+06-21 07:13:04.028  1480 13108 D FSANetCommsService9016: FSA: removing ConnectedClient with ip /192.168.1.112 connected client = com.gm.fsa.service.FSAServiceConnectedClient@bacfdc1
+06-21 07:13:04.032   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_modules_CPsModule_result: [00001CB0] CPsModule[2]::checkPsOfPi(): freq=101100, PI=0x1114/3: db knows PSName: "101.1   "/1, ages:1097554<1200000ms.
+06-21 07:13:04.032   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_modules_CPiModule_result: [00001CB1] CPiModule[2]::updateStatus(CPiDecoder): freq=101100, decPi=0x1114/3, dbPi=0x1114/3, checkTime=52ms, hp=0.
+06-21 07:13:04.033   883  1007 D TunerCommon: dev_amfm_appl_monitor_freqcheck_CFreqCheck_fsmRelated: [00001CB2] FC[2,1]-resume: freq=102500kHz/FCM95/0x0, ASP 13/9F, here 0ms, hp=0
+06-21 07:13:04.036   601   601 D GM_LOCATION: WHEEL T 425618 W0 0.000000 W1 0.000000 W2 0.000000 W3 0.000000 W4 0.000000 W5 0.000000 W6 0.000000 W7 0.000000
+06-21 07:13:04.054  1480  1480 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 425624752482 < nextUpdateTimeNanos: 425624803706
+06-21 07:13:04.054  1480  1480 D CPECallbackController: Dropping carPropertyEvent - propId: 291504647 areaId: 0  because getTimestamp(): 425624752482 < nextUpdateTimeNanos: 425824720081
+06-21 07:13:04.058  1480  1967 D com.gm.fsa.service.FSAServiceConnectedClient: FSA: sending message to /192.168.1.100, fktId 'HEARTBEAT' (100), optype 'STATUS' (343), handle 0
+06-21 07:13:04.058  1480  1967 D com.gm.fsa.service.FSAServiceConnectedClient: FSA: sending message to /192.168.1.102, fktId 'HEARTBEAT' (100), optype 'STATUS' (343), handle 0
+06-21 07:13:04.058  1480  2012 D FSANetCommsClient: NAMFSAClient RX QSize is: 0, funcID: 100, ID: 100
+06-21 07:13:04.058  1480  2012 D FSAIStateOfHealthClient: NAMFSAClient FSA: handle heartbeat 214
+06-21 07:13:04.059   854   870 D IPCutils: select() timed out
+06-21 07:13:04.065  1480  1970 D FSANetCommsService9016: FSA: service accepted client with ip /192.168.1.112
+06-21 07:13:04.065  1480  1970 D FSANetCommsService9016: FSA: connectedClients index 0 is null
+06-21 07:13:04.065  1480  1970 D FSANetCommsService9016: FSA: connectedClients index 3 is null
+06-21 07:13:04.065  1480  1970 D FSANetCommsService9016: FSA: connectedClients index 4 is null
+06-21 07:13:04.065  1480  1970 D FSANetCommsService9016: FSA: connectedClients index 5 is null
+06-21 07:13:04.065  1480  1970 D FSANetCommsService9016: FSA: adding client at index 0
+06-21 07:13:04.065  1480  1970 D com.gm.fsa.service.FSAServiceConnectedClient: FSA: creating new client at ip /192.168.1.112
+06-21 07:13:04.066  1480 13241 D com.gm.fsa.service.FSAServiceConnectedClient: FSA: starting tcp socket listener thread
+06-21 07:13:04.066  1480 13241 D com.gm.fsa.service.FSAServiceConnectedClient: FSA: service is listening to socket with ip /192.168.1.112
+06-21 07:13:04.066  1480 13241 D com.gm.fsa.service.FSAServiceConnectedClient: FSA: waiting to read from: /192.168.1.112:9016
+06-21 07:13:04.086  2803  2803 D CarPlay_PlayerManager: onCinemoEvent(): CINEMO_EC_GRAPH_STATUS
+06-21 07:13:04.090   883  1007 D TunerCommon: dev_amfm_hal_dirana3_CDirana3HwCtrl_standard: [00001CB3] T[2]HSU(30B) fq 102500, fs 54, hwQ 255, pQ 100, afQ 255 trdAfQ 255, mp 5, ofs 0, adj 4, bw 194, dev 26, agc 0, stp 1, ant 1, fs1 -99, fs2 -99, hl FECCEC
+06-21 07:13:04.106   854   870 I IPCutils: --> 0xb1 0x40 0x0 0x0 0xff 0xff 0x0 0x0
+06-21 07:13:04.106   854   870 I lvds_device: setAuxBrightness MSB :0x00 LSB: 0x00
+06-21 07:13:04.106   854   870 D lvds_device: buf[0] : 0x22
+06-21 07:13:04.106   854   870 D lvds_device: buf[1] : 0x00
+06-21 07:13:04.106   854   870 D lvds_device: buf[2] : 0x00
+06-21 07:13:04.107   854   870 D lvds_device: buf[0] : 0x24
+06-21 07:13:04.107   854   870 D lvds_device: buf[1] : 0x00
+06-21 07:13:04.107   854   870 D lvds_device: buf[2] : 0x00
+06-21 07:13:04.107   854   870 D lvds_device: buf[0] : 0x26
+06-21 07:13:04.107   854   870 D lvds_device: buf[1] : 0x00
+06-21 07:13:04.107   854   870 D lvds_device: buf[2] : 0x00
+06-21 07:13:04.108   854   870 D lvds_device: buf[0] : 0x28
+06-21 07:13:04.108   854   870 D lvds_device: buf[1] : 0x00
+06-21 07:13:04.108   854   870 D lvds_device: buf[2] : 0x00
