@@ -317,6 +317,19 @@ Camera/Audio/Screen → GHS Buffer → KETH_WritePacket → WiFi/Ethernet/HECI �
 3. **CRC NOT enforced at boot** - tested with invalid VIN
 5. **Y177 security function stubbed** - Possibly changed SELinux or AVB
 
+### 11.4 Critical GHS / Build Findings (2026-06-29)
+
+- **GHS HOSTOS (85098662) is byte-for-byte identical between Y177 and Y181** — the misc/vda9 rollback counter is the ONLY discriminator between builds.
+- **'VMM: Warning: A/B metatdata CRC failure!' (ghs_str.txt:43973) is a WARNING string, not an abort** — CRC failure in misc may be non-fatal. Untested.
+- **RSA-1024 private key found in ghs_integrity.elf at offset 12924442** — only private key in the entire corpus; function unknown. See research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md.
+
+### 11.5 Critical Untried Paths (2026-06-29)
+
+- **CRITICAL UNTRIED:** `/data/vendor/gm/security/.validation` deletion → TOFU PAL key re-provisioning (INVENTORY.md bypass #3)
+- **CRITICAL UNTRIED:** `androidboot.bootreason=warm` → gm_protokey validation skip (INVENTORY.md bypass #2)
+
+See research/UNTRIED_ATTACK_VECTORS.md for full ranked list.
+
 ### 11.2 Security Mitigations
 
 1. **GHS rollback protection** - blocks downgrades at boot verification
@@ -347,6 +360,10 @@ Private key NOT extractable (GM infrastructure).
 | 3 | Y177 downgrade via hybrid package | Blocked by GHS |
 | 4 | misc partition A/B metadata structure | Research needed |
 | 5 | Factory reset rollback index impact | Unknown |
+| 6 | /data/vendor/gm/security/.validation deletion → TOFU re-provisioning | **UNTRIED** (bypass #3) |
+| 7 | androidboot.bootreason=warm → gm_protokey skip | **UNTRIED** (bypass #2) |
+| 8 | misc/vda9 rollback counter zeroing (GHS HOSTOS identical Y177=Y181) | **UNTRIED** — highest downgrade leverage |
+| 9 | Gordon Peak / Intel Celadon open-source axis | See GORDON_PEAK_CELADON_INTELLIGENCE.md |
 
 ---
 
@@ -377,6 +394,16 @@ Private key NOT extractable (GM infrastructure).
 |------|-------|
 | ADB_enabled.bin | Bypassed (0x0440=5AFF5A) |
 | Y181/original.bin | Locked (0x0440=C300C3) |
+
+### 13.4 Research Documents (added 2026-06-29)
+
+| File | Content |
+|------|---------|
+| research/GORDON_PEAK_CELADON_INTELLIGENCE.md | Gordon Peak MRB and Intel Project Celadon intelligence: cloneable repos, what's NDA-gated, research axis mapping |
+| research/session_logs/RESEARCH_STATE_MAP_JUN2026.md | Complete research state map as of Jun 2026: timeline, what was tried, key discoveries, dead ends, where research stopped |
+| research/UNTRIED_ATTACK_VECTORS.md | Prioritized list of attack vectors identified but not yet executed; ranked by impact on Y177 downgrade goal |
+| research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md | RSA-1024 private key found in ghs_integrity.elf at offset 12924442; only private key in entire corpus; function unknown |
+| platform/intel_apl_external_resources.md | Index of all external Intel APL resources: cloned repos in ~/Downloads/github/, PDFs, patents, NDA-gated items |
 
 ---
 

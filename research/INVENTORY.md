@@ -157,4 +157,27 @@ Intel CSE silicon (QFPROM OEM_PK_HASH)
 ## Mempalace reference
 Wing `gminfo37` contains ~22 drawers across rooms `architecture`, `security`, `attack-surface`, `tooling`, `references` with full project record.
 
-Last updated: 2026-04-13
+---
+
+## External Resources Cloned (2026-06-29)
+Location: ~/Downloads/github/
+
+| Artifact | Path | Branch/Tag | Purpose |
+|---|---|---|---|
+| kernelflinger | ~/Downloads/github/kernelflinger | celadon/s/mr0/apollo | ABL/HECI/ELK trigger source, AVB implementation, misc/BCB boot flow |
+| vendor-intel-utils | ~/Downloads/github/vendor-intel-utils | celadon/s/mr0/apollo | SELinux baseline, AAOS patch overlays (aosp_diff/aaos_iasw) |
+| device-androidia | ~/Downloads/github/device-androidia | celadon/p/mr0/master | Gordon Peak config lineage (caas/mixins.spec) |
+| device-intel-sepolicy | ~/Downloads/github/device-intel-sepolicy | master | Intel AAOS SELinux policy reference |
+| celadon-manifest | ~/Downloads/github/celadon-manifest | master | All Celadon build manifests A10–A15 |
+| intel-FSP (sparse) | ~/Downloads/intel-FSP/ApolloLakeFspBinPkg | master | Apollo Lake FSP binaries (Fsp.fd, VBT) |
+| slimbootloader (sparse) | ~/Downloads/slimbootloader | master | Platform/ApollolakeBoardPkg — GPMRB reference, Stage2BoardInitLib.c |
+
+## PDFs Downloaded (2026-06-29)
+| Document | Path | Source |
+|---|---|---|
+| Intel APL UEFI Enabling Guide #671281 | ~/Downloads/intel_apl_uefi_enabling_guide_671281.pdf | cdrdv2-public.intel.com |
+
+## Key Binary Finding (2026-06-29)
+RSA-1024 private key in ghs_integrity.elf at byte offset 12924442 (609 bytes, sha1=78d9a50f). ONLY private key in the entire corpus. Function unknown. See research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md.
+
+Last updated: 2026-06-29
