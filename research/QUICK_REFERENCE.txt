@@ -108,7 +108,7 @@ SELinux: Y177 permissive (may work), Y181 enforcing (likely blocked)
 === HARDWARE COMPONENTS ===
 
 I2C EEPROM:  ST M24C64 (8KB) - Security flags, VIN, config
-SPI Flash:   ISSI IS25LP016 (2MB) - Logs, backup, extended cfg
+SPI Flash:   ISSI IS25LP016D (2MB) - BCM89551 Ethernet-switch firmware (NOT logs/backup; corrected per hardware/teardown.md). Separate 8MB IS25WP064A = Apollo Lake IFWI/TXE boot flash.
   Location:  Opposite side of PCB from EEPROM
   Markings:  IS25LP016, DNL3, 2243, P3A368L2
   Critical:  NO (module likely boots without it)

@@ -7,6 +7,8 @@
 
 ---
 
+> ⚠ **Treat the capability/benchmark numbers with skepticism.** Several are unverified or internally inconsistent: the `blocks-per-second` max (972,000) only supports 4K**30**, not the 4K60 stated in the summary tables; VC-1 4K60 is not a real capability (VC-1 Advanced Profile tops out at 1080p); and the "measured" FPS tables have no stated methodology. Codec *presence* (from `media_codecs.xml`) is reliable; the *performance points* here are not verified.
+
 ## Codec Overview
 
 This document provides detailed specifications for all video codecs available on the GM infotainment system, including hardware-accelerated (Intel OMX) and software (Android C2/OMX) implementations.

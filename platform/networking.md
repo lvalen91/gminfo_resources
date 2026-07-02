@@ -11,7 +11,7 @@
 
 | Interface | Purpose | Address |
 |-----------|---------|---------|
-| eth0 | Intel I211 physical (gPTP master, 1Gbps) | 192.168.1.100/24 (Y181, same as vlan5); Y175 has no IPv4 on eth0 |
+| eth0 | Intel I210 physical (gPTP master, 1Gbps; "I211" was an unverified near-twin reading — see `hardware/teardown.md`) | 192.168.1.100/24 (Y181, same as vlan5); Y175 has no IPv4 on eth0 |
 | vlan4 | VIP-SoC IPC | 172.16.4.x |
 | vlan5 | Vehicle network (NFSA) | 192.168.1.100 (IHU) |
 | br0 | WiFi hotspot bridge (wlan1+wlan2 bridged, hostapd_bcm+dnsmasq) | — |
@@ -248,7 +248,7 @@ Telematics (CGM module) operates independently of the A11 radio stack — cloud 
 - **CSM address:** 0x80
 - **Gateway:** VIP MCU (RH850/P1M-E) acts as CAN gateway between vehicle bus and SoC
 
-The VIP MCU bridges CAN messages to the Intel SoC over the HDLC IPC link, translating vehicle bus traffic into structured IPC messages for Android services. The CSM (Chassis System Module) at address 0x80 is the primary audio amplifier endpoint connected via Ethernet AVB.
+The VIP MCU bridges CAN messages to the Intel SoC over the HDLC IPC link, translating vehicle bus traffic into structured IPC messages for Android services. The module at CAN address 0x80 (CSM = Center Stack Module) is the radio/head unit itself; the audio **amplifier** is a *separate* AVB endpoint (`192.168.1.103`, `AMP_ETH`) that the radio streams to over Ethernet AVB. *(Corrects earlier text calling 0x80 "the primary audio amplifier endpoint".)*
 
 ---
 
@@ -266,7 +266,7 @@ The Broadcom BCM WiFi module supports three concurrent interfaces:
 
 ## Ethernet AVB
 
-- **NIC:** Intel I211, 1Gbps
+- **NIC:** Intel I210 (WGI210CL), 1Gbps ("I211" was an unverified near-twin reading — see `hardware/teardown.md`)
 - **gPTP role:** Master
 - **AVB streamhandler:** v3.2.7.2 (GM3/CSM)
 - **Audio endpoint:** NXP TDF8532 codec on CSM → external amplifier → 4 speakers

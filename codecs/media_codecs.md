@@ -6,6 +6,8 @@
 
 ---
 
+> ⚠ **Some capability rows are unverified.** `OMX.Intel.hw_vd.vc1 @ 3840x2160@60` and other 4K60 HW rows are inconsistent with the parts' real limits (VC-1 has no 4K mode; Gen9 AVC HW decode is 4K30, not 4K60) and with the codecs' own blocks-per-second ceilings. Codec *presence* is from the XML and reliable; the resolution/fps *performance points* are not verified.
+
 > **SUPERSEDED / ARCHIVAL** — consolidated into [`video/video_codecs.md`](../video/video_codecs.md)
 > (the canonical codec registry). Body retained UNCHANGED as history. Its unique items were
 > migrated first (verified): the **HW-encoder fps benchmarks** (`OMX.Intel.hw_ve.h264`/`.h265`),

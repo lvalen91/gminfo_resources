@@ -152,6 +152,8 @@ FinishCurrentFrame()  // Complete frame decode
 
 ### Supported SEI Types (from libNmeVideoSW.so strings)
 
+> ⚠ **The `SEI Type` numbers below are unverified and do not match H.264 Annex D.** The `rbsp_sei_*` function names are real strings from `libNmeVideoSW.so`, but the numeric column is inconsistent with the standard (e.g. `full_frame_freeze` is Annex-D type 13, not 16; `deblocking_filter_display_preference` is 20, not 8) and type 21 is listed twice. Trust the function names, not the numbers.
+
 | SEI Type | Function Name | Purpose |
 |----------|---------------|---------|
 | 16 | `rbsp_sei_full_frame_freeze` | Freeze display on current frame |

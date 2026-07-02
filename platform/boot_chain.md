@@ -379,7 +379,7 @@ Inter-process communication channels between GHS tasks and Android:
 
 ## Error Screen Architecture
 
-Error and see-dealer screens are displayed by **Android** (`gm_update_engine`), NOT by GHS. GHS has no UI rendering capability — it operates entirely headless. Evidence: `gm_update_engine` detects USB trigger files and renders appropriate error/service screens within Android's UI framework.
+The "return to dealer" / recovery screens are rendered by **GHS**, not Android. GHS has direct display access — it also draws the backup-camera overlay independently of the Android guest (which is why the camera works during an Android reboot). `gm_update_engine` on the Android side stages OTA packages and writes the BCB (`boot-recovery` / `--show_return_to_dealer`) to `misc`, but the on-screen rendering of the error/see-dealer screen itself is done by GHS. See `hardware/teardown.md` §GHS as Recovery Architecture. *(Corrects an earlier claim here that "GHS is headless / has no UI rendering.")*
 
 ---
 

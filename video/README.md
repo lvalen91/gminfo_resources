@@ -37,6 +37,8 @@
 
 ### Video Capabilities at a Glance
 
+> ⚠ **Unverified capability figures.** The rows below are partly inconsistent and should be treated as unverified: 4K60 HW decode conflicts with the codec's own blocks-per-second ceiling (which only supports 4K**30**); VC-1 has no 4K mode; MPEG-2 appears here but in no codec registry. Codec *presence* is reliable; the *performance points* are not. See the caveat in `video/video_codecs.md`.
+
 | Capability | Hardware | Software |
 |------------|----------|----------|
 | H.264 Decode | 4K60 @ 40Mbps | 4K @ 48Mbps |

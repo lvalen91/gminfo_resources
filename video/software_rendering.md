@@ -7,6 +7,8 @@
 
 ---
 
+> ⚠ **Software-decode benchmark tables are unverified/implausible.** The "measured" SW figures show HEVC decoding faster than H.264 at the same resolution, which is backwards (HEVC is computationally heavier). No methodology is stated. Treat all SW FPS/throughput numbers in this doc as unverified.
+
 ## Software Rendering Overview
 
 Software rendering on this device is handled by the Android Codec2 (C2) framework and legacy OMX components. These are CPU-based codecs that serve as fallbacks when hardware codecs are unavailable or incompatible.

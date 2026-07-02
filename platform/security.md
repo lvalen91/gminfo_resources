@@ -361,8 +361,8 @@ These GPIOs control MCU reset and boot mode pins. World-writable access means an
 | `$36` | Transfer Data |
 | `$37` | Request Transfer Exit |
 
-- **CSM (Cluster/Switch Module):** CAN address `0x80`
-- **CGM (Central Gateway Module):** CAN address `0x45`
+- **CSM (Center Stack Module — the radio/head unit itself):** CAN address `0x80`
+- **CGM (Central Gateway Module):** CAN address `0x45` — note: GM's GIS-763 caldef labels `0x45` the "Diagnostic Address of the CGM," but whether the CAN gateway at `0x45` *is* the Ethernet-side CGM/telematics module is not established; see `platform/vehicle_network.md`.
 
 > These UDS services are reachable two ways: over **CAN/DPS** (see
 > [`diagnostics/dps/`](../diagnostics/dps/)) and over **Ethernet/TCP** via the

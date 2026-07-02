@@ -1,3 +1,5 @@
+> **⚠ SUPERSEDED SNAPSHOT (Y177, 2025).** This YAML was captured from a **Y177.6.1** build (note `selinux: permissive`, `Intel_I211`, `vulkan: 1.1.128`). Several values were corrected on Y181 — see [`../VERIFICATION.md`](../VERIFICATION.md), [`hardware.md`](hardware.md), and [`../hardware/teardown.md`](../hardware/teardown.md). In particular the Ethernet MAC is **I210** (not I211) and AV1 is **software-only** (Gen9 HD505 has no AV1 hardware decode). Treat this file as a historical Y177 snapshot, not current truth.
+
 ```yaml
 gminfo37_specifications:
   device: gminfo37
@@ -39,7 +41,7 @@ gpu:
   decode_hevc_8bit: true
   decode_hevc_10bit: true
   decode_vp9: true
-  decode_av1: true
+  decode_av1: false   # SW only (c2.android.av1.decoder); Gen9 HD505 has NO AV1 hardware decode — see the av1 section below
   decode_vc1: true
   max_displays: 3
   interfaces: [DP, eDP, HDMI_1.4]
@@ -173,7 +175,7 @@ video_hardware_decoders:
 network:
   ethernet:
     interface: eth0
-    driver: Intel_I211
+    driver: Intel_I210   # marking-verified (WGI210CL); "I211" was an unverified near-twin reading — see hardware/teardown.md
     mac: 02:04:00:00:01:00
     speed: 1000mbps
     vlans: [vlan4_172.16.4.100, vlan5_192.168.1.100]
