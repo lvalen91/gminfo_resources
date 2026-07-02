@@ -92,6 +92,9 @@ Framing bytes at ±1 vary per firmware version — locate by offset, not pattern
 | Document | What it covers |
 |----------|----------------|
 | [`hardware/teardown.md`](hardware/teardown.md) | Full BOM, PCB layout, security architecture, GHS analysis, research vectors, catch-22s |
+| [`hardware/connectors.md`](hardware/connectors.md) | Rear-panel connector map: FAKRA/coax farm, Stac64 power/CAN/AVB-Ethernet headers, FPD-Link display + USB, Bose-amp AVB path, X1–X11 cross-ref |
+| [`platform/vehicle_network.md`](platform/vehicle_network.md) | Vehicle-wide two-plane network: 24-ECU CAN census (gateway 0x45, radio 0x80) from the DPS log + Ethernet vlan4/5 IP/partition map + FSA/SOME-IP; flags where sources disagree |
+| [`platform/ota_programming_roles.md`](platform/ota_programming_roles.md) | Who reflashes what: radio = ProgrammingMaster/HMI + flashes own domain via VIP UDS/CAN; telematics/CGM = download conduit; Y181 package inventory; CalDef GIS-658/763/887 evidence |
 | [`platform/security.md`](platform/security.md) | SELinux, dm-verity, FBE, EEPROM security, CVEs, ProtoKey |
 | [`platform/boot_chain.md`](platform/boot_chain.md) | 5-phase boot, GHS tasks, A/B metadata, misc partition |
 | [`platform/firmware_versions.md`](platform/firmware_versions.md) | Y175/Y177/Y181 diff, DPS/CalDef |
