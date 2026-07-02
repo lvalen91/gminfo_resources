@@ -63,10 +63,29 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 | 172.16.4.14 | **ACP (Application Control Processor)** | permanent ARP, no ping — hypervisor/control partition |
 | 172.16.4.107 | RTOS partition | active, TTL=255; symmetric 49156↔49156 to diagnosticsd |
 | 172.16.4.112 | CGM_OTA (vlan4 face) | active, TTL=64 (Bosch JuP1, Linux) |
+| 172.16.4.1 | **TCP (vlan4 face)** | **live 2026-07-01** — see note below |
 | 172.16.4.12 | EOCM_HCP_SECONDARY / EOCM_HCP_2 | code-referenced |
 | 172.16.4.13 | EOCM_HCB | code-referenced |
 | 172.16.4.15 | EOCM_HCP_HOST / EOCM_HCP_1 | code-referenced |
-| 172.16.4.1, .104, .110 | additional vlan4 ECUs | code-referenced, not live on bench |
+| 172.16.4.104, .110 | additional vlan4 ECUs | code-referenced, not live on bench |
+
+> **TCP module now dual-homed on vlan4 (2026-07-01).** `172.16.4.1` was
+> previously dead on bench (see prior revision of this table). With the
+> telematics module's cellular antenna connected, it answers TCP connects on
+> ports 9010 (`DeviceInformation`, instant accept) and 9012 (`RemoteReflash`,
+> instant accept); an unrelated/bogus port on the same host times out with no
+> RST (silent filter, not a routing artifact — confirmed against both a truly
+> dead vlan4 IP and a known-live host that does send RST for closed ports).
+> Its MAC (`02:04:00:00:02:00`) is identical to `192.168.1.102` (TCP, see
+> [`fsa_protocol.md`](fsa_protocol.md#deviceinformation-instanceid--partition)),
+> confirming it's the same physical module, not a coincidence. Both new ports
+> accept-then-silently-close under the standard single-client-limit behavior
+> (`com.gm.domain.server.delayed` already holds the legitimate session) — this
+> matches the already-documented vlan5-side behavior for the same instance,
+> not a sign of a broken/proxy service. Working theory: the module only fully
+> activates its network stack (including the vlan4 face) once it has an active
+> cellular link to maintain. Not yet confirmed causally (would need an
+> antenna-disconnect re-scan to see `172.16.4.1` go dark again).
 
 > **Partition identity — canonical source.** The authoritative partition map is
 > the FSA **DeviceInformation** service (serviceId 1001), whose `instanceId`

@@ -192,6 +192,18 @@ is non-zero — see Wire Format.)
 close (single-client window). **CGM_OTA (instanceId=7):** no response — likely
 accepts only its vlan4 source IP (172.16.4.112).
 
+> **TCP dual-homed on vlan4 (2026-07-01).** With the telematics module's
+> cellular antenna connected, `172.16.4.1` (MAC identical to `192.168.1.102`,
+> confirming same physical module) now also answers on 9010
+> (`DeviceInformation`) and 9012 (`RemoteReflash`) — previously dead on bench,
+> see [`networking.md`](networking.md#vlan-4--vcs--eocm-network-17216-4x24).
+> Same accept-then-close single-client behavior as the vlan5 face; a raw
+> `rmIdentification`/RemoteModuleHMI frame (wrong serviceId for this port) got
+> no response, as expected, since 9010/9012 use serviceId 1001/1025, not 1007.
+> `OnStarFunctions` (9005) and `RemoteReflash` (9012) are the two TCP-hosted
+> services most directly tied to cellular/OTA function — worth revisiting once
+> a way around the single-client lock is found.
+
 ### NetworkAccessManager (NAM — serviceId 1026, CSM port 9016)
 
 | FunctionID | Method | Type |
