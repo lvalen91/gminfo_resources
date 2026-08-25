@@ -452,3 +452,132 @@ up should trace the option-string parse inside `CPDUAPI::Construct` (`FUN_1006cf
 - Port **13401 can be ignored** (§10.3).
 - Hardcoded IOCTL numbers should be treated as **session-specific**, with the string names as the
   stable identifier (§10.5). This is the one place our existing scripts are silently fragile.
+
+## 11. Port 10123 pre-activation sequence (live hardware + capture reconstruction, 2026-08-25)
+
+Real capture `DPS+SPS.pcapng` (frames 7447-7791) shows port **10123 refuses connections until a
+specific 7-step sequence completes on other ports first**. Reconstructed byte-for-byte from the
+capture and replayed against live MDI2 hardware (IP `192.168.171.2`, our host `.10`, real capture
+host was `.30`):
+
+1. **13-port magic handshake**, standard ports `9052,9001,9006,9051,9007,9014,9009,9003,9012,
+   9050,9008,9010,9013`: connect, send `0053500000300000` (8B), receive `0053500000310000` (8B).
+2. **Port 9052 extra exchange #1**: send captured 212-byte blob, receive 92-byte response.
+3. **Port 9011 handshake — NON-STANDARD magic**: send `0053500000210000` (not `...300000`),
+   receive `0053500000200000` (not `...310000`). This port uses a different magic pair than the
+   other 13 and was skipped in earlier partial reconstructions.
+4. **Port 9052 extra exchange #2**: send captured 60-byte blob, receive 212-byte response.
+5. **Port 9009 keepalive**: send captured 60-byte blob (structurally identical to 9052's traffic),
+   receive 60-byte response.
+6. **Port 9050, 4-message poll**: 3x identical 28-byte poll frames (only a 1-byte counter at
+   buffer offset 11 increments: `f6,f7,f8`), each gets an identical-structure 116-byte response
+   (counter echoed back at the same offset); then a 4th, differently-structured 108-byte "trigger"
+   frame (counter `f9`), which gets a 108-byte response.
+7. Real capture: TCP SYN to port 10123 **0.5ms after step 6 completes**, and it succeeds.
+
+**All request/response payloads share an 8-byte header**: 4 zero bytes + a big-endian
+length-of-remainder field (e.g. `...00cc` = 204 bytes follow -> 212-byte total frame), followed
+by what looks like a per-port session tag (4 bytes, e.g. `fba0ae42`, `a2404d1c`, `d177f3f6`) that
+increments by a fixed +1 in its low byte on the 3 identical 9050 polls, then encrypted/opaque
+content.
+
+**Live-hardware replay result (byte-verbatim, all 7 steps exactly as captured, run 2026-08-25)**:
+every response byte matched the captured response byte-for-byte, for every step, including the
+9052/9009 "encrypted" exchanges — **strong evidence this layer is a deterministic function of
+input bytes only, not a live random nonce/session key** (a true nonce-based session would not
+reproduce identical ciphertext for identical stale-request replay days later). Despite the
+byte-perfect replay of the full reconstructed sequence, **port 10123 remained refused
+(`ECONNREFUSED`)** in this live test.
+
+**Not yet resolved — leading hypotheses, untested**:
+- The device's internal state machine may have been desynced by this session's earlier *partial*
+  and *malformed* replay attempts (wrong counter offset, incomplete port coverage) against the
+  same live unit before this full-sequence test ran; embedded custom protocols like this are
+  often not re-entrant/idempotent per boot. A physical power-cycle of the MDI2 (USB replug) before
+  the next attempt is the highest-value untried step.
+- Source IP mismatch: real capture client was `192.168.171.30`; our replay used `.10`. Unlikely to
+  gate a device-side listener but not eliminated.
+- Original capture's client TCP source ports were sequential (`54519`-`54534`); our sockets use
+  OS-assigned ephemeral ports. Unlikely but not eliminated.
+- There may be additional required traffic on ports not covered by this reconstruction's frame
+  window (7447-7791) — e.g. something earlier in the capture that primes device state once per
+  power-on rather than once per PDU-API session.
+
+Reconstruction script: `mdi2_full_sequence.py` (scratchpad, session
+`c702cbc7-7dd0-4f49-994c-6ee0703cd474`), implements all 7 steps with literal captured bytes.
+
+### 11.1 Cross-cycle confirmation (2nd of 18 cycles in same capture, frames 13039-13064)
+
+The capture contains **18 repeats** of this full cycle before a 10123 connection (paired SYNs at
+frames 7764/7774, 13064/13075, 15413/15425, ... 47231/47244, etc.) — this is a **per-session
+ritual repeated every time**, not a one-time device-boot unlock.
+
+Diffing cycle 1 (frame 7743+) against cycle 2 (frame 13039+) byte-for-byte isolates the actual
+variable: each TCP connection gets a **4-byte tag** immediately after the 8-byte header (e.g.
+`fba0ae42` cycle 1 vs `9e3e5132` cycle 2 on port 9052; `d177f3f6` vs `a8a7c135` on port 9050) that
+**increments by exactly +1 per subsequent message sent on that same connection** (9052 extra1→
+extra2: `...42`→`...43` cycle 1, `...32`→`...33` cycle 2; 9050 poll low byte `f6,f7,f8,f9` cycle 1,
+`35,36,37,38` cycle 2) — but the **encrypted payload content after the tag is byte-identical
+across cycles**. This is consistent with the tag being a **client-chosen, per-connection
+nonce/counter** that the device simply echoes and increments against, not a device-issued
+session secret — i.e. our live replay's reuse of stale tag values (`d177f3f6...`) was not
+functionally wrong, since the device honored it and returned the expected structurally-correct
+response both times. This rules out "wrong nonce" as the reason 10123 stayed refused in the live
+test, and strengthens the leading hypothesis in §11 that **live-device internal state was left
+desynced by this session's earlier partial/malformed manual attempts**, recoverable only by a
+power cycle (untested at time of writing — requires physical MDI2 USB replug).
+
+## 12. MAJOR FINDING: local loopback Manager IPC (127.0.0.1:8125) precedes/interleaves the
+    device-side low-port dance — likely explains why byte-perfect §11 replay still fails
+
+While investigating the frame gap (7516-7730) between the first 11 and last 3 ports of the §11
+14-port precheck, found this capture **also contains USB-level frames (protocol `USBCOM`/`USB`)
+merged into the same pcapng** (Wireshark multi-adapter capture) — previously missed because file
+search was by filename ("usb") not by content.
+
+**Critical discovery: TCP port 8125 on `127.0.0.1` (loopback, tablet-local, NOT device
+traffic)** — a local IPC/RPC service, almost certainly exposed by the Windows MDI2 Manager
+background process (`gm_mdi_manager.exe` or a service DLL it hosts), that DPS/SPS talk to
+*while* the device-side low-port dance is still in progress. Decoded frames (all format:
+`[u32 total_len][u32 opcode][...payload]`, opcodes pair as request N / response N+1 or N+3):
+
+- **opcode `0x7f2`→`0x7f5`**: client sends hostname (`"zeno"` — the tablet's own hostname) +
+  a sequence id; server responds `"Identification Service"` + **three IPs**:
+  `192.168.171.30` (tablet), `192.168.171.2` (this MDI2), and a **previously-unseen third IP
+  `192.168.177.2`** (different subnet — a second adapter/MDI unit or a diagnostic bridge,
+  unexplored).
+- **opcode `0x8bf`→`0x8c0`**: capability/count query → responds `count=1`.
+- **opcode `0x8d1`→`0x8d2`** — **the key frame** (capture frame 7650): client sends a string
+  `"BSH:88985275:28:9.1.2752.177:08"` (Bosch-format: **serial `88985275`** = this exact unit's
+  serial, confirmed matching `GM VCIHistory ...-D88985275.txt`; `module_type=28`; firmware
+  `9.1.2752.177`) **followed by a 28-byte credential, hex-encoded as ASCII**:
+  `5F06abb5de50a079fCd1e8f69d3EaF16c8D3E5Ee4F55eF31cB0A3fdE`. Server responds with a bare
+  status value (`3`).
+- Two ~16.7KB responses (frames 7574/7576/7671/7709) list installed driver/module info per
+  adapter (`ax9u_dlink_drivers-kernel_modules`, `ax9u_dlink_drivers-tools`, versions
+  `0.1.2735.5` / `3.0.14`, serial-like `370A0A00`) — `ax9u_dlink` appears to be gadget-side
+  internal driver codename.
+
+**Why this matters**: this 28-byte credential is per-installation (or per-license) secret
+material the *client software* already possesses and hands to the local Manager — it is **not
+derivable from anything in the network capture**, was not found anywhere on disk in this
+research tree (`grep` across all of `gm_dps` for the exact hex string: no hits; only the device
+serial `88985275` itself appears, in log/VCIHistory files — a *different*, device-manufactured
+16-byte `serialnum` value, not this 28-byte credential). It most plausibly lives in a
+Windows-side protected store (registry/DPAPI blob, or is itself fetched from a GM licensing
+server at Manager startup) tied to the specific DPS/SPS installation.
+
+**Working theory**: the Manager service uses this credential (received here over loopback) to
+compute or unlock whatever makes the device-side 9052/9050 "encrypted" exchange authoritative —
+our §11 replay reuses only the *outer* captured ciphertext bytes with no access to this
+credential, which is consistent with every result so far: content/timing/IP/TCP-options/L2 MAC
+identity/device-freshness all ruled out by direct live testing (2026-08-25), yet port 10123
+still refuses. **This finding, not a further network-level replay refinement, is the likely
+actual blocker** — pure IP-level replay from macOS cannot succeed without either (a) obtaining
+or deriving this per-installation credential, or (b) running the real Manager service itself
+(e.g. under Wine) so it performs its own authenticated device handshake and our client only
+needs to speak D-PDU/PDU-API on 10123 *after* the Manager has already unlocked it.
+
+Not yet attempted: extracting this credential from the actual Windows Manager process (Wine)
+via memory/API hooking, or locating it in the installed MDI2 Manager's registry/config on the
+Windows tablet if that filesystem is available for imaging.
