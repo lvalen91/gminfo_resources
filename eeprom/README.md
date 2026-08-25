@@ -39,6 +39,22 @@ minipro -p "M24C64" -r verify.bin
   - Byte 0xa81: 0x00 ← Security flag = ENABLED
   - Byte 0xa82: 0x5A (framing byte)
 
+> **The "flip to 0xFF" you were told about** = set the *data* byte (`0x0441` and the
+> backup `0x0A81`) to `0xFF`. That makes the VIP return an all-`0xFF` seed instead of the
+> real ECUID+Challenge, so the PROTOKEY/ICUSB module skips BCM auth → traditional (limited)
+> ADB. Marker/frame bytes are CalGroup-assigned at runtime and are NOT validated — only the
+> data byte matters. OTA/SPS resets both to locked; re-apply after updates.
+>
+> **This same VIP/PROTOKEY+EEPROM layer also anchors the diagnostic/calibration UDS `$27`
+> SecurityAccess** (the gate on writing `SCREEN_RESOLUTION` and other `CalSets.db` cals — the
+> CarPlay-fullscreen lever). Flipping the *ADB* SBI is NOT proven to open the *calibration*
+> gate, but they share the anchor — so whether a different EEPROM flag governs the cal/diag
+> security level is an open, testable question. See
+> `../research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` (§4) plus the undocumented-flag
+> candidates (`0x04A0`, `0x04C0`, `0x0A40`, `0x0BE0`) in `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`.
+> NB: EEPROM `0x0E00` "display" bytes are touch-region/backlight/timing (guessed) — the actual
+> resolution lever is `CalSets.db SCREEN_RESOLUTION`, not those bytes (§5).
+
 ===============================================
 
   - Byte 0x440: 0x5A (framing byte)

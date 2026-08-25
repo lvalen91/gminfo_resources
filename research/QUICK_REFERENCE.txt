@@ -4,6 +4,14 @@ GM AAOS QUICK REFERENCE CARD
 Last Updated: January 1, 2026 (v1.2)
 ================================================================================
 
+=== SEE ALSO (Aug 2026) ===
+  T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md
+    - T1/Ethernet inward attack surface (hypervisor NOT wire-reachable; calibration
+      write path exists on eth0:49156 gated ONLY by UDS $27; diagnosticsd = root RCE lead)
+    - EEPROM (the ADB SBI you flip) is the VIP/PROTOKEY anchor that also gates the
+      calibration $27 -> open question: does an EEPROM flag lower the cal/diag gate too?
+    - Corrects "192.168.1.1 = hypervisor bridge" (it's the paravirtual VM<->host IPC IP)
+
 === EEPROM BYPASS (CONFIRMED WORKING) ===
 
 ADB Enable:

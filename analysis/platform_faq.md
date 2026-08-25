@@ -68,9 +68,113 @@ Source: POTATO logcat `20260412/logcat_20260412_133523.log` — `UserManagerServ
 
 **What this means in practice:**
 - Every time the CCPA adapter is plugged in, the system asks for USB permission through a one-time dialog.
-- The user tapping "always allow" does nothing persistent — there is no handler to record the decision.
-- The permission dialog is provided by `system_server` directly; without the handler package, the "always allow" checkbox has no effect.
-- This is a GM platform constraint. No app-side workaround exists.
+- The user tapping "always allow" does nothing persistent.
+- ~~This is a GM platform constraint. No app-side workaround exists.~~ **See the correction below — a
+  dialog-free app-side workaround does exist on this build.**
+
+### Correction (2026-08-17): the precise mechanism, and a working app-side workaround
+
+The "root cause" above is correct that `android.car.usb.handler` is absent, but it **mis-attributes the
+mechanism** and the "no workaround" conclusion is **wrong**. Two independent framework analyses of the
+Y181 `86331654` images (all six USB framework classes decompiled and confirmed byte-equivalent to stock
+AOSP 12 / SDK 32 — GM changed *no* USB Java) establish the following.
+
+**The actual lever is a resource, not a missing app.** `framework-res.apk`
+`res/values/strings.xml:497` sets:
+
+```xml
+<string name="config_UsbDeviceConnectionHandling_component">android.car.usb.handler/android.car.usb.handler.UsbHostManagementActivity</string>
+```
+
+`UsbHostManager.usbDeviceAdded()` reads that (via `setUsbDeviceConnectionHandler` in its constructor) and
+branches:
+
+```java
+ComponentName usbDeviceConnectionHandler = getUsbDeviceConnectionHandler();
+if (usbDeviceConnectionHandler == null) {
+    getCurrentUserSettings().deviceAttached(newDevice);                       // stock AOSP path
+} else {
+    getCurrentUserSettings().deviceAttachedForFixedHandler(newDevice, ...);   // ALWAYS taken here
+}
+```
+
+Because the component is set (non-empty), `deviceAttached()` — the path that consults the "always
+allow" default-app map and issues implicit grants — is **never reached for any USB host device.** It is
+not that the checkbox "has no effect because there is no handler"; it is that the entire resolution path
+the checkbox feeds is structurally bypassed. The checkbox itself (`GMSystemUI`
+`UsbPermissionActivity.onDestroy`) calls `setDevicePackage()` → `usb_device_manager.xml`, a map that
+`deviceAttachedForFixedHandler` never reads. Separately, the genuinely-persistent store
+(`usb_permissions.xml`, written only by `setDevicePersistentPermission`) has **zero callers anywhere on
+the image**, so it is never populated either. Net effect is the observed one, but the failing component
+is `config_UsbDeviceConnectionHandling_component` pointing at a stripped package — not the package's
+absence per se.
+
+**Working app-side workaround — the "package-name squat" (CONFIRMED by decompile, not yet
+device-tested):** `deviceAttachedForFixedHandler` (`UsbProfileGroupSettingsManager.java:658`) does:
+
+```java
+appInfo = mPackageManager.getApplicationInfoAsUser(component.getPackageName(), 0, mParentUser);   // "android.car.usb.handler"
+mUsbService.getPermissionsForUser(UserHandle.getUserId(appInfo.uid)).grantDevicePermission(device, appInfo.uid);
+// ... then startActivityAsUser (ActivityNotFoundException caught, does not undo the grant)
+```
+
+If a third-party app is installed **under the package name `android.car.usb.handler`, in the foreground
+user (user 10)**, this resolves *that* app and silently grants it device permission on **every** USB
+attach — no dialog, no root. Verified against this build: `ParsingPackageUtils.validateName` has no
+`android.*` prefix reservation; PMS reserves only the literal `"android"` and `android.uid.*`; the
+`privapp-permissions` / `install-in-user-type` config entries for the name do not reject a `/data`
+install (they only fail to grant priv-permissions / emit a boot warning). The grant is the transient
+in-memory one (dropped on unplug/reboot) but is re-issued on every attach, which is behaviourally
+"always allow." **Must be user 10, not user 0** — a user-0 install resolves in the wrong
+`UsbUserPermissionManager` and does nothing; the `UserHandle{0}`/`UserHandle{10}` log pair is exactly
+the "app absent in that user" signature.
+
+Caveats: the squatting app becomes the fixed handler for *every* USB device on the vehicle (filter by
+VID/PID and `finish()` immediately); it is not Play-shippable under an `android.*` name (sideload only);
+and a future GM OTA that ships a real `CarUsbHandler.apk` would collide with the `/data` package.
+
+**A refuted alternative:** pre-seeding `/data/system/users/<id>/usb_permissions.xml` does *not* work as a
+third-party action. That file is labeled `system_data_file` (falls through
+`plat_file_contexts` `/data/(.*)?`), and `plat_sepolicy.cil:6707` is a **neverallow** forbidding all of
+`appdomain` (incl. every `untrusted_app*`) from writing it — cross-user included. A third-party app in
+user 10 can neither write user 0's nor its own user's copy. Only the system can write it.
+
+### Why native projection and USB storage still work (the dead-end is NARROW)
+
+A natural objection: if every USB attach hits `deviceAttachedForFixedHandler` → `NameNotFoundException`,
+why do wired CarPlay, wired Android Auto, and USB storage all work normally? Because the dead-end kills
+**only one sub-flow** — launching a default-handler app and issuing an *implicit permission grant to an
+untrusted third-party app*, for a **host-mode device**. Everything else routes around it. Confirmed from
+this build's decompiled `UsbHostManager` / `UsbUserPermissionManager` (SDK 32):
+
+- **The `UsbDevice` is still created and the broadcast still fires.** `usbDeviceAdded` runs to
+  completion — `mDevices.put(deviceAddress, newDevice)` (line 292) — and `deviceAttachedForFixedHandler`
+  calls `sendBroadcastAsUser(USB_DEVICE_ATTACHED, currentUser)` (line 660) *before* it throws. So
+  `getDeviceList()` returns the device regardless; the exception only skips the resolver launch + the
+  third-party implicit grant.
+- **System / privileged apps skip the resolver entirely.** `UsbUserPermissionManager.hasPermission`
+  line 122: `if (uid != 1000)` — **SYSTEM_UID (1000) falls straight through to `return true`.** And any
+  app holding **`MANAGE_USB`** (a `signature|privileged` permission) opens devices directly via
+  `getDeviceList()` + `openDevice()`, never touching the resolver. `MANAGE_USB` holders on this image
+  include GM's own privileged apps — `com.gm.lcm`, `com.gm.hmi.connection`, `com.gm.hmi.settings`
+  (`/system/etc/permissions/privapp-permission-gm-platform.xml`) — plus Google's
+  (`privapp-permissions-google.xml`), SystemUI, CarSettings, and tethering.
+- **Wired CarPlay** — `/system/app/GMCarPlaySrc/GMCarPlay.apk` (the Cinemo-based receiver) is a **system
+  app** and enumerates/opens the iPhone through that privileged access. (`hasPermission` line 118 even
+  special-cases `APPLE_VENDOR_ID` in the audio-privacy gate.)
+- **Wired Android Auto** — the phone enters **AOA accessory mode** → `accessoryAttached()`, a **separate
+  path** that `config_UsbDeviceConnectionHandling_component` does **not** gate (the fixed-handler branch
+  exists only in the host-*device* path). `/system/app/GMGALSrc/GMGAL.apk` (GAL) is a system app anyway.
+- **USB storage** — does **not** use `UsbManager` device permissions at all. The kernel `usb-storage`
+  driver binds the block device, **vold** mounts it, and **StorageManagerService / DocumentsProvider**
+  surface it to Files. Entirely separate subsystem from `UsbHostManager`'s host-device permission flow.
+
+So the ONLY thing that dead-ends is a **sideloaded, untrusted third-party app claiming a host-mode
+vendor device that has no kernel driver and no privileged system claimant** — i.e. *exactly and only*
+the CCPA/OCBM case (`0x1314:0x2d00`). This is also **why GM never noticed the bug**: everything GM ships
+is privileged and routes around the broken handler; only third-party host-device claimants are
+collateral damage. It presents as "my app is prompted forever" while the rest of the port works
+flawlessly.
 
 **App-side manifest** (`AndroidManifest.xml` lines 38–40; rationale comment at line 33):
 ```xml

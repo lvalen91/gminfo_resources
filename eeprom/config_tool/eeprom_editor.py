@@ -47,19 +47,36 @@ VIN_LEN = 17
 # Each flag is [marker][data][marker]; we read marker live, edit data at base+1.
 
 SECURITY_FLAGS = [
-    {"key": "sbi1", "base": 0x0440, "name": "Primary SBI — ADB Security #1",
+    {"key": "sbi1", "base": 0x0440, "name": "Primary SBI — NOT ADB-only (field-proven, Aug26)",
      "on": 0xFF, "off": 0x00, "on_label": "Bypass", "off_label": "Lock",
      "states": {0x00: ("LOCKED", "bad"), 0xFF: ("BYPASSED", "good")},
-     "note": "ADB security. 0x00 requires GM Secure Client; 0xFF opens ADB."},
-    {"key": "sbi2", "base": 0x0A80, "name": "Backup SBI — ADB Security #2",
+     "note": "0x00 requires GM Secure Client; 0xFF opens ADB. Aug26 correction: this "
+             "is NOT confirmed ADB-scoped -- captured bench traffic already shows a "
+             "plain CAN UDS $27 request to ECU 0x80 (VIP) returns the same degenerate "
+             "all-0xFF seed with this flipped (diagnostics/dps/A11_CSM_x80.Txt). The "
+             "VIP's seed/key logic is one shared function servicing >=18 security "
+             "levels (FUN_ram_000b67d0 @ 0xb67d0, verified). Calibration-programming "
+             "impact specifically is a strong hypothesis, not yet confirmed -- see "
+             "eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md. Storage: CalGroup 0x3b, "
+             "cells 0x43a-0x447 (vip_app.bin FUN_ram_00091938) -- see "
+             "eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md."},
+    {"key": "sbi2", "base": 0x0A80, "name": "Backup SBI — mechanism NOT located (Aug26)",
      "on": 0xFF, "off": 0x00, "on_label": "Bypass", "off_label": "Lock",
      "states": {0x00: ("LOCKED", "bad"), 0xFF: ("BYPASSED", "good")},
-     "note": "Backup copy. Was 0xFF (empty) pre-Y181; now actively initialized. "
-             "Both SBIs must match for the bypass to hold."},
+     "note": "Was 0xFF (empty) pre-Y181; now actively initialized. Aug26 correction: "
+             "the 'both SBIs must match' claim below is UNVERIFIED and likely wrong as "
+             "stated -- exhaustive static analysis of BOTH vip_app.bin and vip_boot.bin "
+             "found ZERO code references to 0x0A80/0x0A81 via the confirmed EEPROM-cell "
+             "accessor, and zero as a literal operand anywhere in either binary (real "
+             "neighboring CalGroup 0x9b proves the region isn't generally dead). The "
+             "empirical bypass-works observation is NOT in question -- only the "
+             "mechanism/claim about how it relates to sbi1 is. See "
+             "eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md §5."},
     {"key": "debug", "base": 0x0B40, "name": "Debug / Developer Mode",
      "on": 0x01, "off": 0x00, "on_label": "On", "off_label": "Off",
      "states": {0x00: ("OFF", "neutral"), 0x01: ("ON", "good")},
-     "note": "Developer/debug mode flag. 0x01 = on, 0x00 = off."},
+     "note": "Developer/debug mode flag. 0x01 = on, 0x00 = off. Not covered by the "
+             "Aug26 EEPROM-flag-scope analysis (not one of the 4 candidates checked)."},
 ]
 
 # Best-effort ASCII string fields: [marker][ascii...][marker][0xFF pad]
@@ -96,15 +113,32 @@ FEATURE_FLAGS = [
     {"base": 0x15C0, "name": "Feature enable", "risk": "med", "options": FF, "note": "Unknown feature."},
     {"base": 0x1A00, "name": "Tertiary security / calibration flag", "risk": "high", "options": FF,
      "note": "Security-critical per map; modify with care."},
-    # Undocumented candidates (EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS §6)
-    {"base": 0x04A0, "name": "UNDOC security-region flag (17 refs)", "risk": "high", "options": FF,
-     "note": "Undocumented. Test: 0xFF. Security region."},
-    {"base": 0x04C0, "name": "UNDOC security-region flag (11 refs)", "risk": "high", "options": FF,
-     "note": "Undocumented. Test: 0xFF. Security region."},
-    {"base": 0x0A40, "name": "UNDOC feature flag (28 refs)", "risk": "med", "options": FF,
-     "note": "Undocumented. Test: 0xFF."},
-    {"base": 0x0BE0, "name": "UNDOC feature flag (24 refs)", "risk": "med", "options": FF,
-     "note": "Undocumented. Test: 0xFF or 0x01."},
+    # Undocumented candidates (EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS §6) --
+    # CORRECTED Aug26 against real Ghidra decompilation of vip_app.bin/
+    # vip_boot.bin, superseding the original string-count-based "N refs"
+    # framing. See eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md.
+    {"base": 0x04A0, "name": "CLOSED — no code reference found (Aug26)", "risk": "low", "options": FF,
+     "note": "Aug26: exhaustive instruction scan + full accessor-argument scan found "
+             "ZERO code references to this address in vip_app.bin or vip_boot.bin. "
+             "The one apparent hit is a confirmed false positive (a struct-relative "
+             "offset inside an unrelated UDS-style dispatcher). Testing this address "
+             "is now low-expected-value; kept here for completeness, not as a lead."},
+    {"base": 0x04C0, "name": "CONFIRMED real, purpose UNKNOWN (Aug26)", "risk": "high", "options": FF,
+     "note": "Aug26: genuinely real -- CalGroup 0x44, cells 0x4b8-0x4c5, handler "
+             "vip_app.bin FUN_ram_00091f82. Structurally identical to the primary SBI "
+             "block (same interleaved pack/unpack pattern) but administratively "
+             "separate (different CalGroup, different status byte). What it actually "
+             "gates is still unknown -- genuinely worth testing, more so than before "
+             "this correction, now that it's a confirmed real flag and not a guess."},
+    {"base": 0x0A40, "name": "CLOSED — no code reference found (Aug26)", "risk": "low", "options": FF,
+     "note": "Aug26: zero hits in either binary via the confirmed EEPROM-cell "
+             "accessor or as a literal operand. Real neighboring CalGroups (0xa26, "
+             "0xa5e) confirm the surrounding region isn't generally dead -- just not "
+             "at this specific offset. Low-expected-value to test."},
+    {"base": 0x0BE0, "name": "CLOSED — no code reference found (Aug26)", "risk": "low", "options": FF,
+     "note": "Aug26: zero hits in either binary. Sits 3 bytes past the last real "
+             "cell in this region (0xbdd) with nothing found through 0xC00. "
+             "Low-expected-value to test."},
 ]
 
 # UI flags block at 0xE80: [marker][b1 b2 ...]; individual data bytes.

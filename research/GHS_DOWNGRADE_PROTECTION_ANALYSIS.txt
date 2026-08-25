@@ -53,6 +53,39 @@ The system returned to Y181 completely unchanged. This means:
 | Y177 -> Y181    | SUCCESS  | Upgrade works                      |
 | Y181 -> Y177    | FAILURE  | Downgrade blocked                  |
 
+2.4 OWNER BENCH RE-TEST (2026-08-17) — refines 2.1
+--------------------------------------------------
+Evidence class: OWNER FIELD OBSERVATION (repeated bench testing on own unit). This
+resolves the provenance-audit flag that the downgrade result had "no capture artifact"
+(see PROVENANCE_AUDIT_AUG2026.md #19): the behavior is runtime-only and is confirmed by
+direct owner observation, which is the appropriate evidence class for it.
+
+Observed matrix (USB update media):
+  - Active Y181 + Y177 USB, NORMAL boot .......... NOTHING happens (no update prompt at all).
+  - Active Y181 + Y177 USB, RECOVERY mode (blank
+    screen entry) ................................. Progress bar starts as if the update is
+                                                    beginning, then STOPS and displays
+                                                    "update not supported / invalid".
+  - Active Y177 + Y177 USB ...................... Prompts for update, REAPPLIES same build (OK).
+  - Active Y181 + Y181 USB ...................... Same-build reapply works (OK).
+  - Any downgrade attempt ....................... Either does nothing at all, or fails entirely.
+
+Interpretation:
+  - Same-build reapply succeeding (both directions) isolates the failure to a VERSION /
+    ROLLBACK-INDEX check — it is NOT a signature, packaging, or USB-media problem (the media
+    and package are accepted for equal-or-newer).
+  - The normal-boot "nothing happens" indicates the updater declines a lower-version package
+    at manifest/version-check time (before any user prompt). Recovery mode gets as far as
+    starting the progress bar but is rejected with "not supported/invalid" — i.e. the reject
+    is at/near update start, not merely a post-write boot-verification revert.
+  - This REFINES the Dec-2024 account in 2.1 (which described a full write to the inactive
+    slot followed by a boot-verification revert). The current, directly-observed behavior is a
+    version-gated rejection that (on normal boot) never prompts and (in recovery) fails early.
+    The 2.1 sequence is retained for archival fidelity; where they differ, 2.4 is the more
+    accurate current observation.
+  - Net: the GHS/AVB anti-rollback mechanism inferred from rb_ua.conf + A/B fstab + TSS/AVB
+    manifest is now CORROBORATED by field behavior. Downgrade is blocked; equal-or-newer is not.
+
 ================================================================================
 3. GHS INTEGRITY AS VERIFICATION GATEKEEPER
 ================================================================================

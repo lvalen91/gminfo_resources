@@ -1,0 +1,122 @@
+# WRITE_SECURE_SETTINGS capability-unlock analysis - Y181 (2024 Silverado, Android 12L/SDK32)
+# Threat model: untrusted_app adb-granted WRITE_SECURE_SETTINGS (development-flagged).
+# Question: which Settings.Secure/Global keys turn a setting-write into a capability the writer lacked?
+# All findings below are Java/framework-layer (consent/UI-gate bypass). NONE cross a SELinux
+# domain or grant a signature permission - the app stays untrusted_app. Verified-boot/SELinux/
+# no-root are NOT affected by any of these.
+
+## CORE CLASS: "bind-my-component" settings (system binds a component named by a Secure setting
+## as a privileged helper; only gate = the component's manifest declares the matching BIND_*
+## permission, which ANY app may declare on its own service; writing the setting bypasses the
+## user-consent UI that normally gates enabling the helper).
+
+[EXPLOITABLE] enabled_accessibility_services (+ accessibility_enabled)   -- KNOWN, baseline
+  Consumer: AccessibilityManagerService.readEnabledAccessibilityServicesLocked
+            dec_services2/.../accessibility/AccessibilityManagerService.java:1276 (read) ,
+            2575/2577, enable state written 1926.
+  Capability: global input injection + cross-app screen read. No user toggle.
+
+[EXPLOITABLE] default_input_method  (+ enabled_input_methods)            -- NEW
+  Consumer: InputMethodManagerService.updateInputMethodsFromSettingsLocked
+            dec_services2/.../inputmethod/InputMethodManagerService.java:2014 (reads getSelectedInputMethod)
+            -> setInputMethodLocked  :2031 (only requires mMethodMap.get(id)!=null, i.e. IME installed)
+            observer registered :632-633 (live, no reboot).
+  Capability: attacker's InputMethodService becomes the active keyboard = keylog + inject text in
+            ALL apps, no "this IME may collect all text you type" warning dialog. Write both
+            enabled_input_methods and default_input_method to the attacker IME id.
+  Requires: app ships an InputMethodService with BIND_INPUT_METHOD (normal, any app).
+
+[EXPLOITABLE] enabled_notification_listeners                            -- NEW
+  Consumer: NotificationManagerService :8330 (secureSettingName) via ManagedServices.
+            dec_services2/.../notification/ManagedServices.java rebindServices:1236,
+            approval list loaded from the setting; only shape check :1054 (service must declare
+            mConfig.bindPermission = BIND_NOTIFICATION_LISTENER_SERVICE).
+  Capability: bind attacker's NotificationListenerService without user consent = read ALL
+            notifications (incl. OTP/2FA/SMS previews), dismiss them, toggle DND. Live rebind.
+
+[EXPLOITABLE] autofill_service                                         -- NEW
+  Consumer: AutofillManagerServiceImpl.newServiceInfoLocked
+            dec_services2/.../autofill/AutofillManagerServiceImpl.java:133-149 ->
+            AutofillServiceInfo ctor (dec_framework2/.../service/autofill/AutofillServiceInfo.java:60)
+            gate = intent filter android.service.autofill.AutofillService + requires BIND_AUTOFILL_SERVICE.
+            SecureSettingsServiceNameResolver on "autofill_service" :120.
+  Capability: bind attacker's AutofillService = observe view structure/values across all apps on
+            field focus (harvest credentials/PANs as user types/fills). Weaker than IME (fires only
+            on fillable-field focus) but still cross-app data capture with no user selection.
+
+[EXPLOITABLE] voice_interaction_service                                -- NEW (more scaffolding)
+  Consumer: VoiceInteractionManagerService$...switchImplementationIfNeededNoTracingLocked
+            dec_services2/.../voiceinteraction/VoiceInteractionManagerService.java:639 (read) ,
+            658-659 setShortcutHostPackage + setAllowAppSwitches(attacker uid), 670-672 bind;
+            validation VoiceInteractionServiceInfo (dec_framework2/.../service/voice/
+            VoiceInteractionServiceInfo.java:49) only requires service.permission==BIND_VOICE_INTERACTION
+            + android.voice_interaction meta-data (sessionService + recognitionService). NO system/priv check.
+            Live via SettingsObserver :285.
+  Capability: (a) setAllowAppSwitches grants the attacker uid background-activity-launch / app-switch
+            privilege; (b) becomes assist host -> VoiceInteractionSession reads AssistStructure
+            (foreground app view text) + assist screenshot = cross-app screen scrape, comparable to a11y.
+  Requires: attacker ships a well-formed VoiceInteractionService (BIND_VOICE_INTERACTION + xml with
+            sessionService & recognitionService). Any app can. Medium confidence (more manifest work).
+
+## DIFFERENT MECHANISM (app-op grant at boot, not a live bind):
+
+[EXPLOITABLE] always_on_vpn_app  (+ always_on_vpn_lockdown)            -- NEW
+  Consumer: Vpn.java ctor -> loadAlwaysOnPackage :589-596 (reads setting) ->
+            setAlwaysOnPackageInternal :513 -> setPackageAuthorization :729 ->
+            AppOpsManager.setMode("android:activate_vpn", uid, pkg, ALLOWED) :770.
+            dec_services2/.../connectivity/Vpn.java.
+  Capability: on next user-start/reboot the framework GRANTS the attacker's package OP_ACTIVATE_VPN
+            (the exact consent the VpnService dialog would set), then startAlwaysOnVpn :602 auto-starts
+            its VpnService. Attacker VpnService can then establish() and intercept/MITM all device
+            traffic WITHOUT ever showing the VPN consent dialog.
+  Requires: a reboot / user restart (loadAlwaysOnPackage runs in the per-user Vpn ctor). Attacker
+            ships a VpnService. Blocked only if DISALLOW_CONFIG_VPN user-restriction is active
+            (not set on a stock GM unit w/o device owner).
+  Note: no SettingsProvider write-blocklist for this key; only gate on the write is WRITE_SECURE_SETTINGS
+        (SettingsProvider.java:1457) + isSettingRestrictedForUser (:909, user-restriction/DPM only).
+
+## GATED / MARGINAL / INERT
+
+[GATED-weak] location_mode
+  Consumer: location/injector/SystemSettingsHelper.java:60, GnssLocationProvider:341, ContextHubService:167.
+  Flipping to !=0 turns the location master switch ON, but the writer STILL needs ACCESS_FINE/COARSE
+  runtime permission to actually read fixes. At most re-enables location a user turned off. Marginal.
+
+[GATED] adb_enabled (Global)
+  Toggling to 1 asks AdbService/UsbDeviceManager to bring up adbd, but (a) adbd runs in adbd domain -
+  no capability to the app, (b) USB RSA auth prompt still required, (c) MOOT: the writer already has
+  adb (that is how it got WRITE_SECURE_SETTINGS). Not an escalation.
+
+[INERT] install_non_market_apps (Secure)
+  Only reader PackageManagerService.getUnknownSourcesSettings() :13400 has ZERO callers (dead code).
+  Superseded by per-app REQUEST_INSTALL_PACKAGES app-op. Writing it does nothing.
+
+[INERT] verifier_verify_adb_installs (Global)
+  PackageManagerService:13316 (default 1). Setting 0 only skips Play-Protect verification of adb-side-
+  loaded APKs; not a privilege gain for the untrusted app itself.
+
+[INERT] device-policy "secure settings a DO may change" allowlists
+  DevicePolicyManagerService.java:356/360/363 arraySets are DPM RESTRICTION allowlists, not a writer
+  capability. Device admin/owner is set via provisioning, never via a Settings key.
+
+[N/A] hidden_api_policy - KNOWN (disables hidden-API blocklist). Java-layer only.
+
+## SoftAP / hotspot GM-gate verdict:  NO - a WRITE_SECURE_SETTINGS app CANNOT enable the hotspot.
+  Keys fid_hotspot_disable_status / share_hotspot_data_status / tethering_allow / wifi_ap_enabled
+  are all consumed by GMConnections (/system/priv-app/GMConnectionsSrc/GMConnections.apk),
+  class com.gm.settings.repositories.WiFiHotspotRepository:
+   - The only actual SoftAP enable is WifiManager.startTetheredHotspot(), called ONLY from
+     setWiFiServicesAllowed() :372 and startSoftAp() :183 - both inside GMConnections, which holds
+     the privileged tethering permission the untrusted app lacks.
+   - startSoftAp() is invoked ONLY from onEventReceived(WIFI_AP_STATE_DISABLED) :308 (an AP
+     re-config/restart flow guarded by mStopApForChangeHotspotInfo, which is set true only after a
+     successful SSID/password change on an already-running AP). It is NOT reachable from a settings write.
+   - The settings are read as POLICY GATES, not drivers:
+       isWifiHotspotTurnedOn() :278 returns (fid_hotspot_disable_status==0);
+       data-sharing :248 requires GetOnStarSubscriptionStatusUseCase()==true AND share_hotspot_data_status==1.
+     The share_hotspot_data_status observer :150 only posts a UI event; it never starts the AP.
+   - wifi_ap_enabled / tethering_allow are status mirrors; WifiService derives AP state from the real
+     SoftAP callback, and tethering requires TETHER_PRIVILEGED.
+  Verdict: flipping these keys at most removes a GM UI policy gate so the GM hotspot toggle isn't
+  greyed out; it never causes SoftAP to start. GATED by the privileged startTetheredHotspot call
+  that only GMConnections makes, and only from its own UI/API flow.

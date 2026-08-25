@@ -1,0 +1,171 @@
+# SettingsProvider authoritative factory defaults - Y181 (2024 Silverado, Android 12L/SDK32)
+# Source: /system/priv-app/SettingsProvider/SettingsProvider.apk
+#   - resources.arsc def_* resources (aapt2 dump resources)
+#   - DatabaseHelper.load{System,Secure,Global}Settings() code (classes.dex, jadx)
+# NOTE: Only ~106 keys have a SettingsProvider-backed default. The other ~970 of the 1078
+#       Settings.* constants have NO provider default; their effective value when unset is
+#       the fallback the READING service passes to getInt/getString(..., def). Do not assume
+#       an unlisted key defaults to 0/empty at the provider layer - it is simply absent and
+#       each consumer supplies its own default.
+
+## A. Resource-backed defaults (def_* in resources.arsc) - name = value (type)
+def_accelerometer_rotation                                 = false                                                   (bool)
+def_accessibility_display_magnification_auto_update        = true                                                    (bool)
+def_accessibility_display_magnification_enabled            = false                                                   (bool)
+def_accessibility_speak_password                           = true                                                    (bool)
+def_add_users_from_lockscreen                              = false                                                   (bool)
+def_airplane_mode_on                                       = false                                                   (bool)
+def_apply_ramping_ringer                                   = false                                                   (bool)
+def_auto_time                                              = true                                                    (bool)
+def_auto_time_zone                                         = true                                                    (bool)
+def_aware_enabled                                          = false                                                   (bool)
+def_aware_lock_enabled                                     = false                                                   (bool)
+def_backup_enabled                                         = false                                                   (bool)
+def_bluetooth_on                                           = true                                                    (bool)
+def_charging_sounds_enabled                                = true                                                    (bool)
+def_charging_vibration_enabled                             = true                                                    (bool)
+def_device_provisioned                                     = false                                                   (bool)
+def_dim_screen                                             = true                                                    (bool)
+def_double_tap_to_wake                                     = true                                                    (bool)
+def_dtmf_tones_enabled                                     = true                                                    (bool)
+def_enable_non_resizable_multi_window                      = false                                                   (bool)
+def_haptic_feedback                                        = true                                                    (bool)
+def_hdmiControlAutoDeviceOff                               = true                                                    (bool)
+def_install_non_market_apps                                = false                                                   (bool)
+def_lock_screen_allow_private_notifications                = true                                                    (bool)
+def_lockscreen_disabled                                    = true                                                    (bool)
+def_mobile_data_always_on                                  = true                                                    (bool)
+def_mount_play_notification_snd                            = true                                                    (bool)
+def_mount_ums_autostart                                    = false                                                   (bool)
+def_mount_ums_notify_enabled                               = true                                                    (bool)
+def_mount_ums_prompt                                       = true                                                    (bool)
+def_netstats_enabled                                       = true                                                    (bool)
+def_networks_available_notification_on                     = true                                                    (bool)
+def_notification_bubbles                                   = true                                                    (bool)
+def_notification_pulse                                     = true                                                    (bool)
+def_notifications_use_ring_volume                          = true                                                    (bool)
+def_one_handed_mode_activated                              = false                                                   (bool)
+def_one_handed_mode_enabled                                = false                                                   (bool)
+def_restrict_background_data                               = false                                                   (bool)
+def_screen_brightness_automatic_mode                       = false                                                   (bool)
+def_show_ime_with_hard_keyboard                            = false                                                   (bool)
+def_silence_gesture                                        = false                                                   (bool)
+def_skip_gesture                                           = false                                                   (bool)
+def_sound_effects_enabled                                  = true                                                    (bool)
+def_stay_on_while_plugged_in                               = true                                                    (bool)
+def_swipe_bottom_to_notification_enabled                   = false                                                   (bool)
+def_sync_parent_sounds                                     = true                                                    (bool)
+def_theater_mode_on                                        = false                                                   (bool)
+def_touch_exploration_enabled                              = false                                                   (bool)
+def_usb_mass_storage_enabled                               = true                                                    (bool)
+def_user_setup_complete                                    = false                                                   (bool)
+def_vibrate_in_silent                                      = true                                                    (bool)
+def_vibrate_when_ringing                                   = false                                                   (bool)
+def_wake_gesture_enabled                                   = false                                                   (bool)
+def_wifi_display_on                                        = false                                                   (bool)
+def_wifi_on                                                = false                                                   (bool)
+def_wifi_wakeup_enabled                                    = true                                                    (bool)
+def_accessibility_display_magnification_scale              = 2.000000%                                               (fraction)
+def_window_animation_scale                                 = 1.000000%                                               (fraction)
+def_window_transition_scale                                = 1.000000%                                               (fraction)
+def_accessibility_button_mode                              = 1                                                       (integer)
+def_accessibility_magnification_capabilities               = 3                                                       (integer)
+def_dock_audio_media_enabled                               = 1                                                       (integer)
+def_dock_sounds_enabled                                    = 0                                                       (integer)
+def_dock_sounds_enabled_when_accessibility                 = 0                                                       (integer)
+def_download_manager_max_bytes_over_mobile                 = -1                                                      (integer)
+def_download_manager_recommended_max_bytes_over_mobile     = -1                                                      (integer)
+def_end_button_behavior                                    = 0                                                       (integer)
+def_heads_up_enabled                                       = 0                                                       (integer)
+def_location_mode                                          = 0                                                       (integer)
+def_lock_screen_show_notifications                         = 1                                                       (integer)
+def_lockscreen_sounds_enabled                              = 1                                                       (integer)
+def_long_press_timeout_millis                              = 400                                                     (integer)
+def_low_battery_sound_timeout                              = 0                                                       (integer)
+def_max_dhcp_retries                                       = 9                                                       (integer)
+def_max_sound_trigger_detection_service_ops_per_day        = 1000                                                    (integer)
+def_multi_press_timeout_millis                             = 300                                                     (integer)
+def_pointer_speed                                          = 0                                                       (integer)
+def_power_sounds_enabled                                   = 1                                                       (integer)
+def_screen_brightness                                      = 102                                                     (integer)
+def_screen_off_timeout                                     = 60000                                                   (integer)
+def_sleep_timeout                                          = -1                                                      (integer)
+def_sound_trigger_detection_service_op_timeout             = 15000                                                   (integer)
+def_user_rotation                                          = 0                                                       (integer)
+def_wifi_scan_always_available                             = 0                                                       (integer)
+def_wifi_sleep_policy                                      = 2                                                       (integer)
+def_zen_duration                                           = 0                                                       (integer)
+def_airplane_mode_radios                                   = "cell,bluetooth,wifi,nfc,wimax"                         (string)
+def_backup_agent_timeout_parameters                        = ""                                                      (string)
+def_backup_local_transport_parameters                      = ""                                                      (string)
+def_backup_manager_constants                               = ""                                                      (string)
+def_backup_transport                                       = "com.google.android.gms/.backup.BackupTransportService" (string)
+def_bluetooth_disabled_profiles                            = "0"                                                     (string)
+def_car_dock_sound                                         = "/product/media/audio/ui/Dock.ogg"                      (string)
+def_car_undock_sound                                       = "/product/media/audio/ui/Undock.ogg"                    (string)
+def_charging_started_sound                                 = "/product/media/audio/ui/ChargingStarted.ogg"           (string)
+def_desk_dock_sound                                        = "/product/media/audio/ui/Dock.ogg"                      (string)
+def_desk_undock_sound                                      = "/product/media/audio/ui/Undock.ogg"                    (string)
+def_device_name                                            = "%1$s %2$s"                                             (string)
+def_device_name_simple                                     = "%1$s"                                                  (string)
+def_immersive_mode_confirmations                           = "confirmed"                                             (string)
+def_lock_sound                                             = "/product/media/audio/ui/Lock.ogg"                      (string)
+def_low_battery_sound                                      = "/product/media/audio/ui/LowBattery.ogg"                (string)
+def_nfc_payment_component                                  = ""                                                      (string)
+def_trusted_sound                                          = "/product/media/audio/ui/Trusted.ogg"                   (string)
+def_unlock_sound                                           = "/product/media/audio/ui/Unlock.ogg"                    (string)
+def_wireless_charging_started_sound                        = "/product/media/audio/ui/WirelessChargingStarted.ogg"   (string)
+
+## B. Actual setting key -> default, as bound by DatabaseHelper.load*Settings() (real key names)
+# (maps the def_* resources / literals above onto the real Settings key written at first boot)
+system	screen_off_timeout	integer def_screen_off_timeout=60000	
+system	dtmf_tone_type	0	literal
+system	hearing_aid	0	literal
+system	tty_mode	0	literal
+system	screen_brightness	integer def_screen_brightness=102	
+system	screen_brightness_mode	bool def_screen_brightness_automatic_mode=false->0	
+system	accelerometer_rotation	bool def_accelerometer_rotation=false->0	
+system	user_rotation	integer def_user_rotation=0	
+system	haptic_feedback_enabled	bool def_haptic_feedback=true->1	
+system	notification_light_pulse	bool def_notification_pulse=true->1	
+system	dtmf_tone	bool def_dtmf_tones_enabled=true->1	
+system	sound_effects_enabled	bool def_sound_effects_enabled=true->1	
+system	lockscreen_sounds_enabled	integer def_lockscreen_sounds_enabled=1	
+system	pointer_speed	integer def_pointer_speed=0	
+system	dim_screen	bool def_dim_screen=true->1	
+secure	mock_location	ro.allow.mock.location? -> 0 default	
+secure	backup_enabled	bool def_backup_enabled=false->0	
+secure	backup_transport	string def_backup_transport=com.google.android.gms/.backup.BackupTransportService	
+secure	mount_play_not_snd	bool def_mount_play_notification_snd=true->1	
+secure	mount_ums_autostart	bool def_mount_ums_autostart=false->0	
+secure	mount_ums_prompt	bool def_mount_ums_prompt=true->1	
+secure	mount_ums_notify_enabled	bool def_mount_ums_notify_enabled=true->1	
+secure	long_press_timeout	integer def_long_press_timeout_millis=400	
+secure	touch_exploration_enabled	bool def_touch_exploration_enabled=false->0	
+secure	speak_password	bool def_accessibility_speak_password=true->1	
+secure	lockscreen.disabled	bool def_lockscreen_disabled=true->1 (unless ro.lockscreen.disable.default)	
+secure	accessibility_display_magnification_enabled	bool def=false->0	
+secure	user_setup_complete	bool def_user_setup_complete=false->0	
+secure	immersive_mode_confirmations	string def=confirmed	
+secure	install_non_market_apps	bool def_install_non_market_apps=false->0	
+secure	wake_gesture_enabled	bool def_wake_gesture_enabled=false->0	
+secure	lock_screen_show_notifications	integer def=1	
+secure	lock_screen_allow_private_notifications	bool def=true->1	
+secure	sleep_timeout	integer def_sleep_timeout=-1	
+global	airplane_mode_on	bool def_airplane_mode_on=false->0	
+global	theater_mode_on	bool def=false->0	
+global	auto_time	bool def_auto_time=true->1	
+global	auto_time_zone	bool def_auto_time_zone=true->1	
+global	stay_on_while_plugged_in	def_stay_on_while_plugged_in=true->1 (GM head unit)	
+global	wifi_sleep_policy	integer def_wifi_sleep_policy=2	
+global	wifi_on	bool def_wifi_on=false->0	
+global	bluetooth_on	bool def_bluetooth_on=true->1	
+global	device_provisioned	bool def_device_provisioned=false->0	
+global	mobile_data	TelephonyProperties.mobile_data or TRUE->1	
+global	netstats_enabled	bool def=true->1	
+global	usb_mass_storage_enabled	bool def=true->1	
+global	wifi_scan_always_enabled	integer def_wifi_scan_always_available=0	
+global	heads_up_notifications_enabled	integer def_heads_up_enabled=0	
+global	wifi_display_on	bool def=false->0	
+global	set_install_location	0	literal
+global	default_install_location	0	literal
