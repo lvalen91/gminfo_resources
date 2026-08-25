@@ -26,3 +26,5 @@ $RECYCLE.BIN/
 .vscode/
 *.sublime-project
 *.sublime-workspace
+__pycache__/
+*.pyc
