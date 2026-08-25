@@ -581,3 +581,40 @@ needs to speak D-PDU/PDU-API on 10123 *after* the Manager has already unlocked i
 Not yet attempted: extracting this credential from the actual Windows Manager process (Wine)
 via memory/API hooking, or locating it in the installed MDI2 Manager's registry/config on the
 Windows tablet if that filesystem is available for imaging.
+
+### 12.1 CORRECTION (2026-08-25): opcode 0x8d1/0x8d2 is WiFi AP pairing, NOT a 10123-auth credential
+
+Traced end-to-end in the Ghidra pseudocode (not guessed): the 0x8125 loopback server is hosted
+by **`gm_mdi_ident.exe`**, dispatched in `CClientConnectionMgr::OnDataReceived`. The `0x8d1`
+branch's own log string identifies it explicitly: **`"SID_WIFI_CREDENTIALS_SEND"`**, deserializing
+a **`CWifiCredentials_Send`** object and routing to **`CIdentWifi::SetWifiCredentials`**
+(log format `"%s ssid = %s serial_number = %s ... version = %s"`), which builds a Windows WLAN
+profile (`CreateProfile`, auth `"AES-CCMP"`). The sender side, `bvtx_vci_rt_j.dll`
+`CDeviceMgr::SetConfigItems`, pulls the pair from config items literally named **`"SSID"`** and
+**`"Passphrase"`** (config IDs `0x12`/`0x13`).
+
+**So: the "SN:module:fw" string is the VCI's WiFi SSID, and the 28-byte hex value is its WPA
+passphrase** — config data for pairing to the MDI2's own WiFi access point, unrelated to
+TCP/10123 authorization. It is a device config item (`VtxRtGetConfigItems`/`SetConfigItems`,
+opcodes `0x7e3`/`0x7e4`), only format-validated (`ifm::ValidateWifiConfig`: hex length
+26/10 = WEP, or 8-64 chars = WPA-PSK) not generated or looked up from any registry/DPAPI/backend
+store — confirming it genuinely isn't recoverable by us, but for an unrelated reason than
+originally claimed here.
+
+**This invalidates the working theory above** that this credential explains port 10123's
+`ECONNREFUSED`. Also checked and ruled out: whether the real capture used WiFi instead of the
+USB/RNDIS-style transport we're replaying from macOS (which would have reframed everything) —
+`capinfos` on the source pcap shows `Capture oper-sys: 64-bit Windows 11`, interface
+**`"Ethernet 2"`**, i.e. the same Ethernet-gadget-style transport as our `en17`, not WiFi. So the
+transport match is confirmed correct.
+
+**Net result: the actual gate on port 10123 remains unexplained** after this correction. Every
+network-observable variable tested live (2026-08-25) — content, timing, source IP, TCP options,
+L2 MAC identity, device freshness (full power cycle) — was ruled out, and the loopback-credential
+explanation is now also ruled out. The two unresolved candidates from §11: (a) something in the
+221KB port-9052 bulk transfer discovered separately (§13 — a static, non-random on-device data
+image, confirmed byte-identical across sessions, so *not* session credential material either),
+or (b) a control-plane step outside the frame windows examined so far. Next actionable step:
+target `192.168.171.70` (the vehicle's own DoIP gateway, found directly reachable over TCP/13400
+without needing 10123 at all — see `AUG24_SESSION_FULL_PCAP_TIMELINE.md` finding #1) instead of
+continuing to chase the 10123 unlock when a vehicle is present.
