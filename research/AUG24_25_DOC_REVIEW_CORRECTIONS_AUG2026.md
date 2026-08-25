@@ -96,7 +96,27 @@ what needs correcting, what's genuinely new, and consolidates the SBI-reset inve
   independently: zero cryptographic validation of the 16-byte key on the Android side (any value
   accepted if VIP reports status=1) — a real finding, just not relevant to the seed/key question.
 
-## SBI-reset investigation: consolidated status (still open)
+## SBI-reset investigation: consolidated status (mechanism resolved 2026-08-25)
+
+**UPDATE 2026-08-25**: the write mechanism is now resolved by a dedicated VIP firmware trace —
+see `eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md` for full detail. Headline: `FUN_ram_00091938`
+(the SBI accessor) is **read-only** — no per-cell SBI writer exists anywhere in `vip_app.bin`.
+The value only changes via a **bulk restore-to-ROM-defaults** routine (`FUN_ram_000c6564`),
+reached from a re-init state machine, consistent with standard AUTOSAR NvM behavior: a
+CRC/validity failure on the SBI CalGroup triggers a factory-default restore into the RAM shadow,
+which the CAL layer persists back to EEPROM — explaining the observed reset with **no `$2E`
+write and no unsolicited message required**, exactly as seen in every capture. One gap remains:
+the precise trigger condition (power-on vs. a specific session/RoutineControl transition) wasn't
+statically pinned — the re-init handler is reached via an unresolved computed jump.
+
+Also worth noting: this trace's finding that at least one other CalGroup is stored as an
+identical mirror pair reconciles with a separate direct hex-read of a real ADB-enabled EEPROM
+dump (`ADB_enabled.bin`) showing `0x0440-0x0443` and `0x0A80-0x0A81` holding byte-identical
+`5A FF 5A FF` — i.e. the earlier "zero literal code references to `0x0A80`" retraction is still
+correct about the literal address, but the empirical mirrored-pair behavior is real, likely
+produced by a generically offset-computed accessor rather than a hardcoded second address.
+
+**Prior status (superseded by the above, kept for context):**
 
 **What's confirmed:**
 - SBI EEPROM storage: CalGroup `0x3b`, cells `0x43a-0x447`, bytes `0x440`/`0x441` (per §1-2 above).
