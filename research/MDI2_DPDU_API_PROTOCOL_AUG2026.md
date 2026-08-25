@@ -268,3 +268,187 @@ trips, the same skeleton generalizes to any ECU by discovering its response pref
 **Do not continue investing in the raw-DoIP-on-.70:13400 path** (`mdi2_doip_query.py`) for UDS
 traffic — it's architecturally real (the MDI2 does bring up a DoIP entity there) but is not what
 gets a working ECU response in any of today's 10 real-DPS sessions.
+
+---
+
+## 10. Server-side confirmation from the MDI2 Manager binaries (2026-08-25)
+
+Everything above (§1-§9) was reconstructed **from the DPS side**, byte-by-byte, out of Wireshark
+captures. This section is the **other half of the wire**: the same protocol read directly out of
+the MDI2 Manager / Bosch VCI Software implementation, i.e. the code on the far end of the socket.
+The two reconstructions were produced independently and they agree.
+
+**Provenance.** Three newly-decompiled binaries from the Bosch VCI Software (GM) 9.1.2752.177
+installer — `DPDULib.dll` (Bosch's ISO 22900-2 D-PDU API implementation, 17,229 functions),
+`bvtx4j32.dll` (the SAE J2534 PassThru DLL layered on top of it, 7,764 functions), and
+`gm_mdi_manager.exe` (the MFC manager GUI, 4,477 functions). A 170-function protocol-candidate
+subset was annotated by six independent Opus passes; consensus **STRONG 157 / MAJORITY 13 /
+NONE 0**. Per-function detail:
+`gm_dps/disassembly/annotations/mdi2mgr_candidates.annotations.md`. These binaries retain real
+C++ class/method names, `__FILE__` paths (`D:\ws\Global_VCI\vtx-vci\GM_9_1\6\...`) and unstripped
+log literals, which is why convergence was total.
+
+### 10.1 The DoIP version check is computed, not a constant (`02 FD` explained)
+
+`DoIPComm::ProcessHeader` (`DPDULib.dll`, entry `0x100de380`) is the real DoIP header gate.
+The entire version test is one line:
+
+```c
+else if ((*param_1 == (byte)~param_1[1]) && (*param_1 < 3)) { return 0; }  /* accept */
+else                                                        { return 1; }  /* reject */
+```
+
+- This **confirms** our capture-derived `02 FD` prologue: `~0xFD == 0x02`.
+- It also **extends** it: the check is `hdr[0] == ~hdr[1] && hdr[0] < 3`, so protocol versions
+  `0x00` (`00 FF`), `0x01` (`01 FE`) and `0x02` (`02 FD`) are **all** accepted by the MDI2;
+  `0x03` and above are rejected. A native client must send a matching complement pair, but is
+  not restricted to `02 FD`.
+- It explains a long-standing dead end: grepping the binaries for a literal `0x02`/`0xFD`
+  constant finds nothing, because the constant is never materialised.
+
+A second, **mode-aware** version check exists separately in `DoIPUDPComm::ProcessVa`
+(`0x10123230`): on the vehicle-announcement path it explicitly rejects a stored version byte of
+`1` when running in ISO mode, logging `"ISO - But v1"`. So `0x01` is accepted by the generic
+header parser but refused by the ISO-mode VA handler. Send `02 FD`.
+
+### 10.2 `DoIPVCIProto::ChkMsgHdr` is a source-address filter, NOT the version check
+
+`FUN_1012d960` — despite the name — never looks at the version bytes. It resolves the VCI's
+logical address from **ComParam `0x6b` (primary)** falling back to **ComParam `0x6c` (secondary)**
+via `FUN_101346e0` and filters the message on source address. Any prior note attributing the
+version check to `ChkMsgHdr` is wrong; the version check is §10.1.
+
+### 10.3 UDP port 13401 is transient, which is why captures never show it
+
+Port `0x3459`/**13401** is written in exactly one place in the whole DLL:
+`CModuleSystem::VehicleIdRequest` (`0x10037460`). For **"combination mode 1"** only, it sets
+`this+0x1d6 = 0x3459` (13401), `this+0x1d8 = 0x3458` (13400), `this+0x1d4 = 1`, performs the
+combined vehicle-ID scan, and then **restores `this+0x1d6 = 0`** before returning. The
+constructor `CModuleSystem::CModuleSystem` (`0x10033270`) initialises `+0x1d8 = 0x3458` and
+`+0x1d6 = 0`, i.e. 13400 is the steady state and 13401 exists only inside one call.
+
+Related: in `ProcessEntityIdMsg` (full DLL; not in the candidate subset, around `0x100eb580`)
+the port-13401 comparison only selects a **log label / bitmask** — "VAM" vs "VId Response" — it
+is **not** an accept/reject gate. Actual acceptance is gated by the `DoIPFilterNetworks` bit
+`0x40000000` plus `AllowedAddress()`.
+
+**Practical upshot:** a native client should listen on 13400 and does not need to bind 13401.
+
+### 10.4 The Ethernet/DoIP-enable IOCTL sequence, confirmed at the implementation level
+
+Our captures showed `IOCTL 28` → `IOCTL 37` → `IOCTL 22` once per DPS launch (§5). The source of
+that sequence is now identified exactly. In `bvtx4j32.dll`:
+
+`CJ2534Channel_Ethernet::PassThruConnect` → `SetProtocolConnectionComParameters` issues, in this
+order, all with `hCLL = 0xFFFFFFFF` (module-level, no logical link):
+
+| # | Captured IOCTL | Registered name | Notes |
+|---|---|---|---|
+| 1 | 28 (`0x1c`) | `PDU_IOCTL_MS_SET_ETH_PIN_OPTION` | id global `DAT_10147cd8`; selects the DoIP pin option |
+| 2 | 37 (`0x25`) | `PDU_IOCTL_MS_SET_BRIDGE_SWITCH_STATE` | id global `DAT_10147cf8`; sets `this+0x568 = 1`, payload at `this+0x570` |
+| 3 | 22 (`0x16`) | `PDU_IOCTL_GET_ETH_PIN_OPTION` | id global `DAT_10147cc0`; read-back / verification |
+
+**NEW — teardown (not in the capture-derived doc):** `CJ2534Channel_Ethernet::PassThruDisconnect`
+**reverses** the activation order:
+
+1. `this+0x568 = 0`, then `PDU_IOCTL_MS_SET_BRIDGE_SWITCH_STATE` (`DAT_10147cf8`) — bridge switch OFF
+2. then `PDU_IOCTL_MS_SET_ETH_PIN_OPTION` (`DAT_10147cd8`) with a zeroed value — eth pin option OFF
+
+There is no read-back on teardown. A native client that wants to leave the MDI2 in the state DPS
+leaves it in should replay this reversed pair on shutdown.
+
+### 10.5 CAVEAT: the numeric IOCTL / ComParam IDs are MDF-assigned at runtime, not constants
+
+This is the most important operational caveat in this section. `CJ2534Server::Initialize`
+(`bvtx4j32.dll`) does **not** use compile-time IOCTL numbers. It registers **35 vendor IOCTL
+names as strings**:
+
+```c
+(*vtbl+0x18)(0x8023, "PDU_IOCTL_RESET",                    &DAT_10147c70);
+(*vtbl+0x18)(0x8023, "PDU_IOCTL_CLEAR_TX_QUEUE",           &DAT_10147c74);
+...
+(*vtbl+0x18)(0x8023, "PDU_IOCTL_GET_ETH_PIN_OPTION",       &DAT_10147cc0);
+(*vtbl+0x18)(0x8023, "PDU_IOCTL_VEHICLE_ID_REQUEST",       &DAT_10147cc4);
+...
+(*vtbl+0x18)(0x8023, "PDU_IOCTL_MS_SET_ETH_PIN_OPTION",    &DAT_10147cd8);
+(*vtbl+0x18)(0x8023, "PDU_IOCTL_MS_CLEAR_DOIP_ENTITY_LIST",&DAT_10147cdc);
+...
+(*vtbl+0x18)(0x8023, "PDU_IOCTL_MS_SET_BRIDGE_SWITCH_STATE",&DAT_10147cf8);
+```
+
+That vtable slot is `PDUGetObjectId(PDU_OBJ_IOCTL_ID = 0x8023, name, &out_id)`; the numeric id is
+supplied **by the MDF (manufacturer definition file) at connect time** and written into a
+per-name global. The same is done in bulk for ComParams a few lines earlier
+(`PDUGetObjectId(0x8024, 0xab, ...)` over the `CP_*` name table).
+
+**Therefore:** our hardcoded `0x1c` / `0x25` / `0x16` are correct **for the captured session and
+that MDF**, but are not guaranteed stable across DPS versions, firmware versions or MDF
+revisions. **The durable facts are the STRING names and the CALL ORDER, not the numbers.** A
+robust native client should resolve ids by name (or at minimum re-derive them per session) rather
+than baking in hex.
+
+### 10.6 ADJUDICATED: positional index in the registration list is NOT the IOCTL id
+
+One analysis pass proposed mapping `22 = PDU_IOCTL_VEHICLE_ID_REQUEST` and
+`28 = PDU_IOCTL_MS_CLEAR_DOIP_ENTITY_LIST` by assuming the 1-based position of a name in the
+35-name registration list equals its numeric id. **This is rejected.** Reasons, in order of
+strength:
+
+1. **Arithmetically impossible.** The list has exactly 35 entries (globals `DAT_10147c70` …
+   `DAT_10147cf8`, stride 4 ⇒ `(0xcf8-0xc70)/4 + 1 = 35`). No positional scheme, 0-based or
+   1-based, can yield **37** — which is one of the three ids we actually captured.
+2. **Contradicted by the mechanism (§10.5).** Each name gets its own out-parameter global that
+   `PDUGetObjectId` fills at runtime from the MDF. Position in the source listing carries no
+   information about the assigned value.
+3. **Contradicted by direct behavioural observation (§10.4).** We do not have to guess: we can
+   read *which global is passed to which call at which point in the connect sequence*.
+   `PassThruConnect` demonstrably calls `DAT_10147cd8` first, `DAT_10147cf8` second and
+   `DAT_10147cc0` third, and the capture shows `28` then `37` then `22` in exactly those
+   positions. That fixes 28 = `MS_SET_ETH_PIN_OPTION`, 37 = `MS_SET_BRIDGE_SWITCH_STATE`,
+   22 = `GET_ETH_PIN_OPTION`.
+   (For completeness, the positional guess would have given 21/20 for `GET_ETH_PIN_OPTION` —
+   it does not even self-consistently reproduce one of the three.)
+
+Behavioural evidence beats name-position inference. §10.4's mapping stands.
+
+### 10.7 Protocol identity and framing constants, confirmed
+
+Independently confirmed on the MDI2 side, matching our capture reconstruction:
+
+- Bus type string: **`IEEE_802_3`**. Protocol string: **`ISO_14229_5_ON_ISO_13400_2`**
+  (UDS-on-DoIP). These are the exact literals to request when selecting a resource.
+- DoIP framing: **8-byte header**, payload length **big-endian at offset +4**, maximum accepted
+  payload **`0x100400`** (1 MiB + 1 KiB) — anything larger is rejected before allocation.
+- **Routing Activation request: 15 bytes** (19 with the optional OEM-specific field).
+- **Routing Activation response** is validated as: source address `@+8`, entity address `@+10`,
+  response code `@+12`.
+- **Vehicle announcement / VIR response** layout: VIN `@+8` (17 bytes), logical address `@+0x19`,
+  EID `@+0x1b` (6 bytes), GID `@+0x21` (6 bytes).
+- **Vehicle Identification Request** sizes: **8 B** (broadcast), **14 B** (by EID),
+  **25 B** (by VIN).
+
+### 10.8 OPEN QUESTION — `Port='8080'` in the PDUConstruct option string
+
+`CJ2534Server::Initialize` builds the D-PDU API construct option string as:
+
+```c
+FUN_10034cb0(local_6c, "VCIName='%s' Port='8080'");   /* -> m_PduApi.Construct(local_6c, this) */
+```
+
+i.e. it hands `PDUConstruct` an option string containing **`Port='8080'`**, which does not match
+the **TCP/10123** PDU-API port we captured (nor 13400/13401). `PDUConstruct`'s export wrapper
+(`DPDULib.dll` `0x10083510`) treats the argument as free-form text and passes it straight to
+`CPDUAPI::Construct`, so the value is consumed somewhere deeper in `DPDULib`/`bvtx_vci_rt`.
+
+**Flagged, not resolved** — deliberately out of scope for this consolidation. Candidate readings
+(untested): an internal/loopback service port between `bvtx4j32` and the VCI runtime, an
+MDF-lookup or device-manager port, or a default that the MDF later overrides. Anyone picking this
+up should trace the option-string parse inside `CPDUAPI::Construct` (`FUN_1006cf60`).
+
+### 10.9 What this section changes for the native-client plan
+
+- §5's IOCTL sequence is **confirmed**, and now has a **documented teardown** (§10.4).
+- The DoIP prologue is **confirmed and slightly relaxed** (`00`/`01`/`02` accepted, §10.1).
+- Port **13401 can be ignored** (§10.3).
+- Hardcoded IOCTL numbers should be treated as **session-specific**, with the string names as the
+  stable identifier (§10.5). This is the one place our existing scripts are silently fragile.
