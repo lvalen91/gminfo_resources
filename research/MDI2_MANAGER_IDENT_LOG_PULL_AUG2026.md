@@ -361,3 +361,39 @@ context address, i.e. a debugger (none installed on the bench; x64dbg/WinDbg SDK
 one breakpoint on `bvtx_vci_rt.dll` `BF_set_key`/`FUN_101dce80`, reading its key argument). The
 reimplementation harness + oracle are ready to confirm the instant the real key/derivation is in
 hand.
+
+### 4.10 SOLVED (2026-08-26) — standard Blowfish-ECB + live per-session key = 100% decrypt
+
+The 9052 log stream is now decrypted end-to-end and byte-validated. Two facts closed it:
+
+1. **It is *standard* Blowfish-ECB, big-endian — stock-library compatible.** The
+   `ctx[0x412..0x415]` byte-order table holds the standard `{3,2,1,0}`; the block words are
+   big-endian (`>II`), key packed big-endian. My earlier miss was purely the little-endian block
+   assumption *plus* the wrong key. `Crypto.Cipher.Blowfish` (pycryptodome) `MODE_ECB` reproduces
+   it exactly — no custom variant needed.
+2. **The 56-byte key is per-session and was extracted live.** A Frida hook on
+   `bvtx_vci_rt.dll` `BF_set_key` (RVA `0x1dce80`, live `base+0x1dce80`) reading its 56-byte key
+   argument yielded (this session) `fde7ccb213c2b103c29a617520a9785bbf76df196dcc893412a009bbd199c34bdad67312d5909463130f6169d588af7bbd26641b01f8fd0c`.
+   It is stable for the Manager-process lifetime but changes across sessions (an *earlier* capture
+   would not decrypt with a *later* session's key — which is why the static keyring keys of §4.9,
+   and any cross-session key, all failed).
+
+**Validation:** capturing a fresh 9052 pull *and* the live key from the **same** session, stock
+pycryptodome Blowfish-ECB decrypts the big frame to **100.00% byte-match (59497/59497)** against
+the Manager's own saved plaintext `GM Varlog …txt`.
+
+**Decoded frame + container:** on 9052, an 8-byte plaintext control frame `00 53 50 00 00 XX 00
+00` precedes the messages; each message is `[u32be 0][u32be len][u32 counter][Blowfish-ECB body]`
+(counter increments per message: `c583adc1…c5`). The decrypted big-frame body is an inner file
+container — little-endian `[size][id][namelen][name]` entries (e.g. name `"messages"` = the
+Varlog category) — followed by the raw log text.
+
+**Tooling (working):** `GM_research/mdi2_macos/mdi2_9052_decrypt.py` (pcap + key → plaintext) and
+`ps/frida_bf.py` (attaches to the live Manager, dumps the session key from `BF_set_key`).
+
+**Remaining for a *fully native* macOS client (no Windows/Frida in the loop):** recover how the
+56-byte session key is **derived/negotiated at Connect** (device-side vs client-side, and from
+what — the 16-byte session GUID, the 900x handshake exchange, or the device serial). Everything
+else — discovery (§4.6), the 14-socket transport (§4.1), framing/counter (§4.2), the cipher
+(§4.10), and the container format — is reimplementable today. Key *derivation* is the sole open
+item; live key extraction is a working stopgap in the meantime.
