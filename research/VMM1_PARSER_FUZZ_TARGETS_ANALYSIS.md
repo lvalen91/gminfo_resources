@@ -248,8 +248,10 @@ first:
    (`avb_vbmeta_image_fuzzer`, `avb_slot_verify_fuzzer`) — reuse them as the corpus/harness
    base. This isolates the "signed-vs-unsigned / offset+len" class directly.
 
-2. **Emulate the extracted module.** The ELF is 32-bit x86, statically linked, base
-   `~0x00f60000` (from `vmm1_all.c` addresses). Load the `.vmm1.text`/`.rodata` sections
+2. **Emulate the extracted module.** The ELF is **x86-64**, statically linked, base
+   `~0x00f60000` (from `vmm1_all.c` addresses). **CORRECTED 2026-08-26:** the ELF header claims
+   EM_386/32-bit but the code is x86-64 (§0.8) — emulate with Unicorn `UC_MODE_64` + the SysV
+   x86-64 ABI (not 32-bit), or the register widths/calling convention will be wrong. Load the `.vmm1.text`/`.rodata` sections
    into **Unicorn** (or qiling), map a fake stack + a scratch buffer holding the mutated
    vbmeta, and call the string-anchored parse functions by address. Use the
    `avb_audit.py` string→function map (rerun it under PyGhidra — the archived run failed

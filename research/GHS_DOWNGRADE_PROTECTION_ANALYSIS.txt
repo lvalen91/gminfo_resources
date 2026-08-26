@@ -240,7 +240,7 @@ Size: 14,929,956 bytes
 Structure:
   - Offset 0x000: GM package header
   - Offset 0x220: Intel ipk header ("ipk.")
-  - Offset 0x27C: ELF binary (32-bit x86, statically linked)
+  - Offset 0x27C: ELF binary (CORRECTED 2026-08-26: x86-64, statically linked — the ELF header claims EM_386/32-bit but the code is x86-64; see EEPROM_LAYOUT §0.8)
 
 5.2 GHS VERSION STRINGS
 -----------------------
@@ -698,7 +698,7 @@ APPENDIX A: KEY FILE REFERENCES
 GHS Binary Analysis:
 - Source: update_packages/Y181/85098662
 - ELF offset: 636 bytes into file
-- Architecture: 32-bit x86, statically linked
+- Architecture: x86-64, statically linked (CORRECTED 2026-08-26: EM_386 header is misleading; code is x86-64 — §0.8)
 - Strings extracted at: /tmp/ghs_elf.bin (temporary)
 
 vbmeta Files:
