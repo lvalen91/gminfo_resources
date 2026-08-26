@@ -1,0 +1,10 @@
+pycryptodome>=3.20     # Blowfish-ECB (the 900x/9052 cipher)
+typer>=0.12            # CLI
+# --- optional, recommended ---
+# construct>=2.10       # declarative binary parsing (framing + inner container)
+# scapy>=2.5            # continued protocol RE / pcap analysis
+# rich>=13              # nice CLI/log output
+# --- future: DPS/SPS diagnostic side (separate 10123 D-PDU / 13400 DoIP stack) ---
+# udsoncan>=1.21        # UDS (ISO 14229) client
+# doipclient>=1.1       # DoIP (ISO 13400) transport
+# odxtools>=6           # ODX / PDX diagnostic definitions (GM/Bosch use ODX)
