@@ -543,3 +543,11 @@ re-run blindly):
 **Verdict:** exact derivation is **not** recoverable from the current pseudocode corpus; it needs
 assembly-level ECX tracing or Stalker. Practical deliverable (deterministic per-unit key,
 extract-once, validated decrypt, full automation) stands complete.
+
+**Memory-context check (non-disruptive):** dumped ±160 bytes around all 13 live key copies. The
+surrounding structure is the per-channel transport object — wide-char channel labels
+(`"USB [192.168.171.2]"`, `"log_7"`), vtable/ID pointers — with **no adjacent seed, key-schedule,
+or device serial**. The key is computed elsewhere; only the 56-byte result is copied in. So the
+seed is not recoverable by reading around the key either. Confirms: pinning the formula needs
+assembly-level ECX tracing (offline r2/Ghidra on `bvtx_vci_rt.dll`) or a Stalker trace of an
+automated Connect — both substantial. Stopping the derivation hunt here.
