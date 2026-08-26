@@ -756,6 +756,11 @@ PAGE = r"""<!doctype html>
  .upbtn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
  .infonote{background:#10151c;border:1px solid var(--line);border-left:3px solid var(--warn);
    border-radius:6px;padding:10px 12px;color:var(--mut);font-size:12px;line-height:1.6}
+ .panel{scroll-margin-top:94px}
+ nav.subnav{position:sticky;top:40px;background:#0b0e13;border-bottom:1px solid var(--line);
+   padding:6px 14px;display:flex;gap:6px;flex-wrap:wrap;z-index:4;font-size:11px}
+ nav.subnav a{color:var(--mut);text-decoration:none;padding:2px 9px;border-radius:6px;border:1px solid transparent}
+ nav.subnav a:hover{color:#fff;border-color:var(--line);background:#10151c}
 </style></head><body>
 <header>
   <h1>GM IOK EEPROM Editor</h1>
@@ -769,6 +774,7 @@ PAGE = r"""<!doctype html>
   <button class="danger" onclick="revert()">Revert</button>
   <button class="primary" onclick="saveAs()">Save As…</button>
 </header>
+<nav class="subnav" id="nav" style="display:none"></nav>
 <main id="app"><div class="empty">Upload an EEPROM dump, or pick a known dump and click Load.</div></main>
 <div id="toast"></div>
 <script>
@@ -831,16 +837,23 @@ function render(){
     +(S.diff&&S.diff.length?('<span class=dirty>'+S.diff.length+' byte(s) modified</span>'):'<span class=mut>no edits</span>');
   const a=$('#app');a.innerHTML='';
   a.appendChild(verdictPanel());
+  a.appendChild(diffPanel());
   a.appendChild(secPanel());
+  a.appendChild(trimPanel());
   a.appendChild(idPanel());
   a.appendChild(featPanel());
   a.appendChild(uiPanel());
   a.appendChild(crcPanel());
   a.appendChild(comparePanel());
-  a.appendChild(diffPanel());
   a.appendChild(hexPanel());
+  buildNav();
   loadHex();
 }
+function buildNav(){const nav=$('#nav');if(!nav)return;
+  const ps=[...document.querySelectorAll('#app .panel')];
+  nav.innerHTML=ps.map(p=>{const h=p.querySelector('h2');
+    return h?('<a href="#'+p.id+'">'+esc(h.textContent)+'</a>'):'';}).join('');
+  nav.style.display=ps.length?'flex':'none';}
 
 function verdictPanel(){const p=panel('Configuration verdict','Auto-assessment of the loaded dump.');
   const wrap=document.createElement('div');wrap.className='row';
@@ -848,6 +861,7 @@ function verdictPanel(){const p=panel('Configuration verdict','Auto-assessment o
     s.className='pill '+t.css;s.style.fontSize='12px';s.textContent=t.text;wrap.appendChild(s);});
   p.appendChild(wrap);return p;}
 function panel(title,sub){const p=document.createElement('div');p.className='panel';
+  p.id='sec-'+title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
   p.innerHTML='<h2>'+esc(title)+'</h2>'+(sub?'<div class="sub">'+esc(sub)+'</div>':'');return p;}
 
 // Unified row used by Security / Feature / UI sections.
@@ -920,9 +934,15 @@ function idPanel(){const p=panel('Vehicle / module identity');
   n.textContent='Non-VIN identity strings are read-only here — use the Raw byte editor below to change them (each char = one ASCII byte starting at base+1).';
   p.appendChild(n);return p;}
 
+const TRIM_ADDRS=[0x0AA0,0x0AE5];
+function trimPanel(){
+  const rows=(S.features||[]).filter(f=>TRIM_ADDRS.includes(f.data_addr));
+  const p=panel('Trim / theme (channel b)','VIP-translated GMTrim → boot animation + AAOS theme. UNCONFIRMED candidate bytes (stock 0x69 / LTZ 0xC3 / HighCountry 0xF0). Verify: set, reboot, then adb logcat | grep -i AnimFlavor.');
+  if(!rows.length){p.innerHTML+='<div class="mut small">Trim candidate rows not present.</div>';return p;}
+  p.appendChild(flagRows(rows));return p;}
 function featPanel(){
   const p=panel('Feature flags & undocumented candidates','Suspected values shown as buttons even where ON/OFF semantics are unproven. The outlined button is the default (pre-edit) value.');
-  p.appendChild(flagRows(S.features));return p;}
+  p.appendChild(flagRows((S.features||[]).filter(f=>!TRIM_ADDRS.includes(f.data_addr))));return p;}
 
 function uiPanel(){
   const p=panel('UI flags block @ 0x0E80','Marker '+hx(S.ui_marker)+'. Bitfield rows expose the hex input only.');
