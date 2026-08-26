@@ -1,0 +1,18 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+enabling Aggressive Instruction Finder was False
+AIF_ANALYZE_TIME: 561.7420718669891
+FUNC_COUNT_NOW: 9424
+Traceback (most recent call last):
+  File "GhidraProject.java", line 359, in ghidra.base.project.GhidraProject.save
+Exception: Java Exception
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/x86_step6_aif.py", line 43, in <module>
+    proj.save(prog)
+    ~~~~~~~~~^^^^^^
+java.io.java.io.IOException: java.io.IOException: File error during save

@@ -1,0 +1,34 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step10_deep.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== descriptor entries for trim candidates 0x0AA0 / 0x0AE5 ===
+0x0aa0 : 0x05fa8c : dest=0xc7de f2=0x1074 src=0x0dd2 f6=0xf012 f8=0xf283 type=221 rest=f16088d26e0700205e8000ed5f
+0x0ae5 : 0x060104 : dest=0x3725 f2=0x3620 src=0x0011 f6=0x69e0 f8=0x15ba type=1 rest=3a87ffa8531df07e68416a8e6c
+
+=== raw disasm around callers 0x91b40..0x91b70 (SBI 0x440/0x441 reads) ===
+0x91b30 movea 0x43e,r0,r6
+0x91b34 jarl 0x000c8f6a,lp
+0x91b3a mov r7,r0
+0x91b3c movea 0x43f,r0,r6
+0x91b40 jarl 0x000c8f6a,lp
+0x91b46 mov r8,r0
+0x91b48 movea 0x440,r0,r6
+0x91b4c jarl 0x000c8f6a,lp
+0x91b52 mov r9,r0
+0x91b54 movea 0x443,r0,r6
+0x91b58 jarl 0x000c8f6a,lp
+0x91b5e mov r10,r0
+0x91b60 movea 0x441,r0,r6
+0x91b64 jarl 0x000c8f6a,lp
+0x91b6a mov r11,r0
+0x91b6c movea 0x442,r0,r6
+0x91b70 jarl 0x000c8f6a,lp
+0x91b76 mov r12,r0
+0x91b78 movea 0x444,r0,r6
+0x91b7c jarl 0x000c8f6a,lp
+
+=== function containing 0x91b48, decompiled ===
+fn: None None

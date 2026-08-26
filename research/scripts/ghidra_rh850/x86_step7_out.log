@@ -1,0 +1,14 @@
+STRING Saving calibrations to EMMC @ 0xe092f6 : 0 xrefs
+STRING PAL version mismatch @ 0xe093f5 : 0 xrefs
+STRING Calibration table version mismatch @ 0xe0943d : 0 xrefs
+STRING Failed to load calibrations from EMMC @ 0xe0960d : 0 xrefs
+STRING [VIP] received bad HDLC sequence number from VIP @ 0x86a3f0 : 0 xrefs
+STRING Got IPC msg on invalid channel: %u @ 0x86a3b8 : 0 xrefs
+STRING IPC Channels Opened @ 0x86a3dc : 0 xrefs
+STRING Disabling Android client, invalid message size of %u bytes @ 0x86a358 : 0 xrefs
+STRING Dropped %u bytes from Android @ 0x86a394 : 0 xrefs
+STRING MainLoop @ 0x86a72c : 0 xrefs
+STRING Cache IPC msg: Index=%u, toVip=%u, clientMask=0x%02x @ 0x86a0cd : 0 xrefs
+FUNCS_TO_DECOMPILE: 0
+wrote /tmp/hostos_xref_report.txt
+DONE

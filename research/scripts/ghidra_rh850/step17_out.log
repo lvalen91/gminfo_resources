@@ -1,0 +1,18 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step17_scan.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== scan for 0xfebdaae2 immediate (E2 AA BD FE) ===
+total: 7
+0xc678e fn: None
+0xc68a6 fn: None
+0xc6d06 fn: FUN_000c6d04
+0xc6e1e fn: FUN_000c6e1c
+0xc74fe fn: FUN_000c7472
+0xc8fca fn: FUN_000c8fc4
+0xc916e fn: FUN_000c90fc
+
+=== scan for 0xfebd3e06 immediate (06 3e bd fe) - cross-check known writers/readers use split movhi+disp, expect FEW/no hits ===
+total: 0

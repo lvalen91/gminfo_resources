@@ -1,0 +1,85 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step29_ground_truth.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== block info for ram at 0x9f3a2 and 0x77928 ===
+0x9f3a2 ram initialized= True start= 00000000 end= 001d8385
+0x77928 ram initialized= True start= 00000000 end= 001d8385
+
+=== fixed byte read via getByte loop, 0x9f3a2 (32 bytes) ===
+[27, 48, 2, 58, 0, 66, 191, 255, 190, 248, 93, 87, 0, 0, 221, 15, 1, 0, 10, 234, 0, 50, 92, 55, 0, 0, 14, 50, 132, 255, 30, 217]
+=== fixed byte read via getByte loop, 0x77928 (32 bytes) ===
+[128, 7, 126, 7, 128, 7, 156, 7, 128, 7, 188, 7, 128, 7, 220, 7, 128, 7, 252, 7, 128, 7, 28, 8, 128, 7, 60, 8, 128, 7, 92, 8]
+
+=== disasm at 0x9f3a2 for 0x60 bytes (is this real coherent code?) ===
+0x9f3a2 mov r27,r6
+0x9f3a4 mov 0x2,r7
+0x9f3a6 mov 0x0,r8
+0x9f3a8 jarl 0x0009ec66,lp
+0x9f3ac st.b r10,0x0[r29]
+0x9f3b0 set1 0x1,0x1[r29]
+0x9f3b4 mov 0xa,r29
+0x9f3b6 mov 0x0,r6
+0x9f3b8 st.b r6,0x0[r28]
+0x9f3bc mov 0xe,r6
+0x9f3be jarl 0x000eccdc,lp
+0x9f3c2 br 0x0009f43e
+0x9f3c4 mov 0xe,r6
+0x9f3c6 jarl 0x000eccb4,lp
+0x9f3ca mov r27,r6
+0x9f3cc mov 0x2,r7
+0x9f3ce mov 0x0,r8
+0x9f3d0 jarl 0x0009ec66,lp
+0x9f3d4 st.b r10,0x0[r29]
+0x9f3d8 mov 0xe,r6
+0x9f3da jarl 0x000eccdc,lp
+0x9f3de ld.bu 0x0[r29],r19
+0x9f3e2 cmp 0x4,r19
+0x9f3e4 bne 0x0009f3f6
+0x9f3e6 st.b r0,0x0[r29]
+0x9f3ea clr1 0x1,0x1[r29]
+0x9f3ee mov 0x0,r29
+0x9f3f0 st.b r0,0x0[r28]
+0x9f3f4 br 0x0009f43e
+0x9f3f6 cmp 0x5,r19
+0x9f3f8 bne 0x0009f40e
+0x9f3fa st.b r0,0x0[r29]
+0x9f3fe clr1 0x1,0x1[r29]
+0x9f402 movea 0x22,r0,r12
+
+=== find EEPROM Write Failure string ===
+found strings: [('0x60a6', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x60d2', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x60fe', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x612a', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x6156', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x6182', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x61ae', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x61da', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x6206', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x6232', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x625e', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x628a', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x62b6', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x62e2', '[CAL] EEPROM Write Failure for CalGroup-%d\n'), ('0x630e', '[CAL] EEPROM Write Failure for CalGroup-%d\n')]
+
+=== xrefs TO string @ 0x60a6 ===
+
+=== xrefs TO string @ 0x60d2 ===
+
+=== xrefs TO string @ 0x60fe ===
+
+=== xrefs TO string @ 0x612a ===
+
+=== xrefs TO string @ 0x6156 ===
+
+=== xrefs TO string @ 0x6182 ===
+
+=== xrefs TO string @ 0x61ae ===
+
+=== xrefs TO string @ 0x61da ===
+
+=== xrefs TO string @ 0x6206 ===
+
+=== xrefs TO string @ 0x6232 ===
+
+=== xrefs TO string @ 0x625e ===
+
+=== xrefs TO string @ 0x628a ===
+
+=== xrefs TO string @ 0x62b6 ===
+
+=== xrefs TO string @ 0x62e2 ===
+
+=== xrefs TO string @ 0x630e ===
+
+=== callers of FUN_000778ea (0x778ea) ===

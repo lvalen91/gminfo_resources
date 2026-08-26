@@ -1,0 +1,64 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step15_r28.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+fn: FUN_000af04a
+
+=== raw disasm 0xaf04a .. 0xaf0e0 (prologue, find r28 source) ===
+0xaf04a prepare { r28,r29,lp },0x0
+0xaf04e mov 0xfebe71d8,r29
+0xaf054 movea 0x1d,r0,r6
+0xaf058 jarl 0x000eccb4,lp
+0xaf05c movea 0x1f,r0,r6
+0xaf060 jarl 0x000eccb4,lp
+0xaf064 movea 0x1b,r0,r6
+0xaf068 jarl 0x000eccb4,lp
+0xaf06c movea 0x1c,r0,r6
+0xaf070 jarl 0x000eccb4,lp
+0xaf074 jarl 0x000aee68,lp
+0xaf078 movea 0x1c,r0,r6
+0xaf07c jarl 0x000eccdc,lp
+0xaf080 movea 0x1b,r0,r6
+0xaf084 jarl 0x000eccdc,lp
+0xaf088 movea 0x1f,r0,r6
+0xaf08c jarl 0x000eccdc,lp
+0xaf090 movea 0x1d,r0,r6
+0xaf094 jarl 0x000eccdc,lp
+0xaf098 mov r29,ep
+0xaf09a mov -0x1,r16
+0xaf09c sst.b r16,0x1a[ep]
+0xaf09e movhi -0x143,r0,r11
+0xaf0a2 movhi -0x143,r0,r12
+0xaf0a6 movhi -0x143,r0,r13
+0xaf0aa movhi -0x143,r0,r14
+0xaf0ae mov 0x1,r28
+0xaf0b0 movhi -0x143,r0,r15
+0xaf0b4 movhi -0x143,r0,r16
+0xaf0b8 st.b r0,0x38ce[r11]
+0xaf0bc st.b r0,0x38cd[r12]
+0xaf0c0 st.h r0,0x361c[r13]
+0xaf0c4 st.b r0,0x38e2[r14]
+0xaf0c8 st.b r28,0x38e6[r15]
+0xaf0cc st.b r0,0x38e8[r16]
+0xaf0d0 movhi -0x143,r0,r17
+0xaf0d4 movhi -0x143,r0,r18
+0xaf0d8 movhi -0x143,r0,r19
+0xaf0dc movhi -0x143,r0,lp
+0xaf0e0 movhi -0x143,r0,r11
+
+=== decompile FUN_000af04a ===
+
+void FUN_000af04a(void)
+
+{
+                    /* WARNING: Subroutine does not return */
+  FUN_000eccb4(0x1d);
+}
+
+
+
+=== xrefs TO FUN_000af04a (0xaf04a) - who calls this reset/init fn ===
+ from 0x98810 UNCONDITIONAL_CALL
+total: 1

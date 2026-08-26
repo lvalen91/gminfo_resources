@@ -1,0 +1,92 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step12_groups.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== scanning groups for membership of 0x440/0x441/0xaa0/0xae5 ===
+(placeholder - see raw disasm derivation below)
+
+=== raw disasm of FUN_000c90c4 header again for precise stride/offsets ===
+0xc90c4 prepare { r28,r29,lp },0x0
+0xc90c8 movhi -0x143,r0,r19
+0xc90cc ld.bu 0x3db8[r19],r19
+0xc90d0 movea 0x80,r0,r28
+0xc90d4 cmp r0,r19
+0xc90d6 be 0x000c91be
+0xc90d8 mulhi 0xc,r6,r29
+0xc90dc mov 0x69a14,r19
+0xc90e2 mov 0xfebdbf66,r17
+0xc90e8 add r19,r29
+0xc90ea ld.hu 0x4[r29],ep
+0xc90ee add r17,ep
+0xc90f0 sld.bu 0x0[ep],r16
+0xc90f2 cmp r0,r16
+0xc90f4 cmovne 0x0,r28,r28
+0xc90f8 jarl 0x000ec7f8,lp
+0xc90fc ld.hu 0x2[r29],r13
+0xc9100 br 0x000c91b2
+0xc9102 mov r13,ep
+0xc9104 shl 0x1,ep
+0xc9106 mov 0x64e74,r15
+0xc910c add r15,ep
+0xc910e sld.hu 0x0[ep],ep
+0xc9110 mov 0x4fb8c,r14
+0xc9116 mul 0x18,ep,r0
+0xc911a add r14,ep
+0xc911c sld.bu 0xa[ep],r18
+0xc911e cmp 0x3,r18
+0xc9120 bnc 0x000c9144
+
+=== xrefs TO 0xfebdaae2 (byte shadow) ===
+total: 0
+
+=== xrefs TO 0xfebd3e06 ($27 gate byte) ===
+ from 0xb7a10 WRITE
+ from 0xb3f62 READ
+ from 0xb4bec READ
+ from 0xb5882 READ
+ from 0xb143a READ
+ from 0xb1b66 READ
+ from 0xb2298 READ
+ from 0xb29ca READ
+ from 0xb30fc READ
+ from 0xb382e READ
+ from 0xaf990 READ
+ from 0xafbb0 READ
+ from 0xafdf2 READ
+ from 0xb6b24 READ
+ from 0xb1038 READ
+ from 0xaf896 READ
+ from 0xaf694 READ
+ from 0xaf5c6 READ
+ from 0xb79e4 READ
+ from 0xaf7fc READ
+ from 0xaf354 READ
+ from 0xb0418 READ
+ from 0xb18ca READ
+ from 0xb1ff2 READ
+ from 0xb2724 READ
+ from 0xb2e56 READ
+ from 0xb3588 READ
+ from 0xb3cba READ
+ from 0xb4592 READ
+ from 0xb5226 READ
+ from 0xb6516 READ
+ from 0xb6e7a READ
+ from 0xb6f8a READ
+ from 0xb7310 READ
+ from 0xb76de READ
+ from 0xb7700 READ
+ from 0xb7724 READ
+ from 0xb7748 READ
+ from 0xb7782 READ
+ from 0xb787a READ
+ from 0xb789e READ
+ from 0xb78c2 READ
+ from 0xb7916 READ
+ from 0xb0c9a READ
+ from 0xb6720 READ
+ from 0xb5ebc READ
+ from 0xaf1be WRITE
+total: 47

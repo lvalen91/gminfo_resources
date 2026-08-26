@@ -1,0 +1,206 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step22_commitfns.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=========== FUN_000c812e ===========
+
+void FUN_000c812e(void)
+
+{
+  int iVar1;
+  ushort uVar2;
+  byte bVar3;
+  uint uVar4;
+  byte *pbVar5;
+  uint uVar6;
+  uint uVar7;
+  uint uVar8;
+  uint uVar9;
+  uint uVar10;
+  int unaff_r21;
+  short *unaff_r23;
+  uint *unaff_r24;
+  ushort *unaff_r26;
+  int unaff_r27;
+  int unaff_r28;
+  byte *pbVar11;
+  undefined4 in_stack_00000000;
+  ushort in_stack_00000028;
+  int in_stack_00000034;
+  
+  iVar1 = (uint)*(ushort *)(unaff_r21 * 2 + 0x64e74) * 0x18;
+  if ((*(byte *)(iVar1 + 0x4fb96) < 3) && (*(byte *)(iVar1 + 0x4fb96) == 0)) {
+    bVar3 = *(byte *)(iVar1 + 0x4fb99);
+    in_stack_00000000._3_1_ = 0;
+    pbVar5 = (byte *)((uint)*(byte *)(iVar1 + 0x4fb9b) + in_stack_00000034);
+    uVar8 = *(byte *)(iVar1 + 0x4fb98) & 7;
+    if (bVar3 < 3) {
+      if (bVar3 == 0) {
+        in_stack_00000000._3_1_ =
+             (byte)(0xff >> (8 - *(byte *)(iVar1 + 0x4fb97) & 0x1f)) &
+             (byte)((int)(uint)*pbVar5 >> uVar8);
+      }
+      else if (bVar3 == 1) {
+        in_stack_00000000._3_1_ = *pbVar5;
+      }
+      else {
+        FUN_000e3d20((int)&stack0x00000000 + 3,1,pbVar5,*(undefined1 *)(iVar1 + 0x4fb9a));
+      }
+    }
+    else {
+      if (bVar3 < 4) {
+        uVar8 = (uint)*(byte *)(iVar1 + 0x4fb9a);
+        do {
+          *(byte *)((int)&stack0x00000000 + uVar8 + 2) = pbVar5[-(uVar8 - 1)];
+          uVar8 = uVar8 - 1;
+        } while( true );
+      }
+      if (bVar3 == 4) {
+        uVar9 = (uint)*(byte *)(iVar1 + 0x4fb97);
+        uVar6 = 0;
+        if (8 < uVar9) {
+          uVar6 = (int)uVar9 >> 3;
+          uVar4 = uVar6;
+          if (uVar6 < 2) {
+            while (uVar7 = uVar4 - 1, -1 < (int)uVar7) {
+              pbVar11 = (byte *)((int)&stack0x00000000 + uVar4 + 2);
+              bVar3 = (byte)((int)(uint)pbVar5[uVar7] >> uVar8);
+              *pbVar11 = bVar3;
+              uVar9 = uVar9 - 8 & 0xff;
+              *pbVar11 = bVar3 | (pbVar5 + uVar7)[1] << (8 - uVar8 & 0x1f);
+              uVar4 = uVar7;
+            }
+          }
+          else {
+            uVar6 = 0;
+          }
+        }
+        if (uVar9 != 0) {
+          *(byte *)((int)&stack0x00000000 + uVar6 + 3) =
+               ~(byte)(0xff << (uVar9 & 0x1f)) &
+               ((byte)((int)(uint)pbVar5[uVar6] >> uVar8) |
+               (pbVar5 + uVar6)[1] << (8 - uVar8 & 0x1f));
+        }
+      }
+      else if (bVar3 == 5) {
+        uVar9 = (uint)*(byte *)(iVar1 + 0x4fb97);
+        uVar6 = 0;
+        if ((8 < uVar9) && (uVar7 = (int)uVar9 >> 3, uVar4 = uVar7, uVar7 < 2)) {
+          while (uVar10 
+
+=========== FUN_000c6cb0 ===========
+
+/* WARNING: Instruction at (ram,0x000ee772) overlaps instruction at (ram,0x000ee770)
+    */
+
+void FUN_000c6cb0(undefined4 param_1,uint param_2)
+
+{
+  bool bVar1;
+  char cVar2;
+  uint uVar3;
+  uint uVar4;
+  byte bVar5;
+  int in_r13;
+  int in_r17;
+  int iVar6;
+  int unaff_r22;
+  short *unaff_r23;
+  undefined1 *unaff_r24;
+  uint unaff_r25;
+  int unaff_r26;
+  int unaff_r27;
+  int unaff_r28;
+  uint uVar7;
+  
+  iVar6 = (uint)*(ushort *)(&LAB_00065d20 + unaff_r26 * 2) * 0x18;
+  uVar7 = iVar6 + 0x4fb8c;
+  cVar2 = *(char *)(iVar6 + 0x4fb92);
+  if (cVar2 == '\0') {
+switchD_000c6ce2_default:
+    if ((*(char *)(iVar6 + 0x4fb93) != '\0') && (*(char *)(iVar6 + 0x4fb96) == '\b')) {
+      FUN_000e37be(*(byte *)(iVar6 + 0x4fba0) + 0xfebdaac6,*(byte *)(iVar6 + 0x4fb9d) + 0x4f7f8,
+                   (uint)*(byte *)(iVar6 + 0x4fb9c) - (uint)*(byte *)(iVar6 + 0x4fb9d) & 0xff);
+    }
+    if (((*(char *)(iVar6 + 0x4fb94) == '\0') || (cVar2 == '\0')) ||
+       (uVar3 = (uint)*(byte *)(iVar6 + 0x4fb96), 6 < uVar3)) {
+      if (*(char *)(unaff_r28 + 0xe) != '\0') {
+        *(undefined2 *)((unaff_r25 & 0xffff) * 2 + -0x142963e) = 0;
+      }
+      for (uVar7 = (uint)*(byte *)(unaff_r28 + 0x13); uVar7 < *(byte *)(unaff_r28 + 0x12);
+          uVar7 = uVar7 + 1 & 0xff) {
+        *(undefined2 *)(uVar7 * 2 + -0x14290ae) = *(undefined2 *)(FUN_0006cc86 + uVar7 * 8);
+        *(undefined1 *)(uVar7 + 0xfebdc212) = 1;
+      }
+      *unaff_r24 = 1;
+      iVar6 = unaff_r25 * 0x16 + unaff_r22;
+      for (bVar5 = *(byte *)(iVar6 + 0x13); (uint)bVar5 < (uint)*(byte *)(iVar6 + 0x12);
+          bVar5 = bVar5 + 1) {
+        *(undefined1 *)(bVar5 + 0xfebdc212) = 1;
+      }
+      if (*unaff_r23 == 0) {
+        *unaff_r23 = 1;
+        thunk_FUN_000ede90();
+                    /* WARNING: Subroutine does not return */
+        thunk_FUN_000ede5c();
+      }
+      *unaff_r23 = *unaff_r23 + -1;
+      *unaff_r23 = 1;
+      thunk_FUN_000ede90();
+                    /* WARNING: Subroutine does not return */
+      thunk_FUN_000ede5c();
+    }
+    uVar4 = uVar3 * 4;
+    bVar1 = uVar3 == 0;
+    switch(uVar3) {
+    case 0:
+      if (!bVar1) goto switchD_000c6dfa_caseD_3;
+      uVar4 = 2;
+    case 1:
+      FUN_000f264c(uVar4);
+      break;
+    case 2:
+      break;
+    case 3:
+switchD_000c6dfa_caseD_3:
+      bVar1 = *(char *)(*(int *)(iVar6 + 0x4fb94) + 0x5c) == '\0';
+    case 5:
+      uVar4 = uVar7;
+      if (!bVar1) {
+switchD_000c6dfa_caseD_6:
+                    /* WARNING: Subroutine does not return */
+        FUN_0
+
+=========== FUN_000c73f0 ===========
+
+void FUN_000c73f0(void)
+
+{
+  uint uVar1;
+  int unaff_r22;
+  
+  uVar1 = (uint)*(byte *)(unaff_r22 * 6 + 0x6a3cb);
+  if (uVar1 != 0xff) {
+    *(undefined2 *)(uVar1 * 2 + -0x14290ae) = (&DAT_0006cc84)[uVar1 * 4];
+  }
+                    /* WARNING: Could not recover jumptable at 0x000c7448. Too many branches */
+                    /* WARNING: Treating indirect jump as call */
+  (*(code *)((uint)*(byte *)((uint)*(ushort *)(&LAB_0006a3c8 + unaff_r22 * 6) * 0x18 + 0x4fb96) * 4
+            + 0xeeec8))();
+  return;
+}
+
+
+
+=== does any function in program directly call FUN_000c8fc4 (shadow getter) or FUN_000c7472 via jarl elsewhere (2nd search) ===
+2-byte scan 0x60a6: 1 raw hits (noisy)
+2-byte scan 0x60d2: 0 raw hits (noisy)
+2-byte scan 0x60fe: 255 raw hits (noisy)
+   0x4f259 mov 0xfebd0a04,ep @ 0x4f254
+   0x55335 mov 0xfebd7f2c,ep @ 0x55330
+   0x55fbf mov 0xfebd0bb8,ep @ 0x55fba
+   0x5a451 mov 0xfebd83d1,ep @ 0x5a44c
+   0x5cc9d mov 0xfebddd96,ep @ 0x5cc98
+   0x60813 mov 0xfebf0bc0,ep @ 0x6080e

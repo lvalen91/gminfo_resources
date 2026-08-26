@@ -8,6 +8,49 @@ RF-module EEPROM where the flag block is read at boot and shadowed to RAM.
 
 ---
 
+## ⚠ UPDATE 2026-08-26 — RETARGETED after full-coverage RE + owner witness
+
+The original target flags (`0x04A0/0x04C0/0x0A40/0x0BE0`) are **REFUTED** as security flags: full-coverage
+RH850 disassembly (VIP_APP + VIP_BOOT) found **no code evidence** for them — their "xref counts" were grep
+noise and the "IPC Security" naming was a misread of the `[IPC_S]` *serial-transport* log tag (see
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0–§0.8). **Do not spend physical cycles on those four.** Confirmed /
+high-value bench targets instead:
+
+| Target | Bytes | Effect (evidence) |
+|---|---|---|
+| **ADB (SBI)** | `0x0441=FF` **AND** `0x0A80=FF` | **Owner-confirmed, 3-yr reproducible.** Both `00→FF` enables ADB; revert disables. Pre-Y181 stock ships `0x0A80` already `FF` (flip only `0x0441`); **Y181 needs both.** Framing `0x0440/0x0442` NOT required; no CRC recompute needed (the 1-byte `stock_modified` edit worked). |
+| **Trim/theme** | `0x0AA0` / `0x0AE5` (candidate, UNCONFIRMED) | trim cal → boot animation + AAOS theme (HC=`0xF0`, LTZ=`0xC3`, stock=`0x69`; not the raw enum — VIP-translated). |
+
+**Static RE is exhausted** (VIP_APP + VIP_BOOT + GHS HOSTOS all at high coverage): the EEPROM read, the SBI
+consumer, and the trim translation live behind computed-jump dispatch + an externally-triggered CAN/DoIP `$27`
+diagnostic + guest `/data` runtime state — none statically followable. **The bench is now the arbiter;** this
+protocol is the path.
+
+### ADB test (validate the minimal set + scope the effect)
+1. Golden-dump the full 8 KB (×2, sha256) per §6.
+2. Set `0x0441=0xFF` (and `0x0A80=0xFF` on Y181). Reboot.
+3. Observe: `adb devices` (authorizes without the GM key?), shell context (`id`, `getenforce` — expect
+   `u:r:shell:s0`, enforcing), whether `$27` SecurityAccess over CAN/DoIP now succeeds, and diff
+   `/data/gm_adb/{policy,password}` before/after. **Likely mechanism:** SBI → trivial `$27` seed → `$27`
+   passes → a diagnostic enables adb (runtime, `/data`).
+4. **Isolate:** flip `0x0441` alone vs. `0x0441`+`0x0A80` — confirm the minimal set on THIS build.
+5. **Scope:** does anything **beyond** ADB change? (the original open question).
+
+### Trim test (find the real trim byte)
+1. From a stock dump set `0x0AA0` (then `0x0AE5`) to HC `0xF0`. Reboot.
+2. Observe the host-verified pipeline: `adb shell getprop persist.sys.anim.flavor` (index changes?),
+   `adb logcat | grep -i AnimFlavor` (the live `GMTrim: %d, GMModel: %d, GMBrand: %d -> AnimFlavor:%d` line —
+   does GMTrim flip?), and the actual boot animation/theme.
+3. If neither moves it, bisect the **LTZ-vs-stock 110-byte diff** (the clean pair) watching that same
+   `AnimFlavor` log line — it's the direct probe for any trim/model/brand byte.
+
+### Observation harness (extends §5)
+- **ADB:** `adb devices`, `id`, `getenforce`, `/data/gm_adb/{policy,password}` diff, `$27` seed result.
+- **Trim:** `getprop persist.sys.anim.flavor`, `logcat | grep AnimFlavor`, `cmd overlay list`, the animation.
+- Existing §5 `$27`/UDS probes remain valid — the `$27` seed result is the shared signal for the SBI hypothesis.
+
+---
+
 ## 0. Governing principle: do NOT desolder first
 
 Each physical reprogram cycle is expensive and adds bricking risk. The protocol is tiered so

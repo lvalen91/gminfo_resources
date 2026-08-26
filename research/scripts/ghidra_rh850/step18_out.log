@@ -1,0 +1,238 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step18_consumers.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=========== 0xc678e -> None @ None ===========
+(no function wrapper; nearest fn before:)
+FUN_000c6718
+
+=========== 0xc68a6 -> None @ None ===========
+(no function wrapper; nearest fn before:)
+FUN_000c6718
+
+=========== 0xc6d06 -> FUN_000c6d04 @ 000c6d04 ===========
+
+void FUN_000c6d04(void)
+
+{
+  int in_r15;
+  int in_r19;
+  
+  *(undefined *)(in_r15 + -0x142551e) = (&DAT_0004f814)[in_r19];
+  switchD_000c6ce2::default();
+  return;
+}
+
+
+callers(1): ['0xc6ce8']
+
+=========== 0xc6e1e -> FUN_000c6e1c @ 000c6e1c ===========
+
+void FUN_000c6e1c(void)
+
+{
+  int in_r14;
+  int in_r18;
+  
+  *(undefined *)(in_r14 + -0x142551e) = (&DAT_0004f814)[in_r18];
+  FUN_000c6ec6();
+  return;
+}
+
+
+callers(1): ['0xc6e00']
+
+=========== 0xc74fe -> FUN_000c7472 @ 000c7472 ===========
+
+void FUN_000c7472(void)
+
+{
+  byte bVar1;
+  int iVar2;
+  uint uVar3;
+  int iVar4;
+  uint uVar5;
+  uint uVar6;
+  uint uVar7;
+  byte *pbVar8;
+  int iVar9;
+  uint uVar10;
+  short *unaff_r23;
+  uint *unaff_r24;
+  int unaff_r26;
+  int unaff_r27;
+  int unaff_r28;
+  ushort *unaff_ep;
+  byte bStack00000001;
+  int in_stack_00000034;
+  
+  bVar1 = *(byte *)((int)unaff_ep + 0xd);
+  pbVar8 = (byte *)((uint)*(byte *)((int)unaff_ep + 0xf) + in_stack_00000034);
+  uVar7 = (byte)unaff_ep[6] & 7;
+  bStack00000001 = 0;
+  if (bVar1 < 3) {
+    if (bVar1 == 0) {
+      bStack00000001 =
+           (byte)(0xff >> (8 - *(byte *)((int)unaff_ep + 0xb) & 0x1f)) &
+           (byte)((int)(uint)*pbVar8 >> uVar7);
+    }
+    else if (bVar1 == 1) {
+      bStack00000001 = *pbVar8;
+    }
+    else {
+      FUN_000e3d20(&stack0x00000001,1,pbVar8,(char)unaff_ep[7]);
+    }
+  }
+  else if (bVar1 < 4) {
+    uVar7 = (uint)(byte)unaff_ep[7];
+    if (uVar7 < 2) {
+      while (uVar5 = uVar7 - 1, -1 < (int)uVar5) {
+        (&stack0x00000000)[uVar7] = pbVar8[-uVar5];
+        uVar7 = uVar5;
+      }
+    }
+  }
+  else if (bVar1 == 4) {
+    uVar5 = (uint)*(byte *)((int)unaff_ep + 0xb);
+    iVar4 = 0;
+    if (8 < uVar5) {
+      uVar10 = (int)uVar5 >> 3;
+      iVar4 = uVar10 * (uVar10 < 2);
+      iVar2 = iVar4;
+      if (uVar10 < 2) {
+        while (iVar9 = iVar2 + -1, -1 < iVar9) {
+          bVar1 = (byte)((int)(uint)pbVar8[iVar9] >> uVar7);
+          (&stack0x00000000)[iVar2] = bVar1;
+          uVar5 = uVar5 - 8 & 0xff;
+          (&stack0x00000000)[iVar2] = bVar1 | (pbVar8 + iVar9)[1] << (8 - uVar7 & 0x1f);
+          iVar2 = iVar9;
+        }
+      }
+    }
+    if (uVar5 != 0) {
+      (&stack0x00000001)[iVar4] =
+           ~(byte)(0xff << (uVar5 & 0x1f)) &
+           ((byte)((int)(uint)pbVar8[iVar4] >> uVar7) | (pbVar8 + iVar4)[1] << (8 - uVar7 & 0x1f));
+    }
+  }
+  else if (bVar1 == 5) {
+    uVar10 = (uint)*(byte *)((int)unaff_ep + 0xb);
+    uVar5 = 0;
+    if (8 < uVar10) {
+      uVar6 = (int)uVar10 >> 3;
+      uVar5 = uVar6 * (uVar6 < 2);
+      uVar3 = uVar5;
+      if (uVar6 < 2) {
+        while (uVar6 = uVar3 - 1, -1 < (int)uVar6) {
+          bVar1 = (byte)((int)(uint)pbVar8[-uVar6] >> uVar7);
+          (&stack0x00000000)[uVar3] = bVar1;
+          (&stack0x00000000)[uVar3] = bVar1 | pbVar8[-uVar3] << (8 - uVar7 & 0x1f);
+          uVar10 = uVar10 - 8 & 0xff;
+          uVar3 = uVar6;
+        }
+      }
+    }
+    if (uVar10 != 0) {
+      (&stack0x00000001)[uVar5] =
+           ~(byte)(0xff << (uVar10 & 0x1f)) &
+           ((byte)((int)(uint)pbVar8[-uVar5] >> uVar7) | pbVar8[~uVar5] << (8 - uVar7 & 0x1f));
+    }
+  }
+  *(byte *)(*unaff_ep + 0xfebdaae2) = bStack00000001;
+  if (*(byte *)(unaff_r26 + 2) == 0xff) {
+    if (*(char *)(unaff_r27 + 0xf) != '\0') {
+      pbVar8 = (byte *)(*(byte *)(unaff_r27 + 0x13) + 0xfebdc212);
+      *pbVar8 = *pbVar8 & 0xfd;
+    }
+    if (*unaff_r23 == 0) {
+      *unaff_r23 = 1;
+      thunk_FUN_000ede90();
+      if (unaff_r28 != 0) {
+        return;
+      }
+                    /* WARNING: Subroutine does not return */
+      thunk_FUN_000ede5c();
+    }
+    *unaff_r23 = *unaff_r23 + -1;
+    *unaff_r23 = 1;
+    thunk_FUN_000ede90();
+    if (unaff_r28 != 0) {
+      return;
+    }
+                    /* WARNING: Subroutine does not return */
+    thunk_FUN_000ede5c();
+  }
+  if (unaff_r28 != 0) {
+    *unaff_r23 = 1;
+    thunk_FUN_000ede90();
+    return;
+  }
+  *unaff_r24 = (uint)*(byte *)(unaff_r26 + 2);
+  FUN_000c80bc();
+  return;
+}
+
+
+callers(1): ['0xc744e']
+
+=========== 0xc8fca -> FUN_000c8fc4 @ 000c8fc4 ===========
+
+char FUN_000c8fc4(undefined4 param_1,undefined1 *param_2)
+
+{
+  ushort *unaff_r29;
+  
+  *param_2 = *(undefined1 *)(*unaff_r29 + 0xfebdaae2);
+  return (*(char *)(unaff_r29[1] + 0xfebdbf66) == '\0') * -0x80;
+}
+
+
+callers(1): ['0xc8fa0']
+
+=========== 0xc916e -> FUN_000c90fc @ 000c90fc ===========
+
+void FUN_000c90fc(void)
+
+{
+  int iVar1;
+  byte bVar2;
+  uint uVar3;
+  ushort *unaff_r29;
+  ushort *puVar4;
+  
+  for (uVar3 = (uint)unaff_r29[1]; uVar3 < *unaff_r29; uVar3 = uVar3 + 1) {
+    iVar1 = (uint)*(ushort *)(uVar3 * 2 + 0x64e74) * 0x18;
+    puVar4 = (ushort *)(iVar1 + 0x4fb8c);
+    bVar2 = *(byte *)(iVar1 + 0x4fb96);
+    if (bVar2 < 3) {
+      if (bVar2 == 0) {
+        *(undefined1 *)(*puVar4 + 0xfebdaae2) =
+             *(undefined1 *)(*(ushort *)(iVar1 + 0x4fb90) + 0xfebdaae2);
+      }
+      else if (bVar2 == 2) {
+        *(undefined2 *)((uint)*puVar4 * 2 + -0x142936a) =
+             *(undefined2 *)((uint)*(ushort *)(iVar1 + 0x4fb90) * 2 + -0x142936a);
+      }
+    }
+    else if (bVar2 < 4) {
+      *(undefined2 *)((uint)*puVar4 * 2 + -0x14290cc) =
+           *(undefined2 *)((uint)*(ushort *)(iVar1 + 0x4fb90) * 2 + -0x14290cc);
+    }
+    else if (bVar2 == 4) {
+      *(undefined4 *)((uint)*puVar4 * 4 + -0x142a844) =
+           *(undefined4 *)((uint)*(ushort *)(iVar1 + 0x4fb90) * 4 + -0x142a844);
+    }
+    else if (bVar2 == 5) {
+      *(undefined4 *)((uint)*puVar4 * 4 + -0x142a858) =
+           *(undefined4 *)((uint)*(ushort *)(iVar1 + 0x4fb90) * 4 + -0x142a858);
+    }
+  }
+  thunk_FUN_000ede90();
+  return;
+}
+
+
+callers(0): []
+

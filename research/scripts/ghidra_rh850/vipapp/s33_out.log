@@ -1,0 +1,47 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/vipapp/s33_eeprom_err_strings.py:14: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+matched strings: 48
+unique caller functions: 1
+ fn=FUN_00041350 @ 00041350  (1 strs)
+     [SS_SWC] cal_critical_state_of_charge_ignore (%d) read eeprom error !,
+
+=== decompiling up to 3 representative callers ===
+----  FUN_00041350 00041350 ----
+
+void FUN_00041350(undefined4 param_1,undefined1 param_2,undefined1 param_3,undefined1 param_4)
+
+{
+  int in_r10;
+  int unaff_r20;
+  int unaff_r23;
+  short *unaff_r24;
+  int unaff_ep;
+  
+  *(undefined1 *)(unaff_ep + 0x57) = 0;
+  *(undefined1 *)(unaff_ep + 0x50) = 0;
+  __saturate(unaff_r23 + -0x3132);
+  *(undefined1 *)(unaff_ep + 0x5e) = 0;
+  *(undefined1 *)(unaff_ep + 0x57) = 0;
+  *(int *)(unaff_r24 + 0x1919) = unaff_r23 + -0x3132;
+  *(undefined1 *)(unaff_ep + 0x65) = 0;
+  *(undefined1 *)(unaff_ep + 0x5e) = 0;
+  *(undefined1 *)(in_r10 + 0x73c) = 0;
+  *(undefined1 *)(unaff_ep + 0x6c) = 0;
+  *(undefined1 *)(unaff_ep + 0x65) = 0;
+  *(undefined1 *)(unaff_r24 + 0x3a5) = 0;
+  *(undefined1 *)(unaff_ep + 0x73) = 0;
+  *(undefined1 *)(unaff_ep + 0x6c) = 0;
+  *(undefined2 *)(*(int *)(unaff_ep + 0x6c) + 0x758) = 0;
+  *(undefined1 *)(unaff_ep + 0x7a) = 0;
+  *(undefined1 *)(unaff_ep + 0x73) = 0;
+  *(undefined2 *)(unaff_r20 + 0x766) = 0;
+  *(undefined1 *)(unaff_ep + 0x7a) = 0;
+  FUN_00061b5e((int)*unaff_r24,param_2,param_3,param_4);
+  return;
+}
+
+

@@ -1,0 +1,141 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/vipapp/s37_ee8k.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+======== 0x5dda6 FUN_0005dda6 ========
+
+void FUN_0005dda6(int param_1,int param_2)
+
+{
+  uint uVar1;
+  int iVar2;
+  char cVar3;
+  uint uVar4;
+  char *pcVar5;
+  
+  uVar1 = 0;
+  do {
+    uVar4 = param_1 + 0xeU >> ((uVar1 & 7) << 2) & 0xf;
+    cVar3 = (char)uVar4;
+    if (uVar4 < 10) {
+      cVar3 = cVar3 + '0';
+    }
+    else {
+      cVar3 = cVar3 + '7';
+    }
+    pcVar5 = (char *)(-0x142f157 - uVar1);
+    uVar1 = uVar1 + 1;
+    *pcVar5 = cVar3;
+  } while (uVar1 < 4);
+  iVar2 = 0xe;
+  while (iVar2 != 0) {
+    if (param_2 == 0) {
+      param_2 = 0x1fff;
+    }
+    else {
+      param_2 = param_2 + -1;
+    }
+    *(undefined1 *)(param_2 + -0x14221d8) = *(undefined1 *)(iVar2 + -0x142f161);
+    iVar2 = iVar2 + -1;
+  }
+  return;
+}
+
+
+callers: ['FUN_0005df32@0005df32'] total= 1
+
+======== 0x5de8e FUN_0005de8e ========
+
+uint FUN_0005de8e(uint param_1,uint param_2)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  uint uVar3;
+  uint uVar4;
+  
+  uVar4 = ((param_1 + 0x2000) * (uint)(param_1 < param_2) + param_1 * (param_1 >= param_2)) -
+          param_2;
+  uVar3 = 0x2000 - param_2;
+  if (uVar4 != 0) {
+    DAT_febd0eb0 = 1;
+    DAT_febd0eb1 = 0;
+    DAT_febd0eb2 = 1;
+    uVar2 = FUN_00083fc6();
+    uVar4 = (uint)(0xf8 < uVar4) * 0xf9 + uVar4 * (0xf8 >= uVar4);
+    iVar1 = param_2 + 0xfebdde28;
+    DAT_febd0eb3 = (undefined1)((uint)uVar2 >> 0x18);
+    DAT_febd0eb4 = (undefined1)((uint)uVar2 >> 0x10);
+    DAT_febd0eb5 = (undefined1)((uint)uVar2 >> 8);
+    DAT_febd0eb6 = (undefined1)uVar2;
+    if (uVar3 < uVar4) {
+      param_2 = uVar4 - uVar3;
+      uVar4 = param_2;
+    }
+    else {
+      param_2 = param_2 + uVar4;
+      uVar3 = uVar4;
+      uVar4 = 0;
+    }
+    FUN_000e8636(0xfebd0eb7,iVar1,uVar3);
+    if (uVar4 != 0) {
+      FUN_000e8636(uVar3 + 0xfebd0eb7,0xfebdde28,uVar4);
+    }
+    FUN_000570fe(0x14,&DAT_febd0eb0,uVar4 + uVar3 + 7 & 0xffff);
+  }
+  return param_2;
+}
+
+
+callers: ['FUN_0005df32@0005df32'] total= 1
+
+======== 0x5df32 FUN_0005df32 ========
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_0005df32(void)
+
+{
+  uint uVar1;
+  uint uVar2;
+  undefined4 uVar3;
+  int iVar4;
+  uint uVar5;
+  uint uVar6;
+  uint local_20 [2];
+  
+  FUN_0005de04();
+  do {
+    do {
+      FUN_000ecaee(4,0);
+      FUN_000ecab8(10,local_20);
+      FUN_000eca8c(local_20[0] & 4,0);
+      iVar4 = _DAT_febd0e98;
+      uVar3 = _DAT_febd0e94;
+      uVar2 = _DAT_febd0e90;
+      uVar1 = _DAT_febd0e8c;
+      _DAT_febd0e98 = 0;
+      if (iVar4 != 0) {
+        FUN_0005dda6(iVar4,_DAT_febd0e8c);
+      }
+      uVar5 = (uVar1 + 0x2000) * (uint)(uVar1 < uVar2) + uVar1 * (uVar1 >= uVar2);
+      uVar6 = uVar5 - uVar2;
+    } while (uVar5 == uVar2);
+    FUN_000eca5a(10);
+    uVar6 = (uint)(0x3f < uVar6) * 0x40 + uVar6 * (0x3f >= uVar6);
+    uVar5 = 0x2000 - uVar2;
+    uVar5 = uVar6 * (uVar6 <= uVar5) + uVar5 * (uVar6 > uVar5);
+    FUN_0007eaec(0xfebddde4,uVar2 + 0xfebdde28,uVar5 & 0xffff);
+    iVar4 = FUN_0005de72();
+    if (iVar4 != 0) {
+      _DAT_febd0e94 = FUN_0005de8e(uVar1,uVar3);
+    }
+    _DAT_febd0e90 = uVar5 + uVar2 & 0x1fff;
+  } while( true );
+}
+
+
+callers: [] total= 0
+

@@ -1,0 +1,181 @@
+===== calibrations.text 0xdf8000 - 0xe0830a =====
+num functions: 37
+ fn FUN_00df8000 @ 00df8000 size=77
+ fn FUN_00df9ed0 @ 00df9ed0 size=24
+ fn FUN_00df9ee8 @ 00df9ee8 size=211
+ fn FUN_00df9fbb @ 00df9fbb size=29
+ fn FUN_00df9fd8 @ 00df9fd8 size=105
+ fn thunk_FUN_00dfade8 @ 00dfa1d1 size=5
+ fn thunk_FUN_00dfade8 @ 00dfa1d6 size=5
+ fn thunk_FUN_00dfade8 @ 00dfa1e5 size=5
+ fn FUN_00dfa1fc @ 00dfa1fc size=37
+ fn FUN_00dfa2a4 @ 00dfa2a4 size=106
+ fn thunk_FUN_00dfa700 @ 00dfa30e size=5
+ fn FUN_00dfa346 @ 00dfa346 size=57
+ fn FUN_00dfa37f @ 00dfa37f size=90
+ fn FUN_00dfa3d9 @ 00dfa3d9 size=118
+ fn FUN_00dfa468 @ 00dfa468 size=30
+ fn FUN_00dfa490 @ 00dfa490 size=277
+ fn FUN_00dfa5b0 @ 00dfa5b0 size=257
+ fn FUN_00dfa6f0 @ 00dfa6f0 size=3
+ fn FUN_00dfa700 @ 00dfa700 size=9
+ fn FUN_00dfa70c @ 00dfa70c size=15
+ fn FUN_00dfab10 @ 00dfab10 size=35
+ fn FUN_00dfad80 @ 00dfad80 size=46
+ fn FUN_00dfade8 @ 00dfade8 size=4
+ fn FUN_00dfaea4 @ 00dfaea4 size=66
+ fn FUN_00dfafa0 @ 00dfafa0 size=45
+ fn FUN_00dfb048 @ 00dfb048 size=15
+ fn FUN_00dfb0dc @ 00dfb0dc size=18
+ fn FUN_00dfb0f0 @ 00dfb0f0 size=45
+ fn FUN_00dfb144 @ 00dfb144 size=15
+ fn FUN_00dfb32c @ 00dfb32c size=32
+ fn FUN_00dfb694 @ 00dfb694 size=58
+ fn FUN_00dfb6ce @ 00dfb6ce size=58
+ fn FUN_00dfb708 @ 00dfb708 size=115
+ fn thunk_FUN_00dfa468 @ 00dfbc78 size=5
+ fn FUN_00dfbe92 @ 00dfbe92 size=69
+ fn FUN_00e03a93 @ 00e03a93 size=99
+ fn FUN_00e05e0c @ 00e05e0c size=66
+--- disasm near entry ---
+  00df8000 XOR EDX,EDX
+  00df8002 MOV EAX,EAX
+  00df8005 OR EDX,EDX
+  00df8007 JNZ 0x00bf8000
+  00df800d MOV RDX,0x0
+  00df8017 CMP RDX,0x0
+  00df801b JNZ 0x00bf8000
+  00df8021 MOV RCX,0x0
+  00df8028 MOV RDX,0x0
+  00df802f MOV RSI,0x0
+  00df8036 MOV RDI,0x20004d
+  00df8040 CALL 0x00df9fd8
+  00df8045 XOR RBX,RBX
+  00df8048 DIV RBX
+  00df804b JMP 0x00df804b
+  00df804d ?? 00h
+  00df804e ?? 00h
+  00df804f ?? 20h     
+  00df8050 ?? 00h
+  00df8051 ?? 00h
+  00df8052 ?? 00h
+  00df8053 ?? 00h
+  00df8054 ?? 00h
+  00df8055 ?? 00h
+  00df8056 ?? 00h
+  00df8057 ?? 00h
+  00df8058 ?? 00h
+  00df8059 ?? 00h
+  00df805a ?? 00h
+  00df805b ?? 00h
+  00df805c ?? 00h
+  00df805d ?? 00h
+  00df805e ?? 00h
+  00df805f ?? 60h    `
+  00df8060 ?? 00h
+  00df8061 ?? 00h
+  00df8062 ?? 00h
+  00df8063 ?? 00h
+  00df8064 ?? 00h
+  00df8065 ?? 90h
+  00df8066 ?? 90h
+  00df8067 ?? 90h
+  00df8068 ?? 02h
+  00df8069 ?? B0h
+  00df806a ?? ADh
+  00df806b ?? 1Bh
+  00df806c ?? 02h
+  00df806d ?? 00h
+  00df806e ?? 00h
+  00df806f ?? 00h
+===== vip_server.text 0x860000 - 0x869966 =====
+num functions: 37
+ fn FUN_00860000 @ 00860000 size=77
+ fn FUN_00862010 @ 00862010 size=24
+ fn FUN_00862028 @ 00862028 size=211
+ fn FUN_008620fb @ 008620fb size=29
+ fn FUN_00862118 @ 00862118 size=105
+ fn thunk_FUN_00862f28 @ 00862311 size=5
+ fn thunk_FUN_00862f28 @ 00862316 size=5
+ fn thunk_FUN_00862f28 @ 00862325 size=5
+ fn FUN_0086233c @ 0086233c size=37
+ fn FUN_008623e4 @ 008623e4 size=106
+ fn thunk_FUN_00862840 @ 0086244e size=5
+ fn FUN_00862486 @ 00862486 size=57
+ fn FUN_008624bf @ 008624bf size=90
+ fn FUN_00862519 @ 00862519 size=118
+ fn FUN_008625a8 @ 008625a8 size=30
+ fn FUN_008625d0 @ 008625d0 size=277
+ fn FUN_008626f0 @ 008626f0 size=257
+ fn FUN_00862830 @ 00862830 size=3
+ fn FUN_00862840 @ 00862840 size=9
+ fn FUN_0086284c @ 0086284c size=15
+ fn FUN_00862c50 @ 00862c50 size=35
+ fn FUN_00862ec0 @ 00862ec0 size=46
+ fn FUN_00862f28 @ 00862f28 size=4
+ fn FUN_00862fe4 @ 00862fe4 size=66
+ fn FUN_008630e0 @ 008630e0 size=45
+ fn FUN_00863188 @ 00863188 size=15
+ fn FUN_0086321c @ 0086321c size=18
+ fn FUN_00863230 @ 00863230 size=45
+ fn FUN_00863284 @ 00863284 size=15
+ fn FUN_0086346c @ 0086346c size=32
+ fn FUN_008637d4 @ 008637d4 size=58
+ fn FUN_0086380e @ 0086380e size=58
+ fn FUN_00863848 @ 00863848 size=115
+ fn thunk_FUN_008625a8 @ 00863db8 size=5
+ fn FUN_008640be @ 008640be size=69
+ fn FUN_0086474f @ 0086474f size=99
+ fn FUN_00866b40 @ 00866b40 size=66
+--- disasm near entry ---
+  00860000 XOR EDX,EDX
+  00860002 MOV EAX,EAX
+  00860005 OR EDX,EDX
+  00860007 JNZ 0x00660000
+  0086000d MOV RDX,0x0
+  00860017 CMP RDX,0x0
+  0086001b JNZ 0x00660000
+  00860021 MOV RCX,0x0
+  00860028 MOV RDX,0x0
+  0086002f MOV RSI,0x0
+  00860036 MOV RDI,0x20004d
+  00860040 CALL 0x00862118
+  00860045 XOR RBX,RBX
+  00860048 DIV RBX
+  0086004b JMP 0x0086004b
+  0086004d ?? 00h
+  0086004e ?? 00h
+  0086004f ?? 20h     
+  00860050 ?? 00h
+  00860051 ?? 00h
+  00860052 ?? 00h
+  00860053 ?? 00h
+  00860054 ?? 00h
+  00860055 ?? 00h
+  00860056 ?? 00h
+  00860057 ?? 00h
+  00860058 ?? 00h
+  00860059 ?? 00h
+  0086005a ?? 00h
+  0086005b ?? 00h
+  0086005c ?? 00h
+  0086005d ?? 00h
+  0086005e ?? 00h
+  0086005f ?? 60h    `
+  00860060 ?? 00h
+  00860061 ?? 00h
+  00860062 ?? 00h
+  00860063 ?? 00h
+  00860064 ?? 00h
+  00860065 ?? 90h
+  00860066 ?? 90h
+  00860067 ?? 90h
+  00860068 ?? 02h
+  00860069 ?? B0h
+  0086006a ?? ADh
+  0086006b ?? 1Bh
+  0086006c ?? 02h
+  0086006d ?? 00h
+  0086006e ?? 00h
+  0086006f ?? 00h
+DONE

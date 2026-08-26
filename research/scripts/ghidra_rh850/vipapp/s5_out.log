@@ -1,0 +1,41 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/vipapp/s5_seed.py:9: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+vector table entries: 32
+  0x780 -> 0xe5924
+  0x790 -> 0xefebc
+  0x7a0 -> 0xefeac
+  0x7b0 -> 0xefe9c
+  0x7c0 -> 0xf4ae4
+  0x7d0 -> 0xefd44
+  0x7e0 -> 0xefe6c
+  0x7f0 -> 0xefe5c
+  0x800 -> 0xefe4c
+  0x810 -> 0xefde8
+  0x820 -> 0xefe2c
+  0x830 -> 0xefe1c
+  0x840 -> 0xefe0c
+  0x850 -> 0xefdfc
+  0x860 -> 0xefdec
+  0x870 -> 0xefddc
+  0x880 -> 0xefcb0
+  0x890 -> 0xefca0
+  0x8a0 -> 0xefc90
+  0x8b0 -> 0xefc80
+  0x8c0 -> 0xefc70
+  0x8d0 -> 0xefc60
+  0x8e0 -> 0xefc50
+  0x8f0 -> 0xefc40
+  0x900 -> 0xefc30
+  0x910 -> 0xefc20
+  0x920 -> 0xefc10
+  0x930 -> 0xefc00
+  0x940 -> 0xefbf0
+  0x950 -> 0xefbe0
+  0x960 -> 0xefbd0
+  0x970 -> 0xefbc0
+functions created from vector seeds: 32
+total function count now: 12939

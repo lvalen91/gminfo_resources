@@ -1,0 +1,34 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step28_probe.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== instruction detail at 0x77922 ===
+jmp 0x9f3a2[r15]
+numOperands 2
+ operand 0 0x9f3a2 refType []
+ operand 1 r15 refType []
+flowType COMPUTED_JUMP
+
+=== bytes at 0x9f3a2 (64 bytes hex) ===
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+=== bytes at 0x9f466 (64 bytes hex) ===
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+=== bytes at 0x9f540 (64 bytes hex) ===
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+=== what block/section contains 0x9f3a2, 0x77928 ===
+0x9f3a2 -> block: ram code unit: mov r27,r6
+0x9f466 -> block: ram code unit: zxh r6
+0x9f540 -> block: ram code unit: addi -0x3,r19,r11
+0x77928 -> block: ram code unit: jr 0x000780a6
+0x779ec -> block: ram code unit: jr 0x0007abae
+0x77ac6 -> block: ram code unit: jr 0x0007c38a
+
+=== defined data/instructions exactly AT 0x9f3a2 ===
+mov r27,r6 <java class 'ghidra.program.database.code.InstructionDB'>
+function containing 0x9f3a2: None
+
+=== symbols at/near 0x9f3a2 ===
+LAB_0009f3a2

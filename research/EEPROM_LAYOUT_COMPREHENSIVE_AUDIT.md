@@ -197,7 +197,7 @@ Full-coverage RH850 pass on VIP_APP (`85759599`, 12,939 functions; ~90% of real 
 file is 54% content `0x0–0xFFFFF` + 46% erased `0xFF` flash; ~10% tabular residue unresolved; whole-image
 CRC32 `0x7FB2D59E` at EOF). Caveat: ~250 spurious `mov tp,r0` decodes slightly inflate the "code" figure.
 
-**CODE-VERIFIED — this REHABILITATES the SBI addresses:**
+**CODE-VERIFIED (⚠ partly walked back — see §0.6: `0x440/0x441` are *referenced* as accessor args but their value is *discarded* on reachable paths, not consumed as data):**
 - Calibration accessor **`FUN_000C8F6A`** → 24-byte descriptor table **`0x4FB8C`** → computed-call into inlined
   handler bodies at **`0xF0A1A + tag*4`**. **`calItemId` == raw EEPROM byte offset — PROVEN** (unrolled loaders
   at `0x91800+` walk every byte `0x40F–0x45A` via `movea 0xNNN,r0,r6; jarl 0xC8F6A`).
@@ -224,6 +224,82 @@ computed-jump-dispatch code (`0xF0A1A`-style) + the ~10% tabular residue that re
 disassembly cannot fully resolve. Further static digging has diminishing returns. **The productive path to the
 remaining "how" is now DYNAMIC** — the bench harness (§0.3) + documented single-variable flip tests (`0x0441`,
 then `0x0AA0/0x0AE5`), watching `getprop persist.sys.anim.flavor` / `logcat AnimFlavor` / adb reachability.
+
+### §0.6 DISPATCH DECODE + RAW CROSS-CHECK (2026-08-26) — corrects §0.5's "code-read"; the wall is nested dispatch
+
+Two follow-up passes (RH850 dispatch-handler decode + pure raw-byte cross-check) reconcile the structure:
+
+- **Dispatch structure CONFIRMED (instruction-level):** `FUN_C8F6A` computes `entry=0x4FB8C+calId*0x18`, reads
+  `type=*(entry+0xA)`, then `jmp 0xF0A1A[type*4]`. The 24-byte table + type-tag are real (the arithmetic is in
+  the code). A raw-byte entropy test could not *detect* the tag column — a detection limit, not a refutation;
+  the separate 2-byte calId catalogs at `0x3D998`/`0x3F6DE`/`0x3E0CA` (+ mirror backup page) are the group-
+  membership lists, a complementary structure.
+- **CORRECTION to §0.5 — `0x440/0x441` value is NOT consumed on reachable paths.** The type-5 handler
+  (`0xF0A2E`) is a **generic session/pointer-chain validity check** (tests bits 0-1 of `*(ep+0x14)`; no shadow
+  write; no `==0xFF`), and the call site `FUN_00091AEC` calls `C8F6A(0x43a..0x447)` in a batch and **discards
+  every result** (`mov rX,r0`). So `0x440/0x441` are *accessor arguments* (real code references — not fabricated
+  addresses) but their **value is not read/consumed** on any statically-reachable path. "code-read as data" ✗;
+  "referenced" ✓.
+- **`$27` gate `0xFEBD3E06` — EXHAUSTIVE negative:** 47 refs, only 2 writers, both hardcoded (`0` at `0xB7A10`,
+  `1` at `0xAF1BE` via `mov 0x1,r28`); byte-pattern scan confirms no other encoding exists. **No calibration/
+  EEPROM-derived writer.** The ADB gate is set by session-init constants, not by an EEPROM value, on any
+  reachable path. (The real byte-shadow copier is `FUN_C90C4`; `0xFEBDAAE2` has exactly 4 accessors —
+  `FUN_C8FC4` getter, `FUN_C7472/C6D04/C6E1C` bitfield writers — none touching the `$27` gate.)
+- **The write/commit machinery hides behind a SECOND dispatch layer:** the genuinely-orphaned commit functions
+  (`0xC812E/C6CB0/C73F0` — no pointer table anywhere holds their addresses) are reached only via nested
+  computed-jump / interrupt context. `FUN_C73F0` contains its own table at **`0xEEEC8`** (same `type*4+base`
+  shape); `FUN_C6CB0` writes a new per-item dirty bitmap at **`0xFEBDC212`**; `0xEEEC8` reaches `FUN_EF0D0`
+  which does an interrupt-disabled (`di`) masked RMW on constant `0x400780E0` — **REFUTED (§0.7):** that is a
+  plain 32-bit bitmask constant in RTOS event-flag/EIWR bookkeeping, not a device register.
+
+**NET (reinforces §0.5, harder):** even two dispatch layers deep, **no statically-reachable path links EEPROM
+`0x441` → the `$27`/ADB gate** — the gate is hardcoded 0/1 in reachable code, and the commit/consume machinery
+lives behind nested computed-jump tables + interrupt-context peripheral access that recursive-descent cannot
+follow. The mechanism is **empirically certain** (owner witness) yet **static-RE-opaque**. This fits the
+"**$27 diagnostic action**" model: the SBI likely gates whether an *externally-triggered* CAN/DoIP `$27`
+diagnostic *succeeds*, which then enables ADB via the dispatch-hidden path — not a boot-time EEPROM→gate read.
+**The bench remains the arbiter.** (Open host-side possibility: the GHS `calibrations`/`vip_server` tasks —
+under analysis — may consume the SBI the VIP forwards, explaining its absence from VIP_APP's reachable code.)
+
+### §0.7 EEPROM UTILIZATION MAP + driver leads (2026-08-26) — reframed "find all EEPROM access"
+
+A pass that hunted for *all* EEPROM access (not the SBI) delivered the functional map and resolved two leads:
+
+**What the VIP actually reads the EEPROM FOR — 34 named calibration items** (string-verified; per-byte caller
+wiring stays behind the dispatch wall). The EEPROM's primary VIP role is **power/sleep-state & vehicle-lifecycle
+configuration**, plus a little HMI config, plus the security region:
+- **`[SS_SWC]` × 32 — power/sleep/offmode lifecycle:** sleep/suspend/offmode/startup/flush timeouts,
+  `cal_max_suspend_time_{1,2,3}`, `cal_str_mode_soc_min_threshold_{1,2,3}`, `cal_str_min_temp_threshold`,
+  `cal_suspend_to_ram_en`, `cal_vin_relearn_en`, `cal_critical_state_of_charge_ignore`,
+  `cal_cluster_animation_ignore`/`cal_rsi_animation_ignore`/`*_hmiready_ignore`, `cal_local_valet_timeout_sec`,
+  `cal_master_offmode_active_timeout_min`, `cal_remote_reflash_programming_complete_timeout_sec`, etc.
+- **`[J6_CDD]` × 2 — HMI/display:** `LngSelSignal` (language), `TimeDispFormat` (time format).
+- **Security region:** the SBI (`0x0441`/`0x0A80`) + the `0x40F–0x45A` calItem block (empirically the ADB gate).
+- **Write path (`[CAL]`):** `EEPROM Write Failure for CalGroup-%d`.
+> Caveat: only 2 of 48 cal-string addresses have real code xrefs; Ghidra's function boundaries in that region
+> are unreliable, so the *string list is solid* but *which function reads each item* is unresolved (dispatch wall).
+
+**Driver leads — two refuted, one new:**
+- `0x400780E0`: **REFUTED** — a plain 32-bit bitmask constant in RTOS event-flag/EIWR bookkeeping, not a register.
+- The 32 interrupt vectors are **not** per-peripheral ISRs — all non-reset slots hit one RTOS entry/exit stub band
+  (`0xEFBC0–0xF4AE4`); real device ISRs dispatch through a second OS-managed table static analysis can't reach.
+  No `RIIC/IICA/ICCR/ICDR` register strings exist anywhere in the image.
+- ~~**NEW best static lead:** a ~70-entry `jr` jump table at `0x77A00`…~~ **REFUTED (chase pass, 2026-08-26):**
+  `FUN_000778EA` (which contains the `0x77A00` block) has **zero callers by every test** (dead/unreachable, or
+  reached only via a runtime-populated RAM function pointer). The `jr` block is **filler physically adjacent to,
+  but disconnected from,** the real computed-jump targets (`0x9F3A2/9F466/9F540` — which are themselves uncarved
+  code with no containing function). Crucially, the earlier "EEPROM-string xref at `0x77B1A`" claim is **FALSE**:
+  all **15** `[CAL] EEPROM Write Failure` string copies (`0x60A6…0x630E`) have **ZERO code xrefs** — Ghidra never
+  linked the split `movhi`/`movea` immediate loads to the strings. The real callees off this chain are UDS
+  session-state + DTC-setter plumbing, touching no peripheral/I²C register.
+- **Remaining static technique (last resort):** manually scan for split-immediate (`movhi`+`movea`) loads that
+  assemble the EEPROM-string / shadow / peripheral addresses Ghidra's ref manager missed — that's the only way to
+  recover the emitters/driver reference. Also note the *known* dispatchers `0xF0A1A`/`0xEEEC8` are themselves
+  **truncated switch-fragments** Ghidra couldn't fully carve ("too many branches") — the whole dispatch layer is
+  under-analyzed, which is the real static wall.
+
+A candidate 8 KB ring at `0xFEBDDE28` (0x2000) is a **trace/log buffer, NOT the EEPROM shadow** (recorded so it
+isn't re-mistaken). Used calId ranges unchanged: `0x40F–0x45A` + CalGroup live set `0xB4–0xB5/0xF9–0x103/0xDC1–0xDC9`.
 
 ---
 

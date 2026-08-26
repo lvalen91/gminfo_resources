@@ -1,0 +1,116 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step30_followup.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== any instruction anywhere referencing/loading 0x778ea (search all refs, incl no-type) ===
+total matches: 0
+
+=== does CalGroup dispatcher 0xf0a1a or commit dispatcher 0xeeec8 reference 778ea region (77000-78000) or 9f000-a0000? ===
+CalGroupDispatch fn: FUN_000f0a10
+CommitDispatch fn: FUN_000eee60
+
+=== decompile callees from 0x9f3a2 handler: 0x9ec66, 0xeccdc, 0xeccb4 ===
+-- 0x9ec66 -> function FUN_0009ec66
+
+undefined1 FUN_0009ec66(undefined1 param_1,char param_2,char param_3)
+
+{
+  bool bVar1;
+  int iVar2;
+  char cVar3;
+  undefined1 uVar4;
+  char acStack_1d [5];
+  
+  if ((param_2 == '\x03') && (DAT_febe715c == '\x02')) {
+    DAT_febe715a = 0;
+    DAT_febe715c = 0;
+    return 0;
+  }
+  if (DAT_febe715c == '\0') {
+    if (param_2 == '\x03') {
+      return 0;
+    }
+  }
+  else if (DAT_febe715c != param_2) {
+    return 3;
+  }
+  if (DAT_febe715a == '\0') {
+    uVar4 = 3;
+    iVar2 = FUN_00096ac2(acStack_1d);
+    if ((iVar2 != 0) || (acStack_1d[0] == '\x02')) goto LAB_0009ed54;
+    DAT_febe7154 = param_1;
+    DAT_febe715b = param_3;
+    DAT_febe715c = param_2;
+    iVar2 = FUN_00096ad8(&DAT_febe7154);
+    if (iVar2 != 0) {
+      DAT_febe715a = '\x01';
+      goto LAB_0009ed54;
+    }
+  }
+  else {
+    if (DAT_febe715a != '\x01') {
+      if (DAT_febe715a == '\x02') {
+        iVar2 = FUN_00096ac2(acStack_1d);
+        if (iVar2 == 0) {
+          if (acStack_1d[0] == '\0') {
+            uVar4 = 4;
+            DAT_febe715a = '\0';
+            DAT_febe715c = '\0';
+            DAT_febe715b = '\0';
+            DAT_febd83d1 = param_1;
+            FUN_0008c794(param_1);
+            goto LAB_0009ed54;
+          }
+          if (acStack_1d[0] != '\x02') {
+            DAT_febe715a = 0;
+            DAT_febe715b = 0;
+            DAT_febe715c = 0;
+            return 5;
+          }
+        }
+        uVar4 = 3;
+      }
+      else {
+        uVar4 = 5;
+        DAT_febe715a = '\0';
+        DAT_febe715c = '\0';
+ 
+-- 0xeccdc -> function FUN_000eccdc
+
+uint FUN_000eccdc(undefined4 param_1)
+
+{
+  uint uVar1;
+  undefined4 local_24 [6];
+  
+  uVar1 = FUN_000f5d5a();
+  if (uVar1 != 0) {
+    local_24[0] = param_1;
+    thunk_FUN_000f25b2(0xd9,uVar1,local_24);
+  }
+  return uVar1 & 0xff;
+}
+
+
+-- 0xeccb4 -> function FUN_000eccb4
+
+uint FUN_000eccb4(undefined4 param_1)
+
+{
+  uint uVar1;
+  undefined4 local_24 [6];
+  
+  uVar1 = FUN_000f5be8();
+  if (uVar1 != 0) {
+    local_24[0] = param_1;
+    thunk_FUN_000f25b2(0xd8,uVar1,local_24);
+  }
+  return uVar1 & 0xff;
+}
+
+
+
+=== search whole program instructions for immediate 0xa0/0xa1/0x50 used with 'mov' near jarl to i2c-ish, cheap heuristic: search function names containing 'IIC','I2C','RIIC','EEPROM','M24' ===
+name-based hits (0):

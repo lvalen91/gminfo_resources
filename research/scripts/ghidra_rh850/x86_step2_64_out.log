@@ -1,0 +1,10 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+file: hostos.elf
+total symbol rows to apply: 2556
+RESULT named_functions=1996 func_created=1139 label_created=560 errors=0
+REANALYZE_TIME_SEC: 9.803071975708008
+FUNC_COUNT_AFTER_SYMBOLS: 2030
+DONE

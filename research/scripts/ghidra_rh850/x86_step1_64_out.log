@@ -1,0 +1,69 @@
+INFO  Using log config file: jar:file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /Users/zeno/Library/ghidra/ghidra_12.1.2_PUBLIC/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /Users/zeno/Library/ghidra/ghidra_12.1.2_PUBLIC/preferences (Preferences)  
+INFO  Loading previous preferences: /Users/zeno/Library/ghidra/ghidra_12.1.3_PUBLIC/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (503 ms) (ClassSearcher)  
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/x86_step1_import.py:14: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(ELF, project_location=PROJ_DIR, project_name=PROJ_NAME,
+INFO  Creating project: /Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/hostos_x86/hostos_x86 (DefaultProject)  
+WARN  Using unknown opinion: Executable and Linking Format (ELF), x86:LE:64:default:windows (LcsHintLoadSpecChooser)  
+INFO  Using Loader: Executable and Linking Format (ELF) (ProgramLoader)  
+INFO  Using Language/Compiler: x86:LE:64:default:windows (ProgramLoader)  
+INFO  Using Library Search Path: [., /System/Library/dyld/dyld_shared_cache_arm64e, /System/Library/dyld/dyld_shared_cache_x86_64, /System/Library/dyld/dyld_shared_cache_x86_64h, /System/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e, /System/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64, /System/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h, /Users/zeno/Library/Java/Extensions, /Library/Java/Extensions, /Network/Library/Java/Extensions, /System/Library/Java/Extensions, /usr/lib/java] (ProgramLoader)  
+INFO  Additional info:
+Loading file:///Volumes/stuff/misc/research/GM_research/gm_aaos/2024_Silverado_ICE/analysis/hostos_unpack/hostos.elf?MD5=c673f0123e709f24b2a2047c6ed569b8...
+Skipping section [.tls.cond.data] with invalid size 0x0
+Skipping section [/DISCARD/] with invalid size 0x0
+Skipping section [.romjump] with invalid size 0x0
+Skipping section [.gstackfix] with invalid size 0x0
+------------------------------------------------
+
+ (ProgramLoader)  
+INFO  /hostos.elf: file created (zeno) (LocalFileSystem)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  Packed database cache: /var/tmp/zeno-ghidra/packed-db-cache (PackedDatabaseCache)  
+INFO  Applied data type archive: generic_clib_64 (ApplyDataArchiveAnalyzer)  
+WARN  Decompiling 00217de6: Unable to read bytes at ram:ffff800000217e69 (DecompileCallback)  
+WARN  Decompiling 00209bb2: Unable to read bytes at ram:ffff800000209c33 (DecompileCallback)  
+INFO  -----------------------------------------------------
+    ASCII Strings                              0.474 secs
+    Apply Data Archives                        0.084 secs
+    Call Convention ID                         0.002 secs
+    Call-Fixup Installer                       0.005 secs
+    Create Address Tables                      0.045 secs
+    Create Address Tables - One Time           0.591 secs
+    Create Function                            0.084 secs
+    Data Reference                             0.101 secs
+    Decompiler Switch Analysis                 2.435 secs
+    Demangler GNU                              0.006 secs
+    Disassemble                                0.001 secs
+    Disassemble Entry Points                   0.337 secs
+    ELF Scalar Operand References              0.425 secs
+    Embedded Media                             0.074 secs
+    External Entry References                  0.000 secs
+    Function ID                                0.156 secs
+    Function Start Search                      0.010 secs
+    Non-Returning Functions - Discovered       0.048 secs
+    Non-Returning Functions - Known            0.000 secs
+    Reference                                  0.125 secs
+    Shared Return Calls                        0.042 secs
+    Stack                                      0.410 secs
+    Subroutine References                      0.251 secs
+    x86 Constant Reference Analyzer            0.561 secs
+-----------------------------------------------------
+     Total Time   6 secs
+-----------------------------------------------------
+ (AutoAnalysisManager)  
+IMPORTED: hostos.elf min 00200000 max unallocated_3::0000111f
+ANALYSIS_TIME_SEC: 7.656368732452393
+FUNC_COUNT_AFTER_AUTOANALYZE: 929
+SAVED via context manager exit
+DONE

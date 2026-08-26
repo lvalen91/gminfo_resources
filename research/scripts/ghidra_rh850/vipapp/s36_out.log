@@ -1,0 +1,33 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/vipapp/s36_bufscan.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+total existing instructions scanned: 288129
+hits on 0x2000/0x1fff/0x1ffe immediate: 25
+0x2d194 ld.b 0x1fff[r15],lp   fn= FUN_0002d194 0002d194
+0x2d404 ld.b 0x1fff[r15],lp   fn= FUN_0002d274 0002d274
+0x2d41c ld.b 0x1fff[r15],lp   fn= FUN_0002d274 0002d274
+0x5dde8 movea 0x1fff,r0,r7   fn= FUN_0005dda6 0005dda6
+0x5de94 addi 0x2000,r6,r16   fn= FUN_0005de8e 0005de8e
+0x5de9e movea 0x2000,r0,r26   fn= FUN_0005de8e 0005de8e
+0x5df74 addi 0x2000,r27,r15   fn= FUN_0005df32 0005df32
+0x5df98 movea 0x2000,r0,r18   fn= FUN_0005df32 0005df32
+0x5dfd0 andi 0x1fff,r28,r9   fn= FUN_0005df32 0005df32
+0x727d8 addi 0x2000,r11,r12   fn= FUN_000727b6 000727b6
+0x727e0 addi 0x2000,r12,r13   fn= FUN_000727b6 000727b6
+0x727e8 addi 0x2000,r13,r14   fn= FUN_000727b6 000727b6
+0x7e05c ori 0x2000,r12,r12   fn= FUN_0007dfc2 0007dfc2
+0x89c3a movea 0x2000,r0,r8   fn= FUN_00089c10 00089c10
+0x8b170 movea 0x2000,r0,r8   fn= FUN_0008b160 0008b160
+0x8c8fe movhi 0x2000,r0,r8   fn= FUN_0008c8ee 0008c8ee
+0x8c926 movhi 0x2000,r0,r8   fn= None 
+0x8d456 movea 0x2000,r0,r8   fn= FUN_0008d448 0008d448
+0x8db5c movea 0x2000,r0,r8   fn= FUN_0008db4e 0008db4e
+0x98e18 movea 0x2000,r0,r6   fn= None 
+0xa1310 movea 0x2000,r0,r8   fn= None 
+0xc2eac movhi 0x2000,r0,r6   fn= FUN_000c2e6c 000c2e6c
+0xd50c4 ori 0x2000,r27,r26   fn= FUN_000d5058 000d5058
+0xe26c8 movea 0x1fff,r0,r10   fn= caseD_45 000e26c0
+0xe283a movea 0x1fff,r0,r10   fn= FUN_000e2782 000e2782

@@ -32,3 +32,4 @@ __pycache__/
 # Ghidra RH850 analysis projects (large binaries; keep the .py analysis scripts, drop the project dirs)
 research/scripts/ghidra_rh850/*_rh850/
 research/scripts/ghidra_rh850/*_broken/
+research/scripts/ghidra_rh850/hostos_x86/

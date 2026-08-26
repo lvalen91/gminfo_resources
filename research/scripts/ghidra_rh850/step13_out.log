@@ -1,0 +1,57 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step13_writers.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=========== WRITE SITE 0xb7a10 -> fn FUN_000b7a0c @ 000b7a0c ===========
+
+void FUN_000b7a0c(void)
+
+{
+  DAT_febd3e06 = 0;
+  return;
+}
+
+
+
+0xb79f0 cmp 0x1,r17
+0xb79f2 bne 0x000b7a08
+0xb79f4 movea 0x2,sp,r6
+0xb79f8 jarl 0x0008fbc4,lp
+0xb79fc cmp r0,r10
+0xb79fe bne 0x000b7a08
+0xb7a00 ld.hu 0x2[sp],r9
+0xb7a04 st.h r9,0x0[r29]
+0xb7a08 dispose 0x1,{ r29,lp },[lp]
+0xb7a0c movhi -0x143,r0,r11
+0xb7a10 st.b r0,0x3e06[r11]
+0xb7a14 jmp [lp]
+0xb7a16 zxb r6
+0xb7a18 cmp 0x1,r6
+0xb7a1a bc 0x000b7a2e
+0xb7a1c be 0x000b7a38
+0xb7a1e cmp 0x3,r6
+0xb7a20 bc 0x000b7a42
+
+=========== WRITE SITE 0xaf1be -> fn None @ None ===========
+
+0xaf19e movea 0x98,r29,r17
+0xaf1a2 movhi -0x143,r0,r12
+0xaf1a6 st.dw r14,0x0[r17]
+0xaf1ac sst.w r13,0xa0[ep]
+0xaf1ae sst.b r0,0x2f[ep]
+0xaf1b0 sst.h r0,0x0[ep]
+0xaf1b2 sst.b r0,0xd[ep]
+0xaf1b4 sst.b r0,0x2c[ep]
+0xaf1b6 sst.b r0,0x2d[ep]
+0xaf1b8 sst.b r0,0x2e[ep]
+0xaf1ba sst.b r0,0x33[ep]
+0xaf1bc sst.b r0,0x32[ep]
+0xaf1be st.b r28,0x3e06[r12]
+0xaf1c2 dispose 0x0,{ r28,r29,lp },[lp]
+0xaf1c6 prepare { r29,lp },0x1
+0xaf1ca mov 0xfebe7208,r29
+
+=== byte-pattern scan for immediate 0xfebdaae2 (LE bytes E2 AA BD FE) across program memory ===
+total occurrences: 0
