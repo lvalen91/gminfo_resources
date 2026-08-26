@@ -1,6 +1,6 @@
 """900x service session: opens the 14-socket bank, does the per-channel control-frame
 handshake, sends length-suffixed + Blowfish-framed app messages, reads whole frames."""
-import socket, struct, time
+import socket, struct, time, random
 from . import crypto, framing, messages
 from .const import SERVICE_PORTS, DEVICE_IP_DEFAULT
 
@@ -10,7 +10,7 @@ _CTRL_MAGIC = b"\x00\x53\x50\x00"
 class Channel:
     def __init__(self, sock, key, port):
         self.sock, self.key, self.port = sock, key, port
-        self.counter = 0
+        self.counter = random.getrandbits(31) | 0x80000000  # device requires high bit set
 
     def handshake(self, timeout=2.0):
         code = CONTROL_CODE.get(self.port, 0x30)
@@ -23,7 +23,7 @@ class Channel:
         return self._ctrl_reply
 
     def send(self, plaintext: bytes):
-        self.counter += 1
+        self.counter = (self.counter + 1) & 0xffffffff
         body = crypto.encrypt(self.key, messages.pack_body(plaintext))
         self.sock.sendall(framing.build_message(self.counter, body))
 

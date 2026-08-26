@@ -1,23 +1,25 @@
-"""Log pull over port 9052 (JSON session + binary get-logs command)."""
+"""Log pull over port 9052: session_open -> get-logs -> decode SID container."""
+import time
 from . import messages
 from .const import LOG_PORT
+from .container import parse_log_container
 
-def pull_logs(session, name="mdi2py", date="00000000000000000"):
-    """Open a session on 9052, trigger the log stream, return decoded frames.
+def pull_logs(session, name="mdi2py", dialer_ip="192.168.171.30"):
+    """Open a session on 9052 and pull the device log container.
 
-    Sequence (from decrypted capture): session_open -> poll* -> GET_LOGS_CMD -> stream.
-    `date` is a client timestamp string (DDMMYYHHMMSS + fraction); value isn't validated.
+    Returns list of (filename, bytes) e.g. ('messages', <Varlog>). Validated live.
+    NOTE: send session_open as the FIRST message on a fresh session; the message
+    counter must have its high bit set (handled by Channel). The device holds ONE
+    session, released on clean disconnect — close the session before reconnecting.
     """
     ch = session.channels[LOG_PORT]
-    ch.send(messages.session_open(name=name, dialer_ip="0.0.0.0",
-                                  listener_ip=session.host, date=date))
+    date = time.strftime("%d%m%y%H%M%S") + "1234567"
+    ch.send(messages.session_open(name, dialer_ip, session.host, date))
+    resp = ch.recv_frames(4.0)
     ch.send(messages.poll(4))
     ch.send(messages.GET_LOGS_CMD)
-    frames = ch.recv_frames(timeout=6.0)
-    return [(ctr, messages.parse(body)) for ctr, body in frames]
-
-def parse_container(plaintext: bytes):
-    """Inner file container: LE [size][id][namelen][name] sections + text.
-    Heuristic split until the exact header layout is finalized."""
-    idx = plaintext.find(b"Aug ")
-    return [("log", plaintext[idx:] if idx >= 0 else plaintext)]
+    files = []
+    for _ctr, body in ch.recv_frames(8.0):
+        if len(body) > 500:
+            files += parse_log_container(body)
+    return files

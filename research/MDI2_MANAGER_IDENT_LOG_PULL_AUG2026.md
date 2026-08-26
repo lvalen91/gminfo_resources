@@ -796,3 +796,30 @@ missing arming step. **This confirms §4.22 and supersedes §4.23/§4.21's "acti
 only the channels needed (9052 for logs), and **close cleanly**; don't hammer it. Under those
 conditions the full loop (discover → derive key → control handshake → session_open → get-logs →
 decrypt) works from macOS, USB-only, no Windows.
+
+### 4.25 FULL LIVE LOG PULL FROM macOS — SUCCESS (2026-08-26)
+
+The complete loop runs end-to-end against the real MDI2 over macOS USB, **no Windows**:
+
+    discover (beacon serial) -> derive key -> per-channel control handshake ->
+    session_open (device: {"port":9011,"session":<id>,"error":0}) -> poll -> get-logs ->
+    Blowfish-ECB decrypt -> SID container -> "messages" = 56811 bytes of live Varlog
+    ("Aug 26 00:31:46 2505-88985275 syslog-ng... Booting Linux... 4.14.162-gvci").
+
+**The last bug — the message counter must have its HIGH BIT set.** The `[u32be 0][u32be len]
+[u32 counter][body]` counter is not a plain 1..N sequence: values with bit31 clear (`1`,
+`0x10000001`) make the device **choke and abort** the response after `{"data":`; values with
+bit31 set (`0xc583adc1`, `0x8aa81d35`, `0xcc666310` — all captured) are processed normally. Fixed
+in the client: `Channel.counter` starts at `random.getrandbits(31) | 0x80000000` and increments
+mod 2^32. With that, a client-**constructed** session_open (byte-exact body) is accepted and the
+full pull succeeds.
+
+**Session semantics:** the device holds **one session**, and the first session_open on a fresh
+session must be the first app message. It is released on a **clean disconnect** (the Manager sends
+a session-close; the client currently just closes TCP, so a session dangles until timeout/
+power-cycle — sending the close is the one remaining polish item for back-to-back pulls).
+
+**Status: the macOS MDI2 client is done and live-validated** — discovery, key derivation
+(base+serial), Blowfish-ECB, framing, control handshake, JSON session, get-logs, and container
+decode, pulling real device logs from macOS with no Windows in the loop. Client:
+`mdi2_client/` (repo) / `GM_research/mdi2_macos/client/` (with venv).
