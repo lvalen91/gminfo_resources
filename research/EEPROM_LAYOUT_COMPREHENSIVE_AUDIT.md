@@ -346,11 +346,15 @@ signature is needed).
   `gm_adb_auth_verify` (`0xa60f0`): **`if (is_secure_mode==1) return ALLOWED`** — the `GMAdbPolicy`/ECDSA cert
   chain is **never reached**. `==0` → full cert check. (Name inverted: `==1` = *enforcement off* = open.)
 - `gm_adb_auth_init` (`0xa6650`) sets it from **MEC** (queried `"MEC\n"` over `gmauthmanagerservice.socket.adb`,
-  `mec=atoi(reply+3)`): **`mec ∈ [1,255]` → `is_secure_mode=1` → cloud cert BYPASSED**; `mec==0` → cert required.
-  > ⚠ The tracing agent's summary was internally inconsistent on the *secondary* branches (labeled some
-  > `is_secure_mode=0` paths "open" while its own `check_authentication` disasm makes `=0` = cert-required). The
-  > **`MEC∈[1,255]`=bypass** result is self-consistent (only `→1` path). The fail-open-vs-closed polarity of the
-  > malformed-reply / `persist.gm.adb.secure` branches needs a short re-verify before being asserted.
+  `mec=atoi(reply+3)`). **Direct-disassembly VERIFIED (2026-08-26), fail-CLOSED:**
+  - `cmp eax,0x100; jae 0xa6841` and `test eax,eax; je 0xa6841` → **`mec==0` OR `mec≥256` OR query-fail all →
+    `xor ebx,ebx; is_secure_mode=0` = cert REQUIRED** (log `"GM Secure ADB enabled...MEC=%d"`).
+  - **Only `mec ∈ [1,255]` → `mov bl,1; is_secure_mode=1` = cloud cert BYPASSED** (log `"GM Secure ADB
+    disabled...MEC=%d"`).
+  - `persist.gm.adb.secure=="1"` logs `"enabled via property... Feature test Only!"` → `is_secure_mode=0` =
+    **force-ENFORCE** (a test hook to *lock* secure-adb ON — NOT an opener; the earlier "bypass/open" label was wrong).
+  > Net: the gate **fails closed** — a broken/absent/out-of-range MEC keeps the cert requirement. The *only* local
+  > path that opens adb is a genuine `MEC∈[1,255]` returned by the auth-manager, which reads DID `0xF1A0` off the VIP.
 
 **The full chain (guest = code-verified; final hop = the VIP/EEPROM domain already established):**
 ```
