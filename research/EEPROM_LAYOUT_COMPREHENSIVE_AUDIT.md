@@ -335,6 +335,45 @@ binaries (dispatch-hidden VIP + external diagnostic). **Now a precise bench test
 `/data/gm_adb/policy`, `getprop persist.gm.adb.secure`, and `gmauthmanagerservice.socket.adb` traffic — that
 shows exactly what the SBI changes. This is the definitive guest-side instrumentation the static wall couldn't reach.
 
+### §0.10 THE COMPLETE SBI → ADB CHAIN — the local cloud-cert bypass, found (2026-08-26)
+
+Backward-trace from the guest ADB gate found the exact local conditional that removes the cloud-cert
+requirement — and it matches the owner's SBI witness (an EEPROM flip makes a *requirement* fail, so no cloud
+signature is needed).
+
+**The bypass (code-verified: `adbd` x86-64 disasm + jadx):**
+- Master switch: static bool `is_secure_mode` (`.bss 0x219200`). `gm_adb_check_authentication` (`0xa5620`) and
+  `gm_adb_auth_verify` (`0xa60f0`): **`if (is_secure_mode==1) return ALLOWED`** — the `GMAdbPolicy`/ECDSA cert
+  chain is **never reached**. `==0` → full cert check. (Name inverted: `==1` = *enforcement off* = open.)
+- `gm_adb_auth_init` (`0xa6650`) sets it from **MEC** (queried `"MEC\n"` over `gmauthmanagerservice.socket.adb`,
+  `mec=atoi(reply+3)`): **`mec ∈ [1,255]` → `is_secure_mode=1` → cloud cert BYPASSED**; `mec==0` → cert required.
+  > ⚠ The tracing agent's summary was internally inconsistent on the *secondary* branches (labeled some
+  > `is_secure_mode=0` paths "open" while its own `check_authentication` disasm makes `=0` = cert-required). The
+  > **`MEC∈[1,255]`=bypass** result is self-consistent (only `→1` path). The fail-open-vs-closed polarity of the
+  > malformed-reply / `persist.gm.adb.secure` branches needs a short re-verify before being asserted.
+
+**The full chain (guest = code-verified; final hop = the VIP/EEPROM domain already established):**
+```
+EEPROM SBI (VIP)
+ → VIP answer to UDS $22 / DID 0xF1A0 (MANUFACTURER_ENABLE_COUNTER) over CAN
+ → IDiagnosticsService.requestDiagnosticData(CANBUS, 0xF1A0)   [vendor.gm.diagnostics*.so]
+ → ManufacturerEnableCounter.getValue()                        [info3.jar]
+ → GMMecHandler replies "MEC<n>" (plaintext, UNauthenticated socket)
+ → gm_adb_auth_init: is_secure_mode = (mec != 0)
+ → gm_adb_check_authentication short-circuits to ALLOWED, no cert
+```
+
+**MEC = Manufacturer Enable Counter:** nonzero during manufacturing/pre-delivery (security relaxed), zeroed at
+vehicle delivery. So the SBI puts the VIP into a **manufacturing-mode MEC≠0 state**; the guest reads that as
+"secure-ADB enforcement off," and adb opens with no cloud policy. **DID `0xF1A0` is the guest↔VIP crossover** —
+the VIP's SBI-gated answer to that `$22` read is the single inferred hop (consistent with the proven VIP/EEPROM
+gating). This resolves the whole "how the guest knows to unblock ADB" question end to end.
+
+**Bench confirmation (now exact):** with the SBI flipped, (1) read DID `0xF1A0` via diagnostics — MEC should be
+nonzero; (2) `getprop` / probe `gm_adb_is_secure_mode` — false; (3) inspect the `gmauthmanagerservice.socket.adb`
+`"MEC"` reply. Also note: that MEC socket is **unauthenticated plaintext**, so it is independently spoofable on a
+compromised guest (a separate finding).
+
 ---
 
 ## 1. EEPROM Layout Maturity & Detail Level
