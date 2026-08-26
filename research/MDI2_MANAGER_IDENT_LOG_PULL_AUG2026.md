@@ -397,3 +397,23 @@ what — the 16-byte session GUID, the 900x handshake exchange, or the device se
 else — discovery (§4.6), the 14-socket transport (§4.1), framing/counter (§4.2), the cipher
 (§4.10), and the container format — is reimplementable today. Key *derivation* is the sole open
 item; live key extraction is a working stopgap in the meantime.
+
+### 4.11 CORRECTION (2026-08-26): the key is DETERMINISTIC/stable, not per-session
+
+§4.10 called the key "per-session" — that was wrong, an artifact of the still-buggy decryptor at
+the time it was tested. With the corrected stock-Blowfish decryptor, the key
+`fde7ccb213c2b103…01f8fd0c` decrypts **every** capture from this unit, across:
+- two different Manager processes (pid 7064 and a later pid 8704),
+- multiple Disconnect→Connect cycles,
+- the original 22:59 capture *and* the later one — 100% both.
+
+`BCryptGenRandom` never fires for it (hooked live), and the 56 key bytes appear **nowhere** as a
+literal in `bvtx_vci_rt*.dll` / `bvtx4j32.dll` / `device_res.dll` / the Manager exe. So the key
+is **computed deterministically at runtime from a stable input** (device serial `D88985275` /
+the keyring key / a fixed constant via a KDF — derivation still being traced). It is **not** one
+of the static `MODULE_TYPE_ID_*` keyring keys.
+
+**Practical upshot for macOS:** the operative key is *fixed for a given unit*. Extract it once
+per device via the Frida `BF_set_key` hook and hard-use it — no per-session/ per-pull extraction
+needed. Whether it is global (same for all MDI2 units) or per-device (serial-derived) is the open
+question; the derivation trace (below/next) resolves it.
