@@ -50,8 +50,10 @@ SECURITY_FLAGS = [
     {"key": "sbi1", "base": 0x0440, "name": "Primary SBI — NOT ADB-only (field-proven, Aug26)",
      "on": 0xFF, "off": 0x00, "on_label": "Bypass", "off_label": "Lock",
      "states": {0x00: ("LOCKED", "bad"), 0xFF: ("BYPASSED", "good")},
-     "note": "0x00 requires GM Secure Client; 0xFF opens ADB. Aug26 correction: this "
-             "is NOT confirmed ADB-scoped -- captured bench traffic already shows a "
+     "note": "0x00 = secured; 0xFF opens ADB. Aug26: the ADB path IS now confirmed -- VIP "
+             "transmits MEC=0xFF via DID 0xF1A0 at boot -> SoC is_secure_mode bypass (boot-log "
+             "+ guest RE, EEPROM_LAYOUT §0.10/§0.14). The SBI is ALSO broader than ADB -- "
+             "captured bench traffic already shows a "
              "plain CAN UDS $27 request to ECU 0x80 (VIP) returns the same degenerate "
              "all-0xFF seed with this flipped (diagnostics/dps/A11_CSM_x80.Txt). The "
              "VIP's seed/key logic is one shared function servicing >=18 security "
@@ -111,8 +113,10 @@ FEATURE_FLAGS = [
      "note": "Observed 0x01 in sample dumps."},
     {"base": 0x1500, "name": "Runtime flag", "risk": "med", "options": FF, "note": "Unknown feature."},
     {"base": 0x15C0, "name": "Feature enable", "risk": "med", "options": FF, "note": "Unknown feature."},
-    {"base": 0x1A00, "name": "Tertiary security / calibration flag", "risk": "high", "options": FF,
-     "note": "Security-critical per map; modify with care."},
+    {"base": 0x1A00, "name": "CLOSED — no code reference found (Aug26)", "risk": "low", "options": FF,
+     "note": "Aug26 correction: the 'tertiary security' label was part of the retracted "
+             "string-count taxonomy (EEPROM_LAYOUT §0). Full-coverage RH850 RE found no "
+             "code reference to 0x1A00 as a security flag. Low-expected-value to test."},
     # Undocumented candidates (EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS §6) --
     # CORRECTED Aug26 against real Ghidra decompilation of vip_app.bin/
     # vip_boot.bin, superseding the original string-count-based "N refs"
@@ -178,9 +182,13 @@ VIN_YEAR = {  # 10th VIN char -> model year (current cycle)
 SBI_CAL_RESET = "Reset to LOCKED by SPS cal SW ID 7 (Security Config) / 13 (Security Flags) on programming"
 
 # Plain-language security-state interpretation for the SBI data byte.
+# Aug26 correction: SBI does NOT drive SELinux. Confirmed chain (boot-log + guest RE):
+# SBI 0xFF -> VIP transmits MEC=0xFF (DID 0xF1A0) -> SoC gm_adb_auth_init sets is_secure_mode=1
+# -> gm_adb_check_authentication returns ALLOWED with NO GM-cloud cert. SELinux stays ENFORCING
+# on every stock build regardless of the SBI (byte-identical init forces enforcing).
 SBI_INTERP = {
-    0xFF: "ADB open · SELinux likely permissive",
-    0x00: "Secured · GM Secure Client required",
+    0xFF: "ADB open (MEC=0xFF -> is_secure_mode, no cloud cert) · SELinux stays ENFORCING",
+    0x00: "Secured · GM cloud-signed ADB policy (VIN/CSM/cert) required",
 }
 
 # VIN check-digit (position 9) transliteration + weights (ISO 3779 / NHTSA).
