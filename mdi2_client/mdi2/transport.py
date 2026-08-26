@@ -20,6 +20,7 @@ class Channel:
             self._ctrl_reply = self.sock.recv(8)
         except socket.timeout:
             self._ctrl_reply = b""
+        time.sleep(0.25)   # device needs a brief settle before the first app message
         return self._ctrl_reply
 
     def send(self, plaintext: bytes):
