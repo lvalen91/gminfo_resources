@@ -642,3 +642,25 @@ addend flows in as `param_5`).
 `base_key[MDI_2]`, compute `addend` from the unit's serial, add per-dword → the exact Blowfish
 key. Confirming the serial→addend formula (one more trace, or a second unit) closes it fully;
 `addend = serial − 0x200` is the working hypothesis.
+
+### 4.19 FINAL — the addend IS the device serial (correction to §4.18's "−512")
+
+Verified programmatically: **`0x054dcebb` = `88985275` decimal = the device serial exactly**
+(§4.18's "serial − 512" was an arithmetic error — `0x054DD0BB ≠ 88985275`; `0x054DCEBB = 88985275`).
+
+**Complete, byte-verified derivation formula:**
+
+    blowfish_key[i] = base_key[module_type][i] + device_serial      // i = 0..13, 32-bit add mod 2^32
+
+- `module_type` = `0x1c` = `MODULE_TYPE_ID_MDI_2` → base key `42197fad58f363fe07cc137065da2a56
+  04a89114b2fd3b2f57d1bbb516cb75461f08260d1ac2465e584013641aba6176025816164629b007` (static, in
+  `bvtx_vci_rt.dll` table `DAT_10309d60`, entry id 0x1c, `+0xC4`).
+- `device_serial` = the unit's serial as a `uint32` (this unit `88985275`; `uiSerialNumber` /
+  `VtxRtSglReadSerialNumber` / `VTX_RT_CFG_SERIAL_NUMBER`).
+- Result for this unit: `fde7ccb213c2b103…01f8fd0c` — recomputed == captured, exact.
+
+**This fully closes the macOS story.** The Blowfish key is **computable with no Windows and no
+per-session extraction**: a native client reads the device serial (present in the `225.1.1.1:8194`
+announce / ident / the pulled logs as `2505-88985275`), takes the static per-module base key,
+adds the serial to each 32-bit word → the exact key. Per-device, deterministic, reproducible.
+Nothing remains blocked on the crypto/key side for a standalone macOS MDI Manager.
