@@ -746,3 +746,23 @@ should open only the channels it needs (9052 for logs) and close cleanly.
 **Interface note (macOS):** MDI DHCP-serves host `192.168.171.30`, but macOS assigns a `/32` and a
 full-tunnel VPN can steal the route — set `en17` to `/24`: `sudo ifconfig en17 inet 192.168.171.30
 netmask 255.255.255.0` (redo after each re-plug).
+
+### 4.23 CORRECTION to §4.22 — device DOES need Bosch activation (arming), not just a clean pool
+
+Further power-cycles resolve the ambiguity: a truly cold device (never armed by a Bosch Manager
+this power cycle) accepts TCP on the 900x ports but **does not answer the control frame** — its
+900x services are **dormant/unarmed**. The one time the client fully succeeded (§4.22), the device
+was still **armed from its immediately-prior Surface Manager session** (residual state), not cold.
+
+So both are true: (a) the macOS client protocol is complete and **proven** (byte-exact
+session_open → full `{"port","session","error":0}` success against the live device when armed);
+(b) but **arming the device requires the Bosch Windows stack's activation** (USB driver control
+step and/or ident handshake), which the generic macOS RNDIS gadget does not perform. Cold Mac-only
+bring-up is therefore not yet possible — the client works only against an already-armed device.
+
+**The remaining blocker is the activation/arming handshake** (was §4.21, mis-attributed to
+exhaustion in §4.22). Next: capture a **cold arming** on the Surface — power-cycle the MDI, then
+the Bosch Manager's first connect, with a **USB-level capture** (usbmon/Wireshark USBPcap) plus the
+device-network trace — to find the control transfer or ident exchange that arms the 900x services,
+then replicate it on macOS (libusb/IOKit, or a network handshake). Everything above the arming
+step is done and validated.
