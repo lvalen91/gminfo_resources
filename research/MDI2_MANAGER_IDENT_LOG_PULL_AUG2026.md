@@ -551,3 +551,32 @@ or device serial**. The key is computed elsewhere; only the 56-byte result is co
 seed is not recoverable by reading around the key either. Confirms: pinning the formula needs
 assembly-level ECX tracing (offline r2/Ghidra on `bvtx_vci_rt.dll`) or a Stalker trace of an
 automated Connect — both substantial. Stopping the derivation hunt here.
+
+### 4.16 Assembly-level trace (2026-08-26) — key located in object graph; compute still deeper
+
+Offline r2 disassembly of `bvtx_vci_rt.dll` (no rig). Two solid results:
+
+1. **Key is never on the wire → local client computation, not device-exchange.** The bytes
+   `fde7ccb2…` appear in **none** of the captures (incl. the full 900x handshake), and decrypting
+   the connect handshake with the static M_VCI key yields no session key. So the key is computed
+   locally from a stable input (same value across all four Manager PIDs observed).
+
+2. **Exact object-graph location of the key** (from `pdf` of the decrypt caller `FUN_100b2d30`):
+   the enc/dec key-holder `this` (ECX) is loaded as `*(*(handler + 0x8c) + 8)` — i.e.
+   `handler.+0x8c → cryptoCtx`, `cryptoCtx.+8 → keyholder`, `keyholder[0:0x38]` = the Blowfish
+   key. The key-holder is owned by the **message-handler/dispatch** object, not the transport.
+
+Ruled out as the key-setter (all zero-init their members): the connect handler `FUN_1005f5f0`,
+the CClientTransport ctor `FUN_1025cce0`, the CTransport ctor `FUN_1025cd30`, and
+`TrnClt::ConnectToServer` `FUN_1025cf40` (pure sockets). The `+0x8c` writes elsewhere are
+`std::string` SSO fields (`=0xf`), unrelated.
+
+**Precise remaining target:** who allocates the handler's `cryptoCtx` (sets `handler+0x8c`) and
+writes the 56-byte key into `cryptoCtx+8`'s key-holder — this lives in the handler-registration /
+connection-security setup path (the SID `0x7f5/0x849/0x874` handshake response area), a further
+subsystem. Fully pinning the inline formula is a multi-subsystem RE effort; it is now localized to
+the message-handler crypto-context init, with the exact field offsets known.
+
+**Net:** derivation confirmed **local + deterministic**, key precisely located in the object
+graph; the exact compute remains buried in the handler crypto-setup path. Practical deliverable
+(extract-once key, validated decrypt, full automation) complete and unchanged.
