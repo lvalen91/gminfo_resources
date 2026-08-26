@@ -14,7 +14,7 @@ class Channel:
 
     def handshake(self, timeout=2.0):
         code = CONTROL_CODE.get(self.port, 0x30)
-        self.sock.sendall(_CTRL_MAGIC + bytes([code]) + b"\x00\x00")
+        self.sock.sendall(_CTRL_MAGIC + b"\x00" + bytes([code]) + b"\x00\x00")
         self.sock.settimeout(timeout)
         try:
             self._ctrl_reply = self.sock.recv(8)
