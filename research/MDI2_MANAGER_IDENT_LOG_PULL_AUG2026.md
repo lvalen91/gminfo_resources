@@ -716,3 +716,33 @@ driver control step and/or an ident handshake) and the generic macOS RNDIS gadge
 **Next:** capture a **cold first-connect** on the Surface (device power-cycled, then Bosch Manager's
 very first connect) incl. USB-control + ident traffic, to find the activation step; or inspect the
 Bosch USB driver's enumeration/control sequence. Client code: `GM_research/mdi2_macos/client/`.
+
+### 4.22 LIVE macOS client WORKS (2026-08-26) — device dormancy was connection-pool exhaustion
+
+The earlier "dormant device" (§4.21) was **not** a missing Bosch activation — it was the device's
+**connection-pool exhausted** by repeated test connects. After a USB power-cycle the device
+responds immediately from macOS. Two more findings closed the live path:
+
+1. **Per-channel control handshake:** each 900x channel must first exchange the 8-byte control
+   frame `00 53 50 00 00 <code> 00 00` (client `0x30`, device `0x31`; port 9011 uses `0x21`/`0x20`)
+   before any app message.
+2. **App-body framing (inside the Blowfish body):** `content + zero-pad + u32be(len)`, padded to
+   a multiple of 8 (the trailing u32be is the content length; responses use it too). My earlier
+   zero-padding without the length suffix caused the device's `error 0x50000006` rejection.
+
+With both fixed, a **client-constructed `session_open` is byte-identical to the real one** and the
+**live device returns full success**: `{"data":{"port":9011,"session":<id>},"error":0,"has_data":
+true,"id":1}` — confirmed on the real MDI2 over macOS USB. Discovery works too: the
+`225.1.1.1:8194` beacon carries the serial (`0x054dcebb`=88985275) and module type `0x1c`, so the
+client auto-derives the key.
+
+**Net: the macOS client is validated end-to-end live** — discover → derive key → control
+handshake → session_open (accepted) — with all layers (Blowfish, framing, app-body length suffix,
+JSON, container) byte-exact against both captures and the live device. Operational caveat: the
+device holds **one session** and a pool of a few connections; leftover sessions/leaked connections
+from rapid testing make it respond inconsistently until a USB power-cycle. A production client
+should open only the channels it needs (9052 for logs) and close cleanly.
+
+**Interface note (macOS):** MDI DHCP-serves host `192.168.171.30`, but macOS assigns a `/32` and a
+full-tunnel VPN can steal the route — set `en17` to `/24`: `sudo ifconfig en17 inet 192.168.171.30
+netmask 255.255.255.0` (redo after each re-plug).
