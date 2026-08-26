@@ -28,3 +28,7 @@ $RECYCLE.BIN/
 *.sublime-workspace
 __pycache__/
 *.pyc
+
+# Ghidra RH850 analysis projects (large binaries; keep the .py analysis scripts, drop the project dirs)
+research/scripts/ghidra_rh850/*_rh850/
+research/scripts/ghidra_rh850/*_broken/

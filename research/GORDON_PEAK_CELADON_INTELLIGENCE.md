@@ -119,10 +119,10 @@ Both directories represent the delta between upstream AOSP and Intel's automotiv
 
 The SELinux policy patches within `aosp_diff/` are critical for the Y177 → Y181 downgrade analysis:
 
-- **Y177 is permissive** (confirmed from VIP firmware analysis): SELinux in permissive mode logs denials but does not enforce them, enabling broader system access.
+- **CORRECTED 2026-08-25:** ~~**Y177 is permissive** (confirmed from VIP firmware analysis)~~ -- stock Y177 runs **ENFORCING**. Its `system/bin/init` is byte-identical to Y175/Y181 and forces enforcing (`ALLOW_PERMISSIVE_SELINUX=0`); any past permissive observation was a false finding/misread (both CSMs only ran stock packages — a modified unit is ruled out). See security/KERNEL_CVE_ANALYSIS.txt Appendix E.8.
 - **Y181 is enforcing**: SELinux enforcement was tightened in Y181.
 
-The `system/sepolicy` patches in the apollo branch show exactly which rules Intel added for AAOS. Diffing the Celadon SELinux baseline against the Y177 permissive policy identifies the specific rules that were added or tightened between the two GM builds. This diff is the path to understanding what new restrictions block the downgrade path and what audit log entries to expect on a Y181 → Y177 attempt.
+The `system/sepolicy` patches in the apollo branch show exactly which rules Intel added for AAOS. Diffing the Celadon SELinux baseline against the Y177 policy identifies the specific rules that were added or tightened between the two GM builds (CORRECTED 2026-08-25: the Y177 policy is *enforced* at runtime like Y181 -- there is no 'permissive policy'; the .cil diff is still useful for rule deltas). This diff is the path to understanding what new restrictions block the downgrade path and what audit log entries to expect on a Y181 → Y177 attempt.
 
 ### device-intel-sepolicy
 
@@ -277,7 +277,7 @@ This extracted config is the authoritative kernel configuration for GM's 4.19.30
 |---|---|
 | misc partition / BCB layout | `kernelflinger.c` + `hardware-intel-bootctrl` HAL + offset 0x800; GM misc (vda9) magic "AB0" at 0x800, CRC32 poly 0xEDB88320 |
 | HECI/ABL/ELK trigger chain | `kf4abl.c` + `libheci` (celadon/s/mr0/apollo) + Slim Bootloader `Stage2BoardInitLib.c` |
-| SELinux baseline vs Y177 permissive | `device-intel-sepolicy` + `aosp_diff/*/system/sepolicy` on apollo branch; three-way diff against extracted Y177 policy |
+| SELinux baseline vs Y177 policy (enforcing; 'permissive' corrected 2026-08-25) | `device-intel-sepolicy` + `aosp_diff/*/system/sepolicy` on apollo branch; three-way diff against extracted Y177 policy |
 | AVB implementation | `kernelflinger` `libkernelflinger/` + `avb/` subtree on celadon/s/mr0/apollo |
 | Kernel 4.19 config | Pull from live device: `adb shell "gzip -dc /proc/config.gz"` — not obtainable from any public source |
 | VT-x guest isolation model | US Patent 12,423,197 (GHS INTEGRITY SMMU/GVM) |

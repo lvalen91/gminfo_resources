@@ -430,7 +430,7 @@ See: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt for complete technical details.
 [1] CONFIRM DOWNGRADE FEASIBILITY
     - Attempt Y177 flash via DPS
     - Document any rollback protection encountered
-    - Note: Y177 has SELinux permissive
+    - Note: CORRECTED 2026-08-25 -- stock Y177 is ENFORCING (identical init forces it); the 'permissive' belief was a false finding/misread, modified unit ruled out (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 
 [2] ANALYZE VIP_BOOT FORMAT
     - Extract from update package

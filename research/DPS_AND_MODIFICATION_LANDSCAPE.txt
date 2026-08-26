@@ -207,8 +207,10 @@ CORRECTIONS.txt; `ls -l /dev/i2c-*`, major 89):
   crw------- root:root               /dev/i2c-9
   crw------- root:root               /dev/i2c-10
 NOTE: the EEPROM (0x50) is NOT on i2c-0/1 (or any SoC bus) -- it is on the VIP MCU's i2c
-(see IMPORTANT note below). The world-rw DAC on i2c-0/1/2/3 is the Y177-permissive attack
-surface (see security/KERNEL_CVE_ANALYSIS.txt Appendix E); on Y181 SELinux blocks it.
+(see IMPORTANT note below). The world-rw DAC on i2c-0/1/2/3 is SELinux-blocked on ALL stock
+builds — CORRECTED 2026-08-25: there is no "Y177-permissive" window; stock Y177 boots enforcing
+identically to Y181 (see security/KERNEL_CVE_ANALYSIS.txt Appendix E.8), so SELinux blocks this
+DAC on Y177 too.
 
 APPLE MFi (native OEM CarPlay) -- OPEN QUESTION: No Apple-CP/MFi i2c device is bound on
 the SoC i2c, and NO carplay/iAP/ffsd/MFi SELinux domain accesses i2c_device. So the

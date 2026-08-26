@@ -1,0 +1,72 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step1_probe.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+LANGUAGE: RH850:LE:32:default
+IMAGE BASE: 00000000
+---- 0xc8f6a FUN_000c8f6a
+---- 0xc90c4 FUN_000c90c4
+=========== DECOMPILE 0xc8f6a FUN_000c8f6a ===========
+
+void FUN_000c8f6a(uint param_1)
+
+{
+                    /* WARNING: Could not recover jumptable at 0x000c8f9a. Too many branches */
+                    /* WARNING: Treating indirect jump as call */
+  (*(code *)((uint)(byte)(&DAT_0004fb96)[(param_1 & 0xffff) * 0x18] * 4 + 0xf0a1a))();
+  return;
+}
+
+
+=========== DECOMPILE 0xc90c4 FUN_000c90c4 ===========
+
+char FUN_000c90c4(int param_1)
+
+{
+  int iVar1;
+  byte bVar2;
+  uint uVar3;
+  char cVar4;
+  ushort *puVar5;
+  
+  cVar4 = -0x80;
+  if (DAT_febd3db8 != '\0') {
+    param_1 = param_1 * 0xc;
+    cVar4 = (*(char *)(*(ushort *)(&LAB_00069a18 + param_1) + 0xfebdbf66) == '\0') * -0x80;
+    thunk_FUN_000ede5c();
+    for (uVar3 = (uint)*(ushort *)(&DAT_00069a16 + param_1);
+        uVar3 < *(ushort *)(&DAT_00069a14 + param_1); uVar3 = uVar3 + 1) {
+      iVar1 = (uint)*(ushort *)(&LAB_00064e74 + uVar3 * 2) * 0x18;
+      puVar5 = (ushort *)(&DAT_0004fb8c + iVar1);
+      bVar2 = (&DAT_0004fb96)[iVar1];
+      if (bVar2 < 3) {
+        if (bVar2 == 0) {
+          *(undefined1 *)(*puVar5 + 0xfebdaae2) =
+               *(undefined1 *)(*(ushort *)(&DAT_0004fb90 + iVar1) + 0xfebdaae2);
+        }
+        else if (bVar2 == 2) {
+          *(undefined2 *)((uint)*puVar5 * 2 + -0x142936a) =
+               *(undefined2 *)((uint)*(ushort *)(&DAT_0004fb90 + iVar1) * 2 + -0x142936a);
+        }
+      }
+      else if (bVar2 < 4) {
+        *(undefined2 *)((uint)*puVar5 * 2 + -0x14290cc) =
+             *(undefined2 *)((uint)*(ushort *)(&DAT_0004fb90 + iVar1) * 2 + -0x14290cc);
+      }
+      else if (bVar2 == 4) {
+        *(undefined4 *)((uint)*puVar5 * 4 + -0x142a844) =
+             *(undefined4 *)((uint)*(ushort *)(&DAT_0004fb90 + iVar1) * 4 + -0x142a844);
+      }
+      else if (bVar2 == 5) {
+        *(undefined4 *)((uint)*puVar5 * 4 + -0x142a858) =
+             *(undefined4 *)((uint)*(ushort *)(&DAT_0004fb90 + iVar1) * 4 + -0x142a858);
+      }
+    }
+    thunk_FUN_000ede90();
+  }
+  return cVar4;
+}
+
+

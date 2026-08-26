@@ -1,0 +1,31 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/vipapp/s10_sweep.py:18: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== round 0: gaps=3980 buckets={'pad0': 1200, 'padff': 24, 'string': 89, 'codecandidate': 2667, 'empty': 0} ===
+  tried=2433 created_functions=2136
+  re-analyze in 139.1s, function count now 9416
+=== round 1: gaps=5043 buckets={'pad0': 1270, 'padff': 88, 'string': 132, 'codecandidate': 3553, 'empty': 0} ===
+  tried=3533 created_functions=1583
+  re-analyze in 62.2s, function count now 11383
+=== round 2: gaps=4937 buckets={'pad0': 1282, 'padff': 119, 'string': 181, 'codecandidate': 3355, 'empty': 0} ===
+  tried=3342 created_functions=983
+  re-analyze in 41.8s, function count now 12434
+=== round 3: gaps=4216 buckets={'pad0': 1291, 'padff': 138, 'string': 193, 'codecandidate': 2594, 'empty': 0} ===
+  tried=2587 created_functions=155
+  re-analyze in 45.7s, function count now 12607
+=== round 4: gaps=4180 buckets={'pad0': 1293, 'padff': 141, 'string': 193, 'codecandidate': 2553, 'empty': 0} ===
+  tried=2546 created_functions=97
+  re-analyze in 45.0s, function count now 12712
+=== round 5: gaps=4195 buckets={'pad0': 1297, 'padff': 141, 'string': 193, 'codecandidate': 2564, 'empty': 0} ===
+  tried=2559 created_functions=83
+  re-analyze in 45.6s, function count now 12801
+=== round 6: gaps=4186 buckets={'pad0': 1297, 'padff': 141, 'string': 194, 'codecandidate': 2554, 'empty': 0} ===
+  tried=2549 created_functions=70
+  re-analyze in 44.9s, function count now 12874
+=== round 7: gaps=4178 buckets={'pad0': 1298, 'padff': 141, 'string': 194, 'codecandidate': 2545, 'empty': 0} ===
+  tried=2540 created_functions=60
+  re-analyze in 45.3s, function count now 12939
+FINAL function count: 12939

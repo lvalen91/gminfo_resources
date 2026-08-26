@@ -1,0 +1,54 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step6_xrefs.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== xrefs TO 0xc8f6a ===
+ from 0x90006 in fn None type UNCONDITIONAL_CALL
+ from 0x90012 in fn None type UNCONDITIONAL_CALL
+ from 0x9001e in fn None type UNCONDITIONAL_CALL
+ from 0x9002a in fn None type UNCONDITIONAL_CALL
+ from 0x90036 in fn None type UNCONDITIONAL_CALL
+ from 0x90042 in fn None type UNCONDITIONAL_CALL
+ from 0x9004e in fn None type UNCONDITIONAL_CALL
+ from 0x90058 in fn None type UNCONDITIONAL_CALL
+ from 0x90064 in fn None type UNCONDITIONAL_CALL
+ from 0x90070 in fn None type UNCONDITIONAL_CALL
+ from 0x9007c in fn None type UNCONDITIONAL_CALL
+ from 0x95996 in fn FUN_0009597c type UNCONDITIONAL_CALL
+ from 0x959a2 in fn FUN_0009597c type UNCONDITIONAL_CALL
+ from 0x959ac in fn FUN_0009597c type UNCONDITIONAL_CALL
+ from 0x959b8 in fn FUN_0009597c type UNCONDITIONAL_CALL
+ from 0x94742 in fn None type UNCONDITIONAL_CALL
+ from 0x9474c in fn None type UNCONDITIONAL_CALL
+ from 0x94758 in fn None type UNCONDITIONAL_CALL
+ from 0x94764 in fn None type UNCONDITIONAL_CALL
+ from 0x94770 in fn None type UNCONDITIONAL_CALL
+total refs: 20
+
+=== xrefs TO 0xc90c4 ===
+ from 0x9598a in fn FUN_0009597c type UNCONDITIONAL_CALL
+ from 0x94736 in fn None type UNCONDITIONAL_CALL
+total refs: 2
+
+=== searching defined strings for 'CalGroup' / 'GetCal' ===
+0x60a6 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x60d2 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x60fe '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x612a '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x6156 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x6182 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x61ae '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x61da '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x6206 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x6232 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x625e '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x628a '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x62b6 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x62e2 '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x630e '[CAL] EEPROM Write Failure for CalGroup-%d\n'
+0x13446 '[J6_CDD] Calibration_Request_CalGroup: GetCal Index = %d message.\n'
+0x1348a '[J6_CDD] Calibration_Request_CalGroup: GetCal failed for Index = %d message.\n'
+0x137e2 '[J6_CDD] Message index (%d) != CalReadIndx (%d), will not write CalGroup\n'
+string hits: 18

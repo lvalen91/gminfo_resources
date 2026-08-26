@@ -8,8 +8,13 @@ Purpose: Comprehensive summary for continuation in new Claude sessions
 --------------------------------------------------------------------------------
 ARCHIVAL SESSION LOG (Dec 20 2025) -- retained as history; body UNCHANGED. Several
 hypotheses here were later RESOLVED/REFUTED. Do NOT trust the following as current:
+  - "Y177 (or any stock build) runs SELinux permissive" (throughout this log, e.g. L167/200/
+    441/506/549/578/590/624): REFUTED 2026-08-25. Stock Y175/Y177/Y181 ship a byte-identical
+    init that forces enforcing (`ALLOW_PERMISSIVE_SELINUX=0`), ignoring the permissive cmdline;
+    a permissive observation was a false finding/misread (both CSMs only ran stock packages; modified unit ruled out). See security/KERNEL_CVE_ANALYSIS.txt Appendix E.8.
   - "EEPROM 0x0B40/0x0B41 controls SELinux/debug mode" (L256, 341-346, 544, 571-576, 633):
-    WRONG. SELinux mode is set by the kernel cmdline (Y181 Enforcing / Y177 permissive),
+    WRONG. SELinux mode is set OS-side by init -- a `user` build forces enforcing regardless of the
+    cmdline (both Y181 and Y177 boot a *permissive* cmdline yet run enforcing; see bullet above),
     NOT by EEPROM. 0x0B41->0x01 is part of the VERIFIED EEPROM ADB-UNLOCK set (alongside
     0x0441/0x0A81/0x1A01->0xFF); its independent function (debug / verbose logging) is a
     hypothesis, not SELinux control.

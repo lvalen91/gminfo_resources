@@ -11,11 +11,14 @@ Purpose: Comprehensive analysis of VIP control scope, EEPROM modification,
 --------------------------------------------------------------------------------
 CROSS-REFERENCE & VERIFIED-VALUE NOTES (added during doc review; body below unchanged):
 - The open question in this doc's "VIP FIRMWARE MODIFICATION (RESEARCH NEEDED)" section is
-  ANSWERED in research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md: the VIP_APP security function
-  at 0x000b67d0 is a 4-byte stub in Y177 vs a 906-byte full implementation in Y181 -- that
-  firmware change (not SELinux mode alone) is why the EEPROM bypass works on Y177 but not
-  Y181. See that doc for the binary diff. This doc covers the complementary EEPROM/board/DPS
-  surface.
+  ANSWERED in research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md (v2.0, corrected 2026-08-25): the
+  VIP_APP security function at 0x000b67d0 is a FULL ~906-byte validator in ALL builds -- Y175
+  (@0xb6708), Y177 (@0xb67d4), and Y181 (@0xb67d0). The earlier "4-byte stub in Y177" claim was
+  a fixed-absolute-address misread of shifted/recompiled code and is RETRACTED. There is no VIP
+  firmware change between builds here; the function + EEPROM SBI gate ADB/seed auth (CAN-
+  confirmed), NOT SELinux mode. The EEPROM bypass affects ADB the same way on Y177 and Y181;
+  SELinux runtime mode is OS-side (ramdisk/init). See that doc §2 for the binary diff. This doc
+  covers the complementary EEPROM/board/DPS surface.
 - EEPROM values corrected against the shipped bins (eeprom/Y181_stock.bin / Y181_modified.bin):
     * Debug-mode bypass writes 0x0B41 = 0x01 (verified: Y181_modified.bin 0xB40 = 69 01 69).
       This doc's "0x0B40 -> 69 FF" entry was SUSPECTED/UNTESTED and is WRONG -- the value
@@ -586,9 +589,9 @@ Expected:   u:object_r:i2c_device:s0
 
 Shell access to i2c_device likely requires:
   - shell domain allow rule
-  - OR: SELinux permissive mode (Y177 only)
+  - OR: SELinux permissive mode -- CORRECTED 2026-08-25: no stock build is permissive (identical enforcing init, security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 
-Y177 runs SELinux PERMISSIVE - I2C access may work!
+CORRECTED 2026-08-25: stock Y177 runs ENFORCING (not permissive); I2C access is SELinux-gated on all stock builds (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 Y181 runs SELinux ENFORCING - likely blocked.
 
 ================================================================================
@@ -600,7 +603,7 @@ Y181 runs SELinux ENFORCING - likely blocked.
 Goal: Determine if EEPROM is accessible via software
 
 Steps:
-  1. On Y177 (SELinux permissive): Run i2cdetect on buses 0-10
+  1. (CORRECTED 2026-08-25: stock Y177 is enforcing, not permissive; from a stock shell i2cdetect is SELinux-blocked on all builds) Run i2cdetect on buses 0-10
   2. Identify M24C64 at expected address (0x50-0x57)
   3. Read byte at 0x0440 to confirm it's the security EEPROM
   4. If accessible: Test write operation
@@ -626,7 +629,7 @@ Tools needed:
 
 9.3 PRIORITY 3: Y177 DOWNGRADE TEST [HIGH]
 ------------------------------------------
-Goal: Restore SELinux permissive mode
+Goal: Restore SELinux permissive mode -- CORRECTED 2026-08-25: unattainable on stock (no stock build runs permissive, security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 
 Steps:
   1. Obtain Y177 update package

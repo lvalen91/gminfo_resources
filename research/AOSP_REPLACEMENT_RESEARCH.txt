@@ -276,7 +276,7 @@ DIAGNOSTIC SCRIPT:
 
 ALTERNATIVE GSI APPROACHES:
   1. Manual GSI flash via fastboot (if accessible)
-  2. Y177 downgrade first (SELinux permissive may help)
+  2. Y177 downgrade first -- CORRECTED 2026-08-25: stock Y177 is enforcing, no permissive help (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
   3. Modify SEPolicy to allow GSI operations
   4. Direct partition flash via recovery/DPS
 
@@ -405,7 +405,7 @@ May need to preserve or recreate for custom AOSP.
 
 2. Y177 DOWNGRADE (HIGH)
    - Version check confirmed disabled
-   - Would restore SELinux permissive
+   - CORRECTED 2026-08-25: would NOT -- stock Y177 boots enforcing (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
    - Enables more exploration
    *** CORRECTION (verified since): this vector is DEAD. The "version check disabled"
        flag only affects the inactive-slot WRITE phase. Y181->Y177 downgrade is BLOCKED

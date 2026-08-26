@@ -381,7 +381,7 @@ STATUS UPDATE: VIP_BOOT and SOC_ABL have been analyzed. Key finding:
 
 5. [MEDIUM] Test Y177 downgrade
    - Version check disabled in manifest
-   - May restore SELinux permissive
+   - CORRECTED 2026-08-25: no -- stock Y177 boots enforcing (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
    - AVB rollback status unknown
 
 6. [LOW] SOC_ABL Intel CSE research
@@ -433,7 +433,7 @@ IS25LP016 SPI FLASH:
 I2C BUS ACCESS:
   - /dev/i2c-0 and /dev/i2c-1 are WORLD-ACCESSIBLE
   - If EEPROM is on either bus, software bypass possible
-  - SELinux blocks on Y181 (enforcing), may work on Y177 (permissive)
+  - SELinux ENFORCING on ALL stock builds incl. Y177 (corrected 2026-08-25) -- no stock permissive (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 
 ================================================================================
 END OF DOCUMENT

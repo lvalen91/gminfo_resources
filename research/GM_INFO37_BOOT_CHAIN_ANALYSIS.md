@@ -180,21 +180,25 @@ VIP reads critical configuration from external EEPROM via I2C:
 
 ### 4.5 Security Validation Function (@ 0xb67d0)
 
-**Critical Discovery:** This function differs between Y177 and Y181:
+**CORRECTED 2026-08-25 — the earlier "Y177 stub" claim in this section was FALSE.** A three-way
+VIP_APP diff (Y175/Y177/Y181) proves this validator is a **full ~906-byte function in all three
+builds**. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2.
 
-| Version | Function Size | Behavior |
-|---------|---------------|----------|
-| **Y177** | 4 bytes | `mov 0, r10; jmp [lp]` - Always returns success (STUBBED) |
-| **Y181** | 906 bytes | Full validation with multiple security checks |
+| Version | Function entry | Function Size | Behavior |
+|---------|----------------|---------------|----------|
+| **Y175** | `0xb6708` | ~906 bytes | Full validation |
+| **Y177** | `0xb67d4` | ~906 bytes | Full validation |
+| **Y181** | `0xb67d0` | ~906 bytes | Full validation |
+
+~~Y177 = 4-byte stub `mov 0,r10; jmp [lp]`~~ — **retracted.** That "stub" was a
+fixed-absolute-address misread: reading Y177 at the fixed `0xb67d0` lands 4 bytes early on the
+*tail of the previous function* (`00 52 7f 00 …`); the real function begins at `0xb67d4` (+4).
+Aligned body diffs are only 15/906 bytes (Y177↔Y181) and 18/906 (Y175↔Y181) — same source
+recompiled. Identical entry bytes across all three: `88 07 e3 ff 06 c8 99 00 03 3d 05 45 07 4d 83 a7`.
 
 ```
-Y177 Disassembly (0x000b67d0):
-    mov     0x0, r10        ; Always return 0 (success)
-    jmp     [lp]            ; Return to caller
-
-Y181 Disassembly (0x000b67d0):
-    [906 bytes of validation logic]
-    ├── Load debug/security flag from memory 0x3e06
+Validation function (Y181 @0x000b67d0; Y177 @0xb67d4; Y175 @0xb6708) — FULL in every build:
+    ├── Load security/seed flag from memory 0x3e06 (0xFEBD3E06)
     ├── Compare against expected value
     ├── Multiple conditional branches
     ├── Calls to validation functions:
@@ -203,6 +207,10 @@ Y181 Disassembly (0x000b67d0):
     │   └── 0xaee28
     └── Returns error codes on failure
 ```
+
+This function gates **ADB/seed auth** (EEPROM SBI at 0x0440), not SELinux mode — no
+`selinux`/`enforce`/`permissive` strings exist anywhere in the VIP image. No stock build runs
+permissive: Y175/Y177/Y181 share a byte-identical init that forces enforcing (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8).
 
 ### 4.6 ProtoKey Processing
 
@@ -747,12 +755,12 @@ POWER ON (T=0ms)
 │   VIP_BOOT → VIP_APP → Read EEPROM → Security Check → Enable SoC Power      │
 │                            │                │                                │
 │                    ┌───────┴───────┐   ┌────┴────┐                          │
-│                    │ EEPROM:       │   │ Y177:   │                          │
-│                    │ 0x0440: SBI   │   │ STUBBED │                          │
-│                    │ 0x0A80: SBI   │   │ (4 bytes)│                         │
-│                    │ 0x0B40: Debug │   │ Y181:   │                          │
-│                    │ 0x05C0: VIN   │   │ FULL    │                          │
-│                    └───────────────┘   │(906 bytes)│                        │
+│                    │ EEPROM:       │   │ Sec fn: │                          │
+│                    │ 0x0440: SBI   │   │ FULL in │                          │
+│                    │ 0x0A80: SBI   │   │ all bld │                          │
+│                    │ 0x0B40: Debug │   │ (~906 B │                          │
+│                    │ 0x05C0: VIN   │   │ Y175/77 │                          │
+│                    └───────────────┘   │  /81)   │                        │
 │                                        └─────────┘                          │
 └────────────────────────────────────────────┬────────────────────────────────┘
                                              │
@@ -833,7 +841,7 @@ POWER ON (T=0ms)
 | Layer | Mechanism | Bypassable? | Notes |
 |-------|-----------|-------------|-------|
 | **VIP_BOOT** | Harman checksum | Requires RE | Internal RH850 flash |
-| **VIP_APP Security** | Function @ 0xb67d0 | Y177=stubbed | Y181=implemented |
+| **VIP_APP Security** | Function @ 0xb67d0 | Requires RE | **Full ~906 B in all builds (Y175/Y177/Y181)** — no stub; gates ADB/seed, not SELinux (see VIP_FIRMWARE §2) |
 | **EEPROM SBI Flags** | None (no CRC) | Yes (hardware) | I2C accessible |
 | **Intel CSE** | Hardware root of trust | No | OTP fuses |
 | **SOC_ABL** | Intel Secure Boot | No | Sign Type NONE (not GM TSS-signed); verified by/with Intel CSE secure boot |
@@ -842,7 +850,7 @@ POWER ON (T=0ms)
 | **A/B Metadata** | CRC32 only | Potentially | Weak integrity |
 | **Rollback Index** | Secure storage | No | Cannot decrement |
 | **dm-verity** | Hash tree | Conditional | Active in enforcing |
-| **SELinux** | MAC policy | Y177+bypass | Permissive possible |
+| **SELinux** | MAC policy | OS-side only | No stock build runs permissive; byte-identical init forces enforcing on Y175/Y177/Y181 (NOT VIP/EEPROM). Corrected 2026-08-25, `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8 |
 
 ### 10.2 VIP Security Control
 
@@ -873,16 +881,16 @@ EEPROM Read (0x0440, 0x0A80)
     ┌────┴────────────────────┐
     │                         │
    Y177                      Y181
+    │  (fn @0xb67d4)          │  (fn @0xb67d0)
+    ▼                         ▼
+FULL (~906 bytes)      FULL (~906 bytes)     [Y175 @0xb6708 also FULL]
+Validates ADB/seed      Validates ADB/seed   ← corrected 2026-08-25: no stub in any build
     │                         │
     ▼                         ▼
-STUBBED (4 bytes)      IMPLEMENTED (906 bytes)
-Return 0 (success)      Full validation
+IPC: seed/auth state   IPC: seed/auth state  (VIP does NOT set SELinux mode)
     │                         │
     ▼                         ▼
-IPC: "debug mode"      IPC: "normal mode"
-    │                         │
-    ▼                         ▼
-SELinux: PERMISSIVE    SELinux: ENFORCING
+SELinux mode decided OS-side (ramdisk/init), independent of this function
 ```
 
 ### 10.3 MEC Counter Behavior
@@ -922,13 +930,16 @@ The A11 module contains two independent processors:
 
 VIP boots first and controls SoC power sequencing.
 
-### 11.2 VIP Controls Security Posture
+### 11.2 VIP Controls Security Posture (CORRECTED 2026-08-25)
 
-SELinux permissive mode requires:
-1. Y177 VIP firmware (stubbed security function)
-2. EEPROM bypass flags set (0x0440/0x0A80 = 0x5AFF)
-
-Y181 implements actual security validation, blocking permissive mode.
+The VIP does **not** control SELinux mode. The prior claim — that permissive required a "Y177
+stubbed security function" plus EEPROM bypass — is retracted: the VIP security function is a full
+~906-byte validator in Y175, Y177, and Y181 alike (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2),
+and the VIP image contains no SELinux logic at all. What the VIP function + EEPROM SBI
+(0x0440/0x0A80) actually gate is **ADB/seed auth** (CAN-confirmed). SELinux runtime mode is an
+OS-side property (init/ramdisk), never the VIP. **Note (2026-08-25):** stock Y177 does NOT run
+permissive either — its init is byte-identical to Y175/Y181 and forces enforcing; a live permissive
+Y177 was a false finding/misread; a modified unit is ruled out — both CSMs only ever ran stock packages (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8).
 
 ### 11.3 GHS Hypervisor is Mandatory
 
@@ -1204,19 +1215,23 @@ $ cmp -l Y177/86283151 Y181/86331656 | wc -l
 
 #### Critical Region at 0xb67ce (Security Function)
 
-**Y177 (Stubbed):**
+**Y177 (full fn, entry shifted to 0xb67d4):**
 ```
 $ xxd -s 0xb67ce -l 20 Y177/86283151
 000b67ce: ff30 0052 7f00 8807 e3ff 06c8 9900 033d  .0.R...........=
 ```
 
-**Y181 (Implemented):**
+**Y181 (full fn, entry at 0xb67d0):**
 ```
 $ xxd -s 0xb67ce -l 20 Y181/86331656
 000b67ce: 7f00 8807 e3ff 06c8 9900 033d 0545 074d  ...........=.E.M
 ```
 
-**Observation:** Y177 has extra bytes `ff 30 00 52` at start (short return stub), Y181 removes these and has full implementation code.
+**Observation (CORRECTED 2026-08-25):** This is a **+4-byte alignment shift**, not a stub. The
+shared function bytes `7f 00 88 07 e3 ff …` appear at `0xb67ce` in Y181 but at `0xb67d2` in Y177;
+the leading `ff 30 00 52` in Y177 is the *tail of the preceding function*, not a `mov 0,r10;
+jmp[lp]` return stub. The real validation function begins at `0xb67d0` (Y181) / `0xb67d4` (Y177) /
+`0xb6708` (Y175) and is a full ~906-byte function in every build (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2).
 
 ---
 

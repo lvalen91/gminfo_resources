@@ -537,9 +537,19 @@ Untrusted_app capabilities:
 ================================================================================
 APPENDIX E: Y177 (PERMISSIVE) DELTA -- consolidated from Y177_KERNEL_CVE_ANALYSIS.txt
 ================================================================================
+>>> PREMISE REFUTED 2026-08-25 -- READ APPENDIX E.8 FIRST. <<<
+This appendix's central premise -- "Y177 runs SELinux PERMISSIVE at runtime" -- is FALSE for
+stock Y177. Appendix E.8 (below) proves from the boot-image bytes that stock Y177 boots
+ENFORCING, identically to Y175/Y181 (byte-identical init forces it). Every "Y177 EXPLOITABLE /
+inverted verdict" in E.1-E.7 therefore describes a hypothetical permissive unit that does NOT
+correspond to any stock build. The kernel/CVE/CONFIG facts (4.19.305, catalog, flags) remain
+valid; only the permissive-driven exploitability inversion is retracted. Read E.1-E.7 as
+"what WOULD hold IF permissive" -- which, on stock, it never is.
+
 The same kernel (4.19.305-240125T145315Z, Clang 12.0.7), CVE catalog, and CONFIG flags
-above apply to Y177 -- EXCEPT Y177 runs SELinux PERMISSIVE at runtime, which inverts the
-exploitability verdicts. Firmware: Y177.6.1 GAS. Y177-unique content migrated below.
+above apply to Y177. (Original, now-refuted premise: "EXCEPT Y177 runs SELinux PERMISSIVE at
+runtime, which inverts the exploitability verdicts.") Firmware: Y177.6.1 GAS. Y177-unique
+content migrated below.
 
 E.1 Y177 vs Y181 SECURITY COMPARISON
 ------------------------------------
@@ -551,8 +561,12 @@ E.1 Y177 vs Y181 SECURITY COMPARISON
 | Security Patch Level  | ~Feb 2025     | June 2025     |   <-- real per-build delta, keep both
 | CVE Exploitability    | HIGH          | LOW           |
 | Ramdisk sepolicy MD5  | e9ebb7d8...   | 6b2045bf...   |
-* Both have enforcing=1 at END of cmdline (last value wins), but Y177's ramdisk does NOT
-  force enforcing at runtime like Y181's does.
+* Both have enforcing=1 at END of cmdline (last value wins).
+  [[CORRECTED 2026-08-25 -- see E.8]] The trailing "but Y177's ramdisk does NOT force
+  enforcing at runtime like Y181's does" is FALSE. The Y177 and Y181 boot ramdisks force
+  enforcing by the SAME mechanism (byte-identical init binary + identical user props). The
+  ramdisk sepolicy MD5 delta does NOT change the global enforce mode. Y177 STOCK boots
+  ENFORCING; the "Y177 permissive" observation came from a non-stock/modified or misread unit.
 
 Policy near-identical: Y177 vendor_sepolicy.cil = 5,382 lines / 3,582 allow rules;
 Y181 = 5,383 lines / 3,583 allow rules; difference = 1 line (carservice_app
@@ -601,8 +615,15 @@ Binder services more accessible in permissive: com.gm.server.obd.OBDService;
   scontext=u:r:shell:s0 tcontext=u:object_r:i2c_device:s0 ... permissive=0). On Y177
   permissive the same world-rw nodes are reachable -- this empirically confirms the flip.
 
-E.5 WHY Y177 RUNS PERMISSIVE (enforcement mechanism)
+E.5 WHY Y177 RUNS PERMISSIVE (enforcement mechanism)  [[SUPERSEDED 2026-08-25 -- see E.8]]
 ----------------------------------------------------
+!! CORRECTION 2026-08-25: The mechanism described in this subsection is WRONG. The three
+!! boot ramdisks (Y175/Y177/Y181) carry a BYTE-IDENTICAL init binary and identical user
+!! build props, so all three force SELinux enforcing identically. The ramdisk sepolicy
+!! MD5 delta is a routine per-build policy compile delta and does NOT set the global
+!! enforce flag (that flag is not stored in the binary policy at all). Read E.8 instead.
+!! The original (now-refuted) reasoning is retained below for provenance only.
+
 Both builds have identical cmdlines (enforcing=0 ...permissive early; enforcing=1
 ...enforcing late). The difference is the RAMDISK SEPOLICY:
   Ramdisk sepolicy MD5: Y177 e9ebb7d8... / Y181 6b2045bf...
@@ -634,6 +655,86 @@ enforcement to Y177; patch kernel CVEs; kernel upgrade path; USB device whitelis
 Researchers: Y177 gives direct i2c/gpio/VIP-UART access and fewer binder restrictions.
 Downgrade Y181->Y177 is BLOCKED by GHS rollback (and AVB), so accessing Y177 requires a
 vehicle already running it.
+
+================================================================================
+APPENDIX E.8: THREE-WAY RAMDISK/INIT RE-EXAMINATION -- Y177 "PERMISSIVE" CONTRADICTION
+                                                        RESOLVED (dated 2026-08-25)
+================================================================================
+Trigger: newly-analyzed stock Y175 /system is user/release-keys (ro.debuggable=0) with a
+permissive-looking boot cmdline, yet its live unit reported getenforce=Enforcing. Y177 is
+ALSO user/release-keys (W231E-Y177.6.1) with the SAME cmdline, so by the "user build forces
+enforcing" rule Y177 must boot enforcing too -- contradicting the E.1-E.6 claim that stock
+Y177 runs permissive. This appendix resolves it from the actual boot-image bytes.
+
+Method: parsed the Android boot headers of the three SOC_BOOT images (Y175 85759602,
+Y177 86283154, Y181 86331652), split off + lz4-decompressed + cpio-extracted each first-stage
+ramdisk, and diffed init binary, props, cmdline, all *.rc, and the first-stage sepolicy.
+
+E.8.1 THREE-WAY EVIDENCE TABLE (all values are measured bytes, not assumed)
+--------------------------------------------------------------------------
+| Item                         | Y175                | Y177                | Y181                |
+| SOC_BOOT part#               | 85759602            | 86283154            | 86331652            |
+| Kernel cmdline (early)       | enforcing=0 androidboot.selinux=permissive  (IDENTICAL x3) |
+| Kernel cmdline (extra, wins) | ...enforcing=1 androidboot.selinux=enforcing buildvariant=user (IDENTICAL x3) |
+| ro.build.type / tags         | user / release-keys | user / release-keys | user / release-keys |
+| ro.debuggable / ro.secure    | 0 / 1               | 0 / 1               | 0 / 1               |
+| init binary md5 (sys/bin/init)| 7786726cf5f0..fc83 | 7786726cf5f0..fc83  | 7786726cf5f0..fc83  |  <-- BYTE-IDENTICAL
+| init binary size             | 2230472             | 2230472             | 2230472             |
+| setenforce in ANY *.rc/file  | none                | none                | none                |
+| 1st-stage sepolicy md5       | b02914ef4a7f..3851d | e9ebb7d89bf8..19b2  | 6b2045bf6983..24a1  |
+| 1st-stage sepolicy size (B)  | 744036              | 744016              | 744028              |
+| sepolicy magic / polver      | 0xf97cff8c / v30    | 0xf97cff8c / v30    | 0xf97cff8c / v30    |
+Ramdisk file-list diff: Y177 vs Y181 = ZERO differences. Y175 differs only by 6 extra SXM
+radio libs (libpal_radio_*, libpal_swupdate_sxm_*) -- unrelated to SELinux. All three carry
+8 *.rc files, none containing setenforce/permissive/enforcing directives.
+
+E.8.2 WHAT ACTUALLY SETS THE ENFORCE MODE
+-----------------------------------------
+The global SELinux enforce flag is written by init (selinux.cpp: SelinuxInitialize ->
+security_setenforce), decided by IsEnforcing(). On a user build the ALLOW_PERMISSIVE_SELINUX
+compile guard is 0, so IsEnforcing() returns true UNCONDITIONALLY and init ignores the
+androidboot.selinux=permissive request. That guard is baked into the init BINARY -- which is
+byte-identical (md5 7786726c..) across Y175/Y177/Y181. The enforce flag is a runtime
+selinuxfs setting; it is NOT stored in the compiled binary policy, so the ~20-byte sepolicy
+MD5 delta between the three CANNOT change it. The sepolicy delta is an ordinary per-build
+policy recompile (rule region differs from offset ~0x286D0 onward; consistent with the
+1-line vendor_sepolicy allow delta already noted in E.1).
+
+E.8.3 VERDICT (confidence HIGH)
+-------------------------------
+Resolution = combination of (a) and (c):
+ (a) STOCK Y177 (W231E-Y177.6.1) boots SELinux ENFORCING, identically to Y175 and Y181.
+     Nothing in its boot image permits permissive: same init binary, same user/release
+     props, same cmdline (last token enforcing/enforcing/buildvariant=user), no setenforce.
+     A live unit reporting getenforce=Permissive on Y177 therefore was NOT stock. Per the unit
+     owner, both CSMs only ever ran the stock offline packages -- no userdebug/modified boot
+     image was ever flashed and no root shell was available to run `setenforce 0` -- so a
+     MODIFIED/engineering unit is RULED OUT. The permissive observation was a false
+     finding/misread (owner or a prior analysis); at most a misattributed transient during
+     EEPROM bit-flag testing. SELinux mode is neither EEPROM- nor VIP-driven, so EEPROM
+     experimentation cannot itself produce a permissive runtime -- only a misattribution.
+ (c) The "user build forces enforcing" rule is CORRECT but the E.5 explanation of the
+     mechanism was imprecise/wrong: enforcing is forced by the init binary + user build
+     variant, NOT by any Y181-vs-Y177 ramdisk-sepolicy difference. The differing sepolicy
+     MD5s are a red herring for enforce mode.
+REFUTED CLAIMS: E.1 table footnote ("Y177's ramdisk does NOT force enforcing") and E.5
+("Y177's original boot image does NOT [force enforcing] -- it boots permissive per the early
+cmdline"). Both are false against the bytes above.
+
+E.8.4 FOLLOW-UPS FOR THE MAINTAINER (other docs NOT edited -- flagged only)
+--------------------------------------------------------------------------
+The permissive-Y177 premise propagates into several places that still need correction:
+ - This file's E.1 through E.7 (CVE-exploitability inversion, i2c/gpio/UART "flip", risk
+   rating) all rest on Y177=permissive. If (a) holds, the "Y177 EXPLOITABLE" columns
+   describe a false-finding/misread, not stock Y177 (a modified unit is ruled out -- stock-only
+   history). Left in place pending the maintainer's call.
+ - gminfo3.7_tech_specs.md:247  ("selinux: permissive" for live Y177.6.1) -- reconcile:
+   was that unit stock? capture getenforce + `cat /proc/cmdline` + ro.build.fingerprint.
+ - GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt:177 ("getenforce runtime: Permissive [Y177]").
+ - Any Y177_KERNEL_CVE_ANALYSIS.txt source that E.x was consolidated from.
+Recommended disambiguation on live hardware: `getenforce`; `cat /sys/fs/selinux/enforce`;
+`cat /proc/cmdline`; `getprop ro.boot.selinux`; `getprop ro.debuggable`;
+`getprop ro.build.fingerprint`. A stock W231E-Y177.6.1 must return Enforcing / 1 / user / 0.
 
 ================================================================================
 END OF CVE ANALYSIS

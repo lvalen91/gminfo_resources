@@ -136,6 +136,14 @@ analyzed this pass.
 
 ## 5. Correction to `MASTER_REFERENCE.md`'s Y175/Y177/Y181 table (owner-supplied)
 
+> **SUPERSEDED 2026-08-25.** Y175 VIP_APP was subsequently reacquired and diffed three-way
+> against Y177/Y181: the VIP security function is a **full ~906-byte validator in Y175, Y177,
+> AND Y181** — there is **no stub in Y175 or any build** (the stub reading was a fixed-address
+> misparse of shifted code). So the "Permissive due to a stubbed VIP function in Y175" theory
+> below is refuted at the VIP layer; SELinux mode is OS-side, and the VIP function gates ADB/seed
+> auth. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2 and the Y175 partition investigation. The
+> paragraph below is retained as the session's historical reasoning.
+
 The project owner corrected a misreading during this session: the
 "SELinux Permissive on bypass" behavior was **theorized for Y175** (due to
 a stubbed VIP security function), **later fixed in Y177**. This session's

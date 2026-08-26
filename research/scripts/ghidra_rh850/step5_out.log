@@ -1,0 +1,39 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step5_handlers.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+========== type/handler idx=0 target=0xf0a1a ==========
+0xf0a1a or sp,r0
+0xf0a1c sld.hu 0x14[ep],r9
+0xf0a1e andi 0x3,r9,r0
+0xf0a22 cmove 0x2,r8,r10
+0xf0a26 jmp [lp]
+========== type/handler idx=1 target=0xf0a1e ==========
+0xf0a1e andi 0x3,r9,r0
+0xf0a22 cmove 0x2,r8,r10
+0xf0a26 jmp [lp]
+========== type/handler idx=2 target=0xf0a22 ==========
+0xf0a22 cmove 0x2,r8,r10
+0xf0a26 jmp [lp]
+========== type/handler idx=3 target=0xf0a26 ==========
+0xf0a26 jmp [lp]
+========== type/handler idx=4 target=0xf0a2a ==========
+0xf0a2a rie
+========== type/handler idx=5 target=0xf0a2e ==========
+0xf0a2e sld.w 0xc[ep],ep
+0xf0a30 movea 0x103,r0,r8
+0xf0a34 sld.hu 0x14[ep],r9
+0xf0a36 andi 0x3,r9,r0
+0xf0a3a cmove 0x2,r8,r10
+0xf0a3e jmp [lp]
+========== type/handler idx=6 target=0xf0a32 ==========
+0xf0a34 sld.hu 0x14[ep],r9
+0xf0a36 andi 0x3,r9,r0
+0xf0a3a cmove 0x2,r8,r10
+0xf0a3e jmp [lp]
+========== type/handler idx=7 target=0xf0a36 ==========
+0xf0a36 andi 0x3,r9,r0
+0xf0a3a cmove 0x2,r8,r10
+0xf0a3e jmp [lp]

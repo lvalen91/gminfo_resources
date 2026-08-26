@@ -134,11 +134,11 @@ Current status: XGecu direct read/write access to M24C64 already established. Th
 
 **With JTAG access:**
 - Dump complete VIP firmware (no indirect Ghidra needed).
-- Set hardware breakpoint at `0xb67d0` entry → observe inputs (EEPROM→RAM path, expected values).
-- Patch `0xb67d0` in-place: overwrite 906-byte validator with Y177 4-byte stub (`mov 0,r10; jmp [lp]`).
+- Set hardware breakpoint at `0xb67d0` entry → observe inputs (EEPROM→RAM path, expected values). *(Still valuable — reveals the real ADB/seed gate inputs.)*
+- ~~Patch `0xb67d0` in-place: overwrite 906-byte validator with Y177 4-byte stub~~ — **VOID (2026-08-25):** there is no Y177 stub. The validator is a full ~906-byte function in Y175/Y177/Y181 alike (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2), so there is nothing to copy in, and the VIP does not set SELinux mode regardless.
 - Observe J6_CDD OBBPELK handler live → extract exact ELK trigger format.
 
-**This is the highest-leverage single action** — a successful patch of `0xb67d0` achieves permissive SELinux on Y181 without downgrade, without misc modification, and without Boot Guard involvement.
+~~**This is the highest-leverage single action** — a successful patch of `0xb67d0` achieves permissive SELinux on Y181…~~ **RETRACTED:** the patch-to-stub premise is false (no stub exists) and SELinux mode is not decided on the VIP. JTAG remains useful for *observing* the ADB/seed gate, not for a SELinux bypass. The lever for runtime SELinux is OS-side (ramdisk/init).
 
 ---
 
@@ -234,7 +234,7 @@ From Android guest, the VIP IPC channel (`SERIAL_IPC_PROTO_KEY_CHANNEL`) is the 
 
 | Rank | Vector | Type | Effort | Impact |
 |---|---|---|---|---|
-| 1 | RH850 JTAG → patch `0xb67d0` | Hardware | Low (E10A-USB $150) | Permissive SELinux, no downgrade needed |
+| 1 | ~~RH850 JTAG → patch `0xb67d0`~~ **VOID** | Hardware | — | No stub exists in any build; VIP does not set SELinux (corrected 2026-08-25). JTAG still useful to *observe* the ADB/seed gate |
 | 2 | CVE-2024-53197/53104 → misc write | Software/USB | Medium (USB gadget) | Online misc write path |
 | 3 | SPI IFWI dump → Boot Guard FPF audit | Hardware | Low (SOIC-8 clip) | Determines if `bxt_dbg_priv_key.pem` works |
 | 4 | DCI DbC (if HDCIEN already enabled) | Hardware | Low ($15 cable) | Full JTAG, game over |

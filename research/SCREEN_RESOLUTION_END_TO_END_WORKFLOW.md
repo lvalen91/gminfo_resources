@@ -66,7 +66,9 @@ xxd -s 0x0A80 -l 4 /path/to/your_eeprom_dump.bin      # expect: 5aff 5aff / 69ff
 **Expected:** both show the data byte `FF`. Marker byte (`5A`/`69`/`C3`) varies by trim (LTZ vs HC) and
 does not matter — the VIP reads only the data byte (provenance #4).
 
-**Note on Y181 hardening:** the Y177→Y181 fix only un-stubbed the *ADB* validator (`fcn.000b67d0`). The
+**Note on Y181 hardening (CORRECTED 2026-08-25):** there was no un-stubbing — the *ADB* validator
+`fcn.000b67d0` is a full ~906-byte function in both Y177 and Y181 (and Y175); see
+`VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2. The
 DCM `$27` twin validator (`fcn.000b6bcc`, called by the SecurityAccess handler `fcn.000864de`) reads the
 SBI **identically in both versions and was never part of the fix** — so an SBI flip that makes the VIP
 emit the 0xFF `$27` seed is *not* re-blocked by Y181 on the VIP side (`eeprom_security_opus_B.md` §2, §5).

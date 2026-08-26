@@ -5,6 +5,12 @@ Generated: December 20, 2025
 Analyst: Claude (Security Research / Android Engineering)
 Target: GM Infotainment 3 (IOK) - gminfo3.7/3.8 CSM Module
 ================================================================================
+>>> ARCHIVAL — PREMISE REFUTED 2026-08-25. This Dec-2025 report treats "Y177 permissive" and
+>>> "restore permissive on Y181" as goals. Both are void: no stock build (Y175/Y177/Y181) runs
+>>> SELinux permissive — byte-identical init forces enforcing on all; the EEPROM/VIP path gates
+>>> ADB/seed auth, NOT SELinux mode. See security/KERNEL_CVE_ANALYSIS.txt Appendix E.8. Body left
+>>> as historical record; do not act on its permissive-based recommendations.
+================================================================================
 
 --------------------------------------------------------------------------------
 ARCHIVAL SESSION LOG (Dec 20 2025, "v2.4") -- retained as history; body UNCHANGED. This

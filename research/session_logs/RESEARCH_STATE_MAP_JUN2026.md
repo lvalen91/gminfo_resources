@@ -18,7 +18,7 @@
 | Current access | uid=2000 ADB shell (EEPROM SBI bypass applied) |
 | Physical access | Full board access including RH850 |
 
-**Research goal:** Downgrade Android build Y181 to Y177 to restore permissive SELinux environment and stubbed VIP security function at 0xb67d0.
+**Research goal:** Downgrade Android build Y181 to Y177 to restore permissive SELinux environment and stubbed VIP security function at 0xb67d0. *[archival — the "stubbed VIP function" premise was refuted 2026-08-25; see the correction banner in the "VIP Security Function 0xb67d0" section below and `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2.]*
 
 **Primary blocker:** GHS AB0 rollback counter in misc/vda9. Counter is CRC32-only, and is written exclusively by the GHS hypervisor. Cannot be decremented from Android shell.
 
@@ -97,6 +97,12 @@ Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slo
 - **RSA-1024 private key** found in ghs_integrity.elf at byte offset 12924442 (609 bytes, sha1=78d9a50f). This is the only private key in the entire corpus. Function is unknown — candidates include attestation, IPC authentication, or signing.
 
 ### VIP Security Function 0xb67d0
+
+> **CORRECTION 2026-08-25 (post-dates this Jun 2026 log; text below left as archival):** the
+> "Y177 stub" was later REFUTED. A three-way VIP_APP diff (Y175/Y177/Y181) shows a full ~906-byte
+> validator in every build (Y177 @0xb67d4, Y175 @0xb6708); the "4-byte stub" was a fixed-address
+> misread of shifted code. Y177's permissive SELinux is OS-side (ramdisk/init), not a VIP signaling
+> path — the VIP function gates ADB/seed auth. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2.
 
 **Y177 stub (4 bytes):**
 ```asm

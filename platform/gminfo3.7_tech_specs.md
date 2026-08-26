@@ -247,7 +247,7 @@ performance_analysis:
   bottleneck_location: software_optimization
   uptime_stability: 4.8_days
   boot_count: 254
-  selinux: permissive
+  selinux: permissive   # NOTE (2026-08-25): this is the boot-cmdline arg (androidboot.selinux=permissive), NOT the runtime mode. Stock Y177 runs getenforce=Enforcing — init ignores the permissive cmdline on a user build. See research/security/KERNEL_CVE_ANALYSIS.txt Appendix E.8.
   verified_boot: green_locked
 
 system_services:

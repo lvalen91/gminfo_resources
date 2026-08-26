@@ -6,7 +6,231 @@
 
 ---
 
+## 0. CODE AUDIT (2026-08-25) — most of the security map below is NOT code-backed
+
+A ground-truth pass disassembled the Y175 VIP_APP (`85759599`) and grep-audited the SoC-side
+binaries. It **falsifies or downgrades most of §1/§2.1's "security" claims.** Read this before
+trusting any offset below.
+
+**Verified structural facts (high confidence):**
+- **VIP_APP does NOT perform the raw I²C read of the M24C64.** It has zero `RH850-IIC` strings;
+  VIP_BOOT (`85056831`, byte-identical across builds) has them. **The physical EEPROM read and
+  the EEPROM→RAM-shadow mapping live in VIP_BOOT, which has NOT yet been disassembled.** VIP_APP
+  only consumes a RAM shadow left by boot.
+- VIP_APP's calibration accessor is a **table-driven "CalGroup" dispatcher** `FUN_000c8f6a(offset,dest)`
+  at `0xc8f6a` → 24-byte descriptor table at `0x4fb96` → handler pointer table at `0xf0a1a`.
+  **This table is the real offset→field map and has not been decoded yet.** A scan for *literal*
+  offset immediates cannot see computed/table-driven accesses, so "0 code hits" below is
+  suggestive, not conclusive.
+- The `0xFEBD4DA0 & 0x7FFFF` word is the **UDS `$27` SecurityAccess SendKey handler**
+  (`FUN_000b6708`): 19 = the number of diagnostic security *levels* (2–20); each bit = "level N
+  unlocked **this session**." It is a **session unlock accumulator, NOT 19 EEPROM-stored permission
+  bits.** All 19 levels gate on one shared byte `DAT_febd3e06`, whose only VIP_APP writers set it
+  to hardcoded 1/0 — **no VIP_APP code links it to an EEPROM read** (that link, if real, is in VIP_BOOT).
+
+**CONFIRMED hallucinations / fabrications (retract on sight):**
+- **"[IPC_S] = IPC Security"** (basis for calling 0x04A0/0x04C0 "IPC Security Config"): FALSE.
+  `[IPC_S]` is the **IPC *Serial* transport log tag** (HDLC framing: `IFRAME Rx`, `UFRAME RESET`,
+  `HDLC: CRC Failed`, `IPC-Version`). Nothing to do with security.
+- **The "xref" counts** (0x0A00 "871 refs", 0x0B00 "311 refs", 0x04A0 "17", 0x04C0 "11",
+  0x0A40 "28", 0x0BE0 "24") are **not reproducible** — actual instruction-level references number
+  2–3. These counts are grep/byte-pattern noise, not semantic xrefs, and are not evidence of anything.
+- **"0x0440 SBI — disasm-confirmed"**: the "disasm-confirmed" label is FALSE. The only code sites
+  touching literal `0x440` show ordinary 14-byte calibration-group handling with no `==0xFF` bypass test.
+
+**Per-offset verdict (VIP_APP literal-immediate evidence):** 0x0440 UNSUPPORTED-as-claimed;
+0x0A80/0x0A40/0x0AC0/0x0BE0/0x1A00 ZERO code refs (likely fabricated); 0x04A0/0x04C0 ordinary
+calibration bytes; 0x0B40 is 1/5 of a scrambled composite value, not a boolean flag.
+
+**⚠ Consequence for bench testing:** the specific "flip 0x0440 / 0x0A80" SBI targets are **NOT
+code-verified**. The true SBI byte(s) must be recovered from **VIP_BOOT disassembly + the CalGroup
+descriptor table decode** before a bench flip has a known target. Until then, the offsets below are
+historical hypotheses, not confirmed addresses.
+
+**Caveats on the first audit:** it analyzed VIP_APP only, reused the older `V850` project, and its
+literal-immediate method is blind to table-driven access. Pass 2 (below) addressed those.
+
+### §0.1 CODE AUDIT PASS 2 (2026-08-26) — RH850, VIP_BOOT + CalGroup decoded. No EEPROM→security link found.
+
+Two fresh RH850-decoder passes (proper `RH850:LE:32`, not V850):
+
+- **CalGroup accessor fully decoded (VIP_APP).** Descriptor base is **`0x4fb8c`** (24-byte stride;
+  `0x4fb96` was base+0xA, the type byte). `0xf0a1a` is a **computed jump**, not a pointer table.
+  VIP_APP's *entire live* CalItem set is `0xB4–0xB5`, `0xF9–0x103`, `0xDC1–0xDC9` (20/20 call sites,
+  exhaustive) — handlers are width-tags, `divqu` value-scaling, list-node reassembly, marker-rotation
+  copy: **ordinary calibration plumbing.** **None of the 8 flagged security offsets are in the live
+  set.** The `$27` validator (`FUN_000b67d0`) and the CalGroup accessor are **structurally
+  independent** (direct negative xref — neither calls the other). *(Caveat: `calItemId == EEPROM byte
+  offset` is unproven — that needs VIP_BOOT.)*
+- **VIP_BOOT (`85056831`) disassembled under RH850.** Its actual role is a **signed application-image
+  flash updater** ("Starting boot updater application", signed-header/message-digest/Harman-checksum
+  validation, PSI/NBID over HDLC/IPC) — a different domain from calibration/security. **No I²C /
+  M24C64 read routine found:** the `RH850-IIC` string is inert Smart-Configurator BSP boilerplate with
+  **zero code references** (checked via 100%-coverage absolute-address + pointer scans). **`0xFEBD3E06`
+  and `0xFEBD4DA0` do not appear anywhere in the 1.9 MB image** (100% byte-scan of both address-
+  materialization idioms). No EEPROM/NVM/SBI/seed/security strings exist in it at all.
+  ⚠ *Coverage caveat:* Ghidra reached only ~9% (raw import, no vector-table seeding); the address-
+  constant and string negatives are 100%-coverage, but a read routine using gp-relative/computed
+  addressing in the un-disassembled 91% cannot be fully excluded.
+
+**BOTTOM LINE (all three domains analyzed — VIP_APP, VIP_BOOT, SoC):** *No code-verified path exists
+from the config EEPROM to ADB authorization, the `$27` seed state, or SELinux.* VIP_APP does no I²C;
+the `$27` gate byte `0xFEBD3E06` is written by hardcoded 0/1 constants, not an EEPROM read; VIP_BOOT
+(where the I²C peripheral is configured) shows no located read routine and no reference to the seed-gate
+addresses; the SoC has no EEPROM access and consumes only signed ProtoKey (anti-theft) state.
+
+**UPDATE (§0.4, 2026-08-26): VIP_BOOT is now FULLY disassembled and is NOT the reader.** A complete-
+coverage RH850 pass (3193 functions; every byte classified) proves VIP_BOOT is a **dual-bank on-chip
+flash updater** with **no I²C/EEPROM read path at all**. So the EEPROM reader is in **VIP_APP** (or a
+later stage), not VIP_BOOT — combined with the owner's 3-yr witness that the mechanism is real, the
+search relocates to a full-coverage VIP_APP pass. See §0.4.
+
+### §0.2 EMPIRICAL EEPROM DUMP DIFFS (2026-08-26) — the CORE SBI is real; the taxonomy was not
+
+Diffing the actual 8 KB M24C64 dumps (`hardware/EEPROM/gm_csm/…` and `eeprom/bins/…`) against the
+stock reference (`gm_csm_stock.bin`, sha `bbe4528c…`) resolves the code/empirical tension:
+
+- **`stock` → `stock_modified`: EXACTLY ONE byte — `0x0441: 00 → FF`.** A deliberate minimal edit. This
+  is the SBI *data* byte, empirically isolated. **Strongest single piece of evidence in the whole map.**
+- **`stock` → `Y181/ADB_enabled`: 66 bytes** — the SBI signature `0x0440–42: C3 00 C3 → 5A FF 5A`
+  (marker/data/marker) + backup `0x0A80/0x0A82: FF → 5A`, then a cluster in `0x16E0–0x1DCx` consistent
+  with **CRC recomputation** after the edit.
+- `debugging` and `ADB_HC`/`ADB_LTZ` dumps differ broadly (different VIN/trim units — VIN at 0x05C0,
+  serial at 0x068x, whole-EEPROM deltas), so they are not clean stock+flip pairs; the two above are.
+
+**Reconciliation — what is TRUE vs what was HALLUCINATED:**
+- **TRUE / empirically corroborated:** the core SBI at **`0x0441`** (data), **`0x0440`/`0x0442`** (framing
+  `C3↔5A`), and **`0x0A80`** (backup) — independently confirmed by two dump pairs. The minimal edit is a
+  single byte `0x0441=0xFF`. CRC bytes in `0x16E0+` are real and appear to be recomputed on a persistent edit.
+- **OWNER WITNESS — EEPROM→AAOS is PROVEN, not hypothetical (3 years, reproducible):**
+  (1) **ADB access is gated by the two SBI bytes** — setting both `00→FF` enables ADB, every time; reverting
+  disables it. (2) **Applying a different trim's calibration (e.g. a High Country CSM/Radio calibration) on
+  the same CSM changes the AAOS boot animation AND the UI theme.** These are two *independent, empirically
+  confirmed* EEPROM→AAOS channels. The code analysis below did not *locate* the reader — that is a **coverage
+  gap**, **NOT** evidence against the mechanism. The reader provably exists (3-yr witness); it is unlocated.
+  VIP_BOOT is now **fully disassembled and ruled out** (§0.4) — the search relocates to VIP_APP.
+- **TWO channels now distinguished:** (a) **SBI bytes** (`0x0441`+`0x0A80`) → **ADB**; (b) **trim/model
+  calibration** → **AAOS boot-animation + theme**. See §0.3 for channel (b) fully code-traced.
+
+### §0.3 CHANNEL (b) — trim/theme pipeline, SoC side CODE-VERIFIED (2026-08-26)
+
+SoC chain (traced in the extracted Y175 partitions): **`calserviced`** (HIDL
+`vendor.gm.calibrations@1.0::ICalibrationService`, backed by `VIPCALPAL` over IPC — **it gets
+GMTrim/GMModel/GMBrand from the VIP, not from this EEPROM directly**) → **`/system/bin/animengine`**
+computes an integer **AnimFlavor** from those three IDs (literal log fmt
+`GMTrim: %d, GMModel: %d, GMBrand: %d -> AnimFlavor:%d`; C++ syms `gm::calibrations::CalId::{GMTrim,GMModel,GMBrand}`)
+→ loads `/product/ro/anim/<N>/{graphics,audio}/…` (shipped flavors: 0,1,3–10,20–23,31–33,default) → caches
+in sysprop **`persist.sys.anim.flavor`**; `/vendor/bin/hw/plmanager` triggers playback. Brand RRO overlays
+(`brand-<make>-theme-*`) key on **GMBrand only** (make-level — HC & LTZ share the Chevrolet theme); a
+`GMSystemUI`/`GMUILib ThemeUtils` reference to `GMTrim` is an unconfirmed trim-theming lead.
+
+Enum values (from `/vendor/calibrations/CalSets.db`): **GMTrim HighCountry=1, LTZ=16**; GMModel Silverado=4;
+GMBrand Chevrolet=3. HC↔LTZ = GMTrim `1⇄16` → different AnimFlavor → different animation.
+
+**Structural conclusion (mirrors the ADB channel):** the SoC receives GMTrim over IPC from the VIP; it does
+NOT parse a trim byte from this EEPROM. So the **EEPROM→GMTrim translation is on the VIP side** (same dark
+region as the SBI reader). A raw `(1,16)` GMTrim byte-pair appears **nowhere** in the 8 KB dump — confirming
+the enum is not stored verbatim in EEPROM.
+
+**Candidate EEPROM offset (bench hypothesis, UNCONFIRMED):** paired single bytes **`0x0AA0` & `0x0AE5`** —
+HC=`0xF0`, LTZ=`0xC3`, stock=`0x69`. Not a verbatim enum (no clean decode to 1/16); possibly obfuscated.
+Flip-and-observe to confirm/deny.
+
+**⚠ DATA-QUALITY FLAG:** `eeprom/bins/Y181_ADB_enabled_HC.bin` is valid only `0x0000–0x0B43`; `0x0B44`→EOF is
+flat zero-fill (~65% blank). **Re-dump the full 8 KB** before trusting any offset past `0x0B43`. (Most of the
+raw 4186-byte HC↔LTZ diff was this blank-vs-real artifact. LTZ vs stock is only 110 bytes.)
+
+**OBSERVATION HARNESS — the "where to look" for blind flips (once bench ADB is live):**
+| Check | Shows |
+|---|---|
+| `adb logcat \| grep -i AnimFlavor` | live `GMTrim/GMModel/GMBrand → AnimFlavor` at boot — **the key hook: reveals if a flipped byte changed the trim/model/brand the VIP reports** |
+| `getprop persist.sys.anim.flavor` | active AnimFlavor index |
+| `adb logcat -s calserviced`; `lshal \| grep -i calibrations` | VIP-sourced calibration values |
+| `cmd overlay list` | brand RRO (GMBrand) state |
+| `ls /product/ro/anim` | shipped flavor folders |
+- **HALLUCINATED (retract):** the ref-counts (871/311/17/11/28/24), the "IPC Security Config" naming for
+  0x04A0/0x04C0, the "disasm-confirmed" labels, and the elaborated multi-flag taxonomy (0x04A0/0x04C0/
+  0x0A40/0x0AC0/0x0BE0 as distinct "security flags"). None of those are corroborated by code OR by the
+  clean dump diffs. The real modification is far simpler than the doc's taxonomy implied.
+
+**CONFIRMED ADB RECIPE (owner, 3-yr reproducible):** set **`0x0441 = 0xFF` AND `0x0A80 = 0xFF`** — the two
+SBI *data* bytes — and nothing else. ADB enables; revert either and it disables. The `0x0440`/`0x0442`
+framing bytes are **NOT** required (their `C3→5A` change in `Y181/ADB_enabled.bin` is unrelated). No CRC
+recompute is needed (the 1-byte `stock_modified` edit changed no CRC bytes and worked). Note on `0x0A80`:
+pre-Y181 stock ships it already `0xFF` (so only `0x0441` is left to flip — matches the `stock_modified`
+single-byte diff); **Y181 initializes `0x0A80` to a non-FF value, so on Y181 both bytes must be set.**
+
+---
+
+### §0.4 VIP_BOOT FULLY DISASSEMBLED (2026-08-26) — dual-bank flash updater, NOT the EEPROM reader
+
+Complete-coverage RH850 pass on VIP_BOOT (`85056831`); project saved at
+`research/scripts/ghidra_rh850/vipboot_rh850` (3193 functions, converged to fixpoint).
+
+**Structure (the "1.9 MB image" is mostly erased flash):** it is a flash dump of **two firmware banks** —
+Bank A `0x0–0x224FF`, Bank B `0x68500–0x8A37F` — with **85.5% of the file being erased `0xFF` flash**. The
+two banks are the **same firmware relinked at different flash-bank base addresses** (dual-bank fail-safe
+redundancy — *not* a byte-identical mirror; the earlier "mirror" guess was wrong). Reset vector Bank A
+`0x786→0x1E9AC`; crt0 `FUN_00003322` with `gp=0xFEBDCEA4` at file `0x3344`.
+
+**Byte accounting (every byte classified — "no dark %" achieved):** of 279,424 bytes of real content,
+**code 88.5% / data+strings 9.8% / residual 1.7%** — the residual manually verified as vector-slot padding,
+un-tagged format strings, version tags, and the RAM/BSS init table, **not missed code.**
+
+**DEFINITIVE NEGATIVE — no EEPROM read exists in VIP_BOOT:**
+- `RH850-IIC`/`RH850-CSIH` descriptor strings are inert Smart-Configurator BSP metadata with **zero xrefs**
+  from any of the 3193 functions.
+- Only peripheral drivers actually reached: the **on-chip code-flash programming** driver (`0xFFA0/FFA10xxx`
+  SFRs — the signed flash-updater) and a **CSIH power-down-for-sleep** routine (`0xFFD8xxxx`, clears bits, no
+  transfer). No `0x50`/`0xA0`/`0xA1` in any peripheral-register context.
+- `0xFEBD3E06` (seed gate) and `GMTrim`/`GMModel`/`GMBrand`: **absent** — zero occurrences.
+
+**Conclusion:** VIP_BOOT's entire role is dual-bank on-chip flash programming + signature validation. It does
+**not** read the config EEPROM. Since the owner's witness proves the EEPROM→ADB/trim mechanism is real, and
+VIP_BOOT is now excluded at full coverage, **the reader is in VIP_APP** (the prior VIP_APP passes checked the
+CalGroup table and the `$27` validator but did not run a full-coverage hunt for the I²C/M24C64 read routine).
+**Next: full-coverage VIP_APP pass (done — see §0.5).**
+
+### §0.5 VIP_APP FULLY COVERED (2026-08-26) — read pipeline VERIFIED; gate/driver/trim resist static RE
+
+Full-coverage RH850 pass on VIP_APP (`85759599`, 12,939 functions; ~90% of real content classified — the
+file is 54% content `0x0–0xFFFFF` + 46% erased `0xFF` flash; ~10% tabular residue unresolved; whole-image
+CRC32 `0x7FB2D59E` at EOF). Caveat: ~250 spurious `mov tp,r0` decodes slightly inflate the "code" figure.
+
+**CODE-VERIFIED — this REHABILITATES the SBI addresses:**
+- Calibration accessor **`FUN_000C8F6A`** → 24-byte descriptor table **`0x4FB8C`** → computed-call into inlined
+  handler bodies at **`0xF0A1A + tag*4`**. **`calItemId` == raw EEPROM byte offset — PROVEN** (unrolled loaders
+  at `0x91800+` walk every byte `0x40F–0x45A` via `movea 0xNNN,r0,r6; jarl 0xC8F6A`).
+- **`0x0440`/`0x0441`/`0x0442` ARE read** through this pipeline (verified at `0x91B48/0x91B60/0x91B6C`, type_tag
+  5). This **overturns the earlier "likely fabricated / 0 hits."** Combined with the empirical dump (flip
+  `0x0441=FF` → ADB), the SBI byte is now confirmed on **both** axes: empirically flipped **and** code-read.
+- RAM-shadow arrays mapped: byte `0xFEBDAAE2`; u16 `0xFEBD6966/69C2/6C96/6ED2/6F34/6F52`; u32 `0xFEBD57A8/57BC`;
+  staging `0xFEBDC212/C282`; dirty-status word `0xFEBD3B7C` — same RAM bank as the `$27` gate `0xFEBD3E06`
+  (proximity only, no call-graph link).
+
+**STILL UNLOCATED even at full coverage (the honest wall):**
+- **Physical I²C driver + write-path callers** — the CalGroup commit siblings (`0xC812E/C90FC/C6CB0/C73F0`) and
+  the 15 `[CAL] EEPROM Write Failure` string emitters have **zero recoverable callers** (reachable only via a
+  computed-jump dispatcher static analysis couldn't surface). No `RH850-IIC/I2C/NvM/Fee` driver strings (the
+  `[ELMOS_IC]` IIC strings belong to the ELMOS E522.40 antenna-diag IC — red herring).
+- **`0x0441` read → `0xFEBD3E06` gate link:** no `==0xFF` compare, branch, or store into the gate byte anywhere
+  reachable. If `0x0441` gates ADB, the logic is in a *consumer* of the RAM shadow, behind the same dispatch.
+- **Trim/GMTrim IPC path:** `GMTrim/GMModel/GMBrand/VIPCALPAL` are **absent from VIP_APP** (0 occurrences); the
+  only IPC catalog is 12 `[PLC]` power-lifecycle messages. Calibration served to the SoC is not string-named here.
+
+**CONCLUSION — static RE is exhausted across all three images.** EEPROM bytes are provably *read* by VIP_APP's
+calibration pipeline; the *consumer/gate* logic, the *write/I²C primitive*, and the *trim serve path* live in
+computed-jump-dispatch code (`0xF0A1A`-style) + the ~10% tabular residue that recursive-descent + heuristic
+disassembly cannot fully resolve. Further static digging has diminishing returns. **The productive path to the
+remaining "how" is now DYNAMIC** — the bench harness (§0.3) + documented single-variable flip tests (`0x0441`,
+then `0x0AA0/0x0AE5`), watching `getprop persist.sys.anim.flavor` / `logcat AnimFlavor` / adb reachability.
+
+---
+
 ## 1. EEPROM Layout Maturity & Detail Level
+
+> **§0 supersedes the "Verified" / "Evidence" columns in this section for all security rows.**
+> "disasm-confirmed" for 0x0440/0x0A80 is retracted; the xref counts are non-reproducible.
 
 ### Current documentation status:
 
@@ -24,13 +248,22 @@
 
 ### Summary:
 - **Enhanced since initial analysis:** Yes. Dec-2025 report = raw byte map. Jan–Feb 2026 = firmware xref analysis added undocumented flags. Aug-2026 = marker-rotation and CalGroup system discovery.
-- **Current detail:** Mixed. Security-critical (`0x0440/0x0A80`) = disasm-confirmed, high fidelity. Undocumented flags and checksums = inferred, medium-high fidelity.
+- **Current detail:** ~~Security-critical (`0x0440/0x0A80`) = disasm-confirmed, high fidelity.~~
+  **RETRACTED per §0** — the "disasm-confirmed" claim was not reproducible; those offsets show only
+  ordinary calibration handling in VIP_APP, and the real EEPROM read logic is in VIP_BOOT (not yet
+  disassembled). Undocumented-flag "xref counts" are grep noise, not semantic references.
 
 ---
 
 ## 2. Complete EEPROM Parameter Inventory
 
 ### 2.1 Security & Access Control
+
+> **⚠ SEE §0 — the "Evidence Level" column in this table is largely FALSE.** "Disasm-confirmed"
+> for 0x0440/0x0A80 is retracted; "IPC Security Config" for 0x04A0/0x04C0 rests on a misread of the
+> `[IPC_S]` *serial-transport* log tag; the ref-counts are non-reproducible. No security offset here
+> is code-verified in VIP_APP. Treat every row as an UNVERIFIED historical hypothesis pending the
+> VIP_BOOT + CalGroup-table decode.
 
 | Address | Field | Documented | Polarity | Evidence Level | Notes |
 |---------|-------|-----------|----------|----------------|-------|

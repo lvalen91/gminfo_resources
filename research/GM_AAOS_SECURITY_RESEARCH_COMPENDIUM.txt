@@ -830,8 +830,12 @@ Security levels:
 | ro.debuggable       | 0                   | 0                   |
 
 KEY DIFFERENCE:
-Y177 runs with SELinux permissive, Y181 forces enforcing.
-The SELinux mode change is the ONLY significant security difference.
+~~Y177 runs with SELinux permissive, Y181 forces enforcing.~~
+CORRECTED 2026-08-25: FALSE. Stock Y177 runs SELinux ENFORCING, identically to Y175/Y181 —
+their `system/bin/init` is byte-identical and forces enforcing on a user build, ignoring the
+permissive cmdline (see security/KERNEL_CVE_ANALYSIS.txt Appendix E.8). There is NO SELinux-mode
+difference between stock builds; any "permissive" observation was a false finding/misread (both
+CSMs only ran stock packages — a modified unit is ruled out).
 
 VIP FIRMWARE COMPARISON:
 - Binary diff shows 549,518 byte differences
@@ -863,7 +867,8 @@ CONCLUSION: SELinux enforcement is controlled by Android init, not VIP.
 
 [+] Attempt firmware downgrade:
     - Version check disabled in manifest
-    - May restore Y177 SELinux permissive mode
+    - CORRECTED 2026-08-25: does NOT restore permissive — stock Y177 boots ENFORCING
+      (byte-identical init forces it); no stock build runs permissive (security/KERNEL_CVE_ANALYSIS.txt E.8)
     - AVB rollback protection status unknown
 
 [+] Read SPSToolBridge.LOG:
@@ -907,10 +912,11 @@ CONCLUSION: SELinux enforcement is controlled by Android init, not VIP.
    - If accessible via DPS, could bypass MEC checks
    - Need to identify which Module ID contains this cal
 
-3. Downgrade Attack (MEDIUM-HIGH probability):
+3. Downgrade Attack (CORRECTED 2026-08-25 — premise refuted):
    - OTA version check confirmed disabled
-   - Y177 has SELinux permissive
-   - Test: Create Y177 archive, flash, verify SELinux
+   - ~~Y177 has SELinux permissive~~ — stock Y177 is ENFORCING like Y175/Y181; downgrading
+     yields no permissive gain (security/KERNEL_CVE_ANALYSIS.txt E.8). Motivation removed.
+   - (Downgrade is also GHS-rollback-blocked; see GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt)
 
 ================================================================================
 14. RECOMMENDED RESEARCH PATHS

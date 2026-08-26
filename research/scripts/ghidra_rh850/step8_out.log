@@ -1,0 +1,212 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step8_final.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== descriptor entries (24B stride) for every calItemId actually referenced in VIP_APP ===
+id(hex) : entry_addr : dest_idx(u16@0) field@2(u16) src_idx(u16@4) type(u8@0xa) rest(0xb-0x17 hex)
+0x00b4 : 0x050c6c : dest=0x5e40 f2=0xfebd src=0x974b f6=0x3637 f8=0x975c type=0 rest=0000e21c78dd790f475c000f7e
+0x00b5 : 0x050c84 : dest=0x005c f2=0x41e0 src=0x1592 f6=0xf01c f8=0xf2c2 type=221 rest=f1108d1ef62000e089c2055f8a
+0x00f9 : 0x0512e4 : dest=0xffbf f2=0xfddc src=0x37a3 f6=0x0007 f8=0xff89 type=178 rest=64270614aec73e0a3089ff6e66
+0x00fa : 0x0512fc : dest=0xe00a f2=0x300a src=0xff89 f6=0x6660 f8=0x400a type=228 rest=474c02203612002706b8c80200
+0x00fb : 0x051314 : dest=0xff83 f2=0x2d28 src=0xd73d f6=0x0001 f8=0x301a type=137 rest=ff84640a381c3089ff9668e051
+0x00fc : 0x05132c : dest=0x05c6 f2=0x479d src=0x000d f6=0x3df5 f8=0xdf3d type=5 rest=001b3089ff68640a381c3089ff
+0x00fd : 0x051344 : dest=0x687a f2=0x51e0 src=0x1596 f6=0xf01d f8=0x9508 type=6 rest=4d1a401c301b38b2499200bb41
+0x00fe : 0x05135c : dest=0x0089 f2=0x9763 src=0x0001 f6=0xffbf f8=0xff38 type=10 rest=40c5253dd709001a3089ff3264
+0x00ff : 0x051374 : dest=0x380a f2=0x301c src=0xff89 f6=0x6844 f8=0x51e0 type=150 rest=151df00a9d084d1b401c301a38
+0x0100 : 0x05138c : dest=0x49b3 f2=0x0093 src=0x41ba f6=0x0089 f8=0x9f63 type=1 rest=00bfff02ff0a40950d20361200
+0x0101 : 0x0513a4 : dest=0x0627 f2=0xc880 src=0x0002 f6=0xff83 f8=0x2c92 type=0 rest=42405ebffe4b47bc0b20361200
+0x0102 : 0x0513bc : dest=0x0627 f2=0xc8e0 src=0x0002 f6=0xff83 f8=0x2c7a type=68 rest=06ff3080072100bfff08ff4056
+0x0103 : 0x0513d4 : dest=0xfebf f2=0x578a src=0x0bbd f6=0x0640 f8=0x003f type=128 rest=07e10006e03d064000bffe6332
+0x0dc1 : 0x0645a4 : dest=0x00ff f2=0x0780 src=0x10e1 f6=0xd806 f8=0x063d type=52 rest=11bdfe5d0706000832c7e6ff00
+0x0dc2 : 0x0645bc : dest=0x05fa f2=0x0627 src=0x1fdc f6=0x0003 f8=0xff81 type=120 rest=fae5052706fc1f030081ff14fa
+0x0dc3 : 0x0645d4 : dest=0x301b f2=0x3a00 src=0x0086 f6=0x401c f8=0x4807 type=191 rest=ff507f0192405ebdfe4b973511
+0x0dc4 : 0x0645ec : dest=0x0640 f2=0x10ff src=0x063e f6=0x1120 f8=0xfebd type=4 rest=8a01824066befe018d6c87e1fe
+0x0dc5 : 0x064604 : dest=0x0395 f2=0x007f src=0x0780 f6=0x00e1 f8=0x063d type=132 rest=11bdfe0132bfff9cfc0af0ddf1
+0x0dc6 : 0x06461c : dest=0x8860 f2=0x8a61 src=0x15b2 f6=0x3203 f8=0xffbf type=140 rest=fc0af0ddf160806182b20d0532
+0x0dc7 : 0x064634 : dest=0xffbf f2=0xfc7c src=0xf00a f6=0xf1dd f8=0x7860 type=97 rest=7ae2e70000a50501e21c504006
+0x0dc8 : 0x06464c : dest=0x00ff f2=0x063e src=0x1120 f6=0xfebd f8=0x0501 type=149 rest=037f008007e10006e0dc003d06
+0x0dc9 : 0x064664 : dest=0x1128 f2=0xfebd src=0x061c f6=0xff83 f8=0x0dca type=189 rest=7f0d00e079a21dbfff7aff1df0
+
+=== decompile FUN_000b67d0 (SBI validator, per audit) ===
+fn at 0xb67d0: None
+created: FUN_000b67d0
+
+uint FUN_000b67d0(void)
+
+{
+  byte bVar1;
+  undefined1 uVar2;
+  uint uVar3;
+  uint uVar4;
+  int unaff_r20;
+  int unaff_r21;
+  uint unaff_r23;
+  int unaff_r24;
+  int unaff_r25;
+  byte *unaff_r26;
+  undefined1 *unaff_r27;
+  uint unaff_r28;
+  ushort *unaff_r29;
+  int unaff_ep;
+  undefined4 in_stack_00000000;
+  int in_stack_00000004;
+  int in_stack_00000008;
+  int in_stack_0000000c;
+  undefined1 *in_stack_00000040;
+  
+  *(undefined2 *)(unaff_ep + 0xd8) = 0;
+  uVar3 = func_0x000b65c8();
+  if (unaff_r20 == 0) {
+    *(undefined1 *)(unaff_r29 + 5) = 0xf;
+  }
+  else if ((char)unaff_r29[5] == '\0') {
+    *unaff_r27 = 0x22;
+    unaff_r23 = uVar3;
+    unaff_r28 = uVar3;
+    goto LAB_000b6a3a;
+  }
+  bVar1 = *unaff_r26;
+  FUN_000eccb4(0x1e);
+  *(byte *)(unaff_r24 + 1) = *(byte *)(unaff_r24 + 1) | 0x40;
+  FUN_000eccdc(0x1e);
+  if (bVar1 < 3) {
+    if (bVar1 == 0) {
+      *(undefined1 *)(unaff_r29 + 7) = 0;
+      *(undefined1 *)((int)unaff_r29 + 0xf) = 0;
+      *(undefined1 *)(unaff_r29 + 8) = 0;
+      FUN_000eccb4(0x1d);
+      FUN_000eccb4(0x1f);
+      FUN_000eccb4(0x1c);
+      func_0x000aee68();
+      FUN_000eccdc(0x1c);
+      FUN_000eccdc(0x1f);
+      func_0x000b13ce((int)&stack0x00000000 + 2);
+      uRamfebda50e = (undefined1)unaff_r25;
+      *(undefined2 *)((uint)in_stack_00000000._2_2_ * 8 + unaff_r21) = 0x10;
+      uVar3 = unaff_r23;
+      do {
+        uVar4 = uVar3 + 1;
+        *(undefined1 *)(uVar3 + 0xfebda50f) = *(undefined1 *)(in_stack_00000004 + uVar3);
+        uVar3 = uVar4;
+      } while (uVar4 < 0x10);
+      uVar3 = 0;
+      do {
+        uVar4 = uVar3 + 1;
+        *(undefined1 *)(uVar3 + 0xfebda51f) = *(undefined1 *)(in_stack_00000008 + uVar3);
+        uVar3 = uVar4;
+      } while (uVar4 < 0x20);
+      uVar3 = 0;
+      do {
+        uVar4 = uVar3 + 1;
+        *(undefined1 *)(uVar3 + 0xfebda53f) = *(undefined1 *)(in_stack_0000000c + uVar3);
+        uVar3 = uVar4;
+      } while (uVar4 < 0x10);
+      *(undefined1 *)((int)unaff_r29 + 0x2b) = 0;
+      *unaff_r26 = 1;
+      *unaff_r27 = 0;
+      unaff_r28 = 10;
+      FUN_000eccdc(0x1d);
+      goto LAB_000b6a3a;
+    }
+    if (bVar1 == 1) {
+      *unaff_r27 = 0;
+      unaff_r28 = 10;
+      goto LAB_000b6a3a;
+    }
+  }
+  else {
+    if (bVar1 == 4) {
+      bVar1 = (byte)unaff_r29[7];
+      if (bVar1 < 3) {
+        if (bVar1 == 0) {
+          uRamfebd4d9c = 1 << (unaff_r25 - 2U & 0x1f);
+          uRamfebd4da0 = *(uint *)(unaff_r29 + 0x4c) | uRamfebd4d9c;
+          uRamfebd4d9c = *(uint *)(unaff_r29 + 0x4a) | uRamfebd4d9c;
+          *(uint *)(unaff_r29 + 0x4a) = uRamfebd4d9c;
+          *(uint *)(unaff_r29 + 0x4c) = uRamfebd4da0;
+          if ((~uRamfebd4da0 & 0x7ffff) == 0) {
+            *(undefined1 *)(unaff_r29 + 0x4e) = 1;
+          }
+          uRamfebd4da4 = (undefined1)unaff_r29[0x4e];
+          uVar2 = func_0x000b65d8(1);
+          *(undefined1 *)(unaff_r29 + 7) = uVar2;
+          *unaff_r27 = 0;
+          unaff_r28 = 10;
+          goto LAB_000b6a3a;
+        }
+      }
+      else {
+        if (bVar1 < 4) {
+          FUN_000eccb4(0x1e);
+          *(byte *)(unaff_r24 + 1) = *(byte *)(unaff_r24 + 1) & 0xbf;
+          FUN_000eccdc(0x1e);
+          *(undefined1 *)(unaff_r29 + 7) = 0;
+          *(undefined1 *)(unaff_r29 + 5) = 0;
+          *unaff_r26 = 0;
+          *unaff_r27 = 0x22;
+          unaff_r28 = 1;
+          goto LAB_000b6a3a;
+        }
+        if (bVar1 != 4) {
+          if (bVar1 == 5) {
+            *unaff_r26 = 5;
+            *unaff_r27 = 0;
+            unaff_r28 = 10;
+          }
+          goto LAB_000b6a3a;
+        }
+      }
+      uVar2 = func_0x000b65d8(1);
+      *(undefined1 *)(unaff_r29 + 7) = uVar2;
+      *unaff_r27 = 0;
+      unaff_r28 = 10;
+      goto LAB_000b6a3a;
+    }
+    if (bVar1 == 5) {
+      *(undefined1 *)((int)unaff_r29 + 0xf) = 5;
+      *(undefined1 *)(unaff_r29 + 8) = 5;
+      FUN_000eccb4(0x1e);
+      *(byte *)(unaff_r24 + 1) = *(byte *)(unaff_r24 + 1) & 0xbf;
+      FUN_000eccdc(0x1e);
+      func_0x000aed60(0x10);
+      *(undefined1 *)(unaff_r29 + 5) = 0;
+      *unaff_r26 = 0;
+      *in_stack_00000040 = 0;
+      *unaff_r27 = 0;
+      goto LAB_000b6a3a;
+    }
+  }
+  unaff_r23 = 1;
+  *unaff_r27 = 0x22;
+  unaff_r28 = 1;
+LAB_000b6a3a:
+  uVar2 = func_0x000b6704();
+  uVar3 = uRamfebd4da0;
+  *(undefined1 *)(unaff_r29 + 6) = uVar2;
+  *(bool *)(unaff_r29 + 0x4e) = (uVar3 & 0x7ffff) == 0x7ffff;
+  if (unaff_r23 == 1) {
+    func_0x000b65d8(0x10);
+    FUN_000eccb4(0x1d);
+    if (*(short *)((uint)*unaff_r29 * 8 + unaff_r21) == 0x10) {
+      DAT_febd38ee = 0;
+      DAT_febd38ef = 2;
+    }
+    func_0x000af284(0x10);
+    FUN_000eccdc(0x1d);
+    func_0x000aed60(0x10);
+    *(undefined1 *)(unaff_r29 + 5) = 0;
+    *unaff_r26 = 0;
+    FUN_000eccb4(0x1e);
+    *(byte *)(unaff_r24 + 1) = *(byte *)(unaff_r24 + 1) & 0xbf;
+    FUN_000eccdc(0x1e);
+  }
+  FUN_000eccdc(0x1b);
+  return unaff_r28;
+}
+
+
+
+=== search this function's body for calls to c8f6a/c90c4 or refs to febd3e06/febd4da0 ===
+0xb6a42 ld.w 0x4da0[r7],r7

@@ -325,7 +325,7 @@ Without GM signing keys, VIP firmware modification is blocked.
    - Modify 0x0440 and 0x0A80
 
 2. Y177 FIRMWARE DOWNGRADE
-   - SELinux permissive in Y177
+   - SELinux permissive in Y177 -- CORRECTED 2026-08-25: stock Y177 is ENFORCING (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
    - More exploration possible
    - Requires testing AVB rollback
 
@@ -352,7 +352,7 @@ Without GM signing keys, VIP firmware modification is blocked.
 -----------------
 [1] TEST Y177 DOWNGRADE
     - Version check disabled
-    - SELinux permissive enables more exploration
+    - CORRECTED 2026-08-25: stock Y177 downgrade yields ENFORCING, not permissive (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
     - Test AVB rollback behavior
 
 [2] EEPROM FLAG EXPLORATION

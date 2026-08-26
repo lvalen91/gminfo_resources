@@ -10,7 +10,7 @@
 
 As of 2026-06-29, several high-value attack vectors identified in the research have never been attempted. This document tracks untried paths ranked by probability of advancing the Y177 downgrade goal.
 
-The goal remains: achieve a successful Y181→Y177 software downgrade, ultimately to obtain a permissive SELinux enforcement posture (present in Y177, locked down in Y181). Blockers are the GHS rollback counter in the misc/vda9 partition and the VIP RH850 firmware security function at 0xb67d0 that enforces the version floor.
+The goal remains: achieve a successful Y181→Y177 software downgrade, ultimately to obtain a permissive SELinux enforcement posture (Y177 ran permissive at runtime; Y181 does not). **CORRECTED 2026-08-25:** Y177's permissive posture is **OS-side** (ramdisk/init not forcing enforcing), *not* a VIP property — the VIP security function at 0xb67d0 is a full ~906-byte validator in Y175/Y177/Y181 alike and contains no SELinux logic (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2). The remaining blocker is the GHS rollback counter in the misc/vda9 partition; the VIP function gates ADB/seed auth, not a "version floor" for SELinux.
 
 Vectors are ranked by: (1) likelihood of breaking the current blocker, (2) estimated effort, (3) available access level.
 
@@ -80,11 +80,11 @@ Note the typo "metatdata" — this is verbatim from the binary. The word "Warnin
 **What JTAG access provides:**
 - Full VIP firmware dump — no indirect Ghidra analysis from partial binary extraction
 - Live breakpoints on security function at **0xb67d0** — observe exact inputs and branch logic
-- Ability to **patch 0xb67d0 in-place** with a 4-byte stub (equivalent to the Y177 behavior), making the Y181-version VIP behave identically to Y177 without touching the GHS rollback counter at all — this sidesteps the entire misc/AB0 blocker
+- ~~Ability to **patch 0xb67d0 in-place** with a 4-byte stub (equivalent to the Y177 behavior)~~ — **VOID (2026-08-25):** Y177 has no stub; the function is full in every build, so there is no "Y177 behavior" to reproduce and no VIP path to SELinux (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2)
 - Direct view of the J6_CDD channel message handler and the exact OBBPELK trigger format
 - EEPROM 0x0A00 structure read behavior observable in-debugger under real execution conditions
 
-**Why game-changing:** If RH850 JTAG is accessible (OCD fuse not blown, which is likely on production infotainment units that are not end-of-life secured), patching 0xb67d0 achieves the permissive SELinux goal without performing the downgrade at all. The downgrade becomes optional.
+**Why ~~game-changing~~ downgraded (2026-08-25):** the "patch 0xb67d0 → permissive SELinux" premise is refuted — no stub exists in any build and the VIP does not decide SELinux mode. RH850 JTAG (if the OCD fuse is unblown) is still useful for *observing* the ADB/seed validator's inputs and the J6_CDD/OBBPELK format, but it does not yield permissive SELinux and does not make the downgrade optional.
 
 **OCD fuse status:** Unknown. Production RH850 units are frequently shipped without OCD fuse blown — the fuse is typically blown only in high-security applications. Probability of access: estimated moderate-to-high.
 
@@ -302,7 +302,7 @@ print(s.recv(256).hex())
 
 **Action:** Flip bit with XGecu T48, reboot, observe any behavioral change in logcat, VIP diagnostic responses, or SELinux domain assignments.
 
-**Note:** Even a VIP-layer behavioral change is useful — it may alter how 0xb67d0 evaluates the version check.
+**Note:** A VIP-layer behavioral change may alter how 0xb67d0 evaluates the **ADB/seed** check (not a SELinux "version check" — corrected 2026-08-25; see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2).
 
 ---
 
@@ -393,7 +393,7 @@ adb shell dd if=/dev/block/vda4 bs=4096 count=256 2>/dev/null | xxd | head -100
 
 ```
 Physical JTAG (E10A-USB)
-  └── Vector #3: RH850 JTAG → patch 0xb67d0 directly    [HIGHEST LEVERAGE]
+  └── Vector #3: RH850 JTAG → OBSERVE 0xb67d0 ADB/seed gate  [patch-to-stub VOID 2026-08-25]
   └── Vector #4: J6_CDD ELK DID discovery
 
 Dealer Screen (software trigger)

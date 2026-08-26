@@ -1,0 +1,139 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step3_jumptable.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== bytes at 0xf0a1a (first 0x80) as hex ===
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+=== disasm 0xf0a1a .. +0x80, walking by instruction ===
+0xf0a1a ?? 03h
+0xf0a1b ?? 01h
+0xf0a1c ?? 7Ah    z
+0xf0a1d ?? 48h    H
+0xf0a1e ?? C9h
+0xf0a1f ?? 06h
+0xf0a20 ?? 03h
+0xf0a21 ?? 00h
+0xf0a22 ?? E2h
+0xf0a23 ?? 47h    G
+0xf0a24 ?? 04h
+0xf0a25 ?? 53h    S
+0xf0a26 ?? 7Fh    
+0xf0a27 ?? 00h
+0xf0a28 ?? FCh
+0xf0a29 ?? 57h    W
+0xf0a2a ?? 40h    @
+0xf0a2b ?? 00h
+0xf0a2c ?? 0Ah
+0xf0a2d ?? F0h
+0xf0a2e ?? 06h
+0xf0a2f ?? F5h
+0xf0a30 ?? 20h     
+0xf0a31 ?? 46h    F
+0xf0a32 ?? 03h
+0xf0a33 ?? 01h
+0xf0a34 ?? 7Ah    z
+0xf0a35 ?? 48h    H
+0xf0a36 ?? C9h
+0xf0a37 ?? 06h
+0xf0a38 ?? 03h
+0xf0a39 ?? 00h
+0xf0a3a ?? E2h
+0xf0a3b ?? 47h    G
+0xf0a3c ?? 04h
+0xf0a3d ?? 53h    S
+0xf0a3e ?? 7Fh    
+0xf0a3f ?? 00h
+0xf0a40 ?? FCh
+0xf0a41 ?? 57h    W
+0xf0a42 ?? 40h    @
+0xf0a43 ?? 00h
+0xf0a44 ?? 0Ah
+0xf0a45 ?? F0h
+0xf0a46 ?? 06h
+0xf0a47 ?? F5h
+0xf0a48 ?? 20h     
+0xf0a49 ?? 46h    F
+0xf0a4a ?? 03h
+0xf0a4b ?? 01h
+0xf0a4c ?? 7Ah    z
+0xf0a4d ?? 48h    H
+0xf0a4e ?? C9h
+0xf0a4f ?? 06h
+0xf0a50 ?? 03h
+0xf0a51 ?? 00h
+0xf0a52 ?? E2h
+0xf0a53 ?? 47h    G
+0xf0a54 ?? 04h
+0xf0a55 ?? 53h    S
+0xf0a56 ?? 7Fh    
+0xf0a57 ?? 00h
+0xf0a58 ?? FCh
+0xf0a59 ?? 57h    W
+0xf0a5a ?? 40h    @
+0xf0a5b ?? 00h
+0xf0a5c ?? 0Ah
+0xf0a5d ?? F0h
+0xf0a5e ?? 06h
+0xf0a5f ?? F5h
+0xf0a60 ?? 20h     
+0xf0a61 ?? 46h    F
+0xf0a62 ?? 03h
+0xf0a63 ?? 01h
+0xf0a64 ?? 7Ah    z
+0xf0a65 ?? 48h    H
+0xf0a66 ?? C9h
+0xf0a67 ?? 06h
+0xf0a68 ?? 03h
+0xf0a69 ?? 00h
+0xf0a6a ?? E2h
+0xf0a6b ?? 47h    G
+0xf0a6c ?? 04h
+0xf0a6d ?? 53h    S
+0xf0a6e ?? 7Fh    
+0xf0a6f ?? 00h
+0xf0a70 ?? FCh
+0xf0a71 ?? 57h    W
+0xf0a72 ?? 40h    @
+0xf0a73 ?? 00h
+0xf0a74 ?? 0Ah
+0xf0a75 ?? F0h
+0xf0a76 ?? 06h
+0xf0a77 ?? F5h
+0xf0a78 ?? 20h     
+0xf0a79 ?? 46h    F
+0xf0a7a ?? 03h
+0xf0a7b ?? 01h
+0xf0a7c ?? 7Ah    z
+0xf0a7d ?? 48h    H
+0xf0a7e ?? C9h
+0xf0a7f ?? 06h
+0xf0a80 ?? 03h
+0xf0a81 ?? 00h
+0xf0a82 ?? E2h
+0xf0a83 ?? 47h    G
+0xf0a84 ?? 04h
+0xf0a85 ?? 53h    S
+0xf0a86 ?? 7Fh    
+0xf0a87 ?? 00h
+0xf0a88 ?? FCh
+0xf0a89 ?? 57h    W
+0xf0a8a ?? 40h    @
+0xf0a8b ?? 00h
+0xf0a8c ?? 0Ah
+0xf0a8d ?? F0h
+0xf0a8e ?? 06h
+0xf0a8f ?? F5h
+0xf0a90 ?? 20h     
+0xf0a91 ?? 46h    F
+0xf0a92 ?? 03h
+0xf0a93 ?? 01h
+0xf0a94 ?? 7Ah    z
+0xf0a95 ?? 48h    H
+0xf0a96 ?? C9h
+0xf0a97 ?? 06h
+0xf0a98 ?? 03h
+0xf0a99 ?? 00h
+0xf0a9a ?? E2h

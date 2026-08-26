@@ -122,14 +122,16 @@ Intel CSE (hardware root) → Intel ABL → GHS INTEGRITY → Android
 
 **Key Finding:** Security flags are OUTSIDE CRC-protected regions. CRC NOT enforced at boot time (tested: VIN=0xFF, module still boots).
 
-### 4.2 Bypass Mechanism (Y177 Only)
+### 4.2 Bypass Mechanism — ADB/seed gate (all builds)
 
 ```
-EEPROM (0x0440=5AFF5A) → VIP reads → Security func @ 0xb67d0 → IPC to SoC → SELinux mode
+EEPROM (0x0440=5AFF5A) → VIP reads → Security func @ 0xb67d0 → IPC to SoC → ADB/seed auth state
 ```
 
-**Y177:** Security function STUBBED (4 bytes, always returns 0)
-**Y181:** Security function IMPLEMENTED (906 bytes, validates state)
+**CORRECTED 2026-08-25:** the VIP security function is a **full ~906-byte validator in Y175,
+Y177, and Y181 alike** — no stub in any build (the "Y177 4-byte stub" was a fixed-address misread;
+see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2). The EEPROM SBI + this function gate **ADB/seed
+auth** (CAN-confirmed), NOT SELinux mode. SELinux runtime mode is OS-side (ramdisk/init).
 
 ### 4.3 VIP-to-SoC Communication
 
@@ -167,15 +169,19 @@ EEPROM (0x0440=5AFF5A) → VIP reads → Security func @ 0xb67d0 → IPC to SoC 
 | VIP_APP File | 86283151 | 86331656 |
 | Build Date | Feb 28, 2025 | Jun 19, 2025 |
 | Functions | 10,340 | 10,350 |
-| Security @ 0xb67d0 | **4 bytes (stubbed)** | **906 bytes (full)** |
-| EEPROM Bypass | Works | Works |
-| SELinux on bypass | Permissive | Enforcing |
+| Security @ 0xb67d0 | **~906 bytes (full)** | **~906 bytes (full)** |
+| EEPROM Bypass (ADB/seed) | Works | Works |
+| SELinux on bypass | *N/A — VIP does not set SELinux* | *N/A* |
+
+> Corrected 2026-08-25: security fn is full in Y175/Y177/Y181 (Y177 entry @0xb67d4, Y175 @0xb6708);
+> the old "stubbed / Permissive-on-bypass" row was refuted. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2.
 
 ### 5.2 GM Security Response (Post-Disclosure)
 
-**Layer 1:** VIP firmware fix (0xb67d0 implementation)
-**Layer 2:** Calibration file 85783460 resets security flags
-**Layer 3:** USB updates reset EEPROM
+~~**Layer 1:** VIP firmware fix (0xb67d0 implementation)~~ — **retracted:** there was no VIP
+firmware fix; the function is unchanged (full) across builds.
+**Layer 1:** Calibration file 85783460 resets EEPROM security flags (defense-in-depth for the ADB/seed gate)
+**Layer 2:** USB updates reset EEPROM
 
 ---
 
@@ -315,7 +321,7 @@ Camera/Audio/Screen → GHS Buffer → KETH_WritePacket → WiFi/Ethernet/HECI �
 1. **VIP_BOOT (71) and SOC_ABL (72) are UNSIGNED** - flashable without GM keys
 2. **EEPROM security flags outside CRC protection** - modifiable without recalculation
 3. **CRC NOT enforced at boot** - tested with invalid VIN
-5. **Y177 security function stubbed** - Possibly changed SELinux or AVB
+5. ~~**Y177 security function stubbed** - Possibly changed SELinux or AVB~~ — **RETRACTED 2026-08-25:** full ~906-byte validator in all builds; gates ADB/seed, not SELinux/AVB (see VIP_FIRMWARE_Y177_Y181_COMPARISON.md §2)
 
 ### 11.4 Critical GHS / Build Findings (2026-06-29)
 
@@ -333,7 +339,7 @@ See research/UNTRIED_ATTACK_VECTORS.md for full ranked list.
 ### 11.2 Security Mitigations
 
 1. **GHS rollback protection** - blocks downgrades at boot verification
-2. **Y181 security function implemented** - Fixed VIP Stub
+2. ~~**Y181 security function implemented** - Fixed VIP Stub~~ **RETRACTED 2026-08-25** — not a mitigation; the VIP validator is full in all builds (Y175/Y177/Y181), no stub was ever fixed (see VIP_FIRMWARE_Y177_Y181_COMPARISON.md §2)
 3. **Calibration file security reset** - defense-in-depth
 4. **TSS signing for critical modules** - SOC_HOSTOS, VIP_APP signed
 5. **Intel CSE hardware root** - fused keys, hardware protection

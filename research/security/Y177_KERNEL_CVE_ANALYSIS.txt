@@ -1,6 +1,14 @@
 ================================================================================
 GM AAOS Y177 KERNEL CVE ANALYSIS
 ================================================================================
+>>> PREMISE REFUTED 2026-08-25 (archival file). This document's central claim -- "Y177 runs
+>>> SELinux PERMISSIVE at runtime" -- is FALSE for stock Y177. Three-way boot-image analysis
+>>> proved stock Y177 boots ENFORCING, identically to Y175/Y181 (byte-identical init forces it;
+>>> the permissive cmdline is ignored on a user build). Any live permissive observation was a
+>>> false finding/misread -- both CSMs only ran stock packages, so a modified/eng unit is ruled
+>>> out. This file is a SUPERSEDED archival snapshot; the live, corrected source is
+>>> KERNEL_CVE_ANALYSIS.txt Appendix E.8. Do not act on this file's permissive-based verdicts.
+================================================================================
 Analysis Date: 2026-01-04
 Firmware Version: Y177.6.1 GAS
 Kernel Version: 4.19.305-240125T145315Z (SAME as Y181)

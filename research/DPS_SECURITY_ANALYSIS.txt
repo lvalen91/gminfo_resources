@@ -315,7 +315,7 @@ From Y181 manifest (86331663.mnf):
 This means:
   - No firmware version comparison during update
   - Older firmware can be flashed
-  - Y177 (SELinux permissive) could potentially replace Y181
+  - Y177 could replace Y181, but CORRECTED 2026-08-25: stock Y177 is ENFORCING (identical init) -- no permissive gain (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 
 6.2 POTENTIAL BLOCKERS
 ----------------------
@@ -381,7 +381,7 @@ DPS MIGHT help with:
 1. Firmware Downgrade
    - Version check disabled
    - If AVB rollback allows, Y177 could be flashed
-   - Would restore SELinux permissive
+   - CORRECTED 2026-08-25: would NOT -- stock Y177 boots enforcing (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
    - REQUIRES: Downgrade test
 
 2. Calibration Modification
@@ -404,7 +404,7 @@ PRIMARY PATH (proven):
   Physical EEPROM modification for ADB bypass
 
 SECONDARY PATH (if downgrade works):
-  Y177 flash via DPS -> SELinux permissive -> Explore further
+  Y177 flash via DPS -> still ENFORCING (stock) -> no permissive gain (corrected 2026-08-25, security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 
 RESEARCH PATH:
   1. Test Y177 downgrade feasibility

@@ -724,5 +724,72 @@ Offset 0x00cf8657: "VMM: ERROR: A/B metadata: version on disk too new"
 Section: .vmm1.rodata (read-only data for VMM module)
 
 ================================================================================
+ADDENDUM 2026-08-25: Y175 DOWNGRADE / ANTI-ROLLBACK + BUILD-VARIANT NOTE
+================================================================================
+
+Scope: extends section 4 (rollback) to Y175, and answers whether Y175's board is
+the same HW as Y177/Y181. Evidence: parsed AVB headers of all three SOC_VBMETA
+images and mined Y175 build.props (Y181 vendor for contrast).
+
+A) Y175 DOWNGRADE / ANTI-ROLLBACK  (confidence: HIGH on AVB facts, MEDIUM on the
+   downgrade verdict — GHS HOSTOS compare logic not disassembled here)
+
+SOC_VBMETA images parsed (all AVB0, libavb 1.0, avbtool 1.2.0, alg=1/SHA256-RSA):
+  - Y175 = Y175/extracted/85759606 (zip-wrapped 4096B vbmeta; inner 85759606)
+  - Y177 = Y177/86283158.zip       (inner 86283158)
+  - Y181 = Y181/86331644
+
+  AVB header rollback_index          : Y175 = 0    Y177 = 0    Y181 = 0
+  AVB rollback_index_location        : Y175 = 0    Y177 = 0    Y181 = 0
+  Chain-partition descriptors        : NONE in any (this vbmeta carries the
+      boot/system/vendor/product hashtree+hash descriptors directly; there is no
+      chained rollback_index_location to differentiate versions)
+
+  => The AVB rollback_index does NOT encode the Y175<Y177<Y181 ordering; it is a
+     flat 0 across every release. Confirms and extends section 4.3 (Y177/Y181=0)
+     with Y175 also = 0. Embedded os_version = 12 for all three.
+
+  Version ordering is real but lives elsewhere (build fingerprints + SPL):
+     Y175 W213E-Y175.5.2-SIHM22B-383.1  security_patch 2024-05-05
+     Y177 W231E-Y177.6.1-SIHM22B-499.2  security_patch 2025-02-05
+     Y181 W231E-Y181.3.2-SIHM22B-499.3  security_patch 2025-06-05
+  Monotonic increasing; Y175 is OLDER than Y177 (which is older than Y181).
+
+  VERDICT — Y181 -> Y175 is blocked by the SAME mechanism that stops Y181 -> Y177,
+  and at least as hard. The floor is NOT AVB rollback_index (identical 0); it is the
+  GHS VMM's own A/B-metadata/rollback counter stored in misc (/dev/block/vda9), per
+  section 4.2/4.4. Since Y175 presents a lower version than Y177, any comparison that
+  rejects Y177 against a Y181-provisioned stored counter rejects Y175 a fortiori
+  ("VMM: ERROR: rollback index is too old" / "A/B metadata: version on disk too new").
+  CANNOT CONFIRM without GHS HOSTOS internals: the exact integer the VMM derives per
+  release and the precise compare (>, >=), i.e. whether same-counter equality would
+  ever permit a lateral move. AVB evidence only proves the floor is not in AVB.
+
+B) BUILD-VARIANT W213E vs W231E  (confidence: HIGH — same hardware/board)
+
+W213E (Y175) vs W231E (Y177/Y181) is a SOFTWARE build-line / build-tag token in
+ro.build.id, NOT a different hardware or board SKU. Concrete identifiers compared
+(Y175 extracted trees vs Y181 vendor partition 86331650):
+
+  identifier                    Y175            Y181            match
+  ro.board.platform             broxton         broxton         same
+  ro.soc.manufacturer / model   Intel / A3960   Intel / A3960   same  (Apollo Lake auto)
+  ro.hardware.gralloc/hwc/vulkan broxton        broxton         same
+  ro.product.*.device           gminfo37        gminfo37        same
+  ro.product.*.name / board     full_gminfo37_gb full_gminfo37_gb same
+  ro.product.*.brand / model    gm / gminfo37   gm / gminfo37   same
+  vbmeta device codename        gminfo37        gminfo37        same
+  os_version                    12              12              same
+
+  The W2xxE token tracks the build incremental (Y175 fingerprint tail "/213:user"
+  vs Y177/Y181 "/231:user" — 213<->W213E, 231<->W231E), i.e. it is the build-line
+  label, not a panel/SoC/board change. The SIHM22B-383 vs -499 field likewise
+  moves with the build-line, not the hardware.
+
+  CONSEQUENCE: Y175 <-> Y177/Y181 OS-partition comparisons carry NO hardware caveat.
+  Same Intel A3960 "broxton" gminfo37 board across all three; differences are
+  software (build-line, SPL, versioned content).
+
+================================================================================
 END OF DOCUMENT
 ================================================================================

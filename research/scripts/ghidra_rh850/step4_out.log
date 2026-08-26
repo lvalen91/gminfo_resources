@@ -1,0 +1,63 @@
+/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/step4_disasm2.py:7: DeprecationWarning: open_program() is deprecated, use open_project() and program_context() or program_loader() instead.
+  with pyghidra.open_program(
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/Users/zeno/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+=== reliable byte dump 0xf0a1a..+0x300 ===
+0f0a1a: 03 01 7a 48 c9 06 03 00 e2 47 04 53 7f 00 fc 57
+0f0a2a: 40 00 0a f0 06 f5 20 46 03 01 7a 48 c9 06 03 00
+0f0a3a: e2 47 04 53 7f 00 fc 57 40 00 0a f0 06 f5 20 46
+0f0a4a: 03 01 7a 48 c9 06 03 00 e2 47 04 53 7f 00 fc 57
+0f0a5a: 40 00 0a f0 06 f5 20 46 03 01 7a 48 c9 06 03 00
+0f0a6a: e2 47 04 53 7f 00 fc 57 40 00 0a f0 06 f5 20 46
+0f0a7a: 03 01 7a 48 c9 06 03 00 e2 47 04 53 7f 00 fc 57
+0f0a8a: 40 00 0a f0 06 f5 20 46 03 01 7a 48 c9 06 03 00
+0f0a9a: e2 47 04 53 7f 00 fc 57 40 00 0a f0 06 f5 20 46
+0f0aaa: 03 01 7a 48 c9 06 03 00 e2 47 04 53 7f 00 80 07
+0f0aba: e1 00 06 e8 06 f6 0c 00 68 60 47 61 e2 07 05 01
+0f0aca: 02 85 61 82 d1 05 e2 05 63 82 d1 35 92 4d 80 ff
+0f0ada: 8c 15 26 37 05 00 00 45 1d 38 bf ff ea a1 3d f7
+0f0aea: 01 00 03 32 3d 9f 25 00 3d 97 29 00 05 35 3d 8f
+0f0afa: 19 00 03 9d 07 95 09 05 62 8a da 75 3d 37 05 00
+0f0b0a: 1e e0 11 05 0f 05 bf ff 40 9a 3d f7 01 00 7c 57
+0f0b1a: 19 00 3d 87 31 00 00 7d f0 57 fe 92 f0 7f fe 72
+0f0b2a: ee 91 b1 05 ae 91 b5 05 ae 81 d0 91 7c 97 15 00
+0f0b3a: 40 06 ff 00 26 f7 01 00 02 82 26 7f 25 00 26 77
+0f0b4a: 29 00 05 85 26 6f 19 00 03 7d 07 75 09 05 62 6a
+0f0b5a: aa 4d 11 05 0f 05 0d 05 0b 05 40 06 ff 00 26 37
+0f0b6a: 05 00 00 45 1d 38 bf ff 1c a3 3d f7 01 00 03 62
+0f0b7a: 3d 5f 25 00 3d 57 29 00 05 65 3d 4f 19 00 03 5d
+0f0b8a: 07 55 09 05 62 4a fa 2d 3d 37 05 00 1e e0 11 05
+0f0b9a: 0f 05 bf ff b4 99 3d f7 01 00 7c 57 19 00 3d 7f
+0f0baa: 31 00 00 75 ef 57 fe 8a ef 77 fe 6a ed 89 b1 05
+0f0bba: ad 89 b5 05 ad 79 cf 89 7c 8f 15 00 40 06 ff 00
+0f0bca: 26 f7 01 00 26 47 25 00 26 3f 29 00 05 05 26 9f
+0f0bda: 19 00 03 45 07 3d 09 05 62 9a da 05 26 f7 01 00
+0f0bea: 11 05 0f 05 40 06 ff 00 80 07 e1 00 06 e8 26 97
+0f0bfa: 01 00 32 87 09 00 61 82 8a 0d 32 f7 11 00 00 75
+0f0c0a: 14 6d 6e 6f 0d 00 c5 25 12 e0 63 82 9a 25 26 37
+0f0c1a: 05 00 1d 38 bf ff ea a5 3d 97 01 00 32 7f 0d 00
+0f0c2a: fd 79 e2 15 e0 79 c2 15 3c f7 0d 00 00 8d 12 65
+0f0c3a: 14 5d 71 07 09 00 0c 4d 71 67 05 00 71 5f 0d 00
+0f0c4a: 71 07 11 00 62 4a ca 05 11 f0 11 05 0f 05 12 f0
+0f0c5a: 05 05 3d 47 25 00 3d 3f 29 00 3d 9f 19 00 09 05
+0f0c6a: 03 45 07 3d 62 9a da 05 3d f7 01 00 11 05 0f 05
+0f0c7a: 40 06 ff 00 80 07 e1 00 26 8f 19 00 61 8a da 05
+0f0c8a: 20 56 03 03 40 06 ff 00 06 e8 07 40 e0 39 da 05
+0f0c9a: 20 56 08 02 40 06 ff 00 26 f7 25 00 26 37 05 00
+0f0caa: 0c 8d 26 3f 01 00 b1 39 e7 41 d3 05 20 56 08 04
+0f0cba: 40 06 ff 00 3d f7 01 00 04 85 e0 81 d2 05 20 56
+0f0cca: 07 01 40 06 ff 00 1d 38 bf ff fc 9f 3d f7 01 00
+0f0cda: 03 7a 3d 77 25 00 3d 6f 29 00 05 7d 3d 5f 19 00
+0f0cea: 03 75 07 6d 09 05 62 5a e2 67 00 00 e0 61 ca 05
+0f0cfa: 00 52 40 06 ff 00 3d 37 05 00 1e e0 11 05 0f 05
+0f0d0a: bf ff 46 98 3d f7 01 00 7c 57 19 00 3d 8f 31 00
+
+=== disassembling 0xf0a1a .. +0x40 explicitly ===
+disassemble() returned True
+0xf0a1a or sp,r0
+0xf0a1c sld.hu 0x14[ep],r9
+0xf0a1e andi 0x3,r9,r0
+0xf0a22 cmove 0x2,r8,r10
+0xf0a26 jmp [lp]

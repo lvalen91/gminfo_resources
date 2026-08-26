@@ -7,7 +7,7 @@
 
 Two facts dominate all CVE applicability decisions:
 1. **GHS HOSTOS (85098662) is byte-for-byte identical between Y177 and Y181.** The misc/vda9 rollback counter is the only discriminator between builds.
-2. **The cause of Y177 permissive SELinux is the VIP RH850 security function at `0xb67d0`** — a 4-byte stub in Y177, 906-byte validator in Y181. Patching `0xb67d0` achieves the permissive-SELinux goal without a downgrade.
+2. ~~**The cause of Y177 permissive SELinux is the VIP RH850 security function at `0xb67d0`** — a 4-byte stub in Y177, 906-byte validator in Y181.~~ **RETRACTED (2026-08-25).** A three-way VIP_APP diff (Y175/Y177/Y181) proved the `0xb67d0`-class validator is a **full ~906-byte function in all three builds** — the "Y177 stub" was a fixed-absolute-address misread of shifted/recompiled code (Y177's function is at `0xb67d4`, +4; Y175's at `0xb6708`). See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2. Consequently the VIP does **not** drive SELinux mode, and no stock build (incl. Y177) runs permissive — Y175/Y177/Y181 share a byte-identical init that forces enforcing (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8). There is no stub to install and no VIP path to permissive.
 
 ---
 
@@ -105,12 +105,14 @@ Yellow flag: SOC_BOOT (id 23) and SOC_ABL (id 72) are **UNSIGNED in the GM packa
 
 ## Section 3 — New Attack Vectors (Not in Existing Ranked List)
 
-### NEW-1 — Direct In-Place Patch of VIP `0xb67d0` via RH850 JTAG *(Highest Leverage)*
-- **Hardware:** Renesas E10A-USB (~$150), CS+ IDE, QFP-144 probe points (TCK/TMS/TDI/TDO/TRST).
-- **Precondition:** OCD security fuse unblown (moderate-to-high probability on production IVI).
-- **Action:** Replace 906-byte Y181 validator at `0xb67d0` with Y177 4-byte stub (`mov 0,r10; jmp [lp]`).
-- **Effect:** VIP reports "debug/permissive" over `SERIAL_IPC_PROTO_KEY_CHANNEL` exactly as Y177 → permissive SELinux on Y181, zero misc/AB0 modification required.
-- **Bonus:** Reveals J6_CDD/OBBPELK ELK trigger format live.
+### NEW-1 — ~~Direct In-Place Patch of VIP `0xb67d0` via RH850 JTAG~~ **VOID (2026-08-25)**
+**This vector does not exist.** It assumed Y177 shipped a 4-byte stub at `0xb67d0` that could be
+copied onto Y181 to force permissive SELinux. The three-way VIP_APP diff refuted the premise:
+the validator is a **full ~906-byte function in Y175, Y177, and Y181 alike** (Y177 at `0xb67d4`,
+Y175 at `0xb6708` — the "stub" was a fixed-address misread of shifted code). There is nothing to
+copy, and SELinux mode is not decided on the VIP in any build (no `selinux`/`enforce`/`permissive`
+strings exist in the VIP image; the function gates ADB/seed auth, not SELinux). Removed from the
+ranked list. There is no known stock path to permissive SELinux at all: Y175/Y177/Y181 share a byte-identical init that forces enforcing (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8).
 
 ### NEW-2 — Exploit CRC-Warning-Only Behavior in misc/AB0
 - **Evidence:** `VMM: Warning: A/B metatdata CRC failure!` (ghs_str.txt:43973) is classified **Warning**, not Error/Fatal.
@@ -146,7 +148,7 @@ Yellow flag: SOC_BOOT (id 23) and SOC_ABL (id 72) are **UNSIGNED in the GM packa
 | **#4 ELK via VIP J6_CDD → HECI → ABL** | **Elevated** | SA-00086 + CVE-2021-0146 enable HECI injection; ELK bypasses AVB + GHS misc rollback; NEW-1 yields OBBPELK trigger format |
 | **#1 Return-to-dealer screen** | **Mildly elevated** | USB port is NEW-3 delivery surface; dealer domain may enable misc write |
 | **#5 3× boot fail → ELK** | **Neutral** | Confirmed by GHS lifecycle strings; high risk to calibration state |
-| **#2 EEPROM 0x0A00** | **De-prioritized** | On Y181, `0xb67d0` is fully implemented — EEPROM bypass no longer yields permissive SELinux. Pivot: "modify 0x0A00" → "patch 0xb67d0" (NEW-1) |
+| **#2 EEPROM 0x0A00** | **De-prioritized** | `0xb67d0` is fully implemented in *all* builds (Y175/Y177/Y181), so no VIP patch yields permissive SELinux and there is no older stub to revert to. The EEPROM/seed bypass still gates **ADB/seed auth** (CAN-confirmed), but not SELinux mode. Prior "pivot to NEW-1" is void. |
 | **#6 /dev/ghs/ota-isys** | **Unchanged** | Still blocked on ghs_probe build + GHS LIP ioctl RE |
 
 ---
@@ -296,7 +298,7 @@ All Android Security Bulletin CVEs with disclosure/patch date on or before 2025-
 
 ## Strategic Synthesis
 
-**Fastest path to permissive SELinux (actual goal):** NEW-1 — patch VIP `0xb67d0` via RH850 JTAG. No downgrade, no misc modification.
+**Fastest path to permissive SELinux (actual goal):** ~~NEW-1 — patch VIP `0xb67d0`~~ **void** (no VIP path to SELinux mode; see NEW-1 retraction). No stock build boots permissive — Y175/Y177/Y181 share a byte-identical init that forces enforcing (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8). No stock package (Y175/Y177/Y181/Y181B) boots permissive, and only stock packages were ever flashed -- any past 'permissive' was a false finding/misread. SELinux mode is neither VIP- nor EEPROM-driven, so no VIP or EEPROM modification can produce permissive SELinux (only a misattribution).
 
 **Fastest path to literal Y177 downgrade:** NEW-2 (exploit CRC-warning-only behavior in misc/AB0), enabled by a misc-write primitive from NEW-3, NEW-5, or dealer mode.
 

@@ -57,7 +57,7 @@ Frame Types:
 
 === SECURITY DIFFERENCES ===
 
-Y177: SELinux PERMISSIVE, Patch Feb 2025
+Y177: SELinux ENFORCING (stock; byte-identical init forces it -- 'permissive' was a false finding/misread, modified unit ruled out, security/KERNEL_CVE_ANALYSIS.txt Appendix E.8), Patch Feb 2025
 Y181: SELinux ENFORCING,  Patch Jun 2025
 
 OTA Version Check: part-number check disabled in manifest -- but DOWNGRADE IS BLOCKED.
@@ -111,7 +111,7 @@ World-accessible buses:
   /dev/i2c-1: crw-rw-rw- (root:root)
 
 EEPROM I2C address: Unknown (likely 0x50-0x57)
-SELinux: Y177 permissive (may work), Y181 enforcing (likely blocked)
+SELinux: ENFORCING on ALL stock builds (Y175/Y177/Y181, identical init) -- no stock permissive (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
 
 === HARDWARE COMPONENTS ===
 
