@@ -823,3 +823,22 @@ power-cycle — sending the close is the one remaining polish item for back-to-b
 (base+serial), Blowfish-ECB, framing, control handshake, JSON session, get-logs, and container
 decode, pulling real device logs from macOS with no Windows in the loop. Client:
 `mdi2_client/` (repo) / `GM_research/mdi2_macos/client/` (with venv).
+
+### 4.26 Client fully ROBUST — back-to-back pulls (2026-08-26)
+
+The `mdi2_client` package now does repeated pulls with no power-cycle between them: three
+consecutive `pull_logs` each returned the full Varlog (~56.9 KB) live. Four client-side fixes got
+it there (all in `mdi2_client/mdi2/`):
+1. **Counter high bit** — the frame counter must have bit31 set (`Channel.counter =
+   getrandbits(31)|0x80000000`); low/zero-high-bit values make the device abort the response.
+2. **Session-close** — send `{"data":<session_id>,"has_data":true,"id":2,"target":"session"}`
+   after the pull (the device holds ONE session; this releases it for the next pull).
+3. **Patient recv** — `recv_frames` accumulates until idle-after-data (the frame-by-frame reader
+   misread replies and left sessions dangling).
+4. **Control frame length** — the per-channel control frame must be the full **8 bytes**
+   `00 53 50 00 00 <code> 00 00`; a 7-byte version stole a byte from the next frame and
+   misaligned `session_open` (this was the last, decisive bug).
+
+**Final state: the macOS MDI2 client is complete and robust**, live-validated end-to-end, USB-only,
+no Windows: auto-discover (beacon serial) → derive key → 8-byte control handshake → session_open →
+get-logs → Blowfish-ECB decrypt → SID container → Varlog → session_close, repeatable back-to-back.
