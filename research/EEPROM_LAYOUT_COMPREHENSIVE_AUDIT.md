@@ -447,6 +447,47 @@ dev-signed VIP firmware (no ticket needed) — test writability. (2) the **Signa
 value (DID 18) — same VIP/CAN territory as the EEPROM path; who issues/gates it (SPS tool? the VIP based on its
 own SBI/manufacturing state?) is the next question, and would connect firmware-flash bypass back to the EEPROM.
 
+### §0.13 EMPIRICAL `$27` ALL-FF SEED + `SECURE_UNLOCK_LEVEL` inference + DID-18 issuer (2026-08-26)
+
+**Empirical CAN capture** (`gm_dps/misc/Aug24_session/ecu80_READ.Txt`, ECU `0x80`=CSM via MDI2/OBD-II):
+```
+10 03 → 50 03 …            extended diagnostic session opened
+27 01 → 67 01 FF FF … FF   requestSeed L01 → seed = ALL 0xFF (~32 B)
+22 F1 90 → 62 F1 90 …      ReadDataByIdentifier VIN
+```
+In the SBI-bypass state the CSM's `$27` **seed is all-FF** → the seed challenge is trivialized. **Gaps:** no
+`27 02` sendKey in the capture, so "accepts any/stub key" is *inferred* (all-FF seed + known SBI effect), not
+closed; and only **level 01** appears — powerful levels (OTA=5/Engineering=9/ExtendedReflash=17) not captured.
+
+**DID-18 Signature-Bypass Ticket — issuer & trust (guest RE, code-verified):**
+- **Issuer = the VIP** (`VIPRequestManager`, CANBUS). Guest→VIP crossover is native `libdiagnosticsbridge.so`
+  (`MessageAccess`/`MessageValues` — real CAN arbitration ID resolved there, beyond guest visibility).
+- **Trust = presence-only:** `isSignatureBypassTicketPresent()` = `payload>0` — **no signature/nonce/MAC/structural
+  validation guest-side.** The guest trusts whatever the VIP answers on CAN.
+- **Guest is read-only** (no `$2E`/`$31` mint path); provisioning is VIP-side or an external CAN tool→VIP.
+- `AllowDevSignedVIP` = app-private SQLite flag, **debug-build-only writable, not exported, not adb-reachable** →
+  dead on production. (NB the wire value "18" is service-manual nomenclature; the Android enum uses `mGBMessageId=2`.)
+
+**Is `SECURE_UNLOCK_LEVEL` inferable as reachable?** Plausibly, with two unclosed gaps:
+1. **Key + higher levels unproven** — need `27 02` sendKey (stub/FF key → `67 02` accept vs `7F 27 35` invalidKey)
+   and `27 03/05/09/11` seeds to see if higher levels are also all-FF.
+2. **Transport split** — the all-FF seed is **CAN** `$27` (CSM); `SECURE_UNLOCK_LEVEL` is **Ethernet/DoIP**
+   (`getEthSecLevel`, `EthernetRequestManager`). Whether the CSM's `$27` state is shared CAN↔Ethernet (so a CAN
+   unlock raises the Ethernet-read level) is unconfirmed — may be separate per-transport contexts.
+
+**Delivery = exactly as hypothesized:** MDI2/OBD-II on **CAN** (proven — that's what `ecu80_READ.Txt` is) for the
+CAN `$27`; a **DoIP tool on the T1 network** for `SECURE_UNLOCK_LEVEL` (Ethernet).
+
+**The bigger convergence:** DID-18 is VIP-issued + presence-only-trusted, and the all-FF seed shows the SBI
+trivializes the VIP's `$27`. If the VIP emits the ticket based on that same SBI/security state, then **EEPROM SBI
+→ VIP `$27` trivialized → Signature-Bypass Ticket present → dev-signed VIP firmware install allowed, and the guest
+cannot tell** — closing the loop from the EEPROM to arbitrary VIP firmware. The VIP-side "SBI→ticket" gate is
+behind the native/firmware wall (inferred, not proven).
+
+**Bench tests to close it (MDI2/DPS on CAN + a DoIP tool):** (a) `27 02` sendKey with a stub key at L01;
+(b) `27 03/05/09/11` requestSeed — all-FF too?; (c) after a CAN `$27` unlock, read `SECURE_UNLOCK_LEVEL` over DoIP
+(state-sharing test); (d) read the DID-18 ticket payload with the SBI set vs cleared.
+
 ---
 
 ## 1. EEPROM Layout Maturity & Detail Level
