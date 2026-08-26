@@ -664,3 +664,32 @@ per-session extraction**: a native client reads the device serial (present in th
 announce / ident / the pulled logs as `2505-88985275`), takes the static per-module base key,
 adds the serial to each 32-bit word → the exact key. Per-device, deterministic, reproducible.
 Nothing remains blocked on the crypto/key side for a standalone macOS MDI Manager.
+
+### 4.20 900x application protocol DECODED — JSON messages + SID-tagged log container (2026-08-26)
+
+Decrypting the 9052 client→server requests with the derived key reveals the application layer
+(this is the `json_format::base_request/response` of the `generic_client<PORT,...>` templates):
+
+**JSON session protocol** (one line per message, under the Blowfish frame):
+```
+{"data":{"date":"<DDMMYYHHMMSS+frac>","dialer":"<host ip>","interface":2,"keep_alive":false,
+         "listener":"<device ip>","master":true,"name":"<user>"},"has_data":true,"id":1,"target":"session"}
+{"has_data":false,"id":4,"target":"session"}        # poll
+{"has_data":false,"id":9,"target":"session"}        # poll
+```
+Then a **binary get-logs trigger** on 9052: `a7 08 00 00 01 00 00 00 00 00 00 00 00 00 00 0c`
+(→ the device streams the log container as the response).
+
+**Decrypted log body = SID-tagged records** (SID = LE u32; confirms the prior doc's SID `0x8a9`):
+```
+0x8a9 meta : [sid][_r][id][kind][namelen][name]                     e.g. name="messages"
+0x8a8 data : [sid][_r][id][namelen][name][datalen][data]            datalen 0xe869=59497 = Varlog
+```
+So a full pull = session_open → poll → get-logs → parse records; `name` selects the category
+(`messages`=Varlog, etc.). Field semantics of `kind`/`_r` and the complete SID set still need more
+samples, but the log path is fully reproduced.
+
+**Working Python client:** `GM_research/mdi2_macos/client/` (package `mdi2`) — discovery, key
+derivation (`base+serial`), Blowfish-ECB, `construct`-based framing + container, JSON messages,
+active `pull_logs`. Verified end-to-end offline: pcap → decrypt → extract `messages` (59497 B,
+byte-exact) with a stock venv (`pycryptodome` + `construct`). CLI: `python -m mdi2.cli {scan,key,connect}`.
