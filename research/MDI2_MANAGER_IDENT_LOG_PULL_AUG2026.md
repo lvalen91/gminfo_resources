@@ -608,3 +608,37 @@ and, after one connect, set a **conditional HW data breakpoint** on a known chan
 then Disconnect→Connect to catch the copy, and walk back to the master's compute; or take the DLL
 into a controlled Ghidra/emulation harness (not the production Manager) for the handler
 crypto-context init. Both are separate, deliberate efforts. Practical deliverable unchanged.
+
+### 4.18 DERIVATION SOLVED (2026-08-26) — key = static base + per-device addend
+
+Cracked via offline r2 (found the function) + one non-disruptive read-hook (confirmed live).
+**Supersedes §4.12–4.17's "not recoverable" conclusions.**
+
+The 900x channels are `common_service::generic_client<PORT, boost::mpl::map<json_format::
+base_request…,base_response…>>` templates (JSON messages under the Blowfish layer; e.g. port
+9001 = `speaker` service). Each generic_client's 56-byte key-holder is initialized by
+**`FUN_10268960`** (RVA `0x268960`), whose x86 body is exactly:
+
+    memmove(keyholder, base_key_table[module_type] + 0xC4, 0x38)   // static 56-byte base key
+    for (i=0; i<14; i++) keyholder.dword[i] += addend              // add dword[ebp+0xc], per dword
+
+so **`session_key[i] = base_key[module_type][i] + addend`** (per 32-bit word, mod 2³²).
+
+**Live-confirmed values (hook on `FUN_10268960`):**
+- `module_type = 0x1c` = **`MODULE_TYPE_ID_MDI_2`** (entry 27 of table `DAT_10309d60`, stride
+  `0x104`, key at `+0xC4`; table is static, live == on-disk).
+- `base_key[MDI_2]` = `42197fad58f363fe07cc137065da2a5604a89114b2fd3b2f57d1bbb516cb75461f08260d1ac2465e584013641aba6176025816164629b007`
+- `addend = 0x054dcebb`
+- `base_key + 0x054dcebb == fde7ccb2…` → **VERIFIED True** (full 56 bytes).
+
+**Addend is per-device (not a literal — 0 occurrences in the binary; computed at connect).** It
+is strikingly close to the device serial: **serial `88985275` = `0x054DD0BB`; addend `0x054DCEBB`
+= serial − 512 (0x200)**. So the key is **per-device, derivable from the serial** (which a macOS
+client can read from the device ident/logs) — pending confirmation of the exact serial→addend
+transform (traced to `FUN_10268960 ← FUN_1006d3d0(generic_client ctor) ← FUN_1007b0b0`; the
+addend flows in as `param_5`).
+
+**macOS impact — key is now COMPUTABLE, no Windows/extraction needed:** embed the static
+`base_key[MDI_2]`, compute `addend` from the unit's serial, add per-dword → the exact Blowfish
+key. Confirming the serial→addend formula (one more trace, or a second unit) closes it fully;
+`addend = serial − 0x200` is the working hypothesis.
