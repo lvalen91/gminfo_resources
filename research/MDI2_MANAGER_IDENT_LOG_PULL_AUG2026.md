@@ -580,3 +580,31 @@ the message-handler crypto-context init, with the exact field offsets known.
 **Net:** derivation confirmed **local + deterministic**, key precisely located in the object
 graph; the exact compute remains buried in the handler crypto-setup path. Practical deliverable
 (extract-once key, validated decrypt, full automation) complete and unchanged.
+
+### 4.17 Allocator-hook + HW watchpoint (2026-08-26) — keyholder is a 0x38 alloc; watchpoint crashes the live Manager
+
+Pursued the definitive dynamic technique. One solid finding, one hard blocker:
+
+- **Finding:** correlating the RT allocator `FUN_102320c3` (RVA `0x2320c3`) with `BF_set_key`
+  shows the key-holder is a **dedicated `0x38` (56-byte) allocation**, key at offset 0. (The
+  persistent masters predate any probe; freshly-allocated channel key-holders correlate cleanly:
+  `base==keyholder, size=0x38, off=0`.)
+- **Blocker:** Frida hardware watchpoints exist on this 32-bit target via the per-thread method
+  `thread.setHardwareWatchpoint(id, addr, 4, 'w')` (+ `Process.setExceptionHandler`), but the
+  harness (watchpoint the 4 rotating `0x38` allocs, catch the key-prefix write) **crashes the live
+  Manager** — same class of disruption as the guard-page `MemoryAccessMonitor` (§4.13). Root cause:
+  the `#DB` single-step storms + an exception handler that returns `true` for all exceptions
+  (swallowing the app's own). Reliable per-hit identification needs `DR6`, which Frida doesn't
+  cleanly expose here, so returning `false` for non-ours isn't feasible without more work.
+
+**Net:** dynamic low-level instrumentation (guard-page or HW-watchpoint) is **not viable on the
+live rig without crashing the Manager**. The derivation is now maximally localized statically —
+a `0x38` key-holder from `FUN_102320c3`, key at offset 0, filled on the connect path within the
+message-handler crypto context (`handler+0x8c → cryptoCtx+8 → keyholder`) — but the exact write
+instruction can't be captured by the available non-destabilizing means.
+
+**Safest remaining path to the instruction:** attach a real user-mode debugger (x64dbg/WinDbg)
+and, after one connect, set a **conditional HW data breakpoint** on a known channel key-holder,
+then Disconnect→Connect to catch the copy, and walk back to the master's compute; or take the DLL
+into a controlled Ghidra/emulation harness (not the production Manager) for the handler
+crypto-context init. Both are separate, deliberate efforts. Practical deliverable unchanged.
