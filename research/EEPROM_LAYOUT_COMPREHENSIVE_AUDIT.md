@@ -488,6 +488,27 @@ behind the native/firmware wall (inferred, not proven).
 (b) `27 03/05/09/11` requestSeed — all-FF too?; (c) after a CAN `$27` unlock, read `SECURE_UNLOCK_LEVEL` over DoIP
 (state-sharing test); (d) read the DID-18 ticket payload with the SBI set vs cleared.
 
+### §0.14 EMPIRICAL CLOSURE — RH850 boot UART logs confirm SBI→MEC→adb (2026-08-26)
+
+Passive RH850/VIP UART boot captures (owner: read-only, no commands sent) **directly confirm the previously-
+inferred "VIP reports MEC≠0" hop** — the last unproven link in the SBI→ADB chain:
+
+| Boot log | VIP build | `[J6_CDD] Transmitted MEC Value` | Meaning |
+|---|---|---|---|
+| `VIP_log_2B.174.4.1_10JUL24.txt` | 2B.174.4.1 (Jul 2024) | **`0x 0`** | stock / pre-EEPROM-mod → MEC==0 → adb cert REQUIRED |
+| `Y175_session.log` = `Y175_VIP.log` | 2B.175.1.5 | **`0xff`** | SBI-set bench → MEC=255 (`∈[1,255]`) → `is_secure_mode=1` → adb cert BYPASSED |
+
+The VIP **reads the EEPROM and transmits MEC** to the SoC at boot (`0x0` stock vs `0xff` SBI-set), and separately
+logs `Transmitted Response for DID: 0xF1A0` (the MEC DID) repeatedly — **confirming the VIP is the ECU that
+answers DID `0xF1A0`.** So the full chain is now closed end to end, no inferred hops:
+**EEPROM SBI → VIP transmits MEC=0xFF → SoC `gm_adb_auth_init` sets `is_secure_mode=1` → adb opens, no cloud cert.**
+
+Other boot-log notes: `[PROTOKEY] ICUSB module enabled` (the ADB/ICUSB module) + repeated `[PROTOKEY] Receives
+invalid seed [1]/[2] from BCM` = the **anti-theft** VIP↔BCM ProtoKey handshake (failing on the disconnected bench
+— the DATA_LOCKED channel, separate from the adb path). The VIP serves the manufacturer DID block
+(`F1A0/F190/F0F3/F0B4/F1CB/F1DB/F1CC/F1DC`), but **no DID-18 Signature-Bypass Ticket appears at boot** (requested
+on-demand during OTA programming) — that specific read still needs the bench.
+
 ---
 
 ## 1. EEPROM Layout Maturity & Detail Level
