@@ -1,33 +1,47 @@
-# macOS MDI2 Manager (Python foundation)
+# macOS MDI2 client
 
-Native reimplementation of the GM/Bosch MDI2 Manager's device-facing protocol, from the RE in
-`gminfo_resources/research/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md`.
+Native, Windows-free client for the GM/Bosch **MDI2** device-facing protocol, implementing the RE
+in `../research/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md` (see that doc's §0 summary). **Live-validated
+end-to-end** over USB: discover → derive key → control handshake → session_open → get-logs →
+Blowfish-ECB decrypt → SID container → Varlog → session_close, repeatable back-to-back.
 
 ## Status
 | piece | module | state |
 |---|---|---|
-| Device discovery (225.1.1.1:8194 beacon) | `discovery.py` | works; beacon *field* decode = TODO |
-| Key derivation (`base + serial`) | `crypto.py` | **done, byte-verified** |
-| Blowfish-ECB (big-endian) | `crypto.py` | done |
-| Frame + control frame (construct) | `framing.py` | done |
-| 14-socket 900x session | `transport.py` | done; partial-frame rebuffering = TODO |
-| Log pull (9052) | `logs.py`+`messages.py` | **request decoded (JSON+binary); active** |
-| App protocol (JSON `generic_client<PORT>`) | `messages.py` | **decoded (session_open/poll)**; per-service schemas TODO |
-| Network settings read/change | — | needs a WiFi-connected capture |
+| Discovery (`225.1.1.1:8194` beacon; serial at LE u32 offset 9) | `discovery.py` | done |
+| Key derivation (`base_key[MDI_2] + serial`, byte-verified) | `crypto.py` | done |
+| Blowfish-ECB (big-endian, stock pycryptodome) | `crypto.py` | done |
+| Wire frame + 8-byte control frame (construct) | `framing.py` | done |
+| 900x session, control handshake, patient recv | `transport.py` | done |
+| JSON app messages + body length-suffix framing + get-logs + session-close | `messages.py` | done |
+| SID log container decode (`0x8a9` meta / `0x8a8` data) | `container.py` | done |
+| Log pull, back-to-back | `logs.py` | **done, live-validated** |
+| Non-log 900x services (device info, network settings) | — | not yet mapped (needs a WiFi capture) |
 
 ## Install / run
 ```
-pip install -r requirements.txt
-python -m mdi2.cli key 88985275        # -> fde7ccb2...  (serial -> Blowfish key)
-python -m mdi2.cli scan                # listen for the device beacon
-python -m mdi2.cli connect 88985275    # open the 900x bank (needs MDI2 on this machine's net)
+python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
+./.venv/bin/python -m mdi2.cli key 88985275   # serial -> 56-byte Blowfish key
+./.venv/bin/python -m mdi2.cli scan           # listen for the device beacon
 ```
-Pair with `../mdi2_9052_decrypt.py` (pcap + key -> plaintext logs) and `../mdi2_key.py`.
+Pull logs (requires the MDI2 on this machine's `192.168.171.0/24` link):
+```python
+from mdi2 import crypto
+from mdi2.transport import Session
+from mdi2.logs import pull_logs
+key = crypto.derive_key(88985275)                     # or read serial from discovery.discover()
+s = Session(key, "192.168.171.2").connect(ports=[9052])
+print([(n, len(d)) for n, d in pull_logs(s)])         # [('messages', ~56900)]  = Varlog
+s.close()
+```
+Offline: `mdi2_key.py <serial>` (→ key) and `mdi2_9052_decrypt.py <pcap> <key_hex>` (→ plaintext logs).
 
-## Notes
-- The MDI2 must be reachable from this machine (direct link, or the WireGuard tunnel used on the
-  bench). The Mac cannot reach `192.168.171.2` through the Surface by default.
-- The 900x channels carry **JSON** (`json_format::base_request/response`) under the Blowfish layer;
-  each port is a `common_service::generic_client<PORT,...>` service (9001 = speaker, 9052 = logs).
-- Next RE step to make log-pull *active*: decrypt the captured 28-byte 9052 request body with the
-  session key to recover the "get logs" command, then send it via `Channel.send`.
+## Operational notes
+- The MDI2 must be on this machine's network (direct USB gadget, or a tunnel). macOS gives the
+  gadget iface (`en17`) a `/32` and a VPN can steal the route — fix per re-plug:
+  `sudo ifconfig en17 inet 192.168.171.30 netmask 255.255.255.0`.
+- **No Bosch/Windows activation is needed** — macOS generic RNDIS is sufficient.
+- The device holds **one session**; `pull_logs` sends the session-close so back-to-back pulls work.
+  If it stops responding (dangling sessions from crashed/aborted runs), USB power-cycle it.
+- The 900x channels are `common_service::generic_client<PORT>` JSON services (9001=speaker,
+  9052=logs, …); only the log path is implemented so far.

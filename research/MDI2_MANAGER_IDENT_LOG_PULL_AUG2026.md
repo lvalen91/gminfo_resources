@@ -1,5 +1,42 @@
 # MDI2 Manager — Identification Service, WiFi pairing, and device log-pull protocol
 
+## 0. CURRENT STATE — authoritative summary (read this first; §1–§4.26 below are the investigation trail)
+
+**Status (2026-08-26): SOLVED. A native macOS MDI2 client is complete and live-validated** — see
+`mdi2_client/` in this repo (pkg `mdi2`; deps pycryptodome + construct). It pulls device logs over
+USB with no Windows, repeatably. The final, correct facts:
+
+- **Transport:** each Connect opens a 14-TCP bank to device ports 9001/9003/9006–9014/9050–9052
+  (this is the Manager's channel; **not** the 10123 D-PDU diagnostic path, **not** FTP). Log pull
+  is on **9052**.
+- **Wire frame (big-endian):** `[u32 0][u32 len][u32 counter][Blowfish-ECB body]`, each channel
+  preceded by an 8-byte control frame `00 53 50 00 00 <code> 00 00` (code `0x30`, `0x21` for 9011).
+  The counter must have **bit31 set**.
+- **App layer = JSON** (`common_service::generic_client<PORT>`): `session_open`, `poll`, a binary
+  get-logs trigger; body framing inside the BF payload = `content + zero-pad + u32be(len)`. The
+  decrypted log body is a SID-tagged container (`0x8a9` meta / `0x8a8` data → e.g. `messages`=Varlog).
+- **Cipher:** standard **Blowfish-ECB** (big-endian, pycryptodome-compatible).
+- **Key (computable, no extraction):** `key[i] = base_key[MODULE_TYPE_ID_MDI_2][i] + device_serial`
+  (14 dwords, 32-bit add). `base_key` = static const in `bvtx_vci_rt.dll` table `DAT_10309d60`
+  (id `0x1c`, +0xC4) = `42197fad58f363fe…`; `device_serial` = uint32 from the `225.1.1.1:8194`
+  beacon (LE u32 at byte offset 9) or the logs. Formula in `FUN_10268960` (RVA `0x268960`).
+- **Session:** the device holds ONE session; release it with `{"data":<session_id>,"has_data":true,
+  "id":2,"target":"session"}` (else it dangles; a few dangles exhaust the slots → USB power-cycle).
+- **No Bosch activation needed** — a cold USB+network capture proved macOS generic RNDIS is
+  sufficient; the 900x services just need a fresh (unexhausted) device.
+
+**Superseded sections (do NOT trust these earlier claims — kept only as the investigation trail):**
+- **§3.1–3.3 (FTPS/`firmware:vtx` log pull):** not the *Get Log Files* path; that's a separate
+  AAOS-reprogramming route. Real pull = encrypted 9052 (§4.1, §4.20).
+- **§4.9 (which static keyring key is operative):** none — the key is `base + serial` (§4.18–4.19).
+- **§4.10 ("per-session" key):** wrong; the key is deterministic per unit (§4.11), = `base+serial`.
+- **§4.12–4.17 (derivation "at init / buried / needs a HW-watchpoint"):** all obsolete; solved
+  statically in §4.18–4.19.
+- **§4.18 ("addend = serial − 512"):** arithmetic slip; the addend **is** the serial (§4.19).
+- **§4.21 & §4.23 ("device needs Bosch activation / arming gap"):** wrong — resolved in §4.24 (no
+  activation; the "dormancy" was connection-pool/session exhaustion from rapid testing).
+
+
 **Date:** 2026-08-25. Scope: the Windows "MDI2 Manager" / "GM MDI Identification Service"
 stack, as distinct from DPS/SPS diagnostic sessions (already covered in
 `MDI2_DPDU_API_PROTOCOL_AUG2026.md`). Source material: full Ghidra disassembly
