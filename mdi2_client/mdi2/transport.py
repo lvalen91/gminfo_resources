@@ -27,37 +27,20 @@ class Channel:
         body = crypto.encrypt(self.key, messages.pack_body(plaintext))
         self.sock.sendall(framing.build_message(self.counter, body))
 
-    def _recv_exact(self, n, timeout):
-        self.sock.settimeout(timeout); buf = b""
-        while len(buf) < n:
-            c = self.sock.recv(n - len(buf))
-            if not c:
-                break
-            buf += c
-        return buf
-
-    def recv_frames(self, timeout=4.0, max_frames=64):
-        """Read complete frames by length prefix; return (counter, app_body) list."""
-        out = []
-        for _ in range(max_frames):
+    def recv_frames(self, timeout=4.0, idle=1.0):
+        """Accumulate bytes until idle-after-data, then parse+decrypt all app frames."""
+        buf=b""; self.sock.settimeout(timeout); t0=time.time(); got=False
+        while time.time()-t0 < timeout+10:
             try:
-                hdr = self._recv_exact(8, timeout)
+                c=self.sock.recv(65536)
+                if not c: break
+                buf+=c; got=True
+                self.sock.settimeout(idle)
             except socket.timeout:
                 break
-            if len(hdr) < 8:
-                break
-            if hdr[:4] == _CTRL_MAGIC:        # control frame, no payload
-                continue
-            zero, ln = struct.unpack(">II", hdr)
-            if zero != 0 or ln < 4:
-                break
-            payload = self._recv_exact(ln, timeout)
-            if len(payload) < ln:
-                break
-            counter = struct.unpack(">I", payload[:4])[0]
-            body = messages.unpack_body(crypto.decrypt(self.key, payload[4:]))
-            out.append((counter, body))
-            timeout = 0.8
+        out=[]
+        for counter, enc in framing.iter_frames(buf):
+            out.append((counter, messages.unpack_body(crypto.decrypt(self.key, enc))))
         return out
 
 class Session:
