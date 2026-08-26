@@ -412,6 +412,41 @@ denial. (3) Most interesting open thread = **`SECURE_UNLOCK_LEVEL` / `SIGNATURE_
 primitives with no located caller; if wired up (via `GMRegistrationService.apk`, needs re-dex from odex/vdex)
 they outrank MEC (gate ECU *programming*, not just a debug shell).
 
+### §0.12 REFLASH-SECURITY PRIMITIVES — `SIGNATURE_BYPASS_TICKET` is LIVE (dev-signed VIP flashing) (2026-08-26)
+
+> ⚠ **NAMING COLLISION:** this "SBI" = **Signature-Bypass ticket** (DID CUSTOM 18, CAN) — a DIFFERENT mechanism
+> from the EEPROM **Seed-Bypass Indicator** (`0x0441`/`0x0A80`, the adb/MEC path). Same abbreviation, distinct things.
+
+**`SECURE_UNLOCK_LEVEL` (DID CUSTOM 17, Ethernet): DEAD in this build** — `DelayedWKSApp.DiagnosticDispatcher.
+getSecurityLevel()` wraps it but has **no caller** anywhere in the guest (consumed by an external SPS/DoIP
+programming tool over Ethernet, not guest app code). Its enum is GM's graded **SecurityLevel ladder** (the
+guest-visible UDS `$27` taxonomy — this answers "are there other/graded levels?"):
+`None=0, Service=1, AssemblyPlant=3, OTA=5, Engineering=9, RemoteDiagnostics=11, SupplierSecurityAccess=13,
+ExtendedReflash=17, ExtendedAssemblyPlant=19, ExtendedOTA=21, EndOfLife=95`.
+
+**`SIGNATURE_BYPASS_TICKET` (DID CUSTOM 18, CAN): LIVE — highest-leverage primitive found.** Consumer:
+`com.gm.server.update` (**DelayedWKSApp**, GM's OTA/wireless ECU-programming service), `ModulePart.verify()`:
+```java
+if (manifest.getSupplierData().isDevelopmentSecurity()) {
+  boolean allowDev = PersistStore.get(AllowDevSignedVIP);
+  boolean vip = moduleID == 1 /*VIP_APP*/ || moduleID == 71 /*VIP_BOOT*/;
+  if (!allowDev && vip && !DiagnosticDispatcher.isSBISet())
+     throw new InvalidException(526, "development signed package with vip without SBI");
+}
+```
+**Effect: a valid Signature-Bypass Ticket on CAN — OR the `AllowDevSignedVIP` PersistStore flag — lets the OTA
+programmer accept a DEVELOPMENT-SIGNED (non-production) firmware package targeting the head unit's own
+`VIP_APP`(1)/`VIP_BOOT`(71), bypassing production-signature enforcement (`InvalidException 526`).** This gates
+**arbitrary firmware installs to the VIP**, not just a debug shell — architecturally it outranks the MEC/adb unlock.
+
+**DID sources (code-verified):** `SECURE_UNLOCK_LEVEL` ← Ethernet (`getEthSecLevel`); `SIGNATURE_BYPASS_TICKET` ←
+CANBUS (`VIPRequestManager`, `RequestSource(CANBUS,255,255)`).
+
+**Two new bench threads:** (1) the **`AllowDevSignedVIP`** PersistStore flag — if writable, it *alone* permits
+dev-signed VIP firmware (no ticket needed) — test writability. (2) the **Signature-Bypass Ticket** is a CAN
+value (DID 18) — same VIP/CAN territory as the EEPROM path; who issues/gates it (SPS tool? the VIP based on its
+own SBI/manufacturing state?) is the next question, and would connect firmware-flash bypass back to the EEPROM.
+
 ---
 
 ## 1. EEPROM Layout Maturity & Detail Level
