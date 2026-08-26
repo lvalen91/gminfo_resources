@@ -125,7 +125,7 @@ Intel CSE (hardware root) → Intel ABL → GHS INTEGRITY → Android
 ### 4.2 Bypass Mechanism — ADB/seed gate (all builds)
 
 ```
-EEPROM (0x0440=5AFF5A) → VIP reads → Security func @ 0xb67d0 → IPC to SoC → ADB/seed auth state
+EEPROM SBI (0x0441+0x0A80=FF) → VIP reads → transmits MEC=0xFF (DID 0xF1A0) → SoC gm_adb_auth_init sets is_secure_mode=1 → ADB allowed, no cloud cert   [CORRECTED 2026-08-26: the gate is SoC-side MEC/is_secure_mode, NOT the VIP 0xb67d0 function; see EEPROM_LAYOUT §0.9/§0.10/§0.14]
 ```
 
 **CORRECTED 2026-08-25:** the VIP security function is a **full ~906-byte validator in Y175,

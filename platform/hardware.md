@@ -190,7 +190,7 @@ Communication between the two processors occurs over HDLC on UART `/dev/ttyS1` w
 
 ### Binary Format
 
-GHS INTEGRITY binary: ELF 32-bit LSB (Intel 80386), statically linked — GHS runs in 32-bit compatibility mode. VMM uses Intel VT-x with 64-bit EPT for Android guest.
+GHS INTEGRITY binary: ELF header claims 32-bit LSB (Intel 80386) but **the code is x86-64** (CORRECTED 2026-08-26: `movabs`/REX, `crt_x64.86` — disassemble as `x86:LE:64`; the "32-bit compatibility mode" claim was an invented rationalization and is retracted), statically linked. VMM uses Intel VT-x with 64-bit EPT for Android guest.
 
 ### GHS Device Interfaces
 

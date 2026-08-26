@@ -354,7 +354,7 @@ drm.vblankoffdelay=1
 i915.fastboot=1
 
 CRITICAL: cmdline contains "enforcing=0 androidboot.selinux=permissive"
-This is embedded in the boot image - indicates SELinux permissive at image level.
+This is embedded in the boot image - the cmdline requests permissive, BUT (CORRECTED 2026-08-26) init on a user build ignores it and forces ENFORCING; the runtime is NOT permissive (see KERNEL_CVE_ANALYSIS.txt Appendix E.8).
 
 5.4 AVB PROTECTION
 ------------------

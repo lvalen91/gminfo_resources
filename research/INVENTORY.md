@@ -55,9 +55,9 @@ All Ghidra reverse-engineering projects
 | `ghs32/` | GHS hypervisor (correct 32-bit i386) |
 | `sa015bcr_proj/` | sa015bcr.dll Security Access level 0x15 |
 | `ivcspsa_proj/` | ivcspsa.dll GlobalB cloud client |
-| `vip_boot_proj/` | VIP_BOOT (Renesas RH850, V850 SLEIGH) |
+| `vip_boot_proj/` | VIP_BOOT (Renesas RH850 — use the `RH850:LE:32` SLEIGH module; V850 was only an approximation) |
 | `vip_app_proj/` | VIP_APP (Renesas RH850) |
-| `86331656_ghidra/` | Original existing VIP_APP project (V850, abandoned by prior analyst) |
+| `86331656_ghidra/` | Original existing VIP_APP project (V850 approximation — superseded by the fresh `RH850:LE:32` projects) |
 | `ghidra_protokey/` | gm_protokey + gm_protokey_recovery |
 | `ghidra_elk/` | ELK kernelflinger |
 | `ghidra_proj/DPS/` | Combined DPS toolchain (dpsvcs + dps.exe) |

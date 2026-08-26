@@ -7,11 +7,24 @@
 
 ---
 
+> **⚠ CORRECTED 2026-08-26 — this file predates the Aug-2026 corrections; several core claims below are RETRACTED.**
+> Authoritative sources: `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0 and `research/security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8.
+> - **No stock build runs SELinux permissive.** Y175/Y177/Y181 share a byte-identical `init` that forces enforcing
+>   (`ALLOW_PERMISSIVE_SELINUX=0`); the "Y177 permissive" rows/sections and every "CVE exploitable because permissive"
+>   claim below are FALSE.
+> - **There is no "4-byte stub."** The VIP `0xb67d0`-class validator is FULL in all three builds; the stub finding was a
+>   fixed-absolute-address misread.
+> - **The EEPROM "security" section is retracted:** `0x04A0/0x04C0/0x0A40/0x0BE0/0x1A00` are NOT security flags, the
+>   ref-counts and "IPC Security Config" naming were fabricated, and "disasm-confirmed" on `0x0440/0x0A80` is wrong. The
+>   real SBI is `0x0441`+`0x0A80` (empirically flips ADB).
+> - **The ADB unlock is SoC-side and unrelated to SELinux or `0xb67d0`:** EEPROM SBI → VIP transmits MEC=0xFF (DID `0xF1A0`)
+>   → `gm_adb_auth_init` sets `is_secure_mode=1` → adb allowed with no cloud cert. See EEPROM audit §0.9/§0.10/§0.14.
+
 ## Android Security by Firmware Version
 
 | Feature | Y175 (June 2024) | Y177 (March 2025) | Y181 (July 2025) |
 |---------|-------------------|---------------------|-------------------|
-| SELinux | Enforcing | **PERMISSIVE** | Enforcing (462 denials in logcat — CBC, RVC, SXM, but no USB/CarPlay denials) |
+| SELinux | Enforcing | ~~**PERMISSIVE**~~ **Enforcing** (CORRECTED 2026-08-26 — stock Y177 forces enforcing, byte-identical init) | Enforcing (462 denials in logcat — CBC, RVC, SXM, but no USB/CarPlay denials) |
 | dm-verity | Enabled | Enabled | Enabled |
 | FBE (File-Based Encryption) | Yes | Yes | Yes |
 | Security Patch | 2024-05-05 | 2025-03-05 | 2025-06-05 |
@@ -41,7 +54,7 @@ VIP security function ADDRESS: `0x000b67d0` (NOT a firmware version). VIP firmwa
 
 | Version | VIP_APP File ID | Security Function | Details |
 |---------|-----------------|-------------------|---------|
-| Y177 | 86283151 | 4-byte stub (always returns 0) | `mov 0, r10; jmp [lp]` — security function disabled |
+| Y177 | 86283151 | ~~4-byte stub (always returns 0)~~ **FULL ~906-byte validator (CORRECTED 2026-08-26)** | ~~`mov 0, r10; jmp [lp]`~~ no stub in any build; the "stub" was a fixed-address misread (see EEPROM audit §2) |
 | Y181 | 86331656 | 906-byte full implementation | Security function active, calls validation subroutines |
 
 ### Y181 VIP Security Function Detail

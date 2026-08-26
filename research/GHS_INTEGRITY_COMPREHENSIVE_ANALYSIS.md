@@ -3,7 +3,7 @@
 **Date:** 2026-01-05
 **Binary:** SOC_HOSTOS (85098662)
 **Size:** 14,929,320 bytes (extracted ELF)
-**Format:** ELF 32-bit LSB executable, Intel 80386, statically linked, stripped
+**Format:** ELF (header claims 32-bit LSB / Intel 80386) but **the code is x86-64** (CORRECTED 2026-08-26: `movabs`/REX-prefixed instructions, `crt_x64.86`/`libkernel.86_x64`; the EM_386 header is misleading — disassemble as `x86:LE:64`), statically linked, stripped
 
 > Companion doc: `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` covers boot/update/recovery
 > mechanics in depth (BCB/misc byte layout, USB/protokey/capsule trigger files,

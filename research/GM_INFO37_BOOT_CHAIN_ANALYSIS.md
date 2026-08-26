@@ -841,7 +841,7 @@ POWER ON (T=0ms)
 | Layer | Mechanism | Bypassable? | Notes |
 |-------|-----------|-------------|-------|
 | **VIP_BOOT** | Harman checksum | Requires RE | Internal RH850 flash |
-| **VIP_APP Security** | Function @ 0xb67d0 | Requires RE | **Full ~906 B in all builds (Y175/Y177/Y181)** — no stub; gates ADB/seed, not SELinux (see VIP_FIRMWARE §2) |
+| **VIP_APP Security** | Function @ 0xb67d0 | Requires RE | **Full ~906 B in all builds (Y175/Y177/Y181)** — no stub. It is a `$27`/seed-access validator, NOT SELinux and NOT the ADB gate (CORRECTED 2026-08-26: the ADB unlock is SoC-side MEC/`is_secure_mode` via DID 0xF1A0 — see EEPROM_LAYOUT §0.9/§0.10) |
 | **EEPROM SBI Flags** | None (no CRC) | Yes (hardware) | I2C accessible |
 | **Intel CSE** | Hardware root of trust | No | OTP fuses |
 | **SOC_ABL** | Intel Secure Boot | No | Sign Type NONE (not GM TSS-signed); verified by/with Intel CSE secure boot |

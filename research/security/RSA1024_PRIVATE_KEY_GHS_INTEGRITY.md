@@ -23,7 +23,7 @@ This is the **only private key** found across the entire GM Info 3.7 binary corp
 | **Component** | SOC_HOSTOS |
 | **File ID** | 85098662 |
 | **File size** | 14,929,956 bytes |
-| **Binary format** | ELF 32-bit x86 |
+| **Binary format** | ELF — header says 32-bit x86 but code is **x86-64** (corrected 2026-08-26: `movabs`/REX, `crt_x64.86`) |
 | **Key offset** | 12924442 (0xC53DBA) |
 | **Key size** | 609 bytes (DER-encoded) |
 | **Key type** | RSA-1024 PRIVATE KEY |

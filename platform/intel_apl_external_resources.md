@@ -135,7 +135,7 @@ adb shell "gzip -dc /proc/config.gz" > gm_kernel_4.19.305.config
 |---|---|
 | misc/BCB A/B layout | kernelflinger.c boot flow (celadon/s/mr0/apollo) |
 | HECI/ABL/ELK trigger | kf4abl.c + libheci + Slim Bootloader Stage2BoardInitLib.c |
-| SELinux permissive (Y177) vs enforcing (Y181) | device-intel-sepolicy + aosp_diff/*/system/sepolicy |
+| ~~SELinux permissive (Y177) vs enforcing (Y181)~~ CORRECTED: both enforce (no stock permissive) | device-intel-sepolicy + aosp_diff/*/system/sepolicy |
 | AVB2 verification chain | kernelflinger avb/ subtree |
 | IFWI/Boot Guard structure | Intel UEFI guide #671281 + FSP ApolloLakeFspBinPkg |
 | GHS guest isolation model | US patent 12,423,197 |

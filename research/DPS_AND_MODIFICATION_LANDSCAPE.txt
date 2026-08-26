@@ -527,7 +527,7 @@ CAN bus fuzzing (protocol vulnerabilities); network service exploitation (ports 
 ------------------------------------------
 SELinux mode in Y181 is controlled by init.rc in the system partition; that partition
 is AVB-protected, so it cannot be modified without breaking boot. The only DPS-based
-route to permissive SELinux is therefore a Y177 downgrade -- which is now CONFIRMED
+route to permissive SELinux is therefore a Y177 downgrade -- CORRECTED 2026-08-26: VOID. Stock Y177 forces enforcing (byte-identical init); a downgrade yields NO permissive. There is no stock route to permissive. Formerly CONFIRMED
 blocked by the GHS rollback counter (see section 7.7).
 
 ================================================================================

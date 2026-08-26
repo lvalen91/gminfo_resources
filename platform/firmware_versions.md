@@ -7,6 +7,11 @@
 
 ---
 
+> **⚠ CORRECTED 2026-08-26:** the "SELinux Permissive" and "VIP security fn: Stubbed (4B)" claims for Y177 are FALSE.
+> No stock build runs permissive (byte-identical init forces enforcing), and the VIP validator is FULL (~906 B) in all
+> builds — there was never a stub. So "Y177 is a security regression" is retracted. HOSTOS is x86-**64**, not 32-bit.
+> See `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0 and `research/security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8.
+
 ## Firmware Version Comparison
 
 | Field | Y175 (June 2024) | Y177 (March 2025) | Y181 (July 2025) |
@@ -16,14 +21,16 @@
 | Security Patch | 2024-05-05 | ~2025-03 | 2025-06-05 |
 | Bootloader | 2121-1 | — | 2344 |
 | Built | Wed Jun 26 2024 | — | — |
-| SELinux | Enforcing | **Permissive** | Enforcing |
-| VIP security fn | Present | **Stubbed (4B)** | Full (906B) |
+| SELinux | Enforcing | ~~**Permissive**~~ **Enforcing** (corrected) | Enforcing |
+| VIP security fn | Present | ~~**Stubbed (4B)**~~ **Full (~906B)** (corrected — no stub in any build) | Full (906B) |
 | VIP firmware diff | — | 28.4% vs Y181 | Baseline |
 | Rollback | — | Y181→Y177 blocked | — |
 
 ### Key Observations
 
-- **Y177 is a security regression** — both SELinux and VIP security function were weakened compared to Y175 and Y181
+- ~~**Y177 is a security regression** — both SELinux and VIP security function were weakened compared to Y175 and Y181~~
+  **RETRACTED 2026-08-26:** neither was weakened — stock Y177 forces SELinux enforcing (byte-identical init) and its VIP
+  validator is the full ~906 B function, same as Y175/Y181. No regression.
 - **Kernel upgraded** from 4.19.283 (Y175) to 4.19.305 (Y177/Y181), gaining security patches
 - **Rollback protection** prevents downgrading from Y181 back to Y177, enforced by GHS rollback counter in `misc` partition
 - **VIP firmware delta** between Y177 and Y181 is 549,518 bytes (28.4%), indicating substantial changes beyond just the security function
@@ -59,7 +66,7 @@ VIP_BOOT, SOC_HOSTOS, and SOC_ABL are **identical** between Y177 and Y181. The s
 The GHS INTEGRITY hypervisor is **identical** between Y177 and Y181:
 
 - **Version:** INTEGRITY IoT 2020.18.19 MY22-026
-- **SOC_HOSTOS:** 14.9MB ELF 32-bit x86 statically linked
+- **SOC_HOSTOS:** 14.9MB GHS INTEGRITY ELF — **x86-64** (corrected 2026-08-26; the ELF header claims EM_386/32-bit but the code is x86-64: `movabs`/REX, `crt_x64.86`), statically linked
 - **Build path:** `/home/mal/gm_release/MY22-026/final/iot/rtos/`
 
 The security difference between Y177 and Y181 is entirely in VIP firmware — the hypervisor layer is unchanged.

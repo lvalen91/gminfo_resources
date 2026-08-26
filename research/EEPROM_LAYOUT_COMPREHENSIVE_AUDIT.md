@@ -521,9 +521,9 @@ on-demand during OTA programming) — that specific read still needs the bench.
 | Region | Detail Level | Evidence | Verified | Gaps |
 |--------|--------------|----------|----------|------|
 | **Boot/Init (0x0000–0x03FF)** | Field-level | Byte reads + structure inference | Partial | Exact bit fields for boot flags unclear |
-| **Security Config (0x0400–0x04FF)** | Byte-level (primary), Field-inferred (secondary) | `0x0440/0x0A80` SBI disasm-confirmed; undocumented 0x04A0/0x04C0 via firmware xrefs (17/11 refs) | High for SBI; low for others | Polarity unknown for undocumented flags; no live testing data |
+| **Security Config (0x0400–0x04FF)** | Byte-level (SBI only) | ~~`0x0440/0x0A80` SBI disasm-confirmed; 0x04A0/0x04C0 via xrefs (17/11 refs)~~ **RETRACTED (§0): SBI is empirical, not disasm-confirmed; 0x04A0/0x04C0 are NOT security flags (fabricated ref-counts)** | SBI empirical | Only `0x0441`+`0x0A80` real |
 | **Device ID (0x0500–0x05FF)** | Field-level | VIN, serial, part# reads verified from dump | High | — |
-| **Backup Security (0x0A00–0x0AFF)** | Byte-level (0x0A80), Field-inferred (structure) | 0x0A00 (871 refs), 0x0B00 (311 refs) = base addresses (not flags) | Medium | Base-address counts are approximate; individual flag function unknown |
+| **Backup Security (0x0A00–0x0AFF)** | Byte-level (0x0A80 SBI) | ~~0x0A00 (871 refs), 0x0B00 (311 refs)~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise, not semantic xrefs** | Low | Only 0x0A80 (SBI) is real |
 | **Feature Flags (0x0B00–0x0BFF)** | Byte-level (0x0B40 debug mode), Field-guessed (0x0A40/0x0A60/0x0AC0/0x0BE0) | 0x0B40 documented; 0x0A40 (28 refs), 0x0BE0 (24 refs) via xref | Low-Medium | Undocumented flags need physical or RAM-shadow testing |
 | **UI/Display Settings (0x0E00–0x0EBF)** | Field-level | Timing/threshold values (e.g., 0xE01=30 sec screen timeout) read from sample dump | Medium | Bit-field granularity guessed; interpretation inferred not verified |
 | **Display Calibration (0x0EC0–0x0F7F)** | Table-level | Brightness LUTs (11-point, 22-point), color RGB calibration (0x0F40) | Medium | Ambient-light compensation logic guessed |
@@ -551,14 +551,14 @@ on-demand during OTA programming) — that specific read still needs the bench.
 
 | Address | Field | Documented | Polarity | Evidence Level | Notes |
 |---------|-------|-----------|----------|----------------|-------|
-| **0x0440** | Primary SBI (Seed Bypass Indicator) | Yes | 0xFF=bypass, 0x00=locked | Disasm-confirmed (VIP 0xb67d0 validator) | ADB security gate. Marker byte [M] at 0x0440, data at 0x0441, marker at 0x0442 |
-| **0x0A80** | Backup SBI | Yes | 0xFF=bypass, 0x00=locked | Disasm-confirmed | Redundancy. Now initialized in Y181 (was 0xFF/empty in stock) |
+| **0x0441** (data; framing 0x0440/0x0442) | Primary SBI (Seed Bypass Indicator) | Yes | 0xFF=bypass, 0x00=locked | ~~Disasm-confirmed (VIP 0xb67d0 validator)~~ **empirically flips ADB + code-read via CalGroup accessor; NOT via 0xb67d0 (retracted §0)** | ADB gate is SoC-side (MEC/`is_secure_mode`) |
+| **0x0A80** | Backup SBI | Yes | 0xFF=bypass, 0x00=locked | ~~Disasm-confirmed~~ **empirical only; static reader not located (§0)** | Both SBI bytes required on Y181 (owner-verified) |
 | **0x0B40** | Debug Mode Flag | Yes | 0x01=enabled, 0x00=disabled | Firmware refs (9 xrefs) | Enables additional diagnostic output or feature access |
-| **0x04A0** | IPC Security Config #1 | Undocumented | Unknown | Firmware xrefs (17 refs); near `[IPC_S]` strings | High priority for cal-`$27` gate hypothesis |
-| **0x04C0** | IPC Security Config #2 | Undocumented | Unknown | Firmware xrefs (11 refs); paired with 0x04A0 | Companion flag; may be access-level or variant selector |
+| ~~**0x04A0**~~ | ~~IPC Security Config #1~~ **RETRACTED (§0)** | — | — | **Not a security flag** — `[IPC_S]`=serial-transport log, not "IPC Security"; the "17 refs" is fabricated | — |
+| ~~**0x04C0**~~ | ~~IPC Security Config #2~~ **RETRACTED (§0)** | — | — | **Not a security flag** — "11 refs" fabricated | — |
 | **0x0A40** | Feature Enable (mid-region) | Undocumented | Unknown | Firmware xrefs (28 refs) | Medium priority; likely hidden-feature enable, not the `$27` gate |
 | **0x0BE0** | Late-Region Flag (danger zone) | Undocumented | Unknown | Firmware xrefs (24 refs) | **LOWEST priority.** Likely manufacturing lock / debug-interface disable (OTP-like). **Do not flip casually.** |
-| **0x1A00** | Tertiary Security | Documented (stock=0x00) | 0x00=locked | Sample dump; undocumented full function | Modified in ADB-bypass sample (0x1A01=0xFF). Possibly secondary SBI mirror or lock counter |
+| ~~**0x1A00**~~ | ~~Tertiary Security~~ **RETRACTED (§0)** — no code evidence it is a security byte | — | — | — | — |
 
 ### 2.2 Display/UI Parameters (0x0E00–0x0EAF)
 
@@ -629,6 +629,12 @@ on-demand during OTA programming) — that specific read still needs the bench.
 
 ## 3. ADB SBI Bypass Mechanism: Seed Behavior & Validation
 
+> **⚠ SUPERSEDED 2026-08-26 (§§3–4).** The mechanism described below — "VIP `0xb67d0` reads `0x0440/0x0A80` and
+> returns an all-`0xFF` seed, disasm-confirmed" — is the pre-correction hypothesis and is **wrong on attribution.**
+> `0xb67d0` is NOT the ADB gate. The real, verified ADB chain is **SoC-side**: EEPROM SBI → VIP transmits MEC=0xFF
+> (DID `0xF1A0`) → `gm_adb_auth_init` sets `is_secure_mode=1` → adb allowed with no cloud cert (see §0.9/§0.10/§0.14).
+> The `$27` all-FF seed on the CSM is real (§0.13) but does **not** drive the guest ADB gate. Read §§3–4 as archival.
+
 ### 3.1 Documented Mechanism
 
 The VIP firmware's security validation function at **address 0xb67d0** (Y181, 906 bytes) performs the ADB gate:
@@ -689,6 +695,12 @@ Per the CALDEF and firmware analysis:
 **Do not assume ADB SBI flip = calibration gate open.** They share an anchor (VIP/EEPROM), but the cal `$27` validator may be tied to a **different flag** (0x04A0, 0x04C0, or another). The T1/cal-convergence document explicitly flags this as the top priority experiment (§7 open item #3).
 
 ---
+
+> **⚠ SUPERSEDED 2026-08-26 (§§5–8).** These sections still treat `0x04A0/0x04C0/0x0A40/0x0BE0` as live cal-`$27`
+> gate candidates (with the fabricated ref-counts) and `0x1A00` as "Tertiary Security", and still label `0x0440/0x0A80`
+> "disasm-confirmed". All retracted — see §0 and §0.7. The only confirmed security bytes are the SBI `0x0441`+`0x0A80`;
+> the four "undocumented flags" have **no code evidence**. Read §§5–8 as archival; do not use their testing-priority
+> tables. The current bench targets/recipe are in `EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md`.
 
 ## 5. Checksum/Integrity Coverage: SBI Flip Impact
 

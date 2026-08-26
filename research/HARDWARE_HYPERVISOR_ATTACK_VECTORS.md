@@ -117,7 +117,7 @@ Current status: XGecu direct read/write access to M24C64 already established. Th
 | Write-blocking interposer (suppress EEPROM writes) | Medium | Prevents VIP from re-asserting lock bytes after session; persistent unlock across reboots |
 | 0x0A00 behavioral profiling via byte-mutation | Medium | Systematically mutate 1 byte/session with emulator → map 871-ref data structure without firmware source |
 
-**I2C passive sniff is the most valuable next step on the EEPROM axis** — it directly answers which bytes VIP validates at 0xb67d0 entry (loading from EEPROM→RAM 0x3e06/0x714f) and what the 0x0A00 structure means.
+**I2C passive sniff is the most valuable next step on the EEPROM axis** — it directly answers which bytes VIP validates at 0xb67d0 entry (loading from EEPROM→RAM 0x3e06/0x714f) and what the 0x0A00 structure means. *(CORRECTED 2026-08-26: `0xb67d0` is the `$27`/seed validator, not the ADB gate; the SBI's ADB effect is SoC-side MEC/`is_secure_mode` — §0.9/§0.10. The I²C sniff is still the way to see the physical EEPROM read the static passes couldn't locate.)*
 
 ---
 
@@ -134,7 +134,7 @@ Current status: XGecu direct read/write access to M24C64 already established. Th
 
 **With JTAG access:**
 - Dump complete VIP firmware (no indirect Ghidra needed).
-- Set hardware breakpoint at `0xb67d0` entry → observe inputs (EEPROM→RAM path, expected values). *(Still valuable — reveals the real ADB/seed gate inputs.)*
+- Set hardware breakpoint at `0xb67d0` entry → observe inputs (EEPROM→RAM path, expected values). *(CORRECTED 2026-08-26: `0xb67d0` is the `$27`/seed validator, NOT the ADB gate — ADB is unlocked SoC-side via MEC/`is_secure_mode` (DID 0xF1A0), see EEPROM_LAYOUT §0.9/§0.10. Still useful for the `$27`/seed path.)*
 - ~~Patch `0xb67d0` in-place: overwrite 906-byte validator with Y177 4-byte stub~~ — **VOID (2026-08-25):** there is no Y177 stub. The validator is a full ~906-byte function in Y175/Y177/Y181 alike (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2), so there is nothing to copy in, and the VIP does not set SELinux mode regardless.
 - Observe J6_CDD OBBPELK handler live → extract exact ELK trigger format.
 

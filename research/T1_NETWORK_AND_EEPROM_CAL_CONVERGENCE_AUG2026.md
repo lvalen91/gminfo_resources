@@ -161,7 +161,7 @@ relevant facts, and the new integration:
   single flag. The open, testable question is whether a **different** EEPROM flag governs the diagnostic/
   calibration security level the way `0x0440` governs ADB. The undocumented-flag candidates already
   flagged in the security region are the first place to look:
-  - `0x04A0` (17 refs) / `0x04C0` (11 refs) — near `[IPC_S]` (VIP↔SoC secure IPC) strings.
+  - ~~`0x04A0` (17 refs) / `0x04C0` (11 refs) — near `[IPC_S]` (VIP↔SoC secure IPC) strings.~~ **RETRACTED 2026-08-26:** the ref-counts are fabricated and `[IPC_S]` = serial-transport (HDLC) log tag, NOT "secure IPC"; these are not security flags (see EEPROM_LAYOUT §0).
   - `0x0A40` (28 refs), `0x0BE0` (24 refs) — feature-flag region.
   - (`0x0A00`/`0x0B00` are structure **base** addresses — do **not** poke.)
 - `[O]` **In-band EEPROM access is plausible but unconfirmed:** `/dev/i2c-0` and `/dev/i2c-1` are
@@ -228,7 +228,7 @@ expecting window-bounds changes.
 2. `[O]` **Which I²C bus reaches the M24C64?** If `/dev/i2c-0`/`i2c-1` (world-writable) map to it, in-band
    software EEPROM R/W is possible from the SBI-enabled ADB shell — no programmer needed.
 3. `[O]` **Does an EEPROM flag govern the calibration/diag `$27` gate** the way `0x0440` governs ADB? Probe
-   candidates `0x04A0`, `0x04C0`, `0x0A40`, `0x0BE0` (one at a time, backup first). This is the crux for a
+   candidates `0x04A0`, `0x04C0`, `0x0A40`, `0x0BE0` (RETRACTED 2026-08-26 — no code evidence; do not test these. Real SBI = `0x0441`+`0x0A80`). Formerly the crux for a
    software-only `SCREEN_RESOLUTION` write.
 4. `[O]` **Confirm the `49156` owner/domain** live (`ss -tlnp` + `ps -Z`) — resolves the §6 attribution.
 5. `[O]` **`diagnosticsd` parser as an RCE target** (root, no seccomp, unvalidated target address) — the

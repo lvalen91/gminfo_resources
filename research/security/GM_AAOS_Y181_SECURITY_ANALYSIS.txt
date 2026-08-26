@@ -248,7 +248,7 @@ MAC: SELinux BLOCKS shell, untrusted_app
 
 I2C buses 0 and 1 are world-accessible at DAC level, but:
 - SELinux blocks on Y181 (enforcing)
-- May work on Y177 (permissive) - but Y177 downgrade blocked
+- CORRECTED 2026-08-26: NOT "Y177 permissive" — stock Y177 forces enforcing (byte-identical init); no permissive gain from a downgrade (which is also GHS-blocked)
 
 5.5 BINDER SERVICES
 -------------------

@@ -65,7 +65,7 @@ goals are:
 
 KEY FINDINGS:
 - ADB bypass confirmed working via EEPROM modification (0x0440 + 0x0A80)
-- SELinux changed from PERMISSIVE (Y177) to ENFORCING (Y181)
+- ~~SELinux changed from PERMISSIVE (Y177) to ENFORCING (Y181)~~ CORRECTED 2026-08-26: both enforce; stock Y177 is NOT permissive (see this file's correction below + KERNEL_CVE_ANALYSIS.txt E.8)
 - PROTOKEY service mediates ADB authentication via BCM seed exchange
 - DPS cannot directly access security EEPROM addresses
 - Calibration files are separate from VIP EEPROM security flags
@@ -198,7 +198,7 @@ Security Patch: June 2025 (Y181) / February 2025 (Y177)
 |---------------------------|-------------|-------------|
 | ro.debuggable             | 0           | 0           |
 | ro.boot.selinux           | permissive  | permissive  |
-| getenforce (runtime)      | Permissive  | Enforcing   |
+| getenforce (runtime)      | Enforcing (corrected — was wrongly "Permissive") | Enforcing   |
 | ro.boot.flash.locked      | 1           | 1           |
 | ro.boot.verifiedbootstate | green       | green       |
 | sys.oem_unlock_allowed    | 0           | 0           |
