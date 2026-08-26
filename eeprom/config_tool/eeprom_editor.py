@@ -143,6 +143,22 @@ FEATURE_FLAGS = [
      "note": "Aug26: zero hits in either binary. Sits 3 bytes past the last real "
              "cell in this region (0xbdd) with nothing found through 0xC00. "
              "Low-expected-value to test."},
+    # Trim/theme candidate (channel b) — Aug26. The VIP translates EEPROM config into GMTrim,
+    # served to AAOS over IPC (VIPCALPAL) -> animengine AnimFlavor -> boot animation + theme.
+    # base is target-1 so the tool edits the exact byte (data_addr shows the real 0x0AA0/0x0AE5).
+    {"base": 0x0A9F, "name": "Trim/theme candidate → byte 0x0AA0 (UNCONFIRMED)", "risk": "med",
+     "options": [0x69, 0xC3, 0xF0],
+     "note": "Byte at 0x0AA0. Observed across trim dumps: stock=0x69, LTZ=0xC3, HighCountry=0xF0. "
+             "Candidate for the value the VIP maps to GMTrim (HighCountry=1 / LTZ=16) → AnimFlavor "
+             "→ boot animation + AAOS theme. NOT the raw enum (VIP applies an encoding) — UNCONFIRMED. "
+             "TEST: on a stock dump set this (+ 0x0AE5) to 0xF0 (HC) or 0xC3 (LTZ), reboot, then "
+             "`adb shell getprop persist.sys.anim.flavor` and `adb logcat | grep -i AnimFlavor` — "
+             "if GMTrim/AnimFlavor flips, this is the byte. Paired with 0x0AE5."},
+    {"base": 0x0AE4, "name": "Trim/theme candidate → byte 0x0AE5 (UNCONFIRMED)", "risk": "med",
+     "options": [0x69, 0xC3, 0xF0],
+     "note": "Byte at 0x0AE5 (paired with 0x0AA0, ~69 bytes apart — looks like a duplicated/"
+             "redundant field). Same observed values: stock=0x69, LTZ=0xC3, HighCountry=0xF0. "
+             "Set both 0x0AA0 and 0x0AE5 to match a full trim dump when testing."},
 ]
 
 # UI flags block at 0xE80: [marker][b1 b2 ...]; individual data bytes.
