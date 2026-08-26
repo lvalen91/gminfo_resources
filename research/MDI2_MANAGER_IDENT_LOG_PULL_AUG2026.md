@@ -766,3 +766,33 @@ the Bosch Manager's first connect, with a **USB-level capture** (usbmon/Wireshar
 device-network trace — to find the control transfer or ident exchange that arms the 900x services,
 then replicate it on macOS (libusb/IOKit, or a network handshake). Everything above the arming
 step is done and validated.
+
+### 4.24 Cold-arming capture RESOLVES it — NO special activation; macOS RNDIS is sufficient
+
+Captured the full cold sequence on the Surface (USBPcap both buses + device-network dumpcap):
+device power-cycled off, plugged in, Windows mounts it, Bosch Manager first-connect → "Connected".
+Artifacts: `GM_research/mdi2_macos/captures/cold_arming/{usb2.pcap,net.pcap}`. Findings:
+
+- **USB enumeration is standard** (dev VID `0x0ca0` PID `0x1301`, RNDIS: class 02/subclass 02/proto
+  ff). The only control transfers are GET_DESCRIPTOR ×3 + SET_CONFIGURATION — **no vendor control
+  requests**.
+- **RNDIS init is standard**: `INITIALIZE`, then `SET OID_GEN_CURRENT_PACKET_FILTER` and
+  `SET 802_3_MULTICAST_LIST` — exactly what every RNDIS host (incl. the generic macOS driver) does.
+  **No vendor OID, no `OID_GEN_RNDIS_CONFIG_PARAMETER`, no arming message.**
+- **No pre-900x device-facing network step:** before the 900x connect (29.6 s) the only device
+  traffic is its own `225.1.1.1:8194` beacon; the 17 KB `127.0.0.1:8125` exchange is pure
+  Manager↔ident **loopback**. The device gets **zero** host→device packets until the 900x TCP
+  connect.
+- The successful cold 900x connect uses the **identical** bytes my macOS client sends (control
+  frame `00 53 50 00 00 30 00 00` → device `…31…` in ~1 ms, then the byte-exact session_open).
+
+**Conclusion: the device requires NO Bosch-specific activation.** macOS's generic RNDIS gadget is
+sufficient; the macOS client works cold (proven by the earlier full session_open success). The
+intermittent "dormancy" on the Mac was **connection-pool/session exhaustion from rapid repeated
+test connects** (the device holds one session + a few connections) plus device boot timing — NOT a
+missing arming step. **This confirms §4.22 and supersedes §4.23/§4.21's "activation gap".**
+
+**Practical rule for the macOS client:** power-cycle the MDI for a clean state, connect once, open
+only the channels needed (9052 for logs), and **close cleanly**; don't hammer it. Under those
+conditions the full loop (discover → derive key → control handshake → session_open → get-logs →
+decrypt) works from macOS, USB-only, no Windows.
