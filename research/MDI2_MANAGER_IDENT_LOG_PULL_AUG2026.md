@@ -417,3 +417,36 @@ of the static `MODULE_TYPE_ID_*` keyring keys.
 per device via the Frida `BF_set_key` hook and hard-use it — no per-session/ per-pull extraction
 needed. Whether it is global (same for all MDI2 units) or per-device (serial-derived) is the open
 question; the derivation trace (below/next) resolves it.
+
+### 4.12 Key derivation trace (2026-08-26) — deterministic, computed at init, not at Connect
+
+Live tracing (Frida on a fresh Manager, attached *before* Connect) of how the 56-byte
+`fde7ccb2…` key comes to exist:
+
+- **Ruled out at Connect:** the keyring function `FUN_10246d40` (`+0x246d40`) is **never called**,
+  `BCryptGenRandom` **never fires**, `BCryptHashData` **never fires**, and **no `memcpy`/`memmove`
+  of the key bytes** occurs. Hooked all of these across a full Disconnect→Connect + Get Log Files.
+- At the first `BF_set_key`, the key `fde7ccb2…` is **already present** in the `TrnPrt` object,
+  even though we attached before Connect. Backtrace (raw RVAs → functions) of the *use* path:
+  `FUN_10268b90`(enc)→`BF_set_key` ← `FUN_1026b270` ← `FUN_10269ab0` ← `FUN_1026afd0`(TrnPrt) ←
+  `FUN_100aeff0` ← `FUN_100af180` ← `FUN_100b1ec0` ← `FUN_1007b0b0` ← `FUN_1009bdb0` ←
+  `FUN_100591f0` ← `FUN_10040f80`. This is the log-pull path; it *reads* the key, doesn't derive it.
+- The live **keyring in memory still holds the on-disk defaults** (`43297fad…`/`34921fad…`,
+  confirmed by ReadProcessMemory), so `fde7ccb2…` is derived and stored **only in the TrnPrt
+  object**, by **direct stores** (not a CRT copy), and — since attaching post-launch already
+  finds it present — **most likely at process/DLL init**, before any Connect.
+
+**Conclusion:** the key is a **deterministic function of stable input, computed once at init via
+inline stores** — not negotiated with the device at Connect and not randomly generated. Whether
+the input is the device serial (`D88985275`), a fixed constant, or a transform of the keyring
+default is still open.
+
+**Next step to pin it (either):** (a) `frida.spawn` the Manager suspended, install the
+keyring/RNG/hash/memcpy + a broad store-tracer, then resume — captures the **init-time**
+derivation the post-attach hook misses; or (b) hardware write-watchpoint on the key address
+(captured at the first `BF_set_key`) across a reconnect that reuses the object. 
+
+**Practical status unchanged:** the key is fixed per unit, so extract-once via the `BF_set_key`
+hook + reuse fully enables the macOS decryptor today (validated 100%). Native key *derivation* is
+the only remaining item, and it is an init-time deterministic computation, not a Connect-time
+exchange.
