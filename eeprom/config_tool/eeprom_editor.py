@@ -601,6 +601,22 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             return self.wfile.write(body)
+        if u.path == "/api/download":
+            # Stream the current (edited) bytes back as a file download so the browser
+            # shows its native Save dialog — no server-side path needed.
+            if not EE.loaded():
+                return self._send_json({"error": "No file loaded."}, 400)
+            data = bytes(EE.data)
+            base = EE.name or "dump.bin"
+            if base.lower().endswith(".bin"):
+                base = base[:-4]
+            fname = base + "_edited.bin"
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Disposition", f'attachment; filename="{fname}"')
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            return self.wfile.write(data)
         return self._send_json({"error": "not found"}, 404)
 
     def do_POST(self):
@@ -772,7 +788,8 @@ PAGE = r"""<!doctype html>
   <span class="grow"></span>
   <span id="fileInfo" class="mut small"></span>
   <button class="danger" onclick="revert()">Revert</button>
-  <button class="primary" onclick="saveAs()">Save As…</button>
+  <button onclick="saveAs()" title="Write to a path on this machine (resolves in the dump folder)">Save to folder…</button>
+  <button class="primary" onclick="dl()" title="Download the edited .bin through your browser — choose where to save">⬇ Download .bin</button>
 </header>
 <nav class="subnav" id="nav" style="display:none"></nav>
 <main id="app"><div class="empty">Upload an EEPROM dump, or pick a known dump and click Load.</div></main>
@@ -816,6 +833,7 @@ async function saveAs(){if(!S)return;
         body:JSON.stringify({path:p,confirm_overwrite:true})});j=await r.json();}
   if(j.error){toast(j.error,false);return;}
   toast('Saved → '+j.saved);S=j.state;render();}
+function dl(){if(!S){toast('Load a dump first',false);return;}window.location='/api/download';}
 
 async function setByte(addr,value){S=await api('/api/write',{addr,values:[value&0xFF]});render();}
 async function setByteHex(addr,hexval){const v=parseInt(hexval,16);
