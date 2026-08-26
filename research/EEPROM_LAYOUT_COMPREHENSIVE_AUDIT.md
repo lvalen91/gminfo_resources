@@ -301,6 +301,40 @@ configuration**, plus a little HMI config, plus the security region:
 A candidate 8 KB ring at `0xFEBDDE28` (0x2000) is a **trace/log buffer, NOT the EEPROM shadow** (recorded so it
 isn't re-mistaken). Used calId ranges unchanged: `0x40F–0x45A` + CalGroup live set `0xB4–0xB5/0xF9–0x103/0xDC1–0xDC9`.
 
+### §0.9 GUEST-SIDE ADB-UNBLOCK ARCHITECTURE — code-verified, FULL partitions (2026-08-26)
+
+Traced on the **full** ext4 images (prior guest passes saw only a 14-file curated subset): system 3.1 GB /
+vendor 465 MB / product 2.5 GB via `debugfs rdump` → 3273/1373/674 files.
+
+**VIP IPC intake:** `/vendor/bin/IPCServer` owns the VIP link (`/dev/ipc/ipc`, `/dev/ttyS4`), demuxes logical
+channels to Unix sockets. Clients via `libipc.so`: `gm_protokey` (ProtoKey→`vendor.gm.security.state`),
+`diagnosticsd` (`$27` SecurityAccess), `calserviced`, and the **Vehicle HAL** (`…vehicle@2.0-service-gm`,
+which sources VIN over the same transport).
+
+**ADB-unblock decision (end-to-end):** ADB is gated by a **GM-patched `adbd`** (`com.android.adbd` apex;
+`gm_adb_auth_init/verify/check_authentication`, `query_auth_manager`). It queries **`GMAuthManagerService`**
+over the Unix socket **`gmauthmanagerservice.socket.adb`**, which validates a **GM-cloud-signed JSON policy**
+in **`/data/gm_adb/policy`**: `TokenValidator → VinValidator(getVin) → CsmIdValidator(CSM ID) →
+ExpirationValidator(vs NTP trusted time) → UserValidator`, signature `SHA256withECDSA` via
+`GMTrustedADBCertificateStore`. Also a `/data/gm_adb/password` (PBKDF2/AES) path, and a **test-only override
+`persist.gm.adb.secure`** ("Feature test Only!"). MEC (ManufacturerEnableCounter) + SETM (secure time)
+sub-queries back the checks.
+
+**VERDICT — the guest ADB gate does NOT depend on the SBI / `$27` / ProtoKey channel:**
+- `vendor.gm.security.state` (ProtoKey state) is readable by `gm_authManager` but referenced by **0 of 492**
+  decompiled classes — unused.
+- `diagnosticsd` (`$27`) has **no adb symbol** — SecurityAccess does not enable adb.
+- No GMAuthManager class references `vip/diagnostic/protokey/sbi/seed/SecurityAccess`.
+- ADB unblock = **VIN + CSM-ID + cloud-signed policy + not-expired** (or the test property, or a local password).
+- Nuance: VIN itself is VIP-forwarded (Vehicle HAL) — ordinary vehicle identity, not the SBI/seed channel.
+
+**Reconciliation with the owner's SBI→ADB witness:** an EEPROM SBI flip **cannot forge a cloud ECDSA
+signature**, so the SBI's ADB effect operates **outside** this guest gate — most likely the VIP-side `$27`/SBI
+route writes/relaxes `/data/gm_adb/policy` or sets `persist.gm.adb.secure` via a path not present in these
+binaries (dispatch-hidden VIP + external diagnostic). **Now a precise bench test:** with the SBI flipped, diff
+`/data/gm_adb/policy`, `getprop persist.gm.adb.secure`, and `gmauthmanagerservice.socket.adb` traffic — that
+shows exactly what the SBI changes. This is the definitive guest-side instrumentation the static wall couldn't reach.
+
 ---
 
 ## 1. EEPROM Layout Maturity & Detail Level
