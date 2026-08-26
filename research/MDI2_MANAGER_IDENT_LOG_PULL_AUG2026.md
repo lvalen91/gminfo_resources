@@ -514,3 +514,32 @@ future capture/experiments fully self-driving (no human clicks).
 
 **Bottom line unchanged:** the macOS foundation is complete and validated — only the exact inline
 key-derivation formula remains, now localized to the key-holder `SetKey` caller.
+
+### 4.15 Static trace — pseudocode wall (2026-08-26)
+
+Pushed the `SetKey`-caller trace to its pseudocode limit. Dead-end reasons (so this isn't
+re-run blindly):
+
+- The enc/dec (`FUN_10268a40`/`b90`) run as `__thiscall` with the **key-holder in ECX**, and that
+  ECX is produced through **C++ move-semantics helpers** — e.g. `FUN_102113c0` is just
+  `*this = *src; *src = 0` (a `std::move` of a pointer). Ghidra's decompiler **drops the ECX
+  provenance** across these, so the key-holder's constructor + key-write can't be followed in the
+  pseudocode.
+- The `0x10268xxx` address neighborhood is **XML/istream parsing** (peek `<`/`>`, "unexpected
+  EOF"), not the crypto class — adjacency is misleading.
+- Connect handlers (`FUN_1005f5f0`) do the SID handshake (`0x7f5/0x849/0x874`) over a 0x2000
+  buffer; no inline key computation visible there.
+
+**To actually pin the formula, the remaining options are heavier:**
+1. **Assembly-level RE** — re-decompile the enc/dec + their callers in a live Ghidra session
+   with manual `__thiscall`/ECX typing (or read the raw x86) to recover the key-holder ctor and
+   its `SetKey` source. The pseudocode dump alone is insufficient.
+2. **Stalker trace** of a single automated Connect, instrumented to catch the store that first
+   writes the key bytes (heavy; now feasible since Connect is fully scriptable).
+3. Non-disruptive **hardware debug-register watchpoint** — but the master address isn't known
+   until after the one-time write, and it isn't re-derived on reconnect, so it can't be pre-armed
+   without a fresh-process race.
+
+**Verdict:** exact derivation is **not** recoverable from the current pseudocode corpus; it needs
+assembly-level ECX tracing or Stalker. Practical deliverable (deterministic per-unit key,
+extract-once, validated decrypt, full automation) stands complete.
