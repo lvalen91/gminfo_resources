@@ -378,6 +378,40 @@ nonzero; (2) `getprop` / probe `gm_adb_is_secure_mode` — false; (3) inspect th
 `"MEC"` reply. Also note: that MEC socket is **unauthenticated plaintext**, so it is independently spoofable on a
 compromised guest (a separate finding).
 
+### §0.11 SECURITY-RELAXATION LANDSCAPE — MEC domino + other permissive gates (2026-08-26)
+
+**Domino of SBI→MEC≠0 is NARROW.** MEC travels as a 0–255 counter but every *gating* guest consumer collapses
+it to **binary** (0 vs nonzero). Consumers: `ManufacturerEnableCounter` (reader; has an UNUSED `jni_Get_MEC`
+native decl — dead), `GMVehicleData.getMec()` (fails closed → 0 on unavailable), `GMMecHandler` (echoes the raw
+int to a paired diagnostic/dealer tool — the only graded passthrough), and the ADB cert gate (binary). **No
+SELinux / feature-unlock cascade keyed on MEC was found** — MEC≠0's confirmed guest effect is essentially the
+ADB-cert bypass.
+
+**MEC levels: none.** `[0,255]`, out-of-range → `-1` (a third "unavailable" state → cert-required/fail-closed).
+No `==N`/`>N` branching anywhere. It's a manufacturer-mode toggle, not a graded-permission field.
+
+**Other permissive-state variables (ranked):**
+| # | Variable | Source | Effect | Reachable? |
+|---|---|---|---|---|
+| 1 | **MEC≠0** | DID `0xF1A0` / VIP | removes the ADB cloud-cert requirement outright | yes (SBI) |
+| 2 | **`persist.gm.trust_sys_time=1`** | property | bypasses NtpTrustedTime → clock rollback validates an **expired** ADB policy (MEC-independent) | if writable (untested) |
+| 3 | `persist.gm.register.vin` / `.csm` | debug-only props | override vehicle VIN/CSM → satisfy a VIN/CSM-bound policy on the wrong unit | if writable (still needs a signed policy) |
+| 4 | `sys.gmsec.ocsp_freq` / `exp_enforce` | properties | override OCSP/expiration values — **only on non-`user` builds** | build-gated |
+| 5 | `ManageFleetFlag` (DID `MANAGED_FLEET_FLAGS`) | DID / VIP | fleet "remote enable" bit — narrow entitlement | — |
+| 6 | **`SECURE_UNLOCK_LEVEL` (DID id17, Eth, graded int) + `SIGNATURE_BYPASS_TICKET` (DID id18, CAN)** | DID / VIP | `DiagnosticsInternalManager.getSecurityLockLevel()` / `isSignatureBypassTicketPresent()` — genuine **ECU reflash-security** primitives (the guest-facing UDS `$27` analog); **NO caller found in this build** | OPEN — likely used by an external flashing tool or `GMRegistrationService.apk` (only odex/vdex present, not decompiled) |
+| 7 | `DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE` (CalSets.db, `=0`) | signed calibration | if `1`, skips device/account registration binding — theoretically most powerful | needs cal-flash (not runtime) |
+
+`VEHICLE_LOGISTICS_MODE=1` (CalSets.db) is a plausible ship/transport mode but no guest consumer was located
+(inferred). `vendor.gm.security.state` / `gm_protokey` is anti-theft — **restrictive, not permissive**
+(`data_locked` is the outcome to avoid).
+
+**Takeaways:** (1) highest-leverage *reachable* unlock = **MEC≠0** (the SBI path) — the only one that removes a
+whole auth requirement. (2) MEC-independent runner-up = **`persist.gm.trust_sys_time=1` + clock rollback**
+(defeats ADB-policy expiration) — test writability with `setprop` once adb is up, watching for the SELinux
+denial. (3) Most interesting open thread = **`SECURE_UNLOCK_LEVEL` / `SIGNATURE_BYPASS_TICKET`** — real reflash
+primitives with no located caller; if wired up (via `GMRegistrationService.apk`, needs re-dex from odex/vdex)
+they outrank MEC (gate ECU *programming*, not just a debug shell).
+
 ---
 
 ## 1. EEPROM Layout Maturity & Detail Level
