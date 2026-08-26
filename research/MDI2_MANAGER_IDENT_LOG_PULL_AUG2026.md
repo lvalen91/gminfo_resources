@@ -450,3 +450,31 @@ derivation the post-attach hook misses; or (b) hardware write-watchpoint on the 
 hook + reuse fully enables the macOS decryptor today (validated 100%). Native key *derivation* is
 the only remaining item, and it is an init-time deterministic computation, not a Connect-time
 exchange.
+
+### 4.13 Spawn capture result (2026-08-26) — derivation is Connect-time and inline (no lib calls)
+
+`frida.spawn` of the Manager with init-time hooks (keyring, `BCryptGenRandom`, `BCryptHashData`,
+key-content `memcpy`/`memmove`, `BF_set_key`) + a memory scan for the key, all armed on
+module-load before `resume`:
+
+- **12 s after spawn, with no device Connect, the key `fde7ccb2…` is NOT present in process
+  memory** (`Memory.scan` of all `rw-` ranges → 0 hits), and none of the hooks fired.
+
+This **refutes the "derived at init" hypothesis** (§4.12): the key is **not** computed at
+startup. Combined with §4.12 (attaching *before* Connect, then connecting, still caught no
+keyring/RNG/hash/memcpy yet the key was present at first `BF_set_key`), the derivation is:
+
+- **Connect-time** (only exists after a device Connect), and
+- **inline** — pure in-DLL arithmetic/stores, using **no** keyring lookup, no `BCrypt*`, no CRT
+  copy. Deterministic (same value every time) from stable input.
+
+**Definitive next technique (the only ones that can catch inline stores):** (a) hardware
+write-watchpoint on the key address — capture it at the first `BF_set_key`, set the watchpoint,
+then Disconnect→Connect so the derivation re-writes it; or (b) `Stalker` trace of the Connect
+path, filtering for the instruction that first writes `fde7ccb2`. Both require a GUI Connect on
+the live rig. Static alternative: locate the `TrnPrt` constructor (vtable holding
+`FUN_10268a40`/`FUN_10268b90`) and read its key-init.
+
+**Deliverable status:** unchanged and complete — deterministic per-unit key, extract-once via the
+`BF_set_key` hook, 100%-validated decrypt. Only the exact inline derivation formula (→ global vs
+serial-derived) remains open.
