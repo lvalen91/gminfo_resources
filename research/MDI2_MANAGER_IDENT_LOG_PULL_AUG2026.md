@@ -478,3 +478,39 @@ the live rig. Static alternative: locate the `TrnPrt` constructor (vtable holdin
 **Deliverable status:** unchanged and complete — deterministic per-unit key, extract-once via the
 `BF_set_key` hook, 100%-validated decrypt. Only the exact inline derivation formula (→ global vs
 serial-derived) remains open.
+
+### 4.14 Static derivation trace (2026-08-26) — architecture mapped; exact formula still buried
+
+Pursued the derivation via static RE (safe/offline) + confirmed dynamic facts. Mapped the
+transport/crypto class structure in `bvtx_vci_rt.dll`:
+
+- The cipher `this` is a **key-holder object** (56-byte key at **offset 0**; enc `FUN_10268b90`,
+  dec `FUN_10268a40` re-key from it each call). It is **distinct** from `CTransport`
+  (`TrnPrt`/`CTransport::vftable`, ctor `FUN_1025cd30`, offset 0 = vtable).
+- Connect wiring: `CClientTransport::InitializeClientStart` (`FUN_1025dc70`) allocates each
+  0xA0-byte `CTransportServer` (`FUN_1025cd30`); connect handlers `FUN_1005f5f0` / (line 175781)
+  drive the SID handshake (`0x7f5/0x849/0x874`) over a 0x2000 buffer (`FUN_10246990`).
+- The key-holder class methods cluster at `FUN_10268040`–`FUN_10269620` (mostly
+  serialize/enc/dec). `FUN_102682e0` is a deserializer, not SetKey.
+
+**Dynamic facts that constrain the derivation (from §4.11–4.13 + this session):**
+- Deterministic; **one master** key-holder persists across Disconnect (heap ~`0xd2dxxx`), copied
+  by inline stores into ~13 per-channel holders on Connect (freed on Disconnect).
+- Computed **once at first Connect** (absent before Connect; not re-derived on reconnect — a
+  `MemoryAccessMonitor` write-watch on the master pages caught **no** write during reconnect).
+- Uses **no** keyring lookup, `BCryptGenRandom`, `BCryptHashData`, or CRT `memcpy` — pure inline
+  arithmetic. No device-serial reference seen on the traced connect/crypto path so far.
+
+**Precise remaining lead:** the key-holder's `SetKey` (writes 56 bytes to holder+0) inside the
+`FUN_10268xxx` cluster, and its single caller on the first-Connect path — that caller holds the
+seed. Finding it pins global-vs-per-device. This is a bounded but non-trivial RE dig (several more
+functions), not answerable from the traces alone.
+
+**New capability delivered this session:** full **headless GUI automation** of the Manager over
+SSH — a `/it` scheduled task (runs in the interactive session) + `SetForegroundWindow`+mouse-click
+drives open/close/**Connect** (auto-id 1121)/**Disconnect** (1122); verified Connect →
+"Connected: SN 88985275". Scripts in `mdi2_macos/ps/` (`uia_drive.ps1`, launchers). This makes
+future capture/experiments fully self-driving (no human clicks).
+
+**Bottom line unchanged:** the macOS foundation is complete and validated — only the exact inline
+key-derivation formula remains, now localized to the key-holder `SetKey` caller.
