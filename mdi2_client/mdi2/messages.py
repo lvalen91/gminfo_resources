@@ -17,6 +17,12 @@ def poll(msg_id: int, target: str = "session") -> bytes:
     return json.dumps({"has_data": False, "id": msg_id, "target": target},
                       separators=(",", ":")).encode()
 
+
+def session_close(session_id: int) -> bytes:
+    """Release the device session (id 2, data=session id). Sent before disconnect."""
+    return json.dumps({"data": session_id, "has_data": True, "id": 2, "target": "session"},
+                      separators=(",", ":")).encode()
+
 def parse(payload: bytes):
     """Decode an application payload: JSON dict, or raw bytes for binary commands."""
     p = payload.rstrip(b"\x00")
