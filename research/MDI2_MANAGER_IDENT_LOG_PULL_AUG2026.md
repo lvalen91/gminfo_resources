@@ -693,3 +693,26 @@ samples, but the log path is fully reproduced.
 derivation (`base+serial`), Blowfish-ECB, `construct`-based framing + container, JSON messages,
 active `pull_logs`. Verified end-to-end offline: pcap → decrypt → extract `messages` (59497 B,
 byte-exact) with a stock venv (`pycryptodome` + `construct`). CLI: `python -m mdi2.cli {scan,key,connect}`.
+
+### 4.21 Live macOS bring-up (2026-08-26) — client validated; device-activation gap found
+
+MDI2 moved to the Mac via USB (RNDIS gadget = **en17**, MAC 70:c6:ac:00:05:39). The MDI DHCP-serves
+the host **192.168.171.30** (same as Windows) but macOS assigned a **/32** — set `en17` to
+`192.168.171.30/24` (`sudo ifconfig en17 inet 192.168.171.30 netmask 255.255.255.0`) so the device
+subnet is on-link (a full-tunnel VPN on `utun6` had otherwise stolen the route).
+
+**Working live from macOS:** ping .2 (~1 ms); ports 21/80/9000/9002/9004/9005/9001/9052 open;
+**discovery beacon** received on `225.1.1.1:8194` — 41 bytes, decodes to `[len][0x86d][serial
+uint32][…][module_type 0x1c=MDI_2][…]`, so the client **auto-derives the key from the beacon**.
+All 14 channels TCP-connect; key derivation, Blowfish, framing, control-frame format, JSON
+messages, and container parsing are all validated against captures.
+
+**Blocker — 900x services are dormant on the Mac.** The device ACKs the control frame + session_open
+but sends **no data on any channel**; the identical bytes got a 1 ms reply on the Surface. So the
+device needs a **device-level activation** that the Bosch Windows stack performs (USB
+driver control step and/or an ident handshake) and the generic macOS RNDIS gadget does not. The
+900x app protocol is fully reproduced; only *arming* the device from a cold, non-Bosch host remains.
+
+**Next:** capture a **cold first-connect** on the Surface (device power-cycled, then Bosch Manager's
+very first connect) incl. USB-control + ident traffic, to find the activation step; or inspect the
+Bosch USB driver's enumeration/control sequence. Client code: `GM_research/mdi2_macos/client/`.
