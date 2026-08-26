@@ -278,3 +278,84 @@ START
 - **Biggest self-brick risk:** flipping a byte inside a checksummed region without recomputing the
   checksum — always resolve checksum coverage in T0.
 ```
+
+---
+
+## UDS FRAME LIST — the 5 SBI/`$27`/DID bench tests (2026-08-26)
+
+Target ECU = **`0x80`** (CSM). Portable part = the **UDS PDU**; the `gm_dps/misc/Aug24_session/ecu80_READ.Txt`
+on-wire form wraps it as `0E F5 0A 80 <UDS>` (request) / `25 80 0E F5 <UDS>` (response) — DPS/MDI2 GCI framing.
+Send the UDS PDU; the tool (DPS or `mdi2_client`) adds the wrapper. Keep `3E 80` (TesterPresent, suppressed)
+flowing every ~2 s or the session/unlock drops.
+
+**Preamble**
+```
+10 03        → 50 03 00 64 01 F4     extendedDiagnosticSession
+3E 80                                 TesterPresent (suppressResponse) — keep-alive
+```
+
+### Test 1 — MEC read, SBI set vs cleared (live re-confirm of §0.14)
+```
+10 03
+22 F1 A0   → 62 F1 A0 FF   SBI-set (MEC=255 → adb cert bypassed)
+           → 62 F1 A0 00   stock   (MEC=0   → adb cert required)
+22 F1 90   → 62 F1 90 <17 ASCII VIN>   (sanity)
+NRC: 7F 22 31 requestOutOfRange · 7F 22 33 securityAccessDenied
+```
+
+### Test 2 — `$27` L01 key-accept ("any/stub key?")
+```
+10 03
+27 01      → 67 01 FF FF … FF   seed (all-FF expected; COUNT bytes = seed length, ~31 in sample)
+27 02 <key>                     sendKey L01; key LENGTH = seed length; try (a) all-FF then (b) all-00
+           → 67 02              KEY ACCEPTED ⇒ stub/any-key unlock proven ✅
+           → 7F 27 35           invalidKey ⇒ real key required
+NRC: 7F 27 36 exceededAttempts · 7F 27 37 timeDelayNotExpired · 7F 27 24 sequenceError
+```
+
+### Test 3 — higher levels all-FF? (SecurityLevel value = `$27` requestSeed subfunction; sendKey = +1)
+```
+27 01 Service(1)            27 03 AssemblyPlant(3)      27 05 OTA(5)
+27 09 Engineering(9)        27 0B RemoteDiagnostics(11) 27 0D SupplierSecAccess(13)
+27 11 ExtendedReflash(17)   27 13 ExtendedAssembly(19)  27 15 ExtendedOTA(21)   27 5F EndOfLife(95)
+Each → 67 <sf> <seed>. all-FF seed ⇒ level trivialized (run Test-2 sendKey on it).
+NRC 7F 27 12 subFunctionNotSupported = level absent.
+```
+
+### Test 4 — `SECURE_UNLOCK_LEVEL` over DoIP (CAN↔Ethernet state-sharing) — with DID sweep
+Transport = **DoIP (ISO 13400) over T1 (100BASE-T1)**. DoIP header = `02 FD <ptype:2> <len:4> <payload>`.
+```
+# 4a. Discover the CSM DoIP logical address (LA)  — UDP 13400
+Vehicle Identification Request:  02 FD 00 01 00 00 00 00
+   → 02 FD 00 04 <len> <VIN:17> <LA:2> <EID:6> <GID:6> …    LA = ECU logical addr → Target Address (TA)
+
+# 4b. TCP 13400 → Routing Activation (tester source e.g. 0E00)
+   02 FD 00 05 00 00 00 07  0E 00  00  00 00 00 00
+   → 02 FD 00 06 … code 0x10 = success
+
+# 4c. First raise level on CAN (Test 2/3), THEN read over DoIP:
+   Diag message (ptype 0x8001):  02 FD 80 01 00 00 00 07  0E 00  <TA_hi TA_lo>  22 <DID_hi DID_lo>
+   → 62 <DID> <level>   level matches the CAN-set level ⇒ shared state; 0 ⇒ per-transport (separate)
+
+# 4d. DID sweep (SECURE_UNLOCK_LEVEL wire-DID unknown — enum "CUSTOM id 17" ≠ a DID). Prioritized:
+   candidates:  22 00 11 · 22 00 17 · 22 11 17 · 22 00 05
+   Eth block:   22 F1 00 … 22 F1 FF
+   GM custom:   22 01 00 … 22 02 FF
+   HIT = 62 <DID> <n> where n ∈ {0,1,3,5,9,11,13,17,19,21,95} (a SecurityLevel value).
+```
+
+### Test 5 — DID-18 Signature-Bypass Ticket (real DID unknown; "18" = service-manual, enum `mGBMessageId=2`)
+```
+# 5A (preferred) CAPTURE during an OTA poll:
+  Trigger a dev-signed VIP package install (or a programming session) → DelayedWKSApp calls isSBISet()
+  → VIPRequestManager emits the ticket request on CAN toward the VIP. Sniff CAN for the req/resp pair,
+  once with SBI set and once cleared → payload>0 vs 0 identifies the message + its bus ID.
+
+# 5B (fallback) $22 sweep to ECU 0x80 AND the VIP target:
+  candidates:  22 00 12 · 22 00 18 · 22 F1 18 · 22 F1 12 · 22 00 02
+  block:       22 F1 00 … 22 F1 FF     (the ticket DID = the one whose payload flips 0↔nonzero with SBI)
+```
+
+**Sweep note (for `mdi2_client`, Python):** iterate single DIDs (`for lo in range(0x100): send(bytes([0x22,0xF1,lo]))`,
+then `hi in (0x00,0x01,0x02)`); many ECUs reject multi-DID `$22`, so one DID per request, read response, compare
+SBI-set vs cleared. Space `$27` retries — attempt limit + lockout (`7F 27 37`).
