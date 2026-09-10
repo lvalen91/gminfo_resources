@@ -254,16 +254,30 @@ INFRASTRUCTURE PRESENT:
   - ro.vndk.version = 32 (Android 12)
   - ro.product.first_api_level = 29 (Android 10)
 
-CRITICAL BLOCKER FOUND IN SEPOLICY:
+NOT A SEPOLICY BLOCKER:
   (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
 
   This SELinux rule SUPPRESSES THE AUDIT LOG for gm_update_engine accessing GSI
   metadata (a `dontaudit` rule hides the denial from logs; it does NOT itself grant
-  or deny access). GSI being disabled is INFERRED from the other evidence below
-  (ro.treble.enabled, dynamic_system service, network/space prerequisites), not from
-  this rule alone.
+  or deny access). It also targets the OTA A/B engine, not the DSU path.
 
-POSSIBLE FAILURE CAUSES:
+CONFIRMED ROOT CAUSE (2026-09-03, live OS dump):
+  The DSU Loader is non-functional because the DSU FRONT-END APP IS REMOVED.
+  `com.android.dynsystem` is ABSENT from the live 89-package set (Y181 Apr-2026
+  packages.txt). The DSU Loader in Developer Options and the intent path
+  `am start-activity -n com.android.dynsystem/…VerificationActivity …START_INSTALL`
+  fail with activity-not-found — not a policy denial.
+  - `gsid` daemon + `gsi_tool` are RETAINED with full stock SELinux policy (~50 allow
+    rules; can write gsi_metadata_file/gsi_data_file/ota_image_data_file, drive dm/loop
+    devices, sys_admin). The block is NOT at the policy layer.
+  - Direct `gsi_tool` path closed by user build (ro.build.type=user, ro.debuggable=0,
+    shell uid 2000) and the MANAGE_DYNAMIC_SYSTEM signature|privileged permission.
+  - Booting any staged GSI is gated by locked verified boot (flash.locked=1,
+    device_state=locked, verifiedbootstate=green, sys.oem_unlock_allowed=0); fstab
+    trusts only Google GSI keys (q/r/s), so only a Google-signed GSI could pass AVB.
+  See platform/boot_chain.md §GSI/DSU Status for full provenance.
+
+SUPERSEDED FAILURE-CAUSE GUESSES (kept for history; root cause is above):
   1. SELinux enforcement blocking GSI operations
   2. GM update_engine lacks GSI metadata permissions
   3. Network download blocked by GM servers

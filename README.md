@@ -14,16 +14,19 @@ gminfo_resources/
 ├── platform/          Hardware specs, boot chain, security, networking, FSA protocol, OTA stack, firmware versions, tech specs
 ├── hardware/          Physical teardown, BOM, photos, EEPROM/IFWI analysis
 ├── eeprom/            EEPROM mod guide, analysis reports, undocumented flags, .bin dumps
-│   ├── bins/          EEPROM binary dumps (stock, modified, ADB-enabled, bricked Y177)
+│   ├── bins/          EEPROM binary dumps (Y181 ADB-enabled: HC + LTZ)
 │   └── config_tool/   eeprom_editor.py + firmware_re/ (115 decompiled VIP_APP functions)
 ├── enumeration/       ADB + fastboot enumeration by firmware build
+│   ├── scripts/       gm_aaos_enum.sh, quick_security_check.sh
 │   ├── Y175/          Jan 2026 enum, VIP UART log, SELinux policy
-│   └── Y181/          Dec 2025 enum + Apr 2026 enum (apr2026/), fastboot enums
+│   └── Y181/          Dec 2025 enum + Apr 2026 (apr2026/) + Jun 2026 (jun2026/), fastboot enums
 ├── diagnostics/       DPS session logs, CAN bus traces, Ethernet UDS (diagnosticsd :49156)
 │   └── dps/           A11 Radio (ECU 0x80) DPS 4.56 logs
 ├── research/          Deep-dive analysis docs, decompiled artifacts, scripts, reports
-│   ├── MASTER_REFERENCE.md, INVENTORY.md, 17 docs/research + Y177/Y181 VIP/GHS analyses
+│   ├── MASTER_REFERENCE.md, INVENTORY.md, 30 docs/research + Y177/Y181 VIP/GHS analyses
 │   ├── security/      Security-specific CVE and threat analyses
+│   ├── fuzz/          VMM1/OTA parser fuzz bundles and synthesis outputs
+│   ├── type4_radio_info/  Type-4 radio SPAT/calibration build kit
 │   ├── canbus_reset/  CAN bus reset investigation (analysis + CFX config XML)
 │   ├── decompiled/    Ghidra/radare2 string dumps and decompiled C (VMM, ELK, SA015, IVCS)
 │   ├── scripts/       Analysis scripts (avb_audit.py, crypto_scan.py, ghs_dump.py, etc.)
@@ -36,7 +39,8 @@ gminfo_resources/
 ├── codecs/            Full media codec manifest
 ├── projection/        CarPlay vs Android Auto, cluster nav, CPC200 integration
 ├── runtime/           Boot timing, memory pressure, known issues
-└── analysis/          Debloat comparison, third-party API access, platform FAQ
+├── analysis/          Debloat comparison, third-party API access, platform FAQ
+└── mdi2_client/       Native macOS MDI2 diagnostic client (Python tooling, separate project)
 ```
 
 ---
@@ -92,7 +96,7 @@ Framing bytes at ±1 vary per firmware version — locate by offset, not pattern
 | Document | What it covers |
 |----------|----------------|
 | [`hardware/teardown.md`](hardware/teardown.md) | Full BOM, PCB layout, security architecture, GHS analysis, research vectors, catch-22s |
-| [`hardware/connectors.md`](hardware/connectors.md) | Rear-panel connector map: FAKRA/coax farm, Stac64 power/CAN/AVB-Ethernet headers, FPD-Link display + USB, Bose-amp AVB path, X1–X11 cross-ref |
+| [`hardware/connectors.md`](hardware/connectors.md) | Rear-panel connector map + **authoritative IOK connector pinouts** (ALLDATA + GM Body Builder Manual, this VIN): FAKRA/coax farm, Stac64 power/CAN/Ethernet, FPD-Link display (**A22 center-stack HMI**), USB (one USB 2.0 lane, 3-receptacle daisy chain, HSAL2 pinout, ADB role-switch), Bose-amp AVB trace (Ethernet Bus 6), RPO build manifest, X1–X11 cross-ref |
 | [`platform/vehicle_network.md`](platform/vehicle_network.md) | Vehicle-wide two-plane network: 24-ECU CAN census (gateway 0x45, radio 0x80) from the DPS log + Ethernet vlan4/5 IP/partition map + FSA/SOME-IP; flags where sources disagree |
 | [`platform/ota_programming_roles.md`](platform/ota_programming_roles.md) | Who reflashes what: radio = ProgrammingMaster/HMI + flashes own domain via VIP UDS/CAN; telematics/CGM = download conduit; Y181 package inventory; CalDef GIS-658/763/887 evidence |
 | [`platform/security.md`](platform/security.md) | SELinux, dm-verity, FBE, EEPROM security, CVEs, ProtoKey |

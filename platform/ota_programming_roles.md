@@ -122,6 +122,28 @@ self-programming addressing gateway 0x45 (Global B Phase 1) → RRM/FSA with inf
 (Global B Phase 2)**. The FSA `ProgrammingMaster` service on the radio (`.100:9011`) and
 `RemoteReflash`/`RemoteReflashUI` on other nodes match the Phase-2 RRM model.
 
+## GM dealer service programming (SPS2) — official procedure
+
+From GM service data (ALLDATA *Control Module References → Programming and Setup*), the
+dealer-side reflash path for the modules this radio orchestrates:
+
+- **A11 Radio — USB-mediated SPS, not a straight bus push.** SPS2 generates the payload, then it
+  is **copied to a USB stick** ("USB File Transfer") and installed by the infotainment itself:
+  requires an **EL-52100 MDI 2** (the older EL-47955 MDI **fails**), USB **FAT32 ≥16 GB** (USB
+  3.x recommended), vehicle OFF/PARK/door-closed, stable voltage via a *maintainer*. Flow: SPS →
+  *A11 Radio – Programming* → USB copy → move to vehicle → ignition/infotainment ON → on-screen
+  "Update" → Clear DTCs → **reset the Manufacturer Enable Counter (MEC) via GDS2** → ignition OFF,
+  RAP off, fob removed, 5-min wait. (Check *Settings → Updates* for a pending OTA first.)
+  Failed-programming recovery = de-power the module ≥10 min (fuse/connector/battery) then retry.
+- **T3 Audio Amplifier — standard SPS**, no USB, no MEC: ignition OFF → SPS *T3 – Programming* →
+  Clear DTCs.
+- **MDI 2 relevance:** this is the same dealer tool family the repo's `mdi2_client/` speaks to —
+  the USB-SPS/MEC detail explains why the radio's reflash path differs from a plain UDS `$34/$36`
+  push and why MEC state matters after programming.
+
+This is the **dealer** path; it is orthogonal to the GHS/`gm_update_engine` OTA machinery
+documented above (which is how GM pushes signed packages OTA/USB to the running stack).
+
 ## Verification plan
 
 Capture **CAN + VIP↔SoC HDLC IPC + FSA** simultaneously during a real multi-module OTA:

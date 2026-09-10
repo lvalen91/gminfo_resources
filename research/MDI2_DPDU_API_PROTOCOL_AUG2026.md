@@ -86,7 +86,7 @@ request goes out correctly — this is very likely why earlier native-client att
 | `0x886`/`0x887` | bind event channel | used on the event socket |
 | `0x888`/`0x889` | capability query / keepalive ping | harmless to poll; carries no diag data |
 | `0x44D`/`0x44E` (1101/1102) | GetVersion | |
-| **`0x44F`/`0x450`** (1103/1104) | **PDUCreateComLogicalLink** | resource id at payload byte 9: `0x06`=raw CAN, `0x2A`=MDI-managed ISO-TP |
+| **`0x44F`/`0x450`** (1103/1104) | **PDUCreateComLogicalLink** | resource id at payload byte 9: `0x06`=raw CAN, `0x2A`=MDI-managed ISO-TP. **The `0x450` reply is status-only (`0c000000 50040000 00000000`) — it does NOT return a handle.** The CLL handle is CLIENT-assigned and deterministic: `handle = (channel_id << 24) \| index` (high byte = channel from the `0x885` reply, low byte = sequential CLL index). See CORRECTION 2026-08-27. |
 | `0x451`/`0x452` (1105/1106) | **PDUDestroyComLogicalLink** | payload = handle only |
 | `0x457`/`0x458` (1111/1112) | **PDUGetComParam**(handle, paramId) | |
 | `0x459`/`0x45A` (1113/1114) | **PDUSetComParam**(handle, paramId, value) | 34-byte payload, paramId @off17, value @off30 |
@@ -97,6 +97,23 @@ request goes out correctly — this is very likely why earlier native-client att
 | `0x467`/`0x468` (1127/1128) | **PDUIoCtl**(handle, ioctlId, data) | handle `0` + id `0x0B` = clear RX buf (before every CreateCLL); handle `0xFFFFFFFF` + id `0x06` = read battery voltage in mV (after every teardown, e.g. `0x2f6c`=12140mV) |
 | `0x863` (2147, event socket only) | async diagnostic event | TX-confirm (`blockLen`=0) or RX data (`blockLen`>0); see §4 |
 | `1505` (event socket only) | multi-frame length indication | precedes a multi-frame `0x863` response |
+
+> **CORRECTION 2026-08-27 (live bench, native macOS replay of stream 414 + DoIP x80 read):**
+> - `PDUCreateComLogicalLink` does **not** return a handle. `0x450` reply = `0c000000 50040000 00000000`
+>   (12 bytes, status word only). The handle is **client-assigned**: `handle = (channel_id << 24) | index`,
+>   verified against every `0x459/0x45D/0x45F/0x461/0x463` frame in stream 414 (channel `0x13` →
+>   handles `0x13000002 … 0x13000006`). To replay against a live MDI, capture the live channel id from
+>   the `0x885` reply (payload offset 12) and substitute the channel byte in each command frame's leading
+>   handle word — no handle needs to be scraped from any response.
+> - `.70` DHCP lease requires the `br-usb` bridge to stay up **~18.85 s** (SET_BRIDGE enable→disable in
+>   the capture); the bare eth-enable IOCTLs alone do not lease `.70` if the session is torn down promptly.
+>   The SET_BRIDGE-enable IOCTL blocks **~3.28 s** server-side while eth0 links.
+> - DoIP addressing confirmed live: tester `0x0EF5`, gateway `0x0C45` (answers from proxy source `0x0045`),
+>   radio ECU 0x80 physical target `0x0A80` (answers from `0x2580`), functional `0xEFFE`.
+>   `wakeUpNetworks` = `31 01 02 0E FF FF FF` (the `FF FF FF` suffix is required; omitting it → `7F 31 13`).
+>   Radio `27 01` seed is a **null 31×`0xFF`** and the ID/SBI DIDs read with **no** SecurityAccess unlock.
+> - Full results: `~/Desktop/MDI2_DPDU_DoIP_x80_bench_report.md`. Replay engine: `mdi2_client/mdi2/dpdu_replay.py`
+>   (supersedes the guess-based `mdi2/dpdu.py`, whose builders are unverified — recommend deleting it).
 
 ## 4. Per-operation bring-up sequence (gold-standard reconstruction, from stream 317 — a full
 radio flash — cross-checked against streams 106/131/183/215/244/296/360/415/438)
@@ -548,8 +565,8 @@ background process (`gm_mdi_manager.exe` or a service DLL it hosts), that DPS/SP
   unexplored).
 - **opcode `0x8bf`→`0x8c0`**: capability/count query → responds `count=1`.
 - **opcode `0x8d1`→`0x8d2`** — **the key frame** (capture frame 7650): client sends a string
-  `"BSH:88985275:28:9.1.2752.177:08"` (Bosch-format: **serial `88985275`** = this exact unit's
-  serial, confirmed matching `GM VCIHistory ...-D88985275.txt`; `module_type=28`; firmware
+  `"BSH:<SERIAL>:28:9.1.2752.177:08"` (Bosch-format: **serial `<SERIAL>`** = this exact unit's
+  serial, confirmed matching `GM VCIHistory ...-D<SERIAL>.txt`; `module_type=28`; firmware
   `9.1.2752.177`) **followed by a 28-byte credential, hex-encoded as ASCII**:
   `5F06abb5de50a079fCd1e8f69d3EaF16c8D3E5Ee4F55eF31cB0A3fdE`. Server responds with a bare
   status value (`3`).
@@ -562,7 +579,7 @@ background process (`gm_mdi_manager.exe` or a service DLL it hosts), that DPS/SP
 material the *client software* already possesses and hands to the local Manager — it is **not
 derivable from anything in the network capture**, was not found anywhere on disk in this
 research tree (`grep` across all of `gm_dps` for the exact hex string: no hits; only the device
-serial `88985275` itself appears, in log/VCIHistory files — a *different*, device-manufactured
+serial `<SERIAL>` itself appears, in log/VCIHistory files — a *different*, device-manufactured
 16-byte `serialnum` value, not this 28-byte credential). It most plausibly lives in a
 Windows-side protected store (registry/DPAPI blob, or is itself fetched from a GM licensing
 server at Manager startup) tied to the specific DPS/SPS installation.

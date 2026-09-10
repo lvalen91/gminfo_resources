@@ -283,7 +283,7 @@ The GHS INTEGRITY hypervisor exposes the following device interfaces under `/dev
 |--------|----------|-------|
 | `gm_vnd_IPCServer` | VIP MCU IPC communication | Runs as **ROOT**, handles HDLC protocol on `/dev/ttyS1` |
 | `gm_diagnosticsd` | UDS diagnostic service | Handles $10/$22/$27/$2E/$31/$34/$36/$37 commands |
-| `gm_update_engine` | OTA firmware updates | Has GSI blocker: `dontaudit gm_update_engine gsi_metadata_file` |
+| `gm_update_engine` | OTA firmware updates | GM fork of AOSP A/B update_engine. (Note: the `dontaudit gm_update_engine gsi_metadata_file` rule in `vendor_sepolicy.cil` is **not** a GSI blocker — see GSI/DSU Status below.) |
 | `gm_vehicle_hal` | Vehicle HAL implementation | Bridge between Android and VIP/CAN |
 | `gm_protokey` | Security key validation | Controls SELinux enforcement mode |
 
@@ -297,9 +297,27 @@ The following domains have access to Vehicle HAL properties:
 - `plmanager`
 - `vehicleaudiocontrol`
 
-### GSI Blocker
+### GSI/DSU Status (corrected)
 
-The SELinux policy includes `dontaudit gm_update_engine gsi_metadata_file` — this silently blocks Generic System Image (GSI) installation attempts without logging a denial, preventing aftermarket Android ROM installation.
+**Earlier claim (wrong):** that `dontaudit gm_update_engine gsi_metadata_file` blocks GSI
+installs. It does not. `dontaudit` only suppresses the audit log of a denial that already
+happens from the absence of an allow rule — it is not an enforcement mechanism — and it
+targets `gm_update_engine` (GM's OTA A/B engine), not the DSU path.
+
+**What actually disables GSI/DSU on this unit:**
+
+- `com.android.dynsystem` (the DSU installer app) is **removed** from the image — absent
+  from the live 89-package set (Y181, Apr 2026). The `am start … VerificationActivity …
+  START_INSTALL` intent fails with activity-not-found.
+- The `gsid` daemon and `gsi_tool` are retained with **full stock SELinux policy**, so the
+  block is not at the policy layer. The direct `gsi_tool` path is closed instead by the
+  user build (`ro.build.type=user`, `ro.debuggable=0`, shell is uid 2000) and the
+  `MANAGE_DYNAMIC_SYSTEM` signature-or-privileged permission the shell lacks.
+- Booting any staged GSI is gated by locked verified boot (`ro.boot.flash.locked=1`,
+  device_state `locked`, verifiedbootstate `green`, `sys.oem_unlock_allowed=0`). fstab
+  trusts only the Google GSI keys (q/r/s), so only a Google-signed GSI could pass AVB.
+
+Full detail and provenance in [`platform/boot_chain.md`](boot_chain.md#gsidsu-status).
 
 ---
 

@@ -136,8 +136,11 @@ GMSWUpdater.apk (UI) + gm.update.* SDK (in APK dex)
   → Integrity check: IECUInformation::verifyFCID() + libswupdate_fcid.so
 ```
 (The update libraries are also listed in [`platform/networking.md`](networking.md#update-libraries).)
-SELinux domain `gm_update_engine` carries `dontaudit gm_update_engine
-gsi_metadata_file` — silently blocking GSI installs (see security.md GSI Blocker).
+SELinux domain `gm_update_engine` carries `dontaudit gm_update_engine gsi_metadata_file`
+in `vendor_sepolicy.cil`, but this does **not** block GSI installs — `dontaudit` only
+suppresses audit logging and does not deny, and it targets the OTA engine, not the DSU
+path. GSI/DSU is disabled instead by removal of the `com.android.dynsystem` app plus
+locked verified boot. See [`platform/boot_chain.md`](boot_chain.md#gsidsu-status).
 
 ### GMSWUpdater.apk
 

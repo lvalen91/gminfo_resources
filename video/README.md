@@ -53,12 +53,12 @@
 
 ### CarPlay Video Pipeline (Native)
 
-**Key Discovery:** GM Native CarPlay uses **CINEMO NVDEC software decoder**, not Intel hardware:
+**Key Discovery:** GM Native CarPlay uses the **Cinemo NME software H.264 decoder**, not Intel hardware:
 
 ```
 Framework: CINEMO (Harman/Samsung NME)
 Protocol: AirPlay 320.17.8
-Decoder: libNmeVideoSW.so (NVDEC H.264)
+Decoder: libNmeVideoSW.so (Cinemo NME software H.264)
 Library: libNmeCarPlay.so (1.0 MB)
 Transport: USB NCM + IPv6 (carplay.sh)
 ```
@@ -76,7 +76,7 @@ Decoder: OMX.Intel.hw_vd.h264 (hardware)
 Transport: USB AOA, WiFi
 ```
 
-See [../projection_comparison.md](../projection_comparison.md) for detailed comparison.
+See [../projection/carplay_vs_android_auto.md](../projection/carplay_vs_android_auto.md) for detailed comparison.
 
 ### Recommended Settings for Third-Party Apps
 
@@ -136,14 +136,14 @@ ro.hardware.type=automotive
 
 All specifications obtained from GM AAOS research data:
 
-**ADB Enumeration (`/analysis/adb_Y181/`):**
+**ADB Enumeration** (external GM_research corpus, not in this repo):
 - `dumpsys SurfaceFlinger`
 - `dumpsys display`
 - `dumpsys media.player`
 - `dumpsys gpu`
 - Process list, service list, logcat
 
-**Extracted Partitions (`/extracted_partitions/`):**
+**Extracted Partitions** (external GM_research corpus, not in this repo):
 - `/vendor/etc/media_codecs.xml`
 - `/system/lib64/libNme*.so` - NME libraries (binary analysis)
 - `/system/app/GMCarPlaySrc/GMCarPlay.apk`
@@ -153,4 +153,4 @@ All specifications obtained from GM AAOS research data:
 - `strings`, `readelf`, `nm` on NME libraries
 - APK structure analysis
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** external GM_research corpus (`gm_aaos/`), not in this repo.

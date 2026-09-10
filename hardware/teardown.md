@@ -495,11 +495,25 @@ Intel A3960 GPU (HD Graphics 505)
   HWC 2.1 (hwcomposer.broxton)
       |  Triple-buffered, VSYNC 16.67ms
   TI DS90UH949-Q1 (FPD-Link III Serializer)
-      |  FPD-Link III
+      |  FPD-Link III  (rear connector X7 — board silkscreen "LVDS", GY 12-way HSAL-2)
+  A22 Radio Control (center-stack HMI/display assembly) — Chimei panel + touch
   Display Panel: 2400x960 @ 60Hz
       |
   LT3899 (Backlight LED Driver)
 ```
+
+> **The panel is a discrete module: `A22 Radio Control`.** GM service data shows the display is a
+> separate addressable center-stack HMI assembly, fed point-to-point from **A11 X7** over two
+> "Center Stack LVDS" pairs (circuits 7853/7854/7855 + 7847/7848/7849 — these appear at *only*
+> A11 X7 and A22 X2 in the whole Body Builder Manual). GM labels the FPD-Link III link "**LVDS**"
+> on the schematic; the rear connector's own **board silkscreen reads `LVDS`** (grey) with the
+> neighbouring USB connector silk-labeled **`USB2.0`** (black, X8). Full pinout + A22 detail:
+> [`connectors.md`](connectors.md) §"display is a discrete module: A22 Radio Control".
+>
+> **Rear USB (X8) — on-vehicle:** the black `USB2.0` HSAL-2 is a **12-way shell with only 6 pins
+> populated** in the harness; USB uses 4 of them (VBUS/D+/D−/GND) → **one USB 2.0 lane**, feeding
+> the console USB hub-receptacles. Radio device-mode (ADB) is a **SoC software role-switch**
+> (`intel_xhci_usb_sw` + `dabridge dabr_udc.0`), see [`../analysis/platform_faq.md`](../analysis/platform_faq.md).
 
 > **Runtime-identified components** (not read at physical teardown — cross-ref `platform/hardware.md`; confirmed by the live Jun-2026 Y181 capture):
 > - **Display panel:** Chimei Innolux (CMN) **DD134IA-01B**, 2400x960 @ 60Hz, density 200, ~13.4" (from EDID; the teardown captured resolution only — no panel maker/model was read off the assembly).
@@ -1101,7 +1115,7 @@ br0:        192.168.5.1/24     -- WiFi bridge (AP mode)
 
 1. **SBI vs SPS paradox**: EEPROM bypassed → all-0xFF seeds → SPS refuses connection. EEPROM locked → valid seeds → SPS connects but no ADB. Cannot have both simultaneously.
 2. **GHS rollback protection**: Y181→Y177 downgrade blocked by GHS at boot verification. GHS maintains own version counter in misc partition (CRC32-only), independent of vbmeta.rollback_index=0.
-3. **GSI/DSU blocked**: SELinux dontaudit rule denies gm_update_engine access to GSI metadata, even though q-gsi/r-gsi/s-gsi public keys are present.
+3. **GSI/DSU disabled** (not by SELinux): the DSU front-end app `com.android.dynsystem` is removed from the image, so DSU installs have no receiver. The `dontaudit gm_update_engine gsi_metadata_file` rule is NOT a blocker (dontaudit only suppresses audit logs and targets the OTA engine, not DSU). The `gsid` daemon is retained with full policy; a staged GSI is gated by locked verified boot, and the q/r/s-gsi public keys in fstab mean only a Google-signed GSI could pass AVB. See `platform/boot_chain.md` §GSI/DSU Status.
 4. **Y181 security fix**: GM replaced 4-byte stub with 906-byte full validation. EEPROM bypass no longer triggers permissive SELinux on Y181.
 5. **SELinux neverallow on misc**: Shell cannot read/write vda9. neverallow at domain.te:632 blocks all access except 9 exempted domains.
 6. **plmanager is not what it seemed**: Power lifecycle manager, not boot_control HAL. Writes only boot failure counter + BCB to misc. GHS VMM manages AB0 rollback directly.

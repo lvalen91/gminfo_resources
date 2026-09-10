@@ -1,0 +1,9 @@
+; Exports DPS's Type4 host resolves via GetProcAddress (undecorated names).
+; Launch is mandatory (dpsvcs.dll: GetProcAddress(hModule,"Launch")); the others match the
+; export set of the known-good research/canbus_reset Type4 DLL.
+LIBRARY Type4App
+EXPORTS
+    Launch
+    GetResult
+    SetInternal
+    CMessage

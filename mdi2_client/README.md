@@ -8,7 +8,7 @@ Blowfish-ECB decrypt → SID container → Varlog → session_close, repeatable 
 ## Status
 | piece | module | state |
 |---|---|---|
-| Discovery (`225.1.1.1:8194` beacon; serial at LE u32 offset 9) | `discovery.py` | done |
+| Discovery (`225.1.1.1:8194` beacon receive/multicast join) | `discovery.py` | partial — beacon field/serial decode still TODO |
 | Key derivation (`base_key[MDI_2] + serial`, byte-verified) | `crypto.py` | done |
 | Blowfish-ECB (big-endian, stock pycryptodome) | `crypto.py` | done |
 | Wire frame + 8-byte control frame (construct) | `framing.py` | done |
@@ -21,7 +21,7 @@ Blowfish-ECB decrypt → SID container → Varlog → session_close, repeatable 
 ## Install / run
 ```
 python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
-./.venv/bin/python -m mdi2.cli key 88985275   # serial -> 56-byte Blowfish key
+./.venv/bin/python -m mdi2.cli key <SERIAL>   # serial -> 56-byte Blowfish key
 ./.venv/bin/python -m mdi2.cli scan           # listen for the device beacon
 ```
 Pull logs (requires the MDI2 on this machine's `192.168.171.0/24` link):
@@ -29,7 +29,7 @@ Pull logs (requires the MDI2 on this machine's `192.168.171.0/24` link):
 from mdi2 import crypto
 from mdi2.transport import Session
 from mdi2.logs import pull_logs
-key = crypto.derive_key(88985275)                     # or read serial from discovery.discover()
+key = crypto.derive_key(<SERIAL>)                     # or read serial from discovery.discover()
 s = Session(key, "192.168.171.2").connect(ports=[9052])
 print([(n, len(d)) for n, d in pull_logs(s)])         # [('messages', ~56900)]  = Varlog
 s.close()

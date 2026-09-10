@@ -104,7 +104,12 @@ port 2).
 > capture.
 
 ## Open items
-1. Physical Ethernet Bus 2/4/6 pair ↔ IP-segment mapping (per-pair capture).
+1. Physical Ethernet Bus 2/4/6 pair ↔ IP-segment mapping (per-pair capture). **Partially closed
+   from GM service data** (ALLDATA *Data Link Communications*): Ethernet **2** (4757/4758) =
+   A11↔K56 gateway; **4** (7210/7211) = A11/K56↔K73 telematics; **5** (7212/7213) = A11↔P22F
+   rear video; **6** (7214/7215) = **A11↔T3 Bose amp** (the AVB audio pair); **14** (7230/7231) =
+   A11↔P29 HUD. IP-segment↔bus correlation still needs a per-pair capture. See
+   [`networking.md`](networking.md) §Physical Automotive-Ethernet bus map.
 2. CAN address→function decode for the other 22 ECUs.
 3. Whether `.102` (router) and `.107/.112` (CGM/telematics) are one GM TCP/CGM function split
    across faces, or distinct modules.

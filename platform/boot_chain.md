@@ -385,12 +385,69 @@ The "return to dealer" / recovery screens are rendered by **GHS**, not Android. 
 
 ## GSI/DSU Status
 
-GSI (Generic System Image) and DSU (Dynamic System Updates) infrastructure is present but **blocked**:
+GSI (Generic System Image) and DSU (Dynamic System Updates) are **disabled by app
+removal, not by the SELinux rule previously cited here.** *(Corrects an earlier claim
+that `dontaudit gm_update_engine gsi_metadata_file` blocks GSI installs — see below.)*
 
-- SELinux policy: `dontaudit gm_update_engine gsi_metadata_file` — silently denies access
-- No dedicated recovery partition exists (recovery is embedded in boot image)
-- All updates are A/B only — no single-partition or DSU-based update path
-- GSI key trust includes Android q/r/s release keys (in vbmeta), but enforcement prevents use
+**Consistent across Y175, Y177, and Y181.** All three USB full packages ship the stock
+`gsid`/`gsi_tool` daemon and keep the `com.android.dynsystem` entry in
+`privapp-permissions-platform.xml`, but none of the three include the `com.android.dynsystem`
+APK in any app dir. The removal predates the oldest build in the sample (Y175) — it is a
+standing GM build policy, not a lockdown added in a later release. Note Y177 (the
+permissive-SELinux build) also lacks the app, so a Y177 downgrade does not restore DSU.
+
+What is actually present vs. removed:
+
+- **DSU daemon retained.** `gsid.rc` is still in init, and `gsid` / `gsi_tool` are on
+  the image. `gsid` has its **full stock SELinux policy** (~50 allow rules in
+  `plat_sepolicy.cil`): it can create/write `gsi_metadata_file`, `gsi_data_file`, and
+  `ota_image_data_file`, drive `dm_device`/loop devices, touch `userdata_block_device`,
+  hold `sys_admin`, set `gsid_prop`, and add/find `gsi_service`. Nothing is stripped from
+  the daemon's policy. The `dynamic_system` service is registered.
+- **DSU front-end app removed.** `com.android.dynsystem` is **absent** from the live
+  package set (89 packages total on a Y181 Apr-2026 dump — heavily stripped AAOS). The
+  intent path `am start-activity -n com.android.dynsystem/…VerificationActivity -a
+  android.os.image.action.START_INSTALL` therefore fails with *activity-does-not-exist*,
+  not a policy denial.
+- **Why the old claim was wrong.** `dontaudit` never denies anything — it only suppresses
+  the audit log of a denial that already occurs from the absence of an allow rule. And it
+  targets `gm_update_engine` (GM's OTA A/B engine), which is not the DSU path. It has no
+  effect on `gsid`. (The rule does exist, but in `vendor_sepolicy.cil`, and it is not a
+  GSI blocker.)
+- **Direct `gsi_tool` path is closed by other walls, not SELinux.** `ro.build.type=user`,
+  `ro.debuggable=0` (shell is uid 2000, not root), and `gsid` requires the caller to hold
+  `MANAGE_DYNAMIC_SYSTEM` (signature-or-privileged), which shell lacks.
+- **GSI boot is gated by locked verified boot.** `ro.boot.flash.locked=1`,
+  `ro.boot.vbmeta.device_state=locked`, `ro.boot.verifiedbootstate=green`,
+  `sys.oem_unlock_allowed=0`. fstab trusts only the Google GSI keys
+  (`avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey`), so only a
+  Google-signed GSI could pass AVB; a self-signed/unsigned GSI cannot, and verification
+  can't be disabled on a locked unit.
+- No dedicated recovery partition exists (recovery is embedded in boot image); all updates
+  are A/B only.
+
+**Confirmed at firmware-image level (Sep 2026), not just runtime.** Unpacked the Y181
+USB full package (SOC_SYSTEM 86331654, SOC_VENDOR 86331650, SOC_PRODUCT 86331636):
+
+- `com.android.dynsystem` is absent from every app dir across all three images
+  (`system/app`, `system/priv-app`, `system/system_ext/priv-app`, `product/app`,
+  `product/priv-app`). No GM-renamed or variant DSU installer exists.
+- The stock DSU daemon set is present and unmodified: `system/bin/gsid`, `gsi_tool`,
+  `snapshotctl`, `lpdump`/`lpdumpd`, `libgsi.so`, and a byte-stock `gsid.rc` (creates
+  `/metadata/gsi/dsu`, `/data/gsi/dsu`, etc.). The block is purely the missing app.
+- The DSU Loader in Developer Options (`CarDeveloperOptions.apk`,
+  `DSUTermsOfServiceActivity.installDSU()`) just calls
+  `setClassName("com.android.dynsystem","…VerificationActivity")` + `startActivity` — so
+  the button throws ActivityNotFound on this image. It is not a GM reimplementation.
+- The only other "replace /system" path is `gm_update_engine` (GM fork of A/B
+  update_engine, `/vendor/bin/hw/`). Its binary has zero GSI/dynamic-system/dev-signed/
+  unsigned strings and a mandatory RSA+SHA+FCID verify path
+  (`SignatureVerifier.cpp`, OpenSSL `EVP_DigestVerify`). It accepts only GM-signed
+  packages; it cannot load a GSI. `GMSWUpdater.apk` is a pure UI shell with no DSU/GSI code.
+
+*(Cross-checked against the 2024 Silverado ICE OS dump — live `packages.txt`,
+`all_properties.txt`, `plat_sepolicy.cil`/`vendor_sepolicy.cil`, plus the unpacked Y181
+system/vendor/product images decompiled with 7z + jadx.)*
 
 ---
 

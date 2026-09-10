@@ -67,7 +67,21 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 
 EEPROM I²C **0x50** (no raw read — `/dev/i2c-7` is `system:system 0660`, shell can't open);
 VIP stub @0xb67d0 4 B→906 B and Y177 permissive (no Y177 ADB dump — RE-sourced);
-`libNmeVideoSW.so` name (partition `strings` only); 4-port USB topology / OTG-ID-pin (ALLData schematics).
+`libNmeVideoSW.so` name (partition `strings` only).
+
+**~~4-port USB topology / OTG-ID-pin (ALLData schematics)~~ — RESOLVED (Sep 2026)** via the IOK
+ALLDATA connector set + GM Body Builder Manual + on-vehicle inspection + PCB photos, all folded
+into `hardware/connectors.md`:
+- **Topology:** three receptacles — X83B (UBC, floor console, data+ADB), X92IP (UBJ, IP, data),
+  X92CD (UBI, charge-only); a *fourth* (X92CF/UBD) exists in the catalog but **not on this VIN**.
+  Data is an **IP-first daisy chain** (radio X8 → X92IP → X226 → X83B), each receptacle an active
+  hub; power is a parallel feed from fuse F32DR 15A, not the radio.
+- **X8 = one USB 2.0 lane** (board silkscreen `USB2.0`, 12-way shell / 6-pin cable, 4 USB
+  conductors) — not two lanes/controllers.
+- **OTG/ID-pin question corrected:** the radio↔receptacle link carries **no OTG ID pin** (4-wire
+  VBUS/D+/D−/GND); Type-C role is CC-based; ADB device-mode is a **SoC software role-switch**
+  (`intel_xhci_usb_sw` + `dabridge dabr_udc.0`), not a receptacle ID/CC function. Only the physical
+  root-port→console-Type-C mapping remains open.
 
 **Resolved by live Jun-2026 ADB capture** (`enumeration/Y181/jun2026/`):
 - GPU **"HD 505 / Mesa 21.1.5"** → CONFIRMED via `SurfaceFlinger` GLES dump:

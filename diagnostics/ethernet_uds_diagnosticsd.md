@@ -312,3 +312,14 @@ for the full uid=2000 Binder access map.
    active vehicle diagnostic/programming session (e.g. mid-OTA `SecureUnlock`
    state) have a functional effect beyond delayed responses — untested,
    deliberately not attempted on this bench unit without further discussion.
+
+## GM service-data note (ALLDATA)
+
+GM's ALLDATA for this vehicle publishes **no UDS/GMLAN diagnostic addresses** — the "Code"
+column (A11, T3, K9…) is the RPO/schematic designator, not a bus address. So request/response
+IDs like `0x14DA80F1` come from **captured bus traffic** (`dps/`), not GM docs. The dealer-side
+scan-tool (**GDS2**) *data-parameter* lists for A11 Radio / T3 Amp / K9 BCM — Ethernet per-port
+Rx/Tx fail counters + IPs, MEC, ANC/mic levels, battery-sensor stream, etc. — are catalogued in
+[`../enumeration/README.md`](../enumeration/README.md) §Vehicle module inventory, and the
+diagnostics/programming CAN bus is **CAN6 (5 Mbit/s)** per
+[`../platform/networking.md`](../platform/networking.md).

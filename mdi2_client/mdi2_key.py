@@ -4,7 +4,7 @@
 Derivation (from bvtx_vci_rt.dll FUN_10268960, verified byte-exact):
     key[i] = base_key[module_type][i] + device_serial     # 14 dwords, 32-bit add mod 2^32
 module_type 0x1c = MODULE_TYPE_ID_MDI_2. base_key is a static DLL constant (below).
-device_serial = the unit's serial as a uint32 (e.g. hostname "2505-88985275" -> 88985275).
+device_serial = the unit's serial as a uint32 (e.g. hostname "2505-<SERIAL>" -> <SERIAL>).
 Feed the returned 56-byte key to mdi2_9052_decrypt.py.
 
 Usage: mdi2_key.py <serial_uint32>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- Type4 workflow config for the "Read Radio Controller Info" utility.
+     Mirrors the shape of research/canbus_reset/10017909.cfx (Action Id + Text Id).
+     The Action Id is what our interpreter DLL (10018100.dll / Type4App.dll) switches on
+     to select the READ sequence; keep it in sync with kActionReadRadioInfo in the .cpp. -->
+<Config Version="1.0">
+	<Text Id="2200">Read Radio Controller Info</Text>
+	<Action Id="2200">
+		<Text Id="2200">Read Radio Controller Info</Text>
+	</Action>
+</Config>

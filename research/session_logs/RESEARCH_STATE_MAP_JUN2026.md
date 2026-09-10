@@ -73,7 +73,7 @@ Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slo
 | AllowDevSignedVIP / changeDebugMode | isDebugBuild()=false |
 | gm_protokey extraction | Permission denied from uid=2000 |
 | RDMSADBHandler ADB_Disable USB role-reversal | Blocked by GM V10 E2 PD hub |
-| GSI/DSU boot | Silently denied via dontaudit gm_update_engine gsi_metadata_file (vendor_sepolicy.cil:2672) |
+| GSI/DSU boot | *[CORRECTED 2026-09-03: this dontaudit does NOT block GSI. Line 2672 is `(dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))` — dontaudit only suppresses audit logs, never denies, and it targets the OTA engine, not the DSU path. GSI/DSU is disabled because `com.android.dynsystem` is removed from the image and the bootloader is locked. See `platform/boot_chain.md` §GSI/DSU Status.]* |
 | Fastboot | Never connected; Intel ABL has no standard fastboot USB interface |
 | avb_audit.py against /elk_inner.elf | Ghidra failed — "Ghidra was not started with PyGhidra." Zero AVB findings. |
 
@@ -190,7 +190,7 @@ GHS partitions not mounted in Android: ghs_isys_a/b, ghs_storage, ghs_abl_update
 | SOC_ABL modification | Intel CSE hardware root of trust, OTP-fused keys, SVN anti-rollback. Effectively impossible. |
 | Boot Guard v2 / IFWI / custom OS | OTP antifuses burned at factory. |
 | AES-CMAC master key extraction | Inside TXE Sealed Storage; hardware-fuse-derived. |
-| GSI/DSU boot | dontaudit policy block; permanent. |
+| GSI/DSU boot | *[CORRECTED 2026-09-03: not a dontaudit policy block. Disabled by removal of `com.android.dynsystem` + locked verified boot. `gsid` daemon retained with full policy. See `platform/boot_chain.md` §GSI/DSU Status.]* |
 | ISSI SPI flash as AVB bypass | current_android_key hardcoded at GHS offset 0xe3ca34; BG-locked. |
 | vmm1 GHS decompilation | 140 functions decompiled but unusable — Green Hills toolchain, no string cross-references. |
 | Kernel CVE exploitation on Y181 | SELinux enforcing blocks all candidates reviewed. |

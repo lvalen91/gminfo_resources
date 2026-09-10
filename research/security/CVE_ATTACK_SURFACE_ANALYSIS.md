@@ -291,7 +291,7 @@ All Android Security Bulletin CVEs with disclosure/patch date on or before 2025-
 |---|---|---|
 | CVE-2023-4921 (sch_qfq) | `# CONFIG_NET_SCH_QFQ is not set` | Dead (also version-patched) |
 | Any AOSP test-key AVB signing path | GM OEM RSA-2048 enrolled (`d8:04:af:e3…`); not `testkey_rsa4096.pem` | Dead |
-| GSI/DSU boot escalation | `dontaudit gm_update_engine gsi_metadata_file` (vendor_sepolicy.cil:2672) | Silently blocked |
+| GSI/DSU boot escalation | Not the dontaudit rule (it only suppresses logs, targets OTA engine). Actual: `com.android.dynsystem` app removed + locked verified boot; see `platform/boot_chain.md` §GSI/DSU Status | Disabled by app removal, not SELinux |
 | WiFi ADB remote attack surface | WiFi ADB compiled out | No surface |
 
 ---

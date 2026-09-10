@@ -186,11 +186,15 @@ CONFIRMED SUPPORT:
 [X] GSI Keys Present (from fstab):
     - avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey
 
-WHY GSI DOESN'T WORK:
+WHY GSI DOESN'T WORK: [CORRECTED 2026-09-03]
 --------------------
-1. SEPolicy Blocker:
-   - dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search))
-   - GM explicitly blocked GSI in SELinux policy
+1. DSU app removed (PRIMARY, not SEPolicy):
+   - com.android.dynsystem is ABSENT from the live 89-package set (Y181 Apr-2026)
+   - The dontaudit gm_update_engine gsi_metadata_file rule is NOT a blocker: dontaudit
+     only suppresses audit logs, never denies, and targets the OTA engine not DSU
+   - gsid daemon + gsi_tool retained with full stock policy; blocked instead by user
+     build + MANAGE_DYNAMIC_SYSTEM perm, and by locked verified boot at GSI boot time
+   - See platform/boot_chain.md §GSI/DSU Status
 
 2. GHS Hypervisor:
    - Android runs as VM under GHS INTEGRITY

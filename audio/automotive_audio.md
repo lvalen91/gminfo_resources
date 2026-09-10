@@ -274,6 +274,23 @@ This system implements the Android Automotive OS (AAOS) multi-zone audio archite
 
 ---
 
+## Physical Amplifier & Speaker Output (T3 / UQA Bose)
+
+The AAOS buses above terminate, on this vehicle (RPO **UQA** branded amp), at an **external
+Bose amplifier** — GM designator **T3 Audio Amplifier** — reached over **Automotive-Ethernet AVB**,
+not analog speaker wire. The head unit (A11 Radio) drives **no speakers directly** on a UQA truck.
+
+- **Transport:** radio → **Ethernet Bus 6 (circuits 7215/7214)** → T3 amp (T3 X3 p1/2). Amp
+  control/discovery = **AUTOSAR CAN 5** (4985/4984). gPTP grandmaster = the IHU (see
+  [`../platform/networking.md`](../platform/networking.md) §Ethernet AVB).
+- **Amp drives all speakers:** subwoofer, L/R front midrange, front center, LF/RF/LR/RR — plus an
+  **Active Noise Cancellation** mic pair (circuits 3005/3008) on the amp.
+- **Variant note:** the *base* (non-UQA, `U95-UQF`) config would drive speaker-level outputs from
+  the radio's own connectors (X5/X6). On this UQA truck those are **not** the active path.
+- **Full amp connector pinout (per-circuit)** lives in
+  [`../hardware/connectors.md`](../hardware/connectors.md) §Audio Architecture — Bose — not
+  duplicated here to keep one source of truth.
+
 ## Audio Policy Strategies
 
 ### OEM Strategies

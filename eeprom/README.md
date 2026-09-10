@@ -51,7 +51,9 @@ minipro -p "M24C64" -r verify.bin
 > gate, but they share the anchor — so whether a different EEPROM flag governs the cal/diag
 > security level is an open, testable question. See
 > `../research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` (§4) plus the undocumented-flag
-> candidates (`0x04A0`, `0x04C0`, `0x0A40`, `0x0BE0`) in `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`.
+> candidate `0x04C0` (real CalGroup 0x44 handler `FUN_ram_00091f82`); `0x04A0`, `0x0A40`, `0x0BE0`
+> were closed as dead ends (zero real code refs) per `CORRECTIONS_AUG2026.md`. Original survey in
+> `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`.
 > NB: EEPROM `0x0E00` "display" bytes are touch-region/backlight/timing (guessed) — the actual
 > resolution lever is `CalSets.db SCREEN_RESOLUTION`, not those bytes (§5).
 
@@ -69,8 +71,8 @@ minipro -p "M24C64" -r verify.bin
   - Byte 0x0B41: 0x01 ← debug-mode flag = ENABLED     (stock 0x00)
 
 > NOTE: the Y181 stock→modified diff toggles **all four** bytes — 0x441→0xFF,
-> 0xa81→0xFF, 0x1A01→0xFF, 0x0B41→0x01 (verified by byte-diff of the shipped
-> Y181_stock.bin vs Y181_modified.bin). The 0x5A shown above is one firmware's
+> 0xa81→0xFF, 0x1A01→0xFF, 0x0B41→0x01 (verified by byte-diff of stock vs modified Y181
+> dumps in the external GM_research corpus, not in this repo). The 0x5A shown above is one firmware's
 > framing marker; the shipped Y181 bins actually use F0 @0x440 and C3 @0xa80 —
 > locate each security byte by **offset**, not by the framing value.
 

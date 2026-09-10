@@ -49,7 +49,7 @@ BLOCKED ATTACK VECTORS:
 - Firmware downgrade Y181→Y177: BLOCKED by GHS hypervisor rollback protection
 - Direct I2C/GPIO access: BLOCKED by SELinux (world-writable DAC overridden)
 - Third-party Vehicle HAL access: BLOCKED (untrusted_app excluded)
-- GSI installation: BLOCKED by SELinux dontaudit rule
+- GSI installation: DISABLED by removal of com.android.dynsystem app + locked verified boot (NOT the dontaudit rule — see §7.3)
 
 CONFIRMED VULNERABILITIES (Ranked by exploitability):
 
@@ -350,12 +350,18 @@ Third-party apps CANNOT directly:
 
 All access MUST go through CarService with permission checks.
 
-7.3 GSI BLOCKER
----------------
-Exact rule in vendor_sepolicy.cil:2672:
+7.3 GSI/DSU DISABLED (corrected 2026-09-03)
+-------------------------------------------
+NOT blocked by SELinux. vendor_sepolicy.cil:2672 is:
   (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
+`dontaudit` only suppresses audit logging of a denial; it does not deny, and it
+targets the OTA A/B engine, not the DSU path. `gsid` retains full stock policy.
 
-This prevents DSU (Dynamic System Updates) / GSI installation.
+Actual cause: the DSU front-end app `com.android.dynsystem` is REMOVED from the
+image (absent from live Y181 Apr-2026 packages.txt), so DSU install has no receiver.
+Direct gsid access is closed by the user build + MANAGE_DYNAMIC_SYSTEM permission,
+and any staged GSI is gated by locked verified boot (only Google GSI keys trusted).
+See platform/boot_chain.md §GSI/DSU Status.
 
 ================================================================================
 8. VERIFIED VULNERABILITIES

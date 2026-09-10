@@ -272,3 +272,25 @@ The Broadcom BCM WiFi module supports three concurrent interfaces:
 - **Audio endpoint:** NXP TDF8532 codec on CSM → external amplifier → 4 speakers
 
 The IHU serves as the gPTP grandmaster on the AVB network, providing time synchronization for audio stream delivery to the CSM amplifier module.
+
+### Physical Automotive-Ethernet bus map (GM service data)
+
+The AVB/Ethernet links are point-to-point automotive-Ethernet pairs off the A11 Radio's on-board
+switch (BCM89551). GM service data (ALLDATA *Radio-Audio System → Data Link Communications*, +
+connector end-view `A11 Radio X11`) names each bus and circuit — this grounds the IP-level endpoints
+above to physical wire (closes `vehicle_network.md` open item #1 for the amp pair):
+
+| Bus | Circuits | Endpoints |
+|-----|----------|-----------|
+| Ethernet 2 | 4757 / 4758 | **A11 Radio ↔ K56 Serial Data Gateway** (radio X11 p3/4) |
+| Ethernet 4 | 7210 / 7211 | A11 (or K56) ↔ **K73 Telematics** (radio X11 p11/12) |
+| Ethernet 5 | 7212 / 7213 | A11 ↔ **P22F rear-seat Video Display** |
+| **Ethernet 6** | **7214 / 7215** | **A11 Radio ↔ T3 Audio Amplifier** — the Bose AVB audio pair (radio X11 p8/9 → amp T3 X3 p1/2) |
+| Ethernet 14 | 7230 / 7231 | A11 ↔ **P29 Head-Up Display** |
+
+- Both **A11 Radio and K56 (Serial Data Gateway) host Ethernet switches**; the amp is a leaf on
+  **Bus 6**. Amp control/discovery is separate: **AUTOSAR CAN 5** (4985/4984), T3 X3 p11/12.
+- Radio-side connector designator is **X11** in the connector end-view (the IOK schematic labels
+  the same connector **X6** — GM harness-variant designator variance).
+- Physical harness/pinout detail: [`../hardware/connectors.md`](../hardware/connectors.md)
+  §Audio Architecture and §Authoritative IOK Connector Table.

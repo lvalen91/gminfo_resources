@@ -160,8 +160,12 @@ From vendor_sepolicy.cil (line 2672):
 
   (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
 
-This is the EXACT rule that blocks GSI installation.
-The "dontaudit" means the denial is silently suppressed in logs.
+[CORRECTED 2026-09-03] This rule does NOT block GSI installation. `dontaudit` only
+suppresses the audit log of a denial that would happen anyway from the absence of an
+allow rule — it is not an enforcement mechanism — and it targets gm_update_engine (the
+OTA A/B engine), not the DSU path. GSI/DSU is actually disabled by removal of the
+`com.android.dynsystem` app plus locked verified boot. See platform/boot_chain.md
+§GSI/DSU Status.
 
 Additional GSI-related rules found:
   - hal_bootctl_default CAN access gsi_metadata_file_type
@@ -199,11 +203,12 @@ is not accessible.
 
 Q1: What is the exact GSI blocker?
 ----------------------------------
-ANSWER: The SEPolicy rule in vendor_sepolicy.cil:
+ANSWER [CORRECTED 2026-09-03]: There is no SEPolicy GSI blocker. The rule once cited,
   (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
-
-This prevents gm_update_engine from searching the gsi_metadata_file directory,
-which is required for DSU (Dynamic System Updates) to work.
+does not deny anything (dontaudit only hides audit logs) and targets the OTA engine,
+not DSU. The real cause: `com.android.dynsystem` is removed from the image, so DSU
+install has no receiver; `gsid` is retained with full policy but unreachable without a
+privileged caller; and any staged GSI is gated by locked verified boot.
 
 ---
 
@@ -288,11 +293,13 @@ GSI ARCHITECTURE SUPPORT (all present):
   [X] First API level 29 (Android 10)
   [X] GSI AVB keys in fstab
 
-GSI BLOCKERS:
-  1. SEPolicy dontaudit rule (vendor_sepolicy.cil:2672)
-  2. GHS hypervisor controls boot chain
-  3. No standard fastboot/recovery access
-  4. VIP controls boot flags
+GSI BLOCKERS [CORRECTED 2026-09-03 — the dontaudit rule was NOT a blocker]:
+  1. com.android.dynsystem app REMOVED from image (no DSU install receiver) [PRIMARY]
+  2. User build + MANAGE_DYNAMIC_SYSTEM perm — shell cannot drive gsid directly
+  3. Locked verified boot (flash.locked=1, oem_unlock_allowed=0) — only Google-signed
+     GSI (q/r/s keys) could pass AVB; verification cannot be disabled while locked
+  4. No standard fastboot/recovery access
+  (gsid daemon + gsi_tool are retained with full stock SELinux policy — not a policy block)
 
 POTENTIAL BYPASS:
   - Modify vendor_sepolicy.cil (requires AVB bypass)

@@ -3,7 +3,7 @@
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
 **Android Version:** 12 (API 32)
-**Research Date:** December 2025 - February 2026
+**Research Date:** December 2025 - June 2026
 
 ---
 
@@ -17,7 +17,7 @@ This directory documents the phone projection systems on GM Info 3.7: native Car
 
 - **[cluster_navigation.md](cluster_navigation.md)** -- Navigation-to-cluster data flow pipeline. Documents how turn-by-turn data from CarPlay (iAP2 RGD), Android Auto (NavigationStateProto), and built-in Google Maps reaches the instrument cluster ECU via text metadata (NOT video). Includes third-party app access via Car App Library.
 
-- **[cpc200_integration.md](cpc200_integration.md)** -- CPC200-CCPA wireless CarPlay/Android Auto adapter integration with GM Info 3.7. USB protocol, video/audio pipeline, device enumeration, session lifecycle, and adapter-specific behavior.
+- **[cpc200_integration.md](cpc200_integration.md)** -- redirect stub. Adapter-internal detail moved to the separate `CPC200-CCPA_resources` repo; gminfo-platform measurements moved into `../runtime/memory_pressure.md`, `../runtime/known_issues.md`, `../audio/carplay_audio_pipeline.md`, `../video/video_codecs.md`, and `../video/pts_timing_strategies.md`.
 
 - **[cluster_maneuver_mapping.md](cluster_maneuver_mapping.md)** -- End-to-end maneuver-icon mapping table: iAP2/AA cpManeuverType (+ exit angle) → carlink `Maneuver.TYPE_*` → Templates Host `NavigationState.Type` (incl. WITH_ANGLE roundabout buckets) → VMSPlugin `TurnType` → GM cluster glyph. Covers gminfo3.7 (bitmap via shim) vs VCUNH1 (enum-only, QNX Altia sprite), the iAP2→androidx angle conversion, and the directional-only roundabout ceiling.
 

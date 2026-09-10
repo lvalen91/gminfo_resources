@@ -17,7 +17,7 @@
 | [automotive_audio.md](automotive_audio.md) | AAOS multi-zone architecture, policies, focus |
 | **[carplay_audio_pipeline.md](carplay_audio_pipeline.md)** | **CarPlay/AirPlay bidirectional audio processing (CINEMO framework)** |
 | **[intel_audio.md](intel_audio.md)** | **Intel IAS SmartX + SST audio architecture (no official docs)** |
-| [../projection_comparison.md](../projection_comparison.md) | CarPlay vs Android Auto audio/video comparison |
+| [../projection/carplay_vs_android_auto.md](../projection/carplay_vs_android_auto.md) | CarPlay vs Android Auto audio/video comparison |
 
 ---
 
@@ -113,7 +113,7 @@
 
 Both share the same AudioFlinger bus routing and Harman preprocessing.
 
-See [../projection_comparison.md](../projection_comparison.md) for detailed comparison.
+See [../projection/carplay_vs_android_auto.md](../projection/carplay_vs_android_auto.md) for detailed comparison.
 
 ### Recommended Settings
 
@@ -196,4 +196,4 @@ All specifications obtained from GM AAOS research data:
 **Binary Analysis:**
 - `strings`, `readelf`, `nm` on NME libraries
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** external GM_research corpus (`gm_aaos/`), not in this repo.
