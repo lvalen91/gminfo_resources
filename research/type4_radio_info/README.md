@@ -1,5 +1,13 @@
 # Type4 App — "Read Radio Controller Info" (ECU 0x80 / A11 CSM)
 
+> **STATUS (2026-09-10): NOT YET BUILT-AND-EXECUTED BY THE OWNER.** Everything below is
+> RE-derived and byte-verified (the archive's byte structure matches a real reference `A11_ECU_Reset.zip`;
+> the `Launch()` export is confirmed present via `dpsvcs.dll` disassembly), but the owner's only
+> DPS-confirmed capability to date is **reading** via DPS's own built-in GUI options (the source of
+> the `.Txt` logs elsewhere in this repo) — not building/loading/executing a Type4 app. This has
+> never been run through the actual "Type 4 Application" button on a real DPS box. Treat every claim
+> below as "should work per RE," not "confirmed working," until that happens.
+
 A GM DPS **Type4 application** that talks to the radio and prints its controller info — a
 programmable stand-in for DPS's built-in "Get Controller Info / SBI" read. **Read-only**: it
 issues only `$10 03` + a sequence of `$22` ReadDataByIdentifier requests (no `$27`, no writes,

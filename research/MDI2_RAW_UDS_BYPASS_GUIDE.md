@@ -238,7 +238,51 @@ All are on PyPI, stable, and used in the existing research corpus for bench test
 
 ---
 
-## 7. References
+## 7. GM ADB Escape Hatch via `$31` RoutineControl (2026-09-10)
+
+**Source:** Surreal Development, "The ABCs of Global B" (CC0). Independently confirms that
+Global-B head units expose a fully-decoded UDS `RoutineControl` request that toggles Android
+`adb` (usb-debug) on the SoC — a *different* route from the `$27`/SBI seed bypass documented
+above, and worth distinguishing from it.
+
+**Frame:**
+```
+31 01 03 32 DD 42 10 EE
+```
+| Byte(s) | Meaning |
+|---|---|
+| `31` | Service: RoutineControl |
+| `01` | Sub-function: startRoutine |
+| `03 32` | Routine ID `0x0332` |
+| `DD` | Domain byte |
+| `42` | COMPID `0x42` (66) |
+| `10` | DATAID `0x10` (16) |
+| `EE` | Value: `01` = enable ADB, `00` = disable ADB |
+
+**What this does and does not prove:**
+- It proves an **external UDS `RoutineControl` request can drive a privileged internal action**
+  (flipping a SoC-side Android debug flag) on Global-B hardware — the same class of head unit
+  as gminfo37/CSM, though the routine ID/COMPID/DATAID triple above has not been re-confirmed
+  against this repo's own captures.
+- It does **not** hand you authorized root `adb`. SDGM/the radio module normally **blocks this
+  routine** (session/security gating on `$31` calls of this class), and even when it's not
+  blocked, this Global-B `adbd` is **GM-custom and trusts only GM-provisioned keys** — enabling
+  usb-debug via this route gets you a debug-enabled daemon that still refuses an unauthorized
+  host's adb key. It is a togglable primitive, not a bypass of adb's own authentication.
+- Note the broader authentication model this sits inside: Global-B `$27` SecurityAccess is
+  ultimately authenticated against **GM's SDGM/Azure back office via SPS2/3 credentials** for
+  the tiers that matter (calibration/programming); GM has deliberately left some diagnostic
+  *routines* (not full security levels) unauthenticated by design, of which the ADB-enable
+  routine above appears to be one — consistent with, and a second independent example of, the
+  general pattern this doc's §1-2 already documents (MDI2/J2534 has no hardware-level lock;
+  policy lives in the tooling/routine gating, not universally in the transport).
+
+**How this fits the existing routes above:** send it the same way as any other raw UDS frame
+in §2/§3 (Route B, `udsoncan`/DoIP, is the simplest) — it is a `RoutineControl` call like the
+`31 01 02 0E FF FF FF` wakeUpNetworks routine already used elsewhere in this repo's captures,
+not a new transport or session requirement.
+
+## 8. References
 
 - `DPS_MASTER_REFERENCE.md` — J2534 architecture and DPS layers.
 - `MDI2_LINUX_MACOS_ANALYSIS.md` — DoIP interface and cross-platform usage.

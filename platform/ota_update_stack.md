@@ -200,6 +200,30 @@ accepts — this is the **root gate** for flashing modified firmware. (This is t
 same GPD Production CA documented in `platform/security.md` for AVB / VIP
 validation.)
 
+**(2026-09-10) Verified against the shipped `gm_update_engine` binary** (the
+component that actually owns signature verification — `libpal_swupdate_ecu.so`,
+the `gmext.update_ecu` HAL, does **no** crypto at all; it is pure part-info/IPC
+transport). Findings:
+- **Module `Sign Type: NONE` (e.g. `ETH_SWITCH`, module 52) is still bound by
+  the root gate**, not informational-only: the RSA-2048 signature covers the
+  whole manifest, including the per-module SHA-256 hash table for every
+  module regardless of Sign Type ("Hash verify manifest OK/Failed",
+  `DownloadOperationHashMismatch`/`ManifestSignatureMismatch` in
+  `SignatureVerifier.cpp`/`Signature.cpp`). `TSS` adds an *additional* per-part
+  RSA block on top; `NONE` modules lack that extra layer but their hash is
+  still checked against the signed manifest before any write proceeds. No code
+  path skips this regardless of Sign Type, and `Bypass P/N & Module ID Check`
+  (delivery_manifest.csv) is a *different* control (relaxes part-number/module-ID
+  matching only, not signature verification).
+- **The verifier is dual-anchor by design, distinct from the app-layer
+  `AllowDevSignedVIP`.** The native cert-loader has a runtime branch selecting
+  `production/signingCA.cer` vs `development/signingCA.cer`. It is inert on a
+  production image only because `development/signingCA.cer` is not shipped
+  (`fopen` → NULL → "Update CERT is required" → verify fails → install aborts):
+  it **fails closed**, not because the code is hardcoded to a single anchor.
+  Correction to the framing above: describe this as "production-only because
+  the dev CA file is absent," not "the code only trusts one anchor."
+
 ---
 
 ## USB Install Path & Flag Files

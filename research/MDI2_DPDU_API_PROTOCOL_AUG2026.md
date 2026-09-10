@@ -226,10 +226,27 @@ read" hypothesis, which was based on incomplete data)
    - Before the `34/36/37` download sequence (flashing new calibration data to ECU `0x80`).
    - Before a batch of `2E WriteDataByIdentifier` calls (writing `F198` repairShopCode, `F199`
      programmingDate, `F190` VIN) + `31 01 03 9B` + `11 01` ECUReset.
-   Seed request: `27 01` → 31-byte seed response (`67 01 <31 bytes>` — first 16 bytes are a
-   fixed challenge header, last 15 are random per-request). Key: `27 02 <12-byte key>`, computed
-   by DPS in ~0.7-1.1s. Response is `7F 27 78` (responsePending) then `67 02` (unlocked) —
-   **`0x78` must be treated as "keep waiting", not a failure.**
+   Seed request: `27 01` → seed response `67 01 <seed bytes>`. **CORRECTED 2026-09-10**: RH850
+   VIP `$27` handler disasm (`FUN_000b67d0`) confirms the seed structure is **16-byte fixed
+   ECUID + random challenge**, not the pre-2026-09-10 "31-byte seed / 12-byte key" figure (that
+   older figure was a byte-offset misread of an earlier capture).
+   **Byte-count discrepancy, unresolved as of 2026-09-10 — flagged, not silently picked:**
+   this doc previously stated the total seed as 32 bytes (16-byte ECUID `004B41DC…14AC` +
+   16-byte random), attributed to a live capture. A second, independently and programmatically
+   re-parsed capture (`module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt`, ECUID
+   `002642250000160006104145610114AC`, a different physical unit) shows `67 01` followed by
+   **31 bytes** (16-byte ECUID + **15**-byte random challenge) — double-counted by hand and by
+   script; high confidence in this specific 31-byte read. SecurityAccess seed length is an ECU
+   firmware property, not per-unit-variable, so the two captures should agree; they currently
+   don't. Re-verify the original 32-byte capture's raw bytes the same way (script, not by-eye)
+   before treating either figure as final. Key:
+   `27 02 <key bytes>`, computed by DPS in ~0.7-1.1s. Response is `7F 27 78` (responsePending)
+   then `67 02` (unlocked) — **`0x78` must be treated as "keep waiting", not a failure.**
+   The handler is **SHA-256-based** (H0..H7 init constants + a CRC-32 poly-`0xEDB88320` table
+   both present in the binary), not an LFSR or small-seed scheme — see
+   `eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` for the full disasm writeup. The actual
+   key-derivation algorithm (how the 16-byte key is computed from ECUID+challenge) was **not**
+   recovered from this handler — no static secret/salt found in the VIP image — **OPEN**.
 4. **`10 02` (programmingSession) is requested AFTER SecurityAccess succeeds, not before** —
    order is `27 01` → `27 02` → `31 01 02 49` → `10 02` → `34/36/37...`.
 5. Bus-quiesce bracket around the flash: `10 03` (functional, all ECUs) → `85 02`

@@ -68,13 +68,21 @@ minipro -p "M24C64" -r verify.bin
   - Byte 0xa82: 0x5A (framing byte)
 
   - Byte 0x1A01: 0xFF ← second SBI mirror = DISABLED  (stock 0x00)
-  - Byte 0x0B41: 0x01 ← debug-mode flag = ENABLED     (stock 0x00)
+  - Byte 0x0B41: 0x01 ← "debug-mode" flag, label UNCONFIRMED (stock 0x00) — see note below
 
 > NOTE: the Y181 stock→modified diff toggles **all four** bytes — 0x441→0xFF,
 > 0xa81→0xFF, 0x1A01→0xFF, 0x0B41→0x01 (verified by byte-diff of stock vs modified Y181
 > dumps in the external GM_research corpus, not in this repo). The 0x5A shown above is one firmware's
 > framing marker; the shipped Y181 bins actually use F0 @0x440 and C3 @0xa80 —
 > locate each security byte by **offset**, not by the framing value.
+
+> **0x0B41 OPERATOR-TESTED, no observable effect (2026-09-10):** an operator flipped
+> 0x0B41=0x01 as part of the above triad and saw **no change in AAOS behavior** — adb stayed
+> `uid 2000`, SELinux stayed enforcing. The "debug-mode" name comes only from the byte-diff
+> above, not from a confirmed code read-site (no decompiled reference to
+> `ro.debuggable`/SELinux-permissive/OEM-unlock found). ADB enablement tracks 0x441/0xa81
+> (the two SBIs); 0x0B41's function is OPEN, under active VIP-disasm investigation. See
+> `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §1 for detail.
 
 IC in question is an ST M24C64 TSSOP8, using a Tool like XGecu Programmer. The framing byte appears to change depending on Firmware Version (Android OTA). Each update will reset back to 0x00 and lock ADB access.
 

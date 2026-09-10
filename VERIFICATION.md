@@ -32,6 +32,8 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 | CAN tester ID | Req 0x14DA80**F1** / Rsp 0x145AF1**80** | captured DPS session uses **F2** (0x14DA80F2 / 0x145AF280); F1 = generic OBD tester address |
 | EEPROM unlock guide | only 0x441/0xa81 documented | added **0x1A01→0xFF** and **0x0B41→0x01** (all 4 bytes the Y181 mod actually flips) |
 | 0x0A00/0x0B00 ref counts | 871/311 stated as fact | flagged: 871 vs 854 / 311 vs 305 across passes; RE-sourced, not dump-reproducible |
+| `boot_chain.md:136` A/B metadata magic | comment said `"AVB0" or similar` | **(2026-09-10)** `\0AB0` — the misc/BCB slot-metadata magic is a **different, distinct magic** from the vbmeta `AVB0` magic used three lines above it in the same doc. Byte-confirmed via `vbmeta.img` (offset 0 = `41 56 42 30` = stock libavb `AVB_MAGIC`; header 100% upstream: RSA2048/SHA256, avbtool 1.2.0, flags=0x00000000 = verification NOT disabled, zero GM-specific fields). Raised by GitHub issue #1 (@DymOK93). |
+| ELK boot target | implied Linux/USB-storage shell in places | **(2026-09-10)** ELK is **Intel Kernelflinger fastboot** (kernelflinger-07.02, titan_gm_my22): flash/erase/getvar + `oem set-storage`; explicitly **"USB storage is unsupported"** (no external USB rootfs path); libavb-linked, AVB ACTIVE in ELK; unlock is device-state-gated. Not a general-purpose shell. |
 
 ## Confirmed against ground truth (high-value spot-checks)
 
@@ -95,8 +97,8 @@ into `hardware/connectors.md`:
 ## Recommended but not yet applied (judgment calls / lower priority)
 
 - **Provenance hedging:** label Y177-permissive + VIP-stub as RE-sourced in `firmware_versions.md`
-  & README (FAQ §12 already does); `boot_chain.md:136` AB0 magic comment says "AVB0" (should be
-  `\0AB0`); rollback "separate GHS counter in misc" is inference (the *block* is field-observed).
+  & README (FAQ §12 already does); rollback "separate GHS counter in misc" is inference (the
+  *block* is field-observed).
 - ~~**Video codec tables:** annotate the c2.android.* SW video codecs as absent.~~ **WITHDRAWN** —
   live Jun-2026 confirms `c2.android.{avc,hevc,vp8,vp9}.decoder` ARE registered (+ `media_codecs_google_video.xml`).
   The codec tables in `video/video_codecs.md`, `video/software_rendering.md`, `codecs/media_codecs.md`

@@ -560,5 +560,337 @@ Hardware:
   [LSWTCH_SWC] LEO_FIRMWARE 3.x.x is running
 
 ================================================================================
+8. PRACTICAL DPS OPERATION (added 2026-09-10)
+================================================================================
+
+Everything above is protocol/architecture. This section is the missing
+operational piece: how to get DPS actually installed, connected to an MDI2,
+and recognizing Type4 archives without the errors/crashes that are a FAQ on
+the CameraLoops "Private Vehicle Hacking Forum" DPS-support threads. Sourced
+from community setup threads there (topics 3229 "DPS install and setup" and
+3211 "DPS full options"), cross-checked against our own captured DPS session
+log (diagnostics/dps/*, module_dumps/10017909_canbus_reset/), which loads the
+identical stack described below.
+
+8.1 REQUIRED SOFTWARE STACK
+----------------------------
+Confirmed working combination (CameraLoops topic 3229, "Problems solved"
+post) — installing DPS alone is NOT sufficient:
+
+  1. Windows 10 or 11 ONLY. Windows 7 (both 32-bit and 64-bit) does not
+     work with DPS at all -- this is the #1 cause of silent crashes and
+     "device not found" errors reported in that thread, and is easy to
+     misdiagnose as an MDI2/driver problem instead.
+  2. MDI2 Manager (free, Bosch site) -- the MDI2 driver/management app.
+  3. Bosch "GM launcher service" (free, Bosch site) -- runs alongside
+     MDI2 Manager; DPS will not see the interface without it.
+  4. The J2534 Wrapper -- NOT bundled with a standalone DPS install.
+     Only obtainable from a full TDS/Techline Connect installation. You
+     do not have to actively USE Techline Connect or log into it with
+     your DPS account (multiple posters explicitly avoid this to protect
+     a paid Techline subscription) -- you only need to install it once
+     to get the wrapper component onto the machine, then can leave it
+     unused.
+
+  Missing any one of these four produces symptoms that look like an
+  MDI2/driver fault (interface not listed, DPS crashes on "read module
+  data", MDI2 shown in the interface list with a "needs update" icon)
+  but are actually caused by the missing wrapper or launcher service,
+  not a hardware or MDI2-firmware problem.
+
+  Corroboration: our own captured DPS session (diagnostics/dps/,
+  module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt) shows
+  this exact stack actually loaded at runtime:
+    >> C:\Program Files (x86)\GM\J2534Wrapper\J2534Wrapper.dll v1.6.14.0
+    >> C:\Program Files (x86)\Bosch\VTX-VCI\VCI Software (GM)\Products\
+       MDI 2\Dynamic Link Libraries\BVTX4J32.dll
+  i.e. the J2534Wrapper.dll + Bosch VCI (BVTX4J32.dll) combination is not
+  a community guess -- it is confirmed present in a real, working session.
+
+8.2 TYPE4 APPLICATION NOT RECOGNIZED / "Missing type 4 application in VIT2!"
+------------------------------------------------------------------------------
+Community-reported symptom (CameraLoops topic 3488): a Type4 archive
+(built the way research/type4_radio_info/ describes, or downloaded) is not
+recognized -- the file list is empty, and clicking OK gives "Missing type
+4 application in VIT2!".
+
+Answer (CameraLoops topic 3211): VIT2 only activates/populates AFTER
+calibrations have been selected via DPS's own "Select Cal" step. If VIT2
+is empty or a Type4 archive isn't recognized, the fix is to run "Select
+Cal" FIRST (before attempting to load the Type4 archive), not to rebuild
+or re-check the archive itself. This was previously an open/unresolved
+question in this repo (the "what is VIT2?" question was unanswered); it
+is a DPS workflow-ordering issue, not an archive-format issue.
+
+8.3 DPS VERSION / "FULLY ACTIVATED" DEV.PROGRAMMING TOOL OPTION
+------------------------------------------------------------------
+CameraLoops topic 3211 also covers a related confusion: a DPS install
+that only shows a bare "Dev. Programming Tool" option (not the fuller
+option set some users have). Per that thread, this is not a different
+DPS "edition" -- opening the Dev. Programming Tool itself, then Select
+Cal, is what surfaces the rest of the workflow (including VIT2). Users
+comparing screenshots across different DPS versions (4.46 / 4.48 seen in
+these threads) should not assume a missing option means a broken/cracked
+install; check the Select-Cal-first ordering above before concluding the
+install itself is at fault.
+
+8.4 GENERAL PROGRAMMING-SAFETY NOTE (from unrelated but instructive threads)
+--------------------------------------------------------------------------------
+Not A11/gminfo37-specific, but a real bricking case worth keeping in mind
+when testing Type4/DPS actions on the bench (CameraLoops topic "New To GM
+DPS, Need Help"): a module was bricked by (a) flashing a calibration that
+did not match the module's actual configuration (an auto-transmission
+calibration flashed onto a manual-transmission PCM), and (b) a manually
+"corrected" checksum. Lesson for bench work: verify the target
+calibration matches the actual unit's configuration before writing, and
+do not hand-patch checksums without verifying the checksum algorithm
+first (see eeprom/CORRECTIONS_AUG2026.md and CALSETSDB_HAND_EDITING_
+CHECKSUM_SHA256.md for the CalSets checksum scheme already documented in
+this repo).
+
+8.5 THE #1 RECURRING MISTAKE: "TYPE4" BUTTON VS REGULAR PROGRAM FLOW
+----------------------------------------------------------------------
+The single most common error pattern across CameraLoops DPS-support threads
+(seen independently in at least three separate threads: "Type4 Error"
+topic 6303, "Need Type 4 Immo Learn" topic 6464, "File Request SPS/TYPE4/
+type4app.dll" topic 6150) is NOT a broken archive -- it is using the wrong
+DPS button/workflow entirely, which surfaces as a generic
+"type4app.dll"-related error that looks archive-related but isn't.
+
+DPS has (at least) two distinct load paths, and picking the wrong one for
+a given action is the recurring failure mode:
+
+  (A) "Type 4 Application" button -- for a genuine UDS-driving PROGRAM
+      (a .dll interpreter + .cfx workflow that itself issues UDS
+      services). This is what research/type4_radio_info/ and
+      research/canbus_reset/ (A11_ECU_Reset, RadioControllerInfo) are.
+
+  (B) The REGULAR programming flow -- for most everything else,
+      including "Utility file" archives that merely trigger a stock GM
+      procedure (VTD/IMMO relearn, ECM/module reflash, calibration
+      write). Sequence, quoted directly from a resolved thread:
+        "get controller info -> select ECU ID -> select calibration ->
+         find your archive -> Program"
+      A poster explicitly distinguishing the two: "It's not a Type4 app
+      - it is a Utility file that just triggers the procedure. Just
+      select archive and hit 'Program' button." Another, after finally
+      succeeding: "I just programmed it regularly (not type 4) and it
+      went through fine. Why did I think this was a type4 in the first
+      place."
+
+  There is no single rule for which path a given action needs -- check
+  the specific procedure for that module/action (TIS, or ask) rather
+  than defaulting to the Type4 button because a Type4-style zip is
+  involved. If you get a "type4app.dll"-flavored error, first check
+  whether the action should have gone through the regular Program flow
+  instead of the Type4 button before assuming the archive is broken.
+
+8.6 BUILDING A TYPE4 ARCHIVE BY HAND -- COMMUNITY-CONFIRMED GOTCHA
+---------------------------------------------------------------------
+From "Type4 Error" (topic 6303): a user's hand-built Type4 archive failed
+until they combined files from BOTH the spsCache folder AND the separate
+"Type4 folder" into one staging directory before zipping -- files from
+only one of the two locations produced the error. Cross-reference: the
+SPSToolBridge.LOG-driven Blob-ID method already documented in
+research/type4_radio_info/README.md SS4a and
+research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md SS2.1/SS4 is the
+authoritative version of this same "combine the right source files"
+step -- if a hand-built archive fails, re-derive it from SPSToolBridge.LOG
+blob IDs rather than guessing which cached files belong together.
+
+Ground-truth example of what raw spsCache files actually look like
+(topic 6150, a 2019 Express ECM reflash attempt): 11 extracted files --
+8 `.bin` calibration files (matching the SPS CALID catalog), 1 XML, 1
+utility file, and 1 unidentified PE executable ("This program cannot be
+run in DOS mode" signature = the interpreter DLL). The 8 `.bin` files
+began with `FF FF FF FF 00 00 00` instead of a part-number-style 4th
+byte -- i.e. raw spsCache calibration blobs do not necessarily look like
+finished part-numbered files; do not assume a byte layout without
+checking SPSToolBridge.LOG's Blob ID/name mapping first.
+
+8.7 BUILDING A DPS SPAT ARCHIVE MANUALLY — VERIFIED STEP-BY-STEP (2026-09-10)
+---------------------------------------------------------------------------------
+Source: purchased CameraLoops course "Learn how to manually create GM DPS
+archive file for module programming [The Quick Method]" (owner-purchased,
+saved locally). Screenshot-verified, exact click sequence. This is the
+general (non-Type4) calibration-archive path -- the same underlying
+DPS/SPAT mechanism referenced more abstractly in SS4a of
+research/type4_radio_info/README.md and research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md.
+
+  1. Whenever pulling calibration files from GM SPS for a module, SAVE A
+     PERMANENT COPY of "SPSToolBridge.LOG" (found at
+     "C:\Users\<user>\sps") alongside that module's calibration files.
+     Scroll to the "SPS reprogramming info" block. Format:
+       Blob name: <part-number>, Blob ID: <N>, Blob Size: <bytes>
+     "Blob name" = the calibration file's part number. "Blob ID" = the
+     DPS Spat tool "Mod ID" -- the order files must be arranged in when
+     building the archive. **Blob ID 0 is ALWAYS the module's utility
+     file; every other Blob ID is a calibration file.**
+  2. Select all the module's calibration files downloaded from GM SPS,
+     right-click -> "7-Zip -> Extract Here". New files appear alongside
+     the originals -- DELETE THE OLDER (pre-extraction) FILES, keep only
+     the newly extracted ones. Use only the new extracted files below.
+  3. Open the DPS programming tool -> open the SPAT ("Service Programming
+     Archive Tool") utility from the Program menu.
+  4. Click "Create a New Archive".
+  5. Name the new archive file. Do NOT use a SPACE in the filename.
+  6. Click "Template" -> select "califilN.DTM" where N = the COUNT of
+     calibration files for this module, EXCLUDING the Blob-ID-0 utility
+     file (count directly from SPSToolBridge.LOG). Example: a BCM with
+     20 calibration files (Blob IDs 1-20) + 1 utility file (Blob ID 0)
+     -> select "califil20.DTM".
+  7. Click "Next", then "Select File" in the resulting Build
+     Calibration Archive/Template dialog (a Mod ID / Description /
+     Utility-or-Calibration-File table).
+  8. Assign the utility file to DPS Mod ID 0.
+  9. Assign every other calibration file, matching each file's Blob ID
+     (from SPSToolBridge.LOG) to the same-numbered DPS Mod ID row. If a
+     Blob ID is out of strict numerical order, manually type the correct
+     Mod ID digit into that row rather than relying on drag-order.
+ 10. Click "Build".
+ 11. To program: open the DPS tool -> set the correct "Diagnostic Pin"
+     for the module's protocol (example in the source: a GMLAN BCM on
+     the high-speed CAN bus uses Diagnostic Pin "6 & 14", 500 kbit/s) ->
+     click "Select Cal" -> load the archive just built -> click
+     "Program".
+
+Commercial automation note: "GM DPS Archive Creator Tool version 2"
+($270, confirmed 107 purchases / 323 downloads at time of course
+authoring) automates steps 1-10 directly from the GM SPS cache folder.
+This is the same tool already found and documented at
+tools/DPS_Archive_Creator_V2/ in the external GM_research corpus (not in
+this repo) -- confirms it is a real, actively-used product, not vaporware.
+
+8.8 REPROGRAMMING FAILURE SAFETY GUARANTEE (GMW spec, community-confirmed, 2026-09-10)
+-------------------------------------------------------------------------------------------
+Source: a real worked DPS-failure troubleshooting thread on the MHH AUTO forum (A11
+radio, 2015 Corvette, replaced-module reprogram case) that hit a genuine mid-write
+failure and cited GM's own GMW engineering spec while diagnosing it. Relevant because
+it bears directly on brick risk during any bench reprogramming test.
+
+- **Observed failure mode:** DPS utility-file interpreter hung on opcode 53 (a
+  "compare data" instruction) comparing module-ID bytes; the subsequent
+  `$34` RequestDownload was met with `$7F 34 22`
+  (ConditionsNotCorrectOrRequestSequenceError).
+- **Root cause in that case:** wrong calibration for the hardware variant -- a
+  Europe-spec (DAB-equipped) radio's calibration was being written onto a USA-spec
+  (satellite-radio) replacement unit. Confirms calibrations are strictly
+  variant-locked, not freely interchangeable even for nominally "the same" module
+  part family -- a real-world data point, not just a paper concern.
+- **The reassuring part, per the cited GMW spec text:** "the boot memory shall be
+  protected against inadvertent erasure such that a failed attempt to modify
+  program calibrations or operational software does not prohibit the ability of the
+  ECU to recover and be programmed after the failed attempt... The ECU shall be able
+  to recover and be reprogrammed if any of t[he above conditions occur]." I.e. GM's
+  own spec **mandates** that the boot sector be architecturally separated from the
+  calibration/operational sector specifically so a failed/aborted reprogramming
+  attempt cannot brick the module -- it must remain recoverable and reprogrammable
+  afterward. This is a genuine safety guarantee at the standard-UDS-reflash level
+  (separate from, and does not extend to, the VIP/ELK/EEPROM-level work elsewhere in
+  this repo, which sits below this guarantee's scope).
+- Same thread independently confirms the `J2534Wrapper.dll` requirement (SS8.1) holds
+  for non-Bosch J2534 hardware too (this case used a Scanmatik SM2 USB device, not an
+  MDI2), and that the `"VIT2 does not contain Part Number Information (VIT not
+  populated)!"` warning is a commonly-hit message during archive loading, not unique
+  to any one setup -- don't treat it alone as a sign of a broken archive.
+
+§8.9 OFFICIAL GM "DPS USER GUIDE" (Rev 1.9, Mar 14 2022) -- HOSTED DIRECTLY ON
+CAMERALOOPS.RU (2026-09-10)
+--------------------------------------------------------------------------------
+A first-party GM document (not a forum writeup), found via the
+`dps_user_guide.pdf` URL on cameraloops.ru, extracted with `Read`+`pages` since
+WebFetch cannot decompress its FlateDecode text streams. This confirms and
+extends prior RE/community findings; nothing below contradicts existing repo
+docs, but two items are new and load-bearing:
+
+- **The "Security Code" gate is a SEPARATE, legacy mechanism from `$27`
+  SecurityAccess / the S84.dll AES-CMAC PROTOKEY path documented in
+  `eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`.** Per Appendix E ("Program an ECU
+  that requires a Security Code"): a Utility File's normal logic compares the
+  ECU's stored VIN against the VIT (Vehicle Information Table) VIN. If they
+  MISMATCH, the utility file's own "Security Code Logic" executes -- this is
+  the classic VATS/theft-deterrent 4-byte code (`Security Code 1` = vehicle,
+  `Security Code 2` = ECU, gated by the "Theft Deterrent Security Code"
+  checkbox in the Run-Time Options panel), NOT a `$27` seed/key challenge.
+  Verbatim: **"the Security Code Data will need to be entered into DPS;
+  otherwise, default Security Code data of 0xFF 0xFF 0xFF 0xFF data will be
+  used (DPS does NOT access the GM Security Code database) -- the user is
+  EXPECTED to know the SECURITY CODE when using this Development tool."**
+  Practical implication: if a programming attempt fails with a security-code
+  prompt, first check whether it's this VIN-mismatch VATS code (which DPS will
+  never fetch for you and which defaults to all-FF) before assuming it's the
+  `$27`/PROTOKEY path -- they are different gates with different owners.
+- **Utility File binary format, officially confirmed** (Appendix D): one
+  contiguous block, three sections -- (1) 24-byte Header (session-constant
+  info incl. "Type of Interpreter", fixed for the whole event), (2)
+  Interpreter Instructions (sequential steps, each exactly 16 bytes: 1-byte
+  Step Number + 1-byte Op-Code + 4-byte Action Field + 10 bytes of goto
+  fields), (3) ECU Specific Control Routines / Service Request Data (routine
+  data, variable length, controller-specific -- e.g. erase flash, enable
+  reprogramming voltage, read flash mfr/ID). Two Op-Codes terminate a
+  programming event: `EE` = End with Error ("Programming has Failed"), `FF` =
+  End with Success ("Programming was Successful"). This matches the
+  `EE`/`FF`-flagged status lines already seen in this repo's captured DPS
+  `.Txt` logs and corroborates the interpreter-driven design assumed by
+  `type4_radio_info/README.md`.
+- **SBAT / ECU Bypass Ticket, confirmed as a GM-server-issued artifact
+  independent of DPS** (matches and firms up the existing SBAT mentions
+  elsewhere in this repo): "ECU Bypass Ticket" writes a binary SBAT record to
+  an ECU via `$27`-gated "Secure DID write" (checkbox: "Security Access Option
+  (Seed/Key): Secure DID write"). Verbatim: **"Binary SBAT files are obtained
+  from the GM Cyber SBAT ticket server, which is completely independent of
+  DPS."** I.e. DPS is only the delivery mechanism; the actual bypass-ticket
+  content/authorization comes from a GM backend server, same trust boundary
+  as the S84.dll master-key-fetch-over-mTLS finding already documented.
+- **Regular Program flow, GUI-confirmed:** Select Cal -> Program. Nothing
+  else required for a normal (non-Type4, non-security-code) event.
+- **Type4 Application flow, GUI-confirmed, matches
+  `type4_radio_info/README.md` exactly:** Browse -> select the Type4 archive
+  zip -> OK; explicit instruction "Do not use the Debug checkbox." GM's own
+  guide states Type4 apps are used almost exclusively during GM-internal
+  development of Type4 code itself, are not shipped with DPS, and get "no
+  support" from the DPS team outside that use case -- consistent with why the
+  owner has never seen a real one distributed.
+- **SPAT (Service Programming Archive Tool) workflow, GUI-confirmed, matches
+  `make_spat.py`'s approach:** `Create a New Archive` -> name (<=32 chars) ->
+  select a `calfilNN.DTM` layout template (N = file count incl. utility) ->
+  `Build Calibration Archive/Template File` dialog lists one row per Mod ID
+  (0 = Utility File, 1..N = calibrations) -> `Select File` per row -> `Build`.
+  Confirms the `calfilNN.DTM`-template-driven, Mod-ID-ordered build process
+  this repo's `make_spat.py` already reproduces byte-for-byte against a real
+  reference archive.
+- **DPS/SPS relationship, GM's own framing:** "The communications subsystem in
+  DPS is the same as the Service Programming System (SPS), which is used at
+  dealerships. Therefore, proof of functionality within DPS ensures success
+  within the dealership system from a communication perspective." I.e. DPS and
+  SPS are the same wire protocol/comm stack with a different front-end/license
+  scope -- reinforces this repo's existing understanding that SPS-sourced
+  calibration files are DPS-compatible at the protocol level, distinct from
+  the file-*packaging* differences already documented elsewhere in this file.
+- Also documented, lower-priority/no repo impact: Supersession Table (SST) /
+  BATCH SST / Sequential Programming (multi-ECU convenience flows, Appendix
+  A); Vehicle Key Provisioning (Global B/GEM-only, message-authentication key
+  assignment across the whole vehicle via the gateway module -- not
+  applicable to this Global A-era A11/CSM platform); the `Options` menu
+  toggles (Disable Class2 ID Filtering, Disable SST VinLog.Dat Writing,
+  Disable Automatic P/N VIT Setting, Enable Prog Event Logging, Disable Auto
+  File Conversion, Enable GMLAN `$28`/`$A5` Error Toleration) -- ordinary
+  QoL/compat switches, no security-relevant behavior.
+
+§8.10 A11-SPECIFIC DPS SETTING: DIAGNOSTIC PIN (community-confirmed, 2026-09-10)
+--------------------------------------------------------------------------------
+From `forums/topic/3368-a11-programming-fault/` on cameraloops.ru: a user's A11
+module stopped responding to DPS/SPS programming after loading a wrong-region (EU)
+calibration. Troy's (site admin) fix suggestion: **"The radio is on pin 1... Set
+DPS diagnostic PIN to: PIN 1."** I.e. for the A11 radio specifically, the DPS
+"Diagnostic Pin" field (Protocol and Communication Settings panel) should be set to
+Pin 1, not whatever default/other pin a prior session left selected (the official
+DPS User Guide's own example screenshots show "6 & 14 (500KBd)" as a *different*
+module's setting, illustrating this field is genuinely per-module, not a fixed
+default to leave alone). No confirmed outcome was posted in that thread (user said
+"will try that now" with no follow-up) -- treat as a plausible fix worth trying
+first if DPS stops responding to the A11, not a guaranteed resolution.
+
+================================================================================
 END OF DOCUMENT
 ================================================================================

@@ -136,9 +136,54 @@ Current status: XGecu direct read/write access to M24C64 already established. Th
 - Dump complete VIP firmware (no indirect Ghidra needed).
 - Set hardware breakpoint at `0xb67d0` entry → observe inputs (EEPROM→RAM path, expected values). *(CORRECTED 2026-08-26: `0xb67d0` is the `$27`/seed validator, NOT the ADB gate — ADB is unlocked SoC-side via MEC/`is_secure_mode` (DID 0xF1A0), see EEPROM_LAYOUT §0.9/§0.10. Still useful for the `$27`/seed path.)*
 - ~~Patch `0xb67d0` in-place: overwrite 906-byte validator with Y177 4-byte stub~~ — **VOID (2026-08-25):** there is no Y177 stub. The validator is a full ~906-byte function in Y175/Y177/Y181 alike (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2), so there is nothing to copy in, and the VIP does not set SELinux mode regardless.
-- Observe J6_CDD OBBPELK handler live → extract exact ELK trigger format.
+- ~~Observe J6_CDD OBBPELK handler live → extract exact ELK trigger format.~~ **ANSWERED (2026-09-10):** VIP disassembly locates the trigger without JTAG — see the "RH850 VIP IPC Injection" entry below. JTAG is no longer required to *find* the format; it remains useful to confirm live signaling and to probe whether an external path can emit it.
 
 ~~**This is the highest-leverage single action** — a successful patch of `0xb67d0` achieves permissive SELinux on Y181…~~ **RETRACTED:** the patch-to-stub premise is false (no stub exists) and SELinux mode is not decided on the VIP. JTAG remains useful for *observing* the ADB/seed gate, not for a SELinux bypass. The lever for runtime SELinux is OS-side (ramdisk/init).
+
+---
+
+### RH850 Serial Programming Mode — ID Code Bypass via Voltage Glitching (public precedent, 2026-09-10)
+
+**Distinct from the JTAG vector above** — this targets the RH850's *Serial Programming Mode*
+(2-wire UART, enabled via the `FLMD0` pin per the datasheet), not the JTAG/OCD debug port.
+Public, detailed, reproduced writeup: Jerin Sunny & Shakir Zari (FEV Secure Lab),
+["Renesas RH850 Voltage Glitching"](https://jerinsunny.github.io/blogs/2024/02/14/rh850-voltage-glitching.html),
+Apr/May 2024 — a **second, independent, more recent and more detailed public precedent**
+alongside the icanHack.nl RAV4 JTOAG-VFI technique already cited above. Same MCU family
+(RH850/F1L, sibling to this project's RH850/TM52176), different automotive ECU (a BCM, not
+a gatekeeper-CSM VIP), same manufacturer security scheme class.
+
+**What it proved, end to end:**
+1. RH850 Serial Programming Mode gates flash read/write behind a **16-byte ID Code**
+   sent over the 2-wire UART (protocol: commands start `0x81`/`0x01`, end `0x03` w/
+   1-byte checksum preceding it — decoded via logic-analyzer capture of the Renesas
+   Flash Programmer (RFP) tool's own traffic, no datasheet secrecy involved).
+2. The ID Code Check command is the fault-injection target. Glitch injection point:
+   **ISOVCL pin** (the isolated-area voltage regulator rail, which powers flash memory
+   specifically — distinct from AWOVCL/always-on rail). Decoupling caps at ISOVCL were
+   swapped to raise glitch sensitivity.
+3. Tool: **ChipWhisperer Lite** (~$250, cheaper than the $500 already budgeted for
+   vector #9 in the priority matrix below — the same unit can serve both). Glitch width
+   needed to be **under 100ns**, injected immediately after the ID Code Check command ends.
+4. Once the glitch succeeds once, **no further authentication gates subsequent memory-read
+   commands** — the whole code+data flash region is dumpable after a single successful bypass
+   (multiple glitch attempts were still needed across the full dump because the target
+   periodically stopped responding mid-read, not because re-authentication was required).
+5. Reverse-engineering the extracted firmware **yielded the secret keys used to unlock
+   Secure Diagnostic Services** on that BCM — i.e. this technique's proven end state is
+   exactly the kind of key material this project has been unable to capture for `$27`
+   (the S84.dll/AES-CMAC master key, see `eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`).
+
+**Applicability to this project's VIP (RH850/TM52176):** unconfirmed but plausible —
+same MCU family, same class of serial-programming-mode ID-code gate is documented across
+the RH850 line generally (not F1L-specific). Would need: (a) confirming the VIP exposes
+`FLMD0`/2-wire UART programming pins (datasheet + PCB probing, same reconnaissance style
+as the JTAG vector above), (b) a ChipWhisperer Lite or equivalent, (c) the same
+ISOVCL-rail glitch-point identification on TM52176's specific power-supply scheme (may
+differ from F1L's). This is a **lower-barrier alternative to the JTAG vector** — serial
+programming mode is a standard, datasheet-documented interface (no OCD security-fuse
+question to resolve first), and the tool cost is lower than the E10A-USB debugger. Not
+yet attempted on this project's hardware.
 
 ---
 
@@ -156,6 +201,7 @@ Current status: XGecu direct read/write access to M24C64 already established. Th
 **Kernelflinger `SerialPort` EFI Variable:**
 - If fastboot is available (it isn't on this unit): `fastboot oem setvar SerialPort ttyLP2,115200n8` adds `console=ttyLP2,115200n8` to kernel cmdline.
 - Since fastboot is blocked: same variable can potentially be written via the NVRAM manipulation path (Section 1).
+- **ELK identity, corrected (2026-09-10):** ELK is this same `fastboot`-class Intel Kernelflinger (`kernelflinger-07.02` / `titan_gm_my22`), **not a Linux shell/environment.** It implements `fastboot flash/erase/getvar` plus `oem set-storage`; it explicitly strings `"USB storage is unsupported"` (no external-USB-rootfs boot path). Standard libavb is linked and AVB verification is **active** in ELK. Unlock exists as a code path but is device-state-gated (`"Unlocking device not allowed"` / `"Enable OEM Unlock"`), consistent with "fastboot is blocked" above. GitHub issue #1 (GWMv2 sibling, @DymOK93) documents ELK as a minimal Linux shell with USB-rootfs boot on that sibling platform — that trait does **not** hold on GM; do not carry it over.
 
 ---
 
@@ -203,10 +249,33 @@ Green Hills PSA-2020-05 discloses that GHnet v2 (INTEGRITY IoT network stack) is
 
 Relevant CVEs if GHS network stack is reachable:
 - CVE-2020-11896 (Ripple20 heap overflow, CVSS 10.0, IPv4/UDP tunneling)
-- CVE-2019-7714 (IPWEBS HTTP auth header stack overflow, CVSS 9.8)
-- CVE-2019-7713 (IPCOMShell TELNET heap overflow, CVSS 9.8)
+- CVE-2019-7714 (IPWEBS HTTP Basic-Auth header parsing stack overflow, CVSS 9.8 — `auth_outbuf`
+  fixed 60-byte stack buffer in `t_webserver_basic_auth_check`, no length check on the copied
+  `auth_str`; disassembly available, see below)
+- CVE-2019-7713 (**correction, 2026-09-10:** IPCOMShell **"prompt <new_prompt>" command** heap
+  overflow — not TELNET-specific as previously stated here. The undocumented `prompt` command's
+  custom modifiers (`\i`/`\p`/`\P`/`\w`/`\W` — IP, process name, PID, cwd) expand into a
+  heap buffer without a bounds check, causing corruption + a process-address info leak)
+- CVE-2019-7711 (IPCOMShell **undocumented `prompt` command**, format-string variant — the raw
+  prompt value is passed as printf's format string, not just expanded via the modifier bug
+  above; info leak via printf format specifiers)
+- CVE-2019-7712 (IPCOMShell **`pwd` command handler**, format-string — current directory path
+  passed directly as printf's first/format argument)
+- CVE-2019-7715 (IPCOMShell **login greeting**, format-string — the `ipcom.shell.greeting`
+  sysvar is user-settable via the `sysvar` command and is passed as printf's format string
+  at login time, info leak)
 
-**Reachability:** GHS network partition at 192.168.1.1 — `nc 192.168.1.1 <port>` returns "No route to host" from the Android guest network namespace. Accessible only if the GIPC/VirtIO path is bridged, or from a different network namespace.
+All five 2019 CVEs are documented with disassembly (ARM, `t_webserver_basic_auth_check` for
+7714) by Tobias Scharnowski and Ali Abbasi (Ruhr University Bochum),
+[AlixAbbasi/GHS-Bugs](https://github.com/AlixAbbasi/GHS-Bugs) — found 2026-09-10, more detailed
+than the bare NVD entries this doc previously relied on for the CVE-2019-77xx set; use this
+source over NVD if re-deriving exploit specifics. Their framing: these bugs are meant to be
+chained to **bypass the Interpeak IPShell jail and talk to INTEGRITY natively** — i.e. the
+IPCOMShell is treated by GHS as a restricted/jailed shell, and prompt/pwd/greeting are the
+escape surface. That framing (a jail *inside* the Interpeak/IPCOMShell partition, separate from
+INTEGRITY's own partition boundary) is new information not previously captured in this repo.
+
+**Reachability:** GHS network partition at 192.168.1.1 — `nc 192.168.1.1 <port>` returns "No route to host" from the Android guest network namespace. Accessible only if the GIPC/VirtIO path is bridged, or from a different network namespace. (Same caveat applies to all five CVEs above — they require reaching the Interpeak-based IPWEBS/IPCOMShell services on that partition first.)
 
 ### RFDS — CVE-2023-28746 (Intel Goldmont, Apollo Lake listed first)
 
@@ -226,7 +295,9 @@ GHS INTEGRITY configures static MemoryRegion objects shared between Android gues
 
 From Android guest, the VIP IPC channel (`SERIAL_IPC_PROTO_KEY_CHANNEL`) is the software path to the RH850. Replaying or crafting messages on this channel (mercedes-MBUX TCP-over-IPC pattern) may trigger RH850 actions without physical JTAG.
 
-**J6_CDD "Diag Elk Reboot Req"** — the OBBPELK trigger. Exact SID/DID format unknown. Bruteforce on J6_CDD channel to find it. RH850 JTAG reveals it directly.
+**J6_CDD "Diag Elk Reboot Req" — TRIGGER LOCATED (2026-09-10), fresh VIP RH850 + GHS INTEGRITY disassembly, HIGH confidence.** The VIP executes an ELK/reboot on an **unauthenticated** internal serial-IPC message on `SERIAL_IPC_CONTROL_CHANNEL` ("Channel-7"): `RID=0xFF01` (big-endian) + `subcommand=0x01`, handled by VIP function `FUN_000641c2` @0x64208. **No `$27`/session/dev-mode/EEPROM gate exists at the VIP for this command** — whatever authorizes the ELK happens (or doesn't) upstream of the VIP. The VIP only *receives* 0xFF01; the SoC is the emitter. Separately, on the SoC side, GHS INTEGRITY Lifecycle emits `BootELKSendAblUserCommand` over Intel HECI to CSE/ABL for boot-target selection — this is the ABL/fastboot-facing half of the chain, distinct from the VIP's Channel-7 handler. GM does **not** use GWM's UDS DID `0xFDF0` for this (see GORDON_PEAK_CELADON_INTELLIGENCE.md, GitHub issue #1 GWMv2 sibling, @DymOK93, for the DID GM does not share).
+
+**OPEN (under active investigation, 2026-09-10):** whether an *external* DoIP/MDI2 tester, or the uid-2000 Android guest, can make the SoC emit the Channel-7 0xFF01 command — a `$31` RoutineControl bridge analogous to the documented GM ADB hatch (`31 01 0332 DD 42 10 EE`). No artifact so far answers this; do not assume it is reachable. RH850 JTAG (vector below) would settle it by observing live signaling on the channel during a real ELK cycle.
 
 ---
 
@@ -235,6 +306,7 @@ From Android guest, the VIP IPC channel (`SERIAL_IPC_PROTO_KEY_CHANNEL`) is the 
 | Rank | Vector | Type | Effort | Impact |
 |---|---|---|---|---|
 | 1 | ~~RH850 JTAG → patch `0xb67d0`~~ **VOID** | Hardware | — | No stub exists in any build; VIP does not set SELinux (corrected 2026-08-25). JTAG still useful to *observe* the ADB/seed gate |
+| 1b | RH850 Serial Programming Mode ID Code bypass via ISOVCL voltage glitching (public precedent, FEV Secure Lab 2024) | Hardware/VFI | Medium (ChipWhisperer Lite ~$250) | Full flash dump + proven key extraction on a sibling RH850/F1L BCM; unconfirmed on TM52176 |
 | 2 | CVE-2024-53197/53104 → misc write | Software/USB | Medium (USB gadget) | Online misc write path |
 | 3 | SPI IFWI dump → Boot Guard FPF audit | Hardware | Low (SOIC-8 clip) | Determines if `bxt_dbg_priv_key.pem` works |
 | 4 | DCI DbC (if HDCIEN already enabled) | Hardware | Low ($15 cable) | Full JTAG, game over |
@@ -255,5 +327,5 @@ From Android guest, the VIP IPC channel (`SERIAL_IPC_PROTO_KEY_CHANNEL`) is the 
 | SOIC-8 clip + 1.8V adapter | SPI IFWI dump (vector #3) | ~$30 | **Critical** |
 | USB-A to USB-A cable (VBUS cut) | DCI DbC test (vector #4) | ~$15 | High |
 | Logic analyzer (16ch) | I2C sniff, SPI trigger, UART | ~$30 (Saleae clone) | High |
-| ChipWhisperer or equiv | VFI trigger sync | ~$500 | Medium |
+| ChipWhisperer Lite (or equiv) | VFI trigger sync; also serves vector #1b (RH850 ISOVCL glitch) | ~$250-500 | Medium-High (now dual-purpose) |
 | FPGA (Spartan-7 or equiv) | PMIC I2C interposer, TOCTOU | ~$100 | Low |

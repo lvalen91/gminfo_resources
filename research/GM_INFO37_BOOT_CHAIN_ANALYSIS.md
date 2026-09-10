@@ -542,6 +542,12 @@ vbmeta Verification:
 └── Prepare for signature verification
 ```
 
+**(2026-09-10, byte-confirmed):** `"AVB0"` is the **stock upstream `libavb` `AVB_MAGIC`**, not a
+GM-custom value — `vbmeta.img` offset 0 = `41 56 42 30`. The header is 100% upstream (RSA2048/SHA256,
+`avbtool 1.2.0`, flags=0x00000000 i.e. verification NOT disabled), with zero GM-specific fields. Do
+not confuse this with the separate `\0AB0` magic used by the misc/BCB A/B-slot-metadata structure
+(§7.2 above) — the two are different magics guarding different structures. (GitHub issue #1, @DymOK93.)
+
 ### 7.4 Verify vbmeta Signature
 
 ```

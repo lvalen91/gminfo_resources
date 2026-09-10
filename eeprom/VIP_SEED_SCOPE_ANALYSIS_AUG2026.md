@@ -108,7 +108,13 @@ Key facts this establishes:
 - `param_1` is accepted over the range **0x02–0x14 (18 distinct values)**, each validated by
   the SAME code path through `FUN_ram_000b6652`'s range-mapping logic. This is a single,
   parameterized function servicing many security-level/slot values — **not** N separate
-  per-level implementations.
+  per-level implementations. **(2026-09-10 correction:** a follow-up disasm pass on
+  `FUN_000b67d0` recovered the actual access-control structure sitting on top of this range
+  check: a **19-level SecurityAccess bitmask**, one bit per level via `1<<(level-2)` for
+  levels 2..20 inclusive (0x02–0x14 = 19 values, not 18 — the earlier count was off by one),
+  with full-unlock tested as `mask & 0x7FFFF == 0x7FFFF`. This is why a live MDI2 `$27` sweep
+  shows some levels unlocked and others still locked — it is per-bit state in this mask, not a
+  single global locked/unlocked flag. See §7 below.)
 - The function returns genuine UDS-style negative response codes (`0x31`, `0x22`) written into
   `*param_7`, strongly indicating this is the VIP's actual `$27` SecurityAccess seed/key
   processing core (or immediately adjacent to the wire-protocol handler), not something ADB-specific.
@@ -283,3 +289,110 @@ byte-to-slot-state mapping is needed for a PoC.
 - Capture VIP UART debug output (the `[PROTOKEY]`/`[OTA_DIAG]` strings are printf-style debug
   logging) during a live SecurityAccess exchange to correlate log lines to the actual GetSeed
   code path, since static analysis could not locate it by string reference.
+
+## 7. UPDATE (2026-09-10): `$27` handler confirmed SHA-256-based, not an LFSR/small-seed scheme; key-derivation algorithm still OPEN
+
+A further disasm pass on the VIP `$27` handler (`FUN_000b67d0`) settles the "what kind of
+crypto is this" question §3's PROTOKEY-string search left open:
+
+- **`FUN_000b67d0` contains SHA-256 primitives** — the standard SHA-256 initial hash values
+  `H0..H7` are present as constants, alongside a **CRC-32 table using polynomial `0xEDB88320`**
+  (the reversed IEEE 802.3 poly, the same one `zlib`/most CRC-32 implementations use). This
+  confirms the seed/key machine is **SHA-256-based, not an LFSR or a small fixed seed/key
+  scheme** — it categorically rules out GWM's 4-byte LFSR (reported in this repo's GitHub
+  issue #1) as applicable to gminfo37's VIP `$27`; that finding does not transfer here.
+- **Seed size correction:** the live `$27 01` seed RESPONSE captured over CAN (§4 above,
+  ECU `0x80`) is **32 bytes total = 16-byte fixed device identifier (the `$27`
+  ECUID = `004B41DC0000160006104145610114AC`) + 16-byte random challenge**. Earlier byte-count figures in sibling
+  docs describing this as a "31-byte seed / 12-byte key" pair were a misread of the same
+  capture and have been corrected in `research/MDI2_DPDU_API_PROTOCOL_AUG2026.md` §6.
+- **(2026-09-10) UPDATE — the key-derivation algorithm IS now identified, from a separate research
+  track (prior-session artifacts under `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/`,
+  not previously cross-referenced into this repo).** Static disassembly of GM's own DPS-side security
+  DLLs (`S84.dll`, PE32, Crypto++ 8.x) confirms the algorithm is **AES-128-CMAC (RFC 4493)**:
+  `key = CMAC(master_key, ECUID‖challenge)[:12]` — a 12-byte truncated MAC. Confirmed via: (a) a leaked
+  PDB debug path in the binary, `.../Work/GlobalB/Service84/AESCMAC/...s84.pdb` — GM's own internal
+  project name; (b) Crypto++ RTTI strings (`CryptoPP::Rijndael`, `CryptoPP::CMAC`); (c) disassembly of
+  the `generate27Response`/`generateMAC` exports (radare2 + manual), later fully resolved to a concrete
+  `CryptoPP::CMAC_Base` vtable layout. **The 128-bit master key is NOT embedded in `S84.dll`** — an
+  exhaustive entropy/static-key scan found none; it is fetched at runtime by a companion DLL,
+  **`IECS.dll`**, from a **GM key-provisioning server over HTTPS+mTLS** (WinHTTP, Windows cert-store
+  access, XML/TinyXML2 protocol; exports include `getKeyProvResponse`/`getUnlockResponse`). This is
+  the concrete mechanism behind the already-documented "DPS calls the GM backend for `$27`" behavior —
+  not a missing local secret, but a certificate-gated server round-trip. Three independent
+  implementations of this same AES-CMAC transform were found converging on the same design (the
+  original `S84.dll` analysis, a `gm_security.py` in the same `security_dlls/` folder, and an
+  "improved" `gm_security.py` in a separate `carplay/gm_pi/gmtool/` research track) — treat the
+  algorithm identity as high-confidence. **Web search (2026-09-10) confirms zero public coverage of
+  `S84.dll`/`IECS.dll`/this algorithm anywhere** — this repo is ahead of any published research here.
+  **Still NOT recovered: the master key itself.** No key has actually been captured (the paired
+  `ecuid_key_map.json` remains a template — `"key_hex": "PLACEHOLDER_REPLACE_WITH_CAPTURED_KEY"` for
+  this exact ECUID). A ready-made Frida hook (`frida_capture_key.js`, targets `S84.dll`'s
+  `generateMAC`) exists to capture it live off a real DPS session but has never been run — this
+  remains the concrete next step, already tracked in this repo as `research/UNTRIED_ATTACK_VECTORS.md`
+  vector #6, but the actual tooling was never copied in-repo (only referenced) until this note.
+
+- **Reconciliation note, OPEN:** a *separate* GM DLL, `dllsecurity.dll` (the standard, non-GlobalB-
+  specific `CSecurity`/`SetSeedAndGetKey` library also referenced in
+  `research/TISVCSV4_MULTI_OEM_KEYSERVER_AUG2026.md`), implements a **different** `$27` algorithm — a
+  4-step table-driven bytecode VM over a 16-bit seed (byteswap/add-sub/two's-complement/AND-OR/rotate/
+  sorted-byte-mix opcodes, table selected by `(byte)param_3*0xd`), per
+  `gm_dps/disassembly/annotations/dllsecurity.dll.annotations.md`. This does **not** contradict the
+  AES-CMAC finding above — GM likely runs different algorithms for different module classes/security
+  levels (e.g. a legacy/simple path for older or non-CSM modules vs. the CSM/Service-0x84 AES-CMAC
+  path). Which algorithm applies to which module/level is **not yet mapped**; do not assume one
+  supersedes the other without checking which DLL the DPS session actually invokes for a given ECU.
+
+- **Earlier note on what remains open (superseded in part by the above):** the actual key-derivation algorithm, i.e. how the
+  16-byte key is computed from `ECUID + challenge`, was **not** located in this pass. No static
+  secret or salt constant was found embedded in the VIP image alongside the SHA-256/CRC-32
+  material, so it remains unknown whether the derivation uses a per-vehicle secret sourced
+  elsewhere (e.g. relayed from the BCM alongside the seed itself, consistent with §3's
+  "Seed %d taken from GMLAN" debug string) or a fixed algorithm this session simply didn't
+  trace far enough to reach. Treat "SHA-256-based" as confirmed and "the specific
+  derivation/key" as unresolved.
+- **Practical consequence for the bypass:** none of the above changes the operative bypass
+  path. The all-`0xFF` degenerate-seed route via the EEPROM SBI flag (§4, §5) remains the
+  working bypass; it is a **key-management/provisioning defect** (the VIP handing out a
+  degenerate seed and presumably accepting a correspondingly degenerate key), **not** a break
+  of the SHA-256 primitive itself. No cryptanalytic attack on the hash was found or attempted.
+
+## 8. UPDATE (2026-09-10): Community/expert corroboration from CameraLoops.ru — Global-B key is server-issued, not crackable client-side; and a scope-check on the "GM Seed Key Generator" tool
+
+Two findings from the site's forum/files sections (owner's own paid account, `mcOreos`),
+corroborating rather than changing the AES-CMAC finding in §7:
+
+- **Troy (CameraLoops site admin, self-described "GM Car Hacking Expert"), in
+  [`forums/topic/1528-gm-dps-archive-on-global-b/`](https://www.cameraloops.ru/forums/topic/1528-gm-dps-archive-on-global-b/),
+  responding to a 2022 GMC Yukon IPC-programming failure on Global-B:** *"The GM Global-B
+  vehicles uses a much newer higher secured architecture and cannot be programmed with DPS
+  as easy as the Global-A vehicles. You need to generate the Global-B Key externally, or
+  have access to a legit DPS account. The cracked DPS won't work with Global-B vehicles."*
+  This is independent community/expert confirmation — from someone running the largest
+  dedicated GM SPS/DPS community, with no visibility into this repo's own RE — of exactly
+  what §7 found structurally: the Global-B key is not a local/crackable secret sitting in
+  DPS software, it has to come from GM's own backend (a "legit DPS account", consistent
+  with the `IECS.dll` mTLS key-provisioning-server mechanism), and pirated/cracked DPS
+  installs (the MHH-Auto-style licensing cracks documented in
+  `research/DPS_AND_MODIFICATION_LANDSCAPE.txt`) do not bypass this. Troy states he
+  personally "doesn't know much about Global-B" beyond this — not a source of algorithm
+  detail, just confirms the shape of the problem.
+- **The referenced deeper thread, `forums/topic/1311-gm-dps-certificate-to-global-b/`
+  ("GM DPS Certificate to Global B"), is gated behind CameraLoops' "Private Top Secret GM
+  Car Hacking Forum" — a "Contributor" membership tier above the account's current access
+  level.** Likely the single most directly relevant thread on this exact open problem on the
+  entire site; not read. **Actionable, owner's call:** upgrading CameraLoops membership tier
+  would unlock this thread — flagging as a concrete next step rather than a dead end.
+- **Scope-check, negative result:** CameraLoops sells a
+  ["GM Seed Key Generator Tool"](https://www.cameraloops.ru/files/file/416-gm-seed-key-generator-tool/)
+  (a popular/advertised tool, linked site-wide in the header ticker). Its own description:
+  *"This tool can generate the seed key for all GM 5-Byte and 2-Byte seed electronic
+  modules."* This is the **legacy short-seed `$27` algorithm family** (classic GM
+  VATS/theft-deterrent-style modules — BCM/ECM/SDM etc., per its own module-ID examples) —
+  it does **not** cover the CSM/A11's 31-byte seed or the AES-CMAC/Service-0x84 scheme this
+  repo has identified. Confirmed not a shortcut around the master-key problem; ruling it
+  out rather than leaving it as an unchecked lead. (A commenter in that thread separately
+  notes "Gm uses 256 different algo's" — i.e. an 8-bit algorithm-selector code across GM's
+  ECU population — consistent with this repo's own `dllsecurity.dll`
+  table-selected-by-`(byte)param_3*0xd` finding in §7's reconciliation note; different
+  algorithm families genuinely coexist across GM's module population, as already flagged.)

@@ -279,6 +279,29 @@ for the full uid=2000 Binder access map.
 
 ---
 
+## Android → diagnosticsd → CAN UDS surface (non-MDI2, 2026-09-10)
+
+A live Android→`diagnosticsd`→CAN UDS `$22` ReadDataByIdentifier surface exists, distinct
+from the Ethernet-UDS bridge above: an observed `Incoming payload: 22 F1 A0 00` read (MEC /
+DID `F1A0`) round-trips through `diagnosticsd` onto the CAN diagnostic bus. Access is gated
+by an Android-side permission check ("Check Permission first ... any DiagnosticDataID")
+before the DID read is dispatched — the exact permission string/holder is not yet
+characterized (candidate: same uid=2000 Binder surface as OBD-via-Binder above, or a
+distinct signature|privileged permission). This is a **potential non-MDI2 path** to drive
+DID reads/routines directly from the Android guest; what needs characterizing next is (a)
+the permission name/grant path, (b) whether it's reachable from uid=2000 shell or requires a
+signed app, and (c) whether it exposes `$22`/`$2E`/`$31` beyond the single DID observed so
+far. OPEN.
+
+Separately, a **direct T1/DoIP bench approach** would replicate MDI2-equivalent bus access
+without an MDI2 dongle at all: media-convert the vehicle's diagnostic T1 (BroadR-Reach) pair
+to a standard Ethernet PHY, then repoint existing DoIP tooling (e.g. the fsa_protocol.md
+stack) at the resulting IP endpoint. This bypasses the Android-guest permission question
+entirely by talking to the vehicle's diagnostic network directly, same as a dealer MDI2
+would. Route noted, not yet executed on this bench. OPEN.
+
+---
+
 ## Open Questions
 
 1. ~~Ghidra `DiagnosticEthernetMonitor::readHeader()` — exact trust check and
@@ -312,6 +335,10 @@ for the full uid=2000 Binder access map.
    active vehicle diagnostic/programming session (e.g. mid-OTA `SecureUnlock`
    state) have a functional effect beyond delayed responses — untested,
    deliberately not attempted on this bench unit without further discussion.
+9. **New (2026-09-10):** characterize the Android permission gate on the
+   `diagnosticsd` CAN UDS `$22` ReadDataByIdentifier surface (see "Android →
+   diagnosticsd → CAN UDS surface" above) — permission name, grant path, and
+   whether uid=2000 shell can reach it directly. **Open.**
 
 ## GM service-data note (ALLDATA)
 

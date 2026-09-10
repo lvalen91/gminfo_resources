@@ -28,6 +28,22 @@ CROSS-REFERENCE & VERIFIED-VALUE NOTES (added during doc review; body below unch
       actively initializing the backup SBI in Y181.
     * Framing/marker bytes vary by firmware (Y181 stock uses F0 @0x440, C3 @0x0A80). Locate
       each security byte by OFFSET, not by framing value.
+- (2026-09-10, HIGH confidence, fresh VIP RH850 disassembly): The RH850 VIP is CONFIRMED as
+  boot gatekeeper for the ELK/reboot path, not just ADB/EEPROM. It RECEIVES (does not emit) an
+  unauthenticated internal serial-IPC message on SERIAL_IPC_CONTROL_CHANNEL ("Channel-7"):
+  RID=0xFF01 (big-endian) + subcommand=0x01, handled by VIP function FUN_000641c2 @0x64208, and
+  executes a reset. No $27/session/dev-mode/EEPROM gate exists at the VIP for this command --
+  it is the same unconditional-execution pattern as the ADB/seed gate at 0xb67d0 being a pure
+  validator with no upstream authorization check of its own. The SoC is the emitter; on the SoC
+  side GHS INTEGRITY Lifecycle emits BootELKSendAblUserCommand over Intel HECI to CSE/ABL for
+  boot-target selection (a separate, ABL-facing half of the chain -- see
+  GORDON_PEAK_CELADON_INTELLIGENCE.md). GM does NOT use GWM's UDS DID 0xFDF0 for this (GitHub
+  issue #1, GWMv2 sibling, @DymOK93, documents that DID on the sibling platform only).
+  OPEN: whether an external DoIP/MDI2 tester or the uid-2000 Android guest can make the SoC
+  emit 0xFF01 on Channel-7 -- see HARDWARE_HYPERVISOR_ATTACK_VECTORS.md Part 2 "RH850 VIP IPC
+  Injection" for the priority writeup. Full detail: see also the "VIP IPC CHANNELS TO SOC"
+  table in section 4.2 below, which places channel 7 inside the Power Level Control range,
+  consistent with this being reboot/power-state signaling.
 --------------------------------------------------------------------------------
 
 TABLE OF CONTENTS
@@ -258,6 +274,11 @@ Key IPC Messages:
   - IPC_ID_NotifyAlarmStatus (wake timer)
   - Calibration data transmission
   - MEC value transmission
+
+(2026-09-10) ELK/reboot trigger on channel 7 (SERIAL_IPC_CONTROL_CHANNEL, "Channel-7"):
+RID=0xFF01 (big-endian) + subcommand=0x01, handled by VIP FUN_000641c2 @0x64208. No $27/
+session/dev/EEPROM gate at the VIP -- see cross-reference note at top of this document for
+full detail and the open reachability question (external tester / uid-2000 guest).
 
 4.3 VIP POWER LEVEL CONTROL (PLC)
 ---------------------------------

@@ -291,7 +291,7 @@ GHS monitors Android health via **Sign of Health (SoH)** mechanism:
 | **Normal A/B** | Default | `A/B Boot Slot: boot%s` | Standard boot to active slot |
 | **Recovery** | BCB command | `boot-recovery` | Android recovery mode |
 | **See-Dealer** | Service flag | `boot-see-dealer`, `GHS: [LIFECYCLE] Booting 'see-dealer' mode` | Dealer diagnostic mode |
-| **ELK** | Emergency | `GHS: [LIFECYCLE] Got request to boot to ELK`, `BootELKWaitForRespSent` | Emergency/diagnostic kernel |
+| **ELK** | Emergency | `GHS: [LIFECYCLE] Got request to boot to ELK`, `BootELKWaitForRespSent` | **(2026-09-10)** Intel Kernelflinger **fastboot** (kernelflinger-07.02, titan_gm_my22) — flash/erase/getvar + `oem set-storage`; NOT a general Linux shell. "USB storage is unsupported" (no external USB rootfs path); libavb-linked, AVB ACTIVE in ELK; unlock is device-state-gated. Entry is a GHS VMM boot-target decision off BCB/misc. |
 | **Diagnostic** | Service tool | `Diagnostic channel active` | Low-level diagnostics |
 
 ### 2.4 Android-GHS IPC Channels

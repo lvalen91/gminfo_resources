@@ -117,6 +117,10 @@ AVB (Android Verified Boot) is performed by GHS `VMM1_InitialTask`, NOT by Andro
 1. CheckRecoveryMode()          — reads BCB from misc partition
 2. A/B slot selection            — misc@0x800, CRC32 only (no crypto signature)
 3. Load vbmeta                   — AVB0 magic, version 1.1, avbtool 1.2.0
+                                   (2026-09-10: byte-confirmed stock upstream libavb —
+                                   offset 0 = `41 56 42 30` = `AVB_MAGIC`, RSA2048/SHA256,
+                                   flags=0x00000000 i.e. verification NOT disabled, zero
+                                   GM-specific fields)
 4. Verify signing key            — RSA-2048 from .oemkeys ELF section in SOC_ABL
 5. Check rollback index          — GHS independent counter in misc
 6. Load boot partition           — verify hash against vbmeta descriptor
@@ -132,7 +136,10 @@ Located at `misc` partition (`vda9`) offset `0x800`. **CRC32-only protection** (
 ```c
 // A/B metadata at misc+0x800
 struct ab_metadata {
-    uint8_t  magic[4];          // "AVB0" or similar
+    uint8_t  magic[4];          // "\0AB0" (misc/BCB slot-metadata magic — distinct from
+                                 // the "AVB0" vbmeta magic above; corrected 2026-09-10,
+                                 // GitHub issue #1 @DymOK93, confirmed by vbmeta.img byte
+                                 // analysis: offset 0 = 41 56 42 30 = stock libavb AVB_MAGIC)
     uint8_t  version;           // metadata version
     uint8_t  reserved[3];
     struct {
@@ -425,6 +432,15 @@ What is actually present vs. removed:
   can't be disabled on a locked unit.
 - No dedicated recovery partition exists (recovery is embedded in boot image); all updates
   are A/B only.
+- **(2026-09-10, assessment — OPEN) CSM-ownership / AOSP-replacement chain.** The device is
+  locked (`ro.boot.verifiedbootstate=green`, `ro.boot.flash.locked=1`,
+  `sys.oem_unlock_allowed=0`, dm-verity RO), so this is a gate description, not a solved path.
+  The only realistic route to a custom OS is: reach ELK (Intel Kernelflinger fastboot, see
+  `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3) → set `oem_unlock_allowed` → `fastboot
+  flashing unlock` → flash unsigned images. **Both gates are currently OPEN:** (1) no confirmed
+  path to reach ELK from a locked, running unit is documented; (2) no confirmed method to flip
+  `oem_unlock_allowed` off-Android (normally an Android Settings toggle, unavailable here) has
+  been demonstrated. Do not read this as a working unlock procedure.
 
 **Confirmed at firmware-image level (Sep 2026), not just runtime.** Unpacked the Y181
 USB full package (SOC_SYSTEM 86331654, SOC_VENDOR 86331650, SOC_PRODUCT 86331636):

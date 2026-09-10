@@ -133,8 +133,10 @@ Framing bytes at ±1 vary per firmware version — locate by offset, not pattern
 1. Return-to-dealer screen — check ADB/USB exposure during that state (easiest; already been there once)
 2. EEPROM `0x0A00` — 871 VIP firmware references, completely unknown function
 3. Offline eMMC modification — dump BGA-153 eMMC, find AB0 in misc, recalculate CRC32
-4. ELK trigger via VIP J6_CDD diagnostic channel (OBBPELK via HECI → ABL)
-5. 3× boot failure escalation → GHS lifecycle last resort → ELK
+4. ELK trigger via VIP J6_CDD diagnostic channel (OBBPELK via HECI → ABL) — **(2026-09-10)**
+   ELK is Intel Kernelflinger **fastboot** (kernelflinger-07.02), not a Linux shell; "USB
+   storage is unsupported," so this is a fastboot-flash/unlock vector, not a shell-access one
+5. 3× boot failure escalation → GHS lifecycle last resort → ELK (same fastboot caveat as #4)
 6. `/dev/ghs/ota-isys` HostOS streaming (highest risk — GHS likely signature-checked)
 
 See [`hardware/teardown.md`](hardware/teardown.md) §Ranked Research Vectors and §Key Catch-22s for full analysis.

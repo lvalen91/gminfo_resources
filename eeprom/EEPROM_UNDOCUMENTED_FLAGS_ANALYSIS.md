@@ -27,11 +27,21 @@ By analyzing what GM specifically targets in their security fixes and calibratio
 |---------|------|--------------|--------------|----------|
 | **0x0440** | Primary SBI | `[M] FF [M]` | `[M] 00 [M]` | Seed Bypass Indicator - enables ADB |
 | **0x0A80** | Backup SBI | `[M] FF [M]` | `[M] 00 [M]` | Redundant security flag |
-| **0x0B40** | Debug Mode | `[M] 01 [M]` | `[M] 00 [M]` | Developer/debug mode toggle |
+| **0x0B40** | Debug Mode (UNCONFIRMED, see note) | `[M] 01 [M]` | `[M] 00 [M]` | Developer/debug mode toggle |
 | **0x1A00** | Tertiary Security | Unknown | `[M] 00 [M]` | Additional security layer |
 | **0x0E80** | UI Flags Block | Varies | Varies | Contains UI feature flags |
 
 > `[M]` = Marker byte (varies per EEPROM init cycle). See Section 13 for details.
+
+> **0x0B41 "Debug Mode" status — OPERATOR-TESTED, unconfirmed (2026-09-10):** the "Debug
+> Mode" label for 0x0B40/0x0B41 is a byte-diff inference (it changed between stock and
+> modified Y181 dumps alongside the two SBIs), not a confirmed code read-site. An operator
+> flipped 0x0B41 as part of the working bypass triad (`0x0441=FF / 0x0A81=FF / 0x0B41=01`,
+> §Appendix A) and observed **no change in AAOS behavior** — adb remained `uid 2000` and
+> SELinux stayed enforcing. No decompiled read-site has been found tying 0x0B41 to
+> `ro.debuggable`, SELinux-permissive, or OEM-unlock. Treat 0x0B41's runtime effect as
+> **OPEN / UNCONFIRMED**, under active VIP-disasm investigation; the ADB-enable effect of
+> the bypass triad is produced by 0x0441/0x0A81 (the two SBIs), not by 0x0B41.
 
 ### Observed Marker Assignments
 
@@ -74,7 +84,27 @@ By analyzing what GM specifically targets in their security fixes and calibratio
 
 ## 3. Calibration File Target Analysis
 
-### 3.1 File 85783460 (SW ID 07 - Security Config)
+### 3.1 File 85783460 (SW ID 07) — **RETRACTED 2026-09-10, see below**
+
+> **RETRACTION (2026-09-10):** the "Security Config" framing and the address:value table below are
+> **refuted** by a full byte-level decode of the real file (owner's own A11 calibration set,
+> `diagnostics/gm_dps/calibrations/A11_calibration.zip`, external corpus — see
+> `A11_CALIBRATION_FILES_COMPLETE_ANALYSIS_AUG2026.md`). The `0x0440`/`0x0A80` "match" below is a
+> **coincidence**: those are plain DEFLATE-compressed bytes sitting at the same numeric *file offset*
+> as the EEPROM SBI addresses — not an EEPROM address:value patch. Decompressing the gzip stream
+> (offset `0x368`) shows the file is an ordinary **`calserviced` CalOvride XML** — 34 overrides: 12
+> Booleans (all `true`), 1 Integer(0), and 21 `.scd` telephony/voice-DSP tuning blobs (SSE echo-
+> cancellation sets for BT/CarPlay/Android Auto/OnStar). **Searched all 14 real A11 calibration files
+> end-to-end for `0440`/`0a80`/`0b40`/`eeprom`/`security`/`SBI`/`bypass`/`VIN` — zero hits in any
+> file.** There is a genuine unexplained artifact — a 792-byte, AES-CBC-shaped encrypted envelope
+> (with a per-file 16-byte IV) present in *every* CSM calibration file's header (`0x050-0x367`),
+> most consistent with a per-file signature/manifest (key not recovered; likely tied to the same
+> `S84.dll`/`dllsecurity.dll` material in `eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`) — but it is
+> fixed-size in every file (including two *empty* CalOvride files), so it cannot be a variable-length
+> EEPROM address:value list. Preserving the original (wrong) text below for provenance; do not
+> treat it as current.
+
+<details><summary>Original (retracted) text</summary>
 
 This is the primary security calibration file that resets EEPROM security flags. It's 4,285 bytes and contains:
 
@@ -87,9 +117,18 @@ This is the primary security calibration file that resets EEPROM security flags.
 - 0x0B40 (Debug Mode) → Reset to 6900 (off)
 - Potentially other addresses in the 0x0400-0x0C00 range
 
-### 3.2 File 87846384 (SW ID 13 - Security Flags)
+</details>
+
+### 3.2 File 87846384 (SW ID 13) — **also retracted**
+
+> Per the same 2026-09-10 decode: 87846384 is 19 ordinary CalOvride overrides (13 Boolean, 1
+> Integer, 5 enum) — not security data. Original text below preserved for provenance only.
+
+<details><summary>Original (retracted) text</summary>
 
 Secondary security file (1,434 bytes) - also contains encrypted security payloads that may target additional addresses.
+
+</details>
 
 ---
 
@@ -105,10 +144,9 @@ Secondary security file (1,434 bytes) - also contains encrypted security payload
 │  ├── Stubbed function (Y177) vs Full validation (Y181) @ 0xb67d0            │
 │  └── ALWAYS resets security flags on firmware reinstall                     │
 │                                                                              │
-│  LAYER 2: SPS Calibration Files                                              │
-│  ├── 85783460 (Security Config) - Encrypted EEPROM reset payload            │
-│  ├── 87846384 (Security Flags) - Additional security resets                 │
-│  └── Defense-in-depth: Added POST-disclosure to catch bypassed units        │
+│  LAYER 2: SPS Calibration Files — **RETRACTED 2026-09-10, see §3.1/3.2**    │
+│  ├── (was: 85783460/87846384 "Encrypted EEPROM reset payload" — refuted;    │
+│  │    both are ordinary calserviced CalOvride overrides, no EEPROM refs)    │
 │                                                                              │
 │  LAYER 3: VIP Security Validation Function                                   │
 │  ├── Y177: 4-byte stub (always returns success)                             │
@@ -291,9 +329,9 @@ These are in the ICUSB/PROTOKEY module code path.
    - Y177 and Y181 reference identical EEPROM addresses
    - The stubbed function at 0xb67d0 was the vulnerability
 
-2. **Calibration files target multiple addresses for reset**
-   - File 85783460 contains encrypted payload resetting security state
-   - GM added this defense-in-depth after public disclosure
+2. ~~**Calibration files target multiple addresses for reset**~~ **RETRACTED 2026-09-10** — the
+   real, fully-decoded calibration files contain no EEPROM/SBI/security references at all (see
+   §3.1). This "defense-in-depth" model is not supported by the actual file contents.
 
 3. **10 potentially undocumented flags identified**
    - 2 in security config region (0x04A0, 0x04C0)
@@ -324,6 +362,12 @@ These are in the ICUSB/PROTOKEY module code path.
    - `0x0441`=`0xFF`, `0x0A81`=`0xFF`, `0x0B41`=`0x01`
    - Preserves whatever markers CalGroup assigned
 
+9. **0x0B41 "Debug Mode" write produced no observable effect (2026-09-10, OPEN)**
+   - Operator set 0x0B41=0x01 as part of the working bypass triad and saw adb stay at
+     `uid 2000` with SELinux enforcing — no behavioral change attributable to this byte
+   - The "Debug Mode" name is unverified; no code read-site confirmed
+   - Still under active VIP-disasm investigation — see note under §1 table
+
 ---
 
 ## Appendix A: Quick Reference
@@ -332,7 +376,7 @@ These are in the ICUSB/PROTOKEY module code path.
 KNOWN BYPASS FLAGS (marker byte [M] varies per init cycle):
 ├── 0x0440: Primary SBI      → [M] FF [M] (bypass), [M] 00 [M] (locked)
 ├── 0x0A80: Backup SBI       → [M] FF [M] (bypass), [M] 00 [M] (locked)
-└── 0x0B40: Debug Mode       → [M] 01 [M] (on), [M] 00 [M] (off)
+└── 0x0B40: Debug Mode (UNCONFIRMED, no observed effect — §1 note) → [M] 01 [M] (on), [M] 00 [M] (off)
 
 BYPASS PROCEDURE:
 ├── 1. Read current EEPROM to identify marker bytes at each address
@@ -500,7 +544,7 @@ The memory address 0x714f contains the processed ICUSB enable state, which is de
 │  ┌──────────────────────┐            ┌──────────────────────┐               │
 │  │ 0x0440: Primary SBI  │ ─────────► │ 0x3e06: Security flag│               │
 │  │ 0x0A80: Backup SBI   │            │ 0x714f: ICUSB enable │               │
-│  │ 0x0B40: Debug Mode   │            │ 0x71e0: Feature state│               │
+│  │ 0x0B40: Debug Mode(?)│            │ 0x71e0: Feature state│               │
 │  │ 0x04A0: IPC Security │            │ 0x71ed: Debug state  │               │
 │  │ 0x04C0: IPC Security │            └─────────┬────────────┘               │
 │  └──────────────────────┘                      │                             │

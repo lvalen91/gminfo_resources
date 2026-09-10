@@ -180,4 +180,16 @@ Location: ~/Downloads/github/
 ## Key Binary Finding (2026-06-29)
 RSA-1024 private key in ghs_integrity.elf at byte offset 12924442 (609 bytes, sha1=78d9a50f). ONLY private key in the entire corpus. Function unknown. See research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md.
 
-Last updated: 2026-06-29
+## VIP/ELK Findings (2026-09-10, HIGH confidence)
+Fresh VIP RH850 + GHS INTEGRITY disassembly locates the ELK/reboot trigger: an unauthenticated
+internal serial-IPC message (SERIAL_IPC_CONTROL_CHANNEL / "Channel-7", RID=0xFF01 + subcommand
+0x01) handled by VIP `FUN_000641c2` @0x64208, no `$27`/session/dev/EEPROM gate at the VIP. Also
+corrects `elk.bin`'s identity (row above): it is a `fastboot`-class Intel Kernelflinger
+bootloader with AVB active, **not** a Linux shell/USB-rootfs environment — that trait belongs
+to the GWMv2 sibling platform only (GitHub issue #1, @DymOK93), not to GM. OPEN: whether an
+external DoIP/MDI2 tester or the uid-2000 Android guest can make the SoC emit the Channel-7
+trigger. Full writeup: research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md (Part 2, "RH850 VIP IPC
+Injection"), research/GORDON_PEAK_CELADON_INTELLIGENCE.md ("ELK trigger chain"),
+research/VIP_CONTROL_ANALYSIS.txt (cross-reference notes + §4.2).
+
+Last updated: 2026-09-10

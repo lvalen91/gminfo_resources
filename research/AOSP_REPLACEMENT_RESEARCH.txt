@@ -243,6 +243,26 @@ From fstab, AVB accepts these public keys:
   /avb/r-gsi.avbpubkey  (Android R GSI)
   /avb/s-gsi.avbpubkey  (Android S GSI)
 
+4.3b ELK / OEM-UNLOCK ASSESSMENT (2026-09-10, ASSESSMENT NOT SOLVED)
+---------------------------------------------------------------------
+ELK (Level 2, "Intel ABL" above) is Intel **Kernelflinger fastboot** -- a real fastboot
+implementation, not a shell -- with AVB verification ACTIVE and `fastboot flashing unlock`
+gated by device-state, same as stock Android fastboot unlock. There is no external-USB-rootfs
+path through it.
+
+Realistic custom-OS chain, as currently understood:
+  1. Reach ELK (fastboot mode)
+  2. Set `oem_unlock_allowed` -- currently 0 (device locked, verifiedbootstate=green,
+     dm-verity RO); this is the blocking gate
+  3. `fastboot flashing unlock` -- gated on device-state, currently BLOCKED by step 2
+  4. Flash unsigned images once unlocked
+
+BOTH gates (oem_unlock_allowed=0, device_state=locked) are currently OPEN/unresolved --
+no known software path found yet to flip either from this OS. Fallbacks if the software
+path stays closed: VIP glitch/JTAG (see 5.3/5.4, 7.3) or chip-off of a non-secure-boot
+storage segment. This supersedes any earlier assumption that the EEPROM/ADB bypass alone
+provides a path to CSM boot ownership -- see 5.2 LIMITATION note and 7.1 below.
+
 4.4 GSI/DSU STATUS (December 2025 Testing)
 ------------------------------------------
 Developer Options contains a "DSU Loader" / GSI section, BUT it is non-functional.
@@ -333,7 +353,11 @@ When set to 5A FF 5A:
 - ADB authentication passes without GM client
 - PROTOKEY exchange is skipped
 
-LIMITATION: Does not affect GHS/AVB security.
+LIMITATION: Does not affect GHS/AVB security. Also (2026-09-10): this path tops out at
+`uid 2000` -- no known EEPROM path to root has been found. USB adb reaches Android-guest
+userspace only; the guest cannot escape the GHS container from there. CSM *boot* ownership
+therefore needs the T1/DoIP-to-VIP path (5.3/5.4) or the ELK/fastboot unlock chain (4.3b),
+not USB adb.
 
 5.3 VIP FIRMWARE EXPLOITATION VECTORS
 -------------------------------------
@@ -416,6 +440,9 @@ May need to preserve or recreate for custom AOSP.
    - AVB keys include GSI keys
    - Test if stock Android GSI boots
    - If successful, provides immediate custom AOSP path
+   - NOTE (2026-09-10): the realistic general chain is the ELK/fastboot oem_unlock path
+     in 4.3b (ELK -> oem_unlock_allowed -> fastboot flashing unlock -> flash unsigned);
+     both gates are currently open/unresolved -- assessment, not a solved path.
 
 2. Y177 DOWNGRADE (HIGH)
    - Version check confirmed disabled
