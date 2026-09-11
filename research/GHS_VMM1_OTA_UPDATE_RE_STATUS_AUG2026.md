@@ -68,7 +68,9 @@ diagnosed why directly rather than guessing:
   (UNUSABLE due to Green Hills toolchain — no string refs)"*. The prior
   analyst hit and documented this exact wall already.
 
-## CONFIRMED CORRECTION: `.vmm1.text`/`.ota_update.text` task code is x86-64, not x86-32
+## DISPUTED: `.vmm1.text`/`.ota_update.text` task code may be x86-64 (the ELF class is 32-bit EM_386)
+
+> **Status (2026-09-10):** the binary's ELF header is **EM_386 / ELFCLASS32 (32-bit)** — byte-verified, and agreeing with `INVENTORY.md`. The claim below is that specific *task-code sections* nonetheless contain x86-64 instruction idioms; that section-level reading is UNRECONCILED with the 32-bit ELF class and is not settled. Treat the binary as a 32-bit ELF; treat the 64-bit-section argument as an open question.
 
 This overturns the existing corpus's architecture conclusion (`ghs32`
 project's "correct 32-bit i386" verdict in `INVENTORY.md`, and by extension

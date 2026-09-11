@@ -72,7 +72,7 @@ GHS supports multiple boot modes selected via BCB (Boot Control Block) or extern
 | 1. Normal A/B | Default | Standard A/B verified boot into Android |
 | 2. Recovery | BCB `boot-recovery` | Recovery mode (no separate recovery partition — uses boot image) |
 | 3. See-Dealer | BCB `boot-see-dealer` | Service required screen, directs user to dealer |
-| 4. ELK | Emergency Linux Kernel | Fallback Linux environment for diagnostics/recovery |
+| 4. ELK | GHS lifecycle recovery target | Fallback boot target for diagnostics/recovery |
 | 5. Diagnostic | Service tool | Factory/dealer diagnostic mode |
 
 ---

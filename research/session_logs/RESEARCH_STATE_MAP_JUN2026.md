@@ -69,7 +69,7 @@ Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slo
 | /dev/ghs/* and /dev/trusty-ipc-dev0 | DAC is rw-rw-rw- but SELinux blocks from shell domain |
 | /dev/i2c-0 and /dev/i2c-1 | World-accessible DAC; SELinux blocks read |
 | /dev/ttyACM1 write | SELinux blocked despite crw-rw-rw-; passive read returned no data in 2s |
-| 192.168.1.1:9002/9005/9010/9016 via nc | "No route to host" |
+| 192.168.1.1:9002/9005/9010/9016 via nc | Shell `nc` got "No route to host". *[CORRECTED: the 90xx endpoints are NOT unreachable — the guest OS holds ESTABLISHED sessions to 192.168.1.1:9005/9010/9016/9018 (9012 is SYN_SENT, not ESTABLISHED; 9016 IS ESTABLISHED — per the netstat capture in `enumeration/Y181/enumeration_report.txt`). Note this capture uses the older `.1` addressing scheme (VM↔host IPC endpoint at 192.168.1.1), whereas the second table below uses the `.100` guest-side scheme. Reachable in the client direction; the shell simply cannot originate to them.]* |
 | AllowDevSignedVIP / changeDebugMode | isDebugBuild()=false |
 | gm_protokey extraction | Permission denied from uid=2000 |
 | RDMSADBHandler ADB_Disable USB role-reversal | Blocked by GM V10 E2 PD hub |
@@ -122,9 +122,9 @@ Y177's permissive SELinux is not a boot cmdline artifact. It derives from VIP re
 | 0.0.0.0:7000 | Unknown | Present during active CarPlay/projection session only |
 | 0.0.0.0:6363 | NFD/GMVT (Named Data Networking) | — |
 | 192.168.1.100:9002 | RemoteModuleHMI (FSA) | No auth; shell-accessible |
-| 192.168.1.100:9010 | GHS bridge listener | Confirmed listener in Jun 2026 |
-| 192.168.1.100:9016 | FSANetCommsService | — |
-| 192.168.1.100:9012 | Unknown | Persistent SYN_SENT; unexplained |
+| 192.168.1.100:9010 | DeviceInformation (serviceId 1001) | Confirmed LISTEN in Jun 2026 (was mislabeled "GHS bridge"; 192.168.1.1:90xx is VM↔host IPC, not a networked hypervisor bridge) |
+| 192.168.1.100:9016 | NetworkAccessManager (serviceId 1026) | LISTEN (confirmed: gminfo37_network_research.md:341,390) |
+| →192.168.1.102:9012 | RemoteReflash (serviceId 1025) | Guest-originated session (SYN_SENT/ESTABLISHED) toward 9012 on .102 (was mislabeled a .100 listener of "Unknown" service; gminfo37_network_research.md:338) |
 
 ### Complete Partition Map
 
@@ -173,7 +173,7 @@ GHS partitions not mounted in Android: ghs_isys_a/b, ghs_storage, ghs_abl_update
 - Security hardening enabled: KASLR, STACKPROTECTOR_STRONG, RETPOLINE, MODULE_SIG_FORCE
 - Debug-friendly: KALLSYMS_ALL=y, IKCONFIG_PROC=y (`/proc/config.gz` accessible)
 - CAN fully enabled: CAN_RAW, CAN_BCM, CAN_GW, CAN_SLCAN, CAN_8DEV_USB
-- **IOMMU disabled** (`intel_iommu=off`) — DMA attacks are not hardware-blocked
+- **IOMMU compiled IN** (`INTEL_IOMMU=y`) — runtime state never captured (`/proc/cmdline` was permission-denied), so whether it is enabled at boot is an unverified research question. *[CORRECTED: the earlier "IOMMU disabled / `intel_iommu=off`" claim was unsupported — the kernel config has it built in; the DMA-not-hardware-blocked conclusion is therefore not established.]*
 - USER_NS not set, KEXEC not set, EFI not set
 
 ### Trusty Anomaly

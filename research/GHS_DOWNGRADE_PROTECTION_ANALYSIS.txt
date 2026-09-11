@@ -240,7 +240,7 @@ Size: 14,929,956 bytes
 Structure:
   - Offset 0x000: GM package header
   - Offset 0x220: Intel ipk header ("ipk.")
-  - Offset 0x27C: ELF binary (CORRECTED 2026-08-26: x86-64, statically linked — the ELF header claims EM_386/32-bit but the code is x86-64; see EEPROM_LAYOUT §0.8)
+  - Offset 0x27C: ELF binary — **EM_386 / 32-bit** per the ELF header (byte-verified 2026-09-10, matches INVENTORY.md's "correct 32-bit i386"). NOTE: `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md` argues certain task-code sections (`.vmm1.text`/`.ota_update.text`) contain x86-64 prologues — that section-level claim is DISPUTED/unreconciled and does NOT make the whole binary x86-64. (The earlier "code is x86-64, see EEPROM_LAYOUT §0.8" note was wrong: §0.8 disassembles `adbd`, an Android-userspace 64-bit binary, not this HOSTOS image.)
 
 5.2 GHS VERSION STRINGS
 -----------------------
@@ -698,7 +698,7 @@ APPENDIX A: KEY FILE REFERENCES
 GHS Binary Analysis:
 - Source: update_packages/Y181/85098662
 - ELF offset: 636 bytes into file
-- Architecture: x86-64, statically linked (CORRECTED 2026-08-26: EM_386 header is misleading; code is x86-64 — §0.8)
+- Architecture: **EM_386 / 32-bit ELF**, statically linked (header byte-verified 2026-09-10). A disputed x86-64-task-section claim exists (see `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md`); it is unreconciled and not established for the whole binary.
 - Strings extracted at: /tmp/ghs_elf.bin (temporary)
 
 vbmeta Files:

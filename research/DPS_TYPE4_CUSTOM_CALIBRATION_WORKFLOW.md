@@ -222,9 +222,12 @@ not.** This removes the catalog entirely and lets you present the cal blob direc
 - **Open, unproven question (do not overclaim):** the SBI flip is demonstrated to open the **ADB** `$27`,
   but it is *not yet shown* to open the **calibration/diagnostic** `$27` level. Same VIP/PROTOKEY/EEPROM
   subsystem and anchor, but not a proven single flag. If a *different* EEPROM flag governs the cal
-  security level, candidates to probe (one at a time, backup first) are `0x04A0`, `0x04C0`, `0x0A40`,
-  `0x0BE0` (near the secure-IPC / feature-flag regions). This is the concrete next experiment, not a
-  settled result.
+  security level is the concrete next experiment, not a settled result. (Three of the formerly-listed
+  candidates — `0x04A0`, `0x0A40`, `0x0BE0` — are **RETRACTED 2026-08-26**: all read 0xFF/unwritten in
+  both stock and ADB_enabled dumps, no code evidence; do not probe them. **`0x04C0` is the exception:**
+  it reads 0xFF at the literal `0x04C0` byte but is genuinely referenced by the CalGroup `0x44` handler
+  `FUN_ram_00091f82` (data cells `0x4b8–0x4c5`) — the one confirmed-real, worth-probing cal-gate
+  candidate. See `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0 and `VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md` §401.)
 - **Software-only variant:** `calserviced` reportedly contains an `OVERRIDE_BACKDOOR` that applies
   `*.calovride` files **skipping `$27` entirely**, but it needs a `vendor_cald`-context filesystem write
   (dir mode 770) — reachable only from an on-box foothold (e.g. the SBI-enabled ADB shell), not from the
@@ -278,9 +281,12 @@ decided by three independent checks, in this order:
       width and SHA span) *before* sending — a wrong span silently fails at stage 3.
 - [ ] **Power mode Run/Service, stable 12 V supply / battery maintainer.** The Type4 flow aborts on BCM
       power-mode failure; a brownout mid-`$36` is the real bricking risk, not the cal content.
-- [ ] **Don't poke EEPROM structure *base* addresses** (`0x0A00`/`0x0B00`) while probing cal-gate flag
-      candidates — only the flagged data bytes (`0x04A0/0x04C0/0x0A40/0x0BE0`), one at a time, restore
-      from backup between tries.
+- [ ] **Three former cal-gate candidates `0x04A0/0x0A40/0x0BE0` are RETRACTED** (all read
+      0xFF/unwritten in both stock and ADB_enabled dumps, no code evidence — see EEPROM_LAYOUT §0); there
+      is nothing to probe there. **`0x04C0` is the exception** — it reads 0xFF at the literal byte but is a
+      real CalGroup `0x44` handler (`FUN_ram_00091f82`, cells `0x4b8–0x4c5`), the one worth-probing
+      cal-gate candidate. If you do any EEPROM work, don't poke structure *base* addresses
+      (`0x0A00`/`0x0B00`), and change one byte at a time, restoring from backup between tries.
 - [ ] **Expect OTA/SPS to revert.** EEPROM SBI flips and cal overrides are reset by GM OTA/SPS; treat any
       success as non-persistent and re-appliable, and be ready to re-flip after an update.
 - [ ] **Panel reality check.** `4 = 2400×960` is the panel-native res; `3 = 1920×1080` is not the panel's

@@ -202,6 +202,17 @@ address byte):
 | `0x145A` | 0x60, 0x68, 0x80, 0x81, 0x97, 0xBE |
 | `0x14DA` | 0x45 (the only ECU that responds on the "expected" prefix) |
 
+> **Tester-source-byte reconciliation:** the addresses above are from this doc's D-PDU/PDU-API
+> pcaps, in which DPS uses tester byte **`F1`** (GMLAN-standard physical tester), e.g. ECU 0x80 =
+> req `0x14DA80F1` / resp `0x145AF180`, ECU 0x45 = req `0x14DA45F1` / resp `0x14DAF145`. A
+> separate GDS-side capture enumerates the *same* ECU set with tester byte **`F2`** instead —
+> ECU 0x80 = req `0x14DA80F2` / resp `0x145AF280` (confirmed:
+> `diagnostics/icloud_diag/dps_logs/A11_CSM_x80.Txt`). The **response prefix** (0x145A for 0x80,
+> 0x14DA for 0x45) is identical in both; only the low tester byte differs. The tester source byte
+> (F1 vs F2) is therefore tool/session-dependent, not a fixed vehicle property — F1 is the generic
+> GMLAN/OBD tester address. When targeting ECU 0x80 outside these pcaps, treat `0x14DA80F2 /
+> 0x145AF280` (the GDS-captured pair) as the canonical addressing.
+
 Functional broadcast request id: `0x10DBFEF1` (used for `3E 80` TesterPresent and the `22 F1B0`
 node-discovery sweep). A separate, unrelated functional id `0x18DB33F1` (OBD-II style, 11/29-bit)
 appears only in a legacy-bus-probe stream and gets NRC `0x22 conditionsNotCorrect` — this
@@ -461,7 +472,7 @@ Independently confirmed on the MDI2 side, matching our capture reconstruction:
 - **Vehicle Identification Request** sizes: **8 B** (broadcast), **14 B** (by EID),
   **25 B** (by VIN).
 
-### 10.8 OPEN QUESTION — `Port='8080'` in the PDUConstruct option string
+### 10.8 RESOLVED — `Port='8080'` in the PDUConstruct option string is the loopback ident-service default, overridden at runtime
 
 `CJ2534Server::Initialize` builds the D-PDU API construct option string as:
 
@@ -474,10 +485,18 @@ the **TCP/10123** PDU-API port we captured (nor 13400/13401). `PDUConstruct`'s e
 (`DPDULib.dll` `0x10083510`) treats the argument as free-form text and passes it straight to
 `CPDUAPI::Construct`, so the value is consumed somewhere deeper in `DPDULib`/`bvtx_vci_rt`.
 
-**Flagged, not resolved** — deliberately out of scope for this consolidation. Candidate readings
-(untested): an internal/loopback service port between `bvtx4j32` and the VCI runtime, an
-MDF-lookup or device-manager port, or a default that the MDF later overrides. Anyone picking this
-up should trace the option-string parse inside `CPDUAPI::Construct` (`FUN_1006cf60`).
+**Resolved (2026-08-25).** The `'8080'` literal is a hardcoded *default* in `bvtx4j32`'s option
+string; it is **not** the port actually dialed. The value reaching `bvtx_vci_rt` is the
+**loopback ident-service port, computed at runtime as `8097 + ProductGroupId`** (the only
+compile-time constant is the offset `0x1fa1 = 8097`; `lea esi,[eax+0x1fa1]` at `0x1005f6d2`,
+both upstream and downstream sockets to `127.0.0.1`). `ProductGroupId` is a small integer read
+from the Windows registry (`HKLM\SOFTWARE\WOW6432Node\BOSCH\VTX-VCI\GM\ProductGroupId`); absent/0
+→ port `8097`. For this bench's live `ProductGroupId = 0x1c = 28`, the port is **`8125`** —
+exactly the `127.0.0.1:8125` loopback ident service observed in §12. The ident-service TCP client
+is `BVTX-VCI-RT.dll` (`CIdentClient::Connect`); `dps.exe`/`dpsvcs.dll`/`tisvcsv4.dll`/`vcs_dps.dll`
+are Winsock-free. This has **no** relation to the TCP/10123 D-PDU port or 13400/13401. (Confirmed:
+`diagnostics/gm_dps/docs/BVTX_VCI_PROTOCOL_DETAIL_ports_and_config.txt:15-50`,
+`CONFIG_ARCHAEOLOGY_AUG2026.md:15-17`.)
 
 ### 10.9 What this section changes for the native-client plan
 

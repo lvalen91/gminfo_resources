@@ -38,13 +38,13 @@
 | Physical DPI (X) | 192.911 |
 | Physical DPI (Y) | 193.523 |
 | Logical Density | 200 dpi |
-| Density Bucket | xhdpi (1.25x scale) |
+| Density Scale | 1.25x (200 / 160 dpi baseline) |
 
 ### Display Metrics
 
 | Metric | Value |
 |--------|-------|
-| Physical Size | ~13.4 inches diagonal (estimated) |
+| Physical Size | 13.39 inches diagonal (confirmed: /Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/specs/gminfo3.7_tech_specs.md) |
 | Usable App Area | 1416 x 960 pixels (with system UI) |
 | Full Screen | 2400 x 960 pixels |
 

@@ -32,8 +32,8 @@
 | Hypervisor | GHS INTEGRITY IoT 2020.18.19 MY22-026 (Type-1 bare-metal) |
 | WiFi | Broadcom BCM (802.11ac), driver `dhd` |
 | Bluetooth | 5.0 |
-| Ethernet | Intel **I210 (WGI210CL rev A3)**, 1Gbps, gPTP master (physical part per `hardware/teardown.md`; previously labeled "I211" — unverified near-twin reading. Kernel uses a custom `igb_avb` driver; mainline `igb`/`CONFIG_IGB` is disabled per the Jun-2026 capture) |
-| Audio HAL | Harman "Titan" HarmanAudioControl (vendor.hardware.audio@5.0), Dirana3 amplifier plugin, speakerNum=4, micNum=0 |
+| Ethernet | Intel **I210** GbE, 1Gbps, gPTP master, feeding the BCM89551 automotive-Ethernet switch (only `I210` appears in artifacts; the `WGI210CL rev A3` variant marking is prose-only, not artifact-backed; "I211" was an unverified near-twin reading — see `hardware/teardown.md`). Kernel uses a custom `igb_avb` driver; mainline `igb`/`CONFIG_IGB` is disabled per the Jun-2026 capture |
+| Audio HAL | Harman HarmanAudioControl — HAL interface `android.hardware.audio@5.0`, provided by service instance `vendor.hardware.audio@5.0-harman-custom-service` (confirmed: `aaos/gm_aaos/2024_Silverado_ICE/analysis/adb/Y181/.../processes.txt`); Dirana3 amplifier plugin, speakerNum=4, micNum=0. ("Titan" is the SoC platform codename, not the HAL name.) |
 | Audio Transport | Ethernet AVB to NXP TDF8532 codec → external amplifier (CSM) |
 | GPS | u-blox receiver, GPS+DR fusion, UART to GENIVI pipeline |
 | EEPROM | ST M24C64, 8KB, I2C |
@@ -109,7 +109,7 @@ The DalvikVM ISA variant is **silvermont** (x86_64 architecture, 64-bit only).
 │ │ └───────────────────┘  └──────────────────────────────────┘ │ │
 │ └─────────────────────────────────────────────────────────────┘ │
 └─────────────────┬───────────────────────────────────────────────┘
-                  │ HDLC over UART /dev/ttyS1 (19 IPC channels, protocol v16)
+                  │ HDLC over UART /dev/ttyS1 (20 IPC channels 1-20, protocol v16)
 ┌─────────────────▼───────────────────────────────────────────────┐
 │ Renesas RH850/P1M-E (TM52176) — VIP MCU                        │
 │ Power management, CAN gateway, early boot, EEPROM, PLC timers  │
@@ -118,7 +118,7 @@ The DalvikVM ISA variant is **silvermont** (x86_64 architecture, 64-bit only).
 
 The system uses a dual-processor architecture where the Intel Atom x7-A3960 SoC handles all application-level processing under a GHS INTEGRITY Type-1 hypervisor, while the Renesas RH850/P1M-E VIP MCU manages low-level vehicle functions including power sequencing, CAN bus gateway, early boot, EEPROM access, and PLC timers.
 
-Communication between the two processors occurs over HDLC on UART `/dev/ttyS1` with 19 IPC channels using protocol version 16. The GHS hypervisor runs as bare-metal on the Intel SoC, with Android 12 running as a guest VM alongside 14+ native GHS tasks for AVB verification, Ethernet networking, camera processing, TEE keymaster, calibration services, and logging.
+Communication between the two processors occurs over HDLC on UART `/dev/ttyS1` with 20 IPC channels (numbered 1-20; confirmed: `hardware/teardown.md` IPC Channel Map) using protocol version 16. The GHS hypervisor runs as bare-metal on the Intel SoC, with Android 12 running as a guest VM alongside 14+ native GHS tasks for AVB verification, Ethernet networking, camera processing, TEE keymaster, calibration services, and logging.
 
 ---
 
@@ -180,7 +180,7 @@ Communication between the two processors occurs over HDLC on UART `/dev/ttyS1` w
 | Window Size | 5 |
 | IFRAME Timeout | 50 ms |
 | UFRAME Timeout | 20 ms |
-| Serial | 115200 8N1 |
+| Line rate | 1 Mbps (VIP `IPCServer` on /dev/ttyS1; confirmed: `hardware/teardown.md`) |
 
 **Module init order:** SS_SWC → PLC → J6_CDD → IPC_S → AMP_MGR_SWC → PROTOKEY → SBAT → IOHWAB_MIC → NAV
 

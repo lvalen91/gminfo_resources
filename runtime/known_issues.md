@@ -85,11 +85,11 @@ PLSS_PMPAL reports at 1Hz via IPC: `health:48 10 0 0 0 0` (consistent across all
 - MFi IC: clone/compatible, fallback address works (not a real Apple MFi chip)
 - WiFi channel 161 (5.8GHz) — may have interference issues in some environments
 
-## Y177 Specific Issues
+## Y177 Notes
 
-- SELinux is PERMISSIVE (significant security regression)
-- VIP security function is a 4-byte stub (disabled)
-- CVE-2024-53104 and CVE-2024-36971 exploitable on Y177
+- **SELinux:** stock Y177 boots **Enforcing**, same as Y175/Y181. The long-held "Y177 runs permissive" belief is refuted — `system/bin/init` is byte-identical across Y175/Y177/Y181 and compiles with `ALLOW_PERMISSIVE_SELINUX=0`, so it ignores `androidboot.selinux=permissive` and forces Enforcing at runtime; any live permissive Y177 was a modified/eng unit. (confirmed: `aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_OS_PARTITION_INVESTIGATION_AUG2026.md:145`)
+- **VIP security function:** Y177 carries the full ~906-byte validator (@0xb67d4), same as Y175 (@0xb6708) / Y181 (@0xb67d0). The "4-byte stub" was a fixed-address misread, refuted by a three-way byte-level VIP_APP diff — there was no VIP regression, and the function gates ADB/seed auth only, not SELinux or AVB.
+- CVE-2024-53104 and CVE-2024-36971 are kernel CVEs against the 4.19.305 kernel shared by Y177 and Y181 — not Y177-specific.
 
 ---
 

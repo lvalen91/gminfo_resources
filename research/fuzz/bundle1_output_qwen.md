@@ -9,7 +9,7 @@ artifact (`AvbVBMetaImageHeader`, `AvbDescriptor`, Android boot image heade
 header). Specifically, `rollback_index` @ 0x70 is confirmed. The parser is 
 stock AOSP `libavb`, 32-bit x86.
 2.  **Correction:** The device reports `avb_version 1.2`. I must target the
-the upstream `libavb` **1.2** tag, not 1.1.
+the upstream `libavb` **1.2** tag, not 1.1. [corrected: 1.2 is the avbtool/ro.boot.avb_version tool version; the AVB spec version is 1.1]
 3.  **No Invention:** Do not invent disassembly addresses (like `0xb67d0`).
 `0xb67d0`). Do not cite unsupported `.vmm1` register-level asm. Only use th
 the provided struct tables and confirmed strings.

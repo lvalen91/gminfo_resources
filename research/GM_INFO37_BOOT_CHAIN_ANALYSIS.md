@@ -551,7 +551,7 @@ not confuse this with the separate `\0AB0` magic used by the misc/BCB A/B-slot-m
 ### 7.4 Verify vbmeta Signature
 
 ```
-Signature Verification (RSA-4096 / SHA-256):
+Signature Verification (RSA-2048 / SHA-256):
 ├── Load embedded public key from GHS
 ├── Compare vbmeta signing key against known valid key
 │   └── Error: "VMM: Error: vbmeta signing key does not match known valid key"
@@ -811,7 +811,7 @@ POWER ON (T=0ms)
 │   Check BCB → Select A/B Slot → Load vbmeta → Verify Sig → Load boot        │
 │       │             │                │              │            │           │
 │  ┌────▼────┐   ┌────▼────┐    ┌──────▼──────┐ ┌─────▼─────┐ ┌────▼────┐    │
-│  │ misc    │   │ misc    │    │ vbmeta_a/b  │ │ RSA-4096  │ │ boot_a/b│    │
+│  │ misc    │   │ misc    │    │ vbmeta_a/b  │ │ RSA-2048  │ │ boot_a/b│    │
 │  │partition│   │ @0x800  │    │ partition   │ │ SHA-256   │ │partition│    │
 │  │ (BCB)   │   │(CRC32!) │    │             │ │ verify    │ │         │    │
 │  └─────────┘   └─────────┘    └─────────────┘ └───────────┘ └─────────┘    │
@@ -852,7 +852,7 @@ POWER ON (T=0ms)
 | **Intel CSE** | Hardware root of trust | No | OTP fuses |
 | **SOC_ABL** | Intel Secure Boot | No | Sign Type NONE (not GM TSS-signed); verified by/with Intel CSE secure boot |
 | **GHS Signature** | ABL validation | No | Hardware enforced |
-| **AVB vbmeta** | RSA-4096/SHA-256 | No | Without signing key |
+| **AVB vbmeta** | RSA-2048/SHA-256 | No | Without signing key |
 | **A/B Metadata** | CRC32 only | Potentially | Weak integrity |
 | **Rollback Index** | Secure storage | No | Cannot decrement |
 | **dm-verity** | Hash tree | Conditional | Active in enforcing |
@@ -958,7 +958,7 @@ Android runs as a guest VM under GHS INTEGRITY:
 ### 11.4 AVB Enforced by GHS
 
 Android Verified Boot is implemented in the GHS VMM1 task:
-- vbmeta signature verification (RSA-4096)
+- vbmeta signature verification (RSA-2048)
 - boot image hash verification
 - Rollback index checking
 - Cannot bypass without signing keys

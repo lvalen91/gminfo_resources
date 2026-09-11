@@ -34,6 +34,8 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 | 0x0A00/0x0B00 ref counts | 871/311 stated as fact | flagged: 871 vs 854 / 311 vs 305 across passes; RE-sourced, not dump-reproducible |
 | `boot_chain.md:136` A/B metadata magic | comment said `"AVB0" or similar` | **(2026-09-10)** `\0AB0` — the misc/BCB slot-metadata magic is a **different, distinct magic** from the vbmeta `AVB0` magic used three lines above it in the same doc. Byte-confirmed via `vbmeta.img` (offset 0 = `41 56 42 30` = stock libavb `AVB_MAGIC`; header 100% upstream: RSA2048/SHA256, avbtool 1.2.0, flags=0x00000000 = verification NOT disabled, zero GM-specific fields). Raised by GitHub issue #1 (@DymOK93). |
 | ELK boot target | implied Linux/USB-storage shell in places | **(2026-09-10)** ELK is **Intel Kernelflinger fastboot** (kernelflinger-07.02, titan_gm_my22): flash/erase/getvar + `oem set-storage`; explicitly **"USB storage is unsupported"** (no external USB rootfs path); libavb-linked, AVB ACTIVE in ELK; unlock is device-state-gated. Not a general-purpose shell. |
+| VIP "Y177 stub" @0xb67d0 | "Y177 = 4-byte stub, Y181 = full 906 B" (stated as fact in 6+ docs) | **(2026-09-10, byte-verified — was previously "unverifiable")** NO stub ever existed. Direct binary compare of VIP firmware `86283151` (Y177) vs `86331656` (Y181): the validator is the **same full ~906-byte function relocated +4 bytes** — 502/512 leading bytes byte-identical (Y177 @0xb67d4 == Y181 @0xb67d0), the ~10 diffs are absolute-address operands offset by the relocation delta. Y175 @0xb6708 consistent. The "4-byte stub" was a fixed-address/frame-shift misread. Refutes `MASTER_REFERENCE`, `DPS_MASTER_REFERENCE`, `VIP_FIRMWARE_Y177_Y181_COMPARISON` §2, `EEPROM_*`. |
+| Y177 SELinux mode | "permissive (regression)" in several docs | **(2026-09-10, byte-verified)** **Enforcing at runtime.** `system/bin/init` is byte-identical across Y175/Y177/Y181 and compiles `ALLOW_PERMISSIVE_SELINUX=0`, forcing Enforcing regardless of the `selinux=permissive` cmdline token; any live-permissive Y177 was a modified/eng unit. Same posture as Y181. |
 
 ## Confirmed against ground truth (high-value spot-checks)
 
@@ -42,7 +44,8 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
   GLES 3.2 (`ro.opengles.version=196610`).
 - **Boot/firmware:** GHS INTEGRITY IoT **2020.18.19 MY22-026** (ghs_analysis), kernelflinger-07.02
   (elk_strings), libavb chain, A/B-CRC failure strings, security-patch levels (Y175 2024-05-05,
-  Y181 2025-06-05), VIP V850 core, UDS $27 in DPS, identical VIP_BOOT/HOSTOS/ABL across Y177/Y181.
+  Y181 2025-06-05), VIP **RH850/P1M-E** core (the "V850" Ghidra label was an abandoned prior-analyst
+  approximation), UDS $27 in DPS, identical VIP_BOOT/HOSTOS/ABL across Y177/Y181.
 - **Security:** Y181 Enforcing at runtime (user build ignores `selinux=permissive` cmdline);
   `untrusted_app` has usb_device ioctl/read/write/getattr but **not open** (plat_sepolicy.cil);
   no carlink/usbmountreceiver rules; AVB locked/green/sha256, oem_unlock=0; ports 6363/49156/9002/9016.
@@ -68,7 +71,6 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 ## Unverifiable from available sources (not wrong — just not independently evidenced)
 
 EEPROM I²C **0x50** (no raw read — `/dev/i2c-7` is `system:system 0660`, shell can't open);
-VIP stub @0xb67d0 4 B→906 B and Y177 permissive (no Y177 ADB dump — RE-sourced);
 `libNmeVideoSW.so` name (partition `strings` only).
 
 **~~4-port USB topology / OTG-ID-pin (ALLData schematics)~~ — RESOLVED (Sep 2026)** via the IOK
@@ -96,9 +98,9 @@ into `hardware/connectors.md`:
 
 ## Recommended but not yet applied (judgment calls / lower priority)
 
-- **Provenance hedging:** label Y177-permissive + VIP-stub as RE-sourced in `firmware_versions.md`
-  & README (FAQ §12 already does); rollback "separate GHS counter in misc" is inference (the
-  *block* is field-observed).
+- **Rollback provenance:** the "separate GHS counter in misc" is inference (the *block* is
+  field-observed). (The former Y177-permissive/VIP-stub hedge here is resolved — see the two
+  byte-verified rows in "Corrected (applied)" above.)
 - ~~**Video codec tables:** annotate the c2.android.* SW video codecs as absent.~~ **WITHDRAWN** —
   live Jun-2026 confirms `c2.android.{avc,hevc,vp8,vp9}.decoder` ARE registered (+ `media_codecs_google_video.xml`).
   The codec tables in `video/video_codecs.md`, `video/software_rendering.md`, `codecs/media_codecs.md`

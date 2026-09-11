@@ -27,13 +27,13 @@
 
 Broadcom BCM8953x managed switch. Switch port assignments:
 
-> **⚠ Switch-vendor discrepancy (unresolved).** This doc records a Broadcom
-> BCM8953x, but the firmware module inventory reports `ETHERNET_SWITCH` part
-> `85759612.AA` = **`MVL88Q5050_globalB_…`** — `MVL` = **Marvell 88Q5050**
-> (an automotive 1000BASE-T1 switch). Either the unit has two switch stages
-> (e.g. a Broadcom host NIC/PHY + a Marvell backbone switch), or one of these
-> attributions is wrong. Flagged, not resolved — the firmware string is from the
-> `dumpsys UpdateService pn version` inventory; the BCM8953x label predates it.
+> **Switch-vendor is board-variant, not a discrepancy.** The backbone switch IC is
+> selected by `persist.vendor.harman.hardwareid`: **Broadcom BCM8953x/BCM89551** on
+> ED/DV1/DV2/DV4/DV6/PV1/MY22 boards (the teardown unit), **Marvell 88Q5050** on
+> MY23+/MY24 boards (`ETH_SWITCH` fw part `85759612.AA` = `MVL88Q5050_globalB_…`).
+> Same 100BASE-T1 spec and port layout — a minor-IC substitution across gminfo3.7
+> motherboard revisions, expected over the production run. See
+> `video/hardware_rendering.md` for the full hardwareid→switch-driver map.
 
 | Port | Connected Node |
 |------|---------------|
@@ -110,9 +110,9 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 | 0.0.0.0 / 127.0.0.1 | 6363 | TCP | **AVB audio daemon** (uid=1041 audioserver) — init-owned listen socket, text IPC bus for AVB audio routing; arbitrary data → `"ERROR"`. Low value. (Was "Unknown".) |
 | 0.0.0.0 | 7000 | TCP | **AirPlay/AirTunes 320.17.8** (Cinemo `libNmeCarPlay` r14), br0/192.168.5.1, uid=1001000. `GET /` → `404; Server: AirTunes/320.17.8`. CarPlay audio bridge — see [`audio/carplay_audio_pipeline.md`](../audio/carplay_audio_pipeline.md). (Was mislabeled "ADB"; ADB is port 5555.) |
 | 0.0.0.0 | 49156 | TCP | **diagnosticsd UDS-over-TCP bridge** (root, PID 599). Bridges GM Ethernet Diagnostics to RTOS `172.16.4.107:49156`. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). (Was "Unknown".) |
-| 192.168.1.100 | 9002 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
-| 192.168.1.100 | 9010 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
-| 192.168.1.100 | 9016 | TCP | GHS hypervisor bridge service (IPv6-mapped IPv4) |
+| 192.168.1.100 | 9002 | TCP | **FSA RemoteModuleHMI** (serviceId 1007), IPv6-mapped IPv4 — guest's own FSA server (see [`fsa_protocol.md`](fsa_protocol.md)) |
+| 192.168.1.100 | 9010 | TCP | **FSA DeviceInformation** (serviceId 1001), IPv6-mapped IPv4 |
+| 192.168.1.100 | 9016 | TCP | **FSA NetworkAccessManager** (serviceId 1026), IPv6-mapped IPv4 |
 | 127.0.0.1 / 192.168.5.1 | 53 | TCP/UDP | dnsmasq (loopback + br0 WiFi-AP side) |
 
 > **Re-verified against live `enumeration/Y181/jun2026/` capture.** 9002/9010/9016 listen bound to the IHU's own **192.168.1.100** (IPv6-mapped IPv4), *not* 192.168.1.1 — the guest has no `.1` interface or route. **7000 (ADB) is listening** (`0.0.0.0:7000` + `*:7000`), and **9010 is a listener**, not outbound-only. DNS (dnsmasq, TCP/UDP 53) is served locally on **127.0.0.1** and **192.168.5.1 (br0, the WiFi-AP bridge)**.
@@ -124,9 +124,9 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 ## VIP-SoC IPC
 
 - **Transport:** HDLC over UART `/dev/ttyS1`
-- **Channels:** 20 IPC channels (numbered 0-20)
+- **Channels:** 20 IPC channels (numbered 1-20; confirmed: `hardware/teardown.md` IPC Channel Map)
 - **Protocol:** Version 16
-- **Baud:** 4104
+- **Line rate:** 1 Mbps (VIP `IPCServer`; confirmed: `hardware/teardown.md`. The earlier "4104" was a misread of the ~4104 ms channel-XON timing in the VIP UART log, not a baud rate)
 - **PLC:** Programmable Logic Controller timers in VIP
 - **MEC:** Mode/Event/Condition behavior framework
 
@@ -238,7 +238,7 @@ Telematics (CGM module) operates independently of the A11 radio stack — cloud 
 |---------|---------|
 | Power mode | State machine: Run, Accessory, Crank, Off — managed by VIP MCU |
 | License/calibration | GHS cal service, DPS AES-CMAC with server key provisioning |
-| IPC | 20 channels on /dev/ttyS1, HDLC protocol v16, baud 4104 |
+| IPC | 20 channels (1-20) on /dev/ttyS1, HDLC protocol v16, 1 Mbps line rate |
 
 ---
 
@@ -266,7 +266,7 @@ The Broadcom BCM WiFi module supports three concurrent interfaces:
 
 ## Ethernet AVB
 
-- **NIC:** Intel I210 (WGI210CL), 1Gbps ("I211" was an unverified near-twin reading — see `hardware/teardown.md`)
+- **NIC:** Intel I210, 1Gbps (only `I210` appears in artifacts; `WGI210CL` marking is prose-only; "I211" was an unverified near-twin reading — see `hardware/teardown.md`)
 - **gPTP role:** Master
 - **AVB streamhandler:** v3.2.7.2 (GM3/CSM)
 - **Audio endpoint:** NXP TDF8532 codec on CSM → external amplifier → 4 speakers

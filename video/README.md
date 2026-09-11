@@ -29,7 +29,7 @@
 
 | Component | Specification |
 |-----------|---------------|
-| CPU | Intel IoT CPU 1.0, 4 cores @ 1.88 GHz |
+| CPU | Intel Atom x7-A3960 (CPUID masked "IoT CPU 1.0"), Goldmont/Apollo Lake, 4 cores @ 0.8-2.4 GHz (confirmed: aaos/gm_aaos/2024_Silverado_ICE/docs/specs/gminfo3.7_tech_specs.md) |
 | GPU | Intel HD Graphics 505 (Apollo Lake) |
 | Display | 2400x960 @ 60Hz (DD134IA-01B) |
 | OpenGL ES | 3.2 (Mesa 21.1.5) |

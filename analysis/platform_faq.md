@@ -18,7 +18,7 @@ The **GM Info 3.7** (`gminfo37`) is the 2024 Chevrolet/GMC infotainment ECU buil
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, ~13.4", `lcd_density=200` |
 | Touch | Atmel maXTouch, 16-pt multitouch, I²C bus 7 @ 0x4B |
 | HWC | `iahwcomposer` (Intel Automotive 2.1), explicit sync; no HDR/VRR/wide-gamut |
-| Audio HAL | `vendor.hardware.audio@5.0-harman-custom-service` (Harman "Titan"), AVB transport |
+| Audio HAL | `android.hardware.audio@5.0` (HarmanHAL; "Titan" is the SoC platform codename, not the HAL), AVB transport |
 | OS | Android 12 (API 32) AAOS, guest VM under GHS INTEGRITY IoT 2020.18.19 hypervisor |
 | Kernel | Linux 4.19.305 LTS |
 | WiFi | Broadcom BCM 802.11ac, **locked to 2.4 GHz** (`persist.sys.wifi.only2g=1`) |
@@ -400,13 +400,13 @@ TID 3286: [USB] Claimed interface 0: IN=81 OUT=1   ← second claim       (line 
 
 ## 11. What SELinux restrictions apply on gminfo37?
 
-**Y181 is enforcing; Y177 is permissive** (boot cmdline from `86331652` boot image):
+**Both Y177 and Y181 run SELinux enforcing at runtime.** Y177's boot cmdline (from `86331652` boot image) still carries the permissive token, but it is overridden at runtime:
 ```
-enforcing=0 androidboot.selinux=permissive    ← Y177 (security regression)
-# Y181 restores full enforcement
+enforcing=0 androidboot.selinux=permissive    ← Y177 boot cmdline (overridden — runtime is Enforcing)
+# Y181 does not carry the token
 ```
 
-Y177's permissive mode is caused by the VIP MCU security function being replaced with a 4-byte stub (CVE-2024-53104 + CVE-2024-36971 exploitable). Y181 restored full enforcement. Rollback from Y181 to Y177 is blocked by the GHS rollback counter.
+Y177 carries the `androidboot.selinux=permissive` cmdline token; Y181 does not. The token is **not honored at runtime**: Y175/Y177/Y181 ship a byte-identical `init` compiled `ALLOW_PERMISSIVE_SELINUX=0`, which forces enforcing on this `user` build regardless of the cmdline (same mechanism spelled out for Y181 below). So all three builds run SELinux **enforcing** at runtime. This is **not** caused by any VIP MCU change: the VIP security validator is a full ~906-byte function in **every** build (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0) — there is no 4-byte stub (three-way byte-level diff, 2026-08-25) — and it gates ADB/seed authorization only, not SELinux or AVB (SELinux mode is set OS-side in the ramdisk/init). Rollback from Y181 to Y177 is blocked by the GHS/AVB anti-rollback mechanism (owner-verified 2026-08-17 bench re-test).
 
 **USB device access for sideloaded apps** (from `plat_sepolicy.cil`):
 
@@ -431,15 +431,15 @@ Sideloaded apps (`untrusted_app`) are in `base_typeattr_196` which grants:
 | Build | `W213E-Y175.5.2-SIHM22B-383.1` | `W231E-Y177.6.1-SIHM22B-499.2` | `W231E-Y181.3.2-SIHM22B-499.3` |
 | Kernel | 4.19.283 | 4.19.305 | 4.19.305 |
 | Security patch | 2024-05-05 | 2025-02-05 (build dated Mar 5 2025) | 2025-06-05 |
-| SELinux | Enforcing | **Permissive** ⚠️ | Enforcing |
-| VIP security fn | Full (906 B) | **4-byte stub** ⚠️ | Full (906 B) |
+| SELinux | Enforcing | ~~**Permissive**~~ **Enforcing** (cmdline token permissive, overridden at runtime) | Enforcing |
+| VIP security fn | Full (~906 B) | Full (~906 B) | Full (~906 B) |
 | Rollback | — | Y181→Y177 blocked | — |
 
-**Y177 is a security regression.** Update to Y181. Rollback from Y181 is enforced by the GHS hypervisor rollback counter in the `misc` partition.
+**Y177 is not a security regression** — it runs SELinux enforcing at runtime (byte-identical init) with the same full ~906 B VIP validator as Y175/Y181. Update to Y181 for the newer security-patch level. Rollback from Y181 is enforced by the GHS hypervisor rollback counter in the `misc` partition.
 
 > Provenance: Y181 and Y177 build IDs, kernels, security-patch levels, and SELinux states are verified against the partition images (Y181 `86331654`, Y177 `86283152`/`86283154`). The **Y175 column** and the **VIP security fn / Rollback** rows come from separate firmware reverse-engineering and are **not** verifiable from the ADB dump or the Y181/Y177 images alone — treat them as RE-sourced, not dump-confirmed.
 
-Audio/video/codec configuration files are **identical between Y177 and Y181**. App behavior differences between the two builds are limited to SELinux enforcement.
+Audio/video/codec configuration files are **identical between Y177 and Y181**. Both builds run SELinux enforcing at runtime, so build differences reduce to kernel/security-patch level, not SELinux mode.
 
 ---
 
@@ -878,13 +878,13 @@ The 2024 Silverado 2500 LTZ has **four USB ports** across **two separate USB ass
 
 **Module 1 — Center Console / Center Glove Box:**
 - 1× USB Type-A
-- 1× USB Type-C — underlying PCB connector is **USB mini-B (5-pin, including the OTG ID pin)**. A Type-C cable + OTG adapter that pulls the ID pin low triggers the DWC3 controller's OTG detection.
+- 1× USB Type-C — the radio↔receptacle link is **4-conductor (VBUS/D+/D−/GND), with NO OTG ID pin**. There is no mini-B ID/CC pin in this harness. An OTG cable on this port asserts the Type-C **CC** condition the firmware watches, which triggers a **SoC-side software role-switch** (`intel_xhci_usb_sw` role node + Intel `dabridge`, virtual UDC `dabr_udc.0`) into device mode. The switch is done in software; it is **not** a hardware ID-pin detection.
 
 **Module 2 — Radio / Climate Control Area:**
 - 1× USB Type-A
-- 1× USB Type-C — underlying PCB connector does **NOT** have the ID pin wired. OTG adapters have no effect on this port; ADB device-mode cannot be triggered here via hardware.
+- 1× USB Type-C — this port does **not** enter ADB device mode; the firmware only performs the role-switch for the console port.
 
-**The ADB-capable OTG port is exclusively the Type-C on Module 1 (Center Console).** The Radio/Climate area Type-C does not support hardware OTG mode-switch.
+**The ADB-capable port is exclusively the Type-C on Module 1 (Center Console)** — confirmed by field testing (ADB works there even with the receptacle externally unpowered). The Radio/Climate area Type-C does not enter ADB device mode. The differentiation is not a hardware ID pin (there is none); it is which port the firmware role-switches.
 
 ### USB controller (from init files and kernel)
 
@@ -948,18 +948,17 @@ setprop sys.usb.config adb
 - Bytes 1–2: `0x3C 0x4E` — likely CAN signal address / ID
 - Byte 3: `0x01` = host mode, `0x00` = device mode
 
-This is the CAN-bus signal path the user speculated about — **it exists, and it fires on every USB role-switch regardless of whether the trigger is hardware (OTG ID pin) or software (property set).**
+This is the CAN-bus signal path the user speculated about — **it exists, and it fires whenever the role-switch runs, whether the switch was initiated by an OTG-cable CC assertion (detected in software) or a direct property set.**
 
-### Hardware trigger (OTG ID pin)
+### OTG-cable trigger (Type-C CC → software role-switch)
 
-The hardware OTG ID pin path is the same end-point:
-1. Type-C cable + OTG adapter → ID pin pulled low → kernel OTG driver detects device request
-2. Kernel OTG driver writes to `/sys/class/usb_role/intel_xhci_usb_sw-role-switch/role`
-3. DWC3 controller switches from host to peripheral mode
-4. init.rc property triggers fire, setting `vendor.sys.usb.role device` etc.
-5. `usb_otg_switch.sh p` fires → `/dev/cbc-signals` packet sent regardless
+There is **no mini-B OTG ID pin** anywhere on the radio↔receptacle link (it is 4-conductor VBUS/D+/D−/GND). What an OTG cable does is assert the Type-C **CC** condition the firmware watches; the role-switch itself is performed in software at the SoC:
+1. OTG cable on the console Type-C → asserts the CC/role condition the firmware polls (a plain C-to-C does not assert it → no flip → no ADB)
+2. Firmware sets `vendor.sys.usb.role device` → `usb_otg_switch.sh p`
+3. `intel_xhci_usb_sw` role node flips to `device`; Intel `dabridge` exposes the virtual UDC `dabr_udc.0`
+4. `/dev/cbc-signals` device-mode packet is sent
 
-The hardware and software paths converge at the same sysfs node and the same CBC signal.
+There is no DWC3/xHCI hardware ID-pin detection in this path — the controller enters gadget mode via the software role-switch. The CC-triggered and property-set paths converge at the same sysfs node and the same CBC signal.
 
 ### dabridge bridgeport configuration
 
@@ -979,12 +978,12 @@ In recovery mode there is **no dabridge involvement** — the role switch goes d
 ### ADB permission grant chain
 
 Without root access from a locked device:
-1. Only path to switch to ADB mode externally is the hardware OTG ID pin (Type-C + OTG adapter)
+1. The external trigger is an **OTG cable** on the console Type-C, whose CC assertion drives the SoC software role-switch into device mode (there is no hardware OTG ID pin; a plain C-to-C does not trigger it)
 2. If `adb_enabled=1` (confirmed in `settings_global.txt`) and `development_settings_enabled=1` (confirmed), ADB responds once the port is in device mode
 3. `verifier_verify_adb_installs=0` means sideloaded APKs via ADB do not require Google Play Protect verification
 4. `ro.adb.secure=1` means ADB requires RSA key authorization — the key accept dialog must appear on the radio's screen
 
-Software path accessibility: `setprop vendor.sys.usb.role device` requires a SELinux context that can write `vendor.sys.*` properties. `untrusted_app` cannot. A system shell (`u:r:shell:s0` via existing ADB session) can. Bootstrap requires the hardware OTG trigger once per session to get the initial ADB shell.
+Software path accessibility: `setprop vendor.sys.usb.role device` requires a SELinux context that can write `vendor.sys.*` properties. `untrusted_app` cannot. A system shell (`u:r:shell:s0` via existing ADB session) can. Bootstrap requires the OTG-cable trigger on the console Type-C once per session to get the initial ADB shell.
 
 ---
 

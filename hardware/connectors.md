@@ -30,7 +30,7 @@ Compiled 2026-07-01.
 | HWID | ZQ68GEC80317, EC-Index 20 |
 | Vehicle (test unit) | 2024 Chevrolet Silverado (ICE), RPO **IOK** (Infotainment 3 Premium, 13.4″, Google built-in) |
 | Platform / EE arch | GM **T1XX-HD** / **Global B (VIP / SDV1-GB)** |
-| CAN | GM VIP/SDV1 (GB), CAN 2.0 29-bit · Req `0x14DA80F1` / Rsp `0x145AF180` (HS-CAN) |
+| CAN | GM VIP/SDV1 (GB), CAN 2.0 29-bit · Req `0x14DA80F2` / Rsp `0x145AF280` (HS-CAN, dedicated tester F2 — per `A11_CSM_x80.Txt`). The generic OBD tester address F1 (`0x14DA80F1` / `0x145AF180`) also reaches ECU 0x80 and is what the DPS bench read logs use (confirmed: GM_research/diagnostics/gm_dps/DPS_All_Module_Read/.../GCI_*.txt). |
 
 ---
 

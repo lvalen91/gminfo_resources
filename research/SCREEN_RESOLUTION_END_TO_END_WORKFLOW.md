@@ -50,7 +50,8 @@ waived.
 
 ### 1.1 SBI flip verified (the `$27` lever)
 - [ ] EEPROM dumped from the radio's M24C64 (8192 bytes).
-- [ ] Byte at **`0x0440`** data position = `0xFF` (primary SBI). Stock is `C3 00 C3 00`; bypass is the
+- [ ] Byte at **`0x0440`** data position = `0xFF` (primary SBI). Stock is `C3 00 C3 FF` (confirmed:
+      /Volumes/stuff/misc/research/GM_research/csm_eeprom/gm_csm_stock.bin, xxd @0x0440); bypass is the
       data byte flipped to `FF` (marker-agnostic — only the data byte matters).
 - [ ] Byte at **`0x0A80`** data position = `0xFF` (backup SBI). **Both** must be set for a clean bypass;
       GM now inits `0x0A80` to locked, so check it explicitly.

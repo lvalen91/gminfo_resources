@@ -34,8 +34,10 @@ when sharing.
 
 - **Central gateway = ECU `0x45`** — wake-up + ECUID reads route through it; response uses the
   physical `14DAF245` pattern, unlike every other module's `14xAF2xx`. [C]
-- **Radio = ECU `0x80`** — ECUID `004B41DC…14AC` (matches EEPROM/teardown); HS-CAN primary
-  (`14DA80F1`/`145AF180`), also answered on LS-CAN via the gateway. [C]
+- **Radio = ECU `0x80`** — ECUID `004B41DC…14AC` (matches EEPROM/teardown); LS-CAN via the
+  gateway with tester ID **F2**: ReqCANId `0x14DA80F2` / RspCANId `0x145AF280` (confirmed:
+  `diagnostics/dps/A11_CSM_x80.Txt:160` — every ECU in the scan uses F2; F1 is the generic OBD
+  tester address, not seen here). [C]
 - **Segmented buses** behind `0x45`: HS-CAN + LS-CAN + AUTOSAR "SER DATA 5" (seen on the
   connector harness, see [`../hardware/connectors.md`](../hardware/connectors.md)). [C]
 
@@ -50,8 +52,9 @@ of the other 22 → GM Global-B address table (**open**). Scanned unit: `SBI = B
 
 ## Plane 2 — Automotive Ethernet (VLAN 4 / 5)
 
-Backbone: 100BASE-T1 via on-board **BCM89551** switch (host on port 5; gateway/telematics on
-port 2).
+Backbone: 100BASE-T1 via on-board switch (host on port 5; gateway/telematics on
+port 2). Switch IC is board-variant — **Broadcom BCM89551** on MY22/DV boards, **Marvell 88Q5050**
+on MY23+ (per `persist.vendor.harman.hardwareid`); same port layout and spec.
 
 ### vlan5 · `192.168.1.0/24` ("Info3x" service network)
 
@@ -93,15 +96,18 @@ port 2).
 ---
 
 ## Join points
-- **Radio** — CAN `0x80` (via VIP MCU) + Ethernet `.100`. VIP↔SoC HDLC IPC (`/dev/ttyS1`, 19
-  channels) is the CAN↔Android bridge; Android never sees raw CAN.
+- **Radio** — CAN `0x80` (via VIP MCU) + Ethernet `.100`. VIP↔SoC HDLC IPC (`/dev/ttyS1`, 20
+  channels 1-20) is the CAN↔Android bridge; Android never sees raw CAN.
 - **CGM / telematics** — direct CAN access (unlike the radio) + Ethernet `.107/.112` + cellular
   link to GM cloud (`vtmpub.oboservices.mobi`). The real door to the wider bus + internet.
 
-> **Correction to earlier working notes:** CAN gateway `0x45` is **not** established to be the
-> CGM (it is simply "the CAN gateway" in the DPS flow); CGM/telematics is `.107/.112` on Ethernet;
-> the observed Ethernet inter-VLAN router is a separate node (`.102`). Do not conflate without a
-> capture.
+> **CAN gateway `0x45` = the CGM (Central Gateway Module).** The GIS763 CalDef
+> (`InfotainmentProg_GlobalB`) records `GIS763_Gateway = 69 (0x45)` = "Diagnostic Address of the
+> CGM" (see [`ota_programming_roles.md`](ota_programming_roles.md)), and the DPS scan confirms
+> `0x45` as the diagnostic gateway (RspCANId `0x14DAF245`). **Open** (item #3): whether this CAN
+> Central Gateway Module is the same physical unit as the Ethernet-side Connectivity Gateway /
+> telematics (`.107/.112`, Bosch OUI) and/or the Ethernet inter-VLAN router (`.102`) is not settled
+> — the CAN diagnostic address `0x45` and those Ethernet faces are not yet proven to be one node.
 
 ## Open items
 1. Physical Ethernet Bus 2/4/6 pair ↔ IP-segment mapping (per-pair capture). **Partially closed

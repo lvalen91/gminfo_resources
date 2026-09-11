@@ -5,7 +5,7 @@
 **Android Version:** 12 (API 32)
 **Research Date:** December 2025 - February 2026
 
-> **Note:** All audio/video/codec configuration files are IDENTICAL between Y177 and Y181 builds. Behavioral differences between these builds are only in SELinux enforcement (Y177 permissive, Y181 enforcing).
+> **Note:** All audio/video/codec configuration files are IDENTICAL between Y177 and Y181 builds. Both builds run SELinux **enforcing** at runtime (byte-identical init forces enforcing; the "Y177 permissive" claim is retracted), and both carry the full ~906 B VIP validator with no 4-byte stub — so build differences reduce to kernel/security-patch level, not SELinux mode.
 
 ---
 
@@ -18,9 +18,9 @@ The GM infotainment system uses Android Automotive's multi-zone audio architectu
 ## Audio HAL Configuration
 
 ### HAL Version
-- **HIDL Interface:** `vendor.hardware.audio@5.0` (Harman custom service — `vendor.hardware.audio@5.0-harman-custom-service`)
+- **HIDL Interface:** `android.hardware.audio@5.0` (HarmanHAL; served by the Harman custom service process `vendor.hardware.audio@5.0-harman-custom-service`). The registered HIDL interface is `android.hardware.audio@5.0::IDevicesFactory`; the `vendor.…` string is the service/binary instance name, not the interface.
 - **Audio Policy halVersion:** 3.0 (declared in `audio_policy_configuration.xml`). Note: The HIDL service interface version (5.0) and the audio policy module halVersion (3.0) are distinct — the former is the IPC transport, the latter is the policy engine version.
-- **HarmanAudioControl:** Harman "Titan" HarmanAudioControl
+- **HarmanAudioControl:** HarmanAudioControl (HarmanHAL); "Titan" is the SoC platform codename, not the HAL name
 - **Configuration:** `/vendor/etc/audio_policy_configuration.xml`
 
 ### System Properties

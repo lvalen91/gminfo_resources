@@ -19,12 +19,21 @@ Evidence:
   `VMM: vbmeta bad header: descriptors outside data block`,
   `VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu`.
 - `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` + `BOOT_CHAIN_ANALYSIS.txt`: magic
-  `AVB0`, version 1.1, RSA-4096/SHA-256, boot-image header field offsets, A/B misc
-  layout.
-- `research/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:243,386,701`: 32-bit x86,
-  statically linked; `rollback_index` field at header offset **0x70** — this exactly
-  matches the standard `AvbVBMetaImageHeader`, so the *whole* header layout below is
-  known-good ground truth, not a guess.
+  `AVB0`, version 1.1, RSA-2048/SHA-256 (alg_type 1 = SHA256_RSA2048; GT
+  `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:606,633,737` — 2048-bit key, alg=1/SHA256-RSA),
+  boot-image header field offsets, A/B misc layout.
+- **Bitness (GT-verified):** the GHS ELF header is **ELFCLASS32 / EM_386 (32-bit x86)**,
+  statically linked — confirmed by direct read at file offset 636 of `85098662`
+  (`7f 45 4c 46 01 …` `e_ident[CLASS]=01`; `e_machine=03 00`=EM_386; GT
+  `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181B/USB_Files/85098662`).
+  This is consistent with the coherent 32-bit `libavb` decompile (`vmm1_all.c` EAX/EDI +
+  `CONCAT44` dword-pair idioms). **DISPUTED:** a 2026-08-26 note in
+  `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:243,701` / `EEPROM_LAYOUT §0.8` asserts the EM_386
+  header is misleading and the code is really x86-64; that claim is not reflected by the
+  header bytes or the 32-bit register idioms, so it is treated as unverified here (see §5.2).
+- `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt`: `rollback_index` field at header offset **0x70** —
+  this exactly matches the standard `AvbVBMetaImageHeader`, so the *whole* header layout
+  below is known-good ground truth, not a guess.
 
 **Why 32-bit matters:** every size/offset field in the vbmeta header is `uint64_t`
 big-endian, but the module is a 32-bit build. Each 64-bit compare/add is synthesized
@@ -248,10 +257,14 @@ first:
    (`avb_vbmeta_image_fuzzer`, `avb_slot_verify_fuzzer`) — reuse them as the corpus/harness
    base. This isolates the "signed-vs-unsigned / offset+len" class directly.
 
-2. **Emulate the extracted module.** The ELF is **x86-64**, statically linked, base
-   `~0x00f60000` (from `vmm1_all.c` addresses). **CORRECTED 2026-08-26:** the ELF header claims
-   EM_386/32-bit but the code is x86-64 (§0.8) — emulate with Unicorn `UC_MODE_64` + the SysV
-   x86-64 ABI (not 32-bit), or the register widths/calling convention will be wrong. Load the `.vmm1.text`/`.rodata` sections
+2. **Emulate the extracted module.** The ELF is **32-bit x86 (EM_386 / ELFCLASS32)**, statically
+   linked, base `~0x00f60000` (from `vmm1_all.c` addresses) — GT-verified by direct read of the
+   GHS ELF header (see §0, file offset 636 of `85098662`: `e_ident[CLASS]=01`, `e_machine=EM_386`),
+   consistent with the coherent 32-bit `libavb` decompile. **DISPUTED:** a 2026-08-26 note in
+   `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` / `EEPROM_LAYOUT §0.8` claims the header is misleading
+   and the code is really x86-64; that is not reflected by the header bytes or the 32-bit register
+   idioms, so emulate 32-bit (Unicorn `UC_MODE_32` + i386 ABI) unless disassembly proves otherwise.
+   Load the `.vmm1.text`/`.rodata` sections
    into **Unicorn** (or qiling), map a fake stack + a scratch buffer holding the mutated
    vbmeta, and call the string-anchored parse functions by address. Use the
    `avb_audit.py` string→function map (rerun it under PyGhidra — the archived run failed

@@ -162,15 +162,15 @@ This is consistent with: GM's design intent is uniform cluster appearance regard
 
 ### Cross-platform summary table
 
-| Property | Info 3.7 / gminfo37 (Silverado, AAOS 12) | VCU / CIP / VCUNM1 (CT5, AAOS 14) |
+| Property | Info 3.7 / gminfo37 (Silverado, AAOS 12) | VCU / CIP / VCUNH1 (CT5, AAOS 14) |
 |---|---|---|
 | GM platform name | Info 3.x | GM VCU 1.0 / Cockpit Integration Platform ("CIP") |
-| Hardware vendor / model | Intel Atom + Renesas RH850 (gminfo37 module) | Bosch VCUNM1 (Qualcomm 8155 + RH850F1KM/KH); HIGH variant **VCUNH1** (Qualcomm 8195) |
+| Hardware vendor / model | Intel Atom + Renesas RH850 (gminfo37 module) | Bosch **VCUNH1** (HIGH variant, Qualcomm 8195 + RH850F1KM/KH) — the CT5 test specimen; **VCUNM1** (Qualcomm 8155) is the separate MID/base variant, do not conflate |
 | Hypervisor | GHS INTEGRITY | BlackBerry QNX 7.x |
 | Cluster ECU has glyph library | YES (per Protos$maneuverIconType wire format) | YES (same enum schema) |
 | `ClusterIconContentProvider` authority orphaned/claimable | YES (firmware-verified) | YES (firmware-verified — same unmodified GoogleTemplatesHost; open but bypassed) |
 | VMSPlugin forwards URI on imminent turn | YES | YES |
-| VMSPlugin forwards TurnType enum on imminent turn | NO | YES (`setManeuverType()` at NavigationStateProtoUtils:562) |
+| VMSPlugin forwards TurnType enum on imminent turn | NO | YES (`setManeuverType()` at NavigationStateProtoUtils:589, TurnType conversion :564 — firmware-verified; the earlier :554-562 cite was off-by-build, see 2026-06-06 block) |
 | ECU renders app-provided bitmap | YES (parallel URI-resolution channel, mechanism unverified) | NO (enum-driven sprite preferred) — verified on AAOS 14 only |
 | ECU renders own glyph from enum | Only for upcoming-step preview list (`gm.navigation.models.Maneuver` list path) | YES, for imminent turn |
 | Was carlink's ClusterIconShimProvider needed | YES (without it, no icon at all) | NO (futile; bitmap is masked) |

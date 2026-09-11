@@ -11,13 +11,25 @@
 
 By analyzing what GM specifically targets in their security fixes and calibration resets, we can infer which EEPROM addresses are security-relevant beyond the known bypass flags. This reverse-engineering approach reveals **10 potentially undocumented flags** in security-sensitive regions.
 
-> **Provenance / accuracy note (added during verification):** The firmware-reference
-> counts cited below (0x0A00, 0x0B00, etc.) come from an external radare2 cross-reference
-> pass over the full VIP_APP binary that is **not reproducible from the `firmware_re/`
-> artifacts shipped in this repo**. Two analysis passes disagree — **0x0A00 = 871 (§2.2)
-> vs 854 (§10.2)**, **0x0B00 = 311 vs 305** — so treat these as approximate RE-sourced
-> figures, not dump-verified. The §10 function addresses (0xb67d0, 0xb6652, 0xaee28) are
-> from that same external pass; only `0xecd84` exists in the shipped decompilation.
+> **Provenance / accuracy note (added during verification; updated Aug–Sep 2026):** The
+> firmware-reference counts cited below ("N firmware refs" for 0x04A0, 0x0A00, 0x0B00, etc.) come
+> from an external radare2 **string-proximity** pass that is **not reproducible from the
+> `firmware_re/` artifacts shipped in this repo** and disagrees with itself between passes
+> (0x0A00 = 871 §2.2 vs 854 §10.2; 0x0B00 = 311 vs 305). **That entire "N refs" framing is now
+> superseded.** A real Ghidra decompilation pass (`VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`,
+> `VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`) found the actual EEPROM-access mechanism — one generic
+> "CalGroup cell" accessor `FUN_ram_000c8db6` (1,301 call sites / 170 handler functions / 1,050
+> distinct cell IDs) — and checked every candidate against it directly. **Result: of the four
+> "undocumented" candidates, `0x04A0`, `0x0A40`, `0x0BE0` have zero real code references, and all
+> four (`0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0`) read `0xFF` (unwritten, no stored data) in both the
+> stock and ADB_enabled dumps (confirmed by xxd of `csm_eeprom/gm_csm_stock.bin` &
+> `.../gm_csm/Y181/ADB_enabled.bin` at each offset); `0x04C0` alone is referenced by a real
+> CalGroup 0x44 handler (`FUN_ram_00091f82`), but the EEPROM cell is still empty.** Treat the
+> candidate-flag tables below as historical. The §10 function addresses (0xb67d0, 0xb6652, 0xaee28)
+> DO exist as real functions in the correct `86331656_ghidra` project (the earlier "only 0xecd84
+> exists in the shipped decompilation" note reflected an incomplete project import — see
+> `VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` §0); **`0xecd84` itself is a generic RTOS mutex primitive
+> (285 call sites), not a security-validation function.**
 
 ---
 
@@ -25,8 +37,8 @@ By analyzing what GM specifically targets in their security fixes and calibratio
 
 | Address | Name | Bypass Value | Locked Value | Function |
 |---------|------|--------------|--------------|----------|
-| **0x0440** | Primary SBI | `[M] FF [M]` | `[M] 00 [M]` | Seed Bypass Indicator - enables ADB |
-| **0x0A80** | Backup SBI | `[M] FF [M]` | `[M] 00 [M]` | Redundant security flag |
+| **0x0440** | Primary SBI | `[M] FF [M]` | `[M] 00 [M]` | Seed Bypass Indicator — 0xFF data byte forces the VIP's degenerate all-0xFF `$27` seed. **Broader than ADB:** the same degenerate seed appears on the VIP's plain CAN `$27` UDS stack, not just ADB/ICUSB. Storage: CalGroup `0x3b`, cells `0x43a–0x447`, read-only accessor `FUN_ram_00091938`. |
+| **0x0A80** | Backup SBI | `[M] FF [M]` | `[M] 00 [M]` | Empirically mirrors 0x0440 — ADB_enabled.bin holds byte-identical `5A FF 5A FF` at both (xxd-confirmed). NOTE: the "both SBIs must match for the bypass to hold" *mechanism* is unverified/likely wrong — exhaustive static analysis found zero real code references to 0x0A80/0x0A81 in either VIP binary; only the mechanism is disputed, the empirical mirror pair is real. |
 | **0x0B40** | Debug Mode (UNCONFIRMED, see note) | `[M] 01 [M]` | `[M] 00 [M]` | Developer/debug mode toggle |
 | **0x1A00** | Tertiary Security | Unknown | `[M] 00 [M]` | Additional security layer |
 | **0x0E80** | UI Flags Block | Varies | Varies | Contains UI feature flags |
@@ -55,6 +67,15 @@ By analyzing what GM specifically targets in their security fixes and calibratio
 ---
 
 ## 2. Undocumented Flags in Security Regions
+
+> **SUPERSEDED (Aug–Sep 2026 — see provenance note above).** The "Firmware Refs" counts in the
+> tables in this section are string-proximity artifacts, not real code references. A real Ghidra
+> pass found no genuine code reference for `0x04A0`, `0x0A40`, or `0x0BE0`, and an xxd of both the
+> stock and ADB_enabled dumps shows `0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0` all `0xFF` (unwritten, no
+> stored data). Only `0x04C0` is touched by a real code handler (CalGroup 0x44, `FUN_ram_00091f82`)
+> — and even there the EEPROM cell itself is empty. The tables below are retained as historical
+> record only; do not treat these as active flags. Detail:
+> `VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`.
 
 ### 2.1 Security Config Region (0x0400-0x0500)
 
@@ -140,21 +161,21 @@ Secondary security file (1,434 bytes) - also contains encrypted security payload
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  LAYER 1: USB Update (VIP Firmware)                                          │
-│  ├── VIP_APP initialization resets EEPROM to default state                  │
-│  ├── Stubbed function (Y177) vs Full validation (Y181) @ 0xb67d0            │
-│  └── ALWAYS resets security flags on firmware reinstall                     │
+│  ├── VIP_APP re-init can restore EEPROM CalGroups to ROM defaults           │
+│  ├── VIP validator @0xb67d0 is FULL (~906B) in ALL builds — NO stub         │
+│  │     (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0; 3-way diff 2026-08-25) │
+│  └── restore-to-defaults resets flags on re-init (see VIP_SBI_WRITE_...)    │
 │                                                                              │
 │  LAYER 2: SPS Calibration Files — **RETRACTED 2026-09-10, see §3.1/3.2**    │
 │  ├── (was: 85783460/87846384 "Encrypted EEPROM reset payload" — refuted;    │
 │  │    both are ordinary calserviced CalOvride overrides, no EEPROM refs)    │
 │                                                                              │
-│  LAYER 3: VIP Security Validation Function                                   │
-│  ├── Y177: 4-byte stub (always returns success)                             │
-│  ├── Y181: 906-byte full implementation                                      │
-│  │   ├── Loads debug/security flag from memory 0x3e06                       │
-│  │   ├── Validates against expected security state                          │
-│  │   └── Returns error if validation fails                                  │
-│  └── Called by ICUSB/PROTOKEY modules before transmitting to SoC            │
+│  LAYER 3: VIP Seed/Key SecurityAccess Function @0xb67d0                      │
+│  ├── FULL ~906-byte impl in ALL builds (NO Y177 stub — corrected)           │
+│  │   ├── Gates ADB/seed ($27) auth ONLY — NOT SELinux, NOT AVB              │
+│  │   ├── Reads RAM 0x3e06 = module-init readiness flag (NOT the SBI value)  │
+│  │   └── Returns UDS NRC on validation failure                             │
+│  └── Shared multi-slot engine: CAN $27 path + ICUSB/PROTOKEY path           │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -181,8 +202,8 @@ EEPROM Address Map (M24C64 - 8KB)
 ├── 0x0440: ★ PRIMARY SBI - ADB BYPASS (documented)
 ├── 0x0460: Security level config (documented)
 ├── 0x0480: Security mode flags (documented)
-├── 0x04A0: ? UNKNOWN - 17 firmware refs
-├── 0x04C0: ? UNKNOWN - 11 firmware refs
+├── 0x04A0: 0xFF unwritten (both dumps); zero real code refs (SUPERSEDED — see §2)
+├── 0x04C0: 0xFF unwritten; real CalGroup 0x44 handler FUN_ram_00091f82, empty cell
 └── 0x04E0: Unknown flag (documented)
 
 0x0500-0x05FF: Device Identification
@@ -191,24 +212,24 @@ EEPROM Address Map (M24C64 - 8KB)
 └── Other: Part numbers, dates
 
 0x0A00-0x0AFF: BACKUP SECURITY BLOCK ★
-├── 0x0A00: ? UNKNOWN - 871 firmware refs (likely base address)
-├── 0x0A20: ? UNKNOWN - 126 refs (SS_SWC timer related)
-├── 0x0A40: ? UNKNOWN - 28 firmware refs
-├── 0x0A60: ? UNKNOWN - 15 firmware refs
+├── 0x0A00: ref count retired (string-proximity, superseded — see §2)
+├── 0x0A20: ref count retired (string-proximity, superseded)
+├── 0x0A40: 0xFF unwritten (both dumps); zero real code refs (SUPERSEDED)
+├── 0x0A60: ref count retired (string-proximity, superseded)
 ├── 0x0A80: ★ BACKUP SBI - ADB BYPASS (documented)
 ├── 0x0AA0: Security backup data (documented)
-├── 0x0AC0: ? UNKNOWN - 14 firmware refs
+├── 0x0AC0: ref count retired (string-proximity, superseded)
 └── 0x0AE0: Additional security (documented)
 
 0x0B00-0x0BFF: FEATURE FLAGS BLOCK ★
-├── 0x0B00: ? UNKNOWN - 311 firmware refs (likely base address)
-├── 0x0B20: ? UNKNOWN - 7 firmware refs
-├── 0x0B40: ★ DEBUG/DEVELOPER MODE (documented)
+├── 0x0B00: ref count retired (string-proximity, superseded — see §2)
+├── 0x0B20: ref count retired (string-proximity, superseded)
+├── 0x0B40: ★ DEBUG/DEVELOPER MODE (label UNCONFIRMED — operator-tested, no effect; see §1)
 ├── 0x0B60: Security counter (documented)
 ├── 0x0B80: Feature enable #1 (documented)
 ├── 0x0BA0: Feature enable #2 (documented)
 ├── 0x0BC0: Feature toggle (documented)
-└── 0x0BE0: ? UNKNOWN - 24 firmware refs
+└── 0x0BE0: 0xFF unwritten (both dumps); zero real code refs (SUPERSEDED)
 
 0x0C00-0x0DFF: Extended Configuration
 └── 0x0C00: Unknown (ACTIVE in sample dump)
@@ -233,6 +254,9 @@ EEPROM Address Map (M24C64 - 8KB)
 ---
 
 ## 6. Experimental Testing Recommendations
+
+> **SUPERSEDED:** `0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0` all read `0xFF` (unwritten) in the real dumps
+> and are not live flags (see §2). The tests below are retained as historical record only.
 
 ### 6.1 High Priority (Security Region)
 
@@ -293,53 +317,56 @@ The fact that Y177→Y181 fixed the security validation function without changin
 
 ## 8. VIP Firmware Security Function Analysis
 
-### Address: 0x000b67d0
+### Address: 0x000b67d0 (Y181; Y177 @0xb67d4, Y175 @0xb6708)
 
-#### Y177 Implementation (STUBBED)
-```asm
-; 4 bytes - Always returns success
-mov 0, r10      ; Return value = 0 (success)
-jmp [lp]        ; Return to caller
-```
+> **CORRECTED 2026-08-25 (three-way VIP_APP diff, superseding the earlier "Y177 stub" reading):**
+> there is **NO stub**. A full ~906-byte seed/key SecurityAccess validator exists in **ALL** builds
+> (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0), confirmed byte-for-byte. This function gates
+> **ADB/seed ($27) auth only — it does NOT set SELinux mode and does NOT touch AVB.** The primary
+> ADB/seed gate is SoC-side (MEC / `is_secure_mode`, `gm_adb_auth_init`); the EEPROM SBI + this VIP
+> function gate the seed/key path. See `VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`.
 
-#### Y181 Implementation (FULL)
+#### Implementation (FULL — identical across all builds)
 ```asm
-; 906 bytes - Full validation
-; 1. Load debug/security flag from memory 0x3e06
-; 2. Compare against expected value
+; ~906 bytes - Full validation, identical in Y175/Y177/Y181 (no stub)
+; 1. Read RAM 0x3e06 = "security module initialized" readiness flag
+;      (a module-init flag, NOT the processed EEPROM SBI value — corrected)
+; 2. Range/bitmask-validate the requested SecurityAccess level (0x02-0x14)
 ; 3. Multiple conditional branches for different states
-; 4. Call validation functions:
-;    - 0xecd84 (unknown)
-;    - 0xb6652 (unknown)
-;    - 0xaee28 (unknown)
-; 5. Return error codes on validation failure
+; 4. Call helper functions:
+;    - 0xecd84  generic RTOS mutex acquire primitive (285 call sites — NOT a validator)
+;    - 0xb6652  level-range mapping/validation
+;    - 0xaee28  slot/state clear
+; 5. Return UDS NRC (0x31/0x22) on validation failure
 ```
 
 #### Callers
-- 0xb6b06 (in fcn.000b67d4)
-- 0xb6e82 (in fcn.000b6bd0)
-
-These are in the ICUSB/PROTOKEY module code path.
+Reached via an indirect/dispatch mechanism — a multi-slot SecurityAccess dispatch shared by the
+CAN `$27` path and the ICUSB/PROTOKEY path (same engine, not separate code). See
+`VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` §6.
 
 ---
 
 ## 9. Conclusions
 
-1. **GM's security fix was in the validation function, not EEPROM structure**
+1. **There was no "validation-function security fix" — the Y177-stub premise is REFUTED**
+   - Y175/Y177/Y181 all carry the SAME full ~906-byte validator (three-way diff 2026-08-25); no stub ever existed
    - Y177 and Y181 reference identical EEPROM addresses
-   - The stubbed function at 0xb67d0 was the vulnerability
+   - The bypass is the degenerate all-0xFF `$27` seed handed out when the SBI data byte = 0xFF, not a stubbed function
 
 2. ~~**Calibration files target multiple addresses for reset**~~ **RETRACTED 2026-09-10** — the
    real, fully-decoded calibration files contain no EEPROM/SBI/security references at all (see
    §3.1). This "defense-in-depth" model is not supported by the actual file contents.
 
-3. **10 potentially undocumented flags identified**
-   - 2 in security config region (0x04A0, 0x04C0)
-   - 8 in feature flags region (0x0A00-0x0BE0 range)
+3. ~~**10 potentially undocumented flags identified**~~ **REFUTED (Aug–Sep 2026)** — the "N refs"
+   evidence was string-proximity, not real code references. Of the four security-region candidates,
+   `0x04A0`/`0x0A40`/`0x0BE0` have zero real code refs, and `0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0` all
+   read `0xFF` (unwritten) in both dumps. Only `0x04C0` is referenced by real code (CalGroup 0x44,
+   `FUN_ram_00091f82`) — and even that cell is empty. See `VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`.
 
-4. **High reference counts suggest active use**
-   - 0x0A00 (871 refs) and 0x0B00 (311 refs) are likely base addresses
-   - Others with 10+ refs are likely individual flags
+4. ~~**High reference counts suggest active use**~~ **REFUTED** — the 0x0A00/0x0B00 "base address"
+   ref counts came from the same superseded string-proximity pass; the real EEPROM access path is a
+   single generic CalGroup-cell accessor (`FUN_ram_000c8db6`), not per-address literal references.
 
 5. **Testing required to determine function**
    - Addresses identified by analysis, function unknown
@@ -384,15 +411,14 @@ BYPASS PROCEDURE:
 ├── 3. Write: 0x0441=0xFF, 0x0A81=0xFF, 0x0B41=0x01
 └── 4. Marker bytes are irrelevant to security validation
 
-POTENTIALLY UNDOCUMENTED (High Priority):
-├── 0x04A0: Security region, 17 refs
-├── 0x04C0: Security region, 11 refs
-├── 0x0A40: Feature flags, 28 refs
-└── 0x0BE0: Feature flags, 24 refs
+UNDOCUMENTED CANDIDATES — REFUTED (Aug–Sep 2026; "N refs" was string-proximity):
+├── 0x04A0: 0xFF unwritten (both dumps); zero real code refs
+├── 0x04C0: 0xFF unwritten; real CalGroup 0x44 handler (FUN_ram_00091f82) but empty cell
+├── 0x0A40: 0xFF unwritten; zero real code refs
+└── 0x0BE0: 0xFF unwritten; zero real code refs
 
-LIKELY BASE ADDRESSES (Not individual flags):
-├── 0x0A00: 871 refs - probably structure base
-└── 0x0B00: 311 refs - probably structure base
+"BASE ADDRESSES" (0x0A00/0x0B00): ref counts retired — real EEPROM access is one generic
+CalGroup-cell accessor (FUN_ram_000c8db6), not per-address literal references.
 ```
 
 ---
@@ -403,16 +429,14 @@ LIKELY BASE ADDRESSES (Not individual flags):
 
 ### 10.1 Security Validation Function (0xb67d0)
 
-The critical security validation function was analyzed using radare2 with V850 architecture support.
+The seed/key SecurityAccess function was analyzed with radare2 (originally decoded as V850; the
+current authoritative disassembly uses the **RH850:LE:32** SLEIGH module — the V850 pass was only
+an approximation, superseded by fresh RH850 projects).
 
-#### Y177 Implementation (STUBBED - 4 bytes)
-```asm
-; Function always returns success - NO VALIDATION
-mov 0, r10      ; Return value = 0 (success)
-jmp [lp]        ; Return to caller
-```
+> **CORRECTED:** there is no Y177 stub. The full ~906-byte implementation below exists in ALL
+> builds (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0), confirmed by three-way diff 2026-08-25.
 
-#### Y181 Implementation (FULL - 906 bytes)
+#### Implementation (FULL ~906 bytes, identical across Y175/Y177/Y181)
 ```asm
 0x000b67d0  prepare {r20-r29, lp}, 4, sp    ; Save registers
 0x000b67d4  mov r6, r25                      ; Store input parameter
@@ -430,9 +454,20 @@ jmp [lp]        ; Return to caller
 0x000b6844  jarl 0xaee28, lp                 ; Call validation function #2
 ```
 
-**Key Finding:** The flag at memory address 0x3e06 is the processed EEPROM value loaded during boot. This corresponds to the SBI flags at EEPROM addresses 0x0440/0x0A80.
+**Key Finding (CORRECTED):** RAM `0x3e06` is a generic **"security module initialized" readiness
+flag** (1 = init complete, 0 = reset), **not** the processed EEPROM SBI value — it is mapped from
+the 0x0440/0x0A80 region but does not carry the SBI data byte. The earlier "0x3e06 = processed
+EEPROM SBI value" claim is refuted (see `VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` §2).
 
 ### 10.2 Undocumented Address Context Analysis
+
+> **SUPERSEDED (Aug 2026).** The "code context" below is string-proximity, not real cross-references.
+> A real Ghidra pass (`VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`) found the `[IPC_S]` strings live
+> in a different part of the binary (`ram:0001adfe–0001be06`) from any handler touching these cells,
+> with no code link — the `0x04A0`/`0x04C0` ↔ `[IPC_S]` association is coincidental. `0x04A0` has no
+> genuine code reference (its one apparent hit is a struct-relative false positive); `0x04C0` is
+> referenced by CalGroup 0x44 (`FUN_ram_00091f82`) but the EEPROM cell reads `0xFF` (unwritten). The
+> `0x0A00`/`0x0B00` "base address" ref counts are the same superseded string-proximity signal.
 
 Using radare2 cross-reference analysis, we identified the code context for each undocumented address:
 
@@ -496,15 +531,21 @@ The memory address 0x714f contains the processed ICUSB enable state, which is de
 
 | Address | Purpose | Notes |
 |---------|---------|-------|
-| 0xecd84 | Unknown validation | Calls deeper functions at 0xf5cb8, 0xec4be |
-| 0xb6652 | Security level check | Returns based on input range checks |
+| 0xecd84 | Generic RTOS mutex acquire primitive (NOT a validator) | 285 call sites across unrelated subsystems; reused inside security code but not specific to it — see `VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` §1/§7 |
+| 0xb6652 | Security level range-mapping/validation | Returns based on input range checks |
 | 0xb6680 | Feature state check | Loads from 0x71e0, compares against 3 |
 | 0xb6690 | Debug state check | Loads from 0x71ed, checks if zero |
-| 0xaee28 | Unknown validation | Part of validation chain |
+| 0xaee28 | Slot/state clear | Part of the seed/key state machine |
 
 ---
 
 ## 11. Testing Recommendations Based on Analysis
+
+> **NOTE (Aug–Sep 2026):** the candidate addresses in this section (`0x04A0`, `0x04C0`, `0x0A40`,
+> `0x0BE0`, and the `0x0A00`/`0x0B00` "base addresses") are superseded — see §2 and the provenance
+> note. `0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0` all read `0xFF` (unwritten) in the dumps and are not
+> usable flags; the ref counts below are the retired string-proximity figures. Retained as
+> historical test log only.
 
 ### 11.1 High Priority Tests (Security Region)
 
@@ -542,22 +583,22 @@ The memory address 0x714f contains the processed ICUSB enable state, which is de
 │                                                                              │
 │  EEPROM (M24C64)                     RAM (after boot load)                   │
 │  ┌──────────────────────┐            ┌──────────────────────┐               │
-│  │ 0x0440: Primary SBI  │ ─────────► │ 0x3e06: Security flag│               │
+│  │ 0x0440: Primary SBI  │ ─────────► │ 0x3e06: init-rdy flag│               │
 │  │ 0x0A80: Backup SBI   │            │ 0x714f: ICUSB enable │               │
 │  │ 0x0B40: Debug Mode(?)│            │ 0x71e0: Feature state│               │
-│  │ 0x04A0: IPC Security │            │ 0x71ed: Debug state  │               │
-│  │ 0x04C0: IPC Security │            └─────────┬────────────┘               │
+│  │ 0x04A0: (empty 0xFF) │            │ 0x71ed: Debug state  │               │
+│  │ 0x04C0: (empty 0xFF) │            └─────────┬────────────┘               │
 │  └──────────────────────┘                      │                             │
 │                                                 ▼                             │
 │                              ┌─────────────────────────────────┐             │
 │                              │ Security Validation @ 0xb67d0   │             │
 │                              │ ┌─────────────────────────────┐ │             │
-│                              │ │ Y177: STUBBED (4 bytes)     │ │             │
-│                              │ │   → Always returns success  │ │             │
+│                              │ │ FULL ~906B, all builds      │ │             │
+│                              │ │   → identical, all builds   │ │             │
 │                              │ │                             │ │             │
-│                              │ │ Y181: FULL (906 bytes)      │ │             │
-│                              │ │   → Validates security state│ │             │
-│                              │ │   → Calls validation chain  │ │             │
+│                              │ │ Full ~906B; gates $27       │ │             │
+│                              │ │   → NOT SELinux, NOT AVB    │ │             │
+│                              │ │   → checks data byte only   │ │             │
 │                              │ └─────────────────────────────┘ │             │
 │                              └──────────────┬──────────────────┘             │
 │                                             │                                │
@@ -625,7 +666,11 @@ Exhaustive binary search of the VIP_APP firmware confirmed:
 
 ### 13.5 Security Implication
 
-The security validation function at `0xb67d0` loads the **data byte** from RAM address `0x3e06` (mapped from EEPROM 0x0440/0x0A80). It does **not** validate the marker byte. This is confirmed by:
+The security validation function at `0xb67d0` validates the **data byte**, **not** the marker byte.
+(Note: RAM `0x3e06`, which it reads, is now understood to be a generic "security module
+initialized" readiness flag mapped from the 0x0440/0x0A80 region — **not** the SBI data value
+itself; see §10.1 and `VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` §2. The marker-agnostic conclusion is
+unaffected.) This is supported by:
 1. Marker bytes aren't stored in the firmware as expected values
 2. Different marker assignments across identical firmware flashes would break validation if markers were checked
 3. The CalGroup system would need to communicate its marker choices to the security function — no such mechanism exists
@@ -676,11 +721,11 @@ No SPS calibration files (85783460, 87846384) present.
 │                                                                              │
 │  EEPROM (M24C64)                     RAM (after boot load)                   │
 │  ┌──────────────────────┐            ┌──────────────────────┐               │
-│  │ 0x0440: [M] val [M]  │ ─────────► │ 0x3e06: Security flag│               │
+│  │ 0x0440: [M] val [M]  │ ─────────► │ 0x3e06: init-rdy flag│               │
 │  │ 0x0A80: [M] val [M]  │    (only   │ 0x714f: ICUSB enable │               │
 │  │ 0x0B40: [M] val [M]  │    val is  │ 0x71e0: Feature state│               │
-│  │ 0x04A0: [M] val [M]  │   loaded)  │ 0x71ed: Debug state  │               │
-│  │ 0x04C0: [M] val [M]  │            └─────────┬────────────┘               │
+│  │ 0x04A0: FF, empty    │   loaded)  │ 0x71ed: Debug state  │               │
+│  │ 0x04C0: FF, empty    │            └─────────┬────────────┘               │
 │  └──────────────────────┘                      │                             │
 │    ▲ Markers [M] assigned                      ▼                             │
 │    │ at runtime by CalGroup    ┌─────────────────────────────────┐           │
@@ -688,9 +733,9 @@ No SPS calibration files (85783460, 87846384) present.
 │    │                           │   Checks val (data byte) ONLY   │           │
 │  ┌─┴──────────────────────┐   │   Does NOT check marker [M]     │           │
 │  │ CalGroup System        │   │                                  │           │
-│  │ ├─ Runtime marker gen  │   │ Y177: STUBBED (4 bytes)          │           │
-│  │ ├─ 15 CalGroups        │   │   → Always returns success       │           │
-│  │ ├─ EEPROM R/W mgmt     │   │ Y181: FULL (906 bytes)           │           │
+│  │ ├─ Runtime marker gen  │   │ FULL ~906B, all builds           │           │
+│  │ ├─ 15 CalGroups        │   │   → identical, all builds        │           │
+│  │ ├─ EEPROM R/W mgmt     │   │ Full ~906B; gates $27            │           │
 │  │ └─ Default reinstate   │   │   → Validates data byte state    │           │
 │  └────────────────────────┘   └──────────────┬──────────────────┘           │
 │                                               │                              │
@@ -709,6 +754,6 @@ No SPS calibration files (85783460, 87846384) present.
 **Document Version:** 3.0
 **Analysis Method:** Static firmware analysis, calibration file analysis, radare2 disassembly, post-reflash EEPROM diff
 **Tools Used:** radare2 6.0.8, Python 3, strings, xxd
-**Architecture:** Renesas RH850 (V850)
+**Architecture:** Renesas RH850 (authoritative disassembly: RH850:LE:32 SLEIGH module; the earlier V850 pass was an approximation, now superseded)
 **Classification:** Security Research
 

@@ -16,7 +16,7 @@
 | Production Serial | U1J3N05D2F01C01 |
 | Mfg Trace | F2G6MHBW0114601N01PSXXX |
 | CAN Architecture | GM VIP/SDV1 (GB) — CAN 2.0, 29-bit extended |
-| CAN IDs | Req: 0x14DA80F1, Rsp: 0x145AF180 (HS-CAN) |
+| CAN IDs | Req: 0x14DA80F2, Rsp: 0x145AF280 (HS-CAN, dedicated tester F2 per A11_CSM_x80.Txt). Generic OBD tester F1 (Req 0x14DA80F1 / Rsp 0x145AF180) also reaches ECU 0x80 — the value the DPS bench GCI read logs use. |
 
 ---
 
@@ -88,14 +88,14 @@ Three-processor design on a single PCB:
 | eMMC | Samsung KLMCG4JEUD (SEC 228, B04P, NT24G0046) | BGA-153 | 64GB eMMC 5.1 |
 | BCM89551 FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — **Broadcom Ethernet switch firmware** (confirmed via partial dump; IC damaged during extraction) |
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — **confirmed** Apollo Lake IFWI/TXE boot flash (Intel docs mandate 8MB external SPI NOR on CS0). Contains Flash Descriptor, TXE 3.0 FW, UEFI, PMC FW, microcode, SMIP, Boot Guard v2. NOT dumped. |
-| VIP MCU | Renesas RH850 (TM52176, 3TC 2251, lot 15873) | QFP-144+ | V850 core, system/power/security controller |
+| VIP MCU | Renesas RH850/P1M-E (TM52176, 3TC 2251, lot 15873) | QFP-144+ | RH850 core (disassemble as RH850:LE:32, not V850), system/power/security controller |
 | VIP EEPROM | ST M24C64 (464RQ, K228) | TSSOP-8 | 8KB I2C — SBI security flags |
 
 ### Networking & Connectivity
 
 | Component | Part Number | Package | Notes |
 |-----------|-------------|---------|-------|
-| Ethernet Switch | Broadcom BCM89551B1BFBG (TN2224 P21, 395-34 P3 W) | BGA | Automotive BroadR-Reach Ethernet |
+| Ethernet Switch | Broadcom BCM89551B1BFBG (TN2224 P21, 395-34 P3 W) | BGA | Automotive BroadR-Reach Ethernet. **Board-variant IC**: this (MY22/DV) unit is Broadcom; MY23+ boards use Marvell 88Q5050 (`persist.vendor.harman.hardwareid` selects the driver) — same spec |
 | Ethernet FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — BCM89551 firmware (confirmed via partial dump; IC damaged during extraction) |
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — confirmed IFWI/TXE boot flash per Intel Apollo Lake platform requirements. NOT dumped. |
 | Ethernet MAC | Intel WGI210CL (I210) rev A3 (2214ASP) | QFN-48 | GbE for AVB audio, 25MHz xtal |
@@ -170,7 +170,7 @@ Classic A/B (NOT virtual A/B — no COW snapshots). `ro.build.ab_update=true`, `
 
 ### Ghidra Analysis (9 passes, VIP firmware 86331656)
 
-Binary: 1.9MB, RH850 (V850:LE:32:default), 6,251 functions
+Binary: 1.9MB, Renesas RH850 — disassemble with the **RH850:LE:32** SLEIGH module. (The earlier V850:LE:32 pass reported here, 6,251 functions, was only an approximation; it is superseded by fresh RH850 projects — an RH850 disassembly of 86331656 yields substantially more functions than the abandoned ~6,251-function V850 pass (RH850 counts run ~10,350–12,939 across passes; see `research/MASTER_REFERENCE.md` and `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, not INVENTORY.md). The crypto findings below are from the superseded V850 pass but its conclusions — VIP is a transparent relay, no crypto — hold.)
 
 **The VIP contains ZERO cryptographic operations:**
 
@@ -482,7 +482,7 @@ AM/FM/HD Antenna
 ```
 
 - Native: 48kHz, PCM 16-bit stereo
-- 12+ output buses (media, nav, call, alarm, notification, etc.)
+- 8 CarAudioService buses (bus0–bus7), 6 VolumeGroups (media, nav, call, alarm, notification, etc.); bus8–bus13 are Harman-HAL-internal graph nodes, not CarAudioService buses
 - 3 RX + 3 TX AVB streams, FIFO priority 50
 
 ---
@@ -535,18 +535,22 @@ Camera(s)
 ## Network Topology (from ADB Enumeration)
 
 ### Listening Ports
-| Port | Address | Likely Service |
+| Port | Address | Service |
 |------|---------|---------------|
-| 53 | 127.0.0.1, 192.168.5.1, ::1, fe80:: | DNS |
-| 7000 | 0.0.0.0, [::] | CINEMO/NME or GM service |
-| 6363 | 0.0.0.0 | Unknown |
-| 49156 | 0.0.0.0 | Ephemeral (media/IPC) |
-| 9016 | 192.168.1.1 | Internal SoC service |
-| 9002 | 192.168.1.1 | Internal SoC service |
+| 53 | 127.0.0.1, 192.168.5.1, ::1, fe80:: | DNS (br0 WiFi-AP side) |
+| 7000 | 0.0.0.0, [::] | phone-projection (AirPlay/CarPlay), on br0 — LISTENING |
+| 6363 | 0.0.0.0 | AVB audio daemon (UID 1041, local IPC) |
+| 49156 | 0.0.0.0 | **diagnosticsd** — GM Ethernet UDS-over-TCP bridge, root, on vlan4 (see `diagnostics/ethernet_uds_diagnosticsd.md`) |
+| 9016 | ::ffff:192.168.1.1 | NetworkAccessManager — VM↔host IPC |
+| 9002 | ::ffff:192.168.1.1 | RemoteModuleHMI — VM↔host IPC |
+
+Guest's own service listeners (9002/9010/9016 etc.) also bind the guest IP **192.168.1.100**
+(eth0/vlan5); the `::ffff:192.168.1.1` binds above are the VM↔host IPC endpoint, not a
+networked hypervisor bridge.
 
 ### Internal Networks
-- 192.168.1.x — SoC internal services
-- 192.168.5.x — WiFi AP/hotspot
+- 192.168.1.100 — guest (Android) IP on eth0/vlan5 (driver igb_avb); 192.168.1.1 = VM↔host IPC endpoint
+- 192.168.5.x — WiFi AP/hotspot (br0 192.168.5.1/24)
 
 ### UART Interfaces
 | Device | Permissions | Notes |
@@ -616,31 +620,44 @@ Four framing byte patterns: `69`, `F0`, `C3`, `5A`. Each data record: `[framing]
 |--------|--------------|---------------|-------------|
 | 0x0A00 | **871** | — | **Extremely high reference count — critical unknown function** |
 | 0x0B00 | 311 | — | High reference count |
-| 0x04A0 | 17 | — | Moderate references |
-| 0x04C0 | 11 | — | Moderate references |
+| 0x04A0 | ~~17~~ superseded | **0xFF (unwritten)** | No stored data — see note below |
+| 0x04C0 | ~~11~~ superseded | **0xFF (unwritten)** | No stored data — see note below |
 | 0x0A20 | — | — | Adjacent to 0x0A00 block |
-| 0x0A40 | — | — | Adjacent |
+| 0x0A40 | — | **0xFF (unwritten)** | No stored data — see note below |
 | 0x0A60 | — | — | Adjacent |
 | 0x0AC0 | — | — | Adjacent |
 | 0x0B20 | — | — | Adjacent to 0x0B00 |
-| 0x0BE0 | — | — | Near SBI region |
+| 0x0BE0 | — | **0xFF (unwritten)** | No stored data — see note below |
+
+> **CORRECTION (xxd artifact authoritative):** cells **0x04A0, 0x04C0, 0x0A40, 0x0BE0** are all
+> **0xFF (unwritten)** in **both** the stock (`gm_csm_stock.bin`) and `ADB_enabled.bin` dumps —
+> they hold no stored data. The earlier "N firmware refs" framing (and the "0x04C0 = active
+> CalGroup 0x44 handler `FUN_ram_00091f82`" note) is **speculative and superseded** by the direct
+> hex read. Only 0x0A00 (871 refs) and 0x0B00 (311 refs) remain as genuine high-reference unknowns.
 
 ---
 
-## Y177 vs Y181 Security Difference (Critical Finding)
+## Y177 vs Y181 Security Difference (REVISED — no stub)
 
-**Y177 has a STUBBED security validation function. Y181 has the full implementation.**
+**CORRECTED 2026-08-25 (three-way VIP_APP diff):** there is **NO Y177 stub.** A full
+~906-byte validation function exists in **all** builds — Y175 @0xb6708, Y177 @0xb67d4, Y181
+@0xb67d0 — confirmed at byte level. The earlier "4-byte stub in Y177" was a fixed-address
+misread (the function moved by a few bytes between builds). The VIP validation function gates
+**ADB/seed authentication only** — it does **not** set SELinux mode or AVB. The actual ADB/seed
+bypass gate is SoC-side (MEC / `is_secure_mode`, `gm_adb_auth_init`), not this VIP function.
+SELinux mode is OS-side (ramdisk/init), not controlled by the VIP.
 
 | | Y177 (86283151) | Y181 (86331656) |
 |---|---|---|
-| FUN_000b67d0 | **4 bytes — always returns success** | 906 bytes — full state machine |
-| SELinux | **PERMISSIVE** | Enforcing |
+| FUN_000b67d0 (validator) | **~906 bytes, full — @0xb67d4** | ~906 bytes, full — @0xb67d0 |
 | MEC | 0 | 207 |
 | Bootloader | 2121-1 | 2344 |
-| SBI effect | Full bypass (stubbed validation) | ADB auth only |
+| SBI/VIP-fn effect | ADB/seed auth gate only | ADB/seed auth gate only |
 | Kernel | 4.19.283 | 4.19.305 |
 
-This is why the EEPROM SBI bypass had broader effect on Y177 — the security validation was a no-op. GM patched it in Y181.
+There is no VIP "security fix" between Y177 and Y181 — the validator is unchanged/full across
+Y175/Y177/Y181. Do not reintroduce any stub-vs-full distinction or a "GM patched the stub"
+claim; both were retracted.
 
 ---
 
@@ -700,7 +717,7 @@ Same SHA-256 (`317ae85c...`). The hypervisor, VMM, kernel, all RTOS modules — 
 - **Normal A/B**: Standard boot with slot selection
 - **Recovery**: `boot-recovery` BCB command (no recovery partition — GHS IS the recovery mechanism)
 - **See-Dealer**: `GHS: [LIFECYCLE] Booting 'see-dealer' mode` — dealer diagnostic/service mode
-- **ELK (Emergency Linux Kernel)**: `GHS: [LIFECYCLE] Got request to boot to ELK` — minimal emergency kernel for catastrophic failures. Triggered via `ConnToOTA_BootELK` or `ConnToLifecycle_BootELK` IPC. State machine: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand` (sends HECI command to ABL).
+- **ELK**: `GHS: [LIFECYCLE] Got request to boot to ELK` — the Intel Kernelflinger fastboot environment (ABL boot target `OBBPELK`, AVB active), reached on catastrophic boot failure. It is **not** a Linux kernel or shell — it exposes fastboot commands (`flash`/`erase`/`getvar`, `oem set-storage`) and reports `USB storage unsupported`. Triggered via `ConnToOTA_BootELK` or `ConnToLifecycle_BootELK` IPC. State machine: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand` (sends HECI command to ABL).
 - **Diagnostic**: `Diagnostic channel active`
 
 **There is NO recovery partition.** GHS itself is the recovery mechanism — it's always running as the hypervisor, has direct display access (camera overlays, error screens), and can rewrite any Android partition via its OTA module. As long as `ghs_isys` boots (which has its own A/B redundancy), the entire radio is recoverable.
@@ -804,7 +821,7 @@ GHS manages its own A/B slot independent of Android's boot_control HAL. The slot
 
 ### SELinux Boot Parameter Anomaly
 
-`ro.boot.selinux = permissive` appears in boot parameters, but runtime state is **Enforcing**. GHS hypervisor overrides the boot parameter and forces Enforcing mode. This means even if the boot parameter could be modified, GHS would still enforce SELinux policy — except on Y177 where SELinux was natively permissive.
+`ro.boot.selinux = permissive` appears in boot parameters, but runtime state is **Enforcing** on both Y177 and Y181. The boot parameter is overridden and Enforcing is set OS-side (ramdisk/init); even if the boot parameter could be modified, policy stays Enforcing. (The earlier "Y177 was natively permissive" claim was part of the retracted VIP-stub myth — see "Y177 vs Y181 Security Difference" above — and does not hold; SELinux mode is not controlled by the VIP validation function.)
 
 ### SELinux: Shell CANNOT Access misc (Confirmed)
 
@@ -1001,9 +1018,9 @@ misc partition layout (conceptual):
 
 **The AB0 rollback counter is GHS-managed.** No Android process writes to it. The only way to modify it from Android would be to raw-write to the correct offset in misc using a process with write access (plmanager, hal_bootctl_default, or the phantom AOSP update_engine type).
 
-### ELK — Emergency Linux Kernel
+### ELK
 
-**What it is:** GHS boot mode for catastrophic Android failure. A minimal Linux environment that boots via a completely different path than normal Android — bypassing the misc/BCB boot chain entirely.
+**What it is:** GHS boot mode for catastrophic Android failure. It is the **Intel Kernelflinger fastboot** environment (ABL boot target `OBBPELK`), **not a Linux kernel or shell** — it exposes fastboot commands (`flash`/`erase`/`getvar`, `oem set-storage`), reports `USB storage unsupported`, and keeps **AVB active**. It boots via a completely different path than normal Android, bypassing the misc/BCB boot chain entirely.
 
 **Boot path:** HECI → Intel CSE → ABL (boot target `OBBPELK`) — can boot even if eMMC is corrupted.
 
@@ -1028,7 +1045,7 @@ misc partition layout (conceptual):
 | SELinux | Unknown | Not Android, may not apply |
 | Network | Possibly | OTA connection suggests it |
 
-**Critical question:** Is ELK a full Linux with shell access (and possibly no SELinux, direct block device access), or a minimal graphical "return to dealer" screen? If the former, it bypasses the entire Android security stack and is accessible via CAN diagnostic commands that the VIP relays without crypto verification.
+**Resolved (2026-09-10):** ELK is **not** a general-purpose Linux shell. It is the Intel Kernelflinger fastboot environment (ABL target `OBBPELK`; `flash`/`erase`/`getvar` + `oem set-storage`; strings `"USB storage is unsupported"`; libavb-linked with **AVB active**; unlock device-state-gated). So the "full Linux with shell access / no SELinux / direct block-device access" path is closed — there is no unrestricted rootfs shell here. It is still reachable via a CAN diagnostic command the VIP relays without crypto verification (see below), but what it reaches is a fastboot with AVB enforced, not an Android-stack bypass.
 
 **Observed "return to dealer" incident:** The radio was caused to fail to boot by disabling system packages via `pm disable --user` for user 0 and user 10 from ADB shell. This entered the return-to-dealer screen. Recovery was done using a datawipe update package via USB (which resets `/data/` including `pm disable` state in `/data/system/`). **ADB/USB exposure was NOT checked during the return-to-dealer state.** This is the highest-priority test — the return-to-dealer screen may be ELK or a pre-Android state with relaxed security.
 
@@ -1083,11 +1100,11 @@ swu_update_hostos(device, firmware_chunks)
 
 ### Network Architecture (Corrected)
 ```
-eth0:       192.168.1.100/24   -- SoC (Android) internal Ethernet
+eth0:       192.168.1.100/24   -- guest (Android) IP, driver igb_avb
 vlan4@eth0: 172.16.4.100/24    -- VLAN 4 (Enhanced OnStar/EOCM diagnostics)
-vlan5@eth0: 192.168.1.100/24   -- VLAN 5 (AVB/media)
+vlan5@eth0: 192.168.1.100/24   -- VLAN 5 (AVB/media / service)
 br0:        192.168.5.1/24     -- WiFi bridge (AP mode)
-192.168.1.1: NOT the SoC       -- GHS hypervisor or companion VM
+192.168.1.1: VM<->host IPC endpoint (90xx ports) -- NOT a networked GHS bridge/companion VM
 ```
 
 ### OEM Signing Certificate
@@ -1116,7 +1133,7 @@ br0:        192.168.5.1/24     -- WiFi bridge (AP mode)
 1. **SBI vs SPS paradox**: EEPROM bypassed → all-0xFF seeds → SPS refuses connection. EEPROM locked → valid seeds → SPS connects but no ADB. Cannot have both simultaneously.
 2. **GHS rollback protection**: Y181→Y177 downgrade blocked by GHS at boot verification. GHS maintains own version counter in misc partition (CRC32-only), independent of vbmeta.rollback_index=0.
 3. **GSI/DSU disabled** (not by SELinux): the DSU front-end app `com.android.dynsystem` is removed from the image, so DSU installs have no receiver. The `dontaudit gm_update_engine gsi_metadata_file` rule is NOT a blocker (dontaudit only suppresses audit logs and targets the OTA engine, not DSU). The `gsid` daemon is retained with full policy; a staged GSI is gated by locked verified boot, and the q/r/s-gsi public keys in fstab mean only a Google-signed GSI could pass AVB. See `platform/boot_chain.md` §GSI/DSU Status.
-4. **Y181 security fix**: GM replaced 4-byte stub with 906-byte full validation. EEPROM bypass no longer triggers permissive SELinux on Y181.
+4. **No VIP "security fix" between builds** (corrected): there was never a 4-byte stub — the ~906-byte validator is full in all builds (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0). The VIP validation function gates ADB/seed auth only; it does not set SELinux or AVB. The EEPROM/VIP-fn bypass never toggled SELinux mode. GHS/AVB anti-rollback (Catch-22 #2) is the real downgrade blocker.
 5. **SELinux neverallow on misc**: Shell cannot read/write vda9. neverallow at domain.te:632 blocks all access except 9 exempted domains.
 6. **plmanager is not what it seemed**: Power lifecycle manager, not boot_control HAL. Writes only boot failure counter + BCB to misc. GHS VMM manages AB0 rollback directly.
 7. **No AOSP update_engine binary exists**: GM replaced it entirely with gm_update_engine. The AOSP `update_engine` SELinux type has full misc rw but no binary runs in that domain.
@@ -1145,7 +1162,11 @@ br0:        192.168.5.1/24     -- WiFi bridge (AP mode)
 
 ### Executive Summary: 6 Remaining Realistic Options (Post-Binary Analysis)
 
-**Target:** Y177 downgrade — stubbed security (4-byte no-op) + SELinux PERMISSIVE.
+**Target:** Y177 downgrade. **NOTE (corrected):** the original motivation — a Y177 "4-byte
+security stub" + native SELinux PERMISSIVE — was **refuted** (three-way diff shows a full
+~906-byte validator in all builds; SELinux is Enforcing on Y177 too). The downgrade is pursued
+for its older patch level, not a stub. It is also **owner-verified blocked** by GHS/AVB
+anti-rollback (2026-08-17 bench re-test), so treat this section as an exhausted research trail.
 **Blocker:** GHS AB0 rollback counter in misc (vda9) — CRC32-only, but written at hypervisor level only.
 
 After exhaustive binary analysis of plmanager, gm_update_engine, abl-user-cmd_vendor, GHS HOSTOS, and SELinux policy, all software-only paths from ADB shell are blocked. The remaining realistic options are:
@@ -1163,7 +1184,7 @@ Physically dump Samsung KLMCG4JEUD 64GB eMMC (BGA-153). Find misc partition. AB0
 
 **Option 2: Trigger ELK via VIP Diagnostic Channel**
 
-VIP firmware has explicit ELK reboot support via J6_CDD. Boots via HECI → CSE → ABL (target OBBPELK), bypassing normal misc/BCB boot chain entirely. If ELK is a minimal Linux with no SELinux and direct block device access, it provides unrestricted misc write access.
+VIP firmware has explicit ELK reboot support via J6_CDD. Boots via HECI → CSE → ABL (target OBBPELK), bypassing normal misc/BCB boot chain entirely. ELK is the Intel Kernelflinger fastboot (AVB active, "USB storage unsupported"), **not** a minimal Linux with direct block-device access — so it does not provide an unrestricted misc-write primitive; any write path is gated by fastboot's AVB/device-state checks.
 
 Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. Requires knowing exact UDS service/DID for ELK reboot request.
 

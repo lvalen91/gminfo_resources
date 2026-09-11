@@ -350,3 +350,8 @@ Rx/Tx fail counters + IPs, MEC, ANC/mic levels, battery-sensor stream, etc. — 
 [`../enumeration/README.md`](../enumeration/README.md) §Vehicle module inventory, and the
 diagnostics/programming CAN bus is **CAN6 (5 Mbit/s)** per
 [`../platform/networking.md`](../platform/networking.md).
+
+> **Tester-ID note:** `0x14DA80F1`/`0x145AF180` is the **generic OBD tester (F1)** pair used by the
+> DPS bench read logs (confirmed: GM_research/diagnostics/gm_dps/DPS_All_Module_Read/.../GCI_*.txt).
+> The **dedicated tester (F2)** pair for ECU 0x80 is `0x14DA80F2`/`0x145AF280` (per `A11_CSM_x80.Txt`);
+> both reach the radio on HS-CAN.

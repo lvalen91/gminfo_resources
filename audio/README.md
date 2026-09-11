@@ -27,7 +27,7 @@
 
 | Component | Specification |
 |-----------|---------------|
-| Audio HAL | Version 5.0 (`vendor.hardware.audio@5.0`) |
+| Audio HAL | Version 5.0 (`android.hardware.audio@5.0`, HarmanHAL) |
 | Sample Rate | 48000 Hz (primary) |
 | Format | PCM 16-bit |
 | Channels | Stereo |
@@ -155,7 +155,7 @@ Audio from the 8 CarAudioService output buses (plus the Harman-HAL-internal rout
 
 | Layer | Component | Detail |
 |-------|-----------|--------|
-| HAL | Harman "Titan" HarmanAudioControl | `vendor.hardware.audio@5.0`, Dirana3 plugin |
+| HAL | HarmanAudioControl (HarmanHAL) | `android.hardware.audio@5.0`, Dirana3 plugin ("Titan" is the SoC platform codename, not the HAL) |
 | Mixing | PulseAudio | 34-channel combine sink (crossbar mixing) |
 | Transport (I2S) | TDM output | 8ch s32le 48kHz → broxtontdf8532 codec |
 | Transport (AVB) | Ethernet AVB | 6ch s16le 48kHz → csm_amp (amplifier) |

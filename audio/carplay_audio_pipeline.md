@@ -83,7 +83,7 @@ GM AAOS implements CarPlay audio through a multi-layer architecture:
          │              │              │              │
          ▼              ▼              ▼              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│              Harman Audio HAL (vendor.hardware.audio@5.0)                    │
+│              Harman Audio HAL (android.hardware.audio@5.0)                   │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  audio.primary.broxton.so                                           │    │
 │  │  libharmanpreprocessing_gm.so (AEC, NS, AGC)                        │    │

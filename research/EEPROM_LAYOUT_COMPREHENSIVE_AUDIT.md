@@ -524,7 +524,7 @@ on-demand during OTA programming) — that specific read still needs the bench.
 | **Security Config (0x0400–0x04FF)** | Byte-level (SBI only) | ~~`0x0440/0x0A80` SBI disasm-confirmed; 0x04A0/0x04C0 via xrefs (17/11 refs)~~ **RETRACTED (§0): SBI is empirical, not disasm-confirmed; 0x04A0/0x04C0 are NOT security flags (fabricated ref-counts)** | SBI empirical | Only `0x0441`+`0x0A80` real |
 | **Device ID (0x0500–0x05FF)** | Field-level | VIN, serial, part# reads verified from dump | High | — |
 | **Backup Security (0x0A00–0x0AFF)** | Byte-level (0x0A80 SBI) | ~~0x0A00 (871 refs), 0x0B00 (311 refs)~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise, not semantic xrefs** | Low | Only 0x0A80 (SBI) is real |
-| **Feature Flags (0x0B00–0x0BFF)** | Byte-level (0x0B40 debug mode), Field-guessed (0x0A40/0x0A60/0x0AC0/0x0BE0) | 0x0B40 documented; 0x0A40 (28 refs), 0x0BE0 (24 refs) via xref | Low-Medium | Undocumented flags need physical or RAM-shadow testing |
+| **Feature Flags (0x0B00–0x0BFF)** | Byte-level (0x0B40 debug mode) | 0x0B40 documented (0x0B41 debug-mode data byte); ~~0x0A40 (28 refs), 0x0BE0 (24 refs) via xref~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise. 0x0A40/0x0BE0 read all-0xFF (unwritten) in BOTH stock and ADB_enabled dumps (confirmed: /Volumes/.../csm_eeprom/gm_csm_stock.bin & EEPROM/gm_csm/Y181/ADB_enabled.bin) — no stored data** | Low-Medium | Only 0x0B40 is real; the "undocumented flags" hold no data |
 | **UI/Display Settings (0x0E00–0x0EBF)** | Field-level | Timing/threshold values (e.g., 0xE01=30 sec screen timeout) read from sample dump | Medium | Bit-field granularity guessed; interpretation inferred not verified |
 | **Display Calibration (0x0EC0–0x0F7F)** | Table-level | Brightness LUTs (11-point, 22-point), color RGB calibration (0x0F40) | Medium | Ambient-light compensation logic guessed |
 | **Audio Calibration (0x0FE0–0x12DF)** | Table-level | Volume curve (11 points), EQ/DSP (10 bands), fade/balance (22-point) | Medium | Link to actual audio codec/DSP unknown; calibration scale/units guessed |
@@ -556,8 +556,8 @@ on-demand during OTA programming) — that specific read still needs the bench.
 | **0x0B40** | Debug Mode Flag | Yes | 0x01=enabled, 0x00=disabled | Firmware refs (9 xrefs) | Enables additional diagnostic output or feature access |
 | ~~**0x04A0**~~ | ~~IPC Security Config #1~~ **RETRACTED (§0)** | — | — | **Not a security flag** — `[IPC_S]`=serial-transport log, not "IPC Security"; the "17 refs" is fabricated | — |
 | ~~**0x04C0**~~ | ~~IPC Security Config #2~~ **RETRACTED (§0)** | — | — | **Not a security flag** — "11 refs" fabricated | — |
-| **0x0A40** | Feature Enable (mid-region) | Undocumented | Unknown | Firmware xrefs (28 refs) | Medium priority; likely hidden-feature enable, not the `$27` gate |
-| **0x0BE0** | Late-Region Flag (danger zone) | Undocumented | Unknown | Firmware xrefs (24 refs) | **LOWEST priority.** Likely manufacturing lock / debug-interface disable (OTP-like). **Do not flip casually.** |
+| ~~**0x0A40**~~ | ~~Feature Enable (mid-region)~~ **RETRACTED (§0)** | — | — | ~~Firmware xrefs (28 refs)~~ **fabricated; cell reads 0xFF (unwritten) in both stock & ADB_enabled dumps — no stored data** | Not a flag |
+| ~~**0x0BE0**~~ | ~~Late-Region Flag (danger zone)~~ **RETRACTED (§0)** | — | — | ~~Firmware xrefs (24 refs)~~ **fabricated; cell reads 0xFF (unwritten) in both dumps — no stored data** | Not a flag |
 | ~~**0x1A00**~~ | ~~Tertiary Security~~ **RETRACTED (§0)** — no code evidence it is a security byte | — | — | — | — |
 
 ### 2.2 Display/UI Parameters (0x0E00–0x0EAF)

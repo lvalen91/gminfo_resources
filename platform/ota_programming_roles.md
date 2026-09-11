@@ -29,10 +29,12 @@ GIS-646 CalDef database ([`../reference/`](../reference/)); the DPS logs
    traffic documented is radio-domain modules via the VIP.
 
 > **Correction to an earlier hypothesis:** cross-module reflash is *not* shown to be "handed off
-> to the Bosch CGM," and CAN gateway `0x45` is *not* established to be the CGM. Every file that
-> names the programmer names the **radio's VIP MCU**; telematics/CGM appears only as transport +
-> an independent command path. Keep "CGM executes reflash" as an unverified hypothesis pending a
-> live multi-module OTA capture.
+> to the Bosch CGM." CAN gateway `0x45` **is** the CGM (Central Gateway Module) — the GIS763 CalDef
+> records `GIS763_Gateway = 69 (0x45)` = "Diagnostic Address of the CGM" (below) and the DPS scan
+> confirms `0x45` as the diagnostic gateway. What is *not* established is that this CGM (as opposed
+> to the radio's VIP MCU) *executes* foreign-ECU reflash: every file that names the programmer names
+> the **radio's VIP MCU**; telematics/CGM appears only as transport + an independent command path.
+> Keep "CGM executes reflash" as an unverified hypothesis pending a live multi-module OTA capture.
 
 ## What GM actually pushes — the Y181 package
 

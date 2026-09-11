@@ -50,10 +50,13 @@ minipro -p "M24C64" -r verify.bin
 > CarPlay-fullscreen lever). Flipping the *ADB* SBI is NOT proven to open the *calibration*
 > gate, but they share the anchor — so whether a different EEPROM flag governs the cal/diag
 > security level is an open, testable question. See
-> `../research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` (§4) plus the undocumented-flag
-> candidate `0x04C0` (real CalGroup 0x44 handler `FUN_ram_00091f82`); `0x04A0`, `0x0A40`, `0x0BE0`
-> were closed as dead ends (zero real code refs) per `CORRECTIONS_AUG2026.md`. Original survey in
-> `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`.
+> `../research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` (§4). The undocumented-flag
+> candidates `0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0` all read `0xFF` (unwritten, no stored data) in
+> both the stock and ADB_enabled dumps (confirmed: `csm_eeprom/gm_csm_stock.bin` &
+> `.../gm_csm/Y181/ADB_enabled.bin`), so none is a usable flag lever. `0x04A0`/`0x0A40`/`0x0BE0`
+> also have zero real VIP code references; `0x04C0` alone is touched by a real CalGroup 0x44 code
+> handler (`FUN_ram_00091f82`) that references the cell region even though the cell itself is
+> empty. See `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`.
 > NB: EEPROM `0x0E00` "display" bytes are touch-region/backlight/timing (guessed) — the actual
 > resolution lever is `CalSets.db SCREEN_RESOLUTION`, not those bytes (§5).
 

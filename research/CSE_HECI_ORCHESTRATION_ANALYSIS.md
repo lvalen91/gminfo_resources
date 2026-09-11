@@ -312,9 +312,12 @@ frames. A guest RPC to `/dev/ghs/ota-isys` reaches CSE only *through* the four v
   verb is reachable and under-validated, it is a downgrade primitive that sidesteps the *GHS*
   counter — but the *CSE* SVN fuse still independently blocks a firmware rollback, so this would
   weaken AVB/GHS rollback protection, not CSE's.
-- **No-IOMMU DMA bypass (out of band).** `intel_iommu=off` is confirmed. A DMA-capable device could
-  in principle write GHS/TXE-managed RAM directly, bypassing the RPC path entirely — but that is a
-  hardware/DMA attack, not "a guest IPC message."
+- **DMA bypass (out of band), IOMMU-state-dependent.** The kernel is built with `INTEL_IOMMU=y`
+  (IOMMU compiled IN); its *runtime* state was never captured (the `cmdline` read was
+  permission-denied), so whether DMA remapping is actually enforced is an open, unverified research
+  question — do **not** assume `intel_iommu=off`. *If* the IOMMU is disabled at runtime, a DMA-capable
+  device could in principle write GHS/TXE-managed RAM directly, bypassing the RPC path entirely — but
+  that is a hardware/DMA attack, not "a guest IPC message."
 
 **Conclusion:** A guest IPC message **cannot be crafted to command CSE directly** — it is always
 mediated and validated by `OtaUpdateToHeciIod`, and CSE independently enforces signature + rollback.

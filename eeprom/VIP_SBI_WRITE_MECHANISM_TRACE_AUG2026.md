@@ -148,7 +148,11 @@ one remaining step to name the precise UDS/session event, if pursued further.
 
 ## Methodology / tooling
 
-Ghidra 12.1.3 required (12.1.2 fails to load `vip_app_proj`'s V850 language version). Decompiler
+Note: the VIP MCU is a **Renesas RH850**/P1M-E; the authoritative SLEIGH module is **RH850:LE:32**,
+and the `vip_app_proj`/`86331656_ghidra` V850 language used here is an approximation of it (V850 and
+RH850 share the movhi/movea + branch encodings this pass's raw-byte scans rely on, so the
+branch-target/immediate findings hold regardless). Ghidra 12.1.3 required (12.1.2 fails to load
+`vip_app_proj`'s V850 language version). Decompiler
 fails on these specific functions in this project (same issue noted in
 `VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`) — all analysis here is from raw V850 disassembly, not
 decompiled C. Scripts (not preserved in this repo, scratch): `ScanAddr.java` (V850-aware

@@ -135,6 +135,13 @@ structurally isolated from other CalGroups at the accessor level, but I could no
 from "the buffer FUN_ram_00091938 fills" to "the function(s) that consume it," so I cannot
 directly confirm or rule out a second consumer of that same buffer.
 
+> **UPDATE (2026-08-25, `VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md`):** the "unresolved indirect
+> call" here was a Ghidra auto-analysis gap, not a real indirect call. `FUN_ram_00091938` is
+> reached by a **plain direct `jarl`** from a 106-entry switch dispatcher (`ram:000b9c5e`, SBI
+> dispatch ordinal `0x45`), in a region Ghidra left as undefined bytes. The resolved path is
+> read-only (no per-cell SBI writer exists); the SBI value only changes via a bulk
+> restore-to-ROM-defaults routine (`FUN_ram_000c6564`). See that trace for the full call chain.
+
 ---
 
 ## 3. `0x04C0` is real and independently confirmed — but its consumer is equally unresolved
@@ -436,6 +443,9 @@ rule that out**, and the reasons are specific and worth stating plainly rather t
 **Practical recommendation for the operator:** the highest-value next step is resolving the
 indirect call that reaches `FUN_ram_00091938` (SBI, `ram:00091938`) and `FUN_ram_00091f82`
 (`0x04C0`, `ram:00091f82`) — almost certainly a jump table keyed by the same small CalGroup-ID
+(**partly done 2026-08-25:** `VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md` resolved the SBI side —
+`FUN_ram_00091938` is reached by a direct `jarl` from a 106-entry switch dispatcher, SBI ordinal
+`0x45`, and the resolved path is read-only; `0x04C0`'s consumer is still open)
 values (`0x3b`, `0x44`, `0x9b`, ...) already seen passed to `FUN_ram_000c8f10` at the top of all
 170 handler functions. Finding that dispatch table (likely a straightforward data-table scan
 once the jump-table base is located near the accessor's own tables at `0x4fbae`/`0xf0ae2`) would

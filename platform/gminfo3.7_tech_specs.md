@@ -175,7 +175,7 @@ video_hardware_decoders:
 network:
   ethernet:
     interface: eth0
-    driver: Intel_I210   # marking-verified (WGI210CL); "I211" was an unverified near-twin reading — see hardware/teardown.md
+    driver: Intel_I210   # only 'I210' appears in artifacts; WGI210CL variant marking is prose-only; "I211" was an unverified near-twin reading — see hardware/teardown.md
     mac: 02:04:00:00:01:00
     speed: 1000mbps
     vlans: [vlan4_172.16.4.100, vlan5_192.168.1.100]

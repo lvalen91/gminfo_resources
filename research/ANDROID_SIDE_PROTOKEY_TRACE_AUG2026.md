@@ -241,8 +241,11 @@ appears to be exploiting.
 2. **Check the native side of `GMAuthManagerService.apk`** for any bundled
    `.so` that reads `vendor.gm.security.state` — the Java layer doesn't,
    but a native library might (not checked this pass).
-3. **Fix `MASTER_REFERENCE.md`'s Y175/Y177/Y181 table** per the owner's
-   correction (§5 above) — still not applied.
+3. ~~**Fix `MASTER_REFERENCE.md`'s Y175/Y177/Y181 table** per the owner's
+   correction (§5 above)~~ — **DROPPED. Superseded by the 2026-08-25 three-way
+   VIP_APP diff (§5 banner): the "Y175 stub → permissive" premise is refuted
+   (full ~906-byte validator in all builds; SELinux mode is OS-side), so there
+   is no Y177→Y175 relabel to propagate.**
 4. Now that `diagnosticsd` is recovered too, the DoS finding
    (`DIAGNOSTICSD_UDS_WORKER_STARVATION_DOS_AUG2026.md`) can be
    re-verified against the real binary instead of black-box-only evidence,

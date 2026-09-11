@@ -441,7 +441,7 @@ def create_base_vbmeta():
     # Magic "AVB0" @ 0x00
     buf[OFF_MAGIC:OFF_MAGIC+4] = b'AVB0'
     
-    # Version 1.2 (Artifact Correction: device reports 1.2)
+    # Version 1.2 (Artifact Correction: device reports 1.2) [corrected: this is the avbtool/ro.boot.avb_version tool version; AVB spec version is 1.1]
     write_be_u32(buf, OFF_VER_MAJOR, 1)
     write_be_u32(buf, OFF_VER_MINOR, 2)
     

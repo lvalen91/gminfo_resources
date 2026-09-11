@@ -33,9 +33,16 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
   | `eth0` | 192.168.1.100/24 (untagged) | physical T1 MAC; also L2 gPTP/AVB |
   | `vlan5@eth0` | 192.168.1.100/24 | GM "service network" (inter-ECU, SOME/IP, diag peers) |
   | `vlan4@eth0` | 172.16.4.100/24 | internal vehicle/telematics/AVB network |
-- `[C]` On-board **Marvell 88Q5050** automotive-Ethernet switch (`vendor/etc/ethmvlctrl_globalB.cfg`),
-  driven by `ethmvlctrlmgr`. It **enforces per-port VLAN membership** — an external T1 tap only reaches
-  the VLAN(s) assigned to the physical port it lands on.
+- `[C]` The on-board automotive-Ethernet switch is a **Broadcom BCM89551** (hardware authority:
+  `hardware/connectors.md`, `MASTER_REFERENCE.md §1.3`; the 2MB IS25LP016D SPI flash holds its
+  dump-confirmed firmware). The guest ships a **Marvell `ethmvlctrl` VLAN-control stack**
+  (`vendor/etc/ethmvlctrl_globalB.cfg`, driven by `ethmvlctrlmgr`; a `88Q5050` config string appears in
+  the vendor image) — consistent with the switch IC being **board-variant**: the teardown unit is a
+  Broadcom BCM89551 board, while MY23+ boards carry a Marvell 88Q5050 (selected by
+  `persist.vendor.harman.hardwareid`; see `video/hardware_rendering.md`). Same spec — a minor-IC
+  substitution across motherboard revisions, not a contradiction. Either way the stack
+  **enforces per-port VLAN membership** — an external T1 tap only reaches the VLAN(s) assigned to the
+  physical port it lands on.
 - `[C]` T1 peers seen (`network_scan.txt`, `raw/arp_table.txt`): a **gateway/router ECU at
   192.168.1.102 (= 172.16.4.1)** running `dnsmasq` + SOME/IP-SD (UDP 30490); other ECUs at .106/.112;
   a dual-homed telematics/TCU (only real-OUI MAC, `10:66:50:0c:ed:d3`). The IVI is one switched node.
@@ -49,7 +56,7 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
 | TCP 49156 | `0.0.0.0` | **`diagnosticsd`** GM-custom UDS-over-TCP (see §3, attribution caveat) | **Yes** from an on-vlan5 port | app-layer source-address tier + **UDS SecurityAccess `$27`** |
 | TCP 6363 | `0.0.0.0` | NFD (Named-Data-Networking fwd), Android guest | **Yes** | none observed |
 | UDP 5353 | multicast | `mdnsd` | on-link only | none |
-| TCP 9002/9005/9010/9012/9016/9018 | `::ffff:192.168.1.1` | GHS↔Android paravirtual IPC | **No** — hypervisor virtual IP; even the local guest shell gets *"No route to host"* | internal transport |
+| TCP 9002/9005/9010/9012/9016/9018 | `::ffff:192.168.1.1` | GHS↔Android paravirtual IPC (all six present) | **No** from the external T1 wire (paravirtual VM↔host IPC, not exposed off-box). NB: it is **reachable by the guest as a client** — the guest holds ESTABLISHED sessions to `.1:9005/9010/9012/9018` (see §6; earlier "No route to host even locally" was an overstatement) | internal transport |
 | UDP 30490 (SOME/IP-SD) | — | on gateway **.102**, not IVI | IVI is a client | out of scope |
 | TCP 13400 (standard DoIP) | — | **not present on IVI** | — | — |
 
@@ -76,8 +83,8 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
   guest** (least-privileged layer). Inter-partition IPC is non-IP / off-wire (`/dev/ghs/*`, Trusty
   virtio, INTEGRITY connections).
 - `[C]` A real VLAN5 scan found only the Android IVI (.100) + separate physical ECUs — **no
-  hypervisor-owned port on the wire.** The GHS IPC ports (9002/9016) bind the internal virtual IP and are
-  unreachable even locally.
+  hypervisor-owned port on the wire.** The GHS IPC ports (9002/9005/9010/9012/9016/9018) bind the internal
+  virtual IP `.1` — not exposed on the T1 wire (though the guest reaches them as a *client*; see §6).
 - `[I]`facts / `[I]`exploit — **⚠CORRECTED — the hypothesized wire→host vector, now weaker:** the earlier
   `[C]` claim that **IOMMU/VT-d is OFF (`intel_iommu=off`) is UNVERIFIED** — `/proc/cmdline` was never
   captured (permission-denied), and the only IOMMU artifact, `kernel_config.txt`, shows
@@ -148,8 +155,11 @@ relevant facts, and the new integration:
   `0x0441` (Primary SBI) and `0x0A81` (Backup SBI) — to **`0xFF`** makes the VIP return an **all-`0xFF`
   seed** instead of the real ECUID+Challenge, so the **PROTOKEY / ICUSB module skips BCM authentication**
   → the traditional (limited, non-GM-cert) ADB the owner uses. Marker/frame bytes are CalGroup-assigned at
-  runtime and are **not** checked by the validation at `0xb67d0` — only the data byte matters (bypass is
-  marker-agnostic). OTA/SPS resets these to locked; must be re-applied.
+  runtime and are **not** checked — only the data byte matters (bypass is marker-agnostic). OTA/SPS resets
+  these to locked; must be re-applied. **⚠CORRECTED 2026-08-26:** the ADB gate is **SoC-side** MEC /
+  `is_secure_mode` (`gm_adb_auth_init`), not the VIP `0xb67d0` function — `0xb67d0` is the VIP `$27`/seed
+  validator (full ~906-byte fn in all builds), not the thing that decides ADB. The chain is EEPROM SBI →
+  VIP transmits MEC=0xFF (DID `0xF1A0`) → SoC `is_secure_mode=1` → adb allowed (see EEPROM_LAYOUT §0.9/§0.10/§0.14).
 - **The key integration this session establishes:** the **same VIP/PROTOKEY subsystem, reading the same
   M24C64**, anchors **both** (i) the ADB PROTOKEY auth the SBI flip defeats **and** (ii) the calibration
   `$27` SecurityAccess that gates a `SCREEN_RESOLUTION` write (§3b). Per
@@ -162,7 +172,7 @@ relevant facts, and the new integration:
   calibration security level the way `0x0440` governs ADB. The undocumented-flag candidates already
   flagged in the security region are the first place to look:
   - ~~`0x04A0` (17 refs) / `0x04C0` (11 refs) — near `[IPC_S]` (VIP↔SoC secure IPC) strings.~~ **RETRACTED 2026-08-26:** the ref-counts are fabricated and `[IPC_S]` = serial-transport (HDLC) log tag, NOT "secure IPC"; these are not security flags (see EEPROM_LAYOUT §0).
-  - `0x0A40` (28 refs), `0x0BE0` (24 refs) — feature-flag region.
+  - ~~`0x0A40` (28 refs), `0x0BE0` (24 refs) — feature-flag region.~~ **RETRACTED 2026-08-26:** ref-counts fabricated; both cells read all-0xFF (unwritten) in stock **and** ADB_enabled dumps (confirmed: `csm_eeprom/gm_csm_stock.bin` & `EEPROM/gm_csm/Y181/ADB_enabled.bin`) — no stored data, not security flags (see EEPROM_LAYOUT §0).
   - (`0x0A00`/`0x0B00` are structure **base** addresses — do **not** poke.)
 - `[O]` **In-band EEPROM access is plausible but unconfirmed:** `/dev/i2c-0` and `/dev/i2c-1` are
   **world-readable/writable** (`crw-rw-rw-`, `raw/i2c_devices.txt`). If either bus reaches the M24C64, an

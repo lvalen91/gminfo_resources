@@ -24,7 +24,7 @@ B misc struct
 `libavb`,
    32- bit x86, statically linked, no stack canaries, no ASLR.
 2. CORRECTION: the running unit reports avb_ version 1.2  (VERIFIED live:
-   `ro. boot. vbmeta. avb_ version`), not 1.1. Diff against the upstream `l
+   `ro. boot. vbmeta. avb_ version`), not 1.1. [corrected: the '1.2' is avbtool/ro.boot.avb_version tool version, not the AVB spec version — AVB spec is 1.1 per avb_version.h] Diff against the upstream `l
 `libavb`
     1.2 tag. Device is `device_ state= locked` , `verifiedbootstate= green`
 green`  — the
@@ -78,7 +78,7 @@ boot image",
 %lu` .
 - `research/ GM_ INFO37_ BOOT_ CHAIN_ ANALYSIS. md`  + `BOOT_ CHAIN_ ANALYS
 ANALYSIS. txt` : magic
-   `AVB0` , version 1.1, RSA- 4096/ SHA- 256, boot- image header field offs
+   `AVB0` , version 1.1, RSA- 4096/ SHA- 256, boot- image header field offs [corrected: RSA-2048, not RSA-4096]
 offsets, A/ B misc
    layout.
 - `research/ GHS_ DOWNGRADE_ PROTECTION_ ANALYSIS. txt:243,386,701` : 32- b
@@ -684,7 +684,7 @@ A/ B misc
 stock AOSP
    `libavb` , 32- bit x86, statically linked, no stack canaries, no ASLR.
 2. CORRECTION: the running unit reports avb_ version 1.2  (VERIFIED live:
-   `ro. boot. vbmeta. avb_ version`), not 1.1. Diff against the upstream `l
+   `ro. boot. vbmeta. avb_ version`), not 1.1. [corrected: the '1.2' is avbtool/ro.boot.avb_version tool version, not the AVB spec version — AVB spec is 1.1 per avb_version.h] Diff against the upstream `l
 `libavb`
     1.2 tag. Device is `device_ state= locked` , `verifiedbootstate= green`
 green`  — the
@@ -740,7 +740,7 @@ boot image",
 %lu` .
 - `research/ GM_ INFO37_ BOOT_ CHAIN_ ANALYSIS. md`  + `BOOT_ CHAIN_ ANALYS
 ANALYSIS. txt` :
-   magic `AVB0` , version 1.1, RSA- 4096/ SHA- 256, boot- image header fiel
+   magic `AVB0` , version 1.1, RSA- 4096/ SHA- 256 [corrected: RSA-2048, not RSA-4096], boot- image header fiel
 field offsets,
    A/ B misc layout.
 - `research/ GHS_ DOWNGRADE_ PROTECTION_ ANALYSIS. txt:243,386,701` : 32- b
@@ -1349,7 +1349,7 @@ A/ B misc
 stock AOSP
    `libavb` , 32- bit x86, statically linked, no stack canaries, no ASLR.
 2. CORRECTION: the running unit reports avb_ version 1.2  (VERIFIED live:
-   `ro. boot. vbmeta. avb_ version`), not 1.1. Diff against the upstream `l
+   `ro. boot. vbmeta. avb_ version`), not 1.1. [corrected: the '1.2' is avbtool/ro.boot.avb_version tool version, not the AVB spec version — AVB spec is 1.1 per avb_version.h] Diff against the upstream `l
 `libavb`
     1.2 tag. Device is `device_ state= locked` , `verifiedbootstate= green`
 green`  — the
@@ -1405,7 +1405,7 @@ boot image",
 %lu` .
 - `research/ GM_ INFO37_ BOOT_ CHAIN_ ANALYSIS. md`  + `BOOT_ CHAIN_ ANALYS
 ANALYSIS. txt` :
-   magic `AVB0` , version 1.1, RSA- 4096/ SHA- 256, boot- image header fiel
+   magic `AVB0` , version 1.1, RSA- 4096/ SHA- 256 [corrected: RSA-2048, not RSA-4096], boot- image header fiel
 field offsets,
    A/ B misc layout.
 - `research/ GHS_ DOWNGRADE_ PROTECTION_ ANALYSIS. txt:243,386,701` : 32- b
@@ -2014,7 +2014,7 @@ A/ B misc
 stock AOSP
    `libavb` , 32- bit x86, statically linked, no stack canaries, no ASLR.
 2. CORRECTION: the running unit reports avb_ version 1.2  (VERIFIED live:
-   `ro. boot. vbmeta. avb_ version`), not 1.1. Diff against the upstream `l
+   `ro. boot. vbmeta. avb_ version`), not 1.1. [corrected: the '1.2' is avbtool/ro.boot.avb_version tool version, not the AVB spec version — AVB spec is 1.1 per avb_version.h] Diff against the upstream `l
 `libavb`
     1.2 tag. Device is `device_ state= locked` , `verifiedbootstate= green`
 green`  — the
@@ -2070,7 +2070,7 @@ boot image",
 %lu` .
 - `research/ GM_ INFO37_ BOOT_ CHAIN_ ANALYSIS. md`  + `BOOT_ CHAIN_ ANALYS
 ANALYSIS. txt` :
-   magic `AVB0` , version 1.1, RSA- 4096/ SHA- 256, boot- image header fiel
+   magic `AVB0` , version 1.1, RSA- 4096/ SHA- 256 [corrected: RSA-2048, not RSA-4096], boot- image header fiel
 field offsets,
    A/ B misc layout.
 - `research/ GHS_ DOWNGRADE_ PROTECTION_ ANALYSIS. txt:243,386,701` : 32- b

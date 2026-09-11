@@ -18,7 +18,7 @@ claims. A skeptical provenance audit graded them. OBEY THESE RULES:
    32-bit x86, statically linked, no stack canaries, no ASLR.
 2. CORRECTION: the running unit reports avb_version **1.2** (VERIFIED live:
    `ro.boot.vbmeta.avb_version`), not 1.1. Diff against the upstream `libavb`
-   **1.2** tag. Device is `device_state=locked`, `verifiedbootstate=green` — the
+   **1.2** tag. [corrected: this is ro.boot.avb_version / avbtool tool version; the AVB spec version on this platform is 1.1 (AVB_VERSION_MAJOR 1 / MINOR 1)] Device is `device_state=locked`, `verifiedbootstate=green` — the
    signature gate IS active, so overflows past it (O3–O5) need the re-signed variant.
 3. DO NOT invent disassembly, addresses, or function offsets. The addresses
    `0xb67d0 / 0xb6652 / 0xaee28` and any `.vmm1` register-level asm are UNSUPPORTED /

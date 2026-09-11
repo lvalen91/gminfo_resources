@@ -21,7 +21,7 @@ There is **no SELinux type named `vendor_cald`.** The overrides dir is gated by 
   `mounts.txt: /mnt/vendor/calibration ... rw,seclabel`).
 
 Environment: **SELinux Enforcing** (`selinux_status.txt`); bootloader **locked**
-(`ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`), verified boot **green**, AVB 1.2,
+(`ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`), verified boot **green**, `ro.boot.avb_version=1.2` (AVB spec 1.1 per `avb_version.h` MAJOR 1/MINOR 1 — the `1.2` is the avbtool/property version, not the spec),
 `ro.secure=1`, `ro.adb.secure=1`.
 
 Source of truth: `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (compiled CIL,

@@ -273,7 +273,7 @@ gm_protokey bypass
 Built and compiled avb_bundle1_fuzzer.c against the real upstream libavb source
 pinned to commit c0af371864984cddfb983c3b4cba42703b5ba58a (the exact commit
 where AVB_VERSION_MAJOR/MINOR=1/2, matching the device's live
-ro.boot.vbmeta.avb_version=1.2). Ran all 11 generated seeds (O1 header
+ro.boot.vbmeta.avb_version=1.2). [corrected: device AVB spec is actually 1.1 (AVB_VERSION_MAJOR/MINOR=1/1); the live "1.2" is the avbtool/ro.boot.avb_version tool version, not the libavb spec version — so this pinned commit does not actually match the device's spec version] Ran all 11 generated seeds (O1 header
 offset/size overflow, O2 total-length overflow, O3 descriptor payload
 overflow, O5-replica boot-header bound check, O6 rollback high-dword, T1
 TOCTOU placeholder) with ASan against real libavb 1.2. Result: NO crash on any

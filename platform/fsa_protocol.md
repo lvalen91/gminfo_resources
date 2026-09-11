@@ -18,7 +18,8 @@ FSA is GM's proprietary service-oriented middleware running over TCP between
 hypervisor partitions on the vehicle backbone (VLAN 5, 192.168.1.0/24). Each
 message is a **20-byte big-endian binary header** followed by a **Protocol
 Buffers** payload. Service discovery uses SOME/IP-SD multicast
-(`239.192.0.1:3000`).
+(`239.192.0.1`, UDP **30490** — confirmed by the live Y181 network scan; the
+earlier `:3000` reading is superseded).
 
 ---
 
@@ -148,7 +149,7 @@ heartbeat status frames.
 | 9021 | FTPCONTROL | — | CSM (.100), dynamic; allowed from IPC; closed on bench |
 | 9022 | FTPDATA | — | CSM (.100), dynamic; allowed from IPC; closed on bench |
 | 9025 | MAPIMAGE | — | CSM (.100), dynamic; allowed from RSI1; closed on bench |
-| 3000 | SOME/IP-SD multicast | — | `239.192.0.1` group |
+| 30490 | SOME/IP-SD multicast | — | `239.192.0.1` group (UDP; live-scan-confirmed) |
 
 ### DeviceInformation instanceId → partition
 

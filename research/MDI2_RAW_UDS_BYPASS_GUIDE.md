@@ -2,7 +2,25 @@
 
 **Date:** 2026-08-17
 **Context:** The owner has a legitimate Bosch GM MDI2 + GM DPS tools, but needs to send raw UDS services (e.g. `$27` SecurityAccess, `$34/$36/$37` calibration transfer) for bench testing, outside the constrained SPS/DPS workflow.
-**Summary:** DPS wraps J2534 with SPS policy; the MDI2 itself is a full J2534 PassThru device and **can send arbitrary UDS commands** when accessed directly, via open-source libraries.
+**Summary:** DPS wraps its transport with SPS policy; the MDI2 itself is a raw UDS/CAN/DoIP
+transport with no hardware-level lock, and **can carry arbitrary UDS commands** when driven
+directly, via open-source libraries.
+
+> **CORRECTION (superseded by the 2026-08-24+ D-PDU capture work in
+> `MDI2_DPDU_API_PROTOCOL_AUG2026.md` and the AUG24-25 disassembly review):** the specific
+> mechanism claimed below in Route A — sending raw UDS through the J2534 `PassThruWriteMsgs()` /
+> `PassThruReadMsgs()` read/write API — is **not** how UDS actually reaches the wire on this
+> stack. In the full DPS/Manager disassembly and live captures, only
+> `PassThruOpen`/`ReadVersion`/`Connect`/`Ioctl`/`Disconnect`/`Close` are ever observed on the
+> J2534 layer (`bvtx4j32.dll`); the `PassThru*Msgs` read/write pair is never used to move
+> diagnostic payload. Real UDS is tunnelled underneath, over the MDI2's **proprietary
+> ISO-22900-2 D-PDU API channel on TCP/10123** (`PDUStartComPrimitive`, fully documented in
+> `MDI2_DPDU_API_PROTOCOL_AUG2026.md`), or — when a DPS session is configured with the
+> `DoIP (Optimal)` subtype — over **raw ISO-13400 DoIP via `GM_DOIP_32.dll`**. Route B (DoIP +
+> open-source `udsoncan`) below therefore remains a viable raw-UDS path; **Route A's
+> "PassThruWriteMsgs/PassThruReadMsgs" framing does not, and its "confirmed J2534 exports" claim
+> is withdrawn.** The hardware-has-no-lock thesis stands; the transport used is D-PDU/DoIP, not
+> J2534 PassThru message read/write.
 
 ---
 
@@ -38,7 +56,13 @@
 
 ### Route A: Windows J2534 Client (Direct USB/WiFi/BT)
 
-**Capability:** `PassThruWriteMsgs()` + `PassThruReadMsgs()` (confirmed J2534 exports in `GM_DOIP_32.dll`).
+**Capability (WITHDRAWN — see the correction in the Summary above):** this route was written on
+the assumption that raw UDS could be sent via `PassThruWriteMsgs()` + `PassThruReadMsgs()`. Those
+message read/write calls are **not** observed on this stack's J2534 layer (`bvtx4j32.dll` uses
+only `Open`/`ReadVersion`/`Connect`/`Ioctl`/`Disconnect`/`Close`); real UDS moves over the
+proprietary D-PDU API on TCP/10123 (or raw DoIP), not through `PassThru*Msgs`. Prefer Route B, or
+the D-PDU flow in `MDI2_DPDU_API_PROTOCOL_AUG2026.md`. The steps below are retained only as the
+original (now-refuted) framing.
 
 **Approach:**
 1. Write a Win32 C/C++ program using the J2534 API (or use an existing open-source J2534 client).
@@ -200,8 +224,8 @@ print("[+] Calibration write sequence complete")
 | Claim | Prior | Corrected | Evidence |
 |---|---|---|---|
 | "MDI2 is locked to DPS/SPS" | ✗ | MDI2 is a full J2534 device; **DPS constrains itself to SPS policy, not the hardware** | `GM_DOIP_32.dll` disasm, `MDI2_LINUX_MACOS_ANALYSIS.md` |
-| "Can only send signed SPS bundles via MDI2" | ✗ | Via J2534 or DoIP, you can send raw UDS frames outside DPS | J2534 PassThru API, `udsoncan` proof-of-concept |
-| "Raw `$27` requires a different adapter" | ✗ | Your MDI2 has J2534 and DoIP — both support raw UDS | Confirmed exports: `PassThruWriteMsgs`, etc. |
+| "Can only send signed SPS bundles via MDI2" | ✗ | Via the D-PDU API (TCP/10123) or DoIP you can move raw UDS frames outside DPS's SPS policy | `MDI2_DPDU_API_PROTOCOL_AUG2026.md`, `udsoncan` proof-of-concept |
+| "Raw `$27` requires a different adapter" | ✗ | Your MDI2 carries raw UDS over its D-PDU/DoIP transport — no extra adapter | D-PDU capture; **NOT** via `PassThru*Msgs` (only `Open`/`ReadVersion`/`Connect`/`Ioctl`/`Disconnect`/`Close` observed on `bvtx4j32.dll`) |
 | "Linux/macOS users cannot use MDI2" | ✗ | DoIP (Ethernet) interface works on any OS; Python `udsoncan` client is cross-platform | `MDI2_LINUX_MACOS_ANALYSIS.md` |
 
 ---
@@ -295,7 +319,9 @@ not a new transport or session requirement.
 ## Summary
 
 **Your MDI2 is NOT locked to DPS.** You can send raw `$27` SecurityAccess commands via:
-1. **Direct J2534** (Windows, requires custom client or reverse-engineering DPS)
+1. **The MDI2 D-PDU API on TCP/10123** (the transport DPS itself uses for UDS; see
+   `MDI2_DPDU_API_PROTOCOL_AUG2026.md`) — **not** the J2534 `PassThru*Msgs` read/write API, which
+   this stack never uses for diagnostic payload.
 2. **DoIP + Python `udsoncan`** (any OS, open-source, recommended)
 
 The bench test for your `SCREEN_RESOLUTION` goal is now **entirely within your existing hardware and open-source tools**. No new adapters needed.

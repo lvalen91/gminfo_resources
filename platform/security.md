@@ -30,7 +30,7 @@
 | Security Patch | 2024-05-05 | 2025-03-05 | 2025-06-05 |
 | Kernel | 4.19.283 | 4.19.305 | 4.19.305 |
 
-**WARNING:** Y177 (March 2025) has SELinux **permissive** — this is a significant security regression. All SELinux policy violations are logged but not enforced, allowing any process to bypass mandatory access controls. See [Y177 Attack Vectors](#y177-attack-vectors-selinux-permissive) below.
+**CORRECTED 2026-08-26:** the earlier "Y177 runs SELinux permissive / is a security regression" claim is **FALSE and retracted**. Y175/Y177/Y181 ship a byte-identical `init` that forces enforcing (`ALLOW_PERMISSIVE_SELINUX=0`); all three run SELinux **enforcing**. The former "Y177 Attack Vectors (SELinux Permissive)" section below is reframed accordingly — the local hardware attack surface it lists is present on all builds and is not gated by a (nonexistent) permissive mode.
 
 ---
 
@@ -61,41 +61,50 @@ VIP security function ADDRESS: `0x000b67d0` (NOT a firmware version). VIP firmwa
 
 The 906-byte security function at `0x000b67d0` performs multi-stage validation:
 
-- **Validation calls:** `0x000ecd84`, `0x000b6652`, `0x000aee28`
-- **Debug flag:** Loaded from RAM address `0x3e06` — controls security bypass behavior
+- **Called subroutines:** `0x000b6652`, `0x000aee28`. (`0x000ecd84` is **not** part of a "validation chain" — it is a generic RTOS mutex primitive with 285 call sites; corrected per research/AUG24_25.)
+- **RAM `0x3e06`:** a generic "security module initialized" readiness flag — **not** a processed EEPROM SBI value and unrelated to the SBI's actual value (corrected; it does not "control security bypass behavior")
 - **Callers:** `0x000b6b06` (primary entry), `0x000b6e82` (secondary/fallback entry)
-- **SELinux mode control:** The result of this function determines whether the SoC receives a security-validated or bypass response, which in turn controls whether `gm_protokey` sets SELinux to enforcing or permissive (see [ProtoKey Authentication](#protokey-authentication))
+- **ADB/seed-auth gate (NOT SELinux):** this validator gates ADB/seed authentication only. The actual ADB unlock is SoC-side (`gm_adb_auth_init` / `is_secure_mode`) driven by the EEPROM SBI → VIP MEC=0xFF response on DID `0xF1A0` — it does **not** set SELinux mode (SELinux is OS-side ramdisk/init, enforcing on all builds). See [ProtoKey / ADB Authentication](#protokey--adb-authentication) (CORRECTED 2026-08-26)
 
-Between Y177 and Y181, 549,518 bytes differ in VIP firmware — 28.4% of the total firmware image. The re-enablement of the VIP security function in Y181 represents a significant hardening compared to Y177.
+Between Y177 and Y181, 549,518 bytes differ in VIP firmware — 28.4% of the total firmware image. **This is NOT a security re-enablement/hardening:** a three-way byte diff (2026-08-25) shows the full ~906-byte validator present in ALL builds (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0); the "Y177 stub" was a fixed-address misread. The 28.4% delta reflects unrelated VIP changes, not a fixed security function.
 
 ---
 
-## ProtoKey Authentication
+## ProtoKey / ADB Authentication
 
-The VIP MCU mediates a seed-key exchange that determines Android's SELinux enforcement mode:
+> **CORRECTED 2026-08-26.** This exchange gates **ADB / seed authentication**, not SELinux
+> enforcement. SELinux is enforcing on all builds regardless (OS-side init). The former
+> "→ SELinux ENFORCING/PERMISSIVE" outcomes are wrong and have been replaced with the
+> real ADB-unlock outcome, confirmed from device logs (`GM_ADB: gm_adb_auth_init`) and the
+> VIP DID `0xF1A0` trace.
 
-### Normal Operation (EEPROM 0x0440 = 0x00, secured)
+The EEPROM SBI flag drives a VIP→SoC security-state response that determines whether ADB is
+permitted without a cloud/PAL certificate:
 
-1. VIP requests seed from BCM (Body Control Module) via GMLAN
-2. BCM responds with 32-byte seed (ECUID + random nonce)
-3. VIP forwards seed to SoC over HDLC IPC
-4. SoC passes seed to `gm_protokey` service
-5. `gm_protokey` computes key response, VIP validates
-6. Validation passes → SELinux **ENFORCING**
+### Secured Operation (EEPROM 0x0440 data byte = 0x00 / stock marker `C3 00 C3`)
 
-### Bypassed Operation (EEPROM 0x0440 = 0xFF, bypass)
+1. `gm_protokey` runs at boot (`init.protokey.rc`, `post-fs-data`) and validates the stored
+   security state (`/data/vendor/gm/security/.validation`), setting `vendor.gm.security.state`
+2. VIP reports the secured SBI value; SoC-side `gm_adb_auth_init` leaves `is_secure_mode=0`
+3. ADB requires the normal GM Secure-ADB cloud/PAL certificate path
 
-1. VIP reads SBI flag, sees 0xFF
-2. VIP returns 0xFF (bypass indicator) to SoC
-3. SoC passes to `gm_protokey`
-4. `gm_protokey` detects bypass → SELinux **PERMISSIVE**
+### Bypassed Operation (EEPROM 0x0441 data byte = 0xFF / bypass marker `5A FF 5A`)
+
+1. VIP reads the SBI DATA byte, sees `0xFF` (marker-agnostic — the check reads only the data byte)
+2. VIP transmits MEC=0xFF in its DID `0xF1A0` response to the SoC
+3. SoC-side `gm_adb_auth_init` sets `is_secure_mode=1` → ADB allowed with **no cloud cert**
+
+The same degenerate `0xFF` value also appears on the VIP's plain diagnostic UDS stack, so the
+effect is broader than ADB/ICUSB alone. It does **not** change SELinux mode.
 
 ### gm_protokey Service
 
-- **Binary:** `/vendor/bin/gm_protokey`
-- **Init:** class `main`, user `root`
+- **Binary:** `/vendor/bin/gm_protokey` (+ `gm_protokey_recovery`)
+- **Init:** `init.protokey.rc`, class `main`, user `root`, oneshot
 - **SELinux domain:** `gm_protokey`
-- **Function:** Translates VIP security response into SELinux enforcement mode
+- **Function:** validates the persisted GM security state and sets `vendor.gm.security.state`;
+  it is part of the ADB/seed-auth path, **not** a SELinux enforcement selector. (Note:
+  `androidboot.bootreason=warm` makes `gm_protokey` skip validation — a documented bypass path.)
 
 ---
 
@@ -123,8 +132,8 @@ The MEC counter tracks consecutive SoC boot failures and progressively disables 
   - i2c-1: general purpose
   - i2c-2: system bus
   - i2c-3: audioserver bus
-- **BOTH** `0x0440` AND `0x0A80` must be modified for a complete security bypass
-- OTA updates **ACTIVELY RESET** security flags back to secured state (0x00)
+- Empirically, the ADB-enabled dump shows **both** `0x0440` and `0x0A80` flipped to `5A FF 5A FF`. The claim that both cells *must* match for the bypass to hold is an **unverified mechanism** — there are zero code references to the literal address `0x0A80` in either VIP binary, and the security check reads only the DATA byte (marker-agnostic). The empirical bypass-works observation stands; only the hardcoded second-address mechanism is disputed.
+- A post-Y181 reflash re-initializes the backup cell to `F0 00 F0` (initialized+locked). The earlier claim that a specific calibration file (85783460) targets and resets these flags is **REFUTED** (2026-08) — those bytes live inside a gzip-compressed CalOvride XML stream, not an EEPROM address:value table. SBI values change only via the VIP's bulk restore-to-ROM-defaults routine (`FUN_ram_000c6564`, reached on an AUTOSAR NvM CRC/validity failure), not a targeted cal payload.
 
 ### EEPROM Memory Map
 
@@ -134,7 +143,7 @@ The MEC counter tracks consecutive SoC boot failures and progressively disables 
 | `0x0400`-`0x045F` | Security Configuration | **OUTSIDE CRC protection** — modifications not detected |
 | `0x0440` | Primary SBI Flag | Data byte at `0x0441`: `0x00`=secured, `0xFF`=bypass |
 | `0x05C0`-`0x05D1` | VIN (Vehicle ID Number) | 17-byte VIN storage |
-| `0x0A80` | Backup SBI Flag | Data byte at `0x0A81`: same encoding as primary (`0x00`=secured, `0xFF`=bypass) |
+| `0x0A80` | Backup SBI Flag | Stock = uninitialized (`FF FF FF`); ADB-bypass = `5A FF 5A FF`; post-Y181 reflash = `F0 00 F0` (initialized+locked). Data byte `0xFF` = bypass; marker (`5A`/`69`/…) is variant/CalGroup-specific |
 | `0x0B40` | Debug Mode Flag | Data byte at `0x0B41`: `0x00`=off, `0x01`=debug enabled |
 | `0x16E0` | CRC Location 1 | NOT enforced at boot |
 | `0x19E0` | CRC Location 2 | NOT enforced at boot |
@@ -210,7 +219,7 @@ The combination of unenforced CRC and world-writable I2C buses means that EEPROM
 
 #### SELinux Kernel Support
 
-`CONFIG_SECURITY_SELINUX_DEVELOP=y` — the kernel **supports** permissive mode at compile time. Whether SELinux is actually enforcing or permissive at runtime is controlled by the VIP security function result via `gm_protokey`. This is why Y177 (VIP stub returns 0) runs permissive while Y181 (VIP validates) runs enforcing.
+`CONFIG_SECURITY_SELINUX_DEVELOP=y` — the kernel **supports** permissive mode at compile time, but the stock userspace does not use it: Y175/Y177/Y181 ship a byte-identical `init` that forces enforcing (`ALLOW_PERMISSIVE_SELINUX=0`), so all three run **enforcing** at runtime. SELinux mode is set OS-side (ramdisk/init) and is **not** controlled by the VIP security function or `gm_protokey` (CORRECTED 2026-08-26; the old "Y177 stub → permissive" framing was a fixed-address misread — the VIP validator is full in all builds and gates ADB/seed auth, not SELinux).
 
 ---
 
@@ -285,7 +294,7 @@ The GHS INTEGRITY hypervisor exposes the following device interfaces under `/dev
 | `gm_diagnosticsd` | UDS diagnostic service | Handles $10/$22/$27/$2E/$31/$34/$36/$37 commands |
 | `gm_update_engine` | OTA firmware updates | GM fork of AOSP A/B update_engine. (Note: the `dontaudit gm_update_engine gsi_metadata_file` rule in `vendor_sepolicy.cil` is **not** a GSI blocker — see GSI/DSU Status below.) |
 | `gm_vehicle_hal` | Vehicle HAL implementation | Bridge between Android and VIP/CAN |
-| `gm_protokey` | Security key validation | Controls SELinux enforcement mode |
+| `gm_protokey` | Security-state validation (ADB/seed auth) | Validates the persisted GM security state; part of the ADB/seed-auth path, NOT a SELinux enforcement selector (corrected 2026-08-26) |
 
 ### Vehicle HAL Clients
 
@@ -323,22 +332,27 @@ Full detail and provenance in [`platform/boot_chain.md`](boot_chain.md#gsidsu-st
 
 ## Key CVEs
 
-| CVE | CVSS | Description | Y177 Impact | Y181 Impact |
-|-----|------|-------------|-------------|-------------|
-| CVE-2024-53104 | 7.8 | UVC (USB Video Class) vulnerability | **EXPLOITABLE** (SELinux permissive) | Blocked (SELinux enforcing) |
-| CVE-2024-36971 | 7.8 | dst_cache UAF (use-after-free) | **EXPLOITABLE** (SELinux permissive) | Blocked (SELinux enforcing) |
-| CVE-2024-53150 | 7.8 | USB out-of-bounds read (Cellebrite chain) | **EXPLOITABLE** (SELinux permissive) | Blocked (SELinux enforcing) |
-| CVE-2024-53197 | 7.8 | USB ALSA out-of-bounds access (Cellebrite chain) | **EXPLOITABLE** (SELinux permissive) | Blocked (SELinux enforcing) |
-| CVE-2023-2163 | 8.8 | BPF verifier range tracking | **Exploitable** (requires CAP_BPF) | Blocked (SELinux enforcing) |
-| CVE-2024-1086 | 7.8 | nf_tables use-after-free | **NOT APPLICABLE** | **NOT APPLICABLE** |
+> **CORRECTED 2026-08-26.** The prior table premised Y177 exploitability on "SELinux permissive."
+> That premise is FALSE — Y177 and Y181 both run SELinux **enforcing** (byte-identical init). The
+> kernel-vulnerability presence differs by **security-patch level and kernel version**, not by
+> SELinux mode; SELinux enforcing provides the same MAC containment on both builds.
 
-**CVE-2024-53150 / CVE-2024-53197:** Part of the Cellebrite USB exploitation chain. Added to CISA KEV (Known Exploited Vulnerabilities) catalog in April 2025. These are actively exploited in the wild for mobile forensics. On Y177 with SELinux permissive, the USB stack is fully exploitable. Y181 SELinux enforcing policy contains USB driver access to authorized domains only.
+| CVE | CVSS | Description | Kernel status (Y177 & Y181) |
+|-----|------|-------------|-----------------------------|
+| CVE-2024-53104 | 7.8 | UVC (USB Video Class) vulnerability | Both enforce SELinux; patch status tracks the build's kernel (4.19.305) / patch level (Y177 2025-03-05, Y181 2025-06-05) |
+| CVE-2024-36971 | 7.8 | dst_cache UAF (use-after-free) | Same — gated by patch level, not by SELinux mode |
+| CVE-2024-53150 | 7.8 | USB out-of-bounds read (Cellebrite chain) | Same |
+| CVE-2024-53197 | 7.8 | USB ALSA out-of-bounds access (Cellebrite chain) | Same |
+| CVE-2023-2163 | 8.8 | BPF verifier range tracking | Requires `CAP_BPF`; SELinux enforcing (both builds) restricts BPF to authorized domains |
+| CVE-2024-1086 | 7.8 | nf_tables use-after-free | **NOT APPLICABLE** — `CONFIG_NF_TABLES` not set |
 
-**CVE-2023-2163:** BPF verifier allows out-of-bounds memory access. Requires `CAP_BPF` capability. On Y177, SELinux permissive means capability checks are the only barrier. `CONFIG_BPF_JIT_ALWAYS_ON` reduces interpreter attack surface but does not prevent verifier bypass.
+**CVE-2024-53150 / CVE-2024-53197:** Part of the Cellebrite USB exploitation chain; added to CISA KEV in April 2025 and actively exploited for mobile forensics. On both Y177 and Y181 the SELinux enforcing policy restricts USB driver access to authorized domains; there is no permissive-Y177 window. Residual exposure depends on the kernel patch level for the specific build.
+
+**CVE-2023-2163:** BPF verifier out-of-bounds memory access, requires `CAP_BPF`. On both builds SELinux enforcing restricts BPF access to authorized domains, and `CONFIG_BPF_JIT_ALWAYS_ON` reduces interpreter attack surface (though it does not prevent a verifier bypass).
 
 **CVE-2024-1086:** Not applicable — `CONFIG_NF_TABLES` is not set in kernel config, so the vulnerable nf_tables subsystem is not compiled into the kernel.
 
-Both Y177 CVEs are exploitable due to SELinux being in permissive mode, which removes the mandatory access control layer that would otherwise contain exploitation. On Y181 with SELinux enforcing, exploitation is blocked by policy even if the underlying kernel vulnerability remains unpatched.
+The earlier claim that "both Y177 CVEs are exploitable due to SELinux permissive" is retracted: SELinux is enforcing on both builds, so exploitation containment is identical and any difference reduces to the kernel patch level.
 
 ---
 
@@ -393,7 +407,7 @@ These GPIOs control MCU reset and boot mode pins. World-writable access means an
 | `$37` | Request Transfer Exit |
 
 - **CSM (Center Stack Module — the radio/head unit itself):** CAN address `0x80`
-- **CGM (Central Gateway Module):** CAN address `0x45` — note: GM's GIS-763 caldef labels `0x45` the "Diagnostic Address of the CGM," but whether the CAN gateway at `0x45` *is* the Ethernet-side CGM/telematics module is not established; see `platform/vehicle_network.md`.
+- **CGM (Central Gateway Module):** CAN address `0x45` — per GM's GIS-763 caldef, `0x45` **is** the Diagnostic Address of the CGM (Central Gateway Module). The only open question is the narrower one of whether this CAN node is the *same physical module* as the Ethernet-side telematics gateway (`.107`/`.112`); see `platform/vehicle_network.md`.
 
 > These UDS services are reachable two ways: over **CAN/DPS** (see
 > [`diagnostics/dps/`](../diagnostics/dps/)) and over **Ethernet/TCP** via the
@@ -408,25 +422,29 @@ These GPIOs control MCU reset and boot mode pins. World-writable access means an
 
 ---
 
-## Y177 Attack Vectors (SELinux Permissive)
+## Local Hardware Attack Surface (all builds)
 
-With SELinux in permissive mode on Y177, the following attack vectors become available that are blocked on Y175/Y181:
+> **CORRECTED 2026-08-26.** This section was formerly "Y177 Attack Vectors (SELinux Permissive)"
+> and premised on Y177 running permissive. That premise is FALSE — Y175/Y177/Y181 all run SELinux
+> **enforcing**. The DAC-level exposures below (world-writable I2C/GPIO/debug-UART nodes) exist on
+> **all** builds regardless of SELinux mode; SELinux enforcing constrains which *domains* may reach
+> them, but does not change the file-mode permissions themselves.
 
 ### Direct Hardware Access
 
-- **I2C EEPROM manipulation:** Shell-level access to I2C buses allows direct read/write of EEPROM security flags (`0x0440`, `0x0A80`). With SELinux permissive, no domain transitions or access checks prevent `i2cset`/`i2cget` from any process context.
-- **GPIO MCU control:** World-writable GPIOs (458/460/464/466) can be toggled from any process to force VIP MCU into reset or bootloader mode, bypassing the security function entirely.
-- **Debug serial access:** `/dev/ttyACM1` with `crw-rw-rw-` permissions allows any process to interact with the debug UART. SELinux enforcing would restrict access to authorized domains only.
+- **I2C EEPROM manipulation:** A process in an allowed domain can read/write EEPROM security flags (`0x0440`, `0x0A80`) via `i2cset`/`i2cget` on the world-writable buses. SELinux enforcing (all builds) gates this by domain; the DAC world-writable bit does not.
+- **GPIO MCU control:** World-writable GPIOs (458/460/464/466) can be toggled to force the VIP MCU into reset or bootloader mode. This is a DAC exposure independent of SELinux mode.
+- **Debug serial access:** `/dev/ttyACM1` with `crw-rw-rw-` permissions is world-writable at the DAC layer; SELinux enforcing restricts which domains may open it.
 
 ### Kernel Exploitation
 
-- **All listed CVEs are exploitable:** Without SELinux enforcing, neverallow rules are not applied. Kernel exploits (CVE-2024-53104, CVE-2024-36971, CVE-2024-53150, CVE-2024-53197) can achieve arbitrary code execution without MAC containment.
-- **BPF verifier bypass (CVE-2023-2163):** CAP_BPF is the only remaining barrier. SELinux enforcing would additionally restrict BPF access to authorized domains.
-- **ptrace unrestricted:** Without `CONFIG_SECURITY_YAMA` and with SELinux permissive, any process can ptrace any other process of the same UID, enabling runtime code injection and credential theft.
+- **Kernel CVEs (CVE-2024-53104, -36971, -53150, -53197):** unpatched-kernel exposure tracks the build's kernel version / patch level, not SELinux mode. SELinux is enforcing on all builds, so MAC containment (neverallow rules) applies equally to Y177 and Y181.
+- **BPF verifier bypass (CVE-2023-2163):** CAP_BPF plus SELinux enforcing domain restrictions apply on all builds.
+- **ptrace:** `CONFIG_SECURITY_YAMA` is not set, so ptrace scope is unrestricted at the YAMA layer on all builds; SELinux domain rules still apply.
 
 ### Persistence
 
-- **EEPROM SBI flag modification:** Write `0xFF` to both `0x0441` and `0x0A81` to persist security bypass across reboots. OTA updates will reset these flags, but manual re-application is trivial with I2C access.
+- **EEPROM SBI flag modification:** Writing `0xFF` to `0x0441` (and empirically `0x0A81`) persists the ADB/seed bypass across reboots since the SBI region is not CRC-enforced. A bulk restore-to-ROM-defaults on the VIP re-locks it; the bypass is re-applicable with I2C access.
 - **Debug mode activation:** Write `0x01` to `0x0B41` to enable debug mode persistently.
 
 ---

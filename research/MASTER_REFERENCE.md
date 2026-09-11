@@ -11,7 +11,7 @@
 
 | Component | Chip | Purpose |
 |-----------|------|---------|
-| **SoC** | Intel Atom x7-A3960 | Android host, 4-core 2.4GHz, 8GB LPDDR4 (~6GB to guest) |
+| **SoC** | Intel Atom x7-A3960 | Android host, 4-core 0.8-2.4GHz, 8GB LPDDR4 (~6GB to guest) |
 | **VIP MCU** | Renesas RH850/P1M-E | Security gateway, CAN bus, EEPROM control |
 | **GPU** | Intel HD 505 | Gen9, 18 EUs, HW decode H264/HEVC/VP9 |
 | **Display** | 13.4" 2400x960 60Hz | Chimei Innolux DD134IA-01B |
@@ -50,7 +50,7 @@ Intel CSE (hardware root) → Intel ABL → GHS INTEGRITY → Android
 | 2 | SOC_BOOT (23) | **NONE** | None |
 | 3 | SOC_ABL (72) | **NONE** | Intel CSE validates |
 | 4 | SOC_HOSTOS/GHS | TSS signed | GHS enforced |
-| 5 | Android (vbmeta) | RSA-4096/SHA256 | AVB + GHS |
+| 5 | Android (vbmeta) | RSA-2048/SHA256 (AVB spec 1.1; avbtool 1.2.0) | AVB + GHS |
 
 ### 2.2 GHS INTEGRITY Hypervisor
 
@@ -116,8 +116,8 @@ Intel CSE (hardware root) → Intel ABL → GHS INTEGRITY → Android
 
 | Address | Purpose | Locked Value | Bypass Value | CRC Protected |
 |---------|---------|--------------|--------------|---------------|
-| 0x0440 | ADB Security #1 | C3 00 C3 | 5A FF 5A | **NO** |
-| 0x0A80 | ADB Security #2 | C3 00 C3 | 5A FF 5A | **NO** |
+| 0x0440 | ADB Security #1 | C3 00 C3 FF | 5A FF 5A FF | **NO** |
+| 0x0A80 | ADB Security #2 (Backup SBI) | FF FF FF FF (uninitialized) | 5A FF 5A FF | **NO** |
 | 0x0B40 | Debug Mode | 69 00 | 69 01 | **NO** |
 
 **Key Finding:** Security flags are OUTSIDE CRC-protected regions. CRC NOT enforced at boot time (tested: VIN=0xFF, module still boots).

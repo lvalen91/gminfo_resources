@@ -233,15 +233,15 @@ If `/dev/ghs/ota-isys` is accessible (requires: ghs_probe deployed in a less-res
 
 **Expected format:** VirtIO or GIPC message; format unknown without GHS LIP kernel module RE. The kernelflinger `celadon/s/mr0/apollo` source (`kf4abl.c`) shows the ABL-side of this protocol.
 
-### IOMMU/VT-d Disabled (Confirmed: `intel_iommu=off` in kernel config)
+### IOMMU/VT-d — guest kernel has `intel_iommu=off`; platform/hypervisor VT-d state UNVERIFIED
 
-With `intel_iommu=off` confirmed on this unit, **any DMA-capable device has unrestricted access to all physical memory** — including GHS hypervisor memory, TXE-managed regions, and misc partition content held in RAM before write-back.
+Correction: the driver is **compiled in** — `CONFIG_INTEL_IOMMU=y` (confirmed: GT enumeration_report.txt:5117), with `CONFIG_INTEL_IOMMU_DEFAULT_ON` **not** set. The guest Linux **boot cmdline** does carry `intel_iommu=off` (confirmed: GT `firmware/.../Y181B/mountables/BOOT_MOUNT_CHAIN.md:62`) — but that token governs **the guest kernel's own** use of the IOMMU, not the GHS hypervisor's platform-level VT-d. Whether GHS leaves platform VT-d disabled such that a device can DMA into **hypervisor** memory is **NOT established** (never captured; the wire→host DMA conclusion is unsupported as measured). GHS may still enforce SMMU/VT-d guest isolation — see US Patent 12,423,197 (GHS INTEGRITY SMMU/GVM model).
 
-**DMA attack paths:**
+**Conditional DMA attack paths (contingent on platform VT-d actually being off — unverified):**
 - USB DMA (via USB controller without IOMMU protection) — pair with CVE-2024-53197 LPE
 - PCIe device DMA if any external PCIe is accessible
 
-**This is a design-level isolation failure** — even without guest kernel compromise, a malicious USB device could potentially DMA-write into GHS memory space.
+**If** platform VT-d is off, this would be a design-level isolation failure — even without guest kernel compromise, a malicious USB device could DMA-write into GHS memory space. Confirming the platform/hypervisor VT-d state is the prerequisite research question before treating this as a live vector.
 
 ### GHS Interpeak/Treck Network Stack CVEs
 

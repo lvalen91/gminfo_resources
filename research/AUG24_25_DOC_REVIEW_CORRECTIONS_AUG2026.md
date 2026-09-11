@@ -26,8 +26,11 @@ what needs correcting, what's genuinely new, and consolidates the SBI-reset inve
    unrelated to the SBI's actual value); `0xecd84` (was framed as head of a "VIP validation
    chain" — actually a generic RTOS mutex primitive, 285 call sites); `0x04A0`/`0x0A40`/`0x0BE0`
    (closed, zero real references — prior "N refs" counts were string-proximity artifacts, not
-   functional analysis). `0x04C0` was upgraded to confirmed-real (CalGroup `0x44`, structurally
-   parallel to SBI, purpose unknown).
+   functional analysis). **SUPERSEDED 2026-09-10:** direct `xxd` of the artifacts shows
+   `0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0` are **all `0xFF` (unwritten) in both `gm_csm_stock.bin`
+   and `ADB_enabled.bin`** — no stored data (confirmed: `/Volumes/stuff/misc/research/GM_research/csm_eeprom/gm_csm_stock.bin`).
+   The earlier "`0x04C0` upgraded to confirmed-real (CalGroup `0x44` handler `FUN_ram_00091f82`)"
+   note is speculative and superseded by the byte artifact.
 4. **ECU `0x45` is the Central Gateway Module (CGM), not the radio.** The radio/head-unit (CSM)
    is **ECU `0x80`**, ECUID `004B41DC...0114AC` — this ECUID's 16-byte prefix is exactly what's
    already documented as the "static ECU identity constant" in the two captured SecurityAccess

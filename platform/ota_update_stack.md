@@ -170,7 +170,7 @@ Package: **Y181 GAS Full Package**, Part# 86334732, EWO G3D7G, MY2022,
 | all others (bootloaders, ACPIo, vbmeta, product, ETH_SWITCH, SXM, GPS, TUNER) | **NONE** | No TSS signing in package |
 
 NONE-signed bootloaders: `SOC_ABL [72]` (Intel Automotive Bootloader),
-`VIP_BOOT [71]` (Visteon IPC Bootloader), `SOC_BOOT [23]` (Android boot),
+`VIP_BOOT [71]` (VIP Renesas RH850 bootloader; confirmed: `MASTER_REFERENCE.md` — "RH850 bootloader", not the Visteon cluster IPC), `SOC_BOOT [23]` (Android boot),
 `SOC_VBMETA [56]`. The package-level manifest (`86331663.mnf`, module 92) and
 signature (module 93) are themselves not TSS-signed. New modules vs. dumpsys:
 Module 29 GPS (85121980.AB), Module 51 Digital Tuner (85155539.AB).

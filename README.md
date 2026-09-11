@@ -54,14 +54,14 @@ gminfo_resources/
 | Module name | `gminfo37` (GM Info 3.7) |
 | ECU address | `0x80` (A11 Radio) |
 | Manufacturer | Harman/Samsung |
-| CPU | Intel Atom x7-A3960, 4-core, 1.88–2.4 GHz, 14nm Goldmont |
+| CPU | Intel Atom x7-A3960, 4-core, 0.8–2.4 GHz, 14nm Goldmont |
 | RAM | 8 GB LPDDR4 (6 GB visible; ~604 MB reserved by GHS hypervisor) |
 | Storage | 64 GB Samsung eMMC (KLMCG4JEUD, BGA-153) |
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, density 200 |
 | GPU | Intel HD Graphics 505 (Gen9, 18 EUs), Mesa 21.1.5, GLES 3.2 |
 | Audio HAL | HarmanHAL `android.hardware.audio@5.0` ("Titan" = SoC platform codename, not the HAL); 8 CarAudioService output buses; AVB transport |
 | OS | Android 12 (API 32) AAOS, guest VM under GHS INTEGRITY IoT 2020.18.19 |
-| VIP MCU | Renesas RH850/TM52176, QFP-144+, V850 core |
+| VIP MCU | Renesas RH850/P1M-E (marking TM52176) |
 | EEPROM | ST M24C64, 8 KB, I2C (SBI security flags) |
 | Kernel | Linux 4.19.283 (Y175) / 4.19.305 (Y177, Y181) |
 | CAN | GM VIP/SDV1 (GB), CAN 2.0 29-bit · ECU 0x80 · Req 0x14DA80**F2** / Rsp 0x145AF2**80** in the captured DPS session (F1 = generic OBD tester address) |
@@ -70,11 +70,11 @@ gminfo_resources/
 
 | Build | Kernel | SELinux | VIP Security Fn | Bootloader |
 |-------|--------|---------|-----------------|------------|
-| Y175 `W213E-Y175.5.2-SIHM22B-383.1` | 4.19.283 | Enforcing | Present | 2121-1 |
-| Y177 `W231E-Y177.6.1-SIHM22B-499.2` | 4.19.305 | **Permissive** | **Stubbed (4B)** | — |
-| Y181 `W231E-Y181.3.2-SIHM22B-499.3` | 4.19.305 | Enforcing | Full (906B) | 2344 |
+| Y175 `W213E-Y175.5.2-SIHM22B-383.1` | 4.19.283 | Enforcing | Full (~906B) @0xb6708 | 2121-1 |
+| Y177 `W231E-Y177.6.1-SIHM22B-499.2` | 4.19.305 | Enforcing | Full (~906B) @0xb67d4 | — |
+| Y181 `W231E-Y181.3.2-SIHM22B-499.3` | 4.19.305 | Enforcing | Full (~906B) @0xb67d0 | 2344 |
 
-Y177 is a security regression (permissive SELinux + stubbed VIP validation). Y181→Y177 downgrade is blocked by GHS rollback counter in `misc` (CRC32-only, no AVB).
+All three stock builds boot SELinux **Enforcing** and carry the **full ~906-byte** VIP security-validation function — the earlier "Y177 = permissive SELinux + 4-byte VIP stub" claim is refuted (three-way byte-level VIP_APP diff; `system/bin/init` is byte-identical across builds and forces Enforcing, so any live permissive Y177 was a modified/eng unit). The VIP function gates ADB/seed auth only, not SELinux or AVB. Y181→Y177 downgrade is blocked by GHS/AVB anti-rollback (the AB0 rollback counter in `misc`/vda9) — owner-verified 2026-08-17 bench re-test.
 
 ### EEPROM ADB Unlock (M24C64, XGecu)
 
@@ -115,7 +115,7 @@ Framing bytes at ±1 vary per firmware version — locate by offset, not pattern
 | [`research/MASTER_REFERENCE.md`](research/MASTER_REFERENCE.md) | Top-level index of the full GM AAOS research corpus |
 | [`eeprom/EEPROM_Analysis_Report.md`](eeprom/EEPROM_Analysis_Report.md) | Full 8 KB EEPROM map: UI flags, checksums, calibration, factory-reset triggers |
 | [`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`](eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md) | 10 undocumented flag candidates, CalGroup marker rotation, VIP 0xb67d0 RE |
-| [`research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md`](research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md) | VIP security-fn stub→full diff at 0xb67d0 |
+| [`research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md`](research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md) | Three-way VIP security-fn diff (Y175/Y177/Y181): full ~906B in all builds, no stub |
 | [`research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) | GHS INTEGRITY hypervisor, AB0 rollback, VMM analysis |
 | [`enumeration/Y181/apr2026/vulnerability_assessment.txt`](enumeration/Y181/apr2026/vulnerability_assessment.txt) | Apr 2026 CVE/threat assessment (DNSpooq, SOME/IP, SELinux) |
 | [`diagnostics/dps/`](diagnostics/dps/) | DPS 4.56 session logs for A11 Radio (ECU 0x80): SBI/seed-key, ECU map, Y177 update |
@@ -125,15 +125,16 @@ Framing bytes at ±1 vary per firmware version — locate by offset, not pattern
 
 ## Research Status
 
-**Current target:** Y177 downgrade (permissive SELinux + stubbed VIP security).  
-**Blocker:** GHS AB0 rollback counter in `misc` (vda9) — CRC32-only, written at hypervisor level only.
+**Current target:** Y181→Y177 downgrade.  
+**Blocker:** GHS/AVB anti-rollback — the AB0 rollback counter in `misc` (vda9), written at hypervisor level only. *(The earlier motivation — "Y177 = permissive SELinux + stubbed VIP" — is refuted: stock Y177 boots Enforcing with the full ~906B VIP validator.)*
 
 **Ranked options (post-binary analysis):**
 
 1. Return-to-dealer screen — check ADB/USB exposure during that state (easiest; already been there once)
 2. EEPROM `0x0A00` — 871 VIP firmware references, completely unknown function
 3. Offline eMMC modification — dump BGA-153 eMMC, find AB0 in misc, recalculate CRC32
-4. ELK trigger via VIP J6_CDD diagnostic channel (OBBPELK via HECI → ABL) — **(2026-09-10)**
+4. ELK trigger via VIP J6_CDD diagnostic channel (ConnToOTA_BootELK / ConnToLifecycle_BootELK
+   IPC → HECI → ABL) — **(2026-09-10)**
    ELK is Intel Kernelflinger **fastboot** (kernelflinger-07.02), not a Linux shell; "USB
    storage is unsupported," so this is a fastboot-flash/unlock vector, not a shell-access one
 5. 3× boot failure escalation → GHS lifecycle last resort → ELK (same fastboot caveat as #4)
@@ -149,6 +150,6 @@ See [`hardware/teardown.md`](hardware/teardown.md) §Ranked Research Vectors and
 - EEPROM dumps: Y181 stock + modified — [`eeprom/`](eeprom/)
 - VIP UART log: Y175 boot — [`enumeration/Y175/Y175_VIP.log`](enumeration/Y175/Y175_VIP.log)
 - Hardware photos: IC close-up, board overview, XGecu programmer — [`hardware/`](hardware/)
-- Binary analysis: VIP firmware 86331656 (9 Ghidra passes), GHS HOSTOS 85098662, plmanager, gm_update_engine, ELK (kernelflinger-07.02)
+- Binary analysis: VIP firmware 86331656 (9 Ghidra passes, RH850:LE:32), GHS HOSTOS 85098662, plmanager, gm_update_engine, ELK (kernelflinger-07.02)
 - Logcat: 3.7 GB across 29 files (Feb 2026)
 - Partition images: Y177 + Y181 fully extracted and analyzed
