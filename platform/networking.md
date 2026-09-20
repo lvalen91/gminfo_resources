@@ -275,22 +275,60 @@ The IHU serves as the gPTP grandmaster on the AVB network, providing time synchr
 
 ### Physical Automotive-Ethernet bus map (GM service data)
 
-The AVB/Ethernet links are point-to-point automotive-Ethernet pairs off the A11 Radio's on-board
-switch (BCM89551). GM service data (ALLDATA *Radio-Audio System → Data Link Communications*, +
-connector end-view `A11 Radio X11`) names each bus and circuit — this grounds the IP-level endpoints
-above to physical wire (closes `vehicle_network.md` open item #1 for the amp pair):
+The AVB/Ethernet links are point-to-point automotive-Ethernet pairs (single twisted pair, 100/1000
+Mbit, **no terminating resistors**) off the A11 Radio's on-board switch (BCM89551). Two nodes host
+switches — the **A11 Radio** and the **K56 Serial Data Gateway Module**; every other node is a leaf
+`[Module ↔ Switch ↔ Module]`. GM service data names each bus and circuit: ALLDATA *Radio-Audio System
+→ Data Link Communications* + connector end-view `A11 Radio X11`, corroborated by the **GM Silverado
+2500/3500HD Electrical Body Builder Manual** (`24_Silverado_2500-3500HD_Body_Builder_Manual_2023May11.pdf`,
+§*Data Communications → Ethernet Bus Description*), which enumerates the full bus list. This grounds
+the IP-level endpoints above to physical wire (closes `vehicle_network.md` open item #1 for the amp pair).
 
-| Bus | Circuits | Endpoints |
-|-----|----------|-----------|
-| Ethernet 2 | 4757 / 4758 | **A11 Radio ↔ K56 Serial Data Gateway** (radio X11 p3/4) |
-| Ethernet 4 | 7210 / 7211 | A11 (or K56) ↔ **K73 Telematics** (radio X11 p11/12) |
-| Ethernet 5 | 7212 / 7213 | A11 ↔ **P22F rear-seat Video Display** |
-| **Ethernet 6** | **7214 / 7215** | **A11 Radio ↔ T3 Audio Amplifier** — the Bose AVB audio pair (radio X11 p8/9 → amp T3 X3 p1/2) |
-| Ethernet 14 | 7230 / 7231 | A11 ↔ **P29 Head-Up Display** |
+> **Test vehicle:** 2024 Silverado **2500 HD LTZ**, RPO **IOK** — the HD BBM above is the matching
+> service manual. Per the VIN's factory **RPO Code List**, this truck has **no Head-Up Display**
+> (no UV6/HUD code) and **no rear-seat video** (no rear-entertainment code), so radio buses **5**
+> (P22F rear-seat video) and **14** (P29 HUD) are **not equipped** here — only buses **2 / 4 / 6**
+> are wired on X11. Present & relevant options: **IOK** radio, **UQA** Bose amp (Bus 6 / T3),
+> **UE1** OnStar (K73 comm path), **UDV** full cluster (P16), **IVN** (cockpit uses radio family).
+> Bus/circuit numbering is shared across the T1XX line, so a 1500 (light-duty) build uses the same
+> bus map — any 1500-only deviation would be noted here explicitly; none is currently known.
 
-- Both **A11 Radio and K56 (Serial Data Gateway) host Ethernet switches**; the amp is a leaf on
-  **Bus 6**. Amp control/discovery is separate: **AUTOSAR CAN 5** (4985/4984), T3 X3 p11/12.
-- Radio-side connector designator is **X11** in the connector end-view (the IOK schematic labels
-  the same connector **X6** — GM harness-variant designator variance).
+**Radio (A11) Ethernet buses** — all land on connector **X11** (12-way F CTS-050):
+
+| Bus | Circuits | Endpoints | On IOK 2500HD |
+|-----|----------|-----------|---------------|
+| Ethernet 2 | 4757 / 4758 | **A11 Radio ↔ K56 Serial Data Gateway** (radio X11 p3/4) | ✅ wired (harness-confirmed) |
+| Ethernet 4 | 7210 / 7211 | **A11 Radio ↔ K73 Communication Interface Module** (radio X11 p11/12). *IOR-radio variant routes this as K56 ↔ K73 instead.* | ✅ wired (harness-confirmed) |
+| Ethernet 5 | 7212 / 7213 | A11 Radio ↔ **P22F Video Display – Right Rear-Seat Back** | ❌ not equipped (no rear-ent RPO) |
+| **Ethernet 6** | **7214 / 7215** | **A11 Radio ↔ T3 Audio Amplifier** — the Bose AVB audio pair (radio X11 p8/9 → amp T3 X3 p1/2) | ✅ wired (harness-confirmed) |
+| Ethernet 14 | 7230 / 7231 | A11 Radio ↔ **P29 Head-Up Display** | ❌ not equipped (no UV6/HUD) |
+
+**Other vehicle Ethernet buses (not on the radio — via K56 gateway):** Eth 1 (see below); Eth 3
+(7208/7209) K56 ↔ K179 Auto-Driving Mapping Module; Eth 7 (7216/7217) K56 ↔ P16 IPC Cluster / K190
+Off-Board Charger; Eth 11 (7224/7225) K124 Image Processing ↔ K179; Eth 15 (7232/7233) K56 ↔ K161
+Perf Data Recorder ↔ P22F passenger-seat display.
+
+- The amp is a leaf on **Bus 6**. Amp control/discovery is separate: **AUTOSAR CAN 5** (4985/4984),
+  radio **X6 p9/10** ↔ amp T3 X3 p11/12 (see [`../hardware/connectors.md`](../hardware/connectors.md) X6 row).
+- **Connector caution:** the radio's Ethernet lives on **X11** (12-way CTS-050). It is a *different*
+  physical connector from **X6** (29-way, speaker outs + CAN 5) — do not conflate them; earlier notes
+  that labeled the Ethernet connector "X6" were in error.
+
+### Ethernet 1 — service diagnostics / programming (X84 DLC ↔ K56)
+
+Not a radio bus, but the service-tool entry point into the Ethernet backbone. **Ethernet 1 = two
+twisted pairs**: **1R** (circuits 4972/4973) and **1T** (4974/4975), run **X84 Data Link Connector ↔
+K56 Serial Data Gateway**. Used to diagnose/flash control modules over Ethernet instead of CAN; the
+**K56 gateway converts Ethernet serial data ↔ CAN both directions**. An **Ethernet-enable circuit
+(7207)** wakes K56 for Ethernet diagnostics/programming.
+
+**X84 DLC (16-cavity OBD) pinout (Ethernet + CAN):** T1 CAN 7 [+], T2 PP-CAN 1 [+], **T3 Eth 1R [+]**,
+T4 scan-tool ground, T5 signal ground, T6 CAN 6 [+], T7 PP-CAN 2 [+], **T8 Eth 1 enable**, T9 CAN 7 [−],
+T10 PP-CAN 1 [−], **T11 Eth 1R [−]**, **T12 Eth 1T [+]**, **T13 Eth 1T [−]**, T14 CAN 6 [−], T15 PP-CAN 2 [−],
+T16 scan-tool B+. (CAN 6 = diagnostics/programming; CAN 7 = plant programming only; Private-Presentation
+CAN 1/2 = Engineering-only, security-gated.) — BBM §*X84 Data Link Connector*.
+
 - Physical harness/pinout detail: [`../hardware/connectors.md`](../hardware/connectors.md)
-  §Audio Architecture and §Authoritative IOK Connector Table.
+  §Audio Architecture and §Authoritative IOK Connector Table. Radio-side Ethernet connector **X11**
+  mating plug (P/N 13529935) datasheet — Delphi/Aptiv drawing **33283033**:
+  [`../hardware/datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf`](../hardware/datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf).

@@ -28,7 +28,7 @@ Compiled 2026-07-01.
 | GM Service P/N | 3765210 |
 | Harman Assembly P/N | 91.UMAF2HG.GS6FAAG |
 | HWID | ZQ68GEC80317, EC-Index 20 |
-| Vehicle (test unit) | 2024 Chevrolet Silverado (ICE), RPO **IOK** (Infotainment 3 Premium, 13.4″, Google built-in) |
+| Vehicle (test unit) | 2024 Chevrolet Silverado **2500 HD LTZ** (ICE, 6.6L L8T gas), RPO **IOK** (Infotainment 3 Premium, 13.4″, Google built-in) |
 | Platform / EE arch | GM **T1XX-HD** / **Global B (VIP / SDV1-GB)** |
 | CAN | GM VIP/SDV1 (GB), CAN 2.0 29-bit · Req `0x14DA80F2` / Rsp `0x145AF280` (HS-CAN, dedicated tester F2 — per `A11_CSM_x80.Txt`). The generic OBD tester address F1 (`0x14DA80F1` / `0x145AF180`) also reaches ECU 0x80 and is what the DPS bench read logs use (confirmed: GM_research/diagnostics/gm_dps/DPS_All_Module_Read/.../GCI_*.txt). |
 
@@ -70,17 +70,25 @@ occupied cavities.)
 |------------|---------|-------------|----------------|-----------|
 | **X2** | 33340311 | by cable | 1-Way F Coax **(BU)** | GPS/GNSS antenna |
 | **X3** | 33340318 | by cable | 1-Way F Coax **(CU)** | SiriusXM / SDARS (+HD) antenna |
-| **X5** | 35364134 | 13534974 | 29-Way F 0.5 NANO / 1.2 MCON stAK50h **(BK)** | Battery+ (p1, 2340 RD/YE), Signal Gnd (p3, 1051 BK/WH), LR Spkr[-] (p8, 116) †, cell-mic + VR-mic (p9/10, 655/5149, 654/5152; `Opt IOK+UE1`) |
-| **X6** | 35364137 | 13534971 | 29-Way F 0.5 NANO / 1.2 MCON stAK50h **(GY)** | Speaker-level outs (p1-6: LR+ 199, LF1+ 201, RF−1 117, RR− 115, LF−1 118, RF1+ 200) — **base/U95-UQF variant only, NOT wired on this UQA truck** † |
+| **X5** | 35364134 | 13534974 | 29-Way F 0.5 NANO / 1.2 MCON stAK50h **(BK)** | **As-wired on this vehicle — harness populates only p1/3/9/10/11/12** (radio receptacle has all 29 cavities): Battery+ (p1, 2340 RD/YE), Signal Gnd (p3, 1051 BK/WH), cell-mic + VR-mic (p9/10, 655/5149 BU·GY/YE, 654/5152 BK/BN·BK/GY; `Opt GF2-GF5 / IOK+UE1`), Microphone ± (p11/12, 7043 VT/YE / 7044 BU/BK). **p8 (LR Spkr[-], 116 GN/BK) appears in the ALLDATA superset end-view but is NOT wired here** — confirmed by harness inspection, consistent with UQA (radio drives no speakers) † |
+| **X6** | 35364137 | 13534971 | 29-Way F 0.5 NANO / 1.2 MCON stAK50h **(GY)** | **As-wired on this vehicle — harness populates only p9/10/13** (receptacle has all 29 cavities): **AUTOSAR CAN 5 ± (p9/10, 4985 BU/WH / 4984 BU/YE)** — VIP/SDV1-GB 29-bit, amp-control serial data, radio end of the CAN 5 link to the Bose amp (T3 X3); **Backup Lamp Control (p13, 24 GN/WH)**. Speaker-level outs (p1-6/8: LR+ 199, LF1+ 201, RF−1 117, RR− 115, LF−1 118, RF1+ 200, RR+ 46) are in the ALLDATA superset end-view but **NOT wired on this UQA truck** (radio drives no speakers) †. Per ALLDATA X6 end-view + `05_ALLDATA_WIRING_REFERENCE.md §8` [C] |
 | **X7** | 13511515 | by cable | **12-Way M 2.0 HSAL-2 (GY)** | Infotainment display — FPD-Link III ("LVDS") |
 | **X8** | 13545174 | by cable | **12-Way M 2.0 HSAL-2 (BK)** | USB serial data → console USB receptacle(s) |
 | **X9** | 33340320 | by cable | 1-Way F Coax **(OG)** | Video Processing Module coax video (cameras) |
 | **X10** | 33340317 | by cable | 1-Way F Coax **(BG)** | Wi-Fi antenna |
-| **X11** | 35068239 | 13529935 | 12-Way F 050 CTS **(BK)** | Ethernet Bus 2 ± (p3/4, 4758 YE / 4757 BU), **Ethernet Bus 6 ± (p8/9, 7215 YE / 7214 GN → Bose amp)**, Ethernet Bus 4 ± (p11/12, 7211 BN / 7210 GY) |
+| **X11** | 35068239 | 13529935 | 12-Way F 050 CTS **(BK)** | **As-wired on this vehicle — fully populated (all 6 occupied pins wired, unlike sparse X5/X6):** Ethernet Bus 2 ± (p3/4, 4758 YE / 4757 BU → K56 gateway), **Ethernet Bus 6 ± (p8/9, 7215 YE / 7214 GN → Bose amp)**, Ethernet Bus 4 ± (p11/12, 7211 BN / 7210 GY → K73 comm). p1-2/5-7/10 not occupied. **Harness-side mate 13529935 = Delphi/Aptiv drawing 33283033** ("TAXI ASM CONN 12 F CTS 050", 12-way female CTS-050, male-plug shell / female sockets, CPA) — datasheet: [`datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf`](datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf) |
 
 † **X5/X6 speaker-level cavities are the non-amplified (U95-UQF) usage shown in the connector
 superset.** This UQA truck routes audio digitally (see §Audio) — the radio's speaker pins are not
 the active path. Confirmed by the `Speakers (UQA)` vs `Speakers (U95-UQF)` schematic split.
+
+> **Two as-wired datasets — keep them distinct.** The per-pin "as-wired" notes above are the
+> **in-vehicle harness** (owner inspection). A **bench** setup using the **OPU Wiring Tester +
+> Emulator** (GM 85633185, HMI 3.7-3.8) wires even less: **X5 p1/p3 only** (Battery+/Gnd), **X6
+> p9/p10 only** (CAN 5 ±, injected by the tester's emulator board), **X7 LVDS** to the display —
+> no X6 p13 backup lamp, no X5 mics, and X11 Ethernet not populated. With a 12 V PSU the radio +
+> display boot and are operational within limits (no audio — AVB→amp absent on bench; USB WIP).
+> Bench-build detail lives in GM_research `carplay/gm_pi/docs/07_BENCH_TEST_GUIDE.md`.
 
 ### Connector-type note: X7 (display) and X8 (USB) are the *same* connector, keyed
 These are the radio's **only two** 12-way HSAL-2 high-speed data ports. Both are **12-Way Male
@@ -156,10 +164,12 @@ The large multi-bay Stac64 housings carry the vehicle harness. Circuit names/num
 | Ethernet Bus 4 (±) | `BRN` / `GRY` (7211/7210) | " |
 | Ethernet Bus 6 (±) | `YEL` / `GRN` (7215/7214) | " |
 
-> **A sparsely-populated big Stac64 header is normal.** In one observed variant, connector #6
-> carries only **AUTOSAR CAN (+), AUTOSAR CAN (−), and BACKUP LAMP CTRL** — three thin wires in a
-> ~56-way shell (GM loads only the cavities a trim needs). A big connector with 3 wires is *not*
-> necessarily power; confirm by gauge (heavy red/black = power; thin twisted pair = CAN).
+> **A sparsely-populated big header is normal.** This "three thin wires" observation is now
+> confirmed to be **X6 as-wired on this vehicle**: only **AUTOSAR CAN 5 + (p9, 4985), CAN 5 − (p10,
+> 4984), and Backup Lamp Control (p13, 24 GN/WH)** are populated in the 29-way shell — GM loads only
+> the cavities a trim needs (this UQA truck routes audio digitally, so none of the p1-6/8 speaker
+> cavities are wired). A big connector with 3 wires is *not* necessarily power; confirm by gauge
+> (heavy red/black = power; thin twisted pair = CAN).
 
 ### Controls & audio-adjacent discretes
 | Circuit | Wire | Notes |
@@ -444,6 +454,18 @@ POWER (parallel, from fuse — NOT the radio):
 the **floor-console Type-C with an OTG cable** — not a Type-A port, not a single Mini-B data-only
 break-out. A different-color data-cable P/N alone won't help if the hub is unpowered or you're on a
 host port.
+
+> **Owner bench symptom (Sep 2026) — confirms "meter X8", not "buy the right connector".** On a bench
+> harness (OPU emulator: X5 p1/3 + X6 p9/10 + X7 LVDS, no factory USB hub), wiring **X8** to various
+> breakouts exposing Micro-B / Type-A yields **VBUS (~5 V) only — no device ever enumerates**, and
+> **buying visually-identical GM USB connectors changed nothing.** This is the predicted failure of
+> an **unknown D+/D− pin position**: IOK X8 has no published per-pin map, and look-alike HSAL-2 shells
+> differ in assignment. **Action: meter the 6-pin cable** (VBUS ≈ +5 V→GND; GND ≈ 0 Ω to shell; D+/D−
+> = the twisted pair into the ESD/choke cluster) before wiring any port. Note also: **X8 is a
+> permanent host with no ID pin → X8 can never do ADB**; ADB is the SoC role-switch on the console
+> Type-C (X83B) + OTG cable (see §ADB mechanism), independent of the X8 host path and not CAN-gated.
+> For a bench *host* test the A90 hub is optional — a correctly-pinned X8→Type-A should mount a drive
+> directly (radio = host); "VBUS only" means the data pair is mis-pinned, not that the hub is missing.
 
 ---
 

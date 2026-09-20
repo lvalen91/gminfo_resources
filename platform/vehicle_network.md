@@ -1,4 +1,4 @@
-# Vehicle Network Topology — 2024 Silverado ICE (gminfo37 / A11 Radio)
+# Vehicle Network Topology — 2024 Silverado 2500 HD LTZ (ICE, gminfo37 / A11 Radio)
 
 Vehicle-wide network map (distinct from [`networking.md`](networking.md), which covers the
 SoC-internal / inter-partition network). Consolidated 2026-07-01 from: the `A11_CSM_x80` DPS log
