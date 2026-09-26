@@ -146,6 +146,49 @@ dealer-side reflash path for the modules this radio orchestrates:
 This is the **dealer** path; it is orthogonal to the GHS/`gm_update_engine` OTA machinery
 documented above (which is how GM pushes signed packages OTA/USB to the running stack).
 
+## Global B provisioning & SPS/DPS economics — external corroboration [X]
+
+> **Source.** Snipesy / Surreal Development, *"The ABCs of Global B"*, 2026-06-16, **CC0 1.0**
+> (`https://surrealdev.com/the-abcs-of-global-b/`; canonical bibliography:
+> [`qualcomm_cadillac_platform.md`](qualcomm_cadillac_platform.md) → Sources). Independent public
+> RE, primary vehicles a 2023 Chevy Colorado (Intel) and 2025
+> Cadillac Lyriq/CT5 (Qualcomm SA8155P). **[X]** = external/other-vehicle, not independently
+> confirmed on this A11 unit; corroborates the reconciled model above but read the caveats.
+
+- **Global B lineage.** GM's newer architecture (author says previously branded **Ultifi** / "VIP
+  Architecture"), standard across the GM lineup **since 2023**, replacing Global A. Note this repo
+  treats **Ultifi** as the GM *Android service layer* (`com.gm.ultifi.*`), so treat "Global B =
+  Ultifi" as the author's naming, not a confirmed equivalence here. [X]
+- **Circle of accountability.** Every significant module (30+ on some vehicles) handshakes the
+  central gateway at start using a factory-provisioned secret; one failure → whole-vehicle **no
+  start** + DTC **U1962**. Proper module replacement requires GM's **Serial Data Authentication
+  Configuration (SDAC)** run against GM's **"back office"** (Azure-hosted for NA), which holds the
+  CA/private keys — the vehicle cannot self-provision. [X]
+  - *Caveat / naming conflict:* the author uses **SDGM = SGM = CGM = "central gateway"**
+    interchangeably. **Do not adopt that equation here** — this research has (a) *not* established
+    CAN gateway `0x45` as the CGM (see [`vehicle_network.md`](vehicle_network.md) Join-points item
+    #3; `/Volumes/.../VEHICLE_NETWORK_TOPOLOGY.md`), and (b) uses **SGM = Shanghai-GM** (SAIC-GM
+    regional key backend, `tisvcsv4.dll`), a false-friend collision. "SDGM" is the author's term.
+- **$27 SecurityAccess.** Author states $27 is taken **against the SDGM/central gateway** (not the
+  target module, unlike Global A), seed changes per request, tester must round-trip GM's servers
+  (SPS2/3) for the key; **secondary $27 blockers** (notably key reprogramming) use a *different*
+  server-side key, so gateway access ≠ whole-vehicle access. *Caveat:* on **this** platform the DPS
+  captures show $27 as a **per-ECU** exchange (seed/key direct to ECU `0x80` radio, `0x45` gateway
+  — `LIVE_DPS_CAPTURE_ECU80_AUG2026.md`), so the "always against the SDGM" framing is Cadillac-
+  specific / unconfirmed here. The per-VIN SPS-events cap and secondary-key detail are additive. [X]
+- **SPS/DPS economics & bypass.** SPS3 ≈ **$4,400/yr** or **$45** temporary single-VIN license;
+  gives an SPS3 credential usable to obtain $27. **DPS** provisions $27 just-in-time for suppliers
+  (privileged actions incl. key reprogramming, but not arbitrary-image install). Author: it is
+  "trivial" to **spoof the SPS3/DPS flow** (pretend to be the vehicle) or **hijack a live SPS
+  session** to grab the $27 key; GM has **rate-limited SPS events per VIN** to hamper tuners. [X]
+- **GM cloud/OTA auth composition.** The head-unit's GM-server auth is built from **3 configurable
+  values — gateway/CGM id + radio/CSM id + VIN** (~40 bytes entropy) — plus baked-in hardcoded
+  values and an **obfuscated OAuth2 secret shared per Android build** (author notes the OAuth2
+  secret is low-value; the 3 config values are the real secret). A signed cert derived from these
+  is then used for all subsequent API calls; the **telematics module performs the actual OTA
+  download**, radio only kicks off the campaign. Aligns with the Cloud→CGM→`gmConnectionService`→
+  `gm_update_engine` chain above; the 3-value+OAuth2 composition is new/additive. [X]
+
 ## Verification plan
 
 Capture **CAN + VIP↔SoC HDLC IPC + FSA** simultaneously during a real multi-module OTA:

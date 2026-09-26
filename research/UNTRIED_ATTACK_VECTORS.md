@@ -10,7 +10,33 @@
 
 As of 2026-06-29, several high-value attack vectors identified in the research have never been attempted. This document tracks untried paths ranked by probability of advancing the Y177 downgrade goal.
 
-The goal remains: achieve a successful Y181→Y177 software downgrade, ultimately to obtain a permissive SELinux enforcement posture (Y177 ran permissive at runtime; Y181 does not). **CORRECTED 2026-08-25:** Y177's permissive posture is **OS-side** (ramdisk/init not forcing enforcing), *not* a VIP property — the VIP security function at 0xb67d0 is a full ~906-byte validator in Y175/Y177/Y181 alike and contains no SELinux logic (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2). The remaining blocker is the GHS rollback counter in the misc/vda9 partition; the VIP function gates ADB/seed auth, not a "version floor" for SELinux.
+The original goal was a Y181→Y177 software downgrade to obtain a permissive SELinux posture.
+**CORRECTED 2026-09-26 (full primary-evidence extraction of the Y177 system image, `86283152`):** the
+premise is **refuted** — stock **Y177 boots SELinux `Enforcing`**, not permissive. Verified against the
+actual Y177 files, not documentation:
+- **Boot cmdline** (signed boot image `86283154`): the early `enforcing=0 androidboot.selinux=permissive`
+  is overridden by the extra_cmdline's final tokens **`enforcing=1 androidboot.selinux=enforcing buildvariant=user`** (last token wins).
+- **`/system/build.prop`**: `ro.build.type=user`, `ro.secure=1`, `ro.debuggable=0`, release-keys →
+  AOSP init forces enforcing on user builds and ignores `androidboot.selinux=permissive`.
+- **Compiled policy**: all four CIL sources (plat/vendor/plat_pub_versioned/product) have **0 permissive
+  domains**; the monolithic `sepolicy` is byte-identical to vendor `precompiled_sepolicy` (sha `027861ca…`).
+- **Y177 `plat_sepolicy.cil` is byte-identical to Y181's** (0 diff) → there was **no "unintended
+  permissive policy change" for GM to correct** between Y177 and Y181; both are the same enforcing policy.
+- **No permissive lever exists**: `init` uses stock `security_setenforce`/`getenforce` with no VIP/MEC/gmauth
+  hook, and across all 2093 system+vendor binaries the only `setenforce 0` caller is a manual Intel
+  gfx-debug script behind an opt-in `--selinux_disable` flag (not boot- or VIP-gated).
+- Adjacent real-device captures: Y175 (user build) and Y181 both `getenforce=Enforcing`.
+
+**On the VIP-analogy (why ADB is influenceable but SELinux is not):** the ADB bypass works because GM
+built a deliberate userspace lever — `gmauthmanagerservice` reads the VIP's MEC/`is_secure_mode` and
+relaxes adb-auth. SELinux enforcement has **no analogous GM hook**: neither adbd nor gmauth is a
+`setenforce` caller, and `is_secure_mode` does not touch SELinux. So the old "VIP forces permissive"
+theory does not transfer. **Residual gap:** no Y177 *runtime* `getenforce` capture exists; static
+evidence is conclusive, but an emulator/live-unit readout would close it 100%.
+So **a Y177 downgrade would not yield a permissive posture**, and this doc's permissive-via-downgrade
+rationale no longer holds. (The 2026-08-25 sub-finding stands: the VIP function at 0xb67d0 is a
+~906-byte `$27`/seed validator in Y175/Y177/Y181 alike with no SELinux logic — and per the 2026-09-26
+SBI verification it is **not** the ADB gate either; see item-3 note in `PROJECT_MASTER_CHECKLIST.txt`.)
 
 Vectors are ranked by: (1) likelihood of breaking the current blocker, (2) estimated effort, (3) available access level.
 

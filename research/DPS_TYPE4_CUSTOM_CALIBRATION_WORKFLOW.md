@@ -217,8 +217,12 @@ not.** This removes the catalog entirely and lets you present the cal blob direc
 *this owner* is the EEPROM lever:
 
 - The owner already flips the **M24C64 SBI bytes** `0x0441`/`0x0A81` → `0xFF`, which makes the VIP return
-  an **all-`0xFF` seed** and skips PROTOKEY/BCM auth (the ADB bypass). Verified effect: DPS logs show the
+  an **all-`0xFF` seed** and skips PROTOKEY/BCM auth on the `$27`/CAN side. Verified effect: DPS logs show the
   all-FF seed state (`A11_CSM_x80.Txt`) vs a real 32-byte ECUID+challenge (`Y177update_CSM.Txt`).
+  **CORRECTED 2026-09-26:** the all-FF seed is a `$27`/CAN-only effect — it is **not** itself "the ADB
+  bypass". ADB is enabled by the *same* SBI flip through a **separate** SoC-side path (VIP → MEC via DID
+  `0xF1A0` → `is_secure_mode`), not by the seed. Keep the two consequences distinct. Canonical:
+  `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.10-0.14.
 - **Open, unproven question (do not overclaim):** the SBI flip is demonstrated to open the **ADB** `$27`,
   but it is *not yet shown* to open the **calibration/diagnostic** `$27` level. Same VIP/PROTOKEY/EEPROM
   subsystem and anchor, but not a proven single flag. If a *different* EEPROM flag governs the cal

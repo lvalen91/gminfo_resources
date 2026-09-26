@@ -11,7 +11,8 @@ the FSA protocol notes ([`fsa_protocol.md`](fsa_protocol.md)), and the ethernet-
 ([`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md)).
 
 > **Sources disagree on several node labels.** Both are shown where they do. **[C]** = confirmed
-> by ≥2 sources or a primary capture; **[?]** = single-source or contested.
+> by ≥2 sources or a primary capture; **[?]** = single-source or contested; **[X]** = external /
+> other-vehicle source (e.g. surrealdev Cadillac captures), not yet confirmed on this A11 unit.
 
 ## Headline
 
@@ -50,6 +51,81 @@ of the other 22 → GM Global-B address table (**open**). Scanned unit: `SBI = B
 
 ---
 
+## Plane 1a — SecOC (CAN frame authentication)
+
+> **Source.** External public research — Snipesy / Surreal Development, *"Rooting the Cadillac
+> Part 2: SecOc"*, 2026-09-22 (`https://surrealdev.com/rooting-the-cadillac-part-2-secoc/`;
+> canonical bibliography: [`qualcomm_cadillac_platform.md`](qualcomm_cadillac_platform.md) →
+> Sources), captured on **Lyriq / CT5** Global-B vehicles.
+> Same Global-B platform as this Silverado, so the algorithm is expected to hold, but the frame
+> IDs, keys and the VLAN-502 mirror below are **Cadillac captures — not yet observed on this
+> A11/gminfo37 unit.** Marked **[X]** = external/other-vehicle, confirm before relying on it here.
+
+Global B is *mostly* unsigned/unencrypted (especially CAN5), but selected **critical-control**
+frames carry a **SecOC** message-authentication code. Frames are authenticated, **not encrypted** —
+anyone can parse them, and many modules still act on a frame whose MAC fails. The Central Gateway
+selectively forwards between buses and sometimes checks the MAC, sometimes not. MAC'd frames tend to
+be things like power steering — and the modules that consume them may not even be on the radio's bus,
+so the radio itself rarely needs to satisfy SecOC. [X] (Qualcomm/Cadillac radio hardware context:
+[`qualcomm_cadillac_platform.md`](qualcomm_cadillac_platform.md).)
+
+**MAC construction:**
+
+```
+MAC = CMAC_AES128_k( data_id(u8) ‖ BE32(can_id) ‖ BE64(freshness) ‖ payload )
+```
+
+- MAC on the wire is the CMAC **truncated to 27 bits** (3 bytes + 3 bits).
+- Freshness is a 64-bit BE counter, often combined with a secondary companion ID; padding and
+  payload position vary per frame.
+- Worked example — gateway status/power frame **`0x370`** (`bit37:3` = power mode):
+  `Off E8EE8A69…` `Acc 68A66F49…` `Run 7C8CB069…` `Crank 69F65949…` `Propulsion 6BFE8B49…`
+  ```
+  data_id  01
+  can_id   00000370
+  freshness 000000005FEEE249
+  payload  3810
+  key      0814586a72522fd9b57685de676eb246   (real key, source's totaled donor car)
+  CMAC     e8ee8a78 b7ba268d 25473fb3 5bf2067c
+  trunc27  E8EE8A|011  -> on wire E8EE8A|011
+  ```
+
+**$27 SecurityAccess (level 1) key algorithm** — precondition for provisioning: [X]
+
+```
+$27 01                -> 67 01 <31B seed>   seed = ecuid(16B) ‖ nonce(15B)
+$27 02 <12B key>      -> 67 02 accepted  |  7F 27 35 (NRC 0x35 invalidKey)
+
+K1  = CMAC_AES128( root_key, subfn(1B) ‖ ecuid(16B) ‖ nonce(15B) )
+key = CMAC_AES128( K1, 0xFF×16 )[0:12]
+```
+
+Worked vector (AES test key `root_key=2b7e1516…4f3c`, subfn `01`, ecuId `0102…0f10`, nonce
+`1122…eeff`): `K1 = 344944c7c7a8e103f1c9703cca19bf52`, `key_response = ad3ccd21e367a121640b2a23`.
+
+**SecOC key provisioning** (UDS RoutineControl, after $27): the on-wire key is itself encrypted
+against a factory key. Provisioning needs three secrets, all OEM-held: the module's unique **$27
+unlock key**, the **HSM/identifier ID**, and a factory/assembly-line **master key**. Install uses
+the **SHE KDF (Matyas-Meyer-Oseas over AES-128)**: [X]
+
+```
+KDF(key,const) = AES_Enc(key,const) XOR const
+K1 = KDF(auth_key, KEY_UPDATE_ENC_C=0x0101534845 0080…00B0)
+K2 = KDF(auth_key, KEY_UPDATE_MAC_C=0x0102534845 0080…00B0)   ("SHE" = 0x534845)
+M1 = UID(120b) ‖ ID(4b) ‖ AuthID(4b)                          16B
+M2 = AES128_CBC_Enc(K1, IV=0, counter(28b)‖flags(4b)‖new_key(128b))   32B
+M3 = CMAC_AES128(K2, M1‖M2)                                   16B
+-> 31 01 <RID:2B> <slot:1B> M1 M2 M3   (M1|M2|M3 = 64B; with the slot byte the option
+                                        record is 65B, param_4==0x41; response 71 01 <RID> <status>)
+```
+
+**Bottom line for aftermarket repair:** only the OEM servers hold the master keys and there is no
+aftermarket provisioning path — a shared-key module cannot be swapped in without the OEM secrets.
+The author claims (unpublished, zero-days withheld) that all SecOC keys are dumpable from any module
+"with no exploit, if you think fast enough" — **unverified, no method given.** [X]
+
+---
+
 ## Plane 2 — Automotive Ethernet (VLAN 4 / 5)
 
 Backbone: 100BASE-T1 via on-board switch (host on port 5; gateway/telematics on
@@ -78,6 +154,25 @@ on MY23+ (per `persist.vendor.harman.hardwareid`); same port layout and spec.
 `.100` IVI (radio's vlan4 face) · `.1` router (shares MAC with `.102`) · `.14` **ACP** ·
 `.107` RTOS partition · `.12/.13/.15` **EOCM** (Enhanced OnStar). Other-variant subnets
 `192.168.118.x` / `172.16.5.x` are code-referenced, not live.
+
+### vlan502 · CAN-over-Ethernet mirror (Cadillac capture) [X]
+Per the surrealdev SecOC research (see Plane 1a): on Lyriq/CT5 the **entire CAN network is mirrored
+onto VLAN 502 as UDP multicast** — the easiest whole-vehicle monitor is a single pcap on that VLAN.
+Observed source `172.16.50.207` → `239.192.0.9:59200`. Some switches block the VLAN, much is open.
+**Not yet observed on this A11/gminfo37 Silverado — a bench pcap should look for a 502 mirror.**
+Frame encapsulation (little-endian element_id):
+```
+element header (7B):  type=0x02(CAN/CAN-FD) | body_len(2B BE) | element_id(4B LE = CAN ID)
+type-0x02 body:       extended(1B: 0=11-bit,1=29-bit) | dlc(1B) | actual_len(1B)
+  metadata[5]:  [0]=controller mirror(==[2]) [1]=FD marker(0x30) [2]=channel fca0..fca9
+                [3]=flags (0x01/0x09 dominant; 0x04/0x0A/0x0B rare) [4]=reserved
+  rolling[4]    timestamp-like counter
+  data[actual_len]
+  trailer[4]    = rolling byte-reversed (integrity check)
+```
+No authentication of any form on the in-vehicle Ethernet at L2/L3 (no **IPsec**, no **MACsec**) on
+the vehicles the author examined; only niche services use **TLS** — so this VLAN-502 mirror is
+readable by anything on the switch fabric. [X]
 
 ### Service / protocol layer
 - **GM FSA** — 20-byte big-endian header, magic **`0x5AA5`**, protobuf; catalog in
@@ -120,6 +215,10 @@ on MY23+ (per `persist.vendor.harman.hardwareid`); same port layout and spec.
 3. Whether `.102` (router) and `.107/.112` (CGM/telematics) are one GM TCP/CGM function split
    across faces, or distinct modules.
 4. Identity of `:49156`; whether FSA `0x5AA5` framing is really on the wire (single-source).
+5. **SecOC on this Silverado:** confirm the CMAC-AES128/27-bit scheme and the $27 key algorithm
+   (Plane 1a) against a live A11 capture; identify which frame IDs carry a MAC on gminfo37.
+6. **VLAN-502 CAN mirror:** bench-pcap this unit for a 502 UDP-multicast CAN mirror (Plane 2);
+   the Cadillac source was `172.16.50.207→239.192.0.9:59200`.
 
 See also: [`../hardware/connectors.md`](../hardware/connectors.md) (physical harness that carries
 these buses) and [`ota_programming_roles.md`](ota_programming_roles.md) (module programming over

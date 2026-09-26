@@ -141,6 +141,12 @@ Write Cycle:    5ms max
 Endurance:      4 million write cycles
 
 KEY EEPROM ADDRESSES:
+(CORRECTED 2026-09-26, primary evidence: 7-dump byte compare + RH850 disasm + adb-auth binary.
+0x0440/0x0A80 are the SBI/secure-mode bytes, not a direct "ADB Enable" — the read value is the
+DATA byte at offset+1; the "Frame"/marker byte is NOT static per address, C3/5A/F0/69 across
+units/states. Enabling ADB is indirect: VIP reads SBI -> MEC via DID 0xF1A0 -> SoC is_secure_mode.
+The all-FF $27 seed is a separate CAN-only effect; VIP 0xb67d0 is a $27/seed validator, not the ADB
+gate. The Stock column here matches the dumps; canonical: EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.10-0.14.)
 | Address | Frame | Purpose                    | Stock    | Bypass   |
 |---------|-------|----------------------------|----------|----------|
 | 0x0440  | 0xC3  | ADB Enable Primary         | C3 00 C3 | 5A FF 5A |

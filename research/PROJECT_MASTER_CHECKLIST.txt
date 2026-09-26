@@ -290,6 +290,14 @@ CONFIRMED WORKING:
 | 0x0440  | ADB Security #1  | 5A FF 5A     | Primary flag        |
 | 0x0A80  | ADB Security #2  | 5A FF 5A     | Backup flag         |
 
+CORRECTED 2026-09-26 (primary evidence: 7-dump byte compare + RH850 disasm + adb-auth binary):
+0x0440/0x0A80 are the SBI / secure-mode bytes, NOT a direct "ADB enable". The value that is read is
+the DATA byte at offset+1 (0x0441/0x0A81); the framing marker is NOT static per address (observed
+C3/5A/F0/69 across units/states, so "5A FF 5A" is not a fixed signature). Flipping SBI does enable
+ADB, but INDIRECTLY: VIP reads SBI -> transmits MEC via DID 0xF1A0 -> SoC gm_adb_auth_init sets
+is_secure_mode. The $27 all-FF seed is a SEPARATE CAN-only effect. VIP 0xb67d0 is a $27/seed
+validator, NOT the ADB gate. Canonical: EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.10-0.14.
+
 UNTESTED CANDIDATES:
 | Address | Purpose          | Current | Test Value | Risk    |
 |---------|------------------|---------|------------|---------|

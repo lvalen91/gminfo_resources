@@ -353,6 +353,14 @@ When set to 5A FF 5A:
 - ADB authentication passes without GM client
 - PROTOKEY exchange is skipped
 
+CORRECTED 2026-09-26 (primary evidence: ecu80_READ CAN capture + Y175 adb-auth binary +
+GMAuthManagerService + VIP logs): the middle bullet conflates two SEPARATE paths. The all-0xFF seed
+is a $27/CAN-only effect (PROTOKEY/BCM skip). ADB is NOT gated by that seed — nothing consumes it to
+open adb; the guest gate is SoC-side: VIP reads SBI -> transmits MEC via DID 0xF1A0 -> SoC
+gm_adb_auth_init sets is_secure_mode (mec in [1,255] => cert bypassed). Clearing SBI does enable ADB,
+but via the MEC/is_secure_mode path, not "ADB auth passes because of the seed". Canonical:
+EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.10-0.14.
+
 LIMITATION: Does not affect GHS/AVB security. Also (2026-09-10): this path tops out at
 `uid 2000` -- no known EEPROM path to root has been found. USB adb reaches Android-guest
 userspace only; the guest cannot escape the GHS container from there. CSM *boot* ownership

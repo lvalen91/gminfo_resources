@@ -139,6 +139,15 @@ Example: `5A FF 5A` = Security flag with value 0xFF
 - `0x00` = Security ENABLED (ADB requires GM Secure Client authentication)
 - `0xFF` = Security DISABLED (ADB accessible without authentication)
 
+**CORRECTED 2026-09-26 (primary evidence: 7-dump byte compare + RH850 disasm + adb-auth binary +
+ecu80_READ CAN capture):** the framing **marker** shown above (`5A`) is **not static per address** —
+across 7 real dumps the 0x0440 marker was `C3` (stock/debugging) or `5A` (ADB-enabled) and 0x0A80 was
+`FF`/`69`/`5A`/`F0`. Only the **data byte at offset+1** (0x0441/0x0A81) carries the lock state (the
+`0x00`/`0xFF` above). Clearing SBI does not enable ADB *directly*: VIP reads SBI → transmits MEC via
+DID `0xF1A0` → SoC `gm_adb_auth_init` sets `is_secure_mode` (the guest-side gate). The `$27` all-FF
+seed is a **separate** CAN/UDS-only effect, not the ADB path. Canonical marker/mechanism detail:
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.10-0.14. (This file duplicates that report; prefer it.)
+
 **Note:** Both locations must be modified for the bypass to work. OTA updates reset these to 0x00.
 
 ---

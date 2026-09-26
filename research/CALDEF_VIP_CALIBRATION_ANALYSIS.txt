@@ -277,6 +277,15 @@ ADB access is controlled by:
 2. EEPROM Flag 0x0A80: Backup ADB enable (5A FF 5A = enabled)
 3. VIP PROTOKEY module: Validates BCM seeds for ADB auth
 
+CORRECTED 2026-09-26 (primary evidence: 7-dump byte compare + RH850 disasm + adb-auth binary +
+ecu80_READ CAN capture): the above is imprecise. 0x0440/0x0A80 are the SBI / secure-mode bytes, not
+a direct "ADB enable"; the read value is the DATA byte at offset+1 (0x0441/0x0A81), and the framing
+marker is NOT static (C3/5A/F0/69 across units/states). ADB is gated SoC-side: VIP reads SBI ->
+transmits MEC via DID 0xF1A0 -> SoC gm_adb_auth_init sets is_secure_mode (mec in [1,255] => bypass).
+Item 3 above is wrong: the $27/seed validator (VIP 0xb67d0) does NOT gate ADB, and the all-FF $27
+seed is a separate CAN/UDS-only effect that nothing consumes to open adb. Canonical:
+EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.10-0.14.
+
 When EEPROM flags are set to bypass:
 - VIP returns 0xFF seed (all bytes) instead of real challenge
 - PROTOKEY validation is skipped

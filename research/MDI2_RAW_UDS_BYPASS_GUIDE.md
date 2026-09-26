@@ -264,10 +264,17 @@ All are on PyPI, stable, and used in the existing research corpus for bench test
 
 ## 7. GM ADB Escape Hatch via `$31` RoutineControl (2026-09-10)
 
-**Source:** Surreal Development, "The ABCs of Global B" (CC0). Independently confirms that
+**Source:** Snipesy / Surreal Development, "The ABCs of Global B", 2026-06-16, **CC0 1.0**
+(`https://surrealdev.com/the-abcs-of-global-b/`; canonical bibliography:
+[`../platform/qualcomm_cadillac_platform.md`](../platform/qualcomm_cadillac_platform.md) → Sources).
+Independently confirms that
 Global-B head units expose a fully-decoded UDS `RoutineControl` request that toggles Android
 `adb` (usb-debug) on the SoC — a *different* route from the `$27`/SBI seed bypass documented
-above, and worth distinguishing from it.
+above, and worth distinguishing from it. The author sends it **over UDS over DoIP or CAN** and
+reads it as an **escape hatch left in for bench (and possibly in-vehicle) testing**. Note the
+platform split: on the Cadillac/Qualcomm units the article describes this UDS routine; on **this
+Intel gminfo37/A11 Silverado the confirmed adb-enable is an EEPROM byte-flip** (offsets
+`0x0440`/`0x0A80` → `0xFF`), so treat the UDS routine as the Cadillac path, unconfirmed here.
 
 **Frame:**
 ```
@@ -295,7 +302,11 @@ above, and worth distinguishing from it.
   host's adb key. It is a togglable primitive, not a bypass of adb's own authentication.
 - Note the broader authentication model this sits inside: Global-B `$27` SecurityAccess is
   ultimately authenticated against **GM's SDGM/Azure back office via SPS2/3 credentials** for
-  the tiers that matter (calibration/programming); GM has deliberately left some diagnostic
+  the tiers that matter (calibration/programming) — but see
+  [`../platform/ota_programming_roles.md`](../platform/ota_programming_roles.md) § Global B
+  provisioning for the canonical model *and its caveat* that this repo's own DPS captures show
+  `$27` as a **per-ECU** exchange, so the "against the SDGM" framing is Cadillac-specific/
+  unconfirmed here; GM has deliberately left some diagnostic
   *routines* (not full security levels) unauthenticated by design, of which the ADB-enable
   routine above appears to be one — consistent with, and a second independent example of, the
   general pattern this doc's §1-2 already documents (MDI2/J2534 has no hardware-level lock;
@@ -305,6 +316,15 @@ above, and worth distinguishing from it.
 in §2/§3 (Route B, `udsoncan`/DoIP, is the simplest) — it is a `RoutineControl` call like the
 `31 01 02 0E FF FF FF` wakeUpNetworks routine already used elsewhere in this repo's captures,
 not a new transport or session requirement.
+
+**App-install paths on the same head unit (same article, [X] Cadillac/Qualcomm):** the UDS routine
+enables `adb`, but the article also notes two *app*-install avenues distinct from it. (1) **Normal
+Android side-loading is disabled** — GM removes the underlying install permission — though on *some*
+software versions it reportedly still worked ("maybe you should decline those OTAs"). (2) **Google
+Play is a trusted installer**: an account enrolled in a build's **internal test track (ITT)** can
+push an APK straight to the head unit; a long-standing dev workaround. Both are Cadillac/Qualcomm
+observations, unconfirmed on this Intel unit, and — like the UDS route — do not by themselves grant
+authenticated root `adb`.
 
 ## 8. References
 

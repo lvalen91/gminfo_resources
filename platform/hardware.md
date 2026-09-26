@@ -124,6 +124,14 @@ Communication between the two processors occurs over HDLC on UART `/dev/ttyS1` w
 
 ## VIP MCU (Renesas RH850/P1M-E)
 
+> **Low-power sleep (external corroboration [X]).** Surrealdev *"Rooting the Cadillac Part 1"*
+> (Snipesy, 2026-08-15; `https://surrealdev.com/rooting-the-cadillac-part-1-lay-of-the-land/` —
+> canonical bibliography in [`qualcomm_cadillac_platform.md`](qualcomm_cadillac_platform.md) →
+> Sources) reports the RH850 "VIP" powers *itself* down in deep sleep and wakes on a hardware signal direct
+> from its **CAN phy**, letting the whole radio idle at **sub-milliamp** draw on the always-on 12 V
+> feed. Consistent with this board's VIP role (power/CAN/early-boot); the sub-mA figure is the
+> author's Cadillac measurement, **not independently confirmed on this A11 unit.** [X]
+
 ### PLC Timers
 
 | Timer | Duration |
