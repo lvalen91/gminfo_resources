@@ -43,42 +43,55 @@ software/UI/RE emulator, not a functional truck.
 |---|---|---|
 | SoC/kernel/vendor | Intel Apollo Lake + GM vendor firmware | Google goldfish android-32 kernel/vendor |
 | Hypervisor/boot | VIP RH850 → CSE → ABL → **GHS INTEGRITY** → guest | none — Android on QEMU |
-| VHAL | GM `@2.0-service-gm` on the **live CAN bus** | Java HIDL **proxy** + static props |
-| Calibrations | **per-VIN provisioned** (SDAC/back office) | shipped DB, factory "GREEN" + Silverado/theme overrides |
+| VHAL | GM `@2.0-service-gm` on the **live CAN bus** | **GM's real `@2.0-service-gm`** via the libipc shim (540 configs, 486 GM; 141 props shared w/ the real radio) — no live bus behind it |
+| Powermode/RTC/location | real GM daemons on the VCU | **GM's real `plmanager`/`rtcd`/`gmlocation`** run via libipc shim |
+| Calibrations | **per-VIN provisioned** (SDAC/back office) | GM's real `calserviced` + shipped DB, **RPO-matched** to this truck (LTZ trim, Trailering FULL, 360 cams) |
 | Network | real Ethernet/CAN + ECUs, telematics/OnStar | dummy `vlan5`/`vlan4`, no peers |
-| Display/audio | FALD + touch + cluster/HUD; Bose/AVB | software GPU, one display; goldfish audio |
-| Security | locked, AVB+SELinux **enforcing**, no root | **unlocked, permissive, root adb** (deliberate — enables RE) |
+| Display/audio | FALD + touch + cluster/HUD; Bose/AVB | software GPU, one display; goldfish `audio@6.0` (real is `@5.0-harman` on AVB — must stay stubbed) |
+| Security | locked, AVB+SELinux **enforcing**, no root | AVB-off, **SELinux ENFORCING** (matches the radio's posture; 0–2 stock-AOSP MLS denials/boot vs 0 on the radio), root adb (deliberate — enables RE) |
 
-**Faked/absent:** live vehicle data (speed/gear/doors/HVAC/RVS/VIN theft-lock), telematics/OnStar/cloud/
-cellular, other ECUs, SecOC, ProtoKey/powermode (stubbed). Climate/Cameras tiles render but don't
-control/feed anything; AA/CarPlay need a paired phone; **Carlink** (aftermarket) isn't in the stock image.
+**Achieved (2026-09-26, FID-01→16 + RPO-01→03):** GM's real vendor daemons (VHAL/powermode/rtc/location/
+calibrations) run in their proper GM SELinux domains with zero daemon denials, under **SELinux enforcing**,
+RPO-matched to a 2024 Silverado 2500HD LTZ (Trailering 4th card, LTZ trim). Stable reproducible cold boot
+(`hy/fid/verify.sh`); the Java VHAL/powermode stubs are retired. **Still faked/absent** (no vehicle bus):
+live vehicle data (speed/gear/doors/HVAC/RVS/VIN theft-lock — VHAL props read unavailable, e.g. outside
+temp `--`), telematics/OnStar/cloud/cellular, other ECUs, SecOC; the AVB/GHS/CSE boot-chain trust anchors;
+real Bose/AVB audio. Climate/Cameras/Trailering tiles render but don't control/feed anything; AA/CarPlay
+need a paired phone; **Carlink** (aftermarket) isn't in the stock image.
 
 ## Un-stub roadmap — using GM's real files (verified vs the real-radio ADB dumps)
 Cross-checking the emulator's stubs against the running radio's dumps (`enumeration/Y181/raw/*`,
 `analysis/adb/Y181/*`) and the GM images. Full reports: `/Volumes/.../2024_Silverado_ICE/emu/y181_ref/unstub/`.
 
-- **VHAL `@2.0-service-gm` → run GM's real one** (in progress). Links `libipc.so`, opens `/dev/ipc/ipc3`,
-  rc gates on `vendor.modules.ipcserver.ready=true`. `/vendor/etc/ipc4.cfg`: IPCServer transport is a plain
-  **UART `/dev/ttyS1` @1 Mbaud** fanned into per-channel Unix sockets; **channel 3 = `vehicle_network`** (the
-  VHAL's user). Goldfish exposes virtual `ttyS*`, so a `libipc` shim is tractable → replaces the Java proxy.
+- **VHAL `@2.0-service-gm` → GM's real one now runs [DONE].** `libipc.so` (ipcLib 3.0) is a **Unix-socket
+  client of IPCServer** (the UART fanned into per-channel sockets per `/vendor/etc/ipc4.cfg`; ch3=`vehicle_network`),
+  **not** a `/dev/ipc` char-dev client. Built `hy/ipc/libipc_shim.c` (socketpair per channel, logs+swallows writes,
+  answers the ready handshake + VIP frames). GM's real VHAL registers `IVehicle/default`, 540 configs (486 GM),
+  CarService subscribes 166 (141 shared with the real radio's 188). Java proxy retired.
 - **`vendor.gm.gmlocation@1.0-service` + `vehicleaudiocontrol` → cheap net-new adds.** Pure calserviced-HIDL
   clients, **no `/dev/ipc` dep**; currently absent from the emu — add without a shim.
 - **`calserviced` → already GM-real** (libipc only for the override path).
 - **Audio HAL → stays stubbed permanently.** Real = `vendor.hardware.audio@5.0-harman-custom-service` on a real
   **AVB (802.1BA)** network (`daemon_cl`/`avb_streamhandler`/`eavbmgr`); a physical-network dep, no libipc fix.
   Emu substitutes stock Google `audio@6.0`.
-- **powermode/`IPowerModing` → the current system-side Java stand-in is architecturally correct**, not a
-  shortcut: no `/vendor/bin` IPowerModing daemon exists; the real server is the `plmanager` domain.
-- **SELinux enforcing → feasible.** Real domains: `gm_vehicle_hal`, `plmanager`, `calserviced`/`GHSCalibrations`,
-  stock `adbd`; policy **v32.0**. `file_contexts` source is in `emu/hy/sepol/gm_vend/`; init already **recompiles
-  CIL every boot** (no delete-precompiled step); the 5 stand-ins at `u:r:su:s0` need real domains; `cildiff.py`
-  reports only 12 inert Apollo-Lake genfscon symbols. **System/product enforcing ≈ the real posture; vendor-domain
-  enforcing is a plausibility check only** (goldfish + proxies vs Apollo Lake + GHS; the real GHS-IPC rules
-  `gm_vnd_IPCServer`/`ipc_device` have no emulator peer).
-- **Identity props (fidelity fix) —** real radio uses **`persist.sys.cal.brand=GM_Brand_Chevrolet` +
-  `persist.sys.cal.model=Silverado`**; **`persist.vendor.gm.*` does NOT exist on the real radio** (the emu's is
-  guesswork that happens to render via the CalSets `GMBrand=3` + force-enabled RROs). Set the `persist.sys.cal.*`
-  pair and re-verify RRO/theme gating.
+- **powermode/`IPowerModing` → GM's real `plmanager` now runs [DONE]** (via the libipc shim; `IPowerModing`
+  registered, "Power Moding service is ready"). Correction to the earlier note: `plmanager` **is** the real
+  server (a libipc client), and it replaced the Java stand-in. `rtcd` (`IRemoteRtcService`) and `gmlocation`
+  (`IGmLocation`) likewise run real via libipc.
+- **SELinux enforcing → ACHIEVED [DONE].** Real GM domains `gm_vehicle_hal`/`plmanager`/`rtcd`/`gmlocation`/
+  `calserviced` derived from `vendor_sepolicy.cil` (v**32.0**; `file_contexts` from `emu/hy/sepol/gm_vend/`), glue
+  domains for the shim; init recompiles CIL each boot. **6 consecutive `-wipe-data` cold boots all `Enforcing`,
+  boot_completed, 0 GM-daemon denials**; the only enforced denials are 0–2/boot of the same **stock-AOSP MLS
+  cross-user-search** that AOSP denies by design (real radio: Enforcing, 0 avc). `hy/fid/verify.sh` is the harness.
+  System/product enforcing ≈ the real posture; vendor-domain is emulator glue (no real GHS-IPC peer).
+- **Identity props (reconciled) —** the real radio publishes **`persist.sys.cal.brand=GM_Brand_Chevrolet` +
+  `persist.sys.cal.model=Silverado`** (from calserviced), and separately the Chevrolet/SystemUI **RROs gate on
+  `requiredSystemPropertyName=persist.vendor.gm.brand`** — so both namespaces are legitimate (not an either/or).
+  The emu sets both.
+- **RPO-matched calibrations [DONE] —** grounded in the bench truck's RPO codes ([`vehicle_config.md`](vehicle_config.md)):
+  `GMTrim=16` (LTZ; DB held 0=None), `TraileringAppType=2` (FULL — required for the SystemUI trailer card; Z82/UET/JL1),
+  `APPLICATION_HOMESCREEN_TRAILERING_ENABLED=1` → the 4th home card; `RVS_PRESENT_STATUS=2` (UV2 360). Open: propulsion
+  type has no `CalSets.db` row (vendor-only prop); the `FJW`/E15 fuel-blend cal stays factory 0.
 - **Network/FSA (real service mesh) —** `:49156` diagnosticsd (UDS-over-TCP → RTOS `172.16.4.107`), FSA
   `9002`/`9010`/`9016` LISTEN + sessions to `9005`/`9016`/`9018`. Un-stub via **synthetic `vlan5` peers** (`.106`
   Visteon IPC dialing the CSM's `9002`; `.107` RTOS diag bridge; `.102` telematics; `.112` CGM_OTA). AE research
