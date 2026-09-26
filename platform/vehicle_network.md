@@ -42,12 +42,21 @@ when sharing.
 - **Segmented buses** behind `0x45`: HS-CAN + LS-CAN + AUTOSAR "SER DATA 5" (seen on the
   connector harness, see [`../hardware/connectors.md`](../hardware/connectors.md)). [C]
 
-**24-ECU census (diagnostic addresses):**
-`0x11 0x18 0x1A 0x28 0x31 0x40 0x41 0x45(gw) 0x58 0x59 0x60 0x68 0x6D 0x75 0x80(radio) 0x81 0x97 0xA4 0xA8 0xB9 0xBA 0xBD 0xBE 0xBF`
+**ECU census (diagnostic addresses).** The `A11_CSM_x80` DPS scan enumerated **24**; a later live
+MDI2 DoIP read (`dps_readx80`, F1B0 broadcast, 2nd pass) found **27** — adding **`0x6B` `0x84`
+`0x96`** (the three true Ethernet/DoIP nodes alongside gateway `0x45`; every other address incl.
+radio `0x80` is CAN-via-gateway). Combined 27:
+`0x11 0x18 0x1A 0x28 0x31 0x40 0x41 0x45(gw) 0x58 0x59 0x60 0x68 0x6B(eth) 0x6D 0x75 0x80(radio) 0x81 0x84(eth) 0x96(eth) 0x97 0xA4 0xA8 0xB9 0xBA 0xBD 0xBE 0xBF`
 
 Response-ID priority nibbles (`145A`/`142A`/`141A`/`144A`) group modules by bus/priority. Decode
-of the other 22 → GM Global-B address table (**open**). Scanned unit: `SBI = Bypass Inactive`,
-`MEC = 244`, fully programmed (stock/secure); secure $27 SecurityAccess path live.
+of the others → GM Global-B address table (**open**). Scanned unit (A11_CSM_x80): `SBI = Bypass
+Inactive`, `MEC = 244`, fully programmed. **Live corroboration (`dps_readx80`, MDI2 DoIP read of the
+radio):** `0x80` ECUID (`$22 F0F3`) = `004B41DC…14AC` **byte-identical** to the value above;
+ProgrammedState (`$31 FF01`) = `00` fully programmed on both `0x45` and `0x80`; radio `F1A0` = `0xFF`
+on that read (secure-mode; differs from the A11 scan's `MEC=244`, i.e. per-capture unit state — see
+[`security.md`](security.md)). `$27` on that read returned an all-`0xFF` seed under a failed SPS
+validation, whereas valid SPS sessions used an 8-byte seed / 6-byte key and succeeded (so the all-FF
+seed is the **SPS-cred-absent path**, not necessarily a hardware SBI flip).
 
 ---
 

@@ -94,6 +94,14 @@ permitted without a cloud/PAL certificate:
 2. VIP transmits MEC=0xFF in its DID `0xF1A0` response to the SoC
 3. SoC-side `gm_adb_auth_init` sets `is_secure_mode=1` → ADB allowed with **no cloud cert**
 
+> **Live-vehicle corroboration (2026, MDI2 DoIP `dps_readx80` read of radio `0x80`).** `$22 F1A0`
+> returned **`0xFF`** on the vehicle — the first on-vehicle confirmation of the MEC=0xFF path above
+> (prior evidence was EEPROM/teardown only). Nuance on `$27`: that read (SPS "security validation
+> facility failed") got an **all-`0xFF` seed**, while valid SPS sessions used an **8-byte seed /
+> 6-byte key** and succeeded (ECUs 0x80/0x81/0xBE, `67 02` grants). So the all-FF `$27` seed is the
+> **SPS-credential-absent path**, not necessarily a hardware SBI flip — worth separating in
+> `$27`/SBI analysis. (Redacted diagnostic-session reports: `/Volumes/.../2024_Silverado_ICE/emu/y181_ref/diag/`.)
+
 The same degenerate `0xFF` value also appears on the VIP's plain diagnostic UDS stack, so the
 effect is broader than ADB/ICUSB alone. It does **not** change SELinux mode.
 
