@@ -15,7 +15,7 @@ extracted each file via tshark; this doc merges their findings. Complements §10
 |---|---|---|---|
 | 12:07 | `capture_attempt1.pcapng` | 506 KB | Repeated-attempt session: 7 dance cycles in ~222s, DoIP UDS work against `.70` with SecurityAccess seed requested 3x but never keyed, ends with an unexplained 221 KB pull over port 9052 |
 | 12:09 | `capture_attempt2.pcapng` | 75 KB | First **clean success**: dance → 10123 opens in ~2s → DoIP session to vehicle gateway `.70` → VIN read, 26-ECU scan, clean teardown |
-| 12:17 | `multiple_intefaces_attempt1.pcapng` | 2.3 MB | Another full success, 3x 10123 opens, DoIP session to `.70` with VIN `1GC4YPE70RF102143`, confirms `192.168.177.2` is a dormant/unused entry in the Manager's own IPC response (never seen live on the wire) |
+| 12:17 | `multiple_intefaces_attempt1.pcapng` | 2.3 MB | Another full success, 3x 10123 opens, DoIP session to `.70` with VIN `<VIN_REDACTED>`, confirms `192.168.177.2` is a dormant/unused entry in the Manager's own IPC response (never seen live on the wire) |
 | 12:34 | `DPS+SPS.pcapng` | 80 MB | Main working session — 18 full dance+10123 cycles over ~740s; bulk calibration writes (~60-63KB) and reads (~41-50KB) over D-PDU/10123; cycles 8/10/13 are byte-identical 60,675B writes (the radio recal-retry loop); loopback 8125 IPC re-invoked at *every* cycle with a ~16.7KB blob each time; DoIP/13400 only 2 tiny probes near the end to `.70` |
 | 12:45 | `SPS_radioCal_and_OS_UpdateCHeck.pcapng` | 87 MB | **The actual radio SecurityAccess + flash session** — two full seed/key/grant $27 unlocks (real bytes captured, see below), 14-segment RequestDownload/TransferData/RequestTransferExit flash sequence, GM TLC cloud backend involved in key delivery |
 | 12:57 | `postOS_download_SPS.pcapng` | 118 MB | Not a vehicle flash — SPS staging the encrypted calibration package onto a **USB flash drive** (Kingston DataTraveler, 140MB via SCSI WRITE(10)); MDI2 tunnel idles; surfaced a second, JSON-based loopback API on `127.0.0.1:31000/31010` |
@@ -27,7 +27,7 @@ Appears in 4 of 6 captures. Broadcasts DoIP vehicle-announcement over UDP/13400,
 **direct TCP/13400 UDS session with the tablet, bypassing the MDI2's D-PDU/10123 path entirely**.
 This is a second, independent diagnostic route through the MDI2's bridged Ethernet segment —
 worth targeting directly once 10123 is solved, since it doesn't need the low-port dance at all
-(only DoIP routing activation). VIN confirmed twice: **`1GC4YPE70RF102143`**.
+(only DoIP routing activation). VIN confirmed twice: **`<VIN_REDACTED>`**.
 
 ### 2. Port 10123 opens reliably from a real Windows client — not vehicle- or SecurityAccess-gated
 Across `capture_attempt1/2` and `multiple_intefaces_attempt1`, 10123 opens successfully multiple
