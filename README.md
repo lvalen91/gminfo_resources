@@ -100,6 +100,7 @@ Framing bytes at ±1 vary per firmware version — locate by offset, not pattern
 | [`platform/vehicle_network.md`](platform/vehicle_network.md) | Vehicle-wide two-plane network: 24-ECU CAN census (gateway 0x45, radio 0x80) from the DPS log + Ethernet vlan4/5 IP/partition map + FSA/SOME-IP; flags where sources disagree |
 | [`platform/ota_programming_roles.md`](platform/ota_programming_roles.md) | Who reflashes what: radio = ProgrammingMaster/HMI + flashes own domain via VIP UDS/CAN; telematics/CGM = download conduit; Y181 package inventory; CalDef GIS-658/763/887 evidence |
 | [`platform/qualcomm_cadillac_platform.md`](platform/qualcomm_cadillac_platform.md) | **[X] external** — the newer Qualcomm SA8155P + QNX Cadillac radio (Lyriq/CT5): platform split vs this Intel unit, RH850/SA8155P architecture, 33″ FALD/FPD-Link IV display, board BOM, VIN boot gate. From surrealdev "Rooting the Cadillac Part 1" (unverified on our hardware) |
+| [`platform/emulator.md`](platform/emulator.md) | **Y181 Silverado AAOS booted in the x86_64 Android emulator** (hybrid: GM system/product on goldfish kernel/vendor); theme-matched to the real Silverado UI; fidelity vs the actual radio. Build tree lives in the /Volumes research tree |
 | [`platform/security.md`](platform/security.md) | SELinux, dm-verity, FBE, EEPROM security, CVEs, ProtoKey |
 | [`platform/boot_chain.md`](platform/boot_chain.md) | 5-phase boot, GHS tasks, A/B metadata, misc partition |
 | [`platform/firmware_versions.md`](platform/firmware_versions.md) | Y175/Y177/Y181 diff, DPS/CalDef |
