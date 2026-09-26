@@ -92,11 +92,24 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   `GMTrim=16` (LTZ; DB held 0=None), `TraileringAppType=2` (FULL — required for the SystemUI trailer card; Z82/UET/JL1),
   `APPLICATION_HOMESCREEN_TRAILERING_ENABLED=1` → the 4th home card; `RVS_PRESENT_STATUS=2` (UV2 360). Open: propulsion
   type has no `CalSets.db` row (vendor-only prop); the `FJW`/E15 fuel-blend cal stays factory 0.
-- **Network/FSA (real service mesh) —** `:49156` diagnosticsd (UDS-over-TCP → RTOS `172.16.4.107`), FSA
-  `9002`/`9010`/`9016` LISTEN + sessions to `9005`/`9016`/`9018`. Un-stub via **synthetic `vlan5` peers** (`.106`
-  Visteon IPC dialing the CSM's `9002`; `.107` RTOS diag bridge; `.102` telematics; `.112` CGM_OTA). AE research
-  avenues: FSA wire-format fuzz (no auth), the `:49156` UDS-bridge DoS/fuzz, RemoteModuleHMI cluster-injection,
-  NAM EAP-AKA, SOME/IP-SD discovery fuzz, `IDiagnosticsInternalService` vndbinder-bypass.
+- **Network/FSA (real service mesh) —** `:49156` `diagnosticsd` (**custom 8-byte GM header, NOT DoIP**; bridges
+  `172.16.4.100 ↔ 172.16.4.107` on **vlan4**). FSA `9002`/`9010` LISTEN on vlan5, client dials `9016`/`.112:9018`.
+  Un-stub via synthetic peers: **vlan5** `.106` Visteon IPC dialing the CSM's `9002`, `.102` telematics, `.112`
+  CGM_OTA; **vlan4** `.107` RTOS diag bridge. **FSA protocol solved + proven unauthenticated live** (GET/SUBSCRIBE
+  round-trips on `9002` from an anonymous peer; full spec in [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md)).
+  AE avenues: cluster-injection via EVENT 1032 fktId ≥700; the two FSA parser bugs (int32 `payloadLength` RAM-DoS,
+  reject-path framing desync); `:49156` UDS-bridge DoS/fuzz; NAM EAP-AKA; SOME/IP-SD fuzz; `IDiagnosticsInternalService`
+  vndbinder-bypass. Tools: `~/gm_emu/ae/{fsaprobe,fsalisten4}` (raw-syscall connect/accept4 to bypass the netd fwmark handshake).
+  **FSA int32-`payloadLength` RAM-DoS live-proven (2026-09):** one 20-byte header declaring
+  `payloadLength=0x40000000` forced the real `com.gm.cluster` process into a 1,073,741,856-byte allocation
+  attempt (`OutOfMemoryError` caught, process survives) — repeatable, one packet per shot. Full spec:
+  [`fsa_protocol.md`](fsa_protocol.md#f-bugs-two-fsa-parser-bugs-shared-code-both-9002-and-9016).
+- **`diagnosticsd` + the diagnostics HAL chain are ABSENT from the hybrid emulator.** No
+  `/vendor/bin/diagnosticsd`, no `vendor.gm.diagnostics.obd@1.0::IDiagnosticsObd` registered, and GM
+  Secure-ADB is replaced by Google's stock `adbd`. This is why the SBI/`$27` fail-open
+  ([`security.md`](security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09)) cannot
+  be exercised here — the compare lives off-SoC on the VIP MCU, which this emulator has no stand-in for; it
+  would need a substantial synthetic external-component/VIP endpoint, not a quick stub.
 
 See also: [`security.md`](security.md) (SELinux enforcing on all builds), [`vehicle_network.md`](vehicle_network.md)
 (Info3.x/vlan5 addresses used for the FSA shim), [`hardware.md`](hardware.md) (the real 2400×960 panel).

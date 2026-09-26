@@ -187,13 +187,26 @@ readable by anything on the switch fabric. [X]
 - **GM FSA** — 20-byte big-endian header, magic **`0x5AA5`**, protobuf; catalog in
   [`fsa_protocol.md`](fsa_protocol.md) (9002 RemoteModuleHMI, 9005 OnStarFunctions, 9010
   DeviceInformation, 9011 ProgrammingMaster, 9012/9018 RemoteReflash(UI), 9016 NAM, 9020
-  DisplaysCoordination). Live scan saw the proprietary framing on **port 9010** but could not
-  confirm the `0x5AA5` signature — treat FSA specifics as single-source. [?]
+  DisplaysCoordination). **`0x5AA5` framing now confirmed on the wire** — live unauthenticated
+  interaction with the real cluster service on `9002` in the emulator (GET/SUBSCRIBE round-trips)
+  plus jadx RE of ClusterService/DeviceInformationService. Full spec: 20B BE header (serviceId·
+  instanceId·functionId·opType·clientHandle·magic `0x5AA5`·reserved·**payloadLength int32**) +
+  protobuf; opTypes GET 421/SET 422/REQUEST 641/REQUESTRESPONSE 674/EVENT 1032; serviceId 9002=1007,
+  9010=1001. **No auth of any kind** (see [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md)). [C]
+  Cluster-injection surface (EVENT `opType=1032`, fktId ≥700 into `ClusterViewManager`) and the two
+  parser bugs (unbounded int32 `payloadLength` → live-proven RAM-DoS against `com.gm.cluster`;
+  reject-path framing desync) are documented in
+  [`fsa_protocol.md`](fsa_protocol.md#f-inject-cluster-injection-surface). `ProgrammingMaster`
+  (port 9011, catalog serviceId 1006) is confirmed **dead code** — compiled in, never instantiated,
+  never bound — resolving the catalog-vs-live-scan discrepancy (see
+  [`fsa_protocol.md`](fsa_protocol.md#p-programmingmaster-9011-is-dead-code)). [C]
 - **SOME/IP-SD** present (UDP 30490 / 239.192.0.1). [C]
-- **`:49156`** — the FSA notes call it root `diagnosticsd` UDS-over-TCP
-  ([`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md));
-  the live Y181 scan sees it as an **unknown, localhost-only** listener. Not confirmed as a
-  vehicle-facing DoIP endpoint. [?]
+- **`:49156`** — confirmed root `diagnosticsd`, a **custom 8-byte GM-header UDS bridge, NOT DoIP**
+  (SRC/TGT addr + PAYLOAD_LEN; ECU `0x0084`, tester `0x0FA0`), bridging `172.16.4.100 ↔ 172.16.4.107`
+  on vlan4 to the RTOS diagnostic partition
+  ([`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md)). The
+  `MaxPayload 49156` the external DoIP tester prints at connect is a **coincidental numeral**, not this
+  socket. Unauthenticated `$27/$10/$22` from the shell side return NRC `0x10` generalReject. [C]
 - Firewall INPUT DROP / OUTPUT ACCEPT; FSA servers single-client; NAM brokers **EAP-AKA** cellular
   attach + VLAN grants.
 
@@ -223,7 +236,9 @@ readable by anything on the switch fabric. [X]
 2. CAN address→function decode for the other 22 ECUs.
 3. Whether `.102` (router) and `.107/.112` (CGM/telematics) are one GM TCP/CGM function split
    across faces, or distinct modules.
-4. Identity of `:49156`; whether FSA `0x5AA5` framing is really on the wire (single-source).
+4. ~~Identity of `:49156`; whether FSA `0x5AA5` framing is really on the wire (single-source).~~
+   **RESOLVED (2026-09-26):** `:49156` = root `diagnosticsd`, custom 8-byte GM header (not DoIP);
+   FSA `0x5AA5` framing confirmed live on `9002` + jadx RE. See §Service/protocol layer.
 5. **SecOC on this Silverado:** confirm the CMAC-AES128/27-bit scheme and the $27 key algorithm
    (Plane 1a) against a live A11 capture; identify which frame IDs carry a MAC on gminfo37.
 6. **VLAN-502 CAN mirror:** bench-pcap this unit for a 502 UDP-multicast CAN mirror (Plane 2);

@@ -133,10 +133,35 @@ Trust is enforced solely at the UDS application layer:
 
 **Privilege tiers:** `VIP` > `ETHERNET` > `NOTIFICATION`, each unlocking more
 UDS services; the tier is granted by the 0x27 SecurityAccess response after a
-correct seed/key exchange. Any client that reaches port 49156 and completes 0x27
-gains the corresponding tier — the only barrier is the seed→key algorithm,
-likely implemented in `/vendor/bin/gm_protokey` (Permission Denied from
-uid=2000; see [`platform/security.md`](../platform/security.md#protokey-authentication)).
+correct seed/key exchange. `checkSecurityLevelTable` (string, above) is **only
+the per-tier allowed-service lookup table** — which SIDs a tier may call once
+granted — **not** an SBI/seed-key gate itself.
+
+**[D] CORRECTION (2026-09):** an earlier version of this doc guessed the
+seed→key algorithm was "likely implemented in `/vendor/bin/gm_protokey`." This
+is **wrong** — `gm_protokey` is the boot-time proto-key / disk-encryption
+(`DATA_LOCKED`) state validator (`init.protokey.rc`, kernel-netlink `setKey`,
+sets `vendor.gm.security.state`); it is unrelated to UDS SecurityAccess. See
+[`platform/security.md`](../platform/security.md#protokey--adb-authentication)
+for what `gm_protokey` actually does (ADB/seed-auth state, not `$27`).
+
+**The real `$27` handler is in-process, statically linked into `diagnosticsd`
+itself** (`libuds`, `UDSSecurityLevelCheckRequestHandler.cpp`; an ISO-14229
+attempt-counter is present) — for the `ETHERNET`/`NOTIFICATION` tiers this is
+where the seed/key compare happens locally. For the **`VIP` tier**,
+`diagnosticsd` holds **no key material of its own**: `ProxyOfExtComp::
+handleUDSRequest` forwards a `VIP`-tier `$27` request
+(`MESSAGE_SECURITY_ACCESS_VIP`) over a `SockAdaptor` TCP socket
+(`readHeader`/`PDU_Header`, `imp.socket`) to an external component — the VIP
+MCU — where the actual seed/key compare (and the SBI EEPROM read) happen. So
+the fail-open behavior gated on the SBI EEPROM byte (`0xFF` = "Bypass Active";
+see [`platform/security.md`](../platform/security.md#protokey--adb-authentication))
+relaxes the **VIP's own** key-compare, off-SoC — `diagnosticsd` is a relay for
+that tier, not the enforcement point. On this Ethernet path under normal
+(SBI-inactive) posture, an untrusted peer's `$27` requestSeed still returns
+`7F 27 10` generalReject (fail-closed) before any seed is issued (see
+Trust Model above). The VIP MCU firmware is not in the artifact set, so the
+VIP-side compare cannot be re-derived statically from this bench.
 
 ---
 

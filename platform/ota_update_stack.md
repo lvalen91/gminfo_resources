@@ -53,6 +53,21 @@ fully probeable from uid=2000 via `service call`.
 gate, then NPEs in the internal install manager — i.e. the execution path is
 reached but no caller-permission check guards it.
 
+> **[U] No network→install path (resolved 2026-09).** The missing permission
+> check on `install()` is local-Binder-reachable only — it is not itself a
+> network attack surface, since Binder isn't reachable off-device. The
+> network-adjacent candidate, FSA `RemoteReflash` (port 9012, serviceId 1025),
+> has Android acting as a **client** dialing `.102` (telematics), not a
+> server; inbound events from `.102` dispatch to
+> `IRemoteReflashServiceEvents`, which is **unsubscribed system-wide** —
+> verified across 6 decompiled apps including `CriticalWKSApp`/`GMTCPS`. So on
+> this build there is no reachable path from an unauthenticated Ethernet peer
+> to triggering an install. `.102` is pinned by static IP config with no TLS
+> pinning; whether a rogue vlan5 node can spoof `.102` at L2/L3 to feed a
+> subscribed listener (should one exist on another build/config) is an open
+> bench item. See
+> [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#update--rollback--influence-verdicts-network-peer-over-ethernet-resolved-2026-09).
+
 ### Update Preferences Bundle (Tx 23)
 
 Seven keys in `PersistStore.Key.PREFERENCES`:
@@ -223,6 +238,34 @@ transport). Findings:
   it **fails closed**, not because the code is hardcoded to a single anchor.
   Correction to the framing above: describe this as "production-only because
   the dev CA file is absent," not "the code only trusts one anchor."
+
+### [U] Rollback protection — hardware-enforced, not network-influenceable
+
+GHS keeps its **own** rollback counter in the misc partition, independent of
+AVB's rollback index. Empirically, a Y181→Y177 downgrade writes the A/B slots
+successfully but GHS rejects the older image at boot and falls back to the
+current slot. A manifest's "version check disabled" flag (see
+`delivery_manifest.csv`'s per-module flags above) only affects the **write**
+phase — it does not touch GHS's independent boot-time rollback check. No
+network-reachable surface documented here can influence this counter.
+
+### [U] FSA `ProgrammingMaster` (9011) is dead code
+
+Cross-ref [`fsa_protocol.md`](fsa_protocol.md#p-programmingmaster-9011-is-dead-code):
+the FSA catalog's `ProgrammingMaster` service (serviceId 1006, port 9011) is
+compiled into the CSM image but never instantiated — a live scan shows only
+9002/9010/9016 listening. This is consistent with the Global-B demotion of
+infotainment from Programming Master to HMI-only role documented in
+[`ota_programming_roles.md`](ota_programming_roles.md).
+
+### [U] `DisplaysCoordination` writes — documented, not live-fired
+
+The IPC-hosted `DisplaysCoordination` write methods (`resetOilLife`,
+`setIPCLayout`, `postTPMS_Relearn`, etc. — see
+[`fsa_protocol.md`](fsa_protocol.md#displayscoordination-ipc-serviceid-2027-port-9020--vehicle-telemetry))
+are a documented FSA attack surface but were **not** live-fired this session:
+the service is hosted on Visteon IPC `.106`, which was unreachable off-vehicle
+on this bench (SYN timeout, no RST).
 
 ---
 

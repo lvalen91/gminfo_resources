@@ -138,7 +138,7 @@ heartbeat status frames.
 | 9003 | TurnByTurn | 1008 | TCP (.102) |
 | 9005 | OnStarFunctions | 1010 | TCP (.102) — active ESTAB |
 | 9010 | DeviceInformation | 1001 | all partitions (instanceId varies) |
-| 9011 | ProgrammingMaster | 1006 | CSM (.100) |
+| 9011 | ProgrammingMaster | 1006 | CSM (.100) — **[P] dead code, see below** |
 | 9012 | RemoteReflash | 1025 | TCP (.102) |
 | 9013 | VehicleDataHubFunctions | 1028 | GEN12_TCP |
 | 9015 | TCPConnectionNotification | 1030 | TCP (.102) |
@@ -386,6 +386,59 @@ kernel error code). See [`research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](../
   `research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt` for the broader posture.
 - The Android guest's FSA servers (9002/9010/9016) accept unauthenticated
   Subscribe/Get/RequestResponse from the unprivileged shell (confirmed above).
+- **[C] No authentication, confirmed by jadx RE + live validation (2026-09).**
+  The accept loop caps clients at 6 and dedups by source IP; the only gates
+  ever checked are equality of `serviceId`/`instanceId` against constants that
+  are public in every FSA client APK. There is no TLS, no crypto, no allow-list.
+  Magic `0x5AA5` (offset 10) is **written on send but never checked on receive**
+  — it is not a framing gate. **Live-proven:** an anonymous vlan5 TCP peer sent
+  one 22-byte fkt120 SUBSCRIBE frame (`opType=674`) and the real cluster service
+  subscribed it to StateOfHealth and streamed live HEARTBEAT data; a follow-up
+  GET (`opType=421`) returned a live property value. Tools:
+  `~/gm_emu/ae/{fsaprobe,fsalisten4}` (raw-syscall `connect`/`accept4` to bypass
+  the netd fwmark handshake, required because the emulator has no default data
+  NIC). Full writeup: [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md).
+
+### [F-inject] Cluster-injection surface
+
+`EVENT` (`opType=1032`) for `fktId >= 700` dispatches straight into
+`ClusterViewManager` with no additional gate beyond the service/instance check
+above: `712` `CLIENTFOCUS` (moves cluster focus), `700`/`714` asset state,
+`707`/`708`/`710`/`711`/`713`/`715` widget data, `720`/`721` activity indicator.
+Any anonymous peer that can reach `9002` can drive the instrument cluster,
+pending each individual method's protobuf field validation (not yet examined
+per-method).
+
+### [F-bugs] Two FSA parser bugs (shared code, both `9002` and `9016`)
+
+1. **Unbounded allocation / RAM-DoS.** `payloadLength` (signed int32, offset
+   16) is checked only for `>= 0`, so a single 20-byte header with no payload
+   can declare a length up to ~2 GiB and drive `new byte[20+len]`; the
+   allocation is caught by `catch (OutOfMemoryError)` so the process survives.
+   **Live-proven DoS (2026-09):** one 20-byte frame with `payloadLength =
+   0x40000000` (no payload bytes sent) forced the real `com.gm.cluster`
+   process to attempt a 1,073,741,856-byte allocation —
+   `"Forcing collection of SoftReferences for 1024MB allocation"` + blocking
+   GCs → `OutOfMemoryError` caught. Repeatable at one cheap packet per shot:
+   a GC-stall + soft-cache-flush DoS against the cluster process, no crash.
+2. **Framing desync on rejection.** When `serviceId`/`instanceId` fails the
+   equality check, the payload bytes already on the wire are **not drained**
+   before the next read — the next 20 bytes are misread as a header, putting
+   the connection into permanent TCP framing desync for its remaining
+   lifetime.
+
+### [P] ProgrammingMaster (9011) is dead code
+
+The FSA catalog above is a **static compiled-in table**, not a live picture of
+what runs. `ProgrammingMaster` (serviceId 1006, fktId cluster 201–231, catalog
+port 9011) is compiled into the CSM image but the class is **never
+instantiated** in any decompiled app on this build, and port 9011 is never
+bound — a live scan sees only `9002`/`9010`/`9016` LISTEN. This resolves the
+earlier "why doesn't the live scan show a 9011 server?" contradiction between
+the static catalog and the live-scan port list: Global-B demoted infotainment
+from Programming Master to HMI-only (see
+[`ota_programming_roles.md`](ota_programming_roles.md)), and the catalog
+simply was never pruned of the dead entry.
 
 ## Cross-References
 

@@ -169,7 +169,7 @@ GM-signed root-permitting policy.
 | Priority | Vector | Status | Blocker / next step |
 |----------|--------|--------|---------------------|
 | HIGH | Kernel exploit (4.19.305, KASLR ~0x0D000000) | In progress | Symbols known; need exact slide + exploit. SELinux Enforcing contains documented CVEs by policy. `perf_event_open`/`ptrace`/no-seccomp available |
-| HIGH | diagnosticsd UDS SecurityAccess (0x27) | New path | No OS-level peer gate (binary-confirmed); need seed→key algo (`gm_protokey`). See [`diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) |
+| HIGH | diagnosticsd UDS SecurityAccess (0x27) | New path | No OS-level peer gate (binary-confirmed). **CORRECTED 2026-09:** `ETHERNET`/`NOTIFICATION` tiers are checked in-process (`libuds`), not by `gm_protokey`; `VIP` tier is forwarded off-SoC to the VIP MCU (`ProxyOfExtComp`/`SockAdaptor`), gated by the SBI EEPROM byte. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) and [`platform/security.md`](../../platform/security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09) |
 | HIGH | diagnosticsd oversized-payload alloc | Potential | Confirm `malloc(PAYLOAD_LEN)`-before-check via Ghidra |
 | MEDIUM | diagnosticsd IP source spoof (vlan4) | Speculative | If any trust check is IP-based, a 172.16.4.x source bypasses |
 | MEDIUM | `IDiagnosticsInternalService` HIDL | Untested | Needs vendor SELinux domain (vndbinder) |

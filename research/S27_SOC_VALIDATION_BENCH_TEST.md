@@ -292,7 +292,7 @@ class GMEthDiagConnection(BaseConnection):
 |-------|---------|----------------------------|
 | `67 01 FF FF … FF` (all-`0xFF`) | SoC returned the **same bypassed seed the VIP returns on CAN** | **Bypass mirrored.** Almost certainly any key is accepted — go to step 4 to confirm. |
 | `67 01 00 00 … 00` (all-`0x00`) | ECU says security is **already unlocked** for this session | Effectively no gate; proceed to write. Confirm with a benign privileged read. |
-| `67 01 <random/non-trivial>` | SoC generated its **own real challenge**, independent of the VIP/EEPROM bypass | **Bypass NOT honored on Ethernet.** You need the real seed→key algorithm (`gm_protokey`). SBI flip did not reach this handler. |
+| `67 01 <random/non-trivial>` | SoC generated its **own real challenge**, independent of the VIP/EEPROM bypass | **Bypass NOT honored on Ethernet** for this tier. **CORRECTED 2026-09:** the seed/key compare here is `diagnosticsd`'s own in-process `libuds` handler (`ETHERNET`/`NOTIFICATION` tiers), not `gm_protokey` — `gm_protokey` is the boot-time ADB/seed-auth *state* validator, unrelated to this UDS handler. Only the `VIP` tier is forwarded off-SoC to the VIP MCU, where the SBI EEPROM byte gates the compare. See [`platform/security.md`](../platform/security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09). |
 | `7F 27 10` generalReject | Channel-level refusal — connection is **untrusted** at the app layer (no registered tester ID); daemon rejects `$27` before security logic | Bypass is **irrelevant on this path** for this client. This is exactly what the untrusted shell saw. See failure diagnosis. |
 | `7F 27 22` conditionsNotCorrect | Preconditions unmet (wrong session, voltage, vehicle state) | Ensure `$10 02` succeeded first; retry. |
 | `7F 27 24` requestSequenceError | Seed requested out of order / no valid session | Send `$10 02` on the *same* connection first. |
@@ -341,7 +341,12 @@ Work down this tree based on the `$27 01` reply.
 **A. `$27 01` → `67 01 <real/random seed>` (not FF, not 00), and `$27 02` dummy → `7F 27 35`.**
 > The SoC's `diagnosticsd` runs its **own** SecurityAccess with a real challenge that is independent of the EEPROM SBI flip / VIP bypass. The bypass simply does not reach this handler.
 > - Confirm it is genuinely random: request the seed twice (reconnect between) — a changing seed proves a live RNG, a fixed non-FF seed proves a static (still real) key.
-> - Path forward is NOT the SBI flip: you need the real seed→key routine. On this platform that lives in `/vendor/bin/gm_protokey` (see `platform/security.md`) — reversing/invoking it is a separate effort.
+> - Path forward is NOT the SBI flip: you need the real seed→key routine. **CORRECTED 2026-09:** for the
+>   `ETHERNET`/`NOTIFICATION` tiers that routine is in-process inside `diagnosticsd` itself
+>   (`libuds`, `UDSSecurityLevelCheckRequestHandler.cpp`) — **not** `/vendor/bin/gm_protokey`, which is
+>   the unrelated boot-time ADB/seed-auth state validator. The `VIP` tier is forwarded off-SoC via
+>   `ProxyOfExtComp`/`SockAdaptor` to the external VIP MCU, whose firmware is not in this bench's
+>   artifact set. See [`platform/security.md`](../platform/security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09).
 
 **B. `$27 01` → `7F 27 10` (generalReject), and `$10 02` also → `7F 10 10`.**
 > This is the **untrusted-channel** signature — identical to what the unprivileged Android shell saw in `diagnostics/ethernet_uds_diagnosticsd.md`. `diagnosticsd` has *no* OS-level peer check, but the UDS app layer soft-checks a **registered tester ID**; an unregistered client falls to default session and every service is `generalReject`. The bypass never gets evaluated because the service is refused first.

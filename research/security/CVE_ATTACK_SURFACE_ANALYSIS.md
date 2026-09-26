@@ -127,7 +127,11 @@ ranked list. There is no known stock path to permissive SELinux at all: Y175/Y17
 - **(a)** `ro.boot.bootreason=warm` → gm_protokey reportedly skips seed→key validation.
 - **(b)** Delete `/data/vendor/gm/security/.validation` → TOFU re-provisioning with researcher PAL key.
 - **(c)** Write to `/data/gmprotokey/trigger/` → re-key oracle (path is shell-writable).
-- **Effect:** Opens DiagnosticsService + UDS `$27` SecurityAccess → diagnosticsd.
+- **Effect:** these are `gm_protokey` (ADB/seed-auth state) bypasses, not the diagnosticsd UDS `$27`
+  gate. **CORRECTED 2026-09:** `diagnosticsd`'s `$27` for `ETHERNET`/`NOTIFICATION` tiers is checked
+  in-process by its own `libuds`; the `VIP` tier is forwarded off-SoC to the VIP MCU via
+  `ProxyOfExtComp`/`SockAdaptor`, gated by the SBI EEPROM byte there, not by `gm_protokey`. See
+  [`../../diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md).
 
 ### NEW-5 — diagnosticsd Source-Address Spoofing + readHeader malloc-before-check
 - **(a)** 8-byte framing: `[SRC:2 BE][TGT:2 BE][LEN:4 BE][UDS payload]`. Send SRC=0x00FA (factory tester address); compare NRC vs SRC=0x0001. Changed NRC = trust-tier routing confirmed.

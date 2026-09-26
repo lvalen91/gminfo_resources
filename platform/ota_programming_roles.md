@@ -124,6 +124,25 @@ self-programming addressing gateway 0x45 (Global B Phase 1) → RRM/FSA with inf
 (Global B Phase 2)**. The FSA `ProgrammingMaster` service on the radio (`.100:9011`) and
 `RemoteReflash`/`RemoteReflashUI` on other nodes match the Phase-2 RRM model.
 
+> **[P] CORRECTION (2026-09):** live RE + a live port scan confirm the FSA `ProgrammingMaster`
+> catalog entry (`.100:9011`, serviceId 1006) is **dead code on this build** — compiled into the
+> CSM image but never instantiated; port 9011 is never bound (only 9002/9010/9016 LISTEN). This is
+> consistent with, and reinforces, the Phase-2 reading above: Global-B fully demoted infotainment
+> from Programming Master to an RRM/FSA HMI role, to the point the old Programming Master service
+> class ships unused. See [`fsa_protocol.md`](fsa_protocol.md#p-programmingmaster-9011-is-dead-code).
+
+> **[U] No network→install path (2026-09).** `RemoteReflash` (FSA `9012`) has Android as a
+> **client** dialing `.102` (telematics), not a server; inbound events dispatch to
+> `IRemoteReflashServiceEvents`, which is **unsubscribed system-wide** (verified across 6 apps
+> incl. `CriticalWKSApp`/`GMTCPS`). Combined with `UpdateServiceImplGB.install()` being reachable
+> only via local Binder (no network path), there is no confirmed unauthenticated-Ethernet-peer path
+> to triggering a reflash on this build. `.102` is IP-pinned with no TLS pinning; L2/L3 spoofing of
+> `.102` is a bench open item. Rollback is separately **hardware-enforced** — GHS keeps its own
+> misc-partition rollback counter independent of AVB, un-influenceable from any network surface
+> documented here. See
+> [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#update--rollback--influence-verdicts-network-peer-over-ethernet-resolved-2026-09)
+> and [`ota_update_stack.md`](ota_update_stack.md).
+
 ## GM dealer service programming (SPS2) — official procedure
 
 From GM service data (ALLDATA *Control Module References → Programming and Setup*), the

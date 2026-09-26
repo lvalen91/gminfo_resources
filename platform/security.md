@@ -105,6 +105,48 @@ permitted without a cloud/PAL certificate:
 The same degenerate `0xFF` value also appears on the VIP's plain diagnostic UDS stack, so the
 effect is broader than ADB/ICUSB alone. It does **not** change SELinux mode.
 
+## Ethernet UDS `$27` SecurityAccess — VIP-side forwarding, off-SoC (2026-09)
+
+Distinct from the ADB/seed-auth bypass above: this is the `diagnosticsd`
+Ethernet-diagnostic (`:49156`) `$27` SecurityAccess gate documented fully in
+[`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md).
+Recorded here because it resolves the same underlying SBI-fail-open question
+from the diagnostic-Ethernet side and because an earlier revision of that doc
+mis-attributed the seed/key algorithm to `gm_protokey` (retracted there — see
+its `[D] CORRECTION`).
+
+- **`ETHERNET`/`NOTIFICATION` tiers:** the `$27` compare is in-process, inside
+  `diagnosticsd`'s statically-linked `libuds`
+  (`UDSSecurityLevelCheckRequestHandler.cpp`, ISO-14229 attempt counter present).
+  `checkSecurityLevelTable` is only the per-tier allowed-service table, not the
+  seed/key gate.
+- **`VIP` tier is forwarded off-SoC.** `diagnosticsd` holds no `VIP`-tier key
+  material: `ProxyOfExtComp::handleUDSRequest` relays `MESSAGE_SECURITY_ACCESS_VIP`
+  over a `SockAdaptor` TCP socket to the external VIP MCU, where the real
+  compare — and the SBI EEPROM read — happen. **SBI EEPROM byte = `0xFF` =
+  "Bypass Active"** relaxes the **VIP's own** key-compare, the same SBI flag
+  documented under ProtoKey/ADB above, but enforced on a different component
+  (the VIP's UDS stack, not `gm_adb_auth_init`). RE proves no SoC binary reads
+  the SBI EEPROM directly — the SoC only ever *relays* the SBI/MEC-derived byte
+  via `$22 F1A0` (`diagnosticsd` calls
+  `vendor.gm.diagnostics.obd@1.0::IDiagnosticsObd::getManufacturingEnableCounter()`
+  and returns it verbatim, unchecked).
+- **Under normal (SBI-inactive) posture** an untrusted Ethernet peer's `$27`
+  requestSeed still fails closed (`7F 27 10` generalReject) before any seed is
+  issued — confirmed live, unprivileged shell probe (see the diagnosticsd doc).
+- **This supersedes any earlier "possible fail-open (unconfirmed)" framing**
+  for the SBI/`$27` relationship (see `research/AE_RESEARCH_HANDOFF.md`): the
+  fail-open is **real**, gated on the SBI EEPROM byte, and enforced on the VIP
+  MCU — not the SoC. It cannot be re-derived statically because the VIP MCU
+  firmware's compare routine is not in this bench's artifact set.
+- **Emulator note:** this bypass cannot be reproduced on the hybrid Android
+  emulator (`platform/emulator.md`) — `IDiagnosticsObd` is unregistered,
+  `diagnosticsd` is absent, and GM Secure-ADB is replaced by Google's stock
+  `adbd`, so no secure-mode chain runs at all. The compare is off-SoC on real
+  hardware, so it can only be *modeled* on the emulator (a synthetic external-
+  component/VIP endpoint answering `$27`) — a substantial un-stub, not a quick
+  one.
+
 ### gm_protokey Service
 
 - **Binary:** `/vendor/bin/gm_protokey` (+ `gm_protokey_recovery`)
