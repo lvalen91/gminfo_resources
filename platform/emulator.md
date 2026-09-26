@@ -53,5 +53,37 @@ software/UI/RE emulator, not a functional truck.
 cellular, other ECUs, SecOC, ProtoKey/powermode (stubbed). Climate/Cameras tiles render but don't
 control/feed anything; AA/CarPlay need a paired phone; **Carlink** (aftermarket) isn't in the stock image.
 
+## Un-stub roadmap — using GM's real files (verified vs the real-radio ADB dumps)
+Cross-checking the emulator's stubs against the running radio's dumps (`enumeration/Y181/raw/*`,
+`analysis/adb/Y181/*`) and the GM images. Full reports: `/Volumes/.../2024_Silverado_ICE/emu/y181_ref/unstub/`.
+
+- **VHAL `@2.0-service-gm` → run GM's real one** (in progress). Links `libipc.so`, opens `/dev/ipc/ipc3`,
+  rc gates on `vendor.modules.ipcserver.ready=true`. `/vendor/etc/ipc4.cfg`: IPCServer transport is a plain
+  **UART `/dev/ttyS1` @1 Mbaud** fanned into per-channel Unix sockets; **channel 3 = `vehicle_network`** (the
+  VHAL's user). Goldfish exposes virtual `ttyS*`, so a `libipc` shim is tractable → replaces the Java proxy.
+- **`vendor.gm.gmlocation@1.0-service` + `vehicleaudiocontrol` → cheap net-new adds.** Pure calserviced-HIDL
+  clients, **no `/dev/ipc` dep**; currently absent from the emu — add without a shim.
+- **`calserviced` → already GM-real** (libipc only for the override path).
+- **Audio HAL → stays stubbed permanently.** Real = `vendor.hardware.audio@5.0-harman-custom-service` on a real
+  **AVB (802.1BA)** network (`daemon_cl`/`avb_streamhandler`/`eavbmgr`); a physical-network dep, no libipc fix.
+  Emu substitutes stock Google `audio@6.0`.
+- **powermode/`IPowerModing` → the current system-side Java stand-in is architecturally correct**, not a
+  shortcut: no `/vendor/bin` IPowerModing daemon exists; the real server is the `plmanager` domain.
+- **SELinux enforcing → feasible.** Real domains: `gm_vehicle_hal`, `plmanager`, `calserviced`/`GHSCalibrations`,
+  stock `adbd`; policy **v32.0**. `file_contexts` source is in `emu/hy/sepol/gm_vend/`; init already **recompiles
+  CIL every boot** (no delete-precompiled step); the 5 stand-ins at `u:r:su:s0` need real domains; `cildiff.py`
+  reports only 12 inert Apollo-Lake genfscon symbols. **System/product enforcing ≈ the real posture; vendor-domain
+  enforcing is a plausibility check only** (goldfish + proxies vs Apollo Lake + GHS; the real GHS-IPC rules
+  `gm_vnd_IPCServer`/`ipc_device` have no emulator peer).
+- **Identity props (fidelity fix) —** real radio uses **`persist.sys.cal.brand=GM_Brand_Chevrolet` +
+  `persist.sys.cal.model=Silverado`**; **`persist.vendor.gm.*` does NOT exist on the real radio** (the emu's is
+  guesswork that happens to render via the CalSets `GMBrand=3` + force-enabled RROs). Set the `persist.sys.cal.*`
+  pair and re-verify RRO/theme gating.
+- **Network/FSA (real service mesh) —** `:49156` diagnosticsd (UDS-over-TCP → RTOS `172.16.4.107`), FSA
+  `9002`/`9010`/`9016` LISTEN + sessions to `9005`/`9016`/`9018`. Un-stub via **synthetic `vlan5` peers** (`.106`
+  Visteon IPC dialing the CSM's `9002`; `.107` RTOS diag bridge; `.102` telematics; `.112` CGM_OTA). AE research
+  avenues: FSA wire-format fuzz (no auth), the `:49156` UDS-bridge DoS/fuzz, RemoteModuleHMI cluster-injection,
+  NAM EAP-AKA, SOME/IP-SD discovery fuzz, `IDiagnosticsInternalService` vndbinder-bypass.
+
 See also: [`security.md`](security.md) (SELinux enforcing on all builds), [`vehicle_network.md`](vehicle_network.md)
 (Info3.x/vlan5 addresses used for the FSA shim), [`hardware.md`](hardware.md) (the real 2400×960 panel).
