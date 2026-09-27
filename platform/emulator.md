@@ -43,7 +43,7 @@ software/UI/RE emulator, not a functional truck.
 |---|---|---|
 | SoC/kernel/vendor | Intel Apollo Lake + GM vendor firmware | Google goldfish android-32 kernel/vendor |
 | Hypervisor/boot | VIP RH850 → CSE → ABL → **GHS INTEGRITY** → guest | none — Android on QEMU |
-| VHAL | GM `@2.0-service-gm` on the **live CAN bus** | **GM's real `@2.0-service-gm`** via the libipc shim (540 configs, 486 GM; 141 props shared w/ the real radio) — no live bus behind it |
+| VHAL | GM `@2.0-service-gm` on the **live CAN bus** | **GM's real `@2.0-service-gm`** via the libipc shim (540 configs, 486 GM; 141 props shared w/ the real radio) — no live bus behind it; **frame injection into the shim now drives a subset live** (temp/speed/ignition/GPS — see Un-stub roadmap) |
 | Powermode/RTC/location | real GM daemons on the VCU | **GM's real `plmanager`/`rtcd`/`gmlocation`** run via libipc shim |
 | Calibrations | **per-VIN provisioned** (SDAC/back office) | GM's real `calserviced` + shipped DB, **RPO-matched** to this truck (LTZ trim, Trailering FULL, 360 cams) |
 | Network | real Ethernet/CAN + ECUs, telematics/OnStar | dummy `vlan5`/`vlan4`, no peers |
@@ -54,8 +54,10 @@ software/UI/RE emulator, not a functional truck.
 calibrations) run in their proper GM SELinux domains with zero daemon denials, under **SELinux enforcing**,
 RPO-matched to a 2024 Silverado 2500HD LTZ (Trailering 4th card, LTZ trim). Stable reproducible cold boot
 (`hy/fid/verify.sh`); the Java VHAL/powermode stubs are retired. **Still faked/absent** (no vehicle bus):
-live vehicle data (speed/gear/doors/HVAC/RVS/VIN theft-lock — VHAL props read unavailable, e.g. outside
-temp `--`), telematics/OnStar/cloud/cellular, other ECUs, SecOC; the AVB/GHS/CSE boot-chain trust anchors;
+live vehicle data (doors/HVAC/RVS/VIN theft-lock — no live bus, so VHAL props read unavailable by default;
+**frame injection into the libipc shim now drives a measured subset live — see Un-stub roadmap** for outside
+temp, vehicle speed, ignition/power mode and GPS_POSITION; gear stays PARK/fallback-only), telematics/OnStar/
+cloud/cellular, other ECUs, SecOC; the AVB/GHS/CSE boot-chain trust anchors;
 real Bose/AVB audio. Climate/Cameras/Trailering tiles render but don't control/feed anything; AA/CarPlay
 need a paired phone; **Carlink** (aftermarket) isn't in the stock image.
 
@@ -68,16 +70,64 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   **not** a `/dev/ipc` char-dev client. Built `hy/ipc/libipc_shim.c` (socketpair per channel, logs+swallows writes,
   answers the ready handshake + VIP frames). GM's real VHAL registers `IVehicle/default`, 540 configs (486 GM),
   CarService subscribes 166 (141 shared with the real radio's 188). Java proxy retired.
-- **`vendor.gm.gmlocation@1.0-service` + `vehicleaudiocontrol` → cheap net-new adds.** Pure calserviced-HIDL
-  clients, **no `/dev/ipc` dep**; currently absent from the emu — add without a shim.
+- **Live-bus signal injection (write path) [DONE, partial].** GM's VHAL **rejects HIDL `IVehicle::set()`
+  outright** (sensor props `ACCESS_DENIED`; RW props write-through to the swallowed bus) — the only way in is
+  **frame injection on `/dev/ipc/ipc3`**: write raw frame bytes to `/data/vendor/ipcshim/ipc3.in` (shim pump
+  delivers within ~1s; a `setprop` kick is optional). Wire format decoded from the vhalgm binary:
+  `[0xC1][hdr=00][count]` then count×`[fidLo][fidHi][payLen 1..8][payload]`; `frameId=((fidHi&0x0f)<<8)|fidLo`
+  (12-bit); payload **big-endian**; the handler validates `payloadSize==cfg[+8]` (else logs `Wrong size for
+  frame 0x%X`); a dedup filter drops repeat values (inject fresh ones each time). Discovery oracle:
+  `setprop log.tag.GMVHAL VERBOSE` → `Frame Message` / `SignalStore SignalName: <sig> Value: N` /
+  `setPropFromVehicle Property: <PROP>`. Full **152-frame bus→VehicleProperty map** at
+  `emu/y181_integration/framemap.txt` (reference, not reproduced here). **Landed signals (measured):**
+  outside temp (frame `0x4A8`, signal `OATP_OtsAirTmpCrValAuth`, ENV_OUTSIDE_TEMPERATURE read-back 22.0°C;
+  HMI status-bar render needs a sustained feed, see caveat below); vehicle speed (frame `0x229`, signal
+  `VSADP_VehSpdAvgDrvnAuth`; full inject→VHAL→CarService chain confirmed, `CarDrivingStateService` 0→MOVING);
+  ignition/power mode (frame `0x284`, signal `SPMP_SysPwrModeAuth`; IGNITION_STATE=4/RUN); GPS_POSITION (frame
+  `0x26A`, signals `GPSC_PPSLat`/`GPSC_PPSLong`, 180/2^30 deg/LSB; Central Park round-tripped through VhalCtl +
+  GMVHAL). **PARTIAL:** gear (frame `0x264`, `TEGP_TrnsEstGrAuth`) — GEAR_SELECTION only drives PARK/fallback
+  on this build.
+- **`vendor.gm.gmlocation@1.0-service` → now runs [DONE]** (real, via libipc shim; live pid confirmed), **but
+  does not consume the injected GPS_POSITION** — it sources position from the Harman **navsens** HAL
+  (`GmLocationService::receiveGNSSLocation`), unregistered in the emulator (only stock
+  `gnss@2.0-service.ranchu`). CarService/apps reading GPS_POSITION get the injected value (Android
+  `LocationManager` also gets it via `emu geo fix`); GM's own gmlocation would need a navsens HAL stub — out of
+  frame-injection scope. **`vehicleaudiocontrol`
+  → still absent, next cheap net-new add.** Both are calserviced-HIDL clients with no `/dev/ipc` dep (verify vehicleaudiocontrol's
+  import table before adding).
 - **`calserviced` → already GM-real** (libipc only for the override path).
 - **Audio HAL → stays stubbed permanently.** Real = `vendor.hardware.audio@5.0-harman-custom-service` on a real
   **AVB (802.1BA)** network (`daemon_cl`/`avb_streamhandler`/`eavbmgr`); a physical-network dep, no libipc fix.
-  Emu substitutes stock Google `audio@6.0`.
+  Emu substitutes stock Google `audio@6.0`. **Update (2026-09-26):** `-no-audio` removed from `boot.sh` — live
+  PRIMARY mixer output now reaches host CoreAudio (confirmed via `dumpsys media.audio_flinger` `AudioOut_D`).
+  Guest **mic** pipeline PASSES (`AudioRecord` captures at correct real-time pacing, not muted; consumers
+  include `carassistant`, `com.gm.car.input`, `gmaudio.tuner`, BT-HFP). Host delivery is still **blocked** over
+  headless SSH: the Mac Pro has no hardware audio input (a BlackHole 2ch virtual loopback was installed to give
+  it one), and macOS mic-privacy (TCC) denies mic to SSH-launched processes and can't be granted over SSH.
+  Closing it needs a GUI/Screen-Sharing console session on the Mac Pro to grant the emulator mic permission
+  (same as how CT5's mic was closed) — not an emulator defect.
+- **Memory/touch parity [DONE].** RAM now mirrors the radio: 6144M (guest `MemTotal` ~5.8GB vs radio 5.66GB),
+  zram swap disabled (radio `SwapTotal=0`). Touch stays 2400×960@200 (already correct).
+- **Durability.** `boot.sh` runs `emu_integration/scenario.sh` ~20s after `boot_completed`: re-pushes VhalCtl,
+  injects temp/speed/ignition/GPS frames, deploys+bind-mounts the `libpal_tod` stub, restarts rtcd, re-asserts
+  IGNITION=RUN, and runs `emu geo fix -73.9654 40.7829`. Survives `-wipe-data` cold boots. Artifacts under
+  `emu/hy/emu_integration/` (`scenario.sh`, `inject.py`, `framemap.txt`/`.py`, `libpal_tod.so`, sweep tools) +
+  `emu/hy/vhal` (VhalCtl harness).
+- **Caveat — HMI rendering needs a sustained feed.** GM's VHAL gates status=AVAILABLE, HMI-widget rendering,
+  MOVING, and vendor-mirror props behind a broad `_Auth`/validity + power-context signal set. One-shot
+  injection sets raw property values deterministically (verifiable via VhalCtl) but persistent HMI rendering
+  needs a periodic broad valid-signal feed replaying the companion `_Auth` bits.
 - **powermode/`IPowerModing` → GM's real `plmanager` now runs [DONE]** (via the libipc shim; `IPowerModing`
   registered, "Power Moding service is ready"). Correction to the earlier note: `plmanager` **is** the real
   server (a libipc client), and it replaced the Java stand-in. `rtcd` (`IRemoteRtcService`) and `gmlocation`
   (`IGmLocation`) likewise run real via libipc.
+- **RUN power state blocked by an RTC dependency — fixed.** `PowerPropertyManager` requires
+  `IRemoteRtcService.getStatus()==1`, which only flips when `libpal_tod.so` sees a "remote ready" channel state
+  from the VIP over IPC — swallowed by the shim, so it looped `Remote Alarm service is not ready` /
+  `netlink_send_request error:-1` forever and blocked RUN. Fix: a drop-in stub **`libpal_tod.so`** (7
+  `tod_pal_*` symbols; source `hy/ipc/src/libpal_tod_shim.c`) that fires rtcd's ready callback with 1;
+  bind-mounted over `/vendor/lib64/libpal_tod.so`, rtcd restarted. Result: `onVehiclePowerMode: Off(0)→Run(2)`,
+  RTC errors zero. Durable via `scenario.sh` (see Durability below).
 - **SELinux enforcing → ACHIEVED [DONE].** Real GM domains `gm_vehicle_hal`/`plmanager`/`rtcd`/`gmlocation`/
   `calserviced` derived from `vendor_sepolicy.cil` (v**32.0**; `file_contexts` from `emu/hy/sepol/gm_vend/`), glue
   domains for the shim; init recompiles CIL each boot. **6 consecutive `-wipe-data` cold boots all `Enforcing`,

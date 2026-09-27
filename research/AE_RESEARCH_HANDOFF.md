@@ -23,6 +23,21 @@ diagnostic captures as ground truth.
 - **Repo docs:** `platform/vehicle_network.md` (network map, 27-ECU census), `platform/emulator.md`
   (emulator fidelity + un-stub roadmap), `diagnostics/ethernet_uds_diagnosticsd.md` (the on-radio bridge).
 
+## Emulator integration (CT5-parity, 2026-09-26)
+The Y181 emulator now has a working VHAL **write path** (the CT5 analog): GM's real `@2.0-service-gm` rejects
+HIDL `IVehicle::set()` outright, so live data goes in via **frame injection on `/dev/ipc/ipc3`**
+(`/data/vendor/ipcshim/ipc3.in`; wire format + the 152-frame bus→property map are in
+[`../platform/emulator.md`](../platform/emulator.md#un-stub-roadmap--using-gms-real-files-verified-vs-the-real-radio-adb-dumps)).
+Measured live: outside temp, vehicle speed (full inject→VHAL→CarService MOVING chain), ignition/power mode,
+GPS_POSITION; gear is PARK/fallback-only (partial). A `libpal_tod.so` stub (fires rtcd's ready callback)
+unblocked RUN power state, previously stuck looping on an RTC-service dependency the shim can't satisfy —
+durable via `boot.sh`'s post-boot `scenario.sh`.
+**Open items relevant to AE work:** `vendor.gm.gmlocation@1.0` does not consume the injected GPS_POSITION — it
+sources from a Harman **navsens** HAL not present in the emulator, so any research depending on GM's own
+location stack (vs. stock Android LocationManager) needs a navsens stub. Guest mic capture works correctly but
+host-side audio delivery is blocked by TCC/no-input-device on the headless Mac Pro (needs a console session,
+not a code fix) — relevant if AE work later wants a live audio channel for HFP/voice-assistant testing.
+
 ## The radio's three wired AE links (GM service data, this 2500HD LTZ ICE build)
 The CSM (A11) has **three physical 100BASE-T1 pairs actually wired** on this vehicle; Android sees one
 Intel I210 NIC (gPTP master) feeding an on-board AE switch that presents **two tagged VLANs (vlan4, vlan5)**.
