@@ -1584,21 +1584,38 @@ dependency — see the Appendix C correction above and `platform/boot_chain.md`.
 
 ## Appendix G: QEMU Portability Assessment (2026-09)
 
-**Verdict — CONFIRMED (2026-09-27):** the real GM kernel IS portable to plain `qemu-system-x86_64` (q35
-machine type), and this is now an empirical result, not just a static-analysis claim. GHS is a
-SERVICE-layer blocker (specific vendor daemons/HALs stay dead without it), **not** a BOOT-layer
-blocker — the kernel boots without any GHS device present, per the `CONFIG_PARAVIRT`-off finding (F.3)
-and the PCI-driver graceful-degrade structure (F.4), both now directly observed at runtime rather than
-inferred. This refines the `platform/emulator.md` claim "GM's real vendor firmware can't boot on
-goldfish": the precise statement is **"can't boot on goldfish/ranchu specifically (virtio-mmio backend,
-wrong machine type) — the real kernel boots on plain qemu-system-x86_64/q35 (virtio-pci backend);
-confirmed by an actual boot on 2026-09-27 (q35, `-accel hvf`, virtio-blk-pci, e1000e, no display) on the
-Mac Pro, isolated from the goldfish AVD. Reached kernel boot → first-stage init →
-`/system`+`/vendor`+`/product` mounted from a real virtio-blk GPT disk → second-stage init started;
-stops at a `vold-failed` reboot caused by GM's `user` build forcing SELinux enforcing regardless of the
-`androidboot.selinux=permissive` cmdline arg — did not yet reach an interactive shell/zygote. Treat the
-kernel/vendor-ABI portability question as settled; the open work is now purely userspace
-SELinux/partition plumbing (see below), not a kernel or GHS-coupling risk."**
+**Verdict — MILESTONE CONFIRMED (2026-09-27), supersedes the earlier "reaches second-stage init,
+blocked on SELinux-enforcing/vold-failed" interim status recorded in the previous pass of this
+appendix:** the real GM kernel IS portable to plain `qemu-system-x86_64` (q35 machine type), and this is
+now an empirical result at full-boot fidelity, not just a static-analysis claim or a partial-boot
+result. GHS is a SERVICE-layer blocker (specific vendor daemons/HALs stay dead without it), **not** a
+BOOT-layer blocker — the kernel boots without any GHS device present, per the `CONFIG_PARAVIRT`-off
+finding (F.3) and the PCI-driver graceful-degrade structure (F.4), both directly observed at runtime.
+This refines the `platform/emulator.md` claim "GM's real vendor firmware can't boot on goldfish": the
+precise statement is **"can't boot on goldfish/ranchu specifically (virtio-mmio backend, wrong machine
+type) — the real kernel boots on plain qemu-system-x86_64/q35 (virtio-pci backend), and now boots
+AUTONOMOUSLY (no manual intervention) all the way to a fully rendered, themed AAOS home screen, in ~4
+minutes cold boot (q35, `-accel hvf`, virtio-blk-pci, e1000e) on the Mac Pro, isolated from the goldfish
+AVD. Reproduced twice (a manual-assisted first pass, then a clean hands-off autoboot) with matching
+screencaps at different timestamps, confirming reproducibility; verified live via qemu screendump +
+guest shell, not build-only. The previously-blocking `vold-failed`/SELinux-enforcing second-stage reboot
+loop is resolved as part of reaching the home screen. Treat the kernel/vendor-ABI portability question
+as settled at full-boot fidelity — remaining work is now UI/calibration parity with the goldfish hybrid
+(see `platform/emulator.md`'s visual/calibration parity-gap note) and the still-open items below (VHAL
+now runs NATIVELY with no shim needed at all — a further improvement over the "stubbable via
+libipc_shim" classification in G.2 below, since the real IPCServer already provides the link), not a
+kernel or GHS-coupling risk."**
+
+**VHAL update:** the real IPCServer (userspace VIP-link daemon) runs and sets
+`vendor.modules.ipcserver.ready`; `android.hardware.automotive.vehicle@2.0-service-gm` registers for
+real (`lshal` shows `IVehicle/default`), with CarService running 34 real property-subscription clients
+and driving-state correctly deriving PARKED. No `libipc_shim` port was needed here — see
+`platform/emulator.md`'s "VHAL — native, no shim needed" subsection for the full writeup. **Graphics**
+was solved via a from-scratch software-rendering stack (`gralloc.swfb.so` + patched
+`hwcomposer.swfb.so` + SwiftShader sourced from the goldfish `google_apis` image) rather than the
+drm_hwcomposer/SwiftShader retargeting anticipated in G.2 below — see `platform/emulator.md`'s
+"Graphics stack" subsection for the full writeup; the anticipated approach in G.2's Display row is
+superseded by this actually-implemented one.
 
 Two assumptions in this plan were tested and found wrong, then corrected: (1) the extracted ACPI SSDT
 (`ssdt_android.aml`, `_HID ANDR0001`) loads into ACPI fine but does **not** work as a DT-fstab source —
@@ -1613,16 +1630,14 @@ created by first-stage init on this kernel. A new hardware-fidelity fact from ve
 channel by SELinux label); the console must be on `ttyS2`+ (`serial_device`) or SELinux denies the
 write.
 
-**Remaining blocker (honest stopping point):** GM's `user` build forces `enforcing=1` regardless of the
+**Formerly the stopping point, now resolved:** GM's `user` build forces `enforcing=1` regardless of the
 permissive cmdline arg (`selinux=0` outright breaks `mount(selinuxfs)`, so SELinux can't be compiled out
-either — it's a hard build requirement). Under enforcing with no permissive domains, `vold` is
-AVC-denied and killed → the second-stage reboot loop; a recovery-mode follow-up reached the
-`console`/`adbd` service definitions but both are denied (`avc: denied { setcurrent }`) before a shell
-starts. Next concrete step (not yet attempted): `secilc`/`sepolicy-inject` to make `adbd`/`su` domains
-permissive in the ramdisk's compiled `/sepolicy` (recovery and system policy both need it), or relabel
-the console device node. A full boot to zygote additionally needs a real `data`(f2fs)/`metadata`
-partition (zeroed/absent in the test disk) and `system_ext_a` (missing, non-fatal so far), plus the
-previously-planned userspace shims (software keymaster for FBE) once a shell is reached.
+either — it's a hard build requirement). This previously caused `vold` to be AVC-denied and killed → a
+second-stage reboot loop. That loop is now resolved as part of the full boot-to-home-screen milestone
+above (see `platform/emulator.md` for the fix details); `data`(f2fs) and a live shell are both reached.
+Remaining open items are UI/calibration parity with the goldfish hybrid and the 38-unidentified-crashes
+item from the logcat analysis (see `platform/emulator.md`'s logcat comparative-analysis subsection), not
+the SELinux/vold boot blocker.
 
 Artifacts (`run.sh`, `mkstatic.py`, `patch_cpio.py`, `ssdt_noavb.aml`/`.dsl`, `fstab.patched`,
 `serial.log`) preserved to
@@ -1670,8 +1685,11 @@ natively (no VINTF-manifest surgery needed to make GM vendor fit a foreign kerne
 (`:49156`, currently completely absent from the goldfish emulator because its vendor-lib dependency web
 assumes the real kernel/vendor) becomes potentially runnable; the real VHAL's kernel-side dependencies
 resolve natively (still needs a VIP peer via the existing shim, but no cross-kernel-ABI translation
-layer). Effort estimate: ~2-4 focused days to first kernel-up/first-stage-mount/adb-shell; +1-2 weeks
-to a stable AAOS UI (matching the current hybrid's maturity).
+layer); this is no longer needed via a shim at all, since the real IPCServer resolves natively (see
+VHAL update above). Original effort estimate: ~2-4 focused days to first kernel-up/first-stage-mount/
+adb-shell; +1-2 weeks to a stable AAOS UI (matching the current hybrid's maturity) — **superseded:** the
+home-screen milestone above was reached within that estimate's window; remaining work is UI/calibration
+parity (see `platform/emulator.md`), not additional bring-up.
 
 **Framing for future work:** worth doing specifically for vendor-layer fidelity (`diagnosticsd`, native
 vendor SELinux/HALs) — not a general shortcut over the existing goldfish hybrid, which remains
