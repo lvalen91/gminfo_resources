@@ -68,6 +68,57 @@ reached but no caller-permission check guards it.
 > bench item. See
 > [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#update--rollback--influence-verdicts-network-peer-over-ethernet-resolved-2026-09).
 
+> **[U] INSTALLRUNNER trace (2026-09) — closes the code-execution question for the local IPC path.**
+> Refines (does not contradict) the "no network→install path" verdict above. `IUpdateService.install()`
+> (Tx11) has no permission check, but SELinux `find` on `gm_domain_service` (the coarse label hosting
+> UpdateService/DelayedService/CriticalService) is granted only to **platform_app, priv_app,
+> carservice_app** — **not untrusted_app, not shell** — so this is a priv_app/platform_app/carservice_app
+> → system escalation, not an ordinary-3P-app one. Traced end-to-end
+> (`com/gm/server/update/installer/InstallRunner.java`, `UpdatePackage`/`Signature`/`Package` in
+> `DelayedWKSApp`):
+> - The caller's `PackageDetails` IPC argument is **never consumed** by the install pipeline —
+>   `retrievePackageFromMessage()` only accepts `msg.obj instanceof Package` (never true for a raw
+>   IPC-supplied `PackageDetails`), so the state machine always falls back to its own internally-tracked,
+>   legitimately-downloaded `Package` object. `InstallRunner.install(pkg)` uses that trusted internal
+>   object, not the caller's argument.
+> - **Verdict: exploiting the missing permission check achieves forced/premature install-triggering of
+>   whatever update the vehicle already has legitimately staged — a real bug (bypasses user-consent
+>   timing/state gating, a DoS/nuisance vector) — it does NOT allow substituting attacker-controlled image
+>   content.** Downgrade from "critical RCE-adjacent" to "HIGH: unauthorized-trigger / consent-bypass only."
+> - **Signature.verify() mechanism (normal manifest path, containerType 0):**
+>   `InstallRunner.populateInstallers()` (`InstallRunner.java:577-578`) unconditionally runs a `Verifier`
+>   installer before `RecoveryModeInstaller`; `Verifier.run()` calls `UpdatePackage.verify()`
+>   (`UpdatePackage.java:179-208`): real X.509 chain check — extracts the embedded signing cert, loads a
+>   trust anchor from `/system/etc/security/production/signingCA.cer` (or `development/signingCA.cer` only
+>   if the manifest itself claims `isDevelopmentSecurity()=true`), calls
+>   `untrusted.verify(trusted.getPublicKey())` (`Signature.java:126-146`), then `Manifest.verify()`, then
+>   license/DRM checks, then per-module `ModulePart.verify()`. Any failure aborts before any apply step.
+>   This is a second independent layer alongside the native `gm_update_engine` RSA-2048 whole-manifest
+>   check documented above. `UpdatePackage.parse(path, type)` — the only factory used by the normal
+>   OTA/USB manifest flow — hard-rejects any `type != 0` (`UpdatePackage.java:250-251`): an attacker cannot
+>   get a manifest-type package with forged content through this factory either; it must be a real signed
+>   manifest folder already on disk.
+> - **Open item, flagged not exploited: `DevCaloverrideInstaller` (containerType=2,
+>   CONTAINER_TYPE_DEV_CALIBRATION_OVERRIDE).** `UpdatePackage.verify()` returns `true`
+>   **unconditionally** for this type (`UpdatePackage.java:210`), and `populateInstallers()` never adds a
+>   `Verifier` for it (only Delay + `DevCaloverrideInstaller`, `InstallRunner.java:593-596`).
+>   `DevCaloverrideInstaller.copy()` copies whatever files are listed in `getDevCaloverrides()` straight
+>   into `/update_cache/calibrations` with **zero signature/hash check**, then reboots to recovery. But
+>   the only factory that builds such a package (`UpdatePackage.parseCaloverride`,
+>   `UpdatePackage.java:310-329`, itself validating nothing beyond `File.exists()`) is only ever called
+>   from `USBUpdateSource$1.onUSBMounted` (`USBUpdateSource.java:58`) — triggered by physical USB-media
+>   mount detection, not reachable via `IUpdateService.install()` or any other IPC method traced. **This is
+>   the single most promising remaining thread for a future update-path escalation** — it requires RE of
+>   `USBNotifier.java` (what actually decides `container_type==2` and the file list on USB mount; not yet
+>   reviewed) to determine whether any non-removable-media path could be spoofed as a mounted USB volume.
+> - Downgrade/rollback: not directly evaluated via this trace (PNVersionVerifier compares against the
+>   manifest's own declared expected versions, protected by the same signature chain) — state as
+>   inferred-absence, not proven-absence, alongside the hardware-enforced GHS rollback counter below.
+> - **Net verdict: the update/install IPC surface is CLOSED for arbitrary-code-as-system /
+>   attacker-content-injection.** The unguarded `install()` Binder call is a real bug (unauthorized-trigger,
+>   consent-bypass, DoS) but not a payload-substitution vector. Full ranked writeup:
+>   [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
+
 ### Update Preferences Bundle (Tx 23)
 
 Seven keys in `PersistStore.Key.PREFERENCES`:

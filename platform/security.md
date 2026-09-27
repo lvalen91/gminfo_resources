@@ -408,6 +408,20 @@ The earlier claim that "both Y177 CVEs are exploitable due to SELinux permissive
 
 ## Attack Surface Analysis
 
+> **[C] Phase 1 offensive audit (Sep 2026) — single most severe finding.** Static RE of decompiled
+> Y181 APKs found `IGMAuthService` (host process `com.gm.authtoken`, uid `system`) gates
+> `getAuthTokenByUserID`/`setAuthTokenByUserID`/`removeAccount`/`getGuestAccountToken` behind three
+> custom permissions (`gm.permission.authentication.{ID|CLIENT|USER}`) that are shipped with
+> `protectionLevel=normal` — auto-granted at install to any app that simply declares them, no
+> signature match, no prompt. Any sideloaded third-party app can therefore exfiltrate live
+> GM/OnStar bearer tokens from the on-device `authtokens` SQLite DB, forge/replace tokens for
+> arbitrary users, or lock out an account — confirmed under SELinux Enforcing against the shipped
+> `product_sepolicy.cil` (`service_manager find` on `gm_authToken_service` is granted to
+> untrusted_app), not an emulator/root artifact. Full ranked findings (including a same-class
+> systemic `prot=normal` issue across the `com.gm.vehicle.permission.READ_*` telemetry family, an
+> unauthenticated cluster/HUD display-injection surface, and two new FSA UDP/multicast bugs):
+> [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
+
 ### Network Services
 
 | Bind Address | Port | Risk | Notes |

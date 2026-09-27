@@ -32,9 +32,20 @@ Measured live: outside temp, vehicle speed (full inject→VHAL→CarService MOVI
 GPS_POSITION; gear is PARK/fallback-only (partial). A `libpal_tod.so` stub (fires rtcd's ready callback)
 unblocked RUN power state, previously stuck looping on an RTC-service dependency the shim can't satisfy —
 durable via `boot.sh`'s post-boot `scenario.sh`.
-**Open items relevant to AE work:** `vendor.gm.gmlocation@1.0` does not consume the injected GPS_POSITION — it
-sources from a Harman **navsens** HAL not present in the emulator, so any research depending on GM's own
-location stack (vs. stock Android LocationManager) needs a navsens stub. Guest mic capture works correctly but
+**Update (2026-09-27) — navsens HIDL wiring PROVEN, DR-fusion gate remains:** `vendor.gm.gmlocation@1.0`
+does not consume the injected GPS_POSITION directly — it sources from a Harman **navsens** HAL
+(`vendor.harman.hardware.navsens@1.0::INavsens/default`). A Java `app_process` HIDL stub (`Navsens.java`)
+now registers this interface and streams `gnssLocationCB` at 1Hz; **measured**: `lshal` shows it
+registered, gmlocation logs `Connection to navsens HAL succeeded`, and gmlocation's own
+`NavsensCallback::gnssLocationCB` handler caches the injected fix (Central Park) — a real, measured
+client-server connection with data flow, cold-boot durable via `scenario.sh`. **Remaining gate:**
+gmlocation's internal publish/fusion loop only caches the GNSS fix; it also needs DR-calibration state
+(`DRCoefficient`/`CarWheelPulseResolution`, currently defaulted/invalid) and three more navsens
+sub-interfaces the stub doesn't implement yet (`getSensorAccelerometerInterface/Gyroscope/Wheel` — all
+HIDL-failure today), so `IGmLocation::start()` doesn't yet produce fused/published output. Any research
+depending on GM's own location stack (vs. stock Android LocationManager) should treat GNSS-in as solved
+and the DR-fusion sub-interfaces as the next build item. Details in `platform/emulator.md`'s Un-stub
+roadmap. Guest mic capture works correctly but
 host-side audio delivery is blocked by TCC/no-input-device on the headless Mac Pro (needs a console session,
 not a code fix) — relevant if AE work later wants a live audio channel for HFP/voice-assistant testing.
 
@@ -68,10 +79,16 @@ ProgrammingMaster, 9012/9018 RemoteReflash(UI), 9016 NAM, 9020 DisplaysCoordinat
 - **PROVEN unauthenticated:** an anonymous vlan5 TCP peer subscribed to StateOfHealth and streamed live
   HEARTBEAT data, and GET-read a live property value. Tools: `~/gm_emu/ae/{fsaprobe,fsalisten4}` (raw-syscall
   connect/accept4 to bypass the netd fwmark handshake — mandatory in this no-default-NIC emulator).
-- **Cluster-injection surface:** EVENT (1032) for fktId ≥700 dispatches straight into `ClusterViewManager` —
-  712 CLIENTFOCUS (moves cluster focus), 700/714 asset state, 707/708/710/711/713/715 widget data, 720/721
+- **Cluster-injection surface:** REQUEST/REQUESTRESPONSE (opType 641/674) via the method handler for fktId
+  ≥700 dispatches straight into `ClusterViewManager` — **corrected 2026-09**: prior revisions of this doc
+  misattributed this to `EVENT`/opType 1032; deobfuscated FSA service lib RE (`com/gm/fsa/service/`,
+  cross-checked against ClusterService's router `f/d.java`/`f/h.java`/`h/b.java`) shows opType 1032 (Event)
+  in the router only ever drives OfferService/discovery multicast, never `ClusterViewManager` — 712
+  CLIENTFOCUS (moves cluster focus), 700/714 asset state, 707/708/710/711/713/715 widget data, 720/721
   activity indicator. Any anonymous peer can drive the instrument cluster (pending each method's protobuf
-  field validation, not yet examined).
+  field validation, not yet examined). Two new UDP/multicast findings (AIOOBE crash + connectionless
+  all-gates-bypass injection) — see [`fsa_protocol.md`](../platform/fsa_protocol.md#f-udp-udpmulticast-discovery-listener-crash-aioobe--high-unauthenticated)
+  and [`security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
 - **Two parser bugs (shared FSA code, both services):** (1) `payloadLength` (signed int32) checked only `≥0` →
   unbounded `new byte[20+len]` up to ~2 GiB (caught by `catch(OutOfMemoryError)`, but repeatable → RAM DoS);
   (2) on serviceId/instanceId rejection the payload bytes are **not drained** → next 20 bytes misread as a
@@ -133,9 +150,12 @@ reproducible on the emulator, since the compare lives off-SoC on the VIP MCU.
 can be driven both ways:
 - `.106` Visteon IPC — an FSA **client** dialing the CSM's `9002` (highest value; drives RemoteModuleHMI).
 - `.102` telematics FSA server (OnStar/TurnByTurn/RemoteReflash), `.112` CGM/OTA stub.
-Targets: **cluster-injection** via EVENT 1032 fktId ≥700 (712 CLIENTFOCUS etc.) — craft the protobuf-nano
-payload each `ClusterViewManager` method expects, then examine that method's field validation; the **int32
-payloadLength RAM-DoS** and the **framing-desync** parser bugs; FSA wire-format fuzz; SOME/IP-SD (UDP 30490) fuzz.
+Targets: **cluster-injection** via REQUEST/REQUESTRESPONSE opType 641/674 fktId ≥700 (712 CLIENTFOCUS etc.,
+not EVENT 1032 — see correction above) — craft the protobuf-nano payload each `ClusterViewManager` method
+expects, then examine that method's field validation; the **int32 payloadLength RAM-DoS** and the
+**framing-desync** parser bugs; the new **UDP/multicast AIOOBE crash** and **connectionless injection**
+findings (build a UDP sender, `fsaprobe`/`fsalisten4` are TCP-only); FSA wire-format fuzz; SOME/IP-SD (UDP
+30490) fuzz.
 
 **Link-2 (vlan4 diagnosticsd) — needs setup.** Confirm `diagnosticsd` actually runs in the hybrid image (it is a
 `/vendor/bin` daemon tied to the real vendor firmware; may be absent), then stand up a `.107` RTOS stub that

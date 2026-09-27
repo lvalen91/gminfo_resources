@@ -193,10 +193,15 @@ readable by anything on the switch fabric. [X]
   instanceId·functionId·opType·clientHandle·magic `0x5AA5`·reserved·**payloadLength int32**) +
   protobuf; opTypes GET 421/SET 422/REQUEST 641/REQUESTRESPONSE 674/EVENT 1032; serviceId 9002=1007,
   9010=1001. **No auth of any kind** (see [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md)). [C]
-  Cluster-injection surface (EVENT `opType=1032`, fktId ≥700 into `ClusterViewManager`) and the two
-  parser bugs (unbounded int32 `payloadLength` → live-proven RAM-DoS against `com.gm.cluster`;
-  reject-path framing desync) are documented in
-  [`fsa_protocol.md`](fsa_protocol.md#f-inject-cluster-injection-surface). `ProgrammingMaster`
+  Cluster-injection surface (`REQUEST`/`REQUESTRESPONSE` `opType=641/674`, fktId ≥700 into
+  `ClusterViewManager` via the method handler — **corrected 2026-09, was misattributed to
+  EVENT/1032**) and the two parser bugs (unbounded int32 `payloadLength` → live-proven RAM-DoS
+  against `com.gm.cluster`; reject-path framing desync) are documented in
+  [`fsa_protocol.md`](fsa_protocol.md#f-inject-cluster-injection-surface), plus two new
+  UDP/multicast discovery-listener findings (uncaught AIOOBE crash; connectionless injection
+  bypassing all gates) at
+  [`fsa_protocol.md#f-udp-udpmulticast-discovery-listener-crash-aioobe--high-unauthenticated`](fsa_protocol.md#f-udp-udpmulticast-discovery-listener-crash-aioobe--high-unauthenticated).
+  `ProgrammingMaster`
   (port 9011, catalog serviceId 1006) is confirmed **dead code** — compiled in, never instantiated,
   never bound — resolving the catalog-vs-live-scan discrepancy (see
   [`fsa_protocol.md`](fsa_protocol.md#p-programmingmaster-9011-is-dead-code)). [C]

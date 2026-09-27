@@ -518,4 +518,9 @@ been done and is the clean, bypass-free way to satisfy `$27 03/04`.
 - `reference/.../schema/calovride_1.7.xsd` — `.calovride` XML format for Path B.
 - `eeprom_map_opus_A.md` — VIP cal NvM/Ea-Fee indirection (context for why the *VIP* cal path is harder
   than the SoC `CalSets.db` path chosen here).
+- `platform/gmsystemui_app_capability_gating.md` — what `SCREEN_RESOLUTION=4` actually gates
+  code-side (the `CardView` clock/widget panel's existence check, `GMCarStatusBar.i3()`/`g1()`) and the
+  separate, non-calibration app-capability/immersive allow-list (`WhiteList.java`) that this write does
+  **not** touch — relevant if the goal is hiding/expanding UI around a specific foreground app rather
+  than changing the panel/resolution itself.
 ```

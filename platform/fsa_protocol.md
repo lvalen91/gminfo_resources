@@ -401,13 +401,77 @@ kernel error code). See [`research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](../
 
 ### [F-inject] Cluster-injection surface
 
-`EVENT` (`opType=1032`) for `fktId >= 700` dispatches straight into
-`ClusterViewManager` with no additional gate beyond the service/instance check
-above: `712` `CLIENTFOCUS` (moves cluster focus), `700`/`714` asset state,
-`707`/`708`/`710`/`711`/`713`/`715` widget data, `720`/`721` activity indicator.
-Any anonymous peer that can reach `9002` can drive the instrument cluster,
-pending each individual method's protobuf field validation (not yet examined
-per-method).
+> **[C] CORRECTED (2026-09) — opType was misattributed to EVENT/1032.** Prior
+> revisions of this doc (and of `vehicle_network.md`, `emulator.md`,
+> `research/AE_RESEARCH_HANDOFF.md`) stated this surface fires via
+> `EVENT`/`opType=1032`. That is wrong. Deobfuscated FSA service library
+> RE (`com/gm/fsa/service/`, cross-checked against ClusterService's router
+> `f/d.java`, `f/h.java`, `h/b.java`) shows `opType 1032` (Event) in the
+> router only ever drives `OfferService`/discovery multicast logic — it never
+> reaches `ClusterViewManager`. The cluster methods dispatch via the **method
+> handler** on `REQUEST` (`opType=641`) and `REQUESTRESPONSE` (`opType=674`),
+> matching this doc's own live-verified shell session above (`rmIdentification`/
+> `clientFocus` both used `opType=0x02a2=674`).
+
+`REQUEST`/`REQUESTRESPONSE` (`opType=641`/`674`) for `fktId >= 700` dispatch
+straight into `ClusterViewManager` via the method handler, with no additional
+gate beyond the service/instance check above: `712` `CLIENTFOCUS` (moves
+cluster focus), `700`/`714` asset state, `707`/`708`/`710`/`711`/`713`/`715`
+widget data, `720`/`721` activity indicator. Any anonymous peer that can reach
+`9002` can drive the instrument cluster, pending each individual method's
+protobuf field validation (not yet examined per-method). Ranked severity and
+Phase-2 plan: [`research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
+
+### [F-udp] UDP/multicast discovery-listener crash (AIOOBE) — HIGH, unauthenticated
+
+`NetCommsService.DiscoveryListenTask.SocketRead()`
+(`com/gm/fsa/service/NetCommsService.java:212-258`) + the `FSAMessage(byte[])`
+constructor (`FSAMessage.java:55-77`) — compiled into every FSA-hosting app
+(9002/9010/9016/etc, shared library). The UDP receive buffer is a **fixed 256
+bytes** (`NetCommsService.java:214`), reused every iteration, joined on
+multicast group `239.192.0.1:3000` per `FSACatalog.java:97,115` (this doc's
+live network scan sees `:30490` on the real radio — port discrepancy flagged,
+not yet resolved; confirm empirically before a live PoC). `FSAMessage` reads
+`payloadLength` from header bytes 16-19 (attacker-controlled int32), then does
+`new byte[payloadLength]; System.arraycopy(data, 20, bArr, 0, payloadLength)` —
+`data` is always the 256-byte UDP buffer regardless of actual datagram size.
+`payloadLength` in `[237, allocatable-range]` overruns the 256-byte source
+array. The `arraycopy` is wrapped in
+`catch(NegativeArraySizeException){}catch(OutOfMemoryError){}` but **not**
+`catch(ArrayIndexOutOfBoundsException)` — the AIOOBE escapes uncaught, and
+`DiscoveryListenTask.run()` (`NetCommsService.java:221-238`) only catches
+`IOException` — no RuntimeException/Error handler — so the escaping AIOOBE
+kills the discovery-listener thread **permanently** (process survives, SOME/IP-SD
+discovery is dead for that process from then on). Contrast: the TCP ingest path
+(`FSAServiceConnectedClient.java`) sizes its buffer correctly
+(`new byte[20+payloadLength]`) and its `run()` does catch RuntimeException — the
+bug is unique to the UDP/multicast path. Unauthenticated: connectionless,
+spoofable source, no client-slot cap, no dedup (those only exist on the TCP
+accept loop). Blast radius: every FSA-hosting process on the vlan5 segment
+joins the same multicast group — one spoofed packet kills discovery in all of
+them simultaneously. PoC shape (Phase 2, needs a UDP sender —
+`fsaprobe`/`fsalisten4` are TCP-only): 20-byte datagram to `239.192.0.1:3000`
+(or `:30490`, verify), bytes 16-19 = large `payloadLength` (e.g. `0x00001000`).
+
+### [F-udp-inject] UDP/multicast connectionless FSA injection bypasses all gates — HIGH
+
+Same UDP ingest path as above: `DiscoveryListenTask.SocketRead()` builds an
+`FSAMessage` and queues it with `sender=null` (`NetCommsService.java:253`)
+**without ever calling `validateHeader()`** — that check (the only place
+serviceId/instanceId equality is enforced, see the `[C]` note above) exists
+only on the TCP path (`FSAServiceConnectedClient.java:253-260`). The message
+router dispatches purely on opType+functionId, never re-checking serviceId. A
+spoofed/forged multicast UDP datagram can therefore drive the same
+unauthenticated cluster-injection primitives as the TCP path above (opType
+641/674, see the `[C]` correction), but connectionlessly, spoofably, without
+consuming one of the TCP accept loop's 6 client slots, and without the
+source-IP dedup that gates TCP. Payload capped at 236 bytes (256-20 header) —
+fits `clientFocus`/`screenRequest`/`listSlice`/`activityIndicator` protobuf
+payloads. Open item: needs live confirmation that state-mutating (not just
+request-response) handlers actually fire with a null sender — fire-and-forget
+EVENT/SET handlers are the most likely to work since they don't depend on
+responding to sender. Ranked writeup:
+[`research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
 
 ### [F-bugs] Two FSA parser bugs (shared code, both `9002` and `9016`)
 

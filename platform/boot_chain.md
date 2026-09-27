@@ -41,7 +41,13 @@ All tasks launched at `RunInitialTasks` during GHS boot:
 **Core:**
 - `VMM1_InitialTask` — Android virtual machine manager (guest VM)
 - `Lifecycle_InitialTask` — Android health monitoring, shutdown coordination
-- `VIP_InitialTask` — VIP MCU communication (HDLC over /dev/ttyS1)
+- `VIP_InitialTask` — VIP MCU communication (HDLC over /dev/ttyS1). **Confirmed (2026-09, real Y181B
+  kernel `.config` extraction): no `N_HDLC` line discipline is compiled into the Android guest kernel at
+  all.** The VIP/RH850 HDLC framing terminates below the Android guest (GHS-side task shown here); on
+  the Android side the link is a **userspace** protocol — `IPCServer` fans the channel into per-channel
+  Unix sockets (`/vendor/etc/ipc4.cfg`) that `libipc.so` clients connect to (see
+  [`emulator.md`](emulator.md#un-stub-roadmap--using-gms-real-files-verified-vs-the-real-radio-adb-dumps)).
+  Not a kernel driver dependency.
 - `OTA_InitialTask` — Over-the-air update coordination
 
 **Hardware:**
@@ -272,6 +278,19 @@ Red Bend UA (`/vendor/bin/rb_ua`) handles OTA delivery from GM Cloud.
 ### Dynamic Partitions (within `super`)
 
 The `super` partition uses Android's dynamic partition system to host `system`, `vendor`, and `product` partitions. All three are protected by dm-verity for integrity verification.
+
+**Correction (2026-09, real Y181B boot-image extraction, cross-checked against the live device):** the
+ramdisk's own `fstab.full_gminfo37_gb` does mark partitions `logical,first_stage_mount` (an unused
+build-mixin default), and `ro.boot.dynamic_partitions=true` is set as a prop — but the AUTHORITATIVE
+first-stage fstab actually consumed at boot is an **ACPI SSDT table** (`_HID ANDR0001`, OEM Table ID
+"android") whose `_DSD` property gives real by-name **static** partitions on PCI eMMC (`0000:00:1c.0`,
+`wait,slotselect,avb` flags), overriding the logical/dynamic-partition path in practice. Net effect:
+**static A/B, no `super`, no dm-linear** — consistent with the static-A/B note already carried in
+[`emulator.md`](emulator.md#method-hybrid) (`mkdisk.py` comment: "Y181 is static A/B, no super"). The
+SOC_ACPIO firmware module (2MiB) is the ACPI-magic overlay partition carrying this SSDT plus Broxton
+platform ACPI (LPSS, PMC/PUNIT IPC, SDHCI-ACPI); a future QEMU port needs an equivalent `-acpitable`
+injection since q35's default ACPI has no `ANDR0001`. Full kernel-config evidence:
+[`../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-f-kernel-configuration--ghs-coupling-2026-09).
 
 ---
 

@@ -14,7 +14,9 @@ method + the CT5-vs-Y181 delta table: `GM_research/aaos/gm_aaos/EMULATOR_PLAYBOO
 ## Method (hybrid)
 GM `system`/`product` **as-is** on Google's **android-32** goldfish kernel + vendor + vbmeta +
 system_dlkm, packed into an LP `super` (`mkdisk.py`; Y181 is static A/B, no super). GM's real vendor
-firmware (Intel/GHS) can't boot on goldfish, so it's a source only. Blockers solved, in boot order:
+firmware (Intel/GHS) can't boot on **goldfish/ranchu specifically** — that backend is virtio-mmio and
+the wrong machine type (see Kernel characterization + portability below) — so it's a source only here. Blockers solved,
+in boot order:
 Google `vbmeta_dis`; **swap GM `/system` VINTF manifest for Google's** (GM declared HIDL keymaster@3.0 +
 an A/B `IBootControl` goldfish can't serve — the bootloop cause); Google userdebug `init`;
 `ro.zygote=zygote64` (GM is 64-bit-only); **powermode** Java HIDL stand-in; swap Google `adbd`+`/adb_keys`
@@ -23,6 +25,68 @@ an A/B `IBootControl` goldfish can't serve — the bootloop cause); Google userd
 HIDL @2.0 client, so AIDL donors/JSON-config-add don't apply); run **GM's own `calserviced`** with the
 shipped `CalSets.db` (HIDL @1.0, x86_64, no stand-in needed); dummy **`vlan5`@192.168.1.100 / `vlan4`@172.16.4.100**
 (Info3.x FSA variant; vt3/4/5 must be absent); vendor SELinux policy stays **32.0**.
+
+## Kernel characterization + portability (2026-09-27)
+
+Extracted and analyzed the real Y181B (gminfo37 CSM) boot image from the firmware update package,
+cross-checked byte-identical against the live device's own `.config`. Key facts, refining the "can't
+boot on goldfish" framing above:
+
+- **`CONFIG_PARAVIRT` is NOT set.** `CONFIG_HYPERVISOR_GUEST=y` only enables optional detection — no
+  `KVM_GUEST`/`XEN`/`HYPERV`/`PVH`/`JAILHOUSE_GUEST`. Core MMU/timekeeping/IRQ/scheduling is bare-metal
+  x86_64 despite running as a GHS INTEGRITY guest. GHS coupling is entirely at the DEVICE DRIVER layer:
+  `ghs_comms` is a PCI driver binding a GHS-presented virtual PCI function (vendor `0x1B95`, device
+  `0xA000`, BAR-mapped rings, MSI-X, host/guest version handshake); `ghs_vmm_bc` handles A/B
+  slot/boot-control and delivers guest TSC frequency from the VMM; `gm_ghs_mmc`/`snd_ghs_pcm`/
+  `ghs_camera_memory_map` are paravirtual MMC/audio/camera drivers. All are ordinary probe()-based
+  PCI/platform drivers that stay unbound (no panic) when their backing GHS device is absent.
+- **virtio is present but narrow:** `VIRTIO_PCI=y` (**legacy**, not modern-only), `VIRTIO_BLK`,
+  `VIRTIO_CONSOLE` back Trusty TEE only — no `VIRTIO_MMIO`, `VIRTIO_NET`, `VIRTIO_INPUT`,
+  `VIRTIO_BALLOON`. Absence of `VIRTIO_MMIO` means this kernel is **incompatible with the
+  goldfish/ranchu AVD backend** by construction, independent of GHS. `CONFIG_E1000`/`E1000E=y` and
+  `DRM_BOCHS=y` (alongside `DRM_I915=y`) are both compiled in.
+- **Verdict — CONFIRMED by real boot (2026-09-27):** GHS is a *service-layer* blocker (specific vendor
+  daemons/HALs stay dead without it), not a *boot-layer* one — the real GM Y181B kernel (ACK 4.19.305
+  x86_64) was booted on plain `qemu-system-x86_64` (q35, `-accel hvf`, virtio-blk-pci, e1000e, no
+  display/nomodeset) on the Mac Pro, isolated from the goldfish AVD (separate process, port 5560 vs
+  5558, workdir `~/gm_emu/realk/`). This is a real boot with a captured serial log, not a
+  prepared/untested image. **Reached:** kernel boot → first-stage init → `/system`+`/vendor`+`/product`
+  mounted from a real virtio-blk GPT disk (static A/B, verity-off) → second-stage init started; stops
+  at a `vold-failed` reboot in second stage (SELinux-enforcing blocker, see below) — did not yet reach
+  an interactive shell/zygote. All four previously-inferred risk points are now directly confirmed:
+  GHS/i915/IPU4 graceful degrade (no panic; `CONFIG_GHS_*` probes fail cleanly, e.g. repeated
+  `Unable to open file: /dev/ghs/emmc-health`; `CONFIG_PARAVIRT` confirmed unset at runtime — bare-metal
+  VT-x boot), AVB verity-off path works, boot-control (`androidboot.slot_suffix=_a`+`slotselect`)
+  resolves partitions correctly with no GHS VMM bootctrl, and TSC/timebase needs no override
+  (`tsc: Refined TSC clocksource calibration: 2693.33 MHz` → `Switched to clocksource tsc`). Two
+  assumptions from the original plan were proven wrong and corrected: the extracted ACPI SSDT
+  (`ssdt_android.aml`) loads into ACPI fine but does **not** work as a DT-fstab source (`fs_mgr`'s
+  `ReadFstabFromDt()` fails — its nested node layout doesn't match this platform's flat `_DSD`
+  properties); the actual working fix is patching the ramdisk's plain-text first-stage fstab
+  (`first_stage_ramdisk/fstab.full_gminfo37_gb`) directly, dropping `logical`/`avb` and pointing each
+  entry at the PCI-scoped `/dev/block/pci/pci0000:00/0000:00:1c.0/by-name/<partition>` path with
+  `slotselect` — the flat `/dev/block/by-name/...` path is never created by first-stage init on this
+  kernel. New hardware-fidelity fact: vendor `file_contexts` labels `ttyS0` as
+  `bluetooth_serial_device` and `ttyS1` as `ipc_serial_device` (confirming ttyS1 as the real VIP/libipc
+  channel by SELinux label, not just convention) — the console must be on `ttyS2`+ (`serial_device`) or
+  SELinux denies the write. **Remaining blocker:** GM's `user` build forces SELinux `enforcing=1`
+  regardless of `androidboot.selinux=permissive` on the cmdline (and `selinux=0` outright breaks
+  `mount(selinuxfs)`, so it can't be compiled out either) — `vold` gets AVC-denied and killed, causing
+  the second-stage reboot loop; a recovery-mode follow-up reached the `console`/`adbd` service
+  definitions but both abort/deny (`avc: denied { setcurrent }`) before a shell starts. Next concrete
+  step (not yet attempted): use `secilc`/`sepolicy-inject` to make the `adbd`/`su` domains permissive in
+  the ramdisk's compiled `/sepolicy`, or relabel the console device node. A full boot to zygote still
+  needs a real `data`(f2fs)/`metadata` partition (both zeroed/absent in the test disk) and
+  `system_ext_a` (currently missing, non-fatal so far), plus the previously-planned userspace shims
+  (software keymaster for FBE) once a shell is reached. **Kernel/vendor-ABI portability is now
+  empirically proven, not just theoretical** — the remaining work is pure userspace SELinux/partition
+  plumbing, not a kernel or GHS-coupling problem. Artifacts (`run.sh`, `mkstatic.py`, `patch_cpio.py`,
+  `ssdt_noavb.aml`/`.dsl`, `fstab.patched`, `serial.log`) preserved to
+  `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/realk/`;
+  full working tree (incl. the 6GB `gm.img`, not copied off) remains on the Mac Pro at
+  `~/gm_emu/realk/`. Hardware keymaster/attestation/RPMB (Trusty+GHS) and real Harman AVB audio remain
+  hard blockers either way, same as today's stubs. See `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`
+  Appendix G for the full per-dependency portability table.
 
 ## Matching the real Silverado UI (calibration-driven)
 Base boot renders the GM **base** look (red accent, no widget, GAS-default tiles). The real Silverado
@@ -35,13 +99,17 @@ Base boot renders the GM **base** look (red accent, no widget, GAS-default tiles
   Cameras needs `RVS_PRESENT_STATUS=2`, Wi-Fi Hotspot needs `APPLICATION_HOMESCREEN_ONSTAR_ENABLED=1`; GAS
   tiles are hidden by disabling their launcher components (not calibration-gated).
 
+For the CardView clock panel's gate condition and the separate (code-level, non-calibration)
+app-capability/immersive allow-list that governs whether an activity can hide it — including why
+native CarPlay can't — see [`gmsystemui_app_capability_gating.md`](gmsystemui_app_capability_gating.md).
+
 ## Fidelity — emulator vs the actual radio
 Real GM software rendering faithfully on **substituted emulator hardware with no vehicle bus**; a
 software/UI/RE emulator, not a functional truck.
 
 | Layer | Real radio | Emulator |
 |---|---|---|
-| SoC/kernel/vendor | Intel Apollo Lake + GM vendor firmware | Google goldfish android-32 kernel/vendor |
+| SoC/kernel/vendor | Intel Apollo Lake + GM vendor firmware | Google goldfish android-32 kernel/vendor (real kernel **confirmed booted** on plain qemu-system-x86_64/q35 in a separate isolated process — see Kernel characterization above; stops at second-stage `vold-failed`/SELinux-enforcing, not yet at shell/zygote) |
 | Hypervisor/boot | VIP RH850 → CSE → ABL → **GHS INTEGRITY** → guest | none — Android on QEMU |
 | VHAL | GM `@2.0-service-gm` on the **live CAN bus** | **GM's real `@2.0-service-gm`** via the libipc shim (540 configs, 486 GM; 141 props shared w/ the real radio) — no live bus behind it; **frame injection into the shim now drives a subset live** (temp/speed/ignition/GPS — see Un-stub roadmap) |
 | Powermode/RTC/location | real GM daemons on the VCU | **GM's real `plmanager`/`rtcd`/`gmlocation`** run via libipc shim |
@@ -87,12 +155,33 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   `0x26A`, signals `GPSC_PPSLat`/`GPSC_PPSLong`, 180/2^30 deg/LSB; Central Park round-tripped through VhalCtl +
   GMVHAL). **PARTIAL:** gear (frame `0x264`, `TEGP_TrnsEstGrAuth`) — GEAR_SELECTION only drives PARK/fallback
   on this build.
-- **`vendor.gm.gmlocation@1.0-service` → now runs [DONE]** (real, via libipc shim; live pid confirmed), **but
-  does not consume the injected GPS_POSITION** — it sources position from the Harman **navsens** HAL
-  (`GmLocationService::receiveGNSSLocation`), unregistered in the emulator (only stock
-  `gnss@2.0-service.ranchu`). CarService/apps reading GPS_POSITION get the injected value (Android
-  `LocationManager` also gets it via `emu geo fix`); GM's own gmlocation would need a navsens HAL stub — out of
-  frame-injection scope. **`vehicleaudiocontrol`
+- **`vendor.gm.gmlocation@1.0-service` → now runs [DONE]** (real, via libipc shim; live pid confirmed), **and
+  navsens HIDL wiring is now PROVEN [PARTIAL — GNSS path done, DR-fusion gate remains]** (2026-09-27): it
+  sources position from the Harman **navsens** HAL (`GmLocationService::receiveGNSSLocation`), previously
+  unregistered in the emulator (only stock `gnss@2.0-service.ranchu`). Reverse-engineered the exact interface
+  gmlocation expects — `vendor.harman.hardware.navsens@1.0::INavsens/default`, `setCallback`=tx1,
+  `setHighRateCallback`=tx2, callback `INavsensCallback::gnssLocationCB(GNSSLocation, GNSSUTCTime)`=tx1 —
+  and the `GNSSLocation` struct layout (`mLatitude` @0x00, `mLongitude` @0x08, both double, struct size
+  0x78/120 bytes; an initial reversed-offset guess corrupted latitude and was corrected). Implemented a Java
+  `app_process` HIDL service (`Navsens.java`, mirroring the CT5 emulator's `LocD.java`) — no native
+  C++ HIDL build tree available on this Mac, so this is a practical Java substitute — streaming
+  `gnssLocationCB` at 1Hz. **Measured (live device):** `lshal` shows `INavsens/default` registered;
+  gmlocation logs `connectNavsens` → `Connection to navsens HAL succeeded`; the injected fix (Central
+  Park) is received and cached by gmlocation's own `NavsensCallback::gnssLocationCB` handler. Cold-boot
+  durable via `scenario.sh` auto-relaunch/auto-reconnect. **Remaining gate (why PARTIAL not PASS):**
+  `gnssLocationCB` only caches the fix — gmlocation's internal publish/fusion loop separately needs
+  DR-calibration state (`DRCoefficient`/`CarWheelPulseResolution` currently invalid/defaulted) and three
+  more navsens sub-interfaces the stub doesn't implement yet (`getSensorAccelerometerInterface`,
+  `getSensorGyroscopeInterface`, `getSensorWheelInterface` — all currently HIDL-failure from the stub).
+  `IGmLocation::start()` returns OK but produces no fused output yet, confirming the gate is the missing
+  sensor sub-interfaces/DR state, not the GNSS path (which is proven working). Two caveats: Java-server
+  two-way callback ACKs fail (`setCallback HIDL failure`, `lshal getDebugInfo` PID N/A) even though the
+  data callback itself succeeds — a native C++ HIDL service would likely fix this and may also unblock
+  DR fusion; and all measurements are under `SEL=permissive` — enforcing needs the stub in a real service
+  domain (init `.rc` + sepolicy), not adb's `su` domain. Artifacts preserved to
+  `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/navsens/`;
+  live on the Mac Pro at `~/gm_emu/hy/navsens/`, wired into `~/gm_emu/hy/emu_integration/scenario.sh`.
+  **`vehicleaudiocontrol`
   → still absent, next cheap net-new add.** Both are calserviced-HIDL clients with no `/dev/ipc` dep (verify vehicleaudiocontrol's
   import table before adding).
 - **`calserviced` → already GM-real** (libipc only for the override path).
@@ -147,7 +236,8 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   Un-stub via synthetic peers: **vlan5** `.106` Visteon IPC dialing the CSM's `9002`, `.102` telematics, `.112`
   CGM_OTA; **vlan4** `.107` RTOS diag bridge. **FSA protocol solved + proven unauthenticated live** (GET/SUBSCRIBE
   round-trips on `9002` from an anonymous peer; full spec in [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md)).
-  AE avenues: cluster-injection via EVENT 1032 fktId ≥700; the two FSA parser bugs (int32 `payloadLength` RAM-DoS,
+  AE avenues: cluster-injection via REQUEST/REQUESTRESPONSE opType 641/674 fktId ≥700 (**corrected
+  2026-09, was misattributed to EVENT 1032** — see `fsa_protocol.md`); the two FSA parser bugs (int32 `payloadLength` RAM-DoS,
   reject-path framing desync); `:49156` UDS-bridge DoS/fuzz; NAM EAP-AKA; SOME/IP-SD fuzz; `IDiagnosticsInternalService`
   vndbinder-bypass. Tools: `~/gm_emu/ae/{fsaprobe,fsalisten4}` (raw-syscall connect/accept4 to bypass the netd fwmark handshake).
   **FSA int32-`payloadLength` RAM-DoS live-proven (2026-09):** one 20-byte header declaring

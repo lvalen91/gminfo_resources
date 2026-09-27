@@ -143,6 +143,20 @@ self-programming addressing gateway 0x45 (Global B Phase 1) → RRM/FSA with inf
 > [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#update--rollback--influence-verdicts-network-peer-over-ethernet-resolved-2026-09)
 > and [`ota_update_stack.md`](ota_update_stack.md).
 
+> **[U] INSTALLRUNNER trace (2026-09) — refines the local-Binder gap, doesn't reopen it.**
+> `UpdateServiceImplGB.install()`'s missing permission check is reachable only from
+> **priv_app/platform_app/carservice_app** (SELinux `gm_domain_service` `find` grant), not
+> untrusted_app/shell — and even from there, the caller's IPC `PackageDetails` argument is never
+> consumed by the install pipeline (`retrievePackageFromMessage()` only accepts an internal
+> `Package` object); `InstallRunner.install(pkg)` always uses the vehicle's own legitimately-staged
+> package. Net effect of exploiting the missing check: forced/premature triggering of an
+> already-staged update (consent-bypass/DoS), **not** attacker-content substitution. One open item —
+> `DevCaloverrideInstaller` (containerType 2) skips signature verification entirely, but its only
+> trigger (`USBUpdateSource$1.onUSBMounted`) requires physical USB media and is not IPC-reachable;
+> closing this out needs `USBNotifier.java` RE. Full trace:
+> [`ota_update_stack.md`](ota_update_stack.md) and
+> [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
+
 ## GM dealer service programming (SPS2) — official procedure
 
 From GM service data (ALLDATA *Control Module References → Programming and Setup*), the

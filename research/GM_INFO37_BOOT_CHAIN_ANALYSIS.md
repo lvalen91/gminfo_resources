@@ -29,6 +29,8 @@
 11. [Key Findings](#11-key-findings)
 12. [Files Analyzed](#12-files-analyzed)
 13. [Appendix: Error Messages](#appendix-a-error-messages)
+14. [Appendix F: Kernel Configuration + GHS Coupling (2026-09)](#appendix-f-kernel-configuration--ghs-coupling-2026-09)
+15. [Appendix G: QEMU Portability Assessment (2026-09)](#appendix-g-qemu-portability-assessment-2026-09)
 
 ---
 
@@ -1089,6 +1091,13 @@ init: critical process died, rebooting
 | **UFRAME Timeout** | 20ms |
 | **Physical** | UART (115200 8N1) |
 
+**Correction (2026-09, kernel `.config` extraction):** this HDLC/IPC framing is the VIP↔SoC link at the
+GHS-task level shown above; on the Android guest side there is **no `N_HDLC` line discipline in the
+kernel at all** — the guest never owns `/dev/ttyS1` as a kernel HDLC device. The link surfaces to
+Android guest userspace only, via `IPCServer` fanning the channel into per-channel Unix sockets
+(`/vendor/etc/ipc4.cfg`) that `libipc.so` clients (VHAL, powermode, rtcd, gmlocation) connect to. See
+`platform/boot_chain.md` and `platform/emulator.md` (Un-stub roadmap) for the confirmed wire format.
+
 ### GHS IPC Channels
 
 ```
@@ -1477,6 +1486,196 @@ strings Y181/86331656 | grep "MEC is"
 # 9. Dump specific hex region
 xxd -s 0x49168d -l 128 Y181/85098662
 ```
+
+---
+
+## Appendix F: Kernel Configuration + GHS Coupling (2026-09)
+
+Extracted and analyzed the real Y181B (gminfo37 CSM) boot image from the firmware update package,
+cross-checked byte-identical against the live device's own `.config`.
+
+### F.1 Boot Image
+
+Android boot header v2, page size 2048. Kernel: x86_64 bzImage, 15,364,688 bytes, LZ4-compressed
+vmlinux, load addr `0x10008000`. Ramdisk: 20,984,589 bytes, LZ4-legacy, load `0x11000000`. A "second"
+8061-byte blob is an Intel NHLT audio-DSP ACPI table wrapper, not boot code. `dtb` size 0 (no device
+tree — pure ACPI). Loaded by Intel Slim Bootloader → ABL (kernelflinger), not EFI-stub.
+
+### F.2 Kernel Identity
+
+`Linux version 4.19.305-240125T145315Z-gf1edde901aa7 ... SMP PREEMPT ... Tue Jul 22 07:52:16 EDT 2025`,
+clang 12.0.7 (Android r416183b1), x86_64, SMP, `NR_CPUS=32`, `HZ=1000`, X2APIC, KASLR on. Android Common
+Kernel 4.19 base, heavily GM/Intel-patched (GHS drivers, Titan/Broxton Apollo Lake program, IPU4
+camera, Trusty TEE).
+
+### F.3 The Crux Finding — No pv-ops Contract
+
+`CONFIG_PARAVIRT` is **not set**. `CONFIG_HYPERVISOR_GUEST=y` exists but only enables optional
+detection — there is no Linux pv-ops contract, no `KVM_GUEST`, `XEN`, `HYPERV`, `PVH`, or
+`JAILHOUSE_GUEST`. The kernel's core MMU/timekeeping/IRQ/scheduling is bare-metal x86_64 — it is **not**
+a paravirtualized-at-the-core guest despite running under GHS INTEGRITY. The only GHS coupling is via
+ordinary Linux DEVICE DRIVERS (not core kernel infrastructure): `CONFIG_GHS_PARAVIRTUAL_SUPPORT=y`,
+`CONFIG_GHS_GUEST_COMMS=y`, `CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y`, `CONFIG_SND_GHS_PCM=y`,
+`CONFIG_ANDROID_GM_GHS_MMC=y`, `CONFIG_TITAN_X86_BROXTON_PROGRAM=y`.
+
+### F.4 GHS Transport Mechanism (from binary strings/disasm of `ghs_comms` in vmlinux)
+
+`ghs_comms` is a PCI driver binding to a Green-Hills-presented **virtual PCI function, vendor
+`0x1B95`, device `0xA000`** (subvendor/subdevice=ANY). Standard PCI enumeration
+(`pci_enable_device`, `pci_request_regions`), BAR-mapped send/receive ring registers, MSI-X interrupts,
+and a host/guest **version handshake** (log strings: "Host didn't accept driver version %d or fallback
+version %d", "GHS_VMM: version incompatibility"). A companion driver `ghs_vmm_bc`
+(`GHS_VMM_BOOTLOADER_CONTROL`) talks to the GHS VMM for A/B slot/boot-control and delivers the guest's
+TSC frequency (log string "GHS_VMM: TSC_FREQ = %lld" — the guest's timebase comes from the VMM, not
+native TSC calibration). Other GHS-coupled builtin drivers: `gm_ghs_mmc` (paravirtual MMC, exposes
+`/dev/ghs/emmc-health`), `snd_ghs_pcm` (paravirtual audio PCM), `ghs_camera_memory_map` (IPU4 camera
+buffer sharing). All are ordinary PCI/platform drivers that fail their own `probe()` gracefully (device
+not found → driver stays unbound, no panic) when their backing GHS PCI function is absent — standard
+Linux driver behavior, confirmed structurally from the driver code (probe-based binding, not a hard
+init-time dependency).
+
+### F.5 Platform, Storage, virtio, Networking, Console
+
+- **Platform:** Apollo Lake/Broxton — `CONFIG_X86_INTEL_LPSS`, `PINCTRL_BROXTON`,
+  `X86_INTEL_PSTATE`, `VIDEO_INTEL_IPU4` (camera), `DRM_I915=y` **and** `DRM_BOCHS=y` (both compiled
+  in — `DRM_BOCHS` gives a plain framebuffer path independent of i915). `ACPI=y`, `CONFIG_OF` (device
+  tree) not set — fully ACPI-driven, no DT fallback exists.
+- **Storage/verified boot:** `DM_VERITY=y` + `DM_VERITY_FEC=y` (matches AVB hashtree+FEC posture),
+  `DM_DEFAULT_KEY=y`, `MMC_SDHCI_PCI`/`ACPI=y`, EXT4/F2FS with FS encryption, `EFI_PARTITION=y` (GPT).
+- **virtio — present but narrow:** `CONFIG_VIRTIO=y`, `VIRTIO_PCI=y`, **`VIRTIO_PCI_LEGACY=y`** (not
+  modern-only), `VIRTIO_BLK=y`, `VIRTIO_CONSOLE=y`. Notably absent: `VIRTIO_MMIO`, `VIRTIO_NET`,
+  `VIRTIO_INPUT`, `VIRTIO_BALLOON`, `VIRTIO_RPMB`. The existing virtio backs Trusty TEE
+  (`TRUSTY_VIRTIO=m`), not the main rootfs. Absence of `VIRTIO_MMIO` means this kernel is
+  **incompatible with Google's ranchu/goldfish AVD backend** (which uses virtio-mmio) — any real-kernel
+  boot must target plain `qemu-system-x86_64` q35/i440fx (virtio-pci), never the AVD emulator binary.
+- **Networking:** no `VIRTIO_NET`, but `CONFIG_E1000=y` and `CONFIG_E1000E=y` are present — a QEMU
+  `e1000e` NIC would bind with the in-tree driver without any kernel rebuild.
+- **Console:** full 8250 UART stack (`SERIAL_8250_CONSOLE`, `_DW`, `_LPSS`, `_MID` variants, 32 UARTs),
+  `HVC_DRIVER=y`.
+
+### F.6 Cmdline (captured from the boot image header)
+
+Base: `video=HDMI-A-1:e loglevel=2 enforcing=0 androidboot.selinux=permissive no_timer_check noxsaves
+reboot_panic=p,w i915.hpd_sense_invert=0x7 intel_iommu=off loop.max_part=7 rootfstype=ext4 gpt
+console=tty0 androidboot.hardware=full_gminfo37_gb firmware_class.path=/vendor/firmware
+relative_sleep_states=1 intel_pstate=disable pstore.backend=ramoops
+memmap=0x400000$0x50000000 ramoops.mem_address=0x50000000 ramoops.mem_size=0x400000`; appended (later
+tokens win) `i915.enable_guc=2 intel_ipu4_psys.async_fw_init=Y thermal.off=1 trace_buf_size=64M
+enforcing=1 androidboot.selinux=enforcing buildvariant=user`. Net effective: SELinux enforcing (last
+token wins), no explicit `root=` (system-as-root via first_stage_mount), `intel_iommu=off`,
+`no_timer_check`.
+
+### F.7 First-Stage Init / Mount Chain (also see `platform/boot_chain.md`)
+
+System-as-root, `init -> /system/bin/init`. The ramdisk's own `fstab.full_gminfo37_gb` marks
+partitions `logical,first_stage_mount` (an unused build-mixin default) — the AUTHORITATIVE
+first-stage fstab is actually an **ACPI SSDT table** (`_HID ANDR0001`, OEM Table ID "android") whose
+`_DSD` property gives real by-name **static** partitions on PCI eMMC at `0000:00:1c.0` with
+`wait,slotselect,avb` flags — confirming **static A/B** (no dynamic-partitions `super`, no dm-linear),
+consistent with the static-A/B note in `platform/emulator.md`. `ro.boot.dynamic_partitions=true` exists
+as a prop but is overridden by this static SSDT layout in practice. The SOC_ACPIO firmware module is a
+2MiB Intel ACPI-magic overlay partition carrying exactly this android SSDT plus Broxton platform ACPI
+tables (LPSS, PMC/PUNIT IPC, SDHCI-ACPI). Any future QEMU port needs to inject an equivalent SSDT
+(`-acpitable`) plus Broxton platform ACPI, since QEMU's default q35 ACPI does not provide `ANDR0001`.
+
+The VIP link is a **userspace** protocol confirmed from this kernel config: no `N_HDLC` line discipline
+is compiled in anywhere, so the VIP/RH850 protocol over `ttyS1` cannot be an in-kernel driver
+dependency — see the Appendix C correction above and `platform/boot_chain.md`.
+
+## Appendix G: QEMU Portability Assessment (2026-09)
+
+**Verdict — CONFIRMED (2026-09-27):** the real GM kernel IS portable to plain `qemu-system-x86_64` (q35
+machine type), and this is now an empirical result, not just a static-analysis claim. GHS is a
+SERVICE-layer blocker (specific vendor daemons/HALs stay dead without it), **not** a BOOT-layer
+blocker — the kernel boots without any GHS device present, per the `CONFIG_PARAVIRT`-off finding (F.3)
+and the PCI-driver graceful-degrade structure (F.4), both now directly observed at runtime rather than
+inferred. This refines the `platform/emulator.md` claim "GM's real vendor firmware can't boot on
+goldfish": the precise statement is **"can't boot on goldfish/ranchu specifically (virtio-mmio backend,
+wrong machine type) — the real kernel boots on plain qemu-system-x86_64/q35 (virtio-pci backend);
+confirmed by an actual boot on 2026-09-27 (q35, `-accel hvf`, virtio-blk-pci, e1000e, no display) on the
+Mac Pro, isolated from the goldfish AVD. Reached kernel boot → first-stage init →
+`/system`+`/vendor`+`/product` mounted from a real virtio-blk GPT disk → second-stage init started;
+stops at a `vold-failed` reboot caused by GM's `user` build forcing SELinux enforcing regardless of the
+`androidboot.selinux=permissive` cmdline arg — did not yet reach an interactive shell/zygote. Treat the
+kernel/vendor-ABI portability question as settled; the open work is now purely userspace
+SELinux/partition plumbing (see below), not a kernel or GHS-coupling risk."**
+
+Two assumptions in this plan were tested and found wrong, then corrected: (1) the extracted ACPI SSDT
+(`ssdt_android.aml`, `_HID ANDR0001`) loads into ACPI fine but does **not** work as a DT-fstab source —
+`fs_mgr`'s `ReadFstabFromDt()` fails because its nested `fstab/<part>/{dev,type,...}` node layout doesn't
+match the flat dotted `_DSD` properties this ACPI path produces; do not rely on the SSDT for partition
+discovery. (2) The actual working fix is patching the ramdisk's plain-text first-stage fstab
+(`first_stage_ramdisk/fstab.full_gminfo37_gb`) directly: drop `logical`/`avb` from fsmgr_flags, point
+each entry at the PCI-scoped `/dev/block/pci/pci0000:00/0000:00:1c.0/by-name/<partition>` path (matching
+wherever virtio-blk attaches) with `slotselect` — the flat `/dev/block/by-name/...` path is never
+created by first-stage init on this kernel. A new hardware-fidelity fact from vendor `file_contexts`:
+`ttyS0`=`bluetooth_serial_device`, `ttyS1`=`ipc_serial_device` (confirms ttyS1 as the real VIP/libipc
+channel by SELinux label); the console must be on `ttyS2`+ (`serial_device`) or SELinux denies the
+write.
+
+**Remaining blocker (honest stopping point):** GM's `user` build forces `enforcing=1` regardless of the
+permissive cmdline arg (`selinux=0` outright breaks `mount(selinuxfs)`, so SELinux can't be compiled out
+either — it's a hard build requirement). Under enforcing with no permissive domains, `vold` is
+AVC-denied and killed → the second-stage reboot loop; a recovery-mode follow-up reached the
+`console`/`adbd` service definitions but both are denied (`avc: denied { setcurrent }`) before a shell
+starts. Next concrete step (not yet attempted): `secilc`/`sepolicy-inject` to make `adbd`/`su` domains
+permissive in the ramdisk's compiled `/sepolicy` (recovery and system policy both need it), or relabel
+the console device node. A full boot to zygote additionally needs a real `data`(f2fs)/`metadata`
+partition (zeroed/absent in the test disk) and `system_ext_a` (missing, non-fatal so far), plus the
+previously-planned userspace shims (software keymaster for FBE) once a shell is reached.
+
+Artifacts (`run.sh`, `mkstatic.py`, `patch_cpio.py`, `ssdt_noavb.aml`/`.dsl`, `fstab.patched`,
+`serial.log`) preserved to
+`/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/realk/`;
+full working tree (incl. the 6GB `gm.img`, not copied off) remains on the Mac Pro at `~/gm_emu/realk/`.
+
+### G.1 Two Strategies Compared
+
+- **(a) RECOMMENDED:** boot GM's real kernel binary as-is on `qemu-system-x86_64`/q35 with
+  virtio-pci-legacy block+console, e1000e NIC, `DRM_BOCHS` framebuffer, ACPI SSDT injection (the
+  extracted `ssdt_android.aml`), and a modified cmdline (add `androidboot.slot_suffix`, adjust display
+  args for bochs instead of i915, handle AVB either via a matching vbmeta or a verity-off cmdline path
+  like the current hybrid). This preserves the exact kernel-vendor ABI — GM's vendor HALs/modules (e.g.
+  an out-of-tree `igb_avb` module) were built against THIS kernel's headers/KMI, and the current
+  goldfish hybrid's whole fidelity problem is a kernel/vendor ABI mismatch that this strategy
+  eliminates entirely for anything that doesn't specifically need a GHS-backed device.
+- **(b) NOT RECOMMENDED:** rebuild an ACK 4.19 kernel retargeted to ranchu/virtio-mmio (flip on
+  `VIRTIO_MMIO`/`VIRTIO_NET`/`DRM_VIRTIO_GPU`, drop GHS/Titan config). Boots "more cleanly" on the
+  existing AVD but reopens exactly the kernel/vendor-ABI gap the project is trying to close (GM's
+  vendor modules would no longer match). Only justified if (a) hits an unforeseen in-tree driver that
+  hard-faults on QEMU (none found in this analysis).
+
+### G.2 Per-Dependency Classification
+
+(providable = QEMU supplies it natively; patchable = needs a cmdline/config/ACPI tweak; stubbable =
+needs a software shim, same class as the existing libipc/libpal_tod work; hard-blocker = genuinely
+absent, stays dead)
+
+| Dependency | Class | Notes |
+|---|---|---|
+| CPU/entry/ACPI-fstab/storage(virtio-blk)/console/e1000e-networking/AVB | Providable/patchable | q35+virtio-pci+ACPI-SSDT-injection, no kernel source changes |
+| Display (i915 expects real Gen9 GPU) | Stubbable | `DRM_BOCHS` (already compiled in) + the same drm_hwcomposer/SwiftShader work the goldfish hybrid already solved — not a new problem, same effort retargeted |
+| VIP/IPC (ttyS1 userspace protocol) | Stubbable | reuse the existing `libipc_shim.c`/frame-injection tooling verbatim — kernel-agnostic |
+| GHS transport itself (`ghs_comms` PCI device, `/dev/ghs/*`) | Stubbable/absent | driver never binds; no panic. Only matters for what's downstream (next rows) |
+| A/B boot-control (`GHS_VMM_BOOTLOADER_CONTROL`) | Stubbable | `androidboot.slot_suffix` on cmdline + a static/software `IBootControl` HAL (same manifest-swap technique the hybrid already used) |
+| Hardware keymaster/attestation/RPMB (Trusty TEE, requires GHS) | Hard blocker | permanent — same as today's software-keymaster stub, no regression |
+| Harman AVB audio (802.1BA + NXP TDF8532 codec) | Hard blocker | permanent — same as today's Google `audio@6.0` stub, no regression |
+| GHS cal/chime/camera/emmc-health overlay tasks | Stubbable/absent | same posture as today |
+
+### G.3 Payoff and Effort Estimate
+
+Booting the real kernel (vs. the current goldfish hybrid) would run on the native kernel/vendor ABI
+instead of goldfish's, unlocking: real vendor `init` + real vendor SELinux domains/policy loaded
+natively (no VINTF-manifest surgery needed to make GM vendor fit a foreign kernel); `diagnosticsd`
+(`:49156`, currently completely absent from the goldfish emulator because its vendor-lib dependency web
+assumes the real kernel/vendor) becomes potentially runnable; the real VHAL's kernel-side dependencies
+resolve natively (still needs a VIP peer via the existing shim, but no cross-kernel-ABI translation
+layer). Effort estimate: ~2-4 focused days to first kernel-up/first-stage-mount/adb-shell; +1-2 weeks
+to a stable AAOS UI (matching the current hybrid's maturity).
+
+**Framing for future work:** worth doing specifically for vendor-layer fidelity (`diagnosticsd`, native
+vendor SELinux/HALs) — not a general shortcut over the existing goldfish hybrid, which remains
+better/cheaper for UI/RE work that doesn't need those specific vendor daemons.
 
 ---
 
