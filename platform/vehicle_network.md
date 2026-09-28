@@ -249,6 +249,322 @@ readable by anything on the switch fabric. [X]
 6. **VLAN-502 CAN mirror:** bench-pcap this unit for a 502 UDP-multicast CAN mirror (Plane 2);
    the Cadillac source was `172.16.50.207→239.192.0.9:59200`.
 
+---
+
+## CAN feasibility & radio-removal audit — Pi-swap side-project (firmware-grounded, 2026-09-27)
+
+Scope: does the **head unit itself** speak CAN, what does its wake/vehicle-status path look like,
+and what breaks if the OEM radio node is physically removed. Driven by the Pi-replacement theory
+(reuse existing wiring, run AOSP-AAOS on a Pi 4/5). Evidence base: the **Y181B clean-room image**
+(`.../update_packages/Y181B/mountables/Y181B_cleanroom.img`, build
+`W231E-Y181.3.2-SIHM22B-499.3`, Android 12, kernel **4.19.305**, x86_64 Intel Gen8 CSM), read via
+`7z` (no ext4 mount on this host). Confidence tags: **[FW]** confirmed in this firmware · **[INF]**
+inferred from firmware structure · **[VEH]** confirmed by the owner's real-vehicle test · **[GM]**
+general GM-platform knowledge, not specific to this unit.
+
+### 1. The Android/AAOS guest has **no CAN interface** — it never touches CAN directly
+
+- **No CAN driver anywhere.** Zero `can`/`socketcan`/`vcan`/`flexcan`/`slcan`/`j1939` kernel
+  modules in either module set: the generic `os/vendor/lib/modules/` blob (**324 `.ko`**, an
+  upstream x86 collection — `bcmdhd`, `ath3k`, `dell-smm-hwmon`, etc., not all loaded) and, more
+  tellingly, the **actually-loaded** first-stage set in `boot/ramdisk_root/vendor/lib/modules/`
+  (**11 modules**: `igb_avb, dwc3[-pci], xhci-{hcd,pci}, ti949_serdes, faceplate, atmel_mxt_ts,
+  mei[-me], dynamic_spi_node`). Not one CAN driver. [FW]
+- **No CAN netdev is ever brought up.** No `ip link ... type can`, `slcan`, `ifup can*`, or
+  `/dev/can*` in any `.rc` or shell script in system/vendor. [FW]
+- **No CAN symbols in the vehicle stack.** `strings` on `gmvt`, `gmvt_client`,
+  `android.hardware.automotive.vehicle@2.0-service-gm` (the GM VHAL), `IPCServer`,
+  `vehicleaudiocontrol` → no `socketcan`/`AF_CAN`/`gmlan`/`can0`/arbitration-ID handling. [FW]
+- Kernel `CONFIG_CAN` could not be positively read (this bzImage's `IKCFG` block is inside the
+  compressed payload and did not cleanly decompress with `xz`/`gzip`/`lz4`/binwalk here), so the
+  built-in-vs-absent question for the CAN subsystem is **not settled from config**. It does not
+  need to be: a built-in CAN stack with no driver, no netdev bringup and no consumer is inert.
+  **[FW for the modules/netdev/strings; the config symbol itself is unresolved.]**
+- **Caution / correction:** `gmvt` (runs as `audioserver`, cap `NET_RAW`) is **GM Voice**
+  (VA/VR — see `/vendor/etc/gmvt.cfg`: PCM nodes, VTC voice-tuning configs), **not** "GM Vehicle
+  Transport." Its `NET_RAW` is for a voice stream socket, not vehicle CAN. Don't cite it as a
+  vehicle-network daemon. [FW]
+
+**How the guest actually reaches the vehicle** (two paths, both already in this doc, now confirmed
+from the guest side):
+
+1. **GHS hypervisor IPC mux** — the box runs Android as a **Green Hills INTEGRITY guest**
+   (`/vendor/bin/ghs_set_is_virt.sh`: `is_virt=true` iff `/dev/ghs` exists). `IPCServer`
+   ("**GhsComms**", `GhsCommsRx/TxThread`) multiplexes numbered logical channels over a UART-backed
+   link and exposes them as `/dev/ipc/ipcN` sockets. Config `/vendor/etc/ipc4.cfg`:
+   `com_device=/dev/ttyS1`, `com_speed=1000000`, `protocol_version=0x10`, `socket_prefix=/dev/ipc/ipc`,
+   control iface `/dev/ipc/ctrlif_s` (gid `vehicle_network`), **lchannels index 0–20**. The GM VHAL
+   opens **`/dev/ipc/ipc3`** = lchannel **index 3, gid `vehicle_network`** — the vehicle-signal
+   channel. (`IPCServer` strings also reference `/dev/ghs/ipc` and `/dev/ttyS4`; the authoritative
+   backing device per config is `/dev/ttyS1`.) [FW]
+   - This **confirms and refines** the "Join points" note above ("VIP↔SoC HDLC IPC `/dev/ttyS1`,
+     20 channels 1-20 … Android never sees raw CAN"): same UART, same channel count. The peer on
+     the far end of `/dev/ttyS1` (the VIP MCU / a GHS partition) owns the physical CAN; the Android
+     guest sees only cooked signals over IPC channel 3. [FW confirms the guest half; the far-end
+     "VIP MCU" identity is prior project analysis, **[INF]/[GM]** for this build.]
+   - **2026-09-27, owner's domain knowledge [USER]/[INF], not yet independently confirmed in
+     firmware:** the VIP/RH850 is also believed to be the **power sequencer** for the Intel Atom
+     SoC, not just the CAN↔IPC bridge — i.e. the RH850 sits on CAN in its own low-power domain,
+     and only powers on the Atom (which then boots GHS, which then boots AAOS as its guest) once it
+     receives the correct wake condition/CAN message. If true, the head unit's CAN presence and its
+     power-on sequencing are the **same off-SoC component and the same event**, not two separate
+     things — which matters for a Pi replacement: whatever fires the Atom's power rail today is a
+     CAN-side decision made entirely on the RH850, before Android/GHS exists at all. A Pi
+     replacement's power-on trigger would need to either replicate that RH850 wake logic (to stay
+     CAN-driven and power-efficient like the OEM part) or use a simpler always-on/ignition-line
+     power source and accept it isn't reacting to the same wake condition. Verifying this needs
+     either RH850 firmware (separate from the Atom-side Y181B image already extracted — not yet
+     obtained) or a bench power-rail trace correlated with injected CAN wake frames.
+2. **Automotive Ethernet** — `igb_avb.ko` (Intel IGB + AVB/TSN) on **`eth0`**, brought up by
+   `/system/bin/init_ethernet.sh`: `vlan5` = `192.168.1.100/24`, `vlan4` = `172.16.4.100/24`
+   ("legacy_network"), static routes/neighbors to the peer ECUs; `daemon_cl` runs **gPTP/802.1AS**
+   (`-GM` grandmaster, `audio` group) and TSN Tspec — i.e. **AVB audio + FSA/SOME-IP**, exactly the
+   Plane-2 topology documented above. Switch is Marvell (`vendor.harman.ethernetswitch=mrvl`). [FW]
+
+**Answer to Q1:** For a Pi replacement, **you do not need to make the Pi speak CAN.** The OEM radio
+node presents to the rest of the vehicle as (a) an **automotive-Ethernet** node (FSA/SOME-IP on
+vlan4/vlan5, AVB audio) and (b) a CAN ECU (`0x80`) **only via the far side of the GHS/VIP IPC
+boundary** — a boundary that lives inside the OEM radio's own SoC and is *not* reproducible on a
+Pi. The realistic Pi integration surface is the **Ethernet/FSA plane** (largely reverse-engineered
+in this doc), not CAN. [INF from FW + existing doc]
+
+### 2. Wake-up and vehicle-status signalling (as seen by the guest)
+
+- Power/ignition state arrives as a **HIDL service, not CAN NM frames**: `vendor.gm.powermode@1.0`
+  (`IPowerModing`, `IPowerModeListener`, `ISystemStateListener`). The VHAL registers for power-mode
+  updates ("Failed to register for power mode updates from Power Moding service"), logs
+  "Current system state: %s power mode: %s", and runs an **acknowledge** handshake
+  (`acknowledgePowerModeChanged`, "power mode change complete acknowledged"). It carries an explicit
+  **`BPMM_START_STOP_IGNITION_SWITCH_PRESSED_REPORT`** and an `IGNITION` state. [FW]
+- So on this platform the **network-management / wake decision is made on the far (GHS/VIP) side**
+  and delivered to Android as discrete power-mode transitions over IPC channel 3; the Android guest
+  neither sees nor generates CAN NM traffic. [FW for the guest interface; [INF] that NM lives on the
+  far side.]
+- The concrete on-wire GM power-mode frame (`0x370`, `bit37:3` = Off/Acc/Run/Crank/Propulsion) is
+  documented in **Plane 1a** above — but that is an **[X] Cadillac capture**, not yet confirmed on
+  this Silverado, and in any case is consumed on the CAN/VIP side, not by the Android guest.
+- Vehicle-status signals (speed, gear, doors, accessory) reach apps through the **standard AAOS
+  VHAL property model**, sourced over `/dev/ipc/ipc3`; the raw→property mapping is the bus-frame
+  decode the project is already chipping at (see MEMORY: Y181 emulator VHAL write path = bus-frame
+  injection via `/dev/ipc/ipc3`). [FW/INF]
+
+### 3. Risk of physically removing the OEM radio node
+
+**Empirically measured — the owner has driven the truck with the radio module removed [VEH]:**
+
+- **No RearCamera / 360 view.** Camera overlay/compositing runs on the **GHS partition of the
+  radio's own SoC** (the guest ships EVS HALs — `android.hardware.automotive.evs@1.0/1.1` — but the
+  actual compositing is GHS-side); remove the radio and the feed is gone entirely. [VEH] (firmware
+  corroboration: EVS HALs present, and the guest is a GHS guest per §1). [FW/VEH]
+- **No vehicle audio *at all*** — including **turn-signal ticks, door chimes, and safety dings**,
+  not just media. The radio is the **whole-vehicle audio hub/source**, feeding the Bose amp
+  (**T3**) over the **AVB Ethernet pair (bus 6, `A11↔T3`)** — see Open-items #1 above and
+  `.103 = AMP_ETH`. Firmware corroboration: `vehicleaudiocontrol` registers a
+  **"chime-playback-status" callback** and is gated on `vendor.gm.powermode ISystemStateListener`;
+  `libgmaudiopowermode.so` exists; audio HAL + AVB/gPTP transport all live on the radio. [VEH + FW]
+  - **Cross-reference for the audio-HAL owner:** a Pi replacement must source **ALL** vehicle audio
+    (chimes / turn-signal / seatbelt / safety dings), not merely media playback, and drive the Bose
+    amp over AVB/TSN Ethernet — materially larger scope than "play music." Flagging here; the audio
+    HAL/amp details are that agent's slice.
+- **Cluster gauges & safety info are unaffected.** Speedometer, engine data and all NHTSA-mandated
+  displays run on the **cluster's own independent RTOS** (IPC `.106` Visteon IPC); only the cluster
+  "cards" (time/temp, media, nav, calls) that the radio *feeds* go blank. Removing the radio did
+  **not** degrade safety-critical cluster function. [VEH] (consistent with the doc: `.106 IPC` and
+  the `.107` RTOS partition are separate nodes.) [FW/VEH]
+
+**Not yet observed but expected [INF]/[GM]:**
+
+- The radio is CAN **ECU `0x80`** (via the gateway `0x45`) **and** Ethernet node `.100`
+  (SOME/IP-SD peer). When it disappears, other modules that expect it on the bus are likely to log
+  **"lost communication with radio / IVI" U-codes** (U-network DTCs) and SOME/IP-SD peers lose the
+  `.100`/`172.16.4.100` node. Whether any of these produce a **driver-visible warning** vs. a silent
+  stored DTC is untested here. [INF/GM]
+- Telematics/OnStar (CGM `.107/.112`, EOCM `.12/.13/.15`) and remote features depend on the
+  Ethernet fabric, not on the radio specifically, so they should survive the radio's removal — but
+  any HMI they render *through* the radio is gone. [INF]
+- **SecOC is not a removal risk** but is a *replacement* risk: critical-control frames are
+  authenticated with OEM-held keys and there is **no aftermarket provisioning path** (Plane 1a).
+  A Pi cannot forge SecOC'd frames — irrelevant if the Pi stays on the Ethernet/FSA plane and never
+  needs to source those CAN frames, which is the recommended posture. [X→INF]
+
+**Bottom line:** the good news is that safety-critical vehicle function (cluster/RTOS) is
+independent of the radio; the hard news is that the radio is the **camera compositor and the
+whole-vehicle audio hub**, both riding partitions/transports (GHS, AVB-Ethernet) that a Pi does not
+natively reproduce. CAN is *not* the integration problem here — **Ethernet/FSA + AVB audio + GHS-hosted
+camera** are.
+
+### 4. Prioritised bench / in-vehicle capture plan (for a future hardware-enabled session)
+
+Nothing below has been done — this is a plan. Redact VIN and any real MACs/IPs before sharing
+captures (this doc already flags synthetic vs. real MACs).
+
+1. **P0 — Ethernet is the real interface: capture it first.** Tap the radio's 100BASE-T1 pairs
+   (bus 6 `A11↔T3` amp, bus 2/4 gateway/telematics per Open-items #1) with a **BroadR-Reach/100BASE-T1
+   media converter** into a mirror port; `pcap` on `eth0`/vlan4/vlan5 during **power-on, ignition
+   on→acc→run→crank, and ignition-off**. Goals: (a) observe the FSA `0x5AA5` power-mode/system-state
+   exchange the `vendor.gm.powermode` service consumes; (b) map which SOME/IP-SD services vanish when
+   the radio is pulled; (c) confirm/deny a **VLAN-502 CAN mirror** on this unit (Open-items #6).
+2. **P0 — decode the IPC vehicle channel.** With the radio powered on a bench harness, log
+   **`/dev/ipc/ipc3`** (lchannel 3) and correlate against known transitions (ignition, gear, speed)
+   to finish the raw-frame→VHAL-property map (ties into the emulator VHAL work). This is the payload
+   a Pi's VHAL backend would ultimately need to emulate.
+3. **P1 — power/wake sequencing.** Scope the radio connector's **switched-battery / wake / accessory**
+   pins during KL30/KL15 transitions to learn what actually powers the module and whether wake is a
+   hard line or a bus event. Cross-check against `BPMM_..._IGNITION_SWITCH_PRESSED_REPORT` timing.
+4. **P1 — CAN only if/when needed.** Only if the Pi must originate CAN (it likely must not): tap the
+   vehicle CAN at the **gateway `0x45`** side with a USB-CAN adapter and log NM/wake + status frames
+   during the same transitions. Expect the radio itself **not** to be a raw-CAN source (per §1), so
+   this characterises the *gateway/VIP* behaviour, not the radio.
+5. **P2 — removal-DTC survey.** With a GM-capable scan tool (MDI2/DPS, see `../diagnostics/`), pull
+   DTCs from gateway `0x45` and neighbouring modules **before and after** radio removal to enumerate
+   exactly which U-codes fire and whether any surface to the driver. Answers the real
+   feasibility-blocker for the swap.
+6. **P2 — audio-hub scope proof.** Confirm the amp (T3) is a pure AVB-Ethernet sink with no local
+   chime generator, i.e. that a Pi would have to synthesise every chime/ding and stream it over AVB.
+   (Coordinate with the audio-HAL slice.)
+
 See also: [`../hardware/connectors.md`](../hardware/connectors.md) (physical harness that carries
 these buses) and [`ota_programming_roles.md`](ota_programming_roles.md) (module programming over
 this network).
+
+---
+
+## Plane 3 — Audio amp + LVDS panel/touch interconnects (Pi-swap feasibility) — added 2026-09-27
+
+Scope: the physical transport of (a) audio between the A11 radio and the amp/speakers, and
+(b) video + touch between the A11 radio and the center display. Goal is to judge whether a
+Raspberry Pi (4/5) running custom AAOS could re-originate/terminate these same OEM
+interconnects, or must fall back to commodity parts. Every claim below is tagged
+**[confirmed-fw]** (seen in the extracted Y181B firmware), **[confirmed-vehicle]** (from the
+owner's real radio-removal test), **[confirmed-service]** (GM ALLDATA / prior repo docs), or
+**[inferred]** / **[general]** (automotive-platform knowledge, not this-vehicle-specific).
+
+Firmware evidence base: `Y181B_cleanroom.img` (ext4, read via `7z`; not mountable on macOS —
+no `debugfs` present). Platform is **Intel Apollo Lake / "broxton", x86_64, kernel 4.19.305**,
+Android 12 under the GHS hypervisor — *not* an ARM/Qualcomm SoC. This matters: the audio and
+display blocks are Intel-SoC peripherals (Intel SST/SOF DSP, i915 display), so a Pi (ARM,
+VideoCore/DSI) is a different silicon family at both ends.
+
+### 3a. Audio — transport to the amp
+
+**Two amp paths exist in the firmware; this vehicle uses the Ethernet-AVB one.**
+
+- **[confirmed-fw]** On-SoC audio is Intel SST DSP → I2S/TDM → **NXP TDF8532** 4-ch class-D
+  amplifier-codec. Driver `snd-soc-tdf8532.ko` (`sound/soc/codecs/tdf8532.c`, `alias=i2c:tdf8532`)
+  + Intel machine driver `snd-soc-sst_bxt_tdf8532.ko`. Amp control is I2C: `init.audio.rc`
+  chowns `/dev/i2c-3` to `audioserver` (matches `hardware.md`: "i2c-3 = TDF8532 codec control").
+- **[confirmed-fw]** A full **automotive Ethernet AVB** audio stack is present and is what gates
+  audio bring-up:
+  - `vendor/lib/modules/igb_avb.ko` — Intel I210 GbE driver with AVB/TSN extensions (mainline
+    `igb` is disabled per `hardware.md`).
+  - An **AVB StreamHandler** service (COVESA/GENIVI-style, IEEE 1722/AVTP). `init.audio.rc`
+    blocks on `init.svc.vendor.avbstreamhandler=running` and `vendor.avb.streamhandler.ready=true`
+    before starting PulseAudio and the audio HAL.
+  - `service vendor.earlyavbaudio /vendor/bin/early_audio_alsa_avb.sh` — **early-boot AVB audio**,
+    i.e. audio over AVB before Android is fully up. This is the likely carrier for
+    safety-relevant early chimes.
+  - Route/param configs select transport: default `persist.vendor.audio.audioConf =
+    AudioParameterFramework-tdf8532-no-eavb.xml` (local I2S to TDF8532), with alternates
+    `…-eavb-master-raw.xml`, `…-eavb-master.xml`, `…-eavb-slave.xml`, keyed on
+    `persist.vendor.eavb.mode` and AVB profile names `MRB_Master_Audio` / `MRB_Slave_Audio`
+    (IEEE 1722a compatibility flag `d6_1722a`). Same SST DSP, switchable output route.
+- **[confirmed-service]** For *this* vehicle the active path is Ethernet AVB to an **external
+  Bose T3 amplifier**: Open item #1 above records GM ALLDATA *Data Link Communications* data —
+  physical Ethernet **bus 6 (ports 7214/7215) = A11↔T3 Bose amp, "the AVB audio pair."** The
+  A11's Intel **I210 is gPTP grandmaster** for that AVB domain (`hardware.md`). So the default
+  `no-eavb` config in the generic image is a base-trim/build fallback; the LTZ-with-Bose truck
+  streams IEEE-1722 audio over Ethernet to T3. (The local TDF8532 I2S path is almost certainly
+  the base-audio, no-Bose variant — **[inferred]**.)
+- **[confirmed-vehicle] Scope increase — the radio is the whole vehicle's audio hub.** With the
+  A11 radio physically removed the owner had **no audio at all — no media, and no turn-signal
+  ticks or door chimes.** Chimes/turn-signal audio are generated by a body/chime module
+  elsewhere but are *rendered to the speakers through the radio*. Mechanism is consistent with
+  both firmware facts: the radio is either the mixer/source of that audio **or** the AVB gPTP
+  grandmaster — remove it and the AVB clock domain collapses and T3 goes silent regardless of
+  who sourced the stream. A Pi replacement therefore cannot just "play infotainment audio"; to
+  preserve today's behavior it must also (i) act as gPTP grandmaster for bus 6, and (ii)
+  carry/relay the chime/turn-signal audio path to the speakers. Dropping (ii) means **losing
+  turn-signal and seatbelt/door chime audio** — an FMVSS/NHTSA-adjacent expectation
+  (e.g. seatbelt-reminder audibility); flag as a real safety/legal tradeoff, not a nicety.
+
+**Audio feasibility (Pi):**
+- **AVB reuse is plausible and is the same physical network already decoded (FSA), just a
+  different pair/protocol. [inferred, medium confidence]** Linux has the pieces: a TSN-capable
+  NIC (Intel I210/I225/I226, or a USB/HAT with TSN), `linuxptp` for 802.1AS/gPTP (Pi would need
+  to be grandmaster), the kernel `AF_PACKET`/ETF/TAS qdiscs + `libavtp`, and the **open-source
+  COVESA AVB StreamHandler** — the very component this firmware runs. The Pi 4/5 on-board NIC is
+  **not** TSN/AVB-capable, so this needs an add-on TSN NIC; the RPi CM4/CM5 + a carrier with an
+  I210/I226 over PCIe is the realistic route. Hard parts are matching Bose T3's exact AVTP stream
+  format/SRP reservations and the gPTP timing, which are undocumented — bench capture required.
+- **The local-I2S TDF8532 path is not a realistic Pi target [inferred].** It presumes a directly
+  wired NXP amp with proprietary I2C control; a Pi's I2S/TDM to a foreign amp is fragile and
+  this truck's amp is external over AVB anyway.
+- **Pragmatic fallback [general]:** don't preserve the OEM amp bus. Feed the existing speakers
+  from a Pi audio out (analog line-out via a USB/HAT DAC, or the Pi driving a simple aftermarket
+  class-D amp), accepting loss of Bose DSP tuning and — critically — arranging chime/turn-signal
+  audio some other way (or accepting its loss, with the safety caveat above).
+
+### 3b. Video panel + touch
+
+- **[confirmed-service]** Panel is **Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, ~13.4"**
+  (`hardware.md`; system `lcd_density=200`, physical ~193 dpi).
+- **[confirmed-fw]** The display link off the head unit is **TI FPD-Link III, not raw LVDS from
+  the SoC.** Driver `ti949_serdes.ko` (`drivers/video/gm-serdes/ti-949.c`) is a **TI DS90UB949
+  serializer**; its recovery routine `reinit_ti949_948` names the partner **DS90UB948
+  deserializer** at the panel. Signal chain: i915 (eDP/DP or LVDS out of the Intel SoC) →
+  **DS90UB949 serializer** → single FPD-Link III coax/STQ → **DS90UB948 deserializer** at the
+  panel → LVDS into the panel TCON. The user's "LVDS" is the *last hop only*, downstream of the
+  deserializer. Serializer control is I2C: `init.bxtp_gm.rc` chmods `/dev/i2c-7` and `insmod`s
+  `ti949_serdes.ko`; a `949-errata-fix` service and `evs_app` run alongside (the serdes init
+  lives in the **EVS/camera** mixin).
+- **[confirmed-fw]** Touch = **Atmel maXTouch** (`atmel_mxt_ts.ko`, `insmod` at
+  `init.bxtp_gm.rc:73`), on **I2C bus 7 at address 0x4B** (`.../atmel_mxt_ts/7-004b/reinit_mxt`;
+  matches `hardware.md`: "Atmel maXTouch, 16-point, I2C-7 @ 0x4B"). 16-point multitouch.
+- **[inferred, high confidence] Touch I2C is tunneled back over FPD-Link III.** The maXTouch and
+  the DS90UB949 serializer share the *same* i2c-7 bus, and `reinit_mxt` is paired with
+  `reinit_ti949_948` (re-init serdes → re-init touch after a link drop). In FPD-Link III the
+  DS90UB948 bridges a remote I2C segment back over the coax to appear as a local bus on the head
+  unit. So the display is an **integrated module** (LVDS panel + DS90UB948 deserializer + Atmel
+  maXTouch), joined to the radio by **one FPD-Link III coax** carrying forward video + a
+  bidirectional back-channel I2C (touch + serdes + backlight control).
+- **[confirmed-vehicle]** With the radio removed there is **no rear/360-camera overlay** on the
+  display — camera compositing (EVS: `evs_app`, `earlyEvs_harman`, the 949 errata service) runs
+  on the radio's own Intel SoC/GHS. Independent confirmation that the panel is driven **directly
+  by the radio unit's SoC**, with no separate video ECU in the path. (Owner also confirms the
+  instrument cluster is a separate independent RTOS, unaffected — out of scope.)
+
+**Panel/touch feasibility (Pi):**
+- **Video: a bridge-chip problem, not raw LVDS. [inferred/general]** A Pi has no LVDS *or*
+  FPD-Link III output. To drive this exact OEM panel the Pi would need to *originate* FPD-Link
+  III — i.e. drive the panel's DS90UB948 deserializer from a Pi source. Practical route: Pi
+  DSI/HDMI → an LVDS bridge (e.g. TI SN65DSI84 DSI→LVDS) → a DS90UB941/949-class serializer to
+  the panel's 948; or replace the panel-side deserializer board. This is buildable from
+  catalog TI FPD-Link III parts but is **bespoke integration** (link training, I2C-passthrough
+  mapping, backlight/PWM, exact DS90UB948 strap config), not a plug-in. Panel timing for the
+  2400×960 mode must be matched (not fully enumerated in firmware here — **open**).
+- **Touch: the tractable half. [inferred, high confidence]** If the video path is otherwise
+  solved, the Atmel maXTouch is a standard I2C device (0x4B) with a mainline `atmel_mxt_ts`
+  driver; a Pi can read it directly on one of its I2C buses (plus the maXTouch CHG/interrupt
+  line), independent of the FPD-Link back-channel, *if* the touch controller can be wired to the
+  Pi's I2C rather than being trapped behind the deserializer. If it must stay behind the 948,
+  the Pi gets it via the serializer's I2C passthrough — same bridge work as video.
+
+### 3c. Recommendation
+
+- **Audio:** the OEM path *is* worth considering because it rides the already-mapped automotive
+  Ethernet — a CM4/CM5 + TSN NIC running linuxptp + the open COVESA AVB StreamHandler could, in
+  principle, re-originate the bus-6 AVB stream to the Bose T3 amp and be gPTP grandmaster. But
+  the stream-format/SRP details and the chime/turn-signal relay are unproven and safety-relevant.
+  For a first cut, the **analog/USB-DAC-into-amp fallback** is far lower risk; escalate to real
+  AVB only after a bench capture of the A11↔T3 stream.
+- **Panel/touch:** preserving the OEM LVDS/FPD-Link III panel is the **higher-risk half** —
+  bespoke serializer integration for fit/finish, and the panel is physically dash-integrated
+  (~13.4" 2400×960 shaped module). Unless dash fit is a hard requirement, the far simpler path
+  is a **commodity touchscreen driven natively by the Pi** (DSI/HDMI + USB/I2C touch), abandoning
+  the OEM panel interconnect. Reuse OEM panel only if you accept custom FPD-Link III bridge
+  hardware. Touch alone is easy; video is where the engineering risk concentrates.
+
+**Confidence summary:** chip identities, buses, and transport *mechanisms* are **[confirmed-fw]**;
+the this-vehicle amp topology (AVB→Bose T3) is **[confirmed-service]**; the radio-as-audio-hub and
+local-panel-compositing facts are **[confirmed-vehicle]**. All Pi-side feasibility statements are
+**[inferred]/[general]** — no Pi hardware was tested here.

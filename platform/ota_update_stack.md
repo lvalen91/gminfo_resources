@@ -86,12 +86,15 @@ reached but no caller-permission check guards it.
 >   timing/state gating, a DoS/nuisance vector) — it does NOT allow substituting attacker-controlled image
 >   content.** Downgrade from "critical RCE-adjacent" to "HIGH: unauthorized-trigger / consent-bypass only."
 > - **Signature.verify() mechanism (normal manifest path, containerType 0):**
->   `InstallRunner.populateInstallers()` (`InstallRunner.java:577-578`) unconditionally runs a `Verifier`
->   installer before `RecoveryModeInstaller`; `Verifier.run()` calls `UpdatePackage.verify()`
->   (`UpdatePackage.java:179-208`): real X.509 chain check — extracts the embedded signing cert, loads a
+>   `InstallRunner.populateInstallers()` (`InstallRunner.java:577-578`, gated `if (!verified)`) runs a
+>   `Verifier` installer before `RecoveryModeInstaller` — unconditional in effect on the real `install()`
+>   path because its only caller there (`InstallRunner.install()`, `InstallRunner.java:672-676`) hardcodes
+>   `verified=false`; a separate post-download-verification call site passes `verified=true` and is not the
+>   traced path. `Verifier.run()` calls `UpdatePackage.verify()`
+>   (`UpdatePackage.java:179-217`): real X.509 chain check — extracts the embedded signing cert, loads a
 >   trust anchor from `/system/etc/security/production/signingCA.cer` (or `development/signingCA.cer` only
 >   if the manifest itself claims `isDevelopmentSecurity()=true`), calls
->   `untrusted.verify(trusted.getPublicKey())` (`Signature.java:126-146`), then `Manifest.verify()`, then
+>   `untrusted.verify(trusted.getPublicKey())` (`Signature.java:116-142`), then `Manifest.verify()`, then
 >   license/DRM checks, then per-module `ModulePart.verify()`. Any failure aborts before any apply step.
 >   This is a second independent layer alongside the native `gm_update_engine` RSA-2048 whole-manifest
 >   check documented above. `UpdatePackage.parse(path, type)` — the only factory used by the normal
@@ -100,7 +103,7 @@ reached but no caller-permission check guards it.
 >   manifest folder already on disk.
 > - **Open item, flagged not exploited: `DevCaloverrideInstaller` (containerType=2,
 >   CONTAINER_TYPE_DEV_CALIBRATION_OVERRIDE).** `UpdatePackage.verify()` returns `true`
->   **unconditionally** for this type (`UpdatePackage.java:210`), and `populateInstallers()` never adds a
+>   **unconditionally** for this type (`UpdatePackage.java:214-215`), and `populateInstallers()` never adds a
 >   `Verifier` for it (only Delay + `DevCaloverrideInstaller`, `InstallRunner.java:593-596`).
 >   `DevCaloverrideInstaller.copy()` copies whatever files are listed in `getDevCaloverrides()` straight
 >   into `/update_cache/calibrations` with **zero signature/hash check**, then reboots to recovery. But

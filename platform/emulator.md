@@ -52,7 +52,11 @@ boot on goldfish" framing above:
   e1000e), isolated from the goldfish AVD (separate process, port 5560 vs 5558, workdir
   `~/gm_emu/realk/`), in ~4 minutes cold boot. Reproduced twice (a manual-assisted first pass, then a
   clean hands-off autoboot) with matching screencaps at different timestamps, confirming
-  reproducibility. Verified live via qemu screendump + guest shell, not build-only. GHS is confirmed a
+  reproducibility. Verified live via qemu screendump + guest shell, not build-only. **This build boots
+  under `androidboot.selinux=permissive enforcing=0`** (confirmed live: `ps` on the running qemu process
+  + the boot's own `serial.log` kernel-cmdline line) — the "SELinux ENFORCING" fidelity-table row and the
+  Un-stub roadmap's enforcing-mode achievement below apply to the **goldfish hybrid only**; enforcing has
+  not yet been ported to this real-kernel build. GHS is confirmed a
   *service-layer* blocker (specific vendor daemons/HALs stay dead without it), not a *boot-layer* one.
   All four previously-inferred risk points are directly confirmed: GHS/i915/IPU4 graceful degrade (no
   panic; `CONFIG_GHS_*` probes fail cleanly, e.g. repeated `Unable to open file: /dev/ghs/emmc-health`;
@@ -64,7 +68,9 @@ boot on goldfish" framing above:
   a DT-fstab source (`fs_mgr`'s `ReadFstabFromDt()` fails — its nested node layout doesn't match this
   platform's flat `_DSD` properties); the actual working fix is patching the ramdisk's plain-text
   first-stage fstab (`first_stage_ramdisk/fstab.full_gminfo37_gb`) directly, dropping `logical`/`avb`
-  and pointing each entry at the PCI-scoped `/dev/block/pci/pci0000:00/0000:00:1c.0/by-name/<partition>`
+  and pointing **each `first_stage_mount` entry** (system/vendor/product — the three fs_mgr resolves before
+  vold exists; other partitions keep their plain `/dev/block/by-name/...` path unchanged) at the PCI-scoped
+  `/dev/block/pci/pci0000:00/0000:00:1c.0/by-name/<partition>`
   path with `slotselect` — the flat `/dev/block/by-name/...` path is never created by first-stage init
   on this kernel. New hardware-fidelity fact: vendor `file_contexts` labels `ttyS0` as
   `bluetooth_serial_device` and `ttyS1` as `ipc_serial_device` (confirming ttyS1 as the real VIP/libipc
@@ -193,16 +199,42 @@ Findings, ranked by volume:
 - **IPCServer itself** logs `Uframe timer expired` / `Sending Uframe RESET` repeatedly — this IS the
   ~100%-CPU-spin-seeking-the-missing-VIP issue already flagged as an open item by the boot work; the
   logcat confirms it's a continuous retry/reset loop, not a one-off.
-- **38 GENUINE native crash/tombstone events** (`GMCRASHLOG: CRASH ... TOMBSTONE ...`) occurred in this
-  one boot-to-home-screen window (cumulative crash counter reached at least #199 across the machine's
-  history). Affected UIDs include `1201002` (a vendor/OEM uid range), `1000` (system), and `0` (root) —
-  crashes are not confined to one process. **The exact crashing binary/binaries could NOT be identified
-  from the available log stream** (the serial-redirected logcat only carries warning+ severity per the
-  `gmklog.sh` fix above, filtering out some debuggerd/tombstone-manager detail lines that would normally
-  name the process). **This is a genuine, currently-unresolved open item** — needs investigation (either
-  raise the serial log verbosity temporarily, or read the actual tombstone files under
-  `/data/tombstones`/`/data/gmlogger/gmcrashlogs/` directly via a live shell or debugfs, to name the
-  crashing process(es)) before considering this build stable.
+- **"38 native crash/tombstone events per boot" — TRIAGED AND FIXED (2026-09-27).** The earlier
+  reading of these as 38 genuine crashes was wrong. The tombstones, read directly (32-slot
+  `/data/tombstones` ring via the root shell, plus 212 DropBox `SYSTEM_TOMBSTONE` entries), show that
+  a clean cold boot has **only one real native crash class, repeated 6-7 times**. The rest are
+  replayed old crashes. Measured on a clean overlay cold boot: 43 `GMCRASHLOG: CRASH` events = 32
+  replays (all logged before the first real crash) + 6 real Bluetooth aborts, each logged twice
+  (`TOMBSTONE` + `JAVA_TOMBSTONE`).
+  - **Replay mechanism (the bulk of the count):** at system_ready, A12 `NativeTombstoneManager`
+    re-adds every `tombstone_NN.pb` in the ring to DropBox as `SYSTEM_TOMBSTONE_PROTO`, with no
+    dedupe. `gmcrashlogd` then turns each one into a new `TOMBSTONE` crash event. This is stock
+    platform behaviour; the emulator's crash-heavy history just filled the ring.
+  - **`com.android.bluetooth` SIGABRT in `hci_timeout_abort`** (uid `10x1002`/`12x1002` = per-user
+    bluetooth; this is the "1201002" above). `HCI_Reset` (0x0c03) is never answered because there is
+    no BT controller. `probe_wireless` never sets `persist.vendor.harman.wireless` (bcm/nxp), so the
+    Harman BT HAL cannot load a `libbt-vendor` lib. `BluetoothManagerService` retries until it gives
+    up after about 7 crashes. **Fix:** `settings put global bluetooth_on 0` (persisted in /data),
+    plus a one-time clear of the stale ring, archived to the Mac Pro under
+    `~/gm_emu/realk/agents/batch2/agent1/ring_canonical_20260927/`. Verified on an overlay cold boot
+    (43 → 1 events, 0 fatal signals, BT stays off with no power-policy re-enable) and applied to the
+    live canonical instance. Rollback: `settings put global bluetooth_on 1`.
+  - **`vehiclepanel` SIGSEGV at 0x4** in `lvds_input.default.so` `LvdsDevice::volEncoderTech+47`:
+    `mI2C` (this+0x20) is NULL after `I2CDevice::init()` fails (no LVDS serializer i2c under qemu),
+    and the `Panel` constructor calls into it unchecked. This was 94 of the historical DropBox
+    entries. It is already neutralised by the `0gfx.rc` no-op shadow (above), with none since.
+  - **`audioserver` SIGABRT "TimeCheck timeout for IAudioFlinger command N"** (1=createTrack,
+    19=getMicMute, 23=registerClient, 38=releaseAudioSessionId, decoded from
+    `audioflinger-aidl-cpp.so`). Each one is paired with a debuggerd signal-35 *dump* of the Harman
+    audio HAL; that dump is not itself a crash. What starts it: AudioFlinger `mLock` is held across a
+    slow Harman HAL HIDL call or a CPU-starved thread. What keeps it looping: after each restart,
+    `media.audio_policy` takes >10 s to register, and `onTransactWrapper` waits for it *inside* the
+    5 s TimeCheck. It occurred only during the IRQ-storm / host-overcommit period, with none on a
+    healthy boot. Not fixable at config level; it belongs to the Harman audio wiring work.
+  - **`gm_protokey` SIGABRT "FORTIFY: pthread_mutex_lock called on a destroyed mutex"**
+    (`libpal_security` `pal_sec_do_work` → `pal_sec_send_protokey_request`). This happens only on a
+    *graceful* guest shutdown (`adb reboot`): a worker thread outlives the static destructors. It is a
+    vendor race in that binary and is left alone. A hard qemu kill never triggers it.
 
 ## Matching the real Silverado UI (calibration-driven)
 Base boot renders the GM **base** look (red accent, no widget, GAS-default tiles). The real Silverado
@@ -262,8 +294,10 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   (12-bit); payload **big-endian**; the handler validates `payloadSize==cfg[+8]` (else logs `Wrong size for
   frame 0x%X`); a dedup filter drops repeat values (inject fresh ones each time). Discovery oracle:
   `setprop log.tag.GMVHAL VERBOSE` → `Frame Message` / `SignalStore SignalName: <sig> Value: N` /
-  `setPropFromVehicle Property: <PROP>`. Full **152-frame bus→VehicleProperty map** at
-  `emu/y181_integration/framemap.txt` (reference, not reproduced here). **Landed signals (measured):**
+  `setPropFromVehicle Property: <PROP>`. Full **152-frame bus→VehicleProperty map** preserved locally at
+  `emu/y181_integration/emu_integration/framemap.txt` (corrected path — an earlier pass omitted the nested
+  `emu_integration/` segment) and live on the Mac Pro at `~/gm_emu/hy/emu_integration/framemap.txt` (reference,
+  not reproduced here). **Landed signals (measured):**
   outside temp (frame `0x4A8`, signal `OATP_OtsAirTmpCrValAuth`, ENV_OUTSIDE_TEMPERATURE read-back 22.0°C;
   HMI status-bar render needs a sustained feed, see caveat below); vehicle speed (frame `0x229`, signal
   `VSADP_VehSpdAvgDrvnAuth`; full inject→VHAL→CarService chain confirmed, `CarDrivingStateService` 0→MOVING);

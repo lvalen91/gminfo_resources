@@ -197,7 +197,13 @@ adb shell find /vendor/etc/init /system/etc/init -name "*.rc" 2>/dev/null
 adb shell cat /proc/$(adb shell pidof gm_protokey)/maps 2>/dev/null | grep cmdline
 ```
 
-**Potential impact:** If `gm_protokey` can be bypassed, `DiagnosticsService` and UDS `SecurityAccess ($27)` unlock becomes accessible, opening the `diagnosticsd` code path running as root with full capabilities (see vector #9).
+**Potential impact:** If `gm_protokey` can be bypassed, the boot-time proto-key/disk-encryption (DATA_LOCKED)
+gate it controls becomes accessible. **[C] Corrected (2026-09-27):** this does NOT unlock UDS `SecurityAccess
+($27)` — `gm_protokey` is unrelated to the diagnosticsd UDS chain. `$27` for `ETHERNET`/`NOTIFICATION` tiers is
+checked in-process by `diagnosticsd`'s own `libuds`; the `VIP` tier is forwarded off-SoC to the VIP MCU via
+`ProxyOfExtComp`/`SockAdaptor`, gated by the SBI EEPROM byte there — see
+`diagnostics/ethernet_uds_diagnosticsd.md`. Opening the `diagnosticsd` code path (vector #9) is a separate,
+unrelated escalation, not something a `gm_protokey` bypass grants.
 
 ---
 
@@ -218,7 +224,10 @@ adb shell rm /data/vendor/gm/security/.validation
 adb logcat | grep -i "protokey\|TOFU\|provision\|PAL"
 ```
 
-**Potential impact:** A researcher-controlled PAL key in the trust chain could be leveraged to sign update packages accepted by the GHS update path, or to unlock `SecurityAccess ($27)` without needing the original GM seed-to-key algorithm.
+**Potential impact:** A researcher-controlled PAL key in the trust chain could be leveraged to sign update
+packages accepted by the GHS update path. **[C] Corrected (2026-09-27):** this would NOT unlock UDS
+`SecurityAccess ($27)` — that gate is unrelated to `gm_protokey`/the PAL trust chain (see the correction on
+vector #6, above, and `diagnostics/ethernet_uds_diagnosticsd.md`).
 
 ---
 
@@ -408,7 +417,7 @@ adb shell dd if=/dev/block/vda4 bs=4096 count=256 2>/dev/null | xxd | head -100
 | Tool | Purpose | Status |
 |---|---|---|
 | ghs_probe APK | Probe `/dev/ghs/*` ioctls and Trusty IPC ports | Written, not built |
-| Frida S84.dll hooks | Capture gm_protokey seed→key transform | Script ready; needs Windows host + DPS + MDI2 hardware |
+| Frida S84.dll hooks | Capture the diagnosticsd/VIP `$27` seed→key transform (NOT gm_protokey — see the [C] corrections above; gm_protokey is the unrelated boot-time proto-key/disk-encryption gate) | Script ready; needs Windows host + DPS + MDI2 hardware |
 | Renesas E10A-USB debugger | RH850 VIP JTAG access | Not acquired (~$150) |
 | XGecu T48 + BGA-153 ISP adapter | Dump Samsung KLMCG4JEUD eMMC without reballing | Not acquired |
 | ChipWhisperer or equivalent | Voltage glitch misc/AB0 CRC check in VMM | Not acquired |

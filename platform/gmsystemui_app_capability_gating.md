@@ -17,9 +17,14 @@ The CardView clock/widget panel's very existence is gated by
 `CalibrationManager.getEnumeration("SCREEN_RESOLUTION")==4` — a hardcoded Java branch in
 `GMCarStatusBar.i3()` (line ~711-714) feeding `GMCarStatusBar.g1()` (line ~1238), which calls
 `com.gm.cardview.model.g.e()` to inflate+attach the panel as a WindowManager overlay (type 2024). No
-resource/prop/Settings fallback exists anywhere in this path — confirmed by grepping the whole
-decompiled tree for `SCREEN_RESOLUTION`/`SIZE_2400`/`1133`, finding only these two call sites.
-`com.gm.cardview.model.g.e()` itself has no internal gate — it always builds+attaches when called; the
+resource/prop/Settings fallback exists anywhere in this path. **[C] Corrected (2026-09):** an earlier
+pass claimed grepping the tree for `SCREEN_RESOLUTION`/`SIZE_2400`/`1133` found "only these two call
+sites" — that undercounted; there are at least 4-5 read sites across both apps (`GMCarStatusBar.java:711`,
+`com/gm/statusbar/C0.java:307`, `com/gm/statusbar/q0.java:114`, `T/A.java:23` in GMHomeScreen, plus the
+`X.e.SIZE_2400_BY_960` enum path `HomeScreenActivity.java:415` cited in §5). This doesn't change the
+substantive conclusion — every site traces back to the same `CalibrationManager`/`SCREEN_RESOLUTION`
+source, none is an independent resource/prop/Settings fallback — but "only these two" was wrong as stated.
+`com.gm.cardview.model.g.d().e(...)` itself has no internal gate — it always builds+attaches when called; the
 only gate is the caller-site check. See `research/SCREEN_RESOLUTION_END_TO_END_WORKFLOW.md` for the
 calibration-write procedure that changes this value.
 
@@ -47,7 +52,8 @@ predicates:
 |---|---|---|
 | `p()` | `f40184a` | is the top activity a dialog |
 | `s()` | `f40185b` | is it eligible to hide CardView / go immersive |
-| `q()` / `w()` / `r()` | `f40186c` | is it full-screen without hiding CardView (special-cases Android Auto's package `com.gm.hmi.androidauto`) |
+| `t()` | `f40186c` | is it full-screen without hiding CardView — this is the method actually invoked live (`com/gm/cardview/model/p.java:171`, `com/gm/cardview/view/CardView.java:709`); `q()`/`w()`/`r()` are separate predicates that do NOT read `f40186c` at all |
+| `i()` | (hardcoded, not WhiteList) | `"com.gm.hmi.androidauto".equals(pkg)` — the actual Android-Auto special-case; independent of any WhiteList field |
 | `F()` | `f40187d` | is it an audio-focus package |
 
 ## 3. Where CarPlay sits — the asymmetry
@@ -56,8 +62,9 @@ Native Cinemo CarPlay's activity, `com.gm.hmi.applecarplay/.ui.activities.AppleC
 (confirmed as its component name from GMSystemUI's `C3292z.java:34` and GMHomeScreen's
 `p016g0/c.java:46`, `T/C0124q.java:65`), does **not** appear in any of the 8 `WhiteList` lists — grep
 confirmed zero hits for `applecarplay`/`AppleCarPlayProjectionActivity` in `d.java`. By contrast Android
-Auto (`com.gm.hmi.androidauto`) **is** granted a capability (present in `f40186c`, special-cased in
-`q()`/`i()`). This asymmetry — Android Auto whitelisted, CarPlay not — means CarPlay is treated as a
+Auto (`com.gm.hmi.androidauto`) **is** granted a capability — present in `f40186c` (read by `t()`, not
+`q()`/`w()`/`r()` as an earlier pass mischaracterized) and separately special-cased by the hardcoded
+package check in `i()`. This asymmetry — Android Auto whitelisted, CarPlay not — means CarPlay is treated as a
 fully generic 3P activity by this gate.
 
 ## 4. The immersive/CardView-hide gate — mechanism, and why it's orthogonal to Android's own immersive flags

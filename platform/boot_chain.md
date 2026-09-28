@@ -281,15 +281,25 @@ The `super` partition uses Android's dynamic partition system to host `system`, 
 
 **Correction (2026-09, real Y181B boot-image extraction, cross-checked against the live device):** the
 ramdisk's own `fstab.full_gminfo37_gb` does mark partitions `logical,first_stage_mount` (an unused
-build-mixin default), and `ro.boot.dynamic_partitions=true` is set as a prop — but the AUTHORITATIVE
-first-stage fstab actually consumed at boot is an **ACPI SSDT table** (`_HID ANDR0001`, OEM Table ID
-"android") whose `_DSD` property gives real by-name **static** partitions on PCI eMMC (`0000:00:1c.0`,
-`wait,slotselect,avb` flags), overriding the logical/dynamic-partition path in practice. Net effect:
-**static A/B, no `super`, no dm-linear** — consistent with the static-A/B note already carried in
-[`emulator.md`](emulator.md#method-hybrid) (`mkdisk.py` comment: "Y181 is static A/B, no super"). The
-SOC_ACPIO firmware module (2MiB) is the ACPI-magic overlay partition carrying this SSDT plus Broxton
-platform ACPI (LPSS, PMC/PUNIT IPC, SDHCI-ACPI); a future QEMU port needs an equivalent `-acpitable`
-injection since q35's default ACPI has no `ANDR0001`. Full kernel-config evidence:
+build-mixin default), and `ro.boot.dynamic_partitions=true` is set as a prop. The real device's `acpio.img`
+(2MiB, confirmed) carries an **ACPI SSDT table** (`_HID ANDR0001`, OEM Table ID "android") whose `_DSD`
+property describes real by-name **static** partitions on PCI eMMC (`0000:00:1c.0`, `wait,slotselect,avb`
+flags). Net effect on this hardware: **static A/B, no `super`, no dm-linear** — consistent with the
+static-A/B note already carried in [`emulator.md`](emulator.md#method-hybrid) (`mkdisk.py` comment: "Y181
+is static A/B, no super").
+
+**[C] Corrected (2026-09-27) — the SSDT is NOT the fstab mechanism actually consumed at boot, and does NOT
+transfer to QEMU.** An earlier version of this note asserted the SSDT was "the AUTHORITATIVE first-stage
+fstab actually consumed at boot" and that a QEMU port would just need an equivalent `-acpitable` injection —
+that was an inference from static analysis, never confirmed on real hardware, and it is now **empirically
+refuted** by the real-kernel QEMU boot work (see
+[`../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-g-qemu-portability-assessment-2026-09)
+Appendix G): the extracted SSDT loads into ACPI fine but `fs_mgr`'s `ReadFstabFromDt()` fails to read a
+fstab from it — it is **not a usable DT-fstab source** on this kernel. The mechanism that actually worked
+was patching the ramdisk's plain-text `fstab.full_gminfo37_gb` directly (PCI-scoped `by-name` paths +
+`slotselect`, dropping `logical`/`avb`). Whether the real (non-emulated) Y181B hardware genuinely resolves
+partitions via this SSDT rather than the plain-text fstab remains **unconfirmed** — flag as open, not asserted
+fact. Full kernel-config evidence:
 [`../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-f-kernel-configuration--ghs-coupling-2026-09).
 
 ---

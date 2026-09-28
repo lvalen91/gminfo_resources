@@ -19,8 +19,8 @@ emulator artifacts: they hold against the shipped `product_sepolicy.cil` under S
 
 | # | Severity | Component | Unauth-reachable? | Real-radio transferable | Location | PoC shape |
 |---|----------|-----------|--------------------|--------------------------|----------|-----------|
-| 1 | **CRITICAL** | `IGMAuthService` (`com.gm.authtoken`, uid system) | Yes — any 3P app, auto-granted `normal` perms | **HIGH** — shipped APK + sepolicy, SELinux Enforcing | `a/f.java:363,690,666` | declare 3 permission strings, call `getAuthToken`/`setAuthToken`/`removeAccount` |
-| 2 | HIGH | `IGMAuthService.invalidateAuthToken` | Yes — zero permission check at all | HIGH | `a/f.java:561,568` | malformed/crafted token string → DoS or SQLi against `authtokens` table |
+| 1 | **CRITICAL** | `IGMAuthService` (`com.gm.authtoken`, uid system) | Yes — any 3P app, auto-granted `normal` perms | **HIGH** — shipped APK + sepolicy (Y177-confirmed/Y181-inferred), SELinux Enforcing | `com.gm.authtoken.apk`'s `a/f.java:363,690,666` (**not** ClusterService's unrelated same-named file — two APKs both produce a class `a.f`; verify by decompile source, not path alone) | declare 3 permission strings, call `getAuthToken`/`setAuthToken`/`removeAccount` |
+| 2 | HIGH | `IGMAuthService.invalidateAuthToken` | Yes — zero permission check before the query | HIGH | `com.gm.authtoken.apk`'s `a/f.java:561,568` | malformed/crafted token string → DoS or SQLi against `authtokens` table |
 | 3 | HIGH | `NavigationClusterService` (uid system, persistent) | Yes — exported, no permission | HIGH | `ClusterPresentationService.java:87-104`, `DisplayInfo.java:78-86` | `startService()` with forged `DisplayInfo` Parcelable |
 | 4 | HIGH | GM permissions declared `prot=normal` (systemic) | Yes — telemetry/location READ family | HIGH | `dumpsys package permissions` | declare `com.gm.vehicle.permission.READ_*` etc., read live vehicle data |
 | 5 | HIGH | FSA UDP/multicast discovery-listener crash (AIOOBE) | Yes — connectionless, spoofable | needs live confirm of `:3000` vs `:30490` | `NetCommsService.java:212-258`, `FSAMessage.java:55-77` | 20-byte UDP datagram, `payloadLength` in [237, N] |
@@ -29,7 +29,7 @@ emulator artifacts: they hold against the shipped `product_sepolicy.cil` under S
 | 8 | MEDIUM-HIGH | `UpdaterAppService` UI/state-machine injection | needs confirmation of GMSWUpdater's SELinux label | HIGH | `UpdateManagerActionDispatcher.k(Intent)` | forged `extra_packagedetails` Parcelable drives fake update-available/downloaded UI |
 | 9 | MEDIUM | `TcpsAcceptanceStatusService` `prot=normal` bypass | Yes | HIGH | GMTCPS manifest | declare `com.gm.tcps.permission.TCPS_STATUS`, read OnStar terms-acceptance status |
 | 10 | LOW | `DeviceInformationService` exported, no intent-filter | Yes (explicit component) | HIGH | GM DeviceInformationService manifest | force (re)start only — resource-abuse nuisance |
-| — | LOW/latent (native) | vhalgm 1-byte OOB read; gm_protokey unbounded 2nd memcpy (not reachable via current call graph) | no (DoS-only / unreachable) | see NATIVE-1 below | `fcn.0x87750`~0x877a0; `gm_protokey_decompiled.c:1604` | not exploitable this phase |
+| — | LOW/latent (native), `gm_protokey` re-confirmed to the instruction; vhalgm UNVERIFIABLE (binary not located) | vhalgm 1-byte OOB read (unverified); gm_protokey unbounded 2nd memcpy (confirmed, not reachable via current call graph) | no (DoS-only / unreachable) | see NATIVE-1 below | `fcn.0x87750`~0x877a0 (vhalgm, unverified); `gm_protokey_decompiled.c:1604`/`fcn.00005050` (confirmed) | not exploitable this phase |
 
 Cross-referenced, not re-described here: FSA opType correction and the two long-documented FSA TCP
 parser bugs (unbounded-allocation RAM-DoS, reject-path framing desync) — see
@@ -46,34 +46,64 @@ Chain: `untrusted_app` → SELinux `service_manager find` **granted** on `gm_aut
 `com.gm.authtoken`, uid **system**) → `getAuthTokenByUserID` / `setAuthTokenByUserID` /
 `removeAccount` / `getGuestAccountToken`.
 
-The in-code guard (`a/f.java`, decompiled `IGMAuthService.Stub` impl) calls
-`checkCallingOrSelfPermission("gm.permission.authentication.{ID|CLIENT|USER}")` before each
-sensitive method (`a/f.java:363,690,666`) — but all three permissions are declared
-`protectionLevel` = (unset →) **`normal`** in the shipped APK (confirmed via `dumpsys package
-permissions`, sourcePackage=`com.gm.authtoken`, `prot=normal`). Normal permissions **auto-grant at
-install time** to any app that lists a `<uses-permission>` for them — no signature match, no
-runtime prompt.
+**[C] Corrected (2026-09-27) — sepolicy citation provenance:** the `product_sepolicy.cil:586` grant is
+confirmed present in **Y177's** pulled sepolicy (`enumeration/Y177/pulled_files/product_sepolicy.cil`).
+Y181's own pulled sepolicy (`enumeration/Y181/{,jun2026/,apr2026/}pulled_files/`) never included a
+product-partition file, and grepping all Y181 pulls for "authtoken" returns zero hits. GM likely reuses
+this component/policy across Y177→Y181, but that transferability is **inferred, not independently
+confirmed on Y181** — the "confirmed under SELinux Enforcing" framing below should be read as confirmed
+on Y177, transferability to Y181 unverified.
 
-Net effect: any ordinary sideloaded/third-party app can declare these 3 permission strings, pass
-the in-code check trivially, then:
+**[C] Corrected + RE-CONFIRMED (2026-09-27) — citation was wrong, substance now independently
+re-verified.** A verification pass flagged that `a/f.java:363,690,666` as originally cited pointed at an
+unrelated 71-line POJO in the `ClusterService` decompile. A follow-up re-decompile located the REAL
+implementer: `com.gm.authtoken.apk` (confirmed byte-identical to the live on-device
+`/system/app/GMAuthTokenService/GMAuthTokenService.apk`) also produces a class named `a.f` — a package/name
+collision between two unrelated APKs, not fabrication. **Correct citation: `a/f.java` in the
+`com.gm.authtoken.apk` decompile (class declared `public class f extends IGMAuthService.Stub` at line
+33), registered live as system service `"gm_auth"` in `GMAuthServiceApp.onCreate()`.** The original line
+numbers (363/666/690) turn out to be numerically correct for THIS file — re-verified per method:
+- `getAuthTokenByUserID` (line 363), `setAuthTokenByUserID` (line 690), `removeAccount` (line 666),
+  `getGuestAccountToken` (line 483): **all four independently confirmed guarded** —
+  each calls a `checkCallingOrSelfPermission` helper (`b()`/`c()`, `a/f.java:53-90`) on
+  `gm.permission.authentication.{ID,CLIENT,USER}` before touching the DB; `removeAccount` requires **all
+  three** permissions via `c()`. Sepolicy citation provenance note above still stands (Y177-confirmed,
+  Y181-inferred).
+
+The originally-claimed in-code guard calling `checkCallingOrSelfPermission("gm.permission.authentication.
+{ID|CLIENT|USER}")` before each sensitive method is now **CONFIRMED**, at the corrected file path — all
+three permissions remain declared `protectionLevel` = (unset →) **`normal`** in the shipped APK (also
+confirmed via live `dumpsys package permissions`, `prot=normal`). Normal permissions **auto-grant at
+install time** to any app that lists a `<uses-permission>` for them — no signature match, no runtime
+prompt.
+
+Net effect, now fully CONFIRMED: any ordinary sideloaded/third-party app can declare these 3 permission
+strings, pass the in-code check trivially (since it's the same public constant every app can declare),
+then:
 - `getAuthToken("id"/"client"/"user")` → exfiltrate live GM/OnStar bearer tokens from the on-device
   `authtokens` SQLite DB.
 - `setAuthToken`/`setAuthTokenByUserID(uid,...)` → forge/replace tokens for arbitrary users.
 - `removeAccount(uid)` → account-lockout DoS.
 
 Real-radio transferability: **HIGH** — shipped `/system/app/GMAuthTokenService/GMAuthTokenService.apk`
-+ shipped `product_sepolicy.cil`, confirmed under SELinux Enforcing. **Ranked #1 — the single most
-severe finding of this audit.**
+(hash-verified against the live device copy) + sepolicy grant (Y177-confirmed, Y181-inferred), all
+exploit-primitive claims now independently re-verified against the correct decompile. **Ranked #1 — the
+single most severe finding of this audit, confirmed.**
 
-## [PRIVESC-2] HIGH — `invalidateAuthToken`: zero permission check + SQL injection
+## [PRIVESC-2] HIGH — `invalidateAuthToken`: zero permission check + SQL injection — CONFIRMED (citation corrected, same class as PRIVESC-1)
 
-Same class (`a/f.java:561`). `invalidateAuthToken(String)` skips the permission gate entirely
-(only a "DLM mode" internal-state check at lines 91-96), then runs
-`getReadableDatabase().query("authtokens", ..., "token = \"" + str + "\"", ...)` (line 568) — the
-caller-supplied string is concatenated directly into the SQL WHERE clause. Benign malformed input
-= arbitrary token-deletion DoS; a crafted string breaking out of the quoted literal = SQL
-injection against the token DB (impact bounded to that DB; full characterization deferred to
-Phase 2). Reachable the same way as PRIVESC-1 — no permission needed at all for this one method.
+Same corrected class, `a/f.java` in the `com.gm.authtoken.apk` decompile (not the `ClusterService` file
+originally miscited). `invalidateAuthToken(String)` (line 561) skips the permission gate entirely before
+the query — only a "DLM mode" internal-state check (`d()`) runs first — then executes (line 568, exact
+code): `this.b.getReadableDatabase().query("authtokens", new String[]{"_id","user_id","type"}, "token = \""
++ str + "\"", null, null, null, null)` — the caller-supplied `token` string is concatenated directly into
+the SQL WHERE clause with `selectionArgs=null` (not parameterized). Benign malformed input = arbitrary
+token-deletion DoS; a crafted string breaking out of the quoted literal = SQL injection against the token
+DB (impact bounded to that DB; full characterization deferred to Phase 2). **Sharper than originally
+stated: the method DOES call a permission check (`b()`, line 607) — but only AFTER this unguarded query
+already executed and matched a row.** The injection point itself (the SELECT) has zero access control
+regardless of that later check. Reachable the same way as PRIVESC-1 — no permission needed to reach the
+vulnerable query.
 
 ## [PRIVESC-3] HIGH — `UpdateService.install()` reachable with no permission check, but cannot inject attacker content
 
@@ -266,13 +296,21 @@ validator — **not** the UDS `$27` handler, per prior correction). **Correction
 GM vendor binaries are **x86-64**, not ARM — fix any doc that assumed ARM.
 
 Findings:
-- **LOW:** 1-byte OOB read in `vhalgm`'s multi-record frame loop (`onIpcData`→`fcn.0x87750`,
-  instruction ~0x877a0): the record-count-driven loop reads the next record's length byte *before*
-  validating the record fits in the remaining buffer; a crafted `count` byte exceeding actual
-  records present causes up to ~2 bytes OOB read before the subsequent bounds check rejects and
-  exits. DoS-only if it hits an unmapped page; no data disclosure to attacker (read result isn't
-  returned).
-- **LOW/latent:** unbounded second `memcpy` in `gm_protokey`'s `FUN_00105050`@0x105050
+- **LOW, but currently UNVERIFIABLE — [C] flagged 2026-09-27:** 1-byte OOB read in `vhalgm`'s
+  multi-record frame loop (`onIpcData`→`fcn.0x87750`, instruction ~0x877a0), as originally described:
+  the record-count-driven loop reads the next record's length byte *before* validating the record fits
+  in the remaining buffer; a crafted `count` byte exceeding actual records present causes up to ~2 bytes
+  OOB read before the subsequent bounds check rejects and exits. DoS-only if it hits an unmapped page;
+  no data disclosure to attacker. **A re-verification pass could not locate any `vhalgm` binary anywhere
+  on the analysis workstation** (exhaustive search of the research tree and the live emulator's
+  `/system`/`/vendor`/`/odm` found only a Java framework jar, `gmy181_vhal.jar` — not this native
+  binary). Unlike the sibling `gm_protokey` finding below (independently reproduced to the exact
+  instruction on re-check), this one cannot currently be reproduced from any retained artifact. Treat as
+  asserted-not-proven pending the binary being re-pulled (originally analyzed at the same VHAL frame
+  parser this session's emulator-integration work targeted — re-pull via `adb pull
+  /vendor/bin/hw/android.hardware.automotive.vehicle@2.0-service-gm`) and the analysis re-run.
+- **LOW/latent — this one IS independently re-verified, instruction-for-instruction:** unbounded second
+  `memcpy` in `gm_protokey`'s `FUN_00105050`@0x105050
   (`gm_protokey_decompiled.c:1604`) into a fixed 0x110-byte heap buffer — the bound exists on the
   first `memcpy` (line 1601, `__memcpy_chk`, 0xff) but not the second. The only in-binary caller
   passes fixed-length arguments that can't reach the overflow condition, so this is a real code

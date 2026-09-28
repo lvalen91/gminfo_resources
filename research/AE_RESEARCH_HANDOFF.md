@@ -171,12 +171,26 @@ GM-software layer — same binaries as the radio). Instrument with root adb + lo
 **Fabric caveats needing the bench:** the physical vlan↔pair correlation, whether the OBD/DLC DoIP presence is
 a separate physical port on K56 or the same uplink NAT/firewalled — both need a simultaneous per-pair scope/pcap.
 
+## Real-kernel boot (2026-09-27) — see `platform/emulator.md` for full detail
+The real GM Y181B kernel (4.19.305, not goldfish) now boots autonomously on `qemu-system-x86_64` to a
+themed AAOS home screen, with VHAL registering **natively** (no shim — the real IPCServer link works) and
+`diagnosticsd` running for real (absent on the goldfish hybrid). This meaningfully changes the "boot-chain
+must be validated on the real bench" caveat below: the kernel/vendor-ABI portability question is now
+empirically answered (not just theoretical), and several previously-bench-only components (native vendor
+SELinux/HALs, `diagnosticsd`) are now directly testable on this build. Remaining open items: 38 unidentified
+native crash tombstones, an IPCServer CPU-spin against the missing VIP, and a visual/calibration parity gap
+vs the goldfish hybrid. Full detail, logcat analysis, and the kernel-characterization appendices:
+[`../platform/emulator.md`](../platform/emulator.md), [`GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](GM_INFO37_BOOT_CHAIN_ANALYSIS.md).
+
 ## Fidelity caveats
 The emulator is real GM software on substituted hardware with **no real bus and no real peers** (until you
 add synthetic ones). **AE-facing software** findings (parser bugs, unauth handlers, DoS, logic) transfer to
-the radio. The **fabric** (switch/VLAN segmentation, other ECUs, gPTP, the documented no-MACsec/L2-L3-auth),
-**crypto/TEE**, and **boot-chain** must be validated on the real bench. Permissive-vs-enforcing and
-goldfish-vendor differences can alter some paths — confirm promising hits on hardware.
+the radio. The **fabric** (switch/VLAN segmentation, other ECUs, gPTP, the documented no-MACsec/L2-L3-auth)
+and **crypto/TEE** still need real-bench validation regardless of which kernel the emulator runs (both are
+hardware-bound, per `platform/emulator.md`'s hard-blocker list). The **boot-chain** question is now *partially*
+answered by the real-kernel boot above — treat as still-open only the specific pieces that boot doesn't cover
+(AVB/GHS trust anchors, the VIP MCU itself). Permissive-vs-enforcing and goldfish-vendor differences can alter
+some paths — confirm promising hits on hardware.
 
 ## Redaction (hard rule)
 Never commit the raw `Desktop/New folder` logs or any real VIN / `$27` seed-key / MAC / SPS credential.

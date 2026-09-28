@@ -415,9 +415,14 @@ The earlier claim that "both Y177 CVEs are exploitable due to SELinux permissive
 > `protectionLevel=normal` — auto-granted at install to any app that simply declares them, no
 > signature match, no prompt. Any sideloaded third-party app can therefore exfiltrate live
 > GM/OnStar bearer tokens from the on-device `authtokens` SQLite DB, forge/replace tokens for
-> arbitrary users, or lock out an account — confirmed under SELinux Enforcing against the shipped
-> `product_sepolicy.cil` (`service_manager find` on `gm_authToken_service` is granted to
-> untrusted_app), not an emulator/root artifact. Full ranked findings (including a same-class
+> arbitrary users, or lock out an account. The `protectionLevel=normal` permission grant itself is
+> confirmed live (`dumpsys package permissions`, not an emulator/root artifact). **[C] Corrected
+> (2026-09-27):** the `service_manager find`-on-`gm_authToken_service`-granted-to-`untrusted_app` sepolicy
+> line is confirmed at `product_sepolicy.cil:586` — but only in **Y177's** pulled sepolicy; Y181's own
+> pulls never captured a product-partition sepolicy file (grep for "authtoken" across all Y181 pulls
+> returns zero hits). GM likely reuses this component/policy across Y177→Y181, but that transferability
+> is inferred, not independently confirmed on Y181 — do not cite this as "confirmed under SELinux
+> Enforcing" for Y181 specifically until a Y181 product-partition sepolicy pull closes the gap. Full ranked findings (including a same-class
 > systemic `prot=normal` issue across the `com.gm.vehicle.permission.READ_*` telemetry family, an
 > unauthenticated cluster/HUD display-injection surface, and two new FSA UDP/multicast bugs):
 > [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
