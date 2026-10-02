@@ -101,15 +101,28 @@ works natively. **Caveat:** raw property value reads via `cmd car_service get-pr
 refused on this user build, so this wasn't independently spot-read beyond CarService's own internal
 state.
 
-### Graphics stack — built from scratch via software rendering
+### Graphics stack — software rendering (first pass; later superseded by virgl GPU acceleration)
 
-A genuinely hard problem, solved from first principles under `~/gm_emu/realk/gfx/` with the NDK + AOSP
+**(corrected 2026-10-01: the "a real GPU driver is ruled out" premise below was disproved by later
+work. A subsequent pass rebuilt the GM kernel from its exact public base (Intel LTS
+`lts-v4.19.305-android_s`) with `CONFIG_DRM_VIRTIO_GPU` and re-signed the modules with its own build
+key — GM's private signing key was never needed, since the rebuild drops `MODULE_SIG_FORCE` — and
+CRC-matched it against all 157 GM vendor modules (0 mismatches). It then brought up
+hardware-accelerated GLES 3.0 through a custom QEMU (`virtio-vga-gl` → virglrenderer → ANGLE → Metal
+on the W6900X): SurfaceFlinger reports `virgl, OpenGL ES 3.0 Mesa 20.3.4` at 2400×960, Google Maps
+~24 fps vs ~5 fps on SwiftShader, and the one-time SystemUI `EGL_BAD_DISPLAY` crash noted below is
+gone. SwiftShader (now `realk-swfb`) remains the software fallback. See `~/gm_emu/realk/README.md`
+and `~/gm_emu/gpu_research/`.)**
+
+The original software-rendering bring-up was a genuinely hard problem, solved from first principles
+under `~/gm_emu/realk/gfx/` with the NDK + AOSP
 VNDK v32 headers/libs (matching `ro.vndk.version=32`). **Root cause:** GM's stock vendor stack
 (hwcomposer, Mesa, minigbm) is Intel-GPU-only with no software fallback; Android 12's
 separate-allocator-process model breaks GM's gralloc (its buffers carry a memory address from the
 allocating process, which doesn't survive being allocated in a different process); the kernel's
 `bochs-drm` framebuffer driver can't share buffers between processes (ruling out any DRM-based gralloc),
-and kernel modules must be signed (ruling out adding a real GPU driver). Solution:
+and at the time, loading a real GPU driver into GM's signed kernel looked impractical (later solved by
+the full kernel rebuild — see the note above). Solution:
 
 - **`gralloc.swfb.so`** (new, `src/gralloc_swfb.c`) — every buffer is plain shared memory (ashmem),
   mapped by each importing process; its framebuffer device copies each finished frame into
@@ -263,7 +276,7 @@ software/UI/RE emulator, not a functional truck.
 | Powermode/RTC/location | real GM daemons on the VCU | **GM's real `plmanager`/`rtcd`/`gmlocation`** run via libipc shim |
 | Calibrations | **per-VIN provisioned** (SDAC/back office) | GM's real `calserviced` + shipped DB, **RPO-matched** to this truck (LTZ trim, Trailering FULL, 360 cams) |
 | Network | real Ethernet/CAN + ECUs, telematics/OnStar | dummy `vlan5`/`vlan4`, no peers |
-| Display/audio | FALD + touch + cluster/HUD; Bose/AVB | software GPU, one display; goldfish `audio@6.0` (real is `@5.0-harman` on AVB — must stay stubbed) |
+| Display/audio | FALD + touch + cluster/HUD; Bose/AVB | GPU-accelerated as of 2026-10-01 — goldfish Metal via ANGLE (2.46 ms/frame), real-kernel **virgl** (ANGLE→Metal on the W6900X, GLES 3.0, Maps ~24 fps), SwiftShader kept as fallback; one display; goldfish `audio@6.0` (real is `@5.0-harman` on AVB — must stay stubbed) |
 | Security | locked, AVB+SELinux **enforcing**, no root | AVB-off, **SELinux ENFORCING** (matches the radio's posture; 0–2 stock-AOSP MLS denials/boot vs 0 on the radio), root adb (deliberate — enables RE) |
 
 **Achieved (2026-09-26, FID-01→16 + RPO-01→03):** GM's real vendor daemons (VHAL/powermode/rtc/location/

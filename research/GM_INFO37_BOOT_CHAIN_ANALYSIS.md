@@ -1669,7 +1669,7 @@ absent, stays dead)
 | Dependency | Class | Notes |
 |---|---|---|
 | CPU/entry/ACPI-fstab/storage(virtio-blk)/console/e1000e-networking/AVB | Providable/patchable | q35+virtio-pci+ACPI-SSDT-injection, no kernel source changes |
-| Display (i915 expects real Gen9 GPU) | Stubbable | `DRM_BOCHS` (already compiled in) + the same drm_hwcomposer/SwiftShader work the goldfish hybrid already solved — not a new problem, same effort retargeted |
+| Display (i915 expects real Gen9 GPU) | Stubbable / **GPU-accelerable** | `DRM_BOCHS` (already compiled in) + the same drm_hwcomposer/SwiftShader work the goldfish hybrid already solved — not a new problem, same effort retargeted. **(updated 2026-10-01: software rendering is no longer the only option — the kernel was rebuilt from the exact Intel LTS base with `CONFIG_DRM_VIRTIO_GPU` (CRC-matched, re-signed with its own key) and now runs hardware-accelerated virgl via a custom QEMU → ANGLE → Metal; see `platform/emulator.md`.)** |
 | VIP/IPC (ttyS1 userspace protocol) | Stubbable | reuse the existing `libipc_shim.c`/frame-injection tooling verbatim — kernel-agnostic |
 | GHS transport itself (`ghs_comms` PCI device, `/dev/ghs/*`) | Stubbable/absent | driver never binds; no panic. Only matters for what's downstream (next rows) |
 | A/B boot-control (`GHS_VMM_BOOTLOADER_CONTROL`) | Stubbable | `androidboot.slot_suffix` on cmdline + a static/software `IBootControl` HAL (same manifest-swap technique the hybrid already used) |
