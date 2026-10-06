@@ -135,6 +135,22 @@ AVB (Android Verified Boot) is performed by GHS `VMM1_InitialTask`, NOT by Andro
 8. ASP_VMX_SetGuestKernelAddr   → ASP_RunGuestVM (launch Android)
 ```
 
+> **[C] live-Y175 2026-10-05 — runtime posture CONFIRMED (not the internals).** Against a running
+> Y175 radio (`W213E-Y175.5.2-SIHM22B-383.1`, `/tmp/radio_audit/20261005_232227/raw/`) the
+> live-observable end-state of this chain is confirmed: `ro.boot.verifiedbootstate=green`,
+> `ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`, `sys.oem_unlock_allowed=0`,
+> `ro.oem_unlock_supported=` (empty), `ro.debuggable=0`, `ro.secure=1`, `ro.adb.secure=1`,
+> `ro.build.type=user`, tags `release-keys` (security_props). vbmeta: `ro.boot.avb_version=1.2` /
+> `ro.boot.vbmeta.avb_version=1.1`, `hash_alg=sha256`, `size=3328`,
+> `digest=76b736eaf87d186de5f03f08176b67ae2cdcf91130b4350b328b0876c00bb585` (props). SELinux
+> **Enforcing** at runtime (00_whoami; all 179 captured avc lines `permissive=0`) even though
+> `ro.boot.selinux=permissive` is present in the kernel cmdline (props) — the cmdline token is
+> overridden by the enforcing-init build, consistent with VERIFICATION.md. **UNVERIFIABLE-FROM-LIVE
+> (shell uid 2000, no device access to earlier stages):** steps 1-6 internals — the `.oemkeys`
+> RSA-2048 signing key, the AVB0/vbmeta parse, the CRC32 slot metadata, and the GHS rollback
+> counter in `misc`. `verity.txt` captured only `green`/`1` and an empty `===VERITY` section — no
+> dm-verity status line — so runtime dm-verity state is NOT independently evidenced by this capture.
+
 ### A/B Metadata Structure
 
 Located at `misc` partition (`vda9`) offset `0x800`. **CRC32-only protection** (no crypto signature on slot metadata).

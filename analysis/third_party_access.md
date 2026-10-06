@@ -414,6 +414,21 @@ Third-party apps are sandboxed as `untrusted_app` and can only access:
 - Standard Android framework APIs
 - Registered system services via Binder
 
+> `[C] live-Y175 2026-10-05: REFINED — "registered system services via Binder" is too permissive
+> for GM services. Live PoC on Y175: a sideloaded `untrusted_app` (`com.poc.gmwlan`, uid 1010121,
+> user 10) attempting to resolve `com.gm.server.wlanservice` was **SELinux-denied** —
+> `avc: denied { find } ... tcontext=u:object_r:gm_domain_service:s0 tclass=service_manager
+> permissive=0` [avc_denials.txt, 23:19:07]. The service **is registered** (binder service #69,
+> `gm.wifi.IGMWlanService` [services.txt]) yet a 3P app cannot even `find` it, let alone bind —
+> the `gm_domain_service` SELinux type gates it off from `untrusted_app` regardless of registration.
+> So the accurate statement is: a 3P app reaches standard framework services and only those GM/
+> vendor binder services whose SELinux type permits `untrusted_app` service_manager `find` — the
+> GM-domain services (wlanservice and siblings under `gm_domain_service`) are NOT among them.
+> Separately CONFIRMED: no GM-owned permission contains `wifi`/`wlan`/`tether` and the two live 3P
+> packages define/hold no permissions [permissions_full.txt], so WLAN-service access is also not
+> pm-grantable — there is no permission to request and the binder path is SELinux-blocked. Both
+> doors are shut on Y175.*
+
 ---
 
 ## Recommendations for Third-Party Developers
@@ -444,6 +459,18 @@ These are reachable by an unprivileged third-party app. Two classes: **orphaned 
 (referenced-but-unregistered → a 3P app can *claim* them) and **exported-no-permission**
 components (a 3P app can *bind/read/write/spoof* them).
 
+> `[C] live-Y175 2026-10-05: this entire subsection is **Y181-SCOPE-ONLY** — sourced from Y181/CT5
+> APK manifests; no APK/manifest extraction exists in the Y175 live capture, so the exported/
+> claimable status of these specific components is UNVERIFIABLE-FROM-LIVE on Y175. What live Y175
+> does confirm: the owning packages exist (`com.gm.vmsplugin`, `com.gm.domain.server.delayed`,
+> `com.gm.rhmi`, `com.gm.rsicc`, `com.gm.hmianalytics`, `com.gm.ddb_contentprovider` are all in
+> `pkg_system` [pkg_system.txt]). IMPORTANT distinction for the reachability claim: the live SELinux
+> `find`-denial PoC (above, §SELinux Context) is on the **service_manager/getService** path
+> (registered binder services like `wlanservice`), which is a *different* IPC path from
+> `bindService` on an exported app `<service>` component (NavigationClusterService et al., routed via
+> ActivityManager). The live denial neither validates nor refutes the exported-component claims here
+> — they remain Y181-manifest-asserted and untested on Y175. Do not mark them confirmed on Y175.*
+
 ### Orphaned / claimable ContentProvider authority
 
 | Authority | Owner (references it) | State | Notes |
@@ -465,6 +492,41 @@ No other referenced-but-unregistered authority surfaced.
 
 **NOT open:** `com.gm.gtbt.maneuver.provider` (`ManeuversContentProvider`) and `com.gm.tbt.commonprovider` declare no `android:exported` → default `false` (closed).
 
+> `[C] live-Y175 2026-10-06` — **ContentProvider reachability IS live-testable on Y175** (unlike the
+> exported `<service>` components above, which route via ActivityManager `bindService` and remain
+> Y181-manifest-only). Measured from `gm_bench_agent` `prov.query` as uid 1010122 `untrusted_app`,
+> **query() only — no insert/update/delete**:
+> - **`DbContentProvider` authority is the FQCN `com.gm.hmianalytics.db.DbContentProvider`, NOT the
+>   bare package `com.gm.hmianalytics`** (corrects the "analytics DB" placeholder in the table above).
+>   Manifest (`com.gm.hmianalytics.apk`, Silverado decompile): `android:exported=true`,
+>   `grantUriPermissions=true`, **no `android:permission`/read/writePermission**. Real paths from the
+>   `UriMatcher` (`DbContentProvider.java:39-58`): `registry/REGISTRY_QUERY`(101),
+>   `registry/REGISTRY_DB_QUERY`(103), `tasks/TASKS_QUERY_{ALL,ACTIVE,EXPIRED}`(207/201/202),
+>   `acknowledgeReconcile/ACKNOWLEDGE_RECONCILE_QUERY`(401). Live Y175 result: every read path returns
+>   `ok:true`, **no SecurityException** (reach-without-permission CONFIRMED), but `cursor:null` / **zero
+>   rows** — no analytics data materialized on this bench (live build's `query()` returns null for these
+>   codes; the decompile is the Y181 variant). The bare authority and the unmatched `registry`(102) path
+>   also return null (not a crash). **Inert on Y175: reachable, no data leaked.** The named
+>   `*_INSERT`/`*_DELETE`/`*_BULK` paths were never exercised and hit `default`→Unknown URI if reached via
+>   query() anyway; `update()` is a no-op stub returning 0.
+> - **[C] `FavoritesContentProvider` — unprivileged-readable exported provider, CONFIRMED live-Y175
+>   2026-10-06 (two independent confirmations).** Authoritative manifest pull of
+>   `/system/app/FavoritesProvider/FavoritesProvider.apk`: `<provider
+>   android:name="com.gm.favoritesprovider.FavoritesContentProvider" android:exported=true
+>   android:authorities="com.gm.favoritesprovider">` with **NO `readPermission`, NO `writePermission`,
+>   NO `grantUriPermissions`, no path-permission** — hosted in a **system-uid** app
+>   (`sharedUser=android.uid.system`). Independently, `untrusted_app` (harness) read **3 real rows** from
+>   `content://com.gm.favoritesprovider/favorites` (+ `/favorites/#` row path), no permission prompt.
+>   So **any sideloaded app can read the favorites DB with zero permission**, and — since there is no
+>   `writePermission` — almost certainly **write/delete** it too (integrity; not tested — destructive,
+>   harness-blocked). On this bench the rows were **audio-station presets (low sensitivity)**, but the
+>   `GMFavoritesContract` exposes the same no-permission path for **`FT_DESTINATION_HOME` /
+>   `FT_CONTACT_NAME` / `FT_PHONE_NUMBER`** → on a used unit this leaks a saved **home address, contact
+>   names, and phone numbers** to any app (and allows tampering). Class: exported provider missing
+>   permissions (CWE-926). Fix: add a `readPermission`/`writePermission` (signature or at least a
+>   gated custom perm) or set `exported=false`. Evidence: `BENCH_AGENT_SWEEP_RESULTS.md` + the APK
+>   manifest.
+
 ### Exported `<service>` / `<receiver>` with no permission (nav / cluster / OnStar / media)
 
 - **`NavigationClusterService`** (`com.gm.domain.server.delayed`, `DelayedWKSApp`) — exported, no perm; directly named cluster-nav service, bindable by any app. Its `ServiceReadyBroadcastReceiver` is also exported/no-perm.
@@ -477,6 +539,25 @@ No other referenced-but-unregistered authority surfaced.
 > CT5/AAOS 14 mirrors the same `ClusterIconContentProvider` orphan and the same `MapsContentProvider` / `NavStateImageProvider` exposure. See `projection/cluster_navigation.md` (2026-06-06 firmware-verified block). Extraction artifacts: `/Users/zeno/Downloads/misc/GM_research/gm_aaos/_cluster_authority_analysis/`.
 
 ---
+
+## `prot=normal` GM vehicle/cluster perms are INERT for a 3P app — SELinux reach denies them (2026-10-06)
+
+A sideloaded `untrusted_app` is auto-granted several GM `prot=normal` perms (`READ_VEHICLE_STATE`/
+`READ_CLIMATE`/`READ_VEHICLE_INFORMATION`/`ACCESS_VEHICLE_DATA_SERVICE`/`READ_PROJECTION_INFO`) — PoC
+#1 confirmed the grant — **but they are useless**: the permission gates the binder *call* while
+SELinux gates the *reach*, and the reach is denied first (`ServiceManager.getService()` → `null`).
+Variant Y181.3.2 labels/CIL; live-Y175 AVC corroborates the one positive control. Do **not** build a
+3P feature on these perms.
+
+| Data wanted | Backing service | Label | `untrusted_app` find? | Result |
+|---|---|---|---|---|
+| speed/gear/fuel/EV/odo/temp/climate/TPMS/ignition | `vehiclemanagerservice` (`IVehicleManagerService.getVehicleData`) | `gm_vehiclemanager_service` | **No** (only gmBugReport/gmConnection/system_app) | perms inert |
+| CarPlay session/mute/route | PhoneProjection (`READ_PROJECTION_INFO`) | `gm_domain_service` | **No** (matches live wlanservice AVC) | blocked |
+| cluster nav metadata | `clusterService` (`IClusterHmi`) | `gm_cluster_service` | **No** (system_app/graphic_dump only) | blocked |
+| nav launch intents / nav-app metadata | `NavigationService` | `gm_domain_service_nav` | **Yes** (the ONLY gm_* find untrusted_app gets) | reachable, but push methods are `PROVIDE_NAV_PLUGIN`=sig\|priv; only `NAV_SERVICE`(normal) getters work → no telemetry |
+
+**CarPlay day/night** needs no GM perm (AOSP `UiModeManager.getNightMode()` / `Configuration.uiMode`).
+**Cluster-nav hook cannot be dropped:** the "open hook" is `CarAppFocusManager.requestAppFocus(APP_FOCUS_TYPE_NAVIGATION)` (no perm, framework-mediated — why carlink embeds the Car library); actual cluster rendering is `sig|priv` (`CAR_NAVIGATION_MANAGER`/`CAR_INSTRUMENT_CLUSTER_CONTROL`/`CAR_DISPLAY_IN_CLUSTER`) + GM **VMS/IIC** (`com.gm.vmsplugin`, system-domain, 3P-unreachable); the `CarClusterManager` HAL path is **no-op on gminfo37**. `prot=normal` replaces none of it. Detail: `/tmp/radio_audit/20261005_232227/analysis/CCPA_VEHICLE_DATA_VIA_PROTNORMAL.md`.
 
 ## Data Sources
 

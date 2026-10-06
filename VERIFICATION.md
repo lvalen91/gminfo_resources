@@ -11,6 +11,18 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 > and **withdrew two earlier corrections** (c2.android codecs, networking) — see those rows below and
 > `enumeration/Y181/jun2026/CLAIMS_VERIFICATION.md`.
 
+> **[C] live-Y175 2026-10-05 update:** a fresh disk-only capture against a running **Y175** radio
+> (`W213E-Y175.5.2-SIHM22B-383.1`, Android 12/API 32, patch 2024-05-05, kernel 4.19.283 x86_64,
+> `/tmp/radio_audit/20261005_232227/raw/`) CONFIRMED the live-observable security posture on the
+> Y175 variant (not just Y181): verified-boot `green`, `flash.locked=1`, `vbmeta.device_state=locked`,
+> `oem_unlock_allowed=0`, `ro.debuggable=0`/`ro.secure=1`, SELinux **Enforcing** at runtime despite
+> `ro.boot.selinux=permissive` in cmdline, and root `diagnosticsd` LISTENing on TCP `0.0.0.0:49156`
+> (uid 0). It also **flipped one firmware-doc row**: the "DABridge USB topology Y175=1-12.x" variant
+> discriminator is refuted (same Y175 build enumerates 1-6.x live vs 1-12.x in the prior enum — a
+> physical-port artifact, not a firmware difference). See `platform/firmware_versions.md`,
+> `platform/boot_chain.md`, `diagnostics/ethernet_uds_diagnosticsd.md`. Boot-ROM/CSE/SBL/AVB-key
+> internals remain UNVERIFIABLE-FROM-LIVE. This does not alter any Y181/Y177 fact.
+
 Bottom line: the bulk of the repo verified **CONFIRMED**. The errors found are listed below;
 the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was out of scope
 (separate repo).

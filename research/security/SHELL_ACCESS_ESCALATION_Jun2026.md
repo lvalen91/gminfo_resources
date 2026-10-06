@@ -4,6 +4,19 @@
 **Research Date:** June 2026
 **Access:** ADB shell `uid=2000(shell)`, `u:r:shell:s0`, SELinux **Enforcing**
 
+> **[C] live-Y175 2026-10-05 — this doc is Y181; a LIVE Y175 radio cross-checks the shell posture but
+> NOT the kernel.** Read-only capture of `W213E-Y175.5.2-SIHM22B-383.1`
+> (`/tmp/radio_audit/20261005_232227/raw/`) confirms the *unprivileged-shell* baseline on Y175:
+> shell is `uid=2000(shell) ... context=u:r:shell:s0`, SELinux **Enforcing**, groups include
+> `log(1007),inet(3003),readproc(3009),uhid(3011),readtracefs(3012)` (`00_whoami.txt`), **no `su` in
+> ps (0 hits)**, `ro.secure=1 / ro.adb.secure=1 / ro.debuggable=0`, bootloader locked — i.e. the
+> "shell stays uid 2000, no root" model holds on Y175. **But the kernel is `4.19.283`, NOT the 4.19.305
+> this doc analyzes** (§2) — the KASLR slide, BuildID, symbol offsets, and extraction chain are all
+> Y181-specific and do NOT transfer to Y175 unchanged. Per-method Binder `service call` results (§1
+> OPEN/Blocked/Partial) were produced by live-calling Y181; this capture is DISK-ONLY (device owned by
+> another agent, no `service call` run), so those results are Y181-scope here — only *service presence*
+> and *gate permission levels* are re-confirmed on Y175 (see §1 note).
+
 Companion to [`research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt`](GM_AAOS_Y181_SECURITY_ANALYSIS.txt)
 (overall posture/CVEs), [`research/security/KERNEL_CVE_ANALYSIS.txt`](KERNEL_CVE_ANALYSIS.txt),
 and [`platform/security.md`](../../platform/security.md). This doc records what
@@ -37,6 +50,35 @@ Probed via `adb shell service call`.
 - **`gm.permission.ACCESS_ONSTAR`** and **`ACCESS_IPC_HUD`** are signature-level;
   `pm grant` fails ("not a changeable permission type") — cannot be granted to
   uid=2000.
+
+> **[C] live-Y175 2026-10-05: service presence + gate levels CONFIRMED on Y175; per-method results
+> Y181-scope.** All eight services in this table are live-registered on Y175 (`services.txt`):
+> UpdateService (#67), GALService (`gm.gal.IGALService` #56), clusterService (`gm.cluster.IClusterHmi`
+> #52), OnStarRemoteReflashManager (#105), DiagnosticsService (#60), OBDService (#63),
+> deviceInformationService (#80), RDMSADBHandler (`gm.connection.IRDMSADBHandler` #65). The two gate
+> permissions are CONFIRMED signature-family on Y175 (not uid-2000 grantable):
+> `com.gm.cluster.permission.ACCESS_IPC_HUD` = `signature`, `gm.permission.ACCESS_ONSTAR` =
+> `signature|privileged` (`permissions_full.txt`). The OPEN/Blocked/Partial per-method verdicts were
+> obtained by live `service call` on Y181 and were **not** re-run on Y175 (DISK-ONLY capture) →
+> UNVERIFIABLE-FROM-LIVE for Y175.
+>
+> **[C] Y181.3.2-ref 2026-10-06 — service presence + SELinux labels re-confirmed on a LIVE Y181.3.2 root
+> reference (same variant as this doc: `W231E-Y181.3.2-SIHM22B-499.3`); READ-ONLY, no state-changing
+> `service call` issued.** All eight services are live-registered in `service list` on the reference:
+> `clusterService: [gm.cluster.IClusterHmi]`, `com.gm.gal.service.BINDER: [gm.gal.IGALService]`,
+> `com.gm.server.diagnostics_service.DiagnosticsService: [gm.diagnostics_service.IDiagnosticsService]`,
+> `com.gm.server.obd.OBDService: [gm.obd.IOBDService]`,
+> `com.gm.server.screenprojection.RDMSADBHandler: [gm.connection.IRDMSADBHandler]`,
+> `com.gm.server.update.UpdateService: [gm.update.IUpdateService]`,
+> `deviceInformationService: [gm.deviceinfo.IDeviceInfoService]`,
+> `gm.onstar.OnStarRemoteReflashManager: [gm.onstar.IRemoteReflashService]`. SELinux labels
+> (`/product/etc/selinux/product_service_contexts`): `DiagnosticsService`, `OBDService`,
+> `OnStarRemoteReflashManager`, `com.gm.server.wlanservice`, `UpdateService`, `RDMSADBHandler` all →
+> `u:object_r:gm_domain_service:s0`; `clusterService` → `gm_cluster_service`; `deviceInformationService`
+> → `gm_deviceinformation_service`. The per-method OPEN/Blocked/Partial verdicts in the table were produced by
+> the original June-2026 live `service call` run and were deliberately **not** re-executed here (read-only
+> mandate: no state-changing transactions on the shared reference) — they stand as originally measured, not
+> re-confirmed on this session.
 - **DiagnosticsService:** Tx1–3 permission-gated ("To Read Vehicle Internal
   Inf…"); **Tx4** returns `00000000`; **Tx5** returns a live 4-int struct
   (`00000000 73622a85 00000113 0…0 00000001`) with no gate. Reads `/proc/stat`
@@ -186,6 +228,13 @@ GM-signed root-permitting policy.
 above, but is itself gated by the GPD Production CA signing barrier — consistent
 with the repo's standing Research Status (signing/rollback is the root gate; see
 [`README.md`](../../README.md) and [`hardware/teardown.md`](../../hardware/teardown.md)).
+
+> **[C] live-Y175 2026-10-05: the "cmdline permissive ≠ runtime permissive" point is CONFIRMED on a
+> production Y175.** The live production unit carries `ro.boot.selinux=permissive` on its cmdline
+> (`props.txt:259`) yet runs SELinux **Enforcing** (`00_whoami.txt:3`; 179/179 avc lines `permissive=0`).
+> So a permissive cmdline token is present and inert even on a locked production Y175 — init forces
+> Enforcing regardless. This both confirms the divergence note and refutes any reading that
+> `ro.boot.selinux=permissive` in props implies a permissive runtime.
 
 ---
 

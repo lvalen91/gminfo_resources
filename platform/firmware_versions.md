@@ -26,6 +26,16 @@
 | VIP firmware diff | — | 28.4% vs Y181 | Baseline |
 | Rollback | — | Y181→Y177 blocked | — |
 
+> **[C] live-Y175 2026-10-05:** entire Y175 column CONFIRMED against a running radio
+> (`W213E-Y175.5.2-SIHM22B-383.1`, `/tmp/radio_audit/20261005_232227/raw/`). Exact matches:
+> fingerprint `gm/full_gminfo37_gb/gminfo37:12/W213E-Y175.5.2-SIHM22B-383.1/213:user/release-keys`
+> (security_props); kernel `4.19.283-PKT-230612T042614Z-ga53d763f5b0d` x86_64 (00_whoami); security
+> patch `2024-05-05` (security_props); bootloader `2121-1` (`ro.boot.bootloader`=`ro.bootloader`=2121-1,
+> props); build date Wed Jun 26 2024 (props); Android 12 / `ro.build.version.sdk=32`; SKU `gv221`.
+> SELinux **Enforcing** at runtime (00_whoami) **despite `ro.boot.selinux=permissive`** in the kernel
+> cmdline (props) — same enforcing-init posture already documented for Y177/Y181, now also confirmed
+> live on Y175. No stale Y175 value found.
+
 ### Key Observations
 
 - ~~**Y177 is a security regression** — both SELinux and VIP security function were weakened compared to Y175 and Y181~~
@@ -43,7 +53,17 @@
 | Platform prefix | W213E | W231E |
 | SIHM variant | 383 | 499 |
 | Bootloader | 2121-1 | 2344 |
-| DABridge USB topology | 1-12.x | 1-6.x |
+| DABridge USB topology | ~~1-12.x~~ **not a variant discriminator** (see note) | 1-6.x |
+
+> **[C] live-Y175 2026-10-05 — DABridge row ADJUSTED (verdict flip).** The Y175 column value
+> `1-12.x` is REFUTED as a Y175-vs-Y181 discriminator: the live Y175 radio (same exact build
+> `W213E-Y175.5.2-SIHM22B-383.1`) reports `sys.dabridge.dev.portnum=1-6.3` / `host.portnum=1-6.0`
+> (props.txt:482-483) — i.e. the value the doc attributed to Y181. The prior Y175 enum
+> (`gm_enum_20260117_081801`, identical build) reported `1-12.3`/`1-12.0`. Same firmware, two
+> different port numbers, so this tracks which physical USB receptacle the DA bridge enumerated on,
+> not the firmware version. Treat like the networking-ports single-dump artifact in VERIFICATION.md.
+> Ethernet-manager row CONFIRMED unchanged: live Y175 runs `ethctrlmgr` (ps PID 918,
+> `init.svc.ethctrlmgr=running`), `ethmvlctrlmgr` absent — that discriminator holds.
 
 ---
 

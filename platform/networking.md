@@ -18,8 +18,24 @@
 | wlan0-2 | Broadcom WiFi (AP/STA/P2P) | — |
 | wlan1 | WiFi hotspot for CPC200 | ssid=myChevrolet 32D4 |
 
+> `[C] live-Y175 2026-10-05: eth0 row CONFIRMED — eth0 carries inet6 link-local only
+> (`fe80::6865:676d:2f1:e689/64`), NO IPv4 [net_ifaces.txt]. vlan4 CONFIRMED `172.16.4.100/24`,
+> vlan5 CONFIRMED `192.168.1.100/24`, br0 CONFIRMED `192.168.5.1/24` [net_ifaces.txt]. Routes:
+> `172.16.4.0/24 dev vlan4`, `192.168.1.0/24 dev vlan5`, `192.168.5.0/24 dev br0`; NO default
+> route. hostapd_bcm **running**, AOSP hostapd stopped [props]. ADJUSTED: only **wlan1 + wlan2**
+> exist live (both inet6 link-local only); **NO `wlan0` interface is present/up** — the "wlan0 STA"
+> row is not borne out on Y175 live (STA iface absent in this capture). br0 and wlan1 share the same
+> link-local/MAC-derived ID (`...fe87:d89e`) → wlan1 is the bridged member; wlan2 (`...fee7:d89e`)
+> is separate (wlan2-in-br0 not confirmed). SSID: **not confirmed** — this bench unit's live SoftAP
+> was `benchd89`, not `myChevrolet 32D4`; the raw capture holds no dumpsys-wifi SSID string, only
+> `net.hostname=myChevrolet` [props:185]. Treat "myChevrolet 32D4" as UNVERIFIABLE-FROM-LIVE
+> (per-unit/provisioned). `persist.sys.wifi.only2g=1` CONFIRMED [props].*
+
 **MAC address:** eth0 always `02:04:00:00:01:00` (locally administered, OUI bit set).
 **Net hostname:** `myChevrolet`
+
+> `[C] live-Y175 2026-10-05: eth0 MAC UNVERIFIABLE-FROM-LIVE — no `link/ether` line captured
+> (MACs redacted in digest). Net hostname `myChevrolet` CONFIRMED [props:185 net.hostname].*
 
 ---
 
@@ -119,6 +135,17 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 >
 > The earlier apr2026 note (only 9002/9016 @ .1; 9010 outbound; 7000 gone; DNS on .102) reflected one snapshot and is **withdrawn** — listener set varies with projection-session state; the Jun-2026 live set above supersedes it.
 
+> `[C] live-Y175 2026-10-05: port table CONFIRMED on Y175 with two bind-address adjustments
+> [net_sockets.txt]. **6363** LISTEN uid 1041 (audioserver) — live bind is **`0.0.0.0` only**
+> (no separate 127.0.0.1 listener seen). **49156** LISTEN uid 0 (root) CONFIRMED `0.0.0.0`.
+> **7000** LISTEN uid 1001000 (u10_system) CONFIRMED listening (`0.0.0.0:7000` + `:::7000`) —
+> ADJUST: live bind is **wildcard `0.0.0.0`, not specifically `192.168.5.1`/br0** (it is reachable
+> on br0 by virtue of the wildcard). **9002 / 9010 / 9016** all LISTEN uid 1000 (system) bound to
+> `::ffff:192.168.1.100` (IPv6-mapped IPv4) CONFIRMED — 9010 IS a listener (not outbound-only).
+> **53** dnsmasq (uid 1052) on `127.0.0.1` and `192.168.5.1` CONFIRMED. Note: the extra loopback/
+> wildcard listeners present live (9112, 7011, 36103, 41365, 9001-9004) are the carlink PoC app
+> `zeno.gmccpa` (uid 1010120), not platform services.*
+
 ---
 
 ## VIP-SoC IPC
@@ -155,6 +182,13 @@ The VIP MCU communicates with the Intel SoC via a dedicated UART link using HDLC
 | /dev/ttyS2 | root:root | — |
 | /dev/ttyS3 | root:root | — |
 
+> `[C] live-Y175 2026-10-05: CONFIRMED with one label note [dev_listing.txt]. `ttyACM1` is indeed
+> `crw-rw-rw-` (world-writable), owner root — but its SELinux label is **`sxm_device`** (SiriusXM),
+> not a generic debug node; "MCP2200 debug" is the hardware identity, `sxm_device` is how policy
+> labels it. `ttyS0` bluetooth (`bluetooth_serial_device`), `ttyS1` root (`ipc_serial_device` = VIP
+> IPC), `ttyS2` root (`serial_device`) all CONFIRMED. `ttyS3` is root `display_panel_device` live
+> (not blank). No `ttyACM0` present.*
+
 ---
 
 ## USB Identifiers
@@ -178,6 +212,13 @@ path — see [`research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](../researc
 - **FunctionFS endpoints:** iAPClient, adb, mtp, ptp
 
 The `dabr_udc.0` device controller supports USB gadget mode via FunctionFS. The kernel has `CONFIG_USB_GADGET=y` and exposes functionfs endpoints for iAPClient (iAP2 accessory role), adb, mtp, and ptp.
+
+> `[C] live-Y175 2026-10-05: CONFIRMED [props, mounts.txt]. `sys.usb.controller=dabr_udc.0`,
+> `sys.usb.configfs=1`, `sys.usb.config=adb`, `persist.sys.usb.config=adb`;
+> `sys.dabridge.host.portnum=1-6.0`, `sys.dabridge.dev.portnum=1-6.3` (matches the H2H bridge
+> table above and FAQ §20). FunctionFS mounts present and rw: `iAPClient /dev/ffs`,
+> `adb /dev/usb-ffs/adb`, `mtp /dev/usb-ffs/mtp`, `ptp /dev/usb-ffs/ptp`. Note Y175 current role is
+> **device/adb** (this is the bench ADB session), not the boot-default host role.*
 
 ---
 
@@ -208,6 +249,16 @@ NFSA/FSA provides the vehicle-internal network communication layer between the I
 | 192.168.1.102 | 9005 |
 | 192.168.1.102 | 9012 |
 | 192.168.1.102 | 9018 |
+
+> `[C] live-Y175 2026-10-05: client-side targets ADJUSTED from live snapshot [net_sockets.txt].
+> The only non-LISTEN FSA rows captured are uid 1000 (system) in **SYN_SENT to 192.168.1.112:9010
+> and 192.168.1.112:9018** (`.112` = CGM per the switch-port table, NOT `.102`), plus an
+> established `192.168.1.100:9016 <-> 192.168.1.100:58814` loopback-on-vlan5 pair. The `.102:9005/
+> 9012/9018` client targets were **not observed** in this capture; not refuted, mark
+> UNVERIFIABLE-FROM-LIVE. **Confirmed bench artifact:** this is an out-of-vehicle bench (Radio +
+> Display + GM USB receptacles, no vehicle bus/ECUs), so `.112` (CGM) and `.102` (TCP) are external
+> vehicle nodes that are simply not present — the SYN_SENT to `.112:9010/:9018` is the IHU reaching
+> an absent peer, expected, not a defect. See BENCH CONTEXT in `LIVE_Y175_FACTS.md`.*
 
 ---
 
@@ -261,6 +312,14 @@ The Broadcom BCM WiFi module supports three concurrent interfaces:
 | wlan0 | STA (station) | Internet connectivity (tethered or hotspot client) |
 | wlan1 | AP (access point) | CPC200 wireless adapter connection (ssid=myChevrolet 32D4) |
 | wlan2 | P2P | WiFi Direct for wireless projection protocols |
+
+> `[C] live-Y175 2026-10-05: ADJUSTED [net_ifaces.txt, props]. Live shows only **wlan1 and wlan2**
+> up (both inet6 link-local only); **no `wlan0` STA interface present** in this capture — the
+> three-concurrent-interface claim is not borne out on Y175 at capture time (wlan0 may be
+> created on demand). `hostapd_bcm` running confirms the AP role is active and br0 (`192.168.5.1`,
+> dnsmasq) is up, consistent with wlan1=AP. `persist.sys.wifi.only2g=1` CONFIRMED. SSID
+> `myChevrolet 32D4` UNVERIFIABLE-FROM-LIVE (bench unit's SoftAP was `benchd89`; no SSID string in
+> capture).*
 
 ---
 

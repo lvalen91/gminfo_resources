@@ -188,7 +188,7 @@ network:
     hotspot: supported
     current_ssid: ZSmart
     current_rssi: -39dBm
-    current_ip: 192.168.4.65
+    current_ip: <LAN_IP_REDACTED>
   bluetooth:
     version: 5.0
     mac: F8:6D:CC:DC:32:D6

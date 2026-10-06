@@ -58,6 +58,14 @@ public void onReceive(Context context, Intent intent) {
 
 `USBMountRecv` handles **only USB mass storage** (USB drives plugged into the radio). It never processes `android.hardware.usb.action.USB_DEVICE_ATTACHED`, never calls `UsbManager.grantPermission()`, and has no concept of "remember this device".
 
+> `[C] live-Y175 2026-10-05: the decompile-based mechanism and the package-squat workaround in this
+> section are **Y181-SCOPE-ONLY** (jadx from Y181 `86331654`; no framework/decompile evidence in the
+> Y175 live capture) — UNVERIFIABLE-FROM-LIVE on Y175 and NOT device-tested. Live Y175 corroborates
+> only the two package facts: `com.gm.usbmountreceiver` (`/system/priv-app/USBMountRecv/USBMountRecv.apk`)
+> is present [pkg_all_f.txt:26], and `android.car.usb.handler` is **absent** from the 100-package list
+> [pkg_* ]. The boot logcat warnings, the `config_UsbDeviceConnectionHandling_component` resource, and
+> the user-10 squat grant are not observable from this capture.*
+
 **System log evidence** — these two entries appear on every boot, every session:
 ```
 W UserManagerService: android.car.usb.handler is allowlisted but not present.
@@ -406,7 +414,15 @@ enforcing=0 androidboot.selinux=permissive    ← Y177 boot cmdline (overridden 
 # Y181 does not carry the token
 ```
 
-Y177 carries the `androidboot.selinux=permissive` cmdline token; Y181 does not. The token is **not honored at runtime**: Y175/Y177/Y181 ship a byte-identical `init` compiled `ALLOW_PERMISSIVE_SELINUX=0`, which forces enforcing on this `user` build regardless of the cmdline (same mechanism spelled out for Y181 below). So all three builds run SELinux **enforcing** at runtime. This is **not** caused by any VIP MCU change: the VIP security validator is a full ~906-byte function in **every** build (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0) — there is no 4-byte stub (three-way byte-level diff, 2026-08-25) — and it gates ADB/seed authorization only, not SELinux or AVB (SELinux mode is set OS-side in the ramdisk/init). Rollback from Y181 to Y177 is blocked by the GHS/AVB anti-rollback mechanism (owner-verified 2026-08-17 bench re-test).
+Y177 carries the `androidboot.selinux=permissive` cmdline token; Y181 does not. The token is **not honored at runtime**: Y175/Y177/Y181 ship a byte-identical `init` compiled `ALLOW_PERMISSIVE_SELINUX=0`, which forces enforcing on this `user` build regardless of the cmdline (same mechanism spelled out for Y181 below). So all three builds run SELinux **enforcing** at runtime.
+
+> `[C] live-Y175 2026-10-05: CONFIRMED directly on Y175 — the cmdline-vs-runtime discrepancy is
+> live-reproduced [LIVE_Y175_FACTS §1, §8]. `ro.boot.selinux=permissive` IS present in props
+> (kernel-cmdline-derived) yet `getenforce`=**Enforcing** and all 179 captured `avc: denied` lines
+> carry `permissive=0` (enforced) — so Y175 ignores the permissive cmdline token and runs enforcing,
+> exactly as the byte-identical-init mechanism predicts. This was the one column of the §12 table not
+> previously dump-confirmed; it is now live-confirmed. (The `ALLOW_PERMISSIVE_SELINUX=0` init-compile
+> flag itself is RE-sourced and not observable from the shell, but its observable effect is present.)* This is **not** caused by any VIP MCU change: the VIP security validator is a full ~906-byte function in **every** build (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0) — there is no 4-byte stub (three-way byte-level diff, 2026-08-25) — and it gates ADB/seed authorization only, not SELinux or AVB (SELinux mode is set OS-side in the ramdisk/init). Rollback from Y181 to Y177 is blocked by the GHS/AVB anti-rollback mechanism (owner-verified 2026-08-17 bench re-test).
 
 **USB device access for sideloaded apps** (from `plat_sepolicy.cil`):
 
@@ -417,6 +433,15 @@ Sideloaded apps (`untrusted_app`) are in `base_typeattr_196` which grants:
 **`open` is deliberately excluded.** A sideloaded app cannot directly open `/dev/bus/usb/*` device nodes. This is intentional: `UsbManager.openDevice()` has `system_server` open the node and pass the file descriptor. The app uses the fd for ioctls/reads/writes after `UsbDeviceConnection` is established.
 
 **No `zeno.carlink`, `carlink`, or `usbmountreceiver` rules exist** in either `plat_sepolicy.cil` or `vendor_sepolicy.cil`. The app operates under standard `untrusted_app` domain rules.
+
+> `[C] live-Y175 2026-10-05: "operates under standard untrusted_app" CONFIRMED on Y175 — both live
+> 3P packages run as `untrusted_app` in user 10: `zeno.gmccpa` context `u:r:untrusted_app:s0:c120,...`
+> and `com.poc.gmwlan` `...c121,...` [LIVE_Y175_FACTS §2]. Live untrusted_app denials are the generic
+> domain's (`proc:file getattr` on `i915_perf_stream_paranoid`; the `gm_domain_service find` denial),
+> with no app-specific allow/deny — consistent with no per-app rule. The `usb_device {open}`-excluded
+> CIL rule is sepolicy-sourced and not directly dumpable from this shell (UNVERIFIABLE-FROM-LIVE),
+> but note Y175 is currently in device/adb role and `com.gm.usbmountreceiver` (`USBMountRecv.apk`) is
+> present in `pkg_system` [pkg_system.txt].*
 
 **USB port role is CAN-controlled.** A dedicated `usb_roleswitch` SELinux domain (communicates over CAN socket) writes to `sysfs_usb_role_writeable` — the USB port can switch between host (CarPlay/AA adapter) and device (ADB) mode programmatically based on vehicle CAN state.
 
@@ -438,6 +463,16 @@ Sideloaded apps (`untrusted_app`) are in `base_typeattr_196` which grants:
 **Y177 is not a security regression** — it runs SELinux enforcing at runtime (byte-identical init) with the same full ~906 B VIP validator as Y175/Y181. Update to Y181 for the newer security-patch level. Rollback from Y181 is enforced by the GHS hypervisor rollback counter in the `misc` partition.
 
 > Provenance: Y181 and Y177 build IDs, kernels, security-patch levels, and SELinux states are verified against the partition images (Y181 `86331654`, Y177 `86283152`/`86283154`). The **Y175 column** and the **VIP security fn / Rollback** rows come from separate firmware reverse-engineering and are **not** verifiable from the ADB dump or the Y181/Y177 images alone — treat them as RE-sourced, not dump-confirmed.
+
+> `[C] live-Y175 2026-10-05: the Y175 column is now **live-confirmed** on a running Y175 radio and
+> no longer RE-only [LIVE_Y175_FACTS §1]. Exact matches: Build `W213E-Y175.5.2-SIHM22B-383.1`
+> (fingerprint `gm/full_gminfo37_gb/gminfo37:12/W213E-Y175.5.2-SIHM22B-383.1/213:user/release-keys`);
+> Kernel **`4.19.283`** (`4.19.283-PKT-230612T042614Z`); Security patch **`2024-05-05`**; SELinux
+> **Enforcing** (`getenforce`=Enforcing, all 179 captured avc lines `permissive=0`).
+> `ro.build.type=user`, `ro.debuggable=0`, `ro.secure=1`, `ro.boot.flash.locked=1`,
+> `ro.boot.verifiedbootstate=green`, `vbmeta.device_state=locked` all CONFIRMED. The **VIP security
+> fn** and **Rollback** rows remain RE-sourced — not observable from this live shell
+> (UNVERIFIABLE-FROM-LIVE).*
 
 Audio/video/codec configuration files are **identical between Y177 and Y181**. Both builds run SELinux enforcing at runtime, so build differences reduce to kernel/security-patch level, not SELinux mode.
 
@@ -865,6 +900,14 @@ The `car_ux_restrictions_map.xml` (inside `CarService.apk`, not an accessible pl
 | MOVING | ≥2.2 m/s | 0x1ff | FULLY_RESTRICTED (all 9 flags) |
 
 `NO_VIDEO (0x10)` applies at all non-parked states. This restriction is signaled to apps via `CarUxRestrictionsManager.onUxRestrictionsChanged()`. A DO-compliant app must stop video playback when this flag is active. System apps and Play Store-distributed apps may declare DO compliance; sideloaded (untrusted) apps cannot claim the same exemption pathway.
+
+> `[C] live-Y175 2026-10-05: the specific UXR flag values/speed tiers are read from
+> `car_ux_restrictions_map.xml` inside `CarService.apk` (binary) and the CardView whitelist from
+> `GMSystemUI.apk` (decompile) — neither is dumpable from this shell, so the numeric tables and
+> whitelist membership are UNVERIFIABLE-FROM-LIVE. Live Y175 only confirms the enforcement surface
+> exists: `car_service` (`android.car.ICar`) is registered binder service #47 [services.txt], and
+> `com.android.car`/`com.android.car.developeroptions` are installed [pkg_system]. The DO/CardView
+> gating behavior itself is not exercised in this capture.*
 
 Non-GMNA markets omit `NO_KEYBOARD (0x08)` from the moving-speed tier (`uxr=0x1f7` instead of `0x1ff`).
 

@@ -6,7 +6,7 @@ diagnostic surface**, using the emulator as a rooted, instrumentable harness and
 diagnostic captures as ground truth.
 
 ## Access & assets
-- **Emulator:** Mac Pro on the home LAN (`192.168.4.233`, reachable over the active VPN; ask the
+- **Emulator:** Mac Pro on the home LAN (`<MACPRO_LAN_IP>`, reachable over the active VPN; ask the
   owner for the temp SSH password — never store it). Use SSH **ControlMaster** multiplexing (one
   persistent connection — the IPS flags repeated handshakes) and `sudo` is passwordless there.
   Work tree `~/gm_emu`; AVD `y181gm` on port **5558**; `adb -s emulator-5558`.

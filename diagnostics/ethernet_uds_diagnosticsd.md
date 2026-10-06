@@ -19,6 +19,18 @@ Binary obtained by extracting `/bin/diagnosticsd` from vendor ext4 image
 `86331650` (`debugfs -R 'dump ...'`); a live pull is blocked by SELinux from the
 `adbd` context.
 
+> **[C] live-Y175 2026-10-05 — listener existence/owner/bind CONFIRMED on the Y175 variant.**
+> Disk-only capture of a running Y175 radio (`W213E-Y175.5.2-SIHM22B-383.1`,
+> `/tmp/radio_audit/20261005_232227/raw/`): `diagnosticsd` is live — `init.svc.diagnosticsd=running`
+> (props), process in ps as **PID 590, root, SELinux domain `gm_diagnosticsd`** (`ps.txt:132`;
+> note PID differs from the Y181 PID 599 in the header below — PID is capture-specific). It is
+> **LISTENing on `0.0.0.0:49156`** (net_sockets.txt TCP row `00000000:C004` with `st=0A`, `uid=0`,
+> inode 13683; `0xC004`=49156) — bind address is INADDR_ANY/`0.0.0.0`, **not** loopback, same as
+> documented. Owner uid 0 confirmed. **UNVERIFIABLE-FROM-LIVE (shell uid 2000, no CAN/Ethernet diag
+> access):** everything below about the UDS wire format, the 0x27 SecurityAccess seed/key gate, the
+> VIP-tier relay, the privilege tiers, and the worker-starvation DoS — none of it is re-exercised by
+> this capture; only the listener's existence, root ownership, and `0.0.0.0` bind are confirmed.
+
 ---
 
 ## Process Profile
@@ -28,8 +40,10 @@ Binary obtained by extracting `/bin/diagnosticsd` from vendor ext4 image
 - `CapPrm/CapEff/CapBnd = 0000003fffffffff` → **all capabilities**.
 - `NoNewPrivs = 0`, `Seccomp = 0` (no filter). `SigIgn: SIGPIPE`.
 - VmSize ~10.4 GB virtual, VmRSS 9.9 MB.
-- Network: LISTEN `0.0.0.0:49156`; ESTABLISHED `172.16.4.100:49156 ↔
-  172.16.4.107:49156` (bridge to the RTOS diagnostic endpoint on VLAN 4).
+- Network: LISTEN `0.0.0.0:49156` (root TCP **server**). **[C corrected 2026-10-06]** `.107`/`.112`
+  connect *inbound* to it (firewall `iptables_rules_file.txt:35-36`); the earlier "ESTABLISHED
+  `.100↔.107` forwarding" line was **unsupported** — no such socket in any Y181/Y175 capture. See the
+  concurrence-correction block below.
 
 **RC file (from vendor image):**
 ```
@@ -326,6 +340,101 @@ entirely by talking to the vehicle's diagnostic network directly, same as a deal
 would. Route noted, not yet executed on this bench. OPEN.
 
 ---
+
+## vlan4 = internal GHS fabric; diagnosticsd forwarding target; bench-reachability of the VIP/UDS path (2026-10-06)
+
+> **[C] CONCURRENCE CORRECTION (2026-10-06, independent 2nd fable agent re-derived from the primary binary + captures). Read before the section below — several claims were disputed:**
+> - **diagnosticsd does NOT "forward to `.107:49156`."** It is a root **TCP *server*** on `:49156`; the captured firewall rule is **inbound** — `.107`/`.112` connect *into* it (`iptables_rules_file.txt:35-36`). **No `ESTABLISHED 172.16.4.100↔172.16.4.107` exists in any Y181/Y175 capture;** that line traced to a *gminfo37* (different platform) ref doc. The "forwarding target"/ESTABLISHED framing throughout this section is **UNPROVEN** — read "`.107` is a client that connects in," not "diagnosticsd dials out to `.107`."
+> - **`ProxyOfExtComp` is not in the binary** (misattribution). Real symbols: `libdiagnosticsdebugproxy.so`, `MESSAGE_SECURITY_ACCESS_VIP`, `toVIPResponseCode`. The VIP-tier `$27`-proxy *concept* stands; the symbol name does not.
+> - **"Bosch" for `.112` is UNVERIFIED** — only the real/external-OUI vs synthetic/internal split is solid (raw scan OUI "unknown, possibly Harman/Samsung").
+> - **Exact NRCs (`$10 03→7F 10 10`, `$27 01→7F 27 10`) and "the session gate is strictly upstream of the VIP forward"** are **inferred from libuds handler strings** (`UDSSessionControlCheckHandler`, `UDSSecurityLevelCheckRequestHandler`, `"tester id check differ, process req in default session"`), not a traced call order — single-source.
+>
+> **What independently CONCURRED (solid):** diagnosticsd is a root TCP server on `:49156`; a 3P `untrusted_app` **can** open a socket to `:49156` *and* to `.107:49156` (SELinux `netdomain` + `(allow netdomain port_type (tcp_socket name_connect))`, no portcon on 49156, OUTPUT ACCEPT, `.107` on-link) — so **the sole defense is the in-process UDS session/tester/security gate**, which an unregistered 3P tester fails (forced to default session). The SBI/EEPROM `$27` bypass is a **separate, downstream VIP/RH850 gate** and gives nothing to an app rejected at the session gate. `.107`/`.14` internal (synthetic/locally-administered MAC); `.112` external (real OUI). **[OPEN]** `.107`'s own trust model is untested.
+
+Answers the question: *does the automotive-Ethernet VLAN connect the Intel A3960 (AAOS) to the
+internal radio components (RH850 VIP MCU and/or GHS hypervisor) such that a 3P app reaching
+diagnosticsd:49156 could drive UDS to the VIP on the bench, with no vehicle network — and how does
+the SBI/EEPROM `$27` bypass interact?*
+
+**Is `172.16.4.107`/`.112` internal or external?** — RESOLVED from ARP + TTL (Y181 and Y175,
+bench captures, no vehicle connected):
+
+| vlan4 peer | MAC | Kind | Identity |
+|---|---|---|---|
+| `172.16.4.107` (diagnosticsd's forwarding target) | `02:05:00:00:02:00` | **locally-administered / synthetic → hypervisor virtual NIC** | **INTERNAL.** Co-resident GHS "RTOS diagnostic" partition on the same Intel A3960 SoC. The **same** virtual NIC is dual-homed as vlan5 `192.168.1.112` (`enumeration/Y181/*/raw/arp_table.txt` — identical MAC). Response **TTL=255** (`platform/networking.md:80`). |
+| `172.16.4.14` (ACP) | `02:02:00:00:04:00` | locally-administered / synthetic | **INTERNAL.** GHS control/application partition; statically pinned (`init_ethernet.sh:97 ip neigh replace`). |
+| `172.16.4.112` (CGM_OTA) | `10:66:50:0c:ed:d3` | **real/universal OUI → external hardware** (vendor UNVERIFIED — raw scan "unknown, possibly Harman/Samsung"; *not* confirmed Bosch) | **EXTERNAL.** Off-board telematics/CGM hardware. TTL=64 (Linux). |
+
+So **vlan4 is not a pure physical PHY to the car** — it is a hypervisor virtual-switch fabric that
+carries both SoC-internal GHS partitions (`.107`, `.14`) *and* a bridge out to one real external
+module (`.112`, external real-OUI — vendor unverified). This corrects the vehicle_network.md claim
+that the "RTOS partition" was separate hardware (fixed in place there, 2026-10-06).
+
+**diagnosticsd's forwarding target / transport.** Binary is stripped and holds **no hardcoded IP**;
+the target is resolved at runtime (the live `ESTABLISHED 172.16.4.100:49156 ↔ 172.16.4.107:49156`
+in the Process Profile is the authoritative evidence). Transport = **TCP over vlan4** via
+`SockAdaptor` (`libuds/.../ethfrmwk/SockAdaptor.cpp`, confirmed in `.rodata`), to the **`.107`
+GHS-internal RTOS diagnostic partition on port 49156** (symmetric 49156↔49156; both ends listen).
+diagnosticsd does **not** write UDS to `/dev/ttyS1` or `/dev/ipc` itself and does **not** reach the
+RH850 directly — it is an AAOS-guest-side relay to the `.107` partition. Per the VIP-tier note in
+Trust Model, only a **`VIP`-tier `$27`** (`MESSAGE_SECURITY_ACCESS_VIP`) is proxied onward
+(`ProxyOfExtComp::handleUDSRequest`) to the external VIP component where the seed/key compare and
+SBI EEPROM read happen.
+
+**Does vlan4 reach the RH850 VIP MCU directly? NO.** The RH850 is **off-SoC**, reachable only over
+**HDLC IPC on `/dev/ttyS1`** (20 channels; diag = channels 3–5, `platform/networking.md:151-169`).
+vlan4 is not wired to the RH850. The VIP is reached only *indirectly*: `.107` RTOS partition →
+internal SoC↔MCU IPC → RH850. **[single-source/INF — the `.107`→RH850 onward relay is inferred;
+RH850 firmware is not in the artifact set, so it cannot be re-derived statically here.]**
+
+**Bench reachability of the chain (3P app → diagnosticsd → UDS → VIP/RH850), no vehicle net:**
+
+- **Transport layer: YES, bench-reachable.** Every hop — AAOS guest → diagnosticsd:49156 → `.107`
+  RTOS partition → (internal IPC) → RH850 — lives **inside the radio SoC/module**. None of it needs
+  the vehicle CAN bus or any external vehicle ECU powered. The `.107`↔diagnosticsd socket is present
+  in bench captures with nothing but the radio on the bench. UDS targeting the **radio's own VIP**
+  can therefore execute on the bench; UDS targeting **external vehicle ECUs** (gateway `0x45`, other
+  CAN modules) still needs those modules present/powered → **not** on the bench.
+- **Application/trust layer: NO — the chain is blocked for an untrusted 3P peer, and the SBI `$27`
+  bypass does not open it.** An untrusted peer (shell uid 2000 or an untrusted 3P app) is treated as
+  an unregistered tester → the tester-ID soft-check falls through to **default session**, where even
+  `$10 03` (enter ExtendedDiagnosticSession) returns `7F 10 10` generalReject, and `$27 01`
+  requestSeed returns `7F 27 10` generalReject — **before any seed is issued and before anything is
+  forwarded to the VIP.** For the ETHERNET/NOTIFICATION tiers this reject is generated **in-process**
+  in diagnosticsd (`libuds` session-state / `UDSSecurityLevelCheckRequestHandler`), not relayed.
+
+**How the SBI/EEPROM `$27` bypass interacts (the crux).** The all-`0xFF` seed accepted by the VIP
+validator `0xb67d0` relaxes the **VIP's own cryptographic seed/key compare**, which runs **off-SoC
+on the RH850** — i.e. it sits **downstream** of the session/tester-ID gate above. It converts "you
+need the real key" into "any format-valid/all-FF key is accepted." It does **not** defeat the
+session/tester gate that fails closed *in front of* it. So the SBI bypass only helps an actor who is
+**already a registered/authorized tester** (the `.107` RTOS endpoint, or a real Techline/MDI) and
+merely lacks the correct key — it does **not** let an untrusted 3P app at diagnosticsd reach the VIP
+validator at all, because that app never gets past default-session `generalReject` to exchange a
+seed. The two gates are independent; defeating the crypto gate (SBI) without also defeating the
+session/tester gate yields nothing from the 3P-app position.
+
+**What a local 3P app actually gets (unauthenticated):** complete the TCP handshake to `:49156`;
+drive the **worker-starvation DoS** (above); and send UDS that is uniformly `generalReject`-ed
+(no DID reads, no SecurityAccess, no reflash). Driving privileged UDS to the VIP requires first
+defeating the **session/tester-ID gate** — a separate, unsolved problem from the SBI/`$27` crypto
+bypass.
+
+**Also closed: no alternate internal path for a 3P app.** The direct `/dev/ipc/*` route to the VIP
+is **SELinux-denied** to shell/untrusted (AVC-denied; only diagnosticsd and the `vehicle_network`-gid
+VHAL may open it). The firewall's unrestricted OUTPUT does let a local app *originate* a TCP connect
+straight to `172.16.4.107:49156` (bypassing diagnosticsd), but that lands on the **same** `.107`
+RTOS diagnostic listener with the **same** session/tester gate — no added privilege. **[OPEN /
+single-source:** whether the `.107` endpoint's *own* trust model differs from diagnosticsd's, and
+whether an untrusted Android app is even permitted onto vlan4 by SELinux, is uncharacterized —
+needs a second agent / live probe.**]**
+
+**Y175 vs Y181:** the ARP identities (`.107` synthetic/dual-homed, `.112` real-OUI Bosch, `.14`
+synthetic) are **identical across Y175, Y181 apr2026, and Y181 jun2026** captures (confirmed ≥2
+captures → [C]). The listener existence/owner/bind on `:49156` is [C] on both variants (header
+note). The UDS trust/session gate and the VIP-tier relay were binary-derived on the Y181 artifact
+and are **UNVERIFIABLE-FROM-LIVE** on the current bench (shell has no diag access) — single-tool,
+**flag for concurrence**.
 
 ## Open Questions
 

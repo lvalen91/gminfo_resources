@@ -5,6 +5,20 @@
 
 > **Correction (2026-06-29):** An earlier draft of this document stated "GM SPL Feb 2023." This was wrong. The confirmed SPL is **2025-06-05**. This moves CVE-2023-20963 from TIER 2 (VULNERABLE) to Section 6 (NON-APPLICABLE). SPL covers Android framework patches only — kernel-level CVEs are still governed by the kernel version (4.19.305).
 
+> **[C] live-Y175 2026-10-05 — scope pin: the SPL/kernel/config facts above are Y181; a LIVE Y175
+> radio runs an OLDER floor.** Live capture of `W213E-Y175.5.2-SIHM22B-383.1`
+> (`/tmp/radio_audit/20261005_232227/raw/`) shows **kernel `4.19.283`**
+> (`00_whoami.txt:5`, `Linux localhost 4.19.283-PKT-...`) and **SPL `2024-05-05`**
+> (`ro.build.version.security_patch`, `security_props.txt`) — not Y181's 4.19.305 / 2025-06-05.
+> Consequences for this doc: (1) the Y175 kernel-version findings in TIER 3 are CONFIRMED against the
+> live radio (4.19.283 as stated). (2) Section 6.6's "all framework CVEs with ASB ≤ 2025-06 are
+> patched" is **Y181-only** — on live Y175 the framework patch floor is **2024-05-05**, so Android
+> bulletins between 2024-06 and 2025-06 are NOT covered on Y175 (CVE-2023-20963 at ASB 2023-03 is still
+> patched on Y175, so that specific verdict holds). (3) The kernel-config "dead" verdicts in
+> Sections 6.1–6.4 are read from Y181's `kernel_config.txt`; the Y175 kernel is a different build
+> (compiled Jun 2024) and no `/proc/config.gz` was pulled this capture — Y175 config applicability is
+> **UNVERIFIABLE-FROM-LIVE** (and DISK-ONLY anyway).
+
 Two facts dominate all CVE applicability decisions:
 1. **GHS HOSTOS (85098662) is byte-for-byte identical between Y177 and Y181.** The misc/vda9 rollback counter is the only discriminator between builds.
 2. ~~**The cause of Y177 permissive SELinux is the VIP RH850 security function at `0xb67d0`** — a 4-byte stub in Y177, 906-byte validator in Y181.~~ **RETRACTED (2026-08-25).** A three-way VIP_APP diff (Y175/Y177/Y181) proved the `0xb67d0`-class validator is a **full ~906-byte function in all three builds** — the "Y177 stub" was a fixed-absolute-address misread of shifted/recompiled code (Y177's function is at `0xb67d4`, +4; Y175's at `0xb6708`). See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2. Consequently the VIP does **not** drive SELinux mode, and no stock build (incl. Y177) runs permissive — Y175/Y177/Y181 share a byte-identical init that forces enforcing (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8). There is no stub to install and no VIP path to permissive.
@@ -36,6 +50,8 @@ Ranked by: (a) version-confirmed applicability to 4.19.283/4.19.305 + Android 12
 ### TIER 3 — Only Applicable to Y175 Kernel (4.19.283); ALL PATCHED on Y181 (4.19.305)
 
 Y181 runs 4.19.305. Every CVE in this tier is patched. Retained for reference in case Y175 access is re-established.
+
+**[C] live-Y175 2026-10-05:** Y175 access WAS re-established (read-only, disk-only; device owned by another agent). Live kernel CONFIRMED **`4.19.283`** (`00_whoami.txt:5`), so this tier's kernel-version applicability to the live radio stands as written. Reachability from uid=2000 and the config gates (e.g. `CONFIG_USER_NS is not set`) are NOT re-verified — no `/proc/config.gz` or capability probe in this capture → those remain Y181-config-inferred / UNVERIFIABLE-FROM-LIVE for Y175.
 
 #### CVE-2023-6932 — IPv4 IGMP UAF *(would be tier leader on 4.19.283)*
 - **Version:** Patched 4.19.301. **4.19.283 VULNERABLE; 4.19.305 PATCHED → NOT APPLICABLE TO Y181.**
@@ -303,6 +319,13 @@ All Android Security Bulletin CVEs with disclosure/patch date on or before 2025-
 ## Strategic Synthesis
 
 **Fastest path to permissive SELinux (actual goal):** ~~NEW-1 — patch VIP `0xb67d0`~~ **void** (no VIP path to SELinux mode; see NEW-1 retraction). No stock build boots permissive — Y175/Y177/Y181 share a byte-identical init that forces enforcing (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8). No stock package (Y175/Y177/Y181/Y181B) boots permissive, and only stock packages were ever flashed -- any past 'permissive' was a false finding/misread. SELinux mode is neither VIP- nor EEPROM-driven, so no VIP or EEPROM modification can produce permissive SELinux (only a misattribution).
+
+> **[C] live-Y175 2026-10-05 — directly CONFIRMED by the live radio.** The running Y175 carries
+> `ro.boot.selinux=permissive` on its kernel cmdline (`props.txt:259`, `[ro.boot.selinux]: [permissive]`)
+> **yet runs SELinux Enforcing** at runtime (`00_whoami.txt:3` = `Enforcing`; all 179 captured avc lines
+> `permissive=0`, `avc_denials.txt`). This is live proof that a stock Y175 ignores a permissive cmdline
+> request and forces Enforcing in init — SELinux mode is not cmdline-, VIP-, or EEPROM-driven, exactly as
+> the retraction states. A permissive cmdline token is present and inert on a production unit.
 
 **Fastest path to literal Y177 downgrade:** NEW-2 (exploit CRC-warning-only behavior in misc/AB0), enabled by a misc-write primitive from NEW-3, NEW-5, or dealer mode.
 

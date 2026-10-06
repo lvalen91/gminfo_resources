@@ -85,6 +85,16 @@ PLSS_PMPAL reports at 1Hz via IPC: `health:48 10 0 0 0 0` (consistent across all
 - MFi IC: clone/compatible, fallback address works (not a real Apple MFi chip)
 - WiFi channel 161 (5.8GHz) — may have interference issues in some environments
 
+## Bench: SoftAP / WLAN stuck off after `adb reboot` (owner, 2026-10-06)
+On the bench, the WiFi SoftAP (br0 `192.168.5.1`) is not reliably brought up by the system process
+after an `adb reboot` — it can stay stuck off, and **a full power cycle is required** to restore the
+WLAN/SoftAP (an `adb reboot` alone does not fix it). Consequence for research: any SoftAP/CarPlay-AP
+network probe must be done after a power cycle with the AP confirmed up (ideally during a live CarPlay
+session). Pairs with the other post-reboot bench quirks: ADB auto-disables at boot (manual re-enable
+via Dev-options/USB re-plug) and the clock resets (`adb_enabled` + time wiped at boot — the
+workstation-sync hook re-corrects time on next adb use). Wired/loopback/binder testing over ADB is
+unaffected by the SoftAP state.
+
 ## Y177 Notes
 
 - **SELinux:** stock Y177 boots **Enforcing**, same as Y175/Y181. The long-held "Y177 runs permissive" belief is refuted — `system/bin/init` is byte-identical across Y175/Y177/Y181 and compiles with `ALLOW_PERMISSIVE_SELINUX=0`, so it ignores `androidboot.selinux=permissive` and forces Enforcing at runtime; any live permissive Y177 was a modified/eng unit. (confirmed: `aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_OS_PARTITION_INVESTIGATION_AUG2026.md:145`)

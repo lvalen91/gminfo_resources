@@ -27,6 +27,58 @@ Environment: **SELinux Enforcing** (`selinux_status.txt`); bootloader **locked**
 Source of truth: `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (compiled CIL,
 neverallows retained). Cross-checked against `apr2026` and base `Y181` CILs — identical results.
 
+> **[C] live-Y175 2026-10-05 — the sealing *preconditions* re-confirmed on a LIVE Y175 radio; the CIL
+> analysis itself stays Y181-scoped (can't pull sepolicy from a locked user shell).** Read-only capture
+> of `W213E-Y175.5.2-SIHM22B-383.1` (`/tmp/radio_audit/20261005_232227/raw/`) corroborates every live
+> environment fact this verdict rests on, on Y175 as well as Y181:
+> - SELinux **Enforcing** (`00_whoami.txt:3`; 179/179 avc `permissive=0`), bootloader **locked**
+>   (`ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`), verified boot **green**,
+>   `ro.secure=1`, `ro.adb.secure=1`, `ro.debuggable=0` — same posture as the Y181 analysis.
+> - `calserviced` runs as user **`vendor_cald`**, SELinux domain **`calserviced`**, on Y175 too:
+>   `u:r:calserviced:s0  vendor_cald  573 1 ... S calserviced` (`ps.txt:124`) — the exact
+>   uid-vs-domain split this doc's terminology correction describes.
+> - `/mnt/vendor/calibration` is a live **rw,seclabel** ext4 mount on Y175 (`mounts.txt`,
+>   `ext4 ... calibration ... rw,nosuid,nodev`).
+> - The adb `shell` on Y175 is `uid=2000`, groups carry **no `system`(1000) and no `vendor_cald`**
+>   (`00_whoami.txt`) — the DAC floor that denies the overrides-dir write holds on Y175.
+> - Live avc log has **zero** `untrusted_app`/`shell` denials against `calibration_data_file`,
+>   `mnt_vendor`, `cald`, or `calserviced` (grep: no hits) — consistent with no such edge existing, but
+>   note this is a non-attempt, **not** positive proof of a grant/deny; it does not substitute for the
+>   CIL read.
+>
+> **UNVERIFIABLE-FROM-LIVE on Y175:** the actual allow/neverallow set in §(a)/(b) is read from Y181's
+> `vendor_sepolicy.cil`; a locked user shell cannot pull Y175's sepolicy, so the per-rule claims
+> (hwservice whitelist, `shell` → `dir getattr` only, the neverallows) are **not** independently
+> re-derived on Y175 — they transfer by the usual Y177/Y181 policy-reuse inference, not by live Y175
+> evidence. Separately, the **framework** permissions gating GM's calibration *Binder* API (distinct
+> from this filesystem/hwbinder path) resolve on live Y175 as `gm.permission.WRITE_DIAGNOSTIC_CALIBRATION_DATA`
+> = `dangerous` and `gm.permission.READ_DIAGNOSTIC_CALIBRATION_DATA` = `normal` (`permissions_full.txt`);
+> `dangerous` is not auto-granted, which only reinforces "SEALED" — but it is a different gate from the
+> `.calovride`/`calserviced` surface this doc sealed, so it does not change the verdict.
+
+> **[C] Y181.3.2-ref 2026-10-06 — the §(a)/(b) CIL rule-set re-derived VERBATIM from a LIVE Y181.3.2 root
+> reference, not just the jun2026 pull.** Read directly from the on-device `/vendor/etc/selinux/vendor_sepolicy.cil`
+> (root shell, `W231E-Y181.3.2-SIHM22B-499.3`, SELinux Enforcing). Every load-bearing rule this verdict
+> rests on is present on Y181.3.2:
+> - `:2317 (allow calserviced gm_calibration_hwservice (hwservice_manager (add find)))` and
+>   `:2320 (allow calserviced gm_calibration_provider_hwservice (hwservice_manager (add find)))` — CONFIRMED verbatim.
+> - The `find` whitelist: `gm_sxm_32_0` (`:2566`/`:2565`), `hal_calibration_client` (`:2949`),
+>   `hal_calibration_provider_client` (`:2938`), `gmlocation-hal-1_0d` (`:5156`). (The `hal_calibration_server`/
+>   `hal_calibration_provider_server` of §(a) reach their own service via the `add find` server grant, not a
+>   standalone `find` line — same net whitelist, finer mechanism.)
+> - `:2346 (allow shell_32_0 calibration_data_file (dir (getattr)))` — CONFIRMED verbatim as the **only** `shell`
+>   grant on `calibration_data_file` (no `file create`/`write`/`add_name`/`open`). The "`shell` is defanged" claim holds on Y181.3.2.
+> - `untrusted_app` has **zero** allow rules against `calibration`/`calserviced`/`mnt_vendor`/`hwservice`/`hwbinder`
+>   in the live CIL (the only `untrusted_app` hits are the giant `domain`/`file_type` typeattributeset declarations,
+>   not allows) — total MAC denial CONFIRMED.
+> - Neverallows present but as **separate** statements, not the combined `(add find)` the doc quotes:
+>   `gm_calibration_hwservice (add)` `:2952` / `(find)` `:2953`; `gm_calibration_provider_hwservice (add)` `:2322`/`:2941` /
+>   `(find)` `:2942`. Net effect identical (both `add` and `find` neverallowed for the negated base attribute).
+> - `/mnt/vendor/calibration` is a live `ext4 ... errors=panic ... wait,check,formattable,nofail` mount in
+>   `/vendor/etc/fstab` on Y181.3.2 too.
+> This upgrades §(a)/(b) from "Y181 jun2026 pull" to "live Y181.3.2 on-device CIL." Y175 per-rule claims remain
+> *inferred* (no bootable Y175 policy); the Y175 live-environment preconditions were separately re-confirmed above.
+
 ---
 
 ## (a) Does `calserviced` expose a socket / pipe / Binder interface an app can connect to?

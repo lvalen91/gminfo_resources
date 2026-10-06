@@ -13,6 +13,20 @@ shell/untrusted_app SELinux domains. The PRIVESC findings below do **not** depen
 emulator artifacts: they hold against the shipped `product_sepolicy.cil` under SELinux
 **Enforcing**, the same posture as the real radio (see [`../../platform/security.md`](../../platform/security.md)).
 
+**[C] live-Y175 2026-10-05 — permission-level findings re-validated against a LIVE Y175 radio
+(not Y181).** Every `prot=normal` claim below was originally stated on **Y181** decompiled APKs. A
+read-only live capture of a running **Y175.5.2** unit (`W213E-Y175.5.2-SIHM22B-383.1`, Android 12/API
+32, SPL 2024-05-05, user/release-keys, bootloader locked, SELinux **Enforcing**, shell uid 2000;
+`dumpsys package permissions` in `/tmp/radio_audit/20261005_232227/raw/permissions_full.txt`) lets us
+confirm the protectionLevel of each cited permission **on Y175 directly**. Net result: the auth trio,
+keystore.READ, the base `READ_*` vehicle family, TCPS_STATUS, and ACCESS_VEHICLE_DATA_SERVICE are all
+`normal` on live Y175 — i.e. the systemic `prot=normal` finding is CONFIRMED on the live radio, not
+merely inferred from Y181. Divergences (READ_VIN / diagnostic READ_VEHICLE_INTERNAL_INFORMATION /
+`*_DRIVING_BEHAVIOR` / WRITE_DIAGNOSTIC_CALIBRATION_DATA are `dangerous`, not `normal`) are called out
+per-finding below. SELinux-reachability claims (sepolicy `find` grants) are **not** re-verifiable from a
+locked user shell and are marked UNVERIFIABLE-FROM-LIVE where cited; one is independently CONFIRMED by a
+live denial (see PRIVESC-3).
+
 ---
 
 ## Ranked Findings
@@ -40,6 +54,41 @@ parser bugs (unbounded-allocation RAM-DoS, reject-path framing desync) — see
 ---
 
 ## [PRIVESC-1] CRITICAL — GM/OnStar auth-token theft & forgery from an unprivileged third-party app
+
+> **[C] LIVE-DEMONSTRATED 2026-10-06 — the chain holds end-to-end against an ordinary 3P app, on
+> two variants.** A zero-flag sideloaded PoC (`~/gm_priv_poc`, installed with no `-g`) running as
+> `untrusted_app`:
+> - **Auto-grant (live Y175.5.2 bench):** plain `adb install` silently granted the 3 `authentication.*`
+>   perms (+ `keystore.READ`, `READ_DIAGNOSTIC_CALIBRATION_DATA`, `ACCESS_VEHICLE_DATA_SERVICE`,
+>   `TCPS_STATUS`, 3× vehicle `READ_*`) — `granted=true`, no prompt (`dumpsys package` + live
+>   `checkSelfPermission`). The 5 `dangerous` perms were withheld.
+> - **Reach + fail-open (live Y175.5.2 bench):** `untrusted_app` obtained the `gm_auth` binder
+>   (SELinux `find` **passed on the real Y175 unit**) and called `getAuthToken`/`getAuthTokenByUserID`/
+>   `getIDTokenSubjectByUserID` — every getter returned `transact=true` with **no SecurityException**;
+>   the server-side caller gate does **not** hold. Tokens came back null **only because the bench has
+>   no provisioned OnStar account** (`dumpsys account` shows Google only); on a logged-in customer unit
+>   the identical zero-consent path returns live tokens. No writes/forgery issued; values masked.
+> - **Policy corroboration (Y181.3.2 root reference):** `(allow untrusted_app gm_authToken_service
+>   (service_manager (find)))` present verbatim at `product_sepolicy.cil:586`. So the find-grant is
+>   **not Y177-only** — confirmed on live Y175 (behavior) AND Y181.3.2 (policy), two independent
+>   sources. The 2026-09-27 "inferred for Y181" caveat below is now closed; Y175 is directly proven.
+>
+> Net: token theft on a provisioned unit is gated by **nothing but the presence of an account**.
+> PoC + full log: `/tmp/radio_audit/20261005_232227/analysis/WEAK_PERM_POC_RESULTS.md`.
+>
+> **[C] Hidden-API nuance (2026-10-06, measured by two harnesses — reconcile before over/under-stating):**
+> On Y175.5.2, **`dalvik.system.VMRuntime.setHiddenApiExemptions` is absent**, so an `untrusted_app`
+> **cannot self-exempt from hidden-API policy**. Consequence: a *generic reflective* client
+> (`gm_bench_agent` `svc.call`) reaches `gm_auth` with no SecurityException but returns
+> `HIDDEN_API_BLOCKED` — it can't reflect the hidden stub/marshal. **This is a harness-implementation
+> hurdle, NOT a fundamental mitigation:** the `gm_priv_poc` client used a **hand-built AIDL** (bundled
+> `IGMAuthService.Stub`, raw `transact`, and `getAuthToken` returns a plain `String` — no hidden-API
+> reflection) and reached the getter cleanly (token null only because the bench has no provisioned
+> account). So token extraction by a *purpose-built* 3P app is not hidden-API-blocked; only generic
+> reflection is. (The separate SoftAP finding differs: `SoftApConfiguration` is a **hidden parcelable**,
+> so reflecting its `CREATOR` *is* hidden-API-blocked without the absent exemption — relevant there,
+> not here.) **Open:** a definitive token-return on a *provisioned* unit via the hand-built client is
+> still the remaining proof (do not exfil a real customer token — presence/length only).
 
 Chain: `untrusted_app` → SELinux `service_manager find` **granted** on `gm_authToken_service`
 (`/product/etc/selinux/product_sepolicy.cil:586`) → `IGMAuthService` (host process
@@ -90,6 +139,19 @@ Real-radio transferability: **HIGH** — shipped `/system/app/GMAuthTokenService
 exploit-primitive claims now independently re-verified against the correct decompile. **Ranked #1 — the
 single most severe finding of this audit, confirmed.**
 
+**[C] live-Y175 2026-10-05: permission half CONFIRMED on the live radio; SELinux-reachability half
+UNVERIFIABLE-FROM-LIVE.** On the running Y175, all three auth permissions are declared at the weak level
+this finding depends on — exact live `dumpsys package permissions` values (owner `com.gm.authtoken`):
+`gm.permission.authentication.USER` = **`normal`**, `gm.permission.authentication.CLIENT` = **`normal`**,
+`gm.permission.authentication.ID` = **`normal`** (`permissions_full.txt:52-66`). So the "any 3P app can
+declare these 3 strings and pass the in-code check trivially" primitive holds on Y175 exactly as on Y181
+— CONFIRMED, Y175==Y181 for these three perms. The `gm_auth` service is live-registered (services.txt
+#108, `gm.authtoken.IGMAuthService`). The SELinux chain (`untrusted_app` → `service_manager find`
+granted on `gm_authToken_service` / `product_sepolicy.cil:586`) is **UNVERIFIABLE-FROM-LIVE**: a locked
+user shell cannot pull `product_sepolicy.cil`, and the live avc log shows no `untrusted_app → gm_auth`
+`find` attempt at all (absence of a denial is not proof of a grant). Note the one adjacent live datapoint
+cuts the other way for a *different* label (see PRIVESC-3).
+
 ## [PRIVESC-2] HIGH — `invalidateAuthToken`: zero permission check + SQL injection — CONFIRMED (citation corrected, same class as PRIVESC-1)
 
 Same corrected class, `a/f.java` in the `com.gm.authtoken.apk` decompile (not the `ClusterService` file
@@ -118,6 +180,15 @@ source manager with zero checks. The only guarded method in the whole service is
 + Update/Diagnostics/Critical/Delayed) is granted to **platform_app, priv_app, carservice_app**
 (`product_sepolicy.cil:850-852`) — **not** untrusted_app, **not** shell. So this is a
 priv_app/platform_app/carservice_app → system escalation, not an ordinary-3P-app → system one.
+
+**[C] live-Y175 2026-10-05: the "not untrusted_app" reachability correction is CONFIRMED by a live
+SELinux denial.** On the running Y175, the 3P app `com.poc.gmwlan` (`untrusted_app`, uid 1010121)
+attempting to resolve a `gm_domain_service`-hosted service was denied, enforced:
+`avc: denied { find } ... scontext=u:r:untrusted_app:s0:c121,... tcontext=u:object_r:gm_domain_service:s0
+tclass=service_manager permissive=0` (`avc_denials.txt:128`, device clock 23:19:07). This is live proof
+that `untrusted_app` cannot `find` the `gm_domain_service` label that hosts `UpdateService` on Y175 —
+the Y181-stated correction transfers to Y175. (Caveat: this gates `ServiceManager.getService`; it does
+**not** gate `Context.startService()` to an exported component — the APP-1 vector.)
 
 Full INSTALLRUNNER trace (below) resolves the "can this deliver a malicious payload" question:
 **no.** The caller's `PackageDetails` argument is never consumed by the install pipeline; the state
@@ -202,6 +273,33 @@ reachable from an ordinary app despite root-adb being available in the emulator 
 convenience/artifact, does not apply to the real radio's shell/untrusted_app domains, which have
 zero GM-service `find` grants at all).
 
+**[C] live-Y175 2026-10-05: systemic `prot=normal` CONFIRMED on the live radio, with a sharper
+weak-vs-dangerous split than the Y181 write-up states.** Exact live `dumpsys package permissions`
+values on Y175 (`permissions_full.txt`):
+- **CONFIRMED `normal` (auto-grant to any 3P app, no prompt):**
+  `com.gm.vehicle.permission.READ_VEHICLE_MOVEMENT` = `normal`, `READ_VEHICLE_STATE` = `normal`
+  (and the rest of the base READ_* family the digest enumerates: BATTERY, BRAKES, CLIMATE,
+  CRUISE_CONTROL, DOORS_AND_WINDOWS, ELECTRIC_VEHICLE, FUEL, HARDWARE_INPUTS, LIGHTS, PARK_ASSIST,
+  REAR_SEAT_INFOTAINMENT, SAFETY_SYSTEMS, SEAT_CONTROL, TIRES, TRAILER, VEHICLE_INFORMATION — 18
+  base READ_* at `normal`); `com.gm.apimanager.permission.ACCESS_VEHICLE_DATA_SERVICE` = `normal`;
+  `gm.permission.keystore.READ` = `normal`; `gm.permission.READ_DIAGNOSTIC_CALIBRATION_DATA` = `normal`.
+  The telemetry/location READ-exfil class holds on Y175 identically to Y181 — **CONFIRMED**.
+- **ADJUSTED — these are `dangerous`, NOT `normal`, on live Y175** (a `dangerous` perm needs a runtime
+  grant; it does **not** auto-grant at install, so a headless locked user radio will not silently hand
+  it to a sideloaded app): `com.gm.vehicle.permission.READ_VIN` = **`dangerous`**;
+  `com.gm.diagnostic.permission.READ_VEHICLE_INTERNAL_INFORMATION` = **`dangerous`**;
+  `gm.permission.WRITE_DIAGNOSTIC_CALIBRATION_DATA` = **`dangerous`**; and all nine
+  `com.gm.vehicle.permission.READ_*_DRIVING_BEHAVIOR` = **`dangerous`** (`permissions_full.txt:37,92,482`).
+  The ranked Finding-#4 table row ("declare `com.gm.vehicle.permission.READ_*` etc., read live vehicle
+  data") over-generalizes — VIN, vehicle-internal, and the driving-behavior subset are `dangerous`, not
+  `normal`.
+- **Confirmed-clean counterpoint HOLDS on Y175:** `gm.vehicle.permission.WRITE_VEHICLE_DATA` =
+  `signature|privileged` and `gm.vehicle.permission.READ_VEHICLE_DATA` = `signature|privileged`
+  (`permissions_full.txt:172,177`); `gm.permission.keystore.WRITE` = `signature|privileged` (vs its
+  `normal` READ sibling). No `normal`-level vehicle WRITE exists on Y175 either — the negative result
+  transfers. (The `/data/vendor/ipcshim/*.in` DAC/MAC claim is a sepolicy/label fact not re-derivable
+  from a locked user shell → UNVERIFIABLE-FROM-LIVE on Y175.)
+
 ## [APP-1] HIGH — `NavigationClusterService`: unauthenticated cluster/HUD display-state injection into a persistent system-UID process
 
 Component: `com.gm.server.navigation.cluster.NavigationClusterService`, package
@@ -263,6 +361,12 @@ permission name. Lower severity than PRIVESC-1 (exposes TCPS/OnStar terms-accept
 raw control). **Confirmed-clean contrast (record so this doesn't read as "all of GMTCPS is
 broken"):** GMTCPS's other exported components (`ViewTermsActivity`, `DemoActivity`, etc.) ARE
 correctly protected with explicit `protectionLevel="signatureOrSystem"`.
+
+**[C] live-Y175 2026-10-05: CONFIRMED.** On the running Y175, `com.gm.tcps.permission.TCPS_STATUS`
+(owner `com.gm.tcps`) resolves to `protectionLevel:normal` (`permissions_full.txt:769`) — the
+self-grantable weak level this finding describes, same on Y175 as Y181. The `TcpsAcceptanceStatusService`
+component manifest/export state is not in the live permission dump → that half is Y181-APK-scoped; the
+permission-level defect is CONFIRMED live.
 
 ## [APP-4] LOW — `DeviceInformationService` exported with no intent-filter
 
@@ -336,11 +440,47 @@ pipeline and `gm_protokey`'s `FUN_00105050`, on-device ipcshim-injection fuzzing
 
 ---
 
+## [PRIVESC-5] Systemic GM-binder caller-check gaps — 2-agent-confirmed (Y181.3.2 ref, 2026-10-06)
+
+Audit of all ~29 GM binder services (two independent fable agents concur) found a systemic pattern:
+many servers return sensitive data / perform privileged actions with **no caller check**, or use a
+`prot=normal` permission as the "gate" (auto-granted = no gate). **Variant Y181.3.2; inferred for
+Y175** — service indices drift (wlanservice 71 on Y181 vs 69 on Y175), so any Y175 reliance must
+re-confirm label + CIL `find` on Y175 first; do not cross-assert. Full table:
+`/tmp/radio_audit/20261005_232227/analysis/GM_BINDER_CALLER_CHECK_AUDIT.md`.
+
+**Reach facts (live Y181.3.2 CIL):** `shell`/adb (uid 2000) has **no `find`** on `gm_domain_service`
+or `gm_authToken_service` — a plain adb shell cannot reach any of these. `untrusted_app` **can** find
+`gm_authToken_service` (+ `gm_domain_service_nav`). `priv_app`/`platform_app` (+ gm_* system domains,
+`bluetooth`, `carservice_app`) can find `gm_domain_service`; `system_app` has only `add`, not `find`.
+
+**Tier A — reachable by any ordinary `untrusted_app`** (label `gm_authToken_service`):
+- **IGMAuthService** (`gm_auth`) — OAuth/ID tokens; gate = `authentication.*` = `normal`. (= PRIVESC-1, live-demonstrated.)
+- **gmBOAgent / IGMBOAgentService** — `changePassword`/`createProfile`/`getErrorDetail`/`getMessageDetail`/`resendVerification`/`userCheck`: **no check** (`GMAuthTokenService/sources/a/o.java:48-83`); only `passwordGrant*` gate on `authentication.*` (=normal). Account-management reachable by a sideloaded app.
+
+> `[C] live-Y175 2026-10-06` — **REACH confirmed on the live Y175.5.2 bench** (`gm_bench_agent` `svc.call`, uid 1010122 `untrusted_app`). `getService("gmBOAgent")` → `find:"OK"`, `reached:true`, `descriptor:"gm.authtoken.IGMBOAgentService"`, **no SecurityException** (SELinux `service_manager find` passes); `getService("gm_auth")` → `find:"OK"`, `reached:true`, `descriptor:"gm.authtoken.IGMAuthService"`, no SecurityException. So the Y181.3.2 single-source reach claim HOLDS on Y175: an ordinary `untrusted_app` obtains both binders. **Scope of confirmation = reach only.** The actual AIDL method (the "no caller check" part) could NOT be exercised: generic reflection hits `HIDDEN_API_BLOCKED` because `dalvik.system.VMRuntime.setHiddenApiExemptions` is **absent on this firmware**, so a 3P app cannot marshal `*.Stub.asInterface` / `transact`. No setter/destructive method was called (`changePassword`/`createProfile`/`resendVerification`/`userCheck` are harness-blocklisted). The no-caller-check assertion itself remains Y181-source-only; only reach is live-verified on Y175.
+
+**Tier B — reachable by `priv_app`/`platform_app`** (label `gm_domain_service`, all hosted in `/system/priv-app/DelayedWKSApp`, server has no caller check):
+- **RDMSADBHandler.RDMSADBEnable(bool)** — toggles USB ADB (`sys.usb.controller` + USB role).
+- **VehicleCompanionAppService** — `setConsentPopupResult` (consent bypass), `setRemoteAccess`/`setDeviceAccess`/`deleteDevice`/`getDeviceList`.
+- **DeviceConnectionService** — `getDeviceList`/`getCurrentProjectionDevice` (paired-phone PII), `clearDeviceDatabase`.
+- **CarPlayServiceBinder / GALServiceBinder** — `sendTouchEvent`/`sendKeyEvent` (input injection), `getCurrentProjectionDevice` (PII). (GAL `sendData` IS gated — `ACCESS_GAL_EXTENSION`; only touch/key injection is ungated.)
+- **UpdateService** — `install`/`download`/`startMADAI`/`cancelInstall`/`decline` + `getUpdateHistory`. **Process-control / DoS / disclosure, NOT RCE** — downstream static-A/B AVB + module signing block unsigned flash through this binder.
+- Also: GMAudioService (`setTeenMode`/audio-patch/`channelMute`), ProxySxmDiagService (serial/hwrev/`setActiveDiagnosticsBinder`), AlarmService (cross-client).
+
+**Clean (properly `sig|priv`-gated):** all OnStar incl. RemoteReflash, Diagnostics/OBD,
+NonMaskableLocation, camera, passengermode.
+
+Practical gate: Tier B needs a privileged/preinstalled app (platform-signed or `/priv-app`); Tier A
+(gmBOAgent, IGMAuthService) needs only an ordinary installed `untrusted_app`.
+
 ## Phase 2 Plan (top 3 priority)
 
-1. **PRIVESC-1 token-theft PoC** — build a minimal sideloaded app declaring the 3 `normal`
-   `gm.permission.authentication.*` strings, call `getAuthTokenByUserID`/`getGuestAccountToken`,
-   confirm live token exfiltration against the `authtokens` DB.
+1. **PRIVESC-1 token-theft PoC — ✅ DONE 2026-10-06** (see the LIVE-DEMONSTRATED block under
+   PRIVESC-1 above). Chain confirmed end-to-end on live Y175 + Y181.3.2: auto-grant, binder reach,
+   caller gate fails open; live token return blocked on the bench only by the unprovisioned account.
+   Remaining: re-run against a **provisioned** unit to capture an actual token return (do NOT exfil a
+   real customer token — presence/length only, per the credential rule).
 2. **INSTALLRUNNER's open USBNotifier thread** — RE `USBNotifier.java` to determine whether any
    non-removable-media path can be spoofed as a mounted USB volume, which would reopen an
    app-reachable zero-signature-check path into `/update_cache/calibrations` (containerType 2,

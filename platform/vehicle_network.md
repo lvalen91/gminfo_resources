@@ -139,7 +139,22 @@ The author claims (unpublished, zero-days withheld) that all SecOC keys are dump
 
 Backbone: 100BASE-T1 via on-board switch (host on port 5; gateway/telematics on
 port 2). Switch IC is board-variant — **Broadcom BCM89551** on MY22/DV boards, **Marvell 88Q5050**
-on MY23+ (per `persist.vendor.harman.hardwareid`); same port layout and spec.
+on MY23+ (per `persist.vendor.harman.hardwareid`); same port layout and spec. **The vehicle trim
+carries three physical automotive-ethernet connections to this switch** (owner, in-vehicle; not
+wired on the bench).
+
+> **[C] Bench discovery result (2026-10-06, live Y175 via `gm_bench_agent` `mcast.listen`, strictly
+> passive).** The ethernet **service-discovery plane is silent on the bench**: `/proc/net/igmp` shows
+> the HU joins **mDNS `224.0.0.251`/`ff02::fb`** + all-hosts `224.0.0.1` on vlan4/vlan5/eth0 — but
+> **NOT** the SOME/IP-SD group `239.192.0.1`. A 25 s passive listen on `239.192.0.1:30490` and `:3000`
+> and a 20 s listen on mDNS `224.0.0.251:5353` **all returned 0 packets** (joins succeeded on
+> vlan4/vlan5/eth0, no SELinux denial, `sends:0`). **Cause:** the three in-vehicle automotive-ethernet
+> links are unconnected on the bench, so no AE peer ECU/switch is advertising — the HU is *ready* to
+> participate but has no partners. SOME/IP-SD `239.192.0.1:30490` therefore reflects the *firmware/
+> in-vehicle* config, not a bench-active service. The harness (`~/gm_bench_agent`, `untrusted_app`,
+> listen-only) is validated and would map the real OfferService graph **in-vehicle** or with the bench
+> AE links bridged to the vehicle backbone. (A 3P `untrusted_app` CAN join these groups + `MulticastLock`
+> with no root — only the privileged `/proc/net/igmp`/netlink reads are SELinux-denied to it.)
 
 ### vlan5 · `192.168.1.0/24` ("Info3x" service network)
 
@@ -152,12 +167,26 @@ on MY23+ (per `persist.vendor.harman.hardwareid`); same port layout and spec.
 | .106 | **IPC — Instrument Panel Controller** (Visteon cluster; DeviceInfo `Company=Visteon, Module=IPC`) | older note mis-expands as "Inter-Process Communication" | [C] |
 | .107 | **CGM host processor / telematics** | — | [C] |
 | .108 / .110 | LOWRADIO / PDR — offline | — | [?] |
-| .112 | **CGM_ETH / CGM_OTA** — Connectivity Gateway Module / telematics | vlan4 face `172.16.4.112` has the only **real MAC** `10:66:50:...` (Bosch OUI), heavily firewalled | [C] |
+| .112 | **CGM_ETH / CGM_OTA** — Connectivity Gateway Module / telematics | vlan4 face `172.16.4.112` has the only **real/universal-OUI MAC** `10:66:50:...` (vendor UNVERIFIED — not confirmed Bosch; raw scan "unknown, possibly Harman/Samsung"), heavily firewalled | [C] |
 | 239.192.0.1 | SOME/IP-SD multicast (live scan: UDP **30490**) | — | [C] |
 
 > **Synthetic MACs.** Most vlan5 peers use `02:0x:00:00:0x:00` locally-administered MACs =
-> hypervisor virtual NICs / co-resident GHS partitions bridged onto the physical backbone. Only
-> the Bosch device (real OUI) and the RTOS partition are unambiguously separate hardware.
+> hypervisor virtual NICs / co-resident GHS partitions bridged onto the physical backbone.
+> **[C] CORRECTION (2026-10-06):** an earlier version of this note claimed "the Bosch device (real
+> OUI) **and the RTOS partition** are unambiguously separate hardware." The RTOS-partition half is
+> **wrong**. ARP evidence (`enumeration/Y181/*/raw/arp_table.txt`,
+> `enumeration/Y181/jun2026/enumeration_report.txt:7477-7482`): the RTOS/diagnostic endpoint
+> `172.16.4.107` carries MAC **`02:05:00:00:02:00`** — locally-administered (bit-1 set), i.e. a
+> hypervisor virtual NIC, **not** real silicon — and that **same** virtual NIC is dual-homed as
+> `192.168.1.112` on vlan5 (`arp_table.txt` confirms identical MAC). A single co-resident GHS
+> partition bridged onto both VLANs, exactly like the Android guest's own `.100`-on-both. So the
+> **only** unambiguously-separate hardware on these VLANs is the real/universal-OUI device:
+> **vlan4 `172.16.4.112` = `10:66:50:0c:ed:d3`** (universal OUI `10:66:50` — **vendor UNVERIFIED, not
+> confirmed Bosch**; raw scan "unknown, possibly Harman/Samsung"), the external CGM/telematics
+> module. The `.107` "RTOS partition" is **SoC-internal** (a GHS-hosted INTEGRITY partition on the
+> same Intel A3960), corroborated by its response **TTL=255** vs the external `.112`'s **TTL=64**
+> (Linux) — see [`networking.md`](networking.md) vlan4 table and the "vlan4 internal-vs-external"
+> finding in [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md#vlan4--internal-ghs-fabric-diagnosticsd-forwarding-target--bench-reachability-of-the-vipuds-path-2026-10-06).
 
 ### vlan4 · `172.16.4.0/24` (internal vehicle network)
 `.100` IVI (radio's vlan4 face) · `.1` router (shares MAC with `.102`) · `.14` **ACP** ·
