@@ -314,9 +314,32 @@ The IS25WP064A-JHLA3 package is WSON-8/BGA — requires a WSON-8 clip/adapter or
 7. IFWI dump is useful for platform understanding but cannot reveal the master key
 8. Boot Guard v2 root of trust anchored in TXE ROM — tampering with IFWI bricks boot
 
+> **[C] 2026-10-08 (avbtool/binary, SOC_ABL 85738845 — CONFIRMED-FROM-BINARY/F1, F2, F4):**
+> The real OFFLINE unlock target is **not** the Boot Guard chain itself but the device
+> lock-state store. SOC_ABL is kernelflinger ("ELK"); it reads device lock state from
+> the UEFI NV variable `OEMLock` (GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1`) via
+> `read_device_state_efi()`, and `device_is_unlocked()` is INTACT/unpatched (true iff
+> `OEMLock` exists, readable, bit 0 set). `USE_TPM` was NOT compiled in — this is
+> explicitly NOT fTPM/TPM2-backed and NOT RPMB. Boot Guard's Boot Policy (`BPM.met`)
+> hashes cover IBBL/IBB/OBB *code* only — **not** the UEFI NVRAM varstore — so the
+> `OEMLock` bit sits outside the Boot Guard hash chain entirely. The open question
+> (UNKNOWN-FROM-FILES) is whether that varstore is SPI-NOR-backed (i.e., physically
+> present in this same IS25WP064A dump and offline-settable) or RPMB-backed
+> (replay-protected, in the eMMC RPMB partition instead). **This makes the ISSI dump
+> the priority target over the eMMC for the unlock question** — it is the only part
+> that can answer both "where is `OEMLock`" and "what is the Boot Guard FPF
+> enforcement state," in the same read. The IS25WP064A-JHLA3 is a **1.8 V part** —
+> program/read it at 1.8 V, not 3.3 V.
+
 ### Bootloader Unlock / Custom OS Feasibility
 
-**Verdict: Not possible via IFWI modification. Boot Guard v2 is a hardware-enforced dead end.**
+**Verdict: Not possible via IFWI *code* modification. Boot Guard v2 is a hardware-enforced
+dead end for patching IBBL/IBB/OBB.** **[C] 2026-10-08 — UNKNOWN-FROM-FILES caveat:** this
+verdict covers only the signed code path; it does not cover the `OEMLock` lock-state
+variable, which is unlock-relevant, outside the Boot Guard hash, and possibly SPI-NOR
+resident (see F1/F2/F4 note above). Also, whether Boot Guard's mismatch response is a true
+hard-REJECT vs only a measurement depends on the TXE FPF/OTP fuse state, not confirmed from
+this package.
 
 #### The Boot Guard Chain
 
@@ -1170,6 +1193,16 @@ anti-rollback (2026-08-17 bench re-test), so treat this section as an exhausted 
 **Blocker:** GHS AB0 rollback counter in misc (vda9) — CRC32-only, but written at hypervisor level only.
 
 After exhaustive binary analysis of plmanager, gm_update_engine, abl-user-cmd_vendor, GHS HOSTOS, and SELinux policy, all software-only paths from ADB shell are blocked. The remaining realistic options are:
+
+> **[C] 2026-10-08 — UNKNOWN-FROM-FILES:** Option 1 below targets the AB0 *rollback
+> counter* in `misc`, a separate mechanism from device lock state. For the *unlock*
+> question specifically (F1/F4, not rollback), the priority offline target is the
+> **ISSI IS25WP064A SPI boot flash, not the eMMC** — the `OEMLock` UEFI NV variable that
+> actually gates `device_is_unlocked()` is more likely to live in a SPI-NOR varstore on
+> the ISSI (offline-settable) than in the eMMC's RPMB (replay-protected); which one is
+> confirmed only by dumping the ISSI. That dump also carries the Boot Guard Flash
+> Descriptor/FPF region needed to resolve F2's enforcement question. Program/read the
+> ISSI at **1.8 V** (not 3.3 V).
 
 **Option 1: Offline eMMC Modification (Most Direct)**
 

@@ -487,6 +487,31 @@ What is actually present vs. removed:
   `oem_unlock_allowed` off-Android (normally an Android Settings toggle, unavailable here) has
   been demonstrated. Do not read this as a working unlock procedure.
 
+> **[C] 2026-10-08 (avbtool/binary, SOC_ABL 85738845 / SOC_VBMETA 86331644):**
+> - **F1 — the `device_state=locked` gate, decoded (CONFIRMED-FROM-BINARY).** SOC_ABL is
+>   kernelflinger ("ELK"); lock state is read from the UEFI NV variable `OEMLock` (GUID
+>   `1ac80a82-4f0c-456b-9a99-debeb431fcc1`) via `read_device_state_efi()`.
+>   `device_is_unlocked()` is INTACT/unpatched, true iff `OEMLock` exists, is readable,
+>   and has bit 0 (`0x01`) set. `USE_TPM` was NOT compiled (zero TPM2 NV-index
+>   constants/calls in the module) — the lock is **NOT fTPM/TPM2-backed and NOT RPMB**
+>   (`ABL.rpmb=` is only an androidboot cmdline token). UNKNOWN-FROM-FILES: whether the
+>   varstore holding `OEMLock` is SPI-NOR- or RPMB-backed.
+> - **F2 — Boot Guard nuance (UNKNOWN-FROM-FILES for enforcement).** The IPK is a full
+>   Apollo Lake IFWI with a production-signed OEM Key Manifest, IBB manifest, and a Boot
+>   Policy whose SHA-256 digests match the real IBBL/IBB/OBB bytes exactly — verified-boot
+>   **capable**. Whether a mismatch is rejected vs only measured depends on the Intel TXE
+>   FPF/OTP fuse state (outside this package); settle via MSR `0x13A` or an ISSI FPF dump.
+>   Boot Guard digests cover IBBL/IBB/OBB code only, not the `OEMLock` NVRAM varstore.
+> - **F3 — vbmeta signing, no second key (CONFIRMED).** `SOC_VBMETA` (86331644) is
+>   GM-signed, `SHA256_RSA2048`, pubkey sha1 `ccf9677f9683d9fec7dc372a9bc592a11d8e4000`
+>   (same AVB key as the CT5/burmese build), with ONLY hash/hashtree descriptors
+>   (acpio/boot/product/system/vendor) — **no chain-partition descriptors**, so no
+>   partition is delegated to a second key. The Google-GSI trust noted above
+>   (`q/r/s-gsi.avbpubkey`) comes only from the Android fstab/DSU (`gsid`) path, an
+>   Android-system-layer mechanism (loader `com.android.dynsystem` removed/gated) that
+>   cannot replace GHS or ABL — it does not generalize to ABL, which has a single
+>   fuse-anchored OEM key.
+
 **Confirmed at firmware-image level (Sep 2026), not just runtime.** Unpacked the Y181
 USB full package (SOC_SYSTEM 86331654, SOC_VENDOR 86331650, SOC_PRODUCT 86331636):
 

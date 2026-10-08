@@ -50,6 +50,41 @@ The boot chain is a 5-layer trust hierarchy from hardware root to runtime filesy
 
 > **[C] live-Y175 2026-10-05:** Layers 1-3 (Intel CSE OTP, SOC_ABL, GHS INTEGRITY hypervisor internals) UNVERIFIABLE-FROM-LIVE (not observable from a locked user shell). Layer 4 (AVB) supported: `ro.boot.avb_version=1.2`/vbmeta 1.1, `vbmeta` hash_alg sha256, digest `76b736ea…bb585`, `ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`, `verifiedbootstate=green`. Layer 5 (dm-verity) supported by dm-6/7/8 device-mapper mounts of `/`,`/vendor`,`/product` (all `ro,seclabel`); no dm-verity *status* text captured.
 
+> **[C] 2026-10-08 (avbtool/binary, SOC_ABL 85738845, SOC_VBMETA 86331644):**
+> - **F1 — ABL lock-state backend (CONFIRMED-FROM-BINARY).** SOC_ABL is kernelflinger
+>   ("ELK", 32-bit x86 ELF at container offset `0x301288`, with a dedicated `.oemkeys`
+>   AVB keystore). Device lock state is read from the UEFI NV variable **`OEMLock`**
+>   (GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1`) via `read_device_state_efi()`.
+>   **`USE_TPM` was NOT compiled** — zero TPM2 NV-index constants or TPM2 calls in the
+>   1 MB module — so the Layer-2 lock bit is **NOT fTPM/TPM2-backed and NOT RPMB**
+>   (`ABL.rpmb=` is only an androidboot cmdline token, not the lock store).
+>   `device_is_unlocked()` is INTACT/unpatched: true iff `OEMLock` exists, is readable,
+>   and has bit 0 (`0x01`) set — the unit is LOCKED only because that byte is
+>   absent/clear. A secondary provisioning-UNLOCKED path (`OEMLock` NOT_FOUND +
+>   non-virtual boot + life-cycle != ENDUSER) is gated by a manufacturing/SKU
+>   life-cycle fuse and stays LOCKED on a production ENDUSER unit.
+>   UNKNOWN-FROM-FILES: whether the UEFI varstore physically holding `OEMLock` is
+>   SPI-NOR-backed (offline-settable) or RPMB-backed (replay-protected) — a layer
+>   below kernelflinger, not resolvable from this binary alone.
+> - **F2 — Boot Guard (verified-capable; enforcement FPF-dependent — UNKNOWN-FROM-FILES).**
+>   The IPK (85738845) is a full Apollo Lake IFWI containing a production-signed OEM
+>   Key Manifest (`oem.key`, `$MN2`, vendor `0x8086`, RSA-2048), a production-signed
+>   IBB manifest (`IBBP.man`, `$MN2`), and a Boot Policy (`BPM.met`) with three SHA-256
+>   digests that EXACTLY match the real boot-block bytes (IBBL, IBB, ELK/OBB) — a
+>   verified-boot construction, which makes the "SOC_ABL … verified by/with Intel CSE
+>   secure boot" / "Hardware enforced" wording elsewhere **an understatement of
+>   capability, but not provable as categorical enforcement**: whether a hash mismatch
+>   is REJECTED (verified profile) vs only measured depends on the Intel TXE FPF/OTP
+>   fuse state, which is outside this package (`fitc.cfg` shows build-time intent only).
+>   Settle via MSR `0x13A` (`MSR_BOOTGUARD_SACM_INFO`, needs ring-0) or a full ISSI SPI
+>   IFWI dump including Flash Descriptor + FPF region. Corollary: Boot Guard digests
+>   cover CODE (IBBL/IBB/OBB) only, NOT the UEFI NVRAM varstore — flipping the `OEMLock`
+>   variable would not break any Boot Guard hash.
+>
+> Keep this distinct from the ProtoKey/EEPROM-SBI material below (§ProtoKey / ADB
+> Authentication): that section governs **ADB/seed authentication only**, a separate
+> mechanism from the `OEMLock` *boot*-lock state described here.
+
 ---
 
 ## VIP MCU Security

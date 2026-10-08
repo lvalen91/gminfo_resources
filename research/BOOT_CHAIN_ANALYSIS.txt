@@ -801,6 +801,16 @@ SOC_ABL EXPLOITATION ASSESSMENT:
 | Lock States               | VARIES            | May be software-based    |
 | PKCS7/Certificate         | HIGH              | Full PKI chain           |
 
+[C] 2026-10-08 (avbtool/binary, module 85738845 — CONFIRMED-FROM-BINARY): the "Lock
+States" row is the operative one for the boot-unlock question, and it does NOT sit
+behind the fTPM fuses row above it. SOC_ABL's device-lock predicate
+(device_is_unlocked()) reads the UEFI NV variable OemLock/OEMLock (GUID
+1ac80a82-4f0c-456b-9a99-debeb431fcc1) via read_device_state_efi(). USE_TPM was NOT
+compiled into this module (zero TPM2 NV-index constants/calls found) -- so OemLock is
+NOT fTPM-backed and NOT RPMB-backed; "ftpm_fuses" (string D above) and "OemLock" (string
+E above) are two distinct mechanisms, not one. Whether the OemLock varstore itself is
+SPI-NOR (offline-settable) or RPMB is still UNKNOWN-FROM-FILES.
+
 OVERALL SOC_ABL EXPLOITATION: DIFFICULT
 - Intel CSE provides hardware root of trust
 - Even with modified ABL, CSE may reject unsigned payloads

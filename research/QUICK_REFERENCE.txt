@@ -263,6 +263,11 @@ SOC_ABL (Module 72) Internal Security:
   - Multiple lock states (SocCfgLock, OemLock, manuf_lock)
   - PKCS7 certificate validation
 
+  [C] 2026-10-08 (CONFIRMED-FROM-BINARY, module 85738845): the device-unlock-relevant
+  lock state (OemLock, read via read_device_state_efi()) is a UEFI NV variable, NOT one
+  of the fTPM hardware fuses above -- USE_TPM was not compiled into this module. Keep
+  "fTPM hardware fuses" and "OemLock lock state" as two separate mechanisms, not one.
+
 Exploitation Feasibility:
   VIP_BOOT: MODERATE (software validation, RE possible)
   SOC_ABL:  DIFFICULT (Intel CSE hardware protection)

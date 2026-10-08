@@ -409,6 +409,14 @@ COMPLETED ANALYSIS (2025-12-28):
     - fTPM fuses, lock states, PKCS7 validation
     - Hardware-based = very difficult to bypass
 
+    [C] 2026-10-08 (CONFIRMED-FROM-BINARY, module 85738845): correction -- "lock states"
+    does not belong in the "hardware-based/very difficult" bucket above. The
+    unlock-relevant lock state is OemLock, a UEFI NV variable read via
+    read_device_state_efi(); USE_TPM was NOT compiled into this module, so it is NOT
+    fTPM-fuse-backed and NOT RPMB-backed. Whether its backing varstore is SPI-NOR
+    (offline-settable) is UNKNOWN-FROM-FILES. fTPM fuses and PKCS7/SVN remain
+    hardware-based; OemLock does not.
+
 [X] CRC enforcement behavior documented (CRITICAL FINDING)
     - CRC is NOT enforced at boot time
     - VIN set to all 0xFF: Module booted normally

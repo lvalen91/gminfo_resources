@@ -263,6 +263,34 @@ path stays closed: VIP glitch/JTAG (see 5.3/5.4, 7.3) or chip-off of a non-secur
 storage segment. This supersedes any earlier assumption that the EEPROM/ADB bypass alone
 provides a path to CSM boot ownership -- see 5.2 LIMITATION note and 7.1 below.
 
+[C] 2026-10-08 (avbtool/binary, SOC_ABL module 85738845 -- CONFIRMED-FROM-BINARY, F1):
+The "device_state=locked" gate above is not an abstract fastboot flag -- it is backed
+by a concrete, decoded mechanism. SOC_ABL is kernelflinger ("ELK"), a 32-bit x86 ELF at
+container offset 0x301288. Device lock state is read from the UEFI NV variable
+`OEMLock` (GUID 1ac80a82-4f0c-456b-9a99-debeb431fcc1) via read_device_state_efi().
+device_is_unlocked() returns true iff OEMLock exists, is readable, and has bit 0 (0x01)
+set -- this predicate is INTACT/unpatched; the unit is LOCKED only because that byte is
+absent/clear. USE_TPM was NOT compiled into this module (zero TPM2 NV-index constants
+or TPM2 calls found) -- so this is explicitly NOT an fTPM/TPM2-backed lock, and NOT
+RPMB-backed (`ABL.rpmb=` is only an androidboot cmdline token, not the lock store).
+A secondary provisioning-UNLOCKED path (OEMLock NOT_FOUND + non-virtual boot +
+life-cycle != ENDUSER) is gated by a manufacturing/SKU life-cycle fuse and stays LOCKED
+on a production ENDUSER unit.
+
+F2 (UNKNOWN-FROM-FILES): OEMLock is NOT covered by any Boot Guard hash -- the IPK's
+Boot Policy (BPM.met) digests cover IBBL/IBB/OBB *code* only, not the UEFI NVRAM
+varstore. So flipping the OEMLock variable, if reachable, would not break any Boot
+Guard hash. Whether Boot Guard's code-integrity check is itself REJECTED or only
+measured on mismatch depends on the Intel TXE FPF/OTP fuse state, not present in this
+package -- settle via MSR 0x13A or a full ISSI SPI IFWI dump (Flash Descriptor + FPF
+region).
+
+F4 open question (UNKNOWN-FROM-FILES): whether the UEFI varstore physically holding
+OEMLock is SPI-NOR-backed (offline-settable, e.g. via the ISSI boot flash) or
+RPMB-backed (replay-protected) is undetermined from the ABL binary alone -- a layer
+below kernelflinger. This is the decisive next physical step and keeps this section's
+"ASSESSMENT NOT SOLVED" framing: it narrows the open question but does not solve it.
+
 4.4 GSI/DSU STATUS (December 2025 Testing)
 ------------------------------------------
 Developer Options contains a "DSU Loader" / GSI section, BUT it is non-functional.
