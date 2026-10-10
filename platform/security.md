@@ -48,7 +48,7 @@ The boot chain is a 5-layer trust hierarchy from hardware root to runtime filesy
 | 4 | AVB (Android Verified Boot) | RSA-2048 / SHA-256 | `vbmeta` signature verified by GHS VMM1 before Android kernel loads |
 | 5 | dm-verity | Runtime block integrity | Protects system, vendor, and product partitions; hash tree verified on read |
 
-> **[C] live-Y175 2026-10-05:** Layers 1-3 (Intel CSE OTP, SOC_ABL, GHS INTEGRITY hypervisor internals) UNVERIFIABLE-FROM-LIVE (not observable from a locked user shell). Layer 4 (AVB) supported: `ro.boot.avb_version=1.2`/vbmeta 1.1, `vbmeta` hash_alg sha256, digest `76b736ea…bb585`, `ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`, `verifiedbootstate=green`. Layer 5 (dm-verity) supported by dm-6/7/8 device-mapper mounts of `/`,`/vendor`,`/product` (all `ro,seclabel`); no dm-verity *status* text captured.
+> **[C] live-Y175 2026-10-05:** Layers 1-3 (Intel CSE OTP, SOC_ABL, GHS INTEGRITY hypervisor internals) UNVERIFIABLE-FROM-LIVE (not observable from a locked user shell). The GHS image itself is, however, fully mapped from the extracted firmware `85098662` (no compressed/encrypted code; only 768 B of key/signature tail unreadable) — [FW 85098662; 2026-10-10], see `GHS_FILE_MAP_85098662.md`. Layer 4 (AVB) supported: `ro.boot.avb_version=1.2`/vbmeta 1.1, `vbmeta` hash_alg sha256, digest `76b736ea…bb585`, `ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`, `verifiedbootstate=green`. Layer 5 (dm-verity) supported by dm-6/7/8 device-mapper mounts of `/`,`/vendor`,`/product` (all `ro,seclabel`); no dm-verity *status* text captured.
 
 > **[C] 2026-10-08 (avbtool/binary, SOC_ABL 85738845, SOC_VBMETA 86331644):**
 > - **F1 — ABL lock-state backend (CONFIRMED-FROM-BINARY).** SOC_ABL is kernelflinger
@@ -358,6 +358,8 @@ TEE code is loaded from dedicated ELF sections in the hypervisor image:
 - `.tee_keymaster.data` — Keymaster mutable data
 - `.tee_keymaster.rodata` — Keymaster read-only data
 
+> **[FW 85098662; 2026-10-10]:** the high-entropy TEE rodata blocks are standard AES T-tables (Te0–3/Td0–3) and SHA-256/512 constants — identified, not secret and not encrypted code (`GHS_FILE_MAP_85098662.md`).
+
 ### HAL Configuration
 
 - **HAL:** `keymaster@3.0` (Trusty-GHS implementation)
@@ -369,6 +371,8 @@ TEE code is loaded from dedicated ELF sections in the hypervisor image:
 ---
 
 ## GHS Device Interfaces
+
+**GHS USB role [FW 85098662 `.vmm1`/`.boottable`/`IGS_DSDT`; 2026-10-10]:** GHS performs a *mediated (para-virtual) PCI passthrough* of the real Intel xHCI (`8086:5AA8`) and XDCI (`8086:5AAA`) to the Android guest — an emulated PCI function (`usb_passthru_emul.c`) plus RPC register verbs `UsbRdReg`/`UsbWrReg`/`UsbPoll`/`UsbIrq` (`system_usb_passthru.c`) — and supplies the guest ACPI `IGS_DSDT` whose XDCI `OTGD` OpRegion the Android `intel_xhci_usb_sw` role-switch driver uses. GHS contains **no** role-switch, gadget, or dabridge logic (0 hits for `dabridge`/`dabr_udc`/`usb_otg_switch`/`cbc-signals`/`dwc3`/`gadget`); the role decision is made in the Android guest, in software. The XDCI is dual-role (`_ADR 0x00150001`) and both its role and port power are commanded through the `OTGD` `_DSM` `SPPS` method (writes `PUPS` port-power / `UXPE` enable, reads `U2CP`/`U3CP` connect) — a register/ACPI decision, not a sensed pin [FW decoded `dsdt_a.dsl:1290-1500`; CONFIRMED ×2]. The android ACPIO (`86331630`) is only the `ANDR0001` fstab/vbmeta descriptor (no USB config); USB governance is the GHS `IGS_DSDT`. The blob is not opaque: the only unreadable bytes are the 768 B tail (256 B RSA-2048 Android key + 512 B RSA-4096 signature); high-entropy regions are chime PCM, camera/overlay images, IPU/DSP/GuC/HuC firmware and AES/SHA constant tables. Full map: `GHS_FILE_MAP_85098662.md`.
 
 The GHS INTEGRITY hypervisor exposes the following device interfaces under `/dev/ghs/`:
 
@@ -576,8 +580,8 @@ The earlier claim that "both Y177 CVEs are exploitable due to SELinux permissive
 
 ### fastbootd reachable over direct USB OTG — [C live-Y175 2026-10-06]
 
-On the **direct OTG bench line** (no GM receptacle hub — HSAL-2 → breakout with CC→GND `Rd` strap →
-Mac), `adb reboot fastboot` brings up **fastbootd** (userspace fastboot, `is-userspace:yes`),
+On the **direct OTG bench line** (no GM receptacle hub — HSAL-2 → breakout with a **Mac-side** CC→GND `Rd` strap →
+Mac; X8 is 4-wire so CC never reaches the radio, whose role switch is software: `intel_xhci_usb_sw-role-switch` → XDCI `OTGD`/`SPPS` ACPI — the radio's VBUS sourcing and role are a register decision, not a sensed pin, which is why 4 wires suffice [FW `dsdt_a.dsl:1290-1500`]; ADB itself is entered by the Developer-Options USB-debugging toggle, owner-confirmed 2026-10-10: ADB off + Mac VBUS present = nothing enumerates, toggle on = ADB; VBUS-sense auto-role ruled out), `adb reboot fastboot` brings up **fastbootd** (userspace fastboot, `is-userspace:yes`),
 enumerating as USB **`8087:4ee0`** (Intel VID + Android fastboot PID) and **persisting in mode**.
 Captured live via a macOS `ioreg` watcher (device present ~1m50s). This is the **only** pre-OS USB
 interface the unit exposes: `adb reboot bootloader` (ABL), `recovery`, `edl`, `dnx` all stay
@@ -609,7 +613,7 @@ Read-only `fastboot getvar all` succeeded (information disclosure); **writes are
 **Assessment:** fastbootd is a privileged ramdisk/root pre-OS environment and leaks the full
 partition/version map, but on a stock locked unit it is an **information-disclosure + staging**
 surface, **not a flashing path** (locked + no OEM HAL). Reaching it still requires the two ADB
-gates (CC `Rd` strap + EEPROM SBI) to issue `adb reboot fastboot` in the first place — see
+gates (the Developer-Options USB-debugging toggle, which software-switches the radio to device role via `OTGD`/`SPPS`, with a Mac-side CC `Rd` strap only so the Mac sources VBUS — the radio does not sense CC or VBUS for role — plus EEPROM SBI) to issue `adb reboot fastboot` in the first place — see
 [`../hardware/connectors.md`](../hardware/connectors.md) §"Bench ADB … receptacle MODEL". Returning
 to the OS (`fastboot reboot`) auto-disables ADB (re-enable via Dev Options), per this unit's behavior.
 

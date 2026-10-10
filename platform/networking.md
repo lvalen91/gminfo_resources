@@ -196,7 +196,7 @@ The VIP MCU communicates with the Intel SoC via a dedicated UART link using HDLC
 | Device | VID | PID | Notes |
 |--------|-----|-----|-------|
 | GM IHU (iAP) | 0x2996 | 0x0120 | iAP2 USB role |
-| **Aptiv H2H (Head-to-Head) Bridge** | 0x2996 | 0x0105 | Cross-ECU USB bridge (CSM↔other ECU); kernel driver **`dabridge`** (GM custom); controlled via `/sys/bus/usb/drivers/dabridge/bridgeport`; `RDMSADBHandler` writes `1-6.3` here on ADB_Enable. (= the "GM proprietary" 0x0105 entry.) |
+| **Aptiv H2H (Head-to-Head) Bridge** | 0x2996 | `0x0100`–`0x0105` (match table; this radio enumerates `0x0105`) | **On-radio** USB bridge device — NOT a cross-ECU link. `dabridge` (kernel, GM custom) is a host-side driver that matches this VID/PID on the internal USB tree and, once bound, bridges a chosen host-side port to a device-side port (`/sys/bus/usb/drivers/dabridge/bridgeport`) so the physical xHCI host stays up for the hub/accessory tree while a virtual UDC (`dabr_udc.0`) presents the ADB (and CarPlay/AA) gadget on that one bridged port. `RDMSADBHandler` writes `1-6.3` (dev port) here on `ADB_Enable`. (= the "GM proprietary" 0x0105 entry.) |
 | **GM V10 E2 PD USB Hub** | 0x2996 | 0x0132 | USB hub; its presence **blocks** `RDMSADBHandler.ADB_Disable` (peripheral→host role reversal fails, ADB recovers). (= the "USB hub" 0x0132 entry.) |
 | CPC200 adapter | 0x1314 | 0x1521 | manufacturer="Magic Communication Tec.", product="Auto Box" |
 | dabr_udc | — | — | USB device controller for gadget mode |

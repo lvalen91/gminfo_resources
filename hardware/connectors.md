@@ -291,8 +291,10 @@ explicitly **USB 2.0**. The **6-contact silkscreen numbering** reconciles the "1
 the radio header is a 12-way HSAL2 shell (**2 rows of 6**), but **both known cables wire only the
 bottom row — one port** (owner-confirmed 2026-10-06 on the Molex `87813526` bench cable AND the
 in-vehicle harness; the ALLDATA X8 end-view also draws all 12 cavities with only 6 populated). Of
-that wired row, **USB uses 4** (VBUS/D+/D−/GND) + ID/CC-sense + shield = one complete USB 2.0 port,
-one D+/D− pair.
+that wired row, **USB uses 4** (VBUS/D+/D−/GND) = one complete USB 2.0 port, one D+/D− pair; the
+remaining wired positions are not USB signals. **No CC and no OTG-ID conductor reaches the radio** —
+X8 is 4-wire, so the radio cannot sense role/orientation electrically (the earlier "+ ID/CC-sense"
+wording was wrong) [FW/HW, USB_ADB_SESSION_FINDINGS_2026-10-10 §1].
 >
 > **[C/I] OPEN QUESTION — is the unwired TOP row a second USB port/interface? (owner, 2026-10-06).**
 > The earlier claim that "the remaining 6 positions never mate / not two lanes" was an inference
@@ -302,8 +304,8 @@ one D+/D− pair.
 > and depends on the SoC USB routing, not on the cable. If live, plausible candidates for "something
 > else exposed" are: a second **host** USB2 port (more accessories — low value); the
 > **projection/DABridge** path; a **diagnostic RNDIS/ECM** USB (the MDI2 diag path uses USB RNDIS —
-> security-relevant); or a **factory/test** port. Note the radio has typically one device/gadget
-> controller (`dabr_udc.0`), so the top row most likely maps to an xHCI **host** port (would let the
+> security-relevant); or a **factory/test** port. Note the SoC has one physical device controller
+> (XDCI = `dwc3.0.auto`; `dabr_udc.0` is dabridge's *virtual* UDC, not a second port), so the top row most likely maps to an xHCI **host** port (would let the
 > radio host devices, not grant new access to it) unless a second gadget/port-mux exists.
 > **Resolution path (authoritative):** the SoC USB port map in the extracted vendor **ACPI SSDT**
 > (`SOC_ACPIO`) / DTB (xHCI `RHUB` port + xDCI definitions), cross-checked with a continuity probe
@@ -350,67 +352,88 @@ is the **opposite** of the *electrical* order: the D07 trace shows **X92IP (IP) 
 So X83B (UBC) = data+ADB "main" by function but the downstream node by wiring; X92IP (UBJ) =
 data-only secondary but the upstream hub; X92CD (UBI) = power-only.
 
-### Bench ADB is gated by receptacle MODEL (a USB role-strap), not by position or software — [C owner-tested 2026-10-06]
+### ADB is gated by receptacle MODEL — in-vehicle: H2H-bridge device identity (Path A); bench direct line: host-side CC `Rd` (Path B) — [C owner-tested 2026-10-06; mechanism corrected 2026-10-10 from firmware]
+> **Two mechanisms, do not conflate (firmware-verified 2026-10-10, [FW 86331652 vmlinux dabridge id_table @0x1712290; FW 86331650 init.full_gminfo37_gb.rc:106-110]):**
+> - **In-vehicle (Path A, `ro.product.system.brand` ≠ Android):** the ADB-capable receptacle is recognized by
+>   **device identity** — it contains an **H2H bridge chip** matching the `dabridge` id_table
+>   **VID `0x2996`, PID `0x0100–0x0105`**; `dabridge_probe` logs **"No H2H Bridge device for '%s'"** when absent.
+>   Position-independent; no CC/ID signal is involved (none reaches the radio).
+>   **VID `0x2996` = Aptiv [CROSS-CONFIRMED]** — a live USB-tree enumeration lists `2× Aptiv H2H bridges
+>   VID:10646(0x2996) PID:261(0x0105)`, plus `2× GM V10 E2 PD hubs 0x2996:0132` and `2× DFU 0x2996:0120`
+>   [`../research/GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt:798-800`]. So `dabridge` binds the Aptiv **H2H
+>   bridge** (`0x0105`), not the hub (`0x0132`). (The snapshot shows 2× bridges, so it names the device
+>   and vendor but does not alone prove the `13558185`/MCIP receptacle lacks one — [UNVERIFIED].)
+> - **Bench direct line (Path B):** raw physical `dwc3.0.auto` host→device flip, no hub, no bridge. **Trigger
+>   (RESOLVED, owner-confirmed 2026-10-10): the Developer-Options USB-debugging toggle** — ADB off + Mac VBUS
+>   present = nothing enumerates; flip the toggle = ADB appears. It is **not** the `brand=Android`/GSI rule (that
+>   rule exists in `init.full_gminfo37_gb.rc` but does not fire on the stock-GM AAOS bench) and **not** VBUS-sense
+>   (**ruled out**). The CC `Rd` strap below is a **Mac/host-side** property only (it makes the *host* source VBUS);
+>   it never reaches the radio, whose role is set in software (§"Two USB device-role paths").
+> The owner bench results below are real; only the *explanation* ("radio senses CC/ID") was wrong.
 Out-of-vehicle bench testing with discrete receptacles overturns the earlier "end-of-chain / daisy
 required" reading and pins the mechanism:
 
 | Receptacle GM P/N | Board silkscreen (Aptiv) | Type (field) | LED | Exposes ADB? |
 |---|---|---|---|---|
-| **`13550122`** | **APTIV V10 E2 PD `35497296` REV C** | floor/console A/V (= X83B-class, UBC) | no | **Yes** — direct to radio OR anywhere in a chain; position-independent |
-| **`13558185`** | **APTIV GM V10 E2 MCIP `35372688` REV E** | dash/infotainment (= X92IP-class) | yes (port illumination) | **No** — never, direct or any chain position (accessories still pass) |
+| **`13550122`** | **APTIV V10 E2 PD `35497296` REV C** | floor/console A/V (= X83B-class, UBC) | no | **Yes** — direct to radio OR anywhere in a chain; position-independent (consistent with it containing the `2996:010x` H2H bridge — Path A; inferred, chip not yet teardown-confirmed) |
+| **`13558185`** | **APTIV GM V10 E2 MCIP `35372688` REV E** | dash/infotainment (= X92IP-class) | yes (port illumination) | **No** — never, direct or any chain position (accessories still pass) (consistent with a plain hub, no `2996:010x` device → `dabridge` never binds) |
 
 > **Board markings (owner, 2026-10-06).** The two receptacles carry **different Aptiv board part
 > numbers** (`35497296` "PD" vs `35372688` "MCIP"), not merely different REV letters — i.e. they are
 > **distinct board designs/programs**, not revisions of one board. (The `PD`/`MCIP` sub-designators
 > are Aptiv program codes; not over-interpreted here.) This corroborates the finding that ADB
-> capability is a **board-design property** — specifically the CC `Rd` role-strap wiring present on
-> the `PD`/`35497296` design and absent on the `MCIP`/`35372688` design — rather than a software
-> gate or a mere stuff/revision difference. Component-layout variation seen *within* a model is
+> capability is a **board-design property** — in-vehicle, the presence of the H2H bridge device
+> (`2996:010x`) on the `PD`/`35497296` design and its absence on the `MCIP`/`35372688` design [INF — the
+> chip itself is not yet confirmed on either board; the earlier "CC `Rd` strap wiring" explanation is
+> withdrawn for the in-vehicle path] — rather than a software gate or a mere stuff/revision difference. Component-layout variation seen *within* a model is
 > consistent with the REV letters (C vs E) and does not change the ADB behavior, which tracks the
 > board P/N.
 
-**Mechanism (logical + electronic).** GM did **not** put a software/crypto ADB gate in the
-receptacle — the difference between the two models is how they **strap the USB role (CC/ID) sense
-line**:
-- The radio's rear USB (X8 HSAL-2) is plain USB 2.0 (VBUS/D+/D−/GND + an ID/CC role-sense line),
-  broken out to a **Mini-A** plug by Molex cable `87813526`. USB decides host vs device from that
-  ID (Mini) / CC (Type-C) line.
-- The radio runs a USB **device/gadget controller** (`sys.usb.controller=dabr_udc.0`, confirmed
-  live) and `adbd` is a **USB function**. ADB therefore appears **only when the radio is held in
-  peripheral/UFP (device/gadget) role and the Mac is host** — which is the definitional direction
-  for adb (host = PC, gadget = Android).
-- A receptacle/adapter that ties the radio-facing **CC/ID sense to GND through the correct
-  resistor (Rd / ID-ground)** selects exactly that role → the radio enumerates as a device to the
-  Mac → `adbd` is reachable. **`13550122` wires this strap; `13558185` does not** (it leaves the
-  radio in host/charging mode, so accessories work but no gadget/ADB ever appears).
-- Consequences, unifying all bench observations: (a) **model-specific & position-independent** —
-  the strap is a static electrical property of that receptacle, so a daisy chain is irrelevant
-  pass-through and only the model at the host junction matters; (b) **reproducible by hand** — a
-  proper **Mini-A → USB-C OTG cable**, or breakout boards tying **CC to GND via a resistor**,
-  recreates `13550122`'s strap and yields identical ADB; (c) the LED is just port illumination on
-  the dash-style `13558185`, a red herring correlated with (not causal to) the no-ADB behavior.
+**Mechanism (corrected 2026-10-10).** GM did **not** put a software/crypto ADB gate in the receptacle,
+and the radio does **not** read a role strap:
+- The radio's rear USB (X8 HSAL-2) is plain **4-wire** USB 2.0 (VBUS/D+/D−/GND), broken out to a **Mini-A**
+  plug by Molex cable `87813526`. **No ID/CC line reaches the radio**; the only external cues are VBUS and D±.
+- Host-vs-device on the radio is a **software** decision: `vendor.sys.usb.role` → `/vendor/bin/usb_otg_switch.sh`
+  → write `host`/`device` to `/sys/class/usb_role/intel_xhci_usb_sw-role-switch/role` → XDCI via the ACPI
+  OpRegion `OTGD` in the GHS-supplied guest DSDT. The `/dev/cbc-signals` write in that script is a **CAN
+  notification, not the flip** [FW 86331650 init.bxtp_gm.rc:952-956, usb_otg_switch.sh].
+- The XDCI (`_ADR 0x00150001`) is a **dual-role controller whose role AND port power are software-commanded**
+  through `OTGD`/`_DSM` **`SPPS`**: it writes `PUPS` (port power) / `UXPE` (enable) and reads `U2CP/U3CP` (connect)
+  [FW decoded `dsdt_a.dsl:1290-1500`; CONFIRMED ×2]. The decision is a register write, **not a sensed pin** —
+  which is why the 4-wire X8 (no ID/CC) suffices. Boot default is host (`SPPS` sources VBUS, powering the hubs);
+  the dev-options ADB toggle drives it to device (`SPPS` removes radio port power; the radio sinks the Mac's VBUS).
+- **VBUS "clash" is benign.** Boot-host radio and the Mac both idle ~5 V with nothing enumerating = low-energy,
+  current-limited coexistence, not a short; on toggle→device `SPPS` drops the radio's port power, so the
+  dual-source window is momentary. **VBUS-sense auto-role is RULED OUT** (VBUS alone did nothing).
+- `adbd` is a USB **function** on configfs gadget `g1`; ADB appears only when the radio is in device role and a
+  host (Mac/vehicle) supplies VBUS. **In-vehicle**, the receptacle that contains the `2996:010x` H2H bridge is
+  the one `dabridge` binds, so ADB appears there (and not on the plain-hub receptacle); this is why it is
+  **model-specific and position-independent** (a hub chain just passes the bridge device through) and why
+  the LED on `13558185` is a red herring (port illumination, uncorrelated with the gate).
+- Consequences: (a) model-specific & position-independent as above; (b) the **bench** can bypass the receptacle
+  entirely (Path B, below) because the raw `dwc3.0.auto` flip needs no bridge device.
 
 **Receptacle-free confirmation (owner, 2026-10-06).** ADB is exposed with **no GM receptacle in the
 path at all**: HSAL-2 cable → Mini-USB board → bare wires → **USB-C breakout with CC pulled to GND
-through a resistor** → USB-C cable → Mac. This pins the exact mechanism: CC-to-GND-via-resistor is
-presenting **`Rd`** on the radio-facing USB-C, which advertises the radio as a **UFP (device/sink)**;
-the Mac detects `Rd`, becomes the **DFP/host**, sources VBUS, and enumerates the radio, whose gadget
-controller (`dabr_udc.0`) brings up `adbd`. Spec `Rd` for a UFP = **5.1 kΩ to GND** on the live CC
-line (a full Type-C receptacle wants it on each of CC1/CC2). The role decision is therefore at the
-**USB-C CC pin, not the Mini-A ID** — the Mini-USB board/bare wires are pure USB-2.0 passthrough
-(VBUS/D+/D−/GND) and the Mini-A ID pin is irrelevant on this path. Net: the GM receptacle contains
-no logic — `13550122` simply hard-wires this `Rd`.
+through a resistor** → USB-C cable → Mac. This is the **Path B** (bench direct line) mechanism, corrected: the CC pin on the breakout
+is on the **Mac side of the cable only** and never reaches the radio (X8 is 4-wire). CC-to-GND-via-resistor
+presents **`Rd`** to the **Mac**, which becomes the **DFP/host** and sources VBUS (the one external cue
+the radio needs); the radio is placed in device role by the **software** path above, its raw `dwc3.0.auto`
+gadget brings up `adbd`. The earlier reading — `Rd` "advertises the radio as a UFP" / "the role decision is at
+the USB-C CC pin" — is **withdrawn**: the radio never sees CC. Spec `Rd` for a UFP sink = **5.1 kΩ to GND**
+(a full Type-C receptacle wants it on each of CC1/CC2; a true 0 Ω is a short, not a valid `Rd`). The
+Mini-USB board/bare wires are pure USB-2.0 passthrough (VBUS/D+/D−/GND). Net: this does **not** show that
+`13550122` "hard-wires `Rd`" for the radio's benefit; the in-vehicle gate is the bridge device (Path A).
 
-**But the CC strap is necessary, NOT sufficient — there is a second, independent gate (owner,
-2026-10-06).** The `Rd` strap only makes the radio *present* `adbd`; getting an actual **shell**
+**But the link/role layer (Mac-side `Rd` on the bench) is necessary, NOT sufficient — there is a second, independent gate (owner,
+2026-10-06).** Layer 1 only makes the radio *present* `adbd`; getting an actual **shell**
 additionally requires the **EEPROM SBI bypass** (`0x0440` = all-`0xFF` → the `0xb67d0` VIP validator
 authorizes adb without GM's private key — see `platform/security.md` ProtoKey/ADB-auth and
-`research/EEPROM_*`). On a secured unit (SBI not bypassed), the resistor gets a *connected* `adbd`
-that returns **no shell / "Secure Client required."** So full bench ADB = **layer 1: CC `Rd`
-physical role-strap** (receptacle/resistor — trivially defeated) **AND layer 2: EEPROM SBI
+`research/EEPROM_*`). On a secured unit (SBI not bypassed), layer 1 alone gets a *connected* `adbd`
+that returns **no shell / "Secure Client required."** So full bench ADB = **layer 1: link/role** (radio in device role by software, Mac-side `Rd` making the Mac host and source VBUS on the bench; in-vehicle, the `2996:010x` bridge present)  **AND layer 2: EEPROM SBI
 authorization** (the real control; needs the EEPROM write via the seed/VIP path, consistent with
 `ro.adb.secure=1`). This bench works because both are satisfied; `13550122` only ever supplied
-layer 1.
+layer 1 (in-vehicle, plausibly via the H2H bridge device — see above).
 
 **Can an app enable ADB programmatically (vs the manual Dev-Options toggle)? (2026-10-06)**
 - **Plain sideloaded `untrusted_app`: no.** It can't reach GM's `RDMSADBHandler.RDMSADBEnable(bool)`
@@ -447,14 +470,22 @@ On the bench **direct breakout line**, ADB *and* fastboot use the **SoC xDCI dir
 Live reads (uid 2000): `/sys/class/udc/` → active controller **`dwc3.0.auto`**
 (`pci0000:00/0000:00:15.1`, Intel VID `0x8087` — matches observed USB IDs `8087:09ef` ADB /
 `8087:4ee0` fastboot); `sys.usb.controller=dwc3.0.auto`, config/state `adb`; and
-**`sys.dabridge.dev.portnum`/`host.portnum` EMPTY** → the DABridge path is **not engaged**. The
-CC=`Rd` strap selects this SoC device controller (the same raw dwc3 the firmware uses for
-recovery/fastboot). This **confirms** the direct-line "no hub" description from live data.
+**`sys.dabridge.dev.portnum`/`host.portnum` EMPTY** → the DABridge path is **not engaged**. This is
+**Path B** (bench direct line): `vendor.sys.usb.role=device` flips the raw physical `dwc3.0.auto`
+host→device, no hub, no bridge. On the bench the flip is triggered by the **Developer-Options USB-debugging
+toggle** (owner-confirmed 2026-10-10), *not* the GSI-only `on sys.boot_completed=1 && brand=Android` rule
+[FW init.full_gminfo37_gb.rc] — that rule is the Path-B behaviour on a true `brand=Android` image and does not fire on stock GM AAOS.
+The controller choice is **software (`sys.usb.controller`), not a CC strap**; the Mac-side `Rd` only makes the
+Mac host. This **confirms** the direct-line "no hub" description from live data. (Running Y175/Y181 units
+in the property dumps instead report `sys.usb.controller=dabr_udc.0` — **Path A**, bridged ports Y175
+`1-12.0→1-12.3`, Y181 `1-6.0→1-6.3` [LIVE all_properties.txt:482/510, 466-467/494-495]. Full firmware
+trace: §"USB hardware & ADB logic" findings, `USB_ADB_SESSION_FINDINGS_2026-10-10.md`.)
 
 Distinct from the **in-vehicle / GM-receptacle (DABridge) path**, where ADB is a *virtual*
 `dabr_udc` on an **H2H bridge hub**: SoC xHCI **host** → fixed on-board `1-1` hub (hardcoded
-`0000:00:15.0/usb1/1-1` in `product_sepolicy.cil`) → `1-1.4` H2H bridge → CarPlay `1-1.4.2`, ADB
-`1-1.4.3`; the receptacles are active hubs that daisy-chain. *[in-vehicle topology = firmware/
+`0000:00:15.0/usb1/1-1` in `product_sepolicy.cil`) → `1-1.4` H2H bridge (matched by `dabridge` on **VID `0x2996` PID `0x0100–0x0105`**) → CarPlay `1-1.4.2`, ADB
+`1-1.4.3`; the receptacles are active hubs that daisy-chain; the physical xHCI stays host so hubs/accessories keep
+working during ADB (`bridgeport` ← `host.portnum` then `dev.portnum`). *[in-vehicle topology = firmware/
 kernel/sepolicy static analysis — single-source, flagged for second-agent concurrence]*
 
 **So "hubs in the chain" is expected ONLY for the DABridge/receptacle path; the direct breakout
@@ -467,14 +498,20 @@ not the GM PCB — so ACPI carries no connector/port metadata. Resolve only by *
 feed a known device into the top-row pins and watch `/sys/bus/usb/devices` for a new node (root-port
 `1-N` vs hub-port `1-1.x`); continuity of top-row D+/D− to the SoC vs a hub IC decides it.
 
-**Security meaning.** GM's "ADB is limited to a specific receptacle" is a **physical-layer (USB
-role) control only** — no key, fuse, or receptacle-side software check; it is defeated with a
-resistor. It gates *whether `adbd` is reachable at all*, not *whether it grants a shell* — the real
+**Security meaning.** GM's "ADB is limited to a specific receptacle" is a **device-identity /
+physical-layer control only** (in-vehicle: the receptacle must contain the `2996:010x` H2H bridge for
+`dabridge` to bind) — no key, fuse, or receptacle-side software check; on the bench it is sidestepped by
+the direct `dwc3.0.auto` line (Path B), not by a role resistor. It gates *whether `adbd` is reachable at all*, not *whether it grants a shell* — the real
 authorization control is the **EEPROM SBI bypass** (`0x0440`=all-`0xFF`; without it `adbd` returns
 "Secure Client required"/no shell — see the two-gate note below), followed by adb RSA auth
-(`ro.adb.secure=1`) and the `shell` uid-2000 domain on the locked `user` build (all confirmed live). Exact CC/ID pin and resistor value are per
+(`ro.adb.secure=1`) and the `shell` uid-2000 domain on the locked `user` build (all confirmed live). The Mac-side CC resistor value is per
 the owner's working breakout; the role direction (radio = device/gadget, Mac = host) is fixed by
-how ADB works and the radio's gadget controller.
+how ADB works, and the radio's role is set in software (no CC/ID reaches it).
+
+**PC-facing VID:PID (software, configfs `g1`, UDC/path-independent):** `0x8087` for data/debug configs
+(ADB = `8087:09ef`) and **`0x18d1` (Google)** for accessory/audio_source (AOA) configs
+[FW 86331650 init.bxtp_gm.rc:805-892]. This is **not** the radio-internal H2H bridge ID `2996:010x`
+(seen only on the internal bus, Path A) — never conflate the two layers.
 
 Each data receptacle is an **active, separately-powered hub** with three connectors (an internal
 `A90 Logic` controller). Connector detail:
@@ -559,8 +596,12 @@ POWER (parallel, from fuse — NOT the radio):
 > The radio does not become a USB device via the harness or the receptacle — it does so in
 > **software at the SoC**. The Apollo Lake **xHCI role-switch** (`intel_xhci_usb_sw` role node) plus
 > Intel's **Device Authentication Bridge** (`dabridge`, exposing the virtual UDC `dabr_udc.0`) flips
-> a host port into **device mode**: `setprop vendor.sys.usb.role device` → `usb_otg_switch.sh d`,
-> peripheral↔host reversal via `/sys/bus/usb/drivers/dabridge/bridgeport`. Documented in
+> a host port into **device mode**: `setprop vendor.sys.usb.role device` → `usb_otg_switch.sh p`
+> (`host` → `h`) → write to `/sys/class/usb_role/intel_xhci_usb_sw-role-switch/role` → XDCI via ACPI OpRegion
+> `OTGD` (GHS-supplied DSDT; its `_DSM` `SPPS` software-commands port power `PUPS`/`UXPE` and reads connect `U2CP/U3CP`,
+> `dsdt_a.dsl:1290-1500` — role and VBUS sourcing are register writes, not sensed pins; **VBUS-sense auto-role is ruled out**; the bench trigger is the
+> Developer-Options USB-debugging toggle, owner-confirmed 2026-10-10); on Path A, port bridging via `/sys/bus/usb/drivers/dabridge/bridgeport`. The
+> `/dev/cbc-signals` write is a CAN notification, not the flip. Documented in
 > [`../analysis/platform_faq.md`](../analysis/platform_faq.md) (§dabridge/UDC) and
 > [`../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md).
 > So ADB = the radio's own USB controller entering gadget mode; the receptacle's ID/CC pins are
@@ -568,7 +609,7 @@ POWER (parallel, from fuse — NOT the radio):
 >
 > **RESOLVED model (owner bench data, Sep 2026).** Field testing: ADB works over USB on the
 > **floor-console Type-C ONLY**; it worked **even with the receptacle externally unpowered (no
-> 12 V)**; the same port also hosts USB drives/phones normally; and it requires an **OTG cable**
+> 12 V)** [still owner-only/[UNVERIFIED] as a wiring claim, but consistent with the software-toggle + `SPPS` model: the role/port-power change is a register write in the radio, independent of receptacle 12 V]; the same port also hosts USB drives/phones normally; and it requires an **OTG cable**
 > (a plain C-to-C does not enumerate ADB). This locks the architecture:
 > - **The ADB Type-C is NOT behind the A90 hub.** ADB with no 12 V ⇒ the hub is dead yet ADB runs ⇒
 >   the port is on a **direct dual-role link from the radio to that connector, bypassing the hub.**
@@ -576,25 +617,23 @@ POWER (parallel, from fuse — NOT the radio):
 > - **Dual-role, same connector:** host mode (drives/phones — radio supplies VBUS from its own
 >   controller) and device mode (ADB — PC supplies VBUS). Neither needs the receptacle's 12 V; that
 >   12 V only powers the A90 hub's Type-A ports + charging.
-> - **OTG-cable requirement ⇒ ID/CC role signaling.** The OTG cable asserts the ID/CC condition the
->   firmware watches, triggering the software role-switch to device (`vendor.sys.usb.role=device`).
->   A plain C-to-C doesn't assert it → no flip → no ADB. (The owner's original ID-pin intuition is
->   correct for *this* port.)
-> - **Likely wire:** X83B has two Mini-B legs — **X2 (GY)** = host feed from the IP hub daisy;
->   **X3 (BK)** = destination never traced. A Mini-B carries an **ID pin**, so **X83B X3 is most
->   likely the direct dual-role/ID link** from the radio's role-switch root to the Type-C. Only the
+> - **OTG-cable requirement — observation stands, the ID/CC explanation is WRONG (2026-10-10).** No ID/CC
+>   conductor reaches the radio (X8 is 4-wire) and the firmware reads none; the role flip is the software
+>   path (`vendor.sys.usb.role`). The cable's ID/CC termination can matter only on the **host/receptacle
+>   side** (e.g. the Type-C side deciding who sources VBUS); the radio-side cause of "plain C-to-C gives no
+>   ADB" is not established [UNVERIFIED].
+> - **Likely wire [superseded in part — in-vehicle ADB is Path A through an H2H bridge device, hubs stay live; an
+>   un-powered-hub ADB result and a "direct DRD link" are not reconciled with that and remain [UNVERIFIED]]:** X83B has two Mini-B legs — **X2 (GY)** = host feed from the IP hub daisy;
+>   **X3 (BK)** = destination never traced. A Mini-B carries an ID pin, but any such ID line stops at the receptacle (none reaches the radio), so
+>   X83B X3 as a "dual-role/ID link" is a [UNVERIFIED] hypothesis. Only the
 >   floor-console receptacle wires this to its Type-C; the IP receptacle's Type-C is hub-only →
 >   host-only → no ADB.
-> - **Why X8 itself can't do ADB (⚠ unverified inference):** the X8 USB appears to be **VBUS/D+/D−/GND
->   with no ID pin** (from the IOR-X4 *proxy* pinout — not a literal IOK X8 map), so X8 would be a
->   **permanent host** — wiring X8 straight to a PC is host-to-host and should enumerate nothing.
->   The dual-role behaviour needs the **ID pin present on the console link** (X83B X3 Mini-B). This
->   ID-present-vs-absent contrast is the proposed reason only that one port does ADB — **not yet
->   metered on IOK X8**; treat as a working hypothesis.
+> - **"X8 can't do ADB because it has no ID pin" — WITHDRAWN (2026-10-10).** X8 *is* 4-wire (VBUS/D+/D−/GND,
+>   no ID/CC) but that is true of the radio end in every configuration, and role is software-set, so a missing
+>   ID pin does not make X8 a permanent host. The owner's direct X8→Mac breakout line (Path B) does reach ADB.
 >
-> **Remaining to meter (only unconfirmed step):** does **X83B X3** run to a *separate* radio USB
-> connector (the DRD root) rather than the X2/daisy, and is the Type-C CC/ID tied to X3's ID line?
-> Confirming that closes the item fully.
+> **Remaining to meter:** whether **X83B X3** runs to a *separate* radio USB connector or is part of the
+> hub/bridge chain, and where the `2996:010x` H2H bridge sits in the receptacle — probe/teardown only.
 
 **Bench takeaway for USB/ADB access:** power the receptacle hub (**2640 = 12 V + 1051 = gnd**), use
 the **floor-console Type-C with an OTG cable** — not a Type-A port, not a single Mini-B data-only
@@ -607,9 +646,9 @@ host port.
 > **buying visually-identical GM USB connectors changed nothing.** This is the predicted failure of
 > an **unknown D+/D− pin position**: IOK X8 has no published per-pin map, and look-alike HSAL-2 shells
 > differ in assignment. **Action: meter the 6-pin cable** (VBUS ≈ +5 V→GND; GND ≈ 0 Ω to shell; D+/D−
-> = the twisted pair into the ESD/choke cluster) before wiring any port. Note also: **X8 is a
-> permanent host with no ID pin → X8 can never do ADB**; ADB is the SoC role-switch on the console
-> Type-C (X83B) + OTG cable (see §ADB mechanism), independent of the X8 host path and not CAN-gated.
+> = the twisted pair into the ESD/choke cluster) before wiring any port. Note also: X8 has no ID pin, **but that does not
+> make it host-only** — role is a software flip (`vendor.sys.usb.role`), so X8 is also the bench ADB line
+> (Path B); the in-vehicle ADB receptacle path is Path A (see §ADB mechanism), not CAN-gated.
 > For a bench *host* test the A90 hub is optional — a correctly-pinned X8→Type-A should mount a drive
 > directly (radio = host); "VBUS only" means the data pair is mis-pinned, not that the hub is missing.
 
@@ -654,7 +693,10 @@ different connectors between harness variants** — treat this as indicative onl
 | 3 USB receptacles: X83B/UBC (console, data+ADB), X92IP/UBJ (IP, data), X92CD/UBI (rear, charge-only) | **[C]** ALLDATA connector views + owner field data |
 | Receptacles are active hubs (`A90 Logic`) needing 2640/1051 power; two Mini-B = IN/OUT daisy legs | **[C]** ALLDATA *Auxiliary Inputs (D07)* |
 | Daisy-chain direction = **IP-first**: radio X8 → X92IP (upstream) → X226 → X83B console (downstream); power parallel from fuse F32DR 15A | **[C]** ALLDATA D07 diagram trace |
-| ADB device-mode mechanism = SoC xHCI role-switch (`intel_xhci_usb_sw` + `dabridge dabr_udc.0`, `vendor.sys.usb.role=device`) | **[C]** analysis/platform_faq.md, SHELL_ACCESS_ESCALATION_Jun2026.md |
+| ADB device-mode mechanism = software role-switch (`vendor.sys.usb.role` → `usb_otg_switch.sh` → `intel_xhci_usb_sw-role-switch/role` → XDCI `OTGD` ACPI); Path A `dabridge`/`dabr_udc.0` (in-vehicle), Path B raw `dwc3.0.auto` (bench) | **[FW]** USB_ADB_SESSION_FINDINGS_2026-10-10 §4–§6; also analysis/platform_faq.md, SHELL_ACCESS_ESCALATION_Jun2026.md |
+| No CC/ID conductor reaches the radio (X8 4-wire); CC `Rd` strap is host/Mac-side only | **[FW/HW]** findings §1, §4 |
+| In-vehicle ADB receptacle = contains H2H bridge `2996:010x` (dabridge id_table); chip on `13550122` itself | **[FW]** id_table / **[I]** receptacle teardown OPEN |
+| PC-facing ADB ID `8087:09ef` (VID `0x18d1` for AOA/audio_source) = configfs `g1`, path-independent | **[FW]** findings §5, §6.2 |
 | Which SoC root port (`bridgeport 1-6.x`) physically maps to the console Type-C | **[I] OPEN** — port-mapping detail only |
 
 ## Sources

@@ -921,21 +921,27 @@ The 2024 Silverado 2500 LTZ has **four USB ports** across **two separate USB ass
 
 **Module 1 — Center Console / Center Glove Box:**
 - 1× USB Type-A
-- 1× USB Type-C — the radio↔receptacle link is **4-conductor (VBUS/D+/D−/GND), with NO OTG ID pin**. There is no mini-B ID/CC pin in this harness. An OTG cable on this port asserts the Type-C **CC** condition the firmware watches, which triggers a **SoC-side software role-switch** (`intel_xhci_usb_sw` role node + Intel `dabridge`, virtual UDC `dabr_udc.0`) into device mode. The switch is done in software; it is **not** a hardware ID-pin detection.
+- 1× USB Type-C — the radio↔receptacle link is **4-conductor (VBUS/D+/D−/GND), with NO OTG ID pin**. There is no mini-B ID/CC pin in this harness. **CC and ID never reach the radio** (X8 is 4-wire; [HW doc connectors.md]). The host/device role is a **SoC-side software role-switch** (`vendor.sys.usb.role` → `usb_otg_switch.sh` → `intel_xhci_usb_sw-role-switch` node, reaching the XDCI through the ACPI OpRegion `OTGD` in the GHS-supplied guest DSDT) and the ADB gadget rides the Intel `dabridge` virtual UDC `dabr_udc.0` in-vehicle. Nothing on the radio watches a CC or ID pin; any CC `Rd` on a bench cable only makes the **Mac** host and source VBUS. The trigger that enters device role is the **Developer-Options USB-debugging toggle** (software; see "Role switch" below), and hardware VBUS-sense auto-role is **ruled out** [FW 86331650 init.bxtp_gm.rc:952-956; FW 85098662 IGS_DSDT @~0xd1bfa8; FW decoded dsdt_a.dsl:1290-1500; CONFIRMED ×2; trigger owner-confirmed 2026-10-10].
 
 **Module 2 — Radio / Climate Control Area:**
 - 1× USB Type-A
-- 1× USB Type-C — this port does **not** enter ADB device mode; the firmware only performs the role-switch for the console port.
+- 1× USB Type-C — this port does **not** expose ADB (field-observed). The firmware has no per-port role-switch; the likely cause is that this receptacle does not contain the `2996:010x` H2H bridge device `dabridge` binds to (see "dabridge device-identity match" below) [mechanism: FW 86331652 id_table; which receptacle holds the bridge is [UNVERIFIED] per-port].
 
-**The ADB-capable port is exclusively the Type-C on Module 1 (Center Console)** — confirmed by field testing (ADB works there even with the receptacle externally unpowered). The Radio/Climate area Type-C does not enter ADB device mode. The differentiation is not a hardware ID pin (there is none); it is which port the firmware role-switches.
+**The ADB-capable port is exclusively the Type-C on Module 1 (Center Console)** — confirmed by field testing (ADB works there even with the receptacle externally unpowered). The Radio/Climate area Type-C does not enter ADB device mode. The differentiation is not a hardware ID pin (there is none) and not a per-port firmware role-switch; in-vehicle (Path A) it is device identity: `dabridge` binds only where a USB device with VID `0x2996`, PID `0x0100–0x0105` (the H2H bridge) is present on the configured `bridgeport` (see below). Position in the hub chain alone does not make a port ADB-capable.
 
 ### USB controller (from init files and kernel)
 
-**Primary controller:** `dwc3.0.auto` — Synopsys DesignWare USB 3.0 dual-role (OTG) controller, bound at `/sys/bus/platform/devices/dwc3.0.auto/`
+**Primary controller (raw XDCI, PCI `8086:5AAA`):** `dwc3.0.auto` — Synopsys DesignWare USB 3.0 dual-role (OTG) controller, bound at `/sys/bus/platform/devices/dwc3.0.auto/`. GHS does not run USB role/gadget logic; it does mediated PCI passthrough of both the xHCI and XDCI to the Android guest (`Guest1_XHCI0`, `Guest1_XDCI`) [FW 85098662 .boottable; 0 hits for `dabridge`/`usb_otg_switch`/`role-switch`/`cbc-signals` in the GHS blob; CONFIRMED ×3].
 
 **PCIe XHCI host controller:** `0000:00:14.0` — Intel XHCI (host-side, for CarPlay/AA adapter), PM control set to `auto` at boot
 
-**dabridge virtual UDC:** `dabr_udc.0` — created by Intel's Device Authentication Bridge kernel driver (compiled into `kernel.bin`, not a loadable module). When `dabridge` bridges the host port back into device mode, it exposes `dabr_udc.0` as the UDC Android sees. This is why `sys.usb.controller` resolves to `dabr_udc.0` at runtime even though init.rc hardcodes `dwc3.0.auto` — dabridge intercepts.
+[UNVERIFIED — needs live lspci] Address discrepancy: the DSDT XDCI `_ADR` is `0x00150001` (PCI dev 0x15 fn 1) [FW decoded dsdt_a.dsl:1290-1500] and sepolicy roots `usb1` at `0000:00:15.0` [FW sepolicy product_sepolicy.cil:4-8], versus `0000:00:14.0` above. Dev 0x15 holds the XDCI fn1; whether the xHCI is `14.0` or `15.0` fn0 is unconfirmed.
+
+**XDCI dual-role + software port power (hardware reach of the role switch):** the XDCI is dual-role; role and port power are software-commanded through the ACPI `OTGD` OpRegion in the GHS `IGS_DSDT` (`XDCI` `_ADR 0x00150001`). Its `_DSM` `SPPS` method writes `PUPS` (port power), `UXPE` (enable) and reads `U2CP/U3CP` (connect state) [FW decoded dsdt_a.dsl:1290-1500; CONFIRMED ×2]. The Android ACPIO (`86331630`) is only the `ANDR0001` fstab/vbmeta descriptor and carries **no USB config** [checked 2026-10-10]; USB governance is the GHS `IGS_DSDT` XDCI/`OTGD`.
+
+**dabridge virtual UDC:** `dabr_udc.0` — created by the `dabridge` kernel driver (compiled into the kernel, not a loadable module; `drivers/usb/gadget/udc/dabridge.c`, `dabr_udc.c` [FW 86331652 vmlinux @0x1fe070a/@0x1fe02c8]). It is a distinct platform device from `dwc3.0.auto`. It bridges `sys.dabridge.host.portnum` → `sys.dabridge.dev.portnum` while the physical xHCI stays in host mode, and exposes `dabr_udc.0` as the UDC Android binds the gadget to. The vendor default is `setprop sys.usb.controller dwc3.0.auto` [FW 86331650 init.bxtp_gm.rc:787], but running radios report **`dabr_udc.0`** [LIVE Y175 all_properties.txt:482; LIVE Y181 all_properties.txt:510]; the property is overridden outside vendor (setter not pinned, [UNVERIFIED]) — not "intercepted" by dabridge.
+
+**Two paths, gated by `ro.product.system.brand`** [FW 86331650 init.full_gminfo37_gb.rc]: **Path A (in-vehicle, brand ≠ Android)** — bridged virtual UDC `dabr_udc.0`, physical xHCI stays host; **Path B (brand = Android, GSI)** — `sys.boot_completed=1 && brand=Android` sets `vendor.sys.usb.role device` + raw `dwc3.0.auto` gadget, no bridge. That init rule exists but does **not** fire on the GM AAOS bench; the bench's device-role entry is the Developer-Options USB-debugging toggle (below), not this rule [owner-confirmed 2026-10-10].
 
 **Role-switch sysfs node** (from `vendor/ueventd.rc` mixin comment `usb-otg-switch/true`):
 ```
@@ -951,7 +957,7 @@ From `init.full_gminfo37_gb.rc` (vendor):
 on boot
     setprop vendor.sys.usb.role host
 ```
-This fires `usb_otg_switch.sh h` via property trigger.
+This fires `usb_otg_switch.sh h` via property trigger. Host at boot means the XDCI `SPPS` method sources VBUS (this powers the in-vehicle receptacle hubs). The Mac's VBUS on a bench cable is a held-ready prerequisite, not a trigger; both sides sourcing ~5 V while nothing enumerates is benign (low-energy coexistence, not a short), and `SPPS` drops the radio's port power when the role flips to device [owner-confirmed + electrical].
 
 ### Software-controllable role switch (previously unknown)
 
@@ -986,22 +992,24 @@ setprop vendor.sys.usb.role device
 setprop sys.usb.config adb
 ```
 
-**`/dev/cbc-signals`** is the GHS INTEGRITY hypervisor's CAN-bus signal device. The 4-byte packet format:
+**`/dev/cbc-signals`** is a **CAN notification** channel (informs other ECUs); it is **not** what flips the controller, and it is not the trigger. The name appears nowhere in the GHS blob, so do not attribute the device or the role logic to GHS [FW 85098662 token sweep: 0 hits; CONFIRMED ×3]. The 4-byte packet format:
 - Byte 0: `0x01` — message type
 - Bytes 1–2: `0x3C 0x4E` — likely CAN signal address / ID
 - Byte 3: `0x01` = host mode, `0x00` = device mode
 
-This is the CAN-bus signal path the user speculated about — **it exists, and it fires whenever the role-switch runs, whether the switch was initiated by an OTG-cable CC assertion (detected in software) or a direct property set.**
+This CAN notification **fires whenever `usb_otg_switch.sh` runs**; the script is entered by a `vendor.sys.usb.role` property change, not by a CC event.
 
-### OTG-cable trigger (Type-C CC → software role-switch)
+### Role switch: software only (no CC/ID trigger at the radio)
 
-There is **no mini-B OTG ID pin** anywhere on the radio↔receptacle link (it is 4-conductor VBUS/D+/D−/GND). What an OTG cable does is assert the Type-C **CC** condition the firmware watches; the role-switch itself is performed in software at the SoC:
-1. OTG cable on the console Type-C → asserts the CC/role condition the firmware polls (a plain C-to-C does not assert it → no flip → no ADB)
-2. Firmware sets `vendor.sys.usb.role device` → `usb_otg_switch.sh p`
-3. `intel_xhci_usb_sw` role node flips to `device`; Intel `dabridge` exposes the virtual UDC `dabr_udc.0`
-4. `/dev/cbc-signals` device-mode packet is sent
+There is **no mini-B OTG ID pin and no CC conductor** anywhere on the radio↔receptacle link (4-conductor VBUS/D+/D−/GND). **Nothing in firmware watches CC**: the earlier "OTG cable CC assertion watched by the firmware" claim was withdrawn (CC never reaches the radio). On a bench breakout the CC `Rd` is **Mac-side only** — it makes the Mac host and source VBUS. The role switch is software:
+0. **Trigger (RESOLVED, owner-confirmed 2026-10-10): the Developer-Options USB-debugging toggle.** With ADB off and the Mac's VBUS present, nothing enumerates; flipping the toggle makes ADB appear. So the trigger is software, and hardware VBUS-sense auto-role is **ruled out** (VBUS alone did nothing). It is not the `brand=Android` rule (exists, does not fire on GM AAOS).
+1. `vendor.sys.usb.role device` is set (boot default is `host`; on the GM-brand bench the ADB-enable path from the toggle leads here) [FW 86331650 init.bxtp_gm.rc:952-956]
+2. init runs `usb_otg_switch.sh p`
+3. The script writes `device` to the `intel_xhci_usb_sw-role-switch` node (built-in `intel-xhci-usb-role-switch.ko`), which reaches the XDCI through the ACPI OpRegion `OTGD` in the GHS-supplied `IGS_DSDT`; `SPPS` then reconfigures port power/connect (`PUPS`/`UXPE`/`U2CP`/`U3CP`) [FW 85098662 @~0xd1bfa8; dsdt_a.dsl:1290-1500; CONFIRMED ×2]
+4. The `/dev/cbc-signals` device-mode packet is sent as a CAN notification (a side effect, not a trigger)
+5. In-vehicle, the ADB gadget is bound to `dabr_udc.0` via `dabridge` (below)
 
-There is no DWC3/xHCI hardware ID-pin detection in this path — the controller enters gadget mode via the software role-switch. The CC-triggered and property-set paths converge at the same sysfs node and the same CBC signal.
+There is no DWC3/xHCI hardware ID-pin detection in this path.
 
 ### dabridge bridgeport configuration
 
@@ -1012,7 +1020,28 @@ on property:sys.usb.ffs.ready=1 && property:sys.usb.config=adb
     write /sys/bus/usb/drivers/dabridge/bridgeport ${sys.dabridge.dev.portnum}
     setprop sys.usb.state ${sys.usb.config}      # resolves to "adb" in this context
 ```
-`sys.dabridge.host.portnum` = `1-6.0` and `sys.dabridge.dev.portnum` = `1-6.3` (from ADB dump `all_properties.txt`). These are USB bus port identifiers — dabridge bridges port `1-6.0` (host-connected port, i.e., the external connector) to `1-6.3` (device authentication bridge internal port).
+`sys.dabridge.host.portnum` = `1-6.0` and `sys.dabridge.dev.portnum` = `1-6.3` (from ADB dump `all_properties.txt`). These are USB bus port identifiers (Y181 values; Y175 uses `1-12.0` → `1-12.3` [LIVE Y175 all_properties.txt:466-467]; Y181 [:494-495]) — dabridge bridges a host-side port to a device-side port, and the physical xHCI stays host. The sysfs write is only effective where `dabridge` has bound.
+
+### dabridge device-identity match (why only some receptacles expose ADB)
+
+`dabridge` is a USB **host-side driver** with an id_table matching VID `0x2996`, PID `0x0100`, `0x0101`, `0x0102`, `0x0104`, `0x0105` (`match_flags=0x0003`) [FW 86331652 vmlinux @file 0x1712290; CONFIRMED ×1]. `dabridge_probe` binds only to such an H2H bridge device and logs `"No H2H Bridge device for '%s'"` if the configured `bridgeport` has none [FW .rodata @0x1fe06a5]. So the in-vehicle (Path A) ADB-capable receptacle is the one containing an H2H bridge enumerating as `2996:010x`; a plain hub receptacle never binds. The vendor name for `0x2996` is [UNVERIFIED]. The PC still sees the configfs gadget identity (`8087:09ef`, below), not `2996:010x`.
+
+### USB gadget VID/PID (configfs, software-defined)
+
+[FW 86331650 init.bxtp_gm.rc:805-892; CONFIRMED ×2] VID is **not** a single constant: `0x8087` (Intel) for data/debug configs, `0x18d1` (Google) for AOA/audio_source.
+
+| config | idVendor | idProduct |
+|---|---|---|
+| adb | `0x8087` | `0x09ef` |
+| mtp / mtp,adb | `0x8087` | `0x0a5e` / `0x0a5f` |
+| ptp / ptp,adb | `0x8087` | `0x0a60` / `0x0a61` |
+| rndis / rndis,adb | `0x8087` | `0x0a62` / `0x0a63` |
+| midi / midi,adb | `0x8087` | `0x0a65` / `0x0a67` |
+| adb,dvctrace | `0x8087` | `0x0a1f` |
+| accessory / accessory,adb | `0x18d1` | `0x2d00` / `0x2d01` |
+| audio_source (+accessory/adb) | `0x18d1` | `0x2d02`–`0x2d05` |
+
+The identity lives on configfs gadget `g1`, so it is the same on `dwc3.0.auto` and `dabr_udc.0`. In-vehicle `lsusb` confirmation is [UNVERIFIED].
 
 ### Recovery behavior
 
@@ -1021,12 +1050,12 @@ In recovery mode there is **no dabridge involvement** — the role switch goes d
 ### ADB permission grant chain
 
 Without root access from a locked device:
-1. The external trigger is an **OTG cable** on the console Type-C, whose CC assertion drives the SoC software role-switch into device mode (there is no hardware OTG ID pin; a plain C-to-C does not trigger it)
+1. Device mode is entered by the **software** role-switch (`vendor.sys.usb.role device`), triggered by the Developer-Options USB-debugging toggle, not by any CC/ID pin or VBUS sense on the radio; an external host must supply VBUS (a held-ready prerequisite, not the trigger) and, in-vehicle, the port must hold the `2996:010x` H2H bridge (a Mac-side CC `Rd` only makes the Mac host; the OTG-cable CC-trigger claim was withdrawn)
 2. If `adb_enabled=1` (confirmed in `settings_global.txt`) and `development_settings_enabled=1` (confirmed), ADB responds once the port is in device mode
 3. `verifier_verify_adb_installs=0` means sideloaded APKs via ADB do not require Google Play Protect verification
 4. `ro.adb.secure=1` means ADB requires RSA key authorization — the key accept dialog must appear on the radio's screen
 
-Software path accessibility: `setprop vendor.sys.usb.role device` requires a SELinux context that can write `vendor.sys.*` properties. `untrusted_app` cannot. A system shell (`u:r:shell:s0` via existing ADB session) can. Bootstrap requires the OTG-cable trigger on the console Type-C once per session to get the initial ADB shell.
+Software path accessibility: `setprop vendor.sys.usb.role device` requires a SELinux context that can write `vendor.sys.*` properties. `untrusted_app` cannot. A system shell (`u:r:shell:s0` via existing ADB session) can. Bootstrap requires getting `vendor.sys.usb.role=device` set once per session (on the bench the Developer-Options USB-debugging toggle does this; the in-vehicle trigger is presumed the same but not separately pinned, [UNVERIFIED]) plus a host supplying VBUS on the ADB-capable (H2H-bridge) receptacle to get the initial ADB shell.
 
 ---
 

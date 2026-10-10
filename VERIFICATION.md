@@ -73,9 +73,20 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
   Intel VPU workaround marker, iahwcomposer explicit-sync, no HDR/VRR.
 - **VHAL/cluster:** 535 props (49 SYSTEM + 486 VENDOR), Cluster HAL mIsCoreSupported:false →
   VMS via com.gm.vmsplugin/.VMSClusterService, channels 10002/10003.
-- **USB/ADB:** software role-switch (`vendor.sys.usb.role`→`usb_otg_switch.sh`→`/dev/cbc-signals`
-  + intel_xhci_usb_sw role node), dabridge dabr_udc.0 / bridgeport 1-6.0→1-6.3, adb props — all
-  verified in the Y181 vendor init blob.
+- **USB/ADB:** ADB role-entry is the **Developer-Options USB-debugging toggle** (owner-confirmed 2026-10-10: ADB off + Mac VBUS present = nothing enumerates; toggle = ADB) → software role-switch; **VBUS-sense auto-role RULED OUT**; not the `brand=Android` GSI rule (bench is GM AAOS) and not CC. Software role-switch (`vendor.sys.usb.role`→`usb_otg_switch.sh`; the `/dev/cbc-signals`
+  write is only a CAN notification, the flip is the `intel_xhci_usb_sw-role-switch/role` node →
+  XDCI `OTGD` ACPI OpRegion; `_DSM` `SPPS` software-commands port power `PUPS`/`UXPE` and reads `U2CP`/`U3CP` connect, XDCI `_ADR 0x00150001`, `dsdt_a.dsl:1290-1500`), dabridge dabr_udc.0 / bridgeport 1-6.0→1-6.3, adb props — verified in
+  the Y181 vendor init blob (ext4 `/vendor` `init.bxtp_gm.rc`/`init.full_gminfo37_gb.rc`), **deepened
+  2026-10-10** [FW/DIS]: kernel 4.19.305 `.rodata` + disassembly (dabridge `.text` runtime code,
+  dabridge `id_table` VID `0x2996` PID `0x0100–0x0105`), and GHS `85098662` traced as a *mediated
+  PCI passthrough* of the real xHCI `8086:5AA8`/XDCI `8086:5AAA` (`usb_passthru_emul.c` +
+  `UsbRdReg/UsbWrReg/UsbPoll/UsbIrq`) supplying the `IGS_DSDT` `OTGD` surface, with no role/gadget/
+  dabridge logic in GHS. GHS blob has no compressed/encrypted code (768 B key/signature tail only;
+  `GHS_FILE_MAP_85098662.md`). The android ACPIO (`86331630`) is only the `ANDR0001` fstab/vbmeta
+  descriptor (no USB config); USB governance is the GHS `IGS_DSDT`. VID `0x2996` = Aptiv (kernel id_table +
+  live enumeration agree). Still [UNVERIFIED]: where `sys.usb.controller=dabr_udc.0` / `sys.dabridge.*.portnum`
+  are set (system/product EROFS not extracted); in-vehicle Path A descriptor capture; whether the
+  `13558185`/MCIP receptacle lacks a `2996:0105` bridge.
 - **GMSystemUI §19:** WhiteList static-init class, VisibilityController 8 lists (a–h), list
   members, NAV_SCREEN_FULL/SPManager, Maps-only CardViewControl gate — all confirmed in the
   decompiled GMSystemUI.
@@ -96,7 +107,7 @@ into `hardware/connectors.md`:
   conductors) — not two lanes/controllers.
 - **OTG/ID-pin question corrected:** the radio↔receptacle link carries **no OTG ID pin** (4-wire
   VBUS/D+/D−/GND); Type-C role is CC-based; ADB device-mode is a **SoC software role-switch**
-  (`intel_xhci_usb_sw` + `dabridge dabr_udc.0`), not a receptacle ID/CC function. Only the physical
+  (`intel_xhci_usb_sw` + `dabridge dabr_udc.0`, reaching the XDCI via the GHS-supplied `OTGD` ACPI OpRegion), not a receptacle ID/CC function — CC is host-side only; the radio cannot sense it. The role is entered by the Developer-Options USB-debugging toggle (VBUS-sense ruled out) and applied via `OTGD`/`SPPS` port-power. Only the physical
   root-port→console-Type-C mapping remains open.
 
 **Resolved by live Jun-2026 ADB capture** (`enumeration/Y181/jun2026/`):
