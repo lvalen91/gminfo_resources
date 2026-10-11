@@ -11,7 +11,7 @@
 
 | Component | Chip | Purpose |
 |-----------|------|---------|
-| **SoC** | Intel Atom x7-A3960 | Android host, 4-core 0.8-2.4GHz, 8GB LPDDR4 (~6GB to guest) |
+| **SoC** | Intel Atom x7-A3960 | Android host, 4-core 0.8-2.4GHz, 8GB LPDDR4 (GHS grants guest 7830 MiB; kernel MemTotal 5530 MiB = 5.40 GiB; gap = VMM E820 limit [UNVERIFIED]) |
 | **VIP MCU** | Renesas RH850/P1M-E | Security gateway, CAN bus, EEPROM control |
 | **GPU** | Intel HD 505 | Gen9, 18 EUs, HW decode H264/HEVC/VP9 |
 | **Display** | 13.4" 2400x960 60Hz | Chimei Innolux DD134IA-01B |
@@ -21,7 +21,7 @@
 | Component | Spec | Notes |
 |-----------|------|-------|
 | eMMC | 64GB | Samsung KLMCG4JEUD |
-| RAM | 8GB LPDDR4 (~6GB to guest) | Shared with GPU |
+| RAM | 8GB LPDDR4 (GHS grants guest 7830 MiB; kernel MemTotal 5530 MiB = 5.40 GiB; gap = VMM E820 limit [UNVERIFIED]) | Shared with GPU |
 | EEPROM | ST M24C64 8KB | I2C, security flags |
 | SPI Flash | IS25LP016D 2MB | **BCM89551 Ethernet-switch firmware** (corrected per `hardware/teardown.md`, dump-confirmed — NOT logs/backup). Separate 8MB IS25WP064A = Apollo Lake IFWI/TXE boot flash. |
 

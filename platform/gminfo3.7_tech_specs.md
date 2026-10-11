@@ -22,9 +22,14 @@ cpu:
   cores: 4
   threads: 4
   freq_base: 800
-  freq_boost: 2400
+  freq_lfm: 800
+  freq_hfm: 1600
+  freq_boost: 2000  # datasheet burst 2.0 GHz [Intel 336256], not 2.4
   cache_l2: 2
-  tdp: 10
+  tdp: 12  # datasheet TDP @ TjMax [Intel 336256]
+  tcase_range_c: [-40, 98]  # AEC-Q100 [Intel 336256]
+  memory_support: LPDDR4_2400_max_8GB_4ch  # datasheet [Intel 336256]
+  gpu_burst_mhz: 650  # HD 505, 18 EU datasheet burst [Intel 336256]
   current_freq: 300
   operating_temp: 53C
 
@@ -52,7 +57,7 @@ gpu:
 
 memory:
   physical_capacity: 8192    # 8 GB LPDDR4 (4x Micron MT53E512M32D2DS-053), teardown-verified
-  total: 6144                # guest allocation visible to Android (~5.66 GB kernel-visible)
+  total: 5530                # guest kernel MemTotal in MiB (5,663,43x kB = 5.40 GiB / 5.80 GB) [/proc/meminfo, Y175/Y181]. GHS grants the guest 7830 MiB (+34 MiB RO IPU window) [FW 85098662; 3-Opus 2026-10-10], reserves ~362 MiB; 7830->5530 gap = VMM guest E820 limit, cause [UNVERIFIED] (needs root /proc/iomem)
   available: 3584
   utilization: 56
   committed_oversubscription: 88800

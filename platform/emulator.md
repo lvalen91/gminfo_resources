@@ -358,7 +358,7 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   it one), and macOS mic-privacy (TCC) denies mic to SSH-launched processes and can't be granted over SSH.
   Closing it needs a GUI/Screen-Sharing console session on the Mac Pro to grant the emulator mic permission
   (same as how CT5's mic was closed) — not an emulator defect.
-- **Memory/touch parity [DONE].** RAM now mirrors the radio: 6144M (guest `MemTotal` ~5.8GB vs radio 5.66GB),
+- **Memory/touch parity [DONE].** RAM now mirrors the radio: 6144M (guest `MemTotal` ~5.8GB vs radio 5530 MiB = 5.40 GiB / 5.80 GB decimal; the emulator `-m` value needs a bench root `/proc/iomem` to confirm - the "-m 5780/RAM4-capped" split is [UNVERIFIED]),
   zram swap disabled (radio `SwapTotal=0`). Touch stays 2400×960@200 (already correct).
 - **Durability.** `boot.sh` runs `emu_integration/scenario.sh` ~20s after `boot_completed`: re-pushes VhalCtl,
   injects temp/speed/ignition/GPS frames, deploys+bind-mounts the `libpal_tod` stub, restarts rtcd, re-asserts

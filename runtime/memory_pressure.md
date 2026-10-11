@@ -10,8 +10,8 @@
 
 ## System Memory
 
-- 8GB LPDDR4 physical (~6GB allocated to Android guest)
-- 5.66GB visible to kernel (~604MB reserved by GHS hypervisor); `MemTotal` ~5,663,424 KB (varies slightly per capture)
+- 8 GiB LPDDR4 physical (4× 2 GiB Micron MT53E512M32D2DS-053) [teardown]. GHS grants the Android guest 7830 MiB DRAM (+34 MiB read-only IPU frame window) [FW 85098662; 3-Opus verified 2026-10-10] and reserves ~362 MiB below 4 GiB (kernel + 19 servers + PMRs).
+- Kernel-visible: `MemTotal` ~5,663,43x kB = 5530 MiB (5.40 GiB, 5.80 GB decimal) [/proc/meminfo, Y175/Y181; varies slightly per capture]. The 7830→5530 gap (~2300 MiB) is a VMM-configured guest E820 limit, cause [UNVERIFIED] (needs root /proc/iomem + dmesg).
 - **`SwapTotal: 0` — no swap.** The LMK/OOM killer is the only relief valve under pressure.
 - Available at boot: ~3.1GB (debloated) vs ~2.5GB (factory); load avg ~5-7 (debloated) / higher on factory
 - Full debloat-vs-factory study: see [`analysis/debloat_vs_factory_analysis.md`](../analysis/debloat_vs_factory_analysis.md)

@@ -167,7 +167,7 @@ wired on the bench).
 | .106 | **IPC — Instrument Panel Controller** (Visteon cluster; DeviceInfo `Company=Visteon, Module=IPC`) | older note mis-expands as "Inter-Process Communication" | [C] |
 | .107 | **CGM host processor / telematics** | — | [C] |
 | .108 / .110 | LOWRADIO / PDR — offline | — | [?] |
-| .112 | **CGM_ETH / CGM_OTA** — Connectivity Gateway Module / telematics | vlan4 face `172.16.4.112` has the only **real/universal-OUI MAC** `10:66:50:...` (vendor UNVERIFIED — not confirmed Bosch; raw scan "unknown, possibly Harman/Samsung"), heavily firewalled | [C] |
+| .112 | **CGM_ETH / CGM_OTA** — Connectivity Gateway Module / telematics | vlan4 face `172.16.4.112` has the only **real/universal-OUI MAC** `10:66:50:...` (OUI `10:66:50` = **Robert Bosch "JuP1"** [C nmap-mac-prefixes; GM_research ref_repo/gminfo37_network_research.md:146-153]), heavily firewalled | [C] |
 | 239.192.0.1 | SOME/IP-SD multicast (live scan: UDP **30490**) | — | [C] |
 
 > **Synthetic MACs.** Most vlan5 peers use `02:0x:00:00:0x:00` locally-administered MACs =
@@ -181,8 +181,9 @@ wired on the bench).
 > `192.168.1.112` on vlan5 (`arp_table.txt` confirms identical MAC). A single co-resident GHS
 > partition bridged onto both VLANs, exactly like the Android guest's own `.100`-on-both. So the
 > **only** unambiguously-separate hardware on these VLANs is the real/universal-OUI device:
-> **vlan4 `172.16.4.112` = `10:66:50:0c:ed:d3`** (universal OUI `10:66:50` — **vendor UNVERIFIED, not
-> confirmed Bosch**; raw scan "unknown, possibly Harman/Samsung"), the external CGM/telematics
+> **vlan4 `172.16.4.112` = `10:66:50:0c:ed:d3`** (universal OUI `10:66:50` = **Robert Bosch
+> "JuP1"** [C nmap-mac-prefixes; GM_research ref_repo/gminfo37_network_research.md:146-153]; the raw
+> scan's "possibly Harman/Samsung" guess is superseded), the external CGM/telematics
 > module. The `.107` "RTOS partition" is **SoC-internal** (a GHS-hosted INTEGRITY partition on the
 > same Intel A3960), corroborated by its response **TTL=255** vs the external `.112`'s **TTL=64**
 > (Linux) — see [`networking.md`](networking.md) vlan4 table and the "vlan4 internal-vs-external"
@@ -304,11 +305,15 @@ general GM-platform knowledge, not specific to this unit.
 - **No CAN symbols in the vehicle stack.** `strings` on `gmvt`, `gmvt_client`,
   `android.hardware.automotive.vehicle@2.0-service-gm` (the GM VHAL), `IPCServer`,
   `vehicleaudiocontrol` → no `socketcan`/`AF_CAN`/`gmlan`/`can0`/arbitration-ID handling. [FW]
-- Kernel `CONFIG_CAN` could not be positively read (this bzImage's `IKCFG` block is inside the
-  compressed payload and did not cleanly decompress with `xz`/`gzip`/`lz4`/binwalk here), so the
-  built-in-vs-absent question for the CAN subsystem is **not settled from config**. It does not
-  need to be: a built-in CAN stack with no driver, no netdev bringup and no consumer is inert.
-  **[FW for the modules/netdev/strings; the config symbol itself is unresolved.]**
+- Kernel `CONFIG_CAN` **is now settled**: the live `/proc/config.gz` is captured and readable in
+  every gm_enum run (both Y175 and Y181) — `CONFIG_CAN=y`, `CONFIG_CAN_RAW=y`, `CONFIG_CAN_BCM=y`,
+  `CONFIG_CAN_GW=y`, `CONFIG_CAN_SLCAN=y`, `CONFIG_CAN_DEV=y`, with `CONFIG_CAN_VCAN`/`CONFIG_CAN_VXCAN`
+  explicitly unset. So the CAN **subsystem is built into the kernel** but remains inert — no
+  transceiver driver, no netdev bringup, no consumer — exactly as the modules/netdev/strings
+  evidence shows. **[C GM_research .../analysis/adb/Y175/gm_enum_20260117_081801/raw/kernel_config.txt:1376
+  (+ Y181 gm_enum captures); FW for the modules/netdev/strings.]** (The earlier "IKCFG inside the
+  compressed bzImage would not decompress" note was a firmware-side limitation; the live config.gz
+  settles it directly.)
 - **Caution / correction:** `gmvt` (runs as `audioserver`, cap `NET_RAW`) is **GM Voice**
   (VA/VR — see `/vendor/etc/gmvt.cfg`: PCM nodes, VTC voice-tuning configs), **not** "GM Vehicle
   Transport." Its `NET_RAW` is for a voice stream socket, not vehicle CAN. Don't cite it as a

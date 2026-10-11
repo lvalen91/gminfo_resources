@@ -36,7 +36,7 @@ This EEPROM dump is from a **GM Infotainment 3 with Google Built-In** (RPO Code:
 
 > CORRECTION (added during review; original values above left for archival fidelity): the
 > Dec-2025 spec block is stale. Ground truth — GPU = Intel **HD 505** (not 500); RAM = **8 GB
-> LPDDR4** physical, ~6 GB to the Android guest (not 6 GB); OS = **Android Automotive 12
+> LPDDR4** physical, GHS grants the guest 7830 MiB, kernel `MemTotal` 5530 MiB / 5.40 GiB (not 6 GB); OS = **Android Automotive 12
 > (API 32)** (not "10-12"); Storage = 64 GB **Samsung KLMCG4JEUD** eMMC; Display = 2400×960
 > **Chimei Innolux DD134IA-01B**. See `hardware/teardown.md` and `VERIFICATION.md`.
 >

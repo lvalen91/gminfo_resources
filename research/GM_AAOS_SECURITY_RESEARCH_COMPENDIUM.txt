@@ -185,7 +185,7 @@ Bluetooth:      5.0 (HFP, A2DP, AVRCP, PBAP, MAP)
 
 4.1 OPERATING SYSTEM LAYERS
 ---------------------------
-Layer 0:  VIP Firmware (Renesas RH850 bare-metal)
+Layer 0:  VIP Firmware (Renesas RH850 AUTOSAR Classic)
 Layer 1:  GHS INTEGRITY RTOS (Hypervisor)
 Layer 2:  Android 12 (API 32, Automotive variant)
 

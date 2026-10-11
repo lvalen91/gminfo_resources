@@ -77,7 +77,7 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 |---------|------|-------|
 | 172.16.4.100 | VCU_AGVM / Android (vlan4 face) | this device |
 | 172.16.4.14 | **ACP (Application Control Processor)** | permanent ARP, no ping — hypervisor/control partition |
-| 172.16.4.107 | RTOS partition | active, TTL=255; symmetric 49156↔49156 to diagnosticsd |
+| 172.16.4.107 | RTOS partition | active, TTL=255; symmetric 49156↔49156 to diagnosticsd. Per [`vehicle_network.md`](vehicle_network.md) 2026-10-06 correction: a **SoC-internal GHS INTEGRITY partition on the Intel A3960, NOT the Renesas RH850** (locally-administered MAC + TTL=255) |
 | 172.16.4.112 | CGM_OTA (vlan4 face) | active, TTL=64 (Bosch JuP1, Linux) |
 | 172.16.4.1 | **TCP (vlan4 face)** | **live 2026-07-01** — see note below |
 | 172.16.4.12 | EOCM_HCP_SECONDARY / EOCM_HCP_2 | code-referenced |
@@ -125,7 +125,7 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 |-------------|------|----------|---------|
 | 0.0.0.0 / 127.0.0.1 | 6363 | TCP | **AVB audio daemon** (uid=1041 audioserver) — init-owned listen socket, text IPC bus for AVB audio routing; arbitrary data → `"ERROR"`. Low value. (Was "Unknown".) |
 | 0.0.0.0 | 7000 | TCP | **AirPlay/AirTunes 320.17.8** (Cinemo `libNmeCarPlay` r14), br0/192.168.5.1, uid=1001000. `GET /` → `404; Server: AirTunes/320.17.8`. CarPlay audio bridge — see [`audio/carplay_audio_pipeline.md`](../audio/carplay_audio_pipeline.md). (Was mislabeled "ADB"; ADB is port 5555.) |
-| 0.0.0.0 | 49156 | TCP | **diagnosticsd UDS-over-TCP bridge** (root, PID 599). Bridges GM Ethernet Diagnostics to RTOS `172.16.4.107:49156`. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). (Was "Unknown".) |
+| 0.0.0.0 | 49156 | TCP | **diagnosticsd UDS-over-TCP bridge** (root, PID 599). Bridges GM Ethernet Diagnostics to RTOS `172.16.4.107:49156` (SoC-internal GHS INTEGRITY partition on the A3960, not the RH850 — see `vehicle_network.md` 2026-10-06 correction). See [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). (Was "Unknown".) |
 | 192.168.1.100 | 9002 | TCP | **FSA RemoteModuleHMI** (serviceId 1007), IPv6-mapped IPv4 — guest's own FSA server (see [`fsa_protocol.md`](fsa_protocol.md)) |
 | 192.168.1.100 | 9010 | TCP | **FSA DeviceInformation** (serviceId 1001), IPv6-mapped IPv4 |
 | 192.168.1.100 | 9016 | TCP | **FSA NetworkAccessManager** (serviceId 1026), IPv6-mapped IPv4 |
@@ -179,7 +179,7 @@ The VIP MCU communicates with the Intel SoC via a dedicated UART link using HDLC
 | /dev/ttyACM1 | crw-rw-rw- | MCP2200 (world-writable debug) |
 | /dev/ttyS0 | bluetooth:bluetooth | Bluetooth HCI |
 | /dev/ttyS1 | root:root | VIP IPC (HDLC) |
-| /dev/ttyS2 | root:root | — |
+| /dev/ttyS2 | root:root | serial_device / Android guest console (`console=ttyS2`) |
 | /dev/ttyS3 | root:root | — |
 
 > `[C] live-Y175 2026-10-05: CONFIRMED with one label note [dev_listing.txt]. `ttyACM1` is indeed

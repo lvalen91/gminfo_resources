@@ -55,7 +55,7 @@ gminfo_resources/
 | ECU address | `0x80` (A11 Radio) |
 | Manufacturer | Harman/Samsung |
 | CPU | Intel Atom x7-A3960, 4-core, 0.8–2.4 GHz, 14nm Goldmont |
-| RAM | 8 GB LPDDR4 (6 GB visible; ~604 MB reserved by GHS hypervisor) |
+| RAM | 8 GiB LPDDR4 physical (4× 2 GiB Micron MT53E512M32D2DS-053) [teardown]; GHS grants the Android guest 7830 MiB DRAM (+34 MiB read-only IPU frame window) [FW 85098662; 3-Opus verified 2026-10-10] and reserves ~362 MiB below 4 GiB (kernel + 19 servers + PMRs); guest kernel `MemTotal` = 5,663,43x kB = 5530 MiB (5.40 GiB, 5.80 GB decimal) [/proc/meminfo, Y175/Y181]; the 7830-granted to 5530-visible gap (~2300 MiB) is a VMM-configured guest E820 limit, cause [UNVERIFIED] (needs root /proc/iomem + dmesg) |
 | Storage | 64 GB Samsung eMMC (KLMCG4JEUD, BGA-153) |
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, density 200 |
 | GPU | Intel HD Graphics 505 (Gen9, 18 EUs), Mesa 21.1.5, GLES 3.2 |

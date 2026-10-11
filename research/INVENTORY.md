@@ -13,7 +13,7 @@ Carved/decompressed firmware from OTA modules
 | `elk.bin` | extracted from SOC_ABL OBBP partition | Intel kernelflinger-07.02 with Harman ipk wrapper (1.06MB) |
 | `elk_inner.elf` | elk.bin offset 0x22C | Inner ELF: kernelflinger + libavb + BoringSSL + .oemkeys RSA-4096 |
 | `vip_boot.bin` | Y181/85056831 stripped | Renesas RH850 VIP bootloader (1.93MB, contains Harman SBAT pubkey @ 0x29f1) |
-| `vip_app.bin` | Y181/86331656 stripped | Renesas RH850 VIP application (1.93MB, AUTOSAR Classic + uC/OS) |
+| `vip_app.bin` | Y181/86331656 stripped | Renesas RH850 VIP application (1.93MB, AUTOSAR Classic; OS kernel unidentified) |
 | `vmlinux_y181` | Linux kernel from boot.img | 42.6MB stripped ELF, 4.19.305-240125T-gf1edde901aa7 (CONFIG_GM_SIGNATURE=y) |
 | `y181_kconfig.txt` | IKCONFIG from vmlinux | 6456 lines of CONFIG_* flags |
 | `SOC_BOOT_extracted/` | Y181/86331652 | Android boot.img unpacked: kernel, ramdisk (LZ4), second-stage VBT |

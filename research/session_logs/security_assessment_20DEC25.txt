@@ -1743,7 +1743,7 @@ Detailed ICUSB Flag Flow:
 
 23.8 AUTOSAR SOFTWARE ARCHITECTURE
 -----------------------------------
-VIP firmware uses AUTOSAR/MICROSAR architecture:
+VIP firmware uses AUTOSAR (stack vendor unconfirmed) architecture:
 
 | Module | Function |
 |--------|----------|

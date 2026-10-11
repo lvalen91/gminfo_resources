@@ -89,7 +89,7 @@ The boot chain is a 5-layer trust hierarchy from hardware root to runtime filesy
 
 ## VIP MCU Security
 
-> **[C] live-Y175 2026-10-05: UNVERIFIABLE-FROM-LIVE.** VIP firmware version, the `0xb67d0`-class validator, called subroutines, RAM flags and byte-diffs are all off-SoC / teardown artifacts not observable from a locked Y175 user shell. Only corroboration available here: the `gm_protokey` native process is live (PID 889, root, SELinux domain `gm_protokey`), consistent with the ADB/seed-auth framing below.
+> **[C] live-Y175 2026-10-05: UNVERIFIABLE-FROM-LIVE.** VIP firmware version, the `0xb67d0`-class validator, called subroutines, RAM flags and byte-diffs are all off-SoC / teardown artifacts not observable from a locked Y175 user shell. Only corroboration available here: the `gm_protokey` native process is live (PID 889, root, SELinux domain `gm_protokey`), consistent with the ADB/seed-auth framing below. **Additional VIP-side corroboration [C diagnostics/Y175_session.log]:** the VIP boot log independently shows the live ProtoKey/SBAT handshake from the RH850 side — `J6_prv_ProtoKey:Protokey transmitted to SoC` (repeating), `SbaTicketValidation validation failed: 0x0`, and `Receives invalid seed [1/2] from BCM` — i.e. the ProtoKey transmit + SBAT ticket-validation + seed-from-BCM path is observable in the VIP log even though the SoC-side validator internals are not readable from a locked user shell.
 
 VIP security function ADDRESS: `0x000b67d0` (NOT a firmware version). VIP firmware version: **2B.174.4.1** (Build 24Mar22-0256).
 

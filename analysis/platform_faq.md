@@ -10,9 +10,9 @@ The **GM Info 3.7** (`gminfo37`) is the 2024 Chevrolet/GMC infotainment ECU buil
 
 | Component | Specification |
 |-----------|---------------|
-| CPU | Intel Atom x7-A3960, 4-core / 4-thread, 2.4 GHz boost, 14nm |
+| CPU | Intel Atom x7-A3960, 4-core / 4-thread, base 0.8 / HFM 1.6 / **2.0 GHz burst** [Intel 336256 via `platform/gminfo3.7_tech_specs.md:27`; live `cpuinfo.txt` 4 cores, 2056 MHz] [CORRECTED 2026-10-10: was "2.4 GHz boost"], 14nm |
 | ABI | `x86_64`, dalvik variant `silvermont` |
-| RAM | 8 GB LPDDR4 physical (4× Micron MT53E512M32D2DS-053); ~6 GB allocated to Android guest (5.66 GB kernel-visible; ~604 MB reserved by GHS hypervisor) |
+| RAM | 8 GB LPDDR4 physical (4× Micron MT53E512M32D2DS-053); GHS grants the guest 7830 MiB; guest `MemTotal` = 5530 MiB (5.66 GB kernel-visible) [C `platform/hardware.md:24`, FW 85098662]; the earlier "~6 GB / ~604 MB reserved" figures are superseded [CORRECTED 2026-10-10] |
 | Storage | 64 GB Samsung KLMCG4JEUD eMMC |
 | GPU | Intel HD 505 (Gen9, 18 EUs); Mesa 21.1.5 GLES 3.2 |
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, ~13.4", `lcd_density=200` |
@@ -281,7 +281,7 @@ val GM_AAOS = AudioConfig(
 )
 ```
 
-**Native sample rate is 48 kHz.** AudioFlinger mix period: 8 ms (confirmed: `HarmanHal.Routing ... initRBuffer owner(bus0_media_out): owner period ms 8`); HAL output latency is approximately 3× the period (~24 ms, inferred, not directly logged). Audio transport is Ethernet AVB → Harman HAL → PulseAudio → external amplifier (CSM).
+**Native sample rate is 48 kHz.** AudioFlinger mix period: 8 ms (confirmed: `HarmanHal.Routing ... initRBuffer owner(bus0_media_out): owner period ms 8`); HAL output latency is approximately 3× the period (~24 ms, inferred, not directly logged — full-project searched 2026-10-10 incl. Y181 `dumpsys_audio.txt`/`dumpsys_media_audio_policy.txt`; no logged HAL latency value). Audio transport is Ethernet AVB → Harman HAL → PulseAudio → external amplifier (CSM).
 
 **ECNR HAL is missing** (`vendor.gm.audio@1.0::IECNRControl`). This service fails repeatedly during boot (count varies by session — observed 9 to 25 times across the corpus) at ~100–150 ms intervals with `IECNRControl/default is not registered` / `Unable to set property "ctl.interface_start"`. `hal_list.txt` confirms it "cannot be fetched from service manager (null)" — genuinely absent from the system image. This is expected and does not affect audio output.
 
@@ -925,7 +925,7 @@ The 2024 Silverado 2500 LTZ has **four USB ports** across **two separate USB ass
 
 **Module 2 — Radio / Climate Control Area:**
 - 1× USB Type-A
-- 1× USB Type-C — this port does **not** expose ADB (field-observed). The firmware has no per-port role-switch; the likely cause is that this receptacle does not contain the `2996:010x` H2H bridge device `dabridge` binds to (see "dabridge device-identity match" below) [mechanism: FW 86331652 id_table; which receptacle holds the bridge is [UNVERIFIED] per-port].
+- 1× USB Type-C — this port does **not** expose ADB (field-observed). The firmware has no per-port role-switch; the likely cause is that this receptacle does not contain the `2996:010x` H2H bridge device `dabridge` binds to (see "dabridge device-identity match" below) [mechanism: FW 86331652 id_table; which receptacle holds the bridge is [UNVERIFIED] per-port (full-project searched 2026-10-10; live `dumpsys_usb.txt` lists 2 Aptiv H2H bridges at `:61-67`, `:169-175` but no receptacle-to-port map)].
 
 **The ADB-capable port is exclusively the Type-C on Module 1 (Center Console)** — confirmed by field testing (ADB works there even with the receptacle externally unpowered). The Radio/Climate area Type-C does not enter ADB device mode. The differentiation is not a hardware ID pin (there is none) and not a per-port firmware role-switch; in-vehicle (Path A) it is device identity: `dabridge` binds only where a USB device with VID `0x2996`, PID `0x0100–0x0105` (the H2H bridge) is present on the configured `bridgeport` (see below). Position in the hub chain alone does not make a port ADB-capable.
 
@@ -933,13 +933,13 @@ The 2024 Silverado 2500 LTZ has **four USB ports** across **two separate USB ass
 
 **Primary controller (raw XDCI, PCI `8086:5AAA`):** `dwc3.0.auto` — Synopsys DesignWare USB 3.0 dual-role (OTG) controller, bound at `/sys/bus/platform/devices/dwc3.0.auto/`. GHS does not run USB role/gadget logic; it does mediated PCI passthrough of both the xHCI and XDCI to the Android guest (`Guest1_XHCI0`, `Guest1_XDCI`) [FW 85098662 .boottable; 0 hits for `dabridge`/`usb_otg_switch`/`role-switch`/`cbc-signals` in the GHS blob; CONFIRMED ×3].
 
-**PCIe XHCI host controller:** `0000:00:14.0` — Intel XHCI (host-side, for CarPlay/AA adapter), PM control set to `auto` at boot
+**PCIe XHCI host controller:** `0000:00:15.0` — Intel XHCI (host-side, for CarPlay/AA adapter; XDCI is `0000:00:15.1`), PM control set to `auto` at boot [C live: Y181 `dumpsys_usb.txt:140-142` and `:367-369` — both root hubs report `xHCI Host Controller`, `serial_number=0000:00:15.0`, xhci-hcd 4.19.305 (`aaos/gm_aaos/2024_Silverado_ICE/analysis/adb/Y181/gm_enum_20260909_225158/raw/dumpsys_usb.txt`); corroborated by `vendor_sepolicy.cil:19`/`:28` (`0000:00:15.0` role-switch, `0000:00:15.1` xDCI mux)]
 
-[UNVERIFIED — needs live lspci] Address discrepancy: the DSDT XDCI `_ADR` is `0x00150001` (PCI dev 0x15 fn 1) [FW decoded dsdt_a.dsl:1290-1500] and sepolicy roots `usb1` at `0000:00:15.0` [FW sepolicy product_sepolicy.cil:4-8], versus `0000:00:14.0` above. Dev 0x15 holds the XDCI fn1; whether the xHCI is `14.0` or `15.0` fn0 is unconfirmed.
+[C live 2026-10-10 — xHCI = `0000:00:15.0`, `dumpsys_usb.txt:142`] Address: sepolicy roots `usb1`/`usb2` under `0000:00:15.0` [FW sepolicy product_sepolicy.cil:4-8] and the DSDT XDCI `_ADR` is `0x00150001` (PCI dev 0x15 fn 1) [FW decoded dsdt_a.dsl:1290-1500], so the xHCI is dev 0x15 fn 0 (`15.0`) per the Broxton layout. The earlier `0000:00:14.0` figure is NOT the xHCI: `vendor_sepolicy.cil:18` (all Y175/Y181 captures) lists `0000:00:14.0/intel_xhci_usb_sw/...role-switch` as a separate role-switch node alongside the real `15.0` entry at `:19`; live `dumpsys_usb` never reports `14.0`. No further `lspci` needed (`/sys/bus/pci` itself stays shell-restricted; the address comes from the USB root-hub serial string). Other live PCI addresses (same sepolicy, all [C]): iGPU `00:02.0` (`card0-eDP-1`, `vendor_sepolicy.cil:21-22`), touch bridge `00:17.3` (`i2c_designware.7/7-004b`, `:23`), eMMC `00:1c.0` (`all_properties.txt` `ro.boot.boot_devices=pci0000:00/0000:00:1c.0`).
 
 **XDCI dual-role + software port power (hardware reach of the role switch):** the XDCI is dual-role; role and port power are software-commanded through the ACPI `OTGD` OpRegion in the GHS `IGS_DSDT` (`XDCI` `_ADR 0x00150001`). Its `_DSM` `SPPS` method writes `PUPS` (port power), `UXPE` (enable) and reads `U2CP/U3CP` (connect state) [FW decoded dsdt_a.dsl:1290-1500; CONFIRMED ×2]. The Android ACPIO (`86331630`) is only the `ANDR0001` fstab/vbmeta descriptor and carries **no USB config** [checked 2026-10-10]; USB governance is the GHS `IGS_DSDT` XDCI/`OTGD`.
 
-**dabridge virtual UDC:** `dabr_udc.0` — created by the `dabridge` kernel driver (compiled into the kernel, not a loadable module; `drivers/usb/gadget/udc/dabridge.c`, `dabr_udc.c` [FW 86331652 vmlinux @0x1fe070a/@0x1fe02c8]). It is a distinct platform device from `dwc3.0.auto`. It bridges `sys.dabridge.host.portnum` → `sys.dabridge.dev.portnum` while the physical xHCI stays in host mode, and exposes `dabr_udc.0` as the UDC Android binds the gadget to. The vendor default is `setprop sys.usb.controller dwc3.0.auto` [FW 86331650 init.bxtp_gm.rc:787], but running radios report **`dabr_udc.0`** [LIVE Y175 all_properties.txt:482; LIVE Y181 all_properties.txt:510]; the property is overridden outside vendor (setter not pinned, [UNVERIFIED]) — not "intercepted" by dabridge.
+**dabridge virtual UDC:** `dabr_udc.0` — created by the `dabridge` kernel driver (compiled into the kernel, not a loadable module; `drivers/usb/gadget/udc/dabridge.c`, `dabr_udc.c` [FW 86331652 vmlinux @0x1fe070a/@0x1fe02c8]). It is a distinct platform device from `dwc3.0.auto`. It bridges `sys.dabridge.host.portnum` → `sys.dabridge.dev.portnum` while the physical xHCI stays in host mode, and exposes `dabr_udc.0` as the UDC Android binds the gadget to. The vendor default is `setprop sys.usb.controller dwc3.0.auto` [FW 86331650 init.bxtp_gm.rc:787], but running radios report **`dabr_udc.0`** [LIVE Y175 all_properties.txt:482; LIVE Y181 all_properties.txt:510]; the property is overridden outside vendor (setter not pinned, [UNVERIFIED] — full-project searched 2026-10-10; the only `setprop sys.usb.controller` hits in extracted firmware rc files are `dwc3.0.auto` at `init.recovery.common.rc:68` (Y175/Y177); live shows `dabr_udc.0` at `usb_props.txt:8`; the writer is in no extracted rc/script) — not "intercepted" by dabridge.
 
 **Two paths, gated by `ro.product.system.brand`** [FW 86331650 init.full_gminfo37_gb.rc]: **Path A (in-vehicle, brand ≠ Android)** — bridged virtual UDC `dabr_udc.0`, physical xHCI stays host; **Path B (brand = Android, GSI)** — `sys.boot_completed=1 && brand=Android` sets `vendor.sys.usb.role device` + raw `dwc3.0.auto` gadget, no bridge. That init rule exists but does **not** fire on the GM AAOS bench; the bench's device-role entry is the Developer-Options USB-debugging toggle (below), not this rule [owner-confirmed 2026-10-10].
 
@@ -1024,7 +1024,7 @@ on property:sys.usb.ffs.ready=1 && property:sys.usb.config=adb
 
 ### dabridge device-identity match (why only some receptacles expose ADB)
 
-`dabridge` is a USB **host-side driver** with an id_table matching VID `0x2996`, PID `0x0100`, `0x0101`, `0x0102`, `0x0104`, `0x0105` (`match_flags=0x0003`) [FW 86331652 vmlinux @file 0x1712290; CONFIRMED ×1]. `dabridge_probe` binds only to such an H2H bridge device and logs `"No H2H Bridge device for '%s'"` if the configured `bridgeport` has none [FW .rodata @0x1fe06a5]. So the in-vehicle (Path A) ADB-capable receptacle is the one containing an H2H bridge enumerating as `2996:010x`; a plain hub receptacle never binds. The vendor name for `0x2996` is [UNVERIFIED]. The PC still sees the configfs gadget identity (`8087:09ef`, below), not `2996:010x`.
+`dabridge` is a USB **host-side driver** with an id_table matching VID `0x2996`, PID `0x0100`, `0x0101`, `0x0102`, `0x0104`, `0x0105` (`match_flags=0x0003`) [FW 86331652 vmlinux @file 0x1712290; CONFIRMED ×1]. `dabridge_probe` binds only to such an H2H bridge device and logs `"No H2H Bridge device for '%s'"` if the configured `bridgeport` has none [FW .rodata @0x1fe06a5]. So the in-vehicle (Path A) ADB-capable receptacle is the one containing an H2H bridge enumerating as `2996:010x`; a plain hub receptacle never binds. The vendor for `0x2996` is **Aptiv** [C live: Y181 `dumpsys_usb.txt:26-32` (`manufacturer_name=Aptiv`, `GM V10  E2 PD` hub), `:61-67` and `:169-175` (`vendor_id=10646`, `H2H Bridge`), `:242-248`/`:396-402` (Aptiv `Vendor` DFU); `aaos/gm_aaos/2024_Silverado_ICE/analysis/adb/Y181/gm_enum_20260909_225158/raw/dumpsys_usb.txt`]. Live bridge port: `sys.dabridge.dev.portnum=1-6.3`, `host.portnum=1-6.0` (`all_properties.txt:614-615`; `gmccpa_probe_20260909_225421/logcat_main.txt:825`). The snapshot shows 2 H2H bridges, so the per-receptacle question (see line ~928) stays open. The PC still sees the configfs gadget identity (`8087:09ef`, below), not `2996:010x`.
 
 ### USB gadget VID/PID (configfs, software-defined)
 
@@ -1041,7 +1041,7 @@ on property:sys.usb.ffs.ready=1 && property:sys.usb.config=adb
 | accessory / accessory,adb | `0x18d1` | `0x2d00` / `0x2d01` |
 | audio_source (+accessory/adb) | `0x18d1` | `0x2d02`–`0x2d05` |
 
-The identity lives on configfs gadget `g1`, so it is the same on `dwc3.0.auto` and `dabr_udc.0`. In-vehicle `lsusb` confirmation is [UNVERIFIED].
+The identity lives on configfs gadget `g1`, so it is the same on `dwc3.0.auto` and `dabr_udc.0`. In-vehicle `lsusb` confirmation is [UNVERIFIED] (full-project searched 2026-10-10; `analysis/adb/` dumps are radio-side only, no host-side capture of the ADB gadget).
 
 ### Recovery behavior
 
@@ -1055,7 +1055,7 @@ Without root access from a locked device:
 3. `verifier_verify_adb_installs=0` means sideloaded APKs via ADB do not require Google Play Protect verification
 4. `ro.adb.secure=1` means ADB requires RSA key authorization — the key accept dialog must appear on the radio's screen
 
-Software path accessibility: `setprop vendor.sys.usb.role device` requires a SELinux context that can write `vendor.sys.*` properties. `untrusted_app` cannot. A system shell (`u:r:shell:s0` via existing ADB session) can. Bootstrap requires getting `vendor.sys.usb.role=device` set once per session (on the bench the Developer-Options USB-debugging toggle does this; the in-vehicle trigger is presumed the same but not separately pinned, [UNVERIFIED]) plus a host supplying VBUS on the ADB-capable (H2H-bridge) receptacle to get the initial ADB shell.
+Software path accessibility: `setprop vendor.sys.usb.role device` requires a SELinux context that can write `vendor.sys.*` properties. `untrusted_app` cannot. A system shell (`u:r:shell:s0` via existing ADB session) can. Bootstrap requires getting `vendor.sys.usb.role=device` set once per session (on the bench the Developer-Options USB-debugging toggle does this; the in-vehicle trigger is presumed the same but not separately pinned, [UNVERIFIED] — full-project searched 2026-10-10; needs an in-vehicle session) plus a host supplying VBUS on the ADB-capable (H2H-bridge) receptacle to get the initial ADB shell.
 
 ---
 

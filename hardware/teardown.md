@@ -59,7 +59,7 @@ Three-processor design on a single PCB:
 |  | RH850      |<-->| M24C64   |    | Samsung   |            |
 |  | VIP MCU    |I2C | EEPROM   |    | eMMC 64GB |            |
 |  | TM52176    |    | 8KB      |    | KLMCG4JEUD|            |
-|  | QFP-144+   |    | TSSOP-8  |    | BGA-153   |            |
+|  | LFQFP144   |    | TSSOP-8  |    | BGA-153   |            |
 |  +------+-----+    +----------+    +-----------+            |
 |         | IPC (HDLC)                                        |
 |  +------+-----+    +-----------+    +-----------+           |
@@ -88,7 +88,7 @@ Three-processor design on a single PCB:
 | eMMC | Samsung KLMCG4JEUD (SEC 228, B04P, NT24G0046) | BGA-153 | 64GB eMMC 5.1 |
 | BCM89551 FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — **Broadcom Ethernet switch firmware** (confirmed via partial dump; IC damaged during extraction) |
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — **confirmed** Apollo Lake IFWI/TXE boot flash (Intel docs mandate 8MB external SPI NOR on CS0). Contains Flash Descriptor, TXE 3.0 FW, UEFI, PMC FW, microcode, SMIP, Boot Guard v2. NOT dumped. |
-| VIP MCU | Renesas RH850/P1M-E (TM52176, 3TC 2251, lot 15873) | QFP-144+ | RH850 core (disassemble as RH850:LE:32, not V850), system/power/security controller |
+| VIP MCU | Renesas RH850/P1M-E (TM52176, 3TC 2251, lot 15873) | LFQFP144 (144-pin, 0.5mm pitch, 20x20mm) | [C] RH850 core (disassemble as RH850:LE:32, not V850), system/power/security controller. Family (2MB flash, LFQFP144): R7F701377/378/379/380 — 3x RS-CANFD, 2x RLIN3 UART. Source: `datasheets/Renesas_RH850_P1M-E_datasheet.pdf`. Board photo: `photos/rh850_vip_region_on_board.png` |
 | VIP EEPROM | ST M24C64 (464RQ, K228) | TSSOP-8 | 8KB I2C — SBI security flags |
 
 ### Networking & Connectivity
@@ -119,6 +119,41 @@ Three-processor design on a single PCB:
 |-----------|-------------|---------|-------|
 | Power MOSFET/Reg | 96E840 PEm (2305 E4, 5971) | D2PAK | x3+ on board |
 | Bulk Caps | 470uF/25V, 220uF/50V, 47uF/35V | SMD Electrolytic | Multiple |
+
+### Photo-Derived BOM Cross-Check
+
+[C] Cross-linked against `hardware/photos/` (see `photos/README.md` for the full
+file/content index):
+
+- **A3960 compute module is a discrete sub-board**, not soldered directly to the main
+  carrier: `photos/soc_a3960_ram_rf_module.jpeg` visually confirms the Atom A3960 die plus
+  all 4x Micron LPDDR4 packages sitting on their own module PCB, with a separate shielded RF
+  module adjacent to it on the same sub-board. `photos/soc_a3960_lpddr4_closeup.jpeg` shows
+  the same SoC+RAM group from a closer angle.
+- **Connectivity module**: GM Service P/N `3765210`, Harman Assembly P/N
+  `91.UMAF2HG.GS6FAAG` — matches the header "Module Identity" fields above and is
+  photo-legible on the module label itself: `photos/module_label_region.jpeg`,
+  `photos/module_label_closeup.jpeg` (P/N + PSN + DataMatrix close-up; OCR on the label
+  reads a near-identical string with a stray leading character, e.g. "91.LUMAF2HG...", which
+  is the same assembly P/N — treat as one label, not two).
+- **Second RF module**: a separate shielded RF module, marked `7685H.G05` / `40488847`, is
+  photo-visible adjacent to the A3960 module (`photos/soc_a3960_ram_rf_module.jpeg`). This
+  is distinct from the WiFi/BT module already in the "Networking & Connectivity" BOM table
+  above (marked `4D+0847` / `EC-02 7A85H.G05`) — [INF] likely a second antenna/RF function
+  (e.g. cellular or GNSS front-end) rather than a duplicate WiFi/BT part, given the
+  near-identical-but-not-matching marking; not confirmed against a schematic this session.
+- **PCB fab**: **AT&S**, already recorded in the Hardware Architecture diagram above
+  ("AT&S MX3 SH 94V-0, fab A922114") — cross-linked here as photo-consistent with the bare
+  carrier shots (`photos/carrier_top_overview.jpeg`, `photos/carrier_bottom_overview.jpeg`).
+- **Dark/unmarked BGAs — teardown-asserted, not photo-legible**: the Ethernet switch
+  (BCM89551 / 88Q5050 per board variant), the FPD-Link deserializer (DS90UB954), and the
+  audio codec/amp (TDF8532) are all identified in the BOM tables above from board-level
+  teardown and firmware/driver cross-reference, **not** from a legible top-marking in the
+  current photo set — none of the close-up photos resolve their lid text. Treat those three
+  part numbers as [INF]/teardown-asserted pending a legible macro shot, not as
+  photo-confirmed in the same sense as the A3960, RH850, or M24C64 entries (which do have
+  legible close-ups: `photos/rh850_vip_region_on_board.png`,
+  `photos/eeprom_m24c64_microscope.png`).
 
 ---
 
@@ -580,7 +615,9 @@ networked hypervisor bridge.
 |--------|------------|-------|
 | /dev/ttyACM1 | crw-rw-rw- (world) | MCP2200 USB-UART — debug console |
 | /dev/ttyS0 | crw-rw---- bluetooth | Bluetooth HCI |
-| /dev/ttyS1-S3 | crw------- root | Reserved |
+| /dev/ttyS1 | crw------- root | [C] VIP IPC (HDLC) — live-confirmed as `ipc_serial_device` in `platform/networking.md` |
+| /dev/ttyS2 | crw------- root | [C] Console (`serial_device`) — live-confirmed in `platform/networking.md` |
+| /dev/ttyS3 | crw------- root | [C] Display panel (`display_panel_device`) — live-confirmed in `platform/networking.md` |
 
 ### I2C Buses
 11 buses (i2c-0 through i2c-10), consistent across Y175/Y181:
@@ -589,6 +626,42 @@ networked hypervisor bridge.
 - i2c-3: audioserver:audioserver (SAF7751 / TDF8532 control)
 - i2c-7: system:system
 - i2c-4,5,6,8,9,10: root-only
+
+---
+
+## RH850/P1M-E Package & UART Pinout
+
+[C] Renesas RH850/P1M-E, LFQFP144 package (144-pin, 0.5mm pitch, 20x20mm; JEITA code
+P-LFQFP144-20x20-0.50). 2MB flash variant → part family R7F701377/378/379/380
+(3x RS-CANFD, 2x RLIN3 UART). Source: `datasheets/Renesas_RH850_P1M-E_datasheet.pdf`
+(package outline Fig. 4.1; pin tables listing each alt-function column for the 144-pin
+package).
+
+**RLIN3 UART pins (144-pin package column):**
+
+| Pin | Signal | Direction |
+|-----|--------|-----------|
+| 64  | P5_10 / RLIN30RX | input |
+| 65  | P5_11 / RLIN30TX | output |
+| 66  | P5_12 / RLIN31RX | input |
+| 67  | P5_13 / RLIN31TX | output |
+| 3   | P4_1 / RLIN30TX (alt) | output |
+| 4   | P4_2 / SCI30SCO (alt) | output |
+
+[C] `datasheets/Renesas_RH850_P1M-E_datasheet.pdf` pin tables. [UNVERIFIED] which of RLIN30
+vs RLIN31 is the VIP console TX vs the u-blox GNSS UART — not yet resolved from the
+`research/scripts/ghidra_rh850` pin-mux (PFC/PMC) dump; the other RLIN3 instance serves the
+on-board u-blox GNSS receiver (see VIP boot-log findings below, which confirm GNSS rides a
+VIP UART but do not by themselves disambiguate RLIN30 vs RLIN31).
+
+[C] Package pin-numbering per datasheet Fig. 4.1 (index mark at pin 1): **bottom edge =
+pins 1-36, right edge = 37-72, top edge = 73-108, left edge = 109-144** — pins 64-67 (the
+RLIN3 cluster) fall in the 37-72 bank, i.e. the package's **right edge as drawn in the
+datasheet**, not the "bottom edge" previously assumed here. [UNVERIFIED] which physical
+PCB edge this corresponds to once the chip is mounted/rotated on the board — not
+cross-checked against `photos/rh850_vip_region_on_board.png` this session; do not treat
+"right edge in the datasheet drawing" as "bottom edge on the board" without that photo
+correlation.
 
 ---
 
@@ -602,6 +675,62 @@ networked hypervisor bridge.
 - Suspend-to-RAM: enabled
 - SOC thresholds: 90%/75%/60%, temp threshold: -10C
 - Max suspend times: 84h/24h/16h (by SOC tier)
+
+### AUTOSAR SWC Modules Observed in Boot Log
+
+[C] `diagnostics/Y175_session.log` tags each line with an AUTOSAR software-component name.
+Modules seen across the boot trace: `SS_SWC` (system state), `PLC` (power-level control),
+`LSWTCH_SWC` (LEO/Ethernet-switch control), `J6_CDD` (CAN complex device driver), `DTC`,
+`PROTOKEY`, `SBAT`, `UBLOX`, `NAV`, `RTC`, `IPC_S` (IPC core).
+
+### LEO / Ethernet-Switch Reset Sequencing
+
+[C] `LSWTCH_SWC` ("Leo switch") is the VIP-managed control path for the Ethernet switch.
+"LEO" itself is **the Intel A3960 SoC**, not the switch: the VIP toggles
+`IO_IOC_LEO_RESET` (LOW/HIGH) around SoC reset, and logs `LEO_FIRMWARE is not running` /
+`IOC initialized switch Configuration in the absence of LEO firmware` while the SoC has not
+yet come up — i.e. the VIP brings the Ethernet switch up in a default configuration before
+the SoC-hosted "LEO firmware" (switch-management agent running on the SoC) is available.
+Source: `diagnostics/Y175_session.log` lines 90, 94, 129-130, 192-193, 231-232.
+
+### PLC Power-Level Handshake / BootCounter
+
+[C] `PLC` logs the VIP↔SoC power-level handshake: `IPC RX: New Power Level 1 received from
+SoC` (t=732ms), `New Power Level 2 received from SoC` (t=1285ms), and
+`plc_timer_value for SoC SOH Timeout = 1500` (ms) — the VIP's watchdog window for SoC
+state-of-health. The same module reads the boot counter from NVM at startup:
+`Rte_Pim_PLC_BootCounter_PIM is : 4067` (Nvm_ErrorStatus = 0). Source:
+`diagnostics/Y175_session.log` lines 80-82, 171, 204.
+
+### u-blox GNSS on the VIP UART
+
+[C] A u-blox GNSS receiver is wired to a VIP UART, not directly to the SoC. Boot log:
+`UBLOX is not supported in the current hardware` (t=822ms, logged as an error despite the
+receiver being physically present and polled), followed by repeated baud-rate probing —
+`Change the VIP UART BR to 115200 bps`, then after 15 failed `UBX_CFG_PRT` polls, `Change
+the VIP UART BR to 9600 bps`, ending in `u-blox UART BR unknown`. This confirms GNSS rides
+one of the VIP's RLIN3/UART channels (see pinout section above); it does not identify which
+of the two VIP UARTs this is. Source: `diagnostics/Y175_session.log` lines 173, 198,
+270-271, 298-299.
+
+### SBAT Ticket Validation (live boot) & ProtoKey Seed-from-BCM
+
+[C] SBAT (Secure Boot Anti-Theft) module on the live boot trace:
+```
+keyNBID = 0x0000
+appNBID = 0x0001
+ECU_ID: = <ECU_ID>   (16 bytes, REDACTED — full unit identifier)
+SbaTicketValidation validation failed: 0x0
+```
+Validation fails (ticket is effectively unprogrammed) but boot continues — consistent with
+the "SBAT failure is non-blocking" finding already documented below. Source:
+`diagnostics/Y175_session.log` lines 211-215.
+
+[C] `PROTOKEY` on the same trace logs `Receives invalid seed [1] from BCM` /
+`Receives invalid seed [2] from BCM` repeatedly before the BCM seed becomes valid later in
+boot — i.e. on this airgapped bench (no live BCM/vehicle network), ProtoKey seed exchange
+with the BCM over CAN fails by default, consistent with the three-phase ProtoKey sequence
+already documented below. Source: `diagnostics/Y175_session.log` lines 100-101, 197, 199.
 - Calibrations: VIN relearn, cluster animation, shutdown animation failsafe (15s)
 
 ---
@@ -902,7 +1031,7 @@ From Y175 VIP UART log:
 ```
 keyNBID = 0x0000
 appNBID = 0x0001
-ECU_ID = 00 26 42 25 00 00 16 00 06 10 41 45 61 01 14 AC
+ECU_ID = <ECU_ID>   (16 bytes, REDACTED — full unit identifier; see "VIP MCU Details" above)
 First 10 bytes of SBAT = 00 00 00 00 00 00 00 00 00 00
 SbaTicketValidation validation failed: 0x0
 ```

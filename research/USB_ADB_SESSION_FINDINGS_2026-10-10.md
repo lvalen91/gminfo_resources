@@ -383,8 +383,8 @@ key+signature tail — the TEE "high-entropy" blocks are identified AES T-tables
    receptacle" closure) — snapshot shows 2× bridges; needs per-receptacle enumeration.
 4. **Idle X8 VBUS current** during the momentary boot dual-source window — scope nicety; behavior
    already shown benign.
-5. **Host xHCI PCI address** — docs carry `0000:00:14.0` while sepolicy roots `usb1` at `0000:00:15.0`
-   and the DSDT XDCI `_ADR` is `0x00150001` (dev 0x15 fn 1). Needs a live `lspci`/DSDT cross-check.
+5. **Host xHCI PCI address** — resolved to `0000:00:15.0` (XDCI `0000:00:15.1`): sepolicy roots `usb1`/`usb2` under `0000:00:15.0`
+   [FW product_sepolicy.cil:4-8] and the DSDT XDCI `_ADR` is `0x00150001` (dev 0x15 fn 1); `0000:00:14.0` in older docs is only a variant-hedge. [inferred from sepolicy + Broxton layout; confirm with a live `lspci`/`/sys/bus/pci`] — still needs live read.
 6. **X8 top-row** (6 unwired pins): live 2nd USB port? Physical probe [HW doc].
 7. **Bench CC resistor value** — spec `Rd` = 5.1 kΩ; a true 0 Ω is a short, not a valid `Rd` [HW doc].
 

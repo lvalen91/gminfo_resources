@@ -9,6 +9,11 @@
 > mechanics in depth (BCB/misc byte layout, USB/protokey/capsule trigger files,
 > See-Dealer/ELK/Diagnostic boot modes, Lifecycle SoH handshake) — complementary to this
 > RE inventory. The former `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` is consolidated here in §15.
+>
+> Companion doc: `GHS_FILE_MAP_85098662.md` is the edge-to-edge byte map of the same image
+> (sections, `.boottable`, `.secinfo`). The VM/partition configuration derived from `.boottable`
+> is in §7A below; findings tagged `[FW 85098662; 3-Opus verified 2026-10-10]` were re-derived
+> independently by three Opus agents from the firmware bytes. Anything marked `[UNVERIFIED]` was not.
 
 ---
 
@@ -331,7 +336,14 @@ VT-d (IOMMU):
 └── Vtd_InvalidateAfterEnablingDevices
 ```
 
+**VT-d tables are built at runtime** `[FW 85098662; 3-Opus verified 2026-10-10]`: `Vtd_EnableVtdForDevice`
+(va 0x23110b) indexes the root table by bus and the context table by dev*8+fn, allocating a 4 KiB context
+table on demand from `vtdFreePages`. There is **no `.vtdpagetable` section** in the image; that string is
+an error message only. The guest itself runs `intel_iommu=off` and sees no DMAR. See §7A.4.
+
 ### Guest Memory Management
+
+> Grant/visibility numbers (7830 MiB granted vs 5530 MiB guest-visible) are in §7A.3.
 
 ```
 Memory Functions:
@@ -352,6 +364,91 @@ VM Control:
 ├── VMM_UnpendVCpu
 └── VMM_ExitVMCallback
 ```
+
+---
+
+## 7A. Guest/VM Configuration (boottable-derived)
+
+All items `[FW 85098662; 3-Opus verified 2026-10-10]` unless marked `[UNVERIFIED]`. Source: the
+`.boottable` section (section 177, 27 AddressSpace records, 23 Task records, per-AS object and
+memory-map tables). Full derivation: `/tmp/ghs_hv/GHS_HYPERVISOR_CONFIG_RE.md` (working notes);
+section layout in `GHS_FILE_MAP_85098662.md`.
+
+### 7A.1 Topology: exactly one VM
+
+- **27 INTEGRITY address spaces** = kernel (AS0) + 19 named servers + 6 unnamed VT-d DMA domains + **Guest1 (AS25)**.
+  Named servers: VIP, Lifecycle, Audit, Dirana, Chimes, Audio, Camera, Lines, OTA, Calibrations, GPU,
+  DisplayI2C, TEE_Router, TEE_Keymaster, TEE_Gatekeeper, TEE_HW_Crypto, TEE_Storage, EMMC, plus **VMM1** (AS24).
+- **Exactly ONE VM: Guest1 (Android).** AS25 is the only guest-flagged partition (flags 0x4411;
+  servers 0x1001, VMM1 0x1011, DMA domains 0x2401; flag-bit meanings `[UNVERIFIED]`, grouping by observation).
+- **No QNX / cluster guest.** The VIP is an external RH850 MCU reached over `SerialDev1`; the GHS `VIP`
+  server is only its peer. Every other AS is a native INTEGRITY server or an IOMMU domain.
+- VMM1 (`pc_emul`, prio 35) is the pass-through broker and console/log sink; it holds the `Guest_VCpu0..3` links to the vCPU tasks (the GPU server holds its own `Guest1_Core0..3Task` links).
+
+### 7A.2 vCPUs and scheduling
+
+| Item | Value |
+|---|---|
+| vCPUs | **4**: `Guest1.Initial` prio 30, `Guest1.VCpu1/2/3` prio 29 |
+| Priority rank | the **lowest in the system** (TEE_* 40, VMM1 35 ... VIP 100; higher number = higher priority) |
+| Guest `/proc/cpuinfo` | 4 processors, "IoT CPU 1.0", family 6 model 92, 1881.6 MHz (agrees) |
+| Scheduler | **pure priority; no time partitioning / ARINC-653** |
+
+The scheduler claim rests on `__PartitionSchedulerInitPtr` (va 0x84a2a8) = 0 and every
+`BSP_Partition*` / `__PartitionScheduler*` symbol being an undefined external. Android therefore
+runs in whatever CPU time the servers leave and has no time budget. The vCPU count is data-driven
+(`ASP_VMX_SetVcpuQueueAddr`, `ASP_ResetVCpu` with a 0x3000-byte per-vCPU block); the static source of "4"
+is the boottable task list plus the DSDT `_PR` CPU0-3.
+
+### 7A.3 Guest memory
+
+| Quantity | Value |
+|---|---|
+| Physical DRAM | 8 GiB LPDDR4 |
+| **Granted to Guest1 by GHS** | **7830 MiB** (0x1_E960_0000) in five RAM regions, plus a **34 MiB read-only IPU frame window** (`Kernel_IpuFbPMR` at GPA 0x3_fde0_0000) |
+| Reserved by GHS | **~362 MiB** (8192 - 7830), the kernel, servers, GVT-g/Lines/VMM buffers and DMA PMRs below 4 GiB |
+| Guest-visible `MemTotal` | **5530 MiB** (5663432 kB, identical on Y175 and Y181) |
+
+The 7830 MiB figure is byte-confirmed from the MR table and is **not an MMIO over-count**: the GPA hole
+0x8000_0000-0xFFFF_FFFF (PCI window) is not part of any granted region. The ELF program headers under-report
+(RAM0/RAM1 only; RAM2-4 are plain physical ranges), so the boottable MR table is authoritative.
+
+The 7830 -> 5530 MiB gap (2300 MiB) is a **VMM-configured guest E820 limit**; **the cause is `[UNVERIFIED]`**.
+Resolving it needs root `/proc/iomem` or `dmesg` on the bench (denied to the shell user), or RE of the
+unsymbolized VMM1 E820 builder. A 2 GiB cap on RAM4 would give 5780 MiB, less ~250 MiB reserved, which
+fits 5530 MiB, but that is a hypothesis only. The `-m 5780` figure used for the gm_emu QEMU model is
+**unconfirmed pending a bench read**.
+
+### 7A.4 Device grants (who owns what)
+
+**Granted to Guest1 (18 IODevices):** XHCI0, XDCI, GmEth, GmWifi, GmWifi.1, I2C0, I2C1, I2C2, I2C4, I2C5,
+UART0, UART3, SPI0, SPI1, SPI2, Gen9 (GVT-g mediated), DVFS_RESOURCE, PerfMon_Resource. VMM1 holds the same
+IODevices (brokering interrupts for GmEth/GmWifi).
+
+**Kept by GHS, mediated through VMM1:** eMMC/SDHC (EMMC server multiplexes), HDA audio (Audio server),
+IPU camera (Camera server), I2C3 (Dirana), I2C6 (Camera), I2C7 (DisplayI2C), all GPIO (VMM1 owns GPIO_0..30,
+106, 203), RTC, P2SB, SerialDev0. DMA-visible memory for the passthrough set is confined to the guest GPA map.
+
+**VT-d / IOMMU:** root/context tables are built at runtime (no `.vtdpagetable` section, see §7). Six unnamed
+ASes are pure DMA domains: HDA, IPU, Lines, EMMC/SDHC, GPU_Dom_Gen9, GVTG_Dom. The guest runs
+**`intel_iommu=off`**, so all isolation is host-side.
+
+**GVT-g:** the GPU server (`gvtg_server`, AS15) mediates the Gen9 GPU (GuC/HuC firmware in the server) and maps the
+whole of guest RAM; the guest sees a GVT-g vGPU (`ro.hardware.gralloc/hwcomposer=broxton`).
+
+**TEE:** keymaster, gatekeeper, HW crypto and storage are GHS-side servers (TEE_Router fans tipc connections out to
+them); the guest is told `androidboot.trustyimpl=-ghs`. (`TEEAtt` is a VMM1 connection to TEE_Router, not a separate
+server; the "TEE_Attestation" box in §6 is a connection, not an address space.)
+
+### 7A.5 Guest platform (what Linux sees)
+
+- Emulated **i440FX** host bridge (8086:1237), **legacy CF8/CFC** PCI config access.
+- **No MCFG, no HPET, no DMAR, no SPCR** table templates exist. Tables supplied: RSDP/RSDT/FACP/FACS, generated MADT, IGS_DSDT, NHLT.
+- **IOAPIC with GSI 16-119** (`_PRT`: GSI = 16 + (dev*4+pin) mod 104); 8259 PIC and PIT emulated.
+- **NHLT** audio topology: 6 SSP endpoints (SSP0 8/16 kHz mono voice, SSP2 8-slot 48 kHz TDM, SSP3 8-ch capture).
+- **Two IGS_DSDT SKUs**, identical except the `_PR` P-state package: A = 17 states, top **2400 MHz**; B = 11 states,
+  top **1800 MHz**. Both benches report `androidboot.product.hardware.sku=gv221`.
+- Guest cmdline adds `no_timer_check` (boot.img) and `clocksource=tsc tsc=reliable acpi_pm_good` (VMM appendix).
 
 ---
 

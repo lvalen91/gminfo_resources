@@ -11,21 +11,22 @@
 
 | Component | Spec |
 |-----------|------|
-| CPU | Intel Atom x7-A3960 (Goldmont/Apollo Lake), 4 cores, base 800MHz / boost 2.4GHz, 14nm, 10W TDP, AEC-Q100 |
+| CPU | Intel Atom x7-A3960 (Goldmont/Apollo Lake), 4 cores, base 800MHz / HFM 1.6GHz / burst 2.0GHz [Intel 336256], 14nm, 10W TDP, AEC-Q100 |
+| Compute module | The Intel A3960 + RAM form a **discrete compute module** soldered on the Bosch/Harman carrier (photo-confirmed — see `hardware/photos/soc_a3960_ram_rf_module.jpeg`) |
 | CPU Part# | LH8066803226000 |
 | CPU ID | "IoT CPU 1.0" (cpu family 6, model 92, stepping 10) |
 | CPU Clock | 1881.6 MHz (hypervisor-visible), BogoMIPS 3763.20 |
 | CPU Cache | 1024 KB L2 per core |
 | CPU Address | 39-bit physical, 48-bit virtual |
 | DalvikVM ISA | x86_64, variant: silvermont |
-| GPU | Intel HD Graphics 505 (Gen9, 18 EUs, 300-750MHz) |
-| GPU Driver | Intel iHD driver 2.0.0 (GLES backend — Vulkan driver exists but NOT used at runtime) |
-| RAM | 8 GB LPDDR4 physical (4× Micron MT53E512M32D2DS-053, teardown-verified); ~6 GB allocated to the Android guest — 5,663,432 kB / 5.40 GB kernel-visible; ~604 MB reserved by GHS hypervisor. No swap (SwapTotal=0). Committed_AS: ~76 GB virtual (heavy overcommit) |
+| GPU | Intel HD Graphics 505 (Gen9, 18 EUs) at PCI `00:02.0` [C: Mesa renderer `VERIFICATION.md:114-115`; 18 EU = datasheet 336256]. The 300-750 MHz range is the Y177 snapshot (`gminfo3.7_tech_specs.md:41-42`); datasheet burst is 650 MHz (`:32`, `intel_apl_external_resources.md:158`), so 750 is [UNVERIFIED] (full-project searched 2026-10-10; no GPU frequency node is shell-readable) |
+| GPU Driver | Intel iHD driver 2.0.0 [UNVERIFIED — full-project searched 2026-10-10; no iHD string in any Y175/Y181 capture; live evidence is Mesa 21.1.5 GLES renderer `VERIFICATION.md:114-115`, `ro.hardware.gralloc/hwcomposer=broxton` `all_properties.txt:464-465`] (GLES backend — Vulkan driver exists but NOT used at runtime) |
+| RAM | 8 GiB LPDDR4 physical (4× 2 GiB Micron MT53E512M32D2DS-053, teardown-verified); GHS grants the Android guest 7830 MiB DRAM (+34 MiB RO IPU window) [FW 85098662; 3-Opus verified 2026-10-10] and reserves ~362 MiB below 4 GiB; guest `MemTotal` 5,663,43x kB = 5530 MiB (5.40 GiB / 5.80 GB) [/proc/meminfo]; 7830→5530 gap (~2300 MiB) is a VMM-configured guest E820 limit, cause [UNVERIFIED] (full-project searched 2026-10-10; `/proc/iomem`, cmdline, dmesg are shell-inaccessible: Y181 `raw/dmesg.txt` is 1 line, `raw/cmdline.txt` 77 bytes of denial; e820-dependent causes need root). No swap (SwapTotal=0). Committed_AS: ~76 GB virtual (heavy overcommit) |
 | Storage | 64GB Samsung KLMCG4JEUD eMMC |
 | SPI Flash | IS25LP016D SPI NOR, 16Mbit/2MB, SOIC8, Quad SPI 3.3V, week 43/2022. Purpose: **BCM89551 Ethernet-switch firmware** (corrected per `hardware/teardown.md`, confirmed via partial dump — NOT "logs/backup"). NOTE: a separate **8MB IS25WP064A** (BGA) is the Apollo Lake IFWI/TXE boot flash (Flash Descriptor, TXE 3.0, UEFI, Boot Guard v2) — see teardown. |
-| Display | Chimei Innolux DD134IA-01B, 2400x960 @ 60Hz, ~13.4" |
+| Display | Chimei Innolux DD134IA-01B, 2400x960 @ 60Hz, ~13.4" [C live: Y181 `dumpsys_display.txt:26,49-52`, CMN/41268, 60.001434 fps, single mode]. SoC-side output is **eDP** (`00:02.0` `card0-eDP-1` + `intel_backlight`, `vendor_sepolicy.cil:21-22`) [C live]; the panel link continues through the FPD-Link III serializer chain (`platform/vehicle_network.md:545`) |
 | Display DPI | Physical: xDpi=192.911 yDpi=193.523; system lcd_density=200 (xhdpi) |
-| Touchscreen | Atmel maXTouch, 16-point multitouch, I2C bus 7 @ 0x4B |
+| Touchscreen | Atmel maXTouch, I2C bus 7 @ 0x4B (PCI `00:17.3` i2c_designware.7, `7-004b`) [C live: `vendor_sepolicy.cil:23`; IRQ thread `[irq/145-atmel_m]` Y181 `raw/processes.txt:123`; `CONFIG_TOUCHSCREEN_ATMEL_MXT=m` `kernel_config.txt:2397`]; the **16-point** figure comes only from the Y177 snapshot `platform/gminfo3.7_tech_specs.md:115` [UNVERIFIED on Y181: full-project searched 2026-10-10; no `getevent -p`/ABS_MT_SLOT artifact in any capture] |
 | OpenGL ES | 3.2 (Mesa 21.1.5) |
 | Kernel | Linux 4.19.305 LTS (Y181) / 4.19.283 (Y175) |
 | VIP MCU | Renesas RH850/P1M-E (TM52176) — power, CAN, early boot, EEPROM |
@@ -62,7 +63,7 @@ The DalvikVM ISA variant is **silvermont** (x86_64 architecture, 64-bit only).
 - **Presentation deadline:** 14.666 ms
 - **HWC:** 2.1 (iahwcomposer — Intel Automotive HWComposer), explicit sync, high quality scaling, no DCIP3
 - **Composition:** DEVICE + CLIENT composition, triple buffering, only 1 DRM display active (3 defined in hwc_display.ini)
-- **System UI:** Left bar 189px, Top/Bottom decor 95px each → App area 1416x770 (windowed), 2400x960 (full)
+- **System UI:** App Dock 189-190px left, Status Bar 118px top (`CardView_InitManager: cardViewHeight = 842, statusBarHeight = 118, heightPixels = 960`, see `analysis/platform_faq.md` CardView section), CardView 793px right → windowed content 1416-1417x842, 2400x960 (full) [CORRECTED 2026-10-10: earlier "95px top/bottom → 1416x770" contradicted the logged 842 and the CarPlay line below]
 - **GM CarPlay windowed area:** 1416x842 (after subtracting bars), rendered at 30fps
 - **HDR:** No HDR, no wide color gamut, no VRR (single 60Hz mode)
 - **Max luminance:** 500 nits

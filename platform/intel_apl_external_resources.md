@@ -143,4 +143,60 @@ adb shell "gzip -dc /proc/config.gz" > gm_kernel_4.19.305.config
 
 ---
 
-*Date: 2026-06-29*
+## A3960 Datasheet-Confirmed Specifications (2026-10-10)
+
+Source: **Intel Atom Processor E3900 and A3900 Series Datasheet Addendum**, Doc `336256-004US`
+(local copy: [`../hardware/datasheets/Intel_336256_Atom_E3900_A3900_datasheet_addendum_rev004.pdf`](../hardware/datasheets/Intel_336256_Atom_E3900_A3900_datasheet_addendum_rev004.pdf)); full
+platform register map in the main E3900 datasheet `334819`. A3900 = the **automotive**, AEC-Q100
+Apollo Lake-I line (customer = automotive only). The gminfo37 SoC is the top SKU **A3960**.
+
+### SoC (A3960 column, datasheet-confirmed)
+| Spec | A3960 | note |
+|---|---|---|
+| Cores (Goldmont) | **4** | no HT; 2 MB L2 shared |
+| CPU freq LFM/HFM/**Burst** | 800 MHz / 1.6 GHz / **2.0 GHz** | **corrects the common "2.4 GHz" figure — datasheet burst is 2.0 GHz** |
+| GPU | **HD Graphics 505** (Gen9 LP), **18 EU** | freq LFM/HFM/Burst 100/500/650 MHz; industrial-reliability 400 MHz |
+| ISP (IPU) freq | 200/550/700 MHz | CSI D-PHY 1.1 imaging |
+| TDP @ TjMax | **12 W** | S0i3/S3/S5 18/16/16 mW @30 °C |
+| Memory | **LPDDR4 ≤2400 MT/s**, non-ECC; DDR3L-ECC option | max 8 GB, 4 channels (physical RAM here = 8 GB — see RAM reconciliation below) |
+| Temp | **Tcase −40…+98 °C, Tj −40…+110 °C** | AEC-Q100 |
+| Process | 14 nm | Apollo Lake-I |
+
+### Platform I/O feature counts (A-series config, datasheet-confirmed)
+- **HSUART (LPSS): 4 controllers**, automotive assignment = **`1× Discrete GNSS (UART1)`, `1× Host OS
+  Debug (UART2)`, `2× Generic (UART0 and UART3)`**. ← This is the datasheet ground truth behind the
+  live UART map: **UART2 = "Host OS Debug"** is exactly where the guest `console=ttyS2` lands, and GHS
+  grants the two **Generic** UARTs (UART0+UART3 = boottable `Guest1_Uart0`/`Guest1_Uart3`) to the
+  Android guest. GM repurposes Intel's GNSS UART1 for the **VIP IPC** (HDLC) instead of GNSS. See
+  `hardware/teardown.md`/`platform/networking.md` UART tables.
+- **SPI (LPSS): 3 controllers / 7 devices.** I2C (LPSS): multiple ports (I2C0–7). HD Audio + I2S.
+- **PCIe Gen2**, **eMMC** (boot device lives at PCI `00:1c.0` per guest cmdline), SDIO.
+- **MIPI-DSI** display ports + **CSI D-PHY 1.1** camera inputs; the IPU drives the RVC path.
+- **Security:** Boot Guard + TXE/CSE (HECI) on the Intel CM side — the pre-GHS trust stage, stored in
+  the module's ISSI SPI-NOR IFWI (separate from the carrier eMMC that holds GHS+Android).
+
+### How this supplements existing findings
+- **CPU/platform:** corrects the common "x7-A3960 ~2.4 GHz" figure — confirmed **4-core Goldmont,
+  2.0 GHz burst** (HFM 1.6 GHz), HD 505 / 18 EU. (`platform/gminfo3.7_tech_specs.md` already carries
+  the correct `A3960` model string; an earlier note here claiming it was "garbled" was a terminal
+  display artifact, not the file content.) For gm_emu, this pins the QEMU `-cpu` family/model and
+  `tsc-frequency`.
+- **Memory:** SoC max is 8 GB LPDDR4-2400 / 4 ch — consistent with the fitted 8 GB. Verified split
+  [FW 85098662; 3-Opus 2026-10-10]: GHS **grants the guest 7830 MiB** DRAM (byte-confirmed from the
+  boottable, not an over-count) + 34 MiB RO IPU window; GHS reserves **~362 MiB** below 4 GiB; the
+  guest kernel `MemTotal` is **5530 MiB (5.40 GiB)**. The 7830→5530 gap is a VMM-configured guest
+  **E820 limit** whose exact cause is **[UNVERIFIED]** (needs a root `/proc/iomem`/dmesg). The old
+  "604 MB reserved" / "6 GB to guest" figures are unsourced; "5.66 GB" is a unit slip.
+- **UART/console:** the Host-OS-Debug(UART2) / Generic(UART0,3) / GNSS(UART1) assignment is the
+  datasheet basis for the `ttyS2` console + the two guest UART grants.
+- **Graphics (GVT-g):** HD 505 Gen9 is the GVT-g-capable IGD GHS mediates — the datasheet does not
+  itself document GVT-g (an Intel software feature); [UNVERIFIED from the datasheet, confirmed in the
+  GHS blob `.gvtg_server`/`gen9_passthru`].
+
+### Sources
+- Intel Doc 336256-004US (E3900/A3900 Datasheet Addendum) — local PDF above.
+- Intel ARK Atom x7-E3950 (industrial twin, same silicon): HD 505, 18 EU, 2 MB L2, LPDDR4-2400, 8 GB.
+
+---
+
+*Date: 2026-06-29 (A3960 datasheet section added 2026-10-10)*

@@ -132,7 +132,7 @@ Factory reset generated approximately 2x more slow operations per hour. The extr
 
 | Metric | Debloated | Factory Reset |
 |--------|-----------|---------------|
-| MemTotal | 5,799 MB | 5,799 MB |
+| MemTotal | 5,799 MB (decimal MB of 5530 MiB = 5.40 GiB) | 5,799 MB (same) |
 | MemAvailable (boot) | ~3,131 MB | ~2,467 MB |
 | MemFree (steady-state range) | 217–1,761 MB | 173–250 MB |
 | kswapd0 CPU usage | Not in top | 3.2–4.4% |

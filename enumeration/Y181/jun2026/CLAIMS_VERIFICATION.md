@@ -11,7 +11,7 @@
 
 | Claim (repo) | Live evidence |
 |---|---|
-| RAM 5.66 GB kernel-visible | `MemTotal: 5663432 kB` = 5.66 GB ✅ exact |
+| RAM 5.40 GiB kernel-visible (CORRECTED 2026-10-10: earlier "5.66 GB ✅ exact" passed a kB÷1000÷1000 unit slip) | `MemTotal: 5663432 kB` = 5530 MiB = 5.40 GiB (5.80 GB decimal) ✅ |
 | CPU 4-core (Apollo Lake / Goldmont) | `/proc/cpuinfo` 4 cores; model masked `IoT CPU 1.0`; GL renderer `HD Graphics 505 (APL 3)` = Apollo Lake = Goldmont ✅ |
 | ABI x86_64 | `ro.product.cpu.abi=x86_64` ✅ |
 | GLES 3.2 (`ro.opengles.version=196610`) | `196610` ✅ |

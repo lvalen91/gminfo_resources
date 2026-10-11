@@ -31,7 +31,7 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 
 | Area | Was | Now (verified) |
 |------|-----|----------------|
-| RAM type/capacity | "6 GB DDR3L" (8 docs) | **8 GB LPDDR4** physical (4× Micron MT53E512M32D2DS-053, teardown); ~6 GB to guest, 5.66 GB kernel-visible |
+| RAM type/capacity | "6 GB DDR3L" (8 docs) | **8 GiB LPDDR4** physical (4× 2 GiB Micron MT53E512M32D2DS-053) [teardown]; GHS grants guest 7830 MiB (+34 MiB RO IPU window) [FW 85098662; 3-Opus verified 2026-10-10], reserves ~362 MiB below 4 GiB; guest `MemTotal` = 5,663,43x kB = 5530 MiB (5.40 GiB / 5.80 GB) [/proc/meminfo]; 7830→5530 gap (~2300 MiB) = VMM-configured guest E820 limit, cause [UNVERIFIED] (needs root /proc/iomem + dmesg) |
 | eMMC model | KLMBG2JETD-B041 (32 GB part #) | **KLMCG4JEUD** (64 GB, teardown-verified) |
 | Display maker | Chunghwa | **Chimei Innolux** (PnP `CMN`) |
 | Audio output buses | "14" / "12+" (README + 4 audio docs) | **8** CarAudioService buses (bus0–bus7), confirmed in `car_service.txt`; bus8–bus13 are Harman-HAL-internal graph nodes, not CarAudioService buses |

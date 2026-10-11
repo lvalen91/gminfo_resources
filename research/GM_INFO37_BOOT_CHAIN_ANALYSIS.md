@@ -70,7 +70,7 @@ The GM Info 3.7 A11 module uses a **dual-processor architecture** with the Renes
 |-----------|------|----------|
 | **Main SoC** | Intel Atom x7-A3960 | 4-core CPU, GPU, runs GHS + Android |
 | **VIP MCU** | Renesas TM52176 (RH850) | Power control, CAN/LIN, security |
-| **RAM** | LPDDR4 | 8192 MB physical (6144 MB to guest) |
+| **RAM** | LPDDR4 | 8192 MiB physical; GHS grants guest 7830 MiB [FW 85098662; 3-Opus 2026-10-10], kernel `MemTotal` 5530 MiB (5.40 GiB); gap = VMM E820 limit [UNVERIFIED] |
 | **Storage** | Samsung KLMCG4JEUD | 64GB eMMC |
 | **EEPROM** | ST M24C64 | 8KB configuration storage |
 | **CAN Transceiver** | NXP TJA1145T/FDJ | CAN with partial networking |
