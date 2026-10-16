@@ -19,12 +19,42 @@ This EEPROM dump is from a **GM Infotainment 3 with Google Built-In** (RPO Code:
 |-------|-------|---------|
 | **VIN** | XXXXXXXXXXXXXXXXX | 0x5C0-0x5D1 |
 | **Vehicle** | 2024 Chevrolet Silverado 2500HD | Decoded from VIN |
-| **Part Number** | <SN_REDACTED> | 0x500 |
+| **MTC traceability-code tail (corrected 2026-10-16; was "Part Number")** | <SN_REDACTED> | 0x500 |
 | **Serial Number** | 7310500000000X | 0x5A0 |
 | **Unit Serial** | <SN_REDACTED> | 0x680 |
-| **Firmware ID** | XXXXXXXX A | 0x14A0 |
+| **VIN-tail residual (corrected 2026-10-15; was "Firmware ID")** | XXXXXXXX A | 0x14A0 |
 | **Programming Date** | 20.02.2025 | 0x580 |
 | **Region Code** | 34 (ASCII '4' - North America) | 0x4E1 |
+
+> **CORRECTED 2026-10-15 (clean-room triple-pass + cross-session SPS-log match, two independent
+> fable agents + an adversarial verification pass):** `0x14A0` is **not** a firmware ID. The field
+> mirrors whichever VIN was active the last time its NvM block was written; it lags behind the
+> primary VIN (`0x05C0`) after a re-VIN/reprogram event instead of updating immediately. Proven by
+> comparing two SPS sessions on the same physical module (same ECUID
+> `004B41DC0000160006104145610114AC`): the unit was moved from one vehicle's VIN to another, and
+> this field retained the *old* vehicle's last-8-characters instead of tracking the new VIN.
+> Firmware strings `cal_vin_relearn_en` / `Theftlocked` (present in VIP_APP) corroborate a
+> VIN-relearn/theft-lock retention mechanism rather than a firmware-version field. `eeprom/README.md`
+> already independently called this a "VIN-suffix mirror" — this correction refines that: it's not a
+> live mirror, it's a residual field that can go stale.
+>
+> **STRESS-TESTED 2026-10-16** against a cross-tree research survey that initially rated this
+> UNVERIFIABLE (the counter-evidence dump checked turned out to be a *different* file than the one
+> this finding was built from — resolved by direct byte comparison). Three distinct real dumps now
+> show three different states at this address: `ADB_enabled.bin` (the LTZ unit itself) reads its
+> *own* current VIN tail (live, not stale — expected, since that unit was never re-VINed);
+> `/Users/zeno/Downloads/dump.bin` (the HC unit, analyzed above) reads the *previous* vehicle's VIN
+> tail (stale, as described); `Y181_ADB_enabled_HC.bin` (a third, separately-sourced HC dump) reads
+> all-zero (blank). **Do not treat "always retains the old VIN" as a guaranteed behavior** — the
+> field is evidently a separately-written NvM block that is not kept in lockstep with `0x05C0`, and
+> its exact state (live/stale/blank) depends on write history, not a fixed rule.
+>
+> **CORRECTED 2026-10-16:** `0x0500` ("Part Number" above) is not a part number — it's the last 9
+> digits of a 16-digit Manufacturing Traceability Code (MTC), confirmed digit-for-digit against the
+> SPS tool's `mtc`/`infokey` log field. The full code assembles as
+> `0x04E1`(1 digit, "Line") + `0x0561`(1, "Shift") + `0x0541`(2, "Year") + `0x0521`(3, "Doy") +
+> `0x0501`(9, "Tn") — see `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.15/§2.5 for the full
+> derivation. The old "Part Number" label predates that finding and was never reconciled with it.
 
 ### System Specifications (IOK Platform)
 - **CPU:** Intel Atom A3960
@@ -65,7 +95,9 @@ This EEPROM dump is from a **GM Infotainment 3 with Google Built-In** (RPO Code:
 ├────────────────────────────────────────────────────────────────┤
 │ 0x0400-0x045F │ Security Configuration & Flags                │
 ├────────────────────────────────────────────────────────────────┤
-│ 0x0460-0x04FF │ Radio/Audio Settings                          │
+│ 0x0460-0x0465 │ HW Part Number (ssecuhn, confirmed 2026-10-15)│
+├────────────────────────────────────────────────────────────────┤
+│ 0x0466-0x04FF │ Unidentified (not Radio/Audio; 0x0480 holds a second part-number-shaped value) │
 ├────────────────────────────────────────────────────────────────┤
 │ 0x0500-0x05FF │ String Data (VIN, Serial, Date, Part#)        │
 ├────────────────────────────────────────────────────────────────┤
@@ -87,11 +119,11 @@ This EEPROM dump is from a **GM Infotainment 3 with Google Built-In** (RPO Code:
 ├────────────────────────────────────────────────────────────────┤
 │ 0x0F80-0x0FDF │ Secondary Brightness Table                    │
 ├────────────────────────────────────────────────────────────────┤
-│ 0x0FE0-0x103F │ Audio Volume Curve                            │
+│ 0x0FE0-0x103F │ Backlight Dimming Curve (was mislabeled "Audio Volume Curve")                            │
 ├────────────────────────────────────────────────────────────────┤
-│ 0x1040-0x109F │ Audio Fade/Balance Tables                     │
+│ 0x1040-0x109F │ Backlight Dimming Tables (was mislabeled "Audio Fade/Balance")                     │
 ├────────────────────────────────────────────────────────────────┤
-│ 0x10A0-0x12DF │ Audio EQ/DSP Calibration                      │
+│ 0x10A0-0x12DF │ Backlight Dimming Calibration (was mislabeled "Audio EQ/DSP")                      │
 ├────────────────────────────────────────────────────────────────┤
 │ 0x12E0-0x13FF │ Device Capabilities & Communication           │
 ├────────────────────────────────────────────────────────────────┤
@@ -283,9 +315,9 @@ Ambient light response color temperature adjustment:
 
 ---
 
-## Audio Calibration Tables
+## Backlight/Display-Dimming Calibration Tables (corrected 2026-10-15; previously mislabeled "Audio Calibration Tables")
 
-### Volume Curve (0x0FE0)
+### Dimming curve (0x0FE0, was "Volume Curve")
 Non-linear volume response curve:
 
 | Level | Raw Value | Interpretation |
@@ -302,7 +334,7 @@ Non-linear volume response curve:
 | 9 | 9830 | +45 dB |
 | 10 | 13107 | Max |
 
-### Audio EQ/DSP Bands (0x1160)
+### Dimming curve (0x1160, was "Audio EQ/DSP Bands")
 Frequency response calibration:
 
 | Band | Value | Approximate Frequency |
@@ -319,7 +351,7 @@ Frequency response calibration:
 | 9 | 29491 | Ultra-high |
 | 10 | 32768 | Max |
 
-### Fade/Balance Steps (0x1100)
+### Dimming curve (0x1100, was "Fade/Balance Steps")
 22-point linear fade curve for speaker balance.
 
 ---
@@ -386,7 +418,30 @@ These can be adjusted to change UI behavior:
 | 0x1B60 | Block CRC #1 | 0x00000001 | Block validation |
 | 0x1B80 | Block CRC #2 | 0x00000001 | Block validation |
 
-**Warning:** Modifying EEPROM values without recalculating checksums may cause boot failures or factory reset behavior.
+> **REFINED 2026-10-15:** per `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §13.7's stock-vs-post-reflash
+> diff plus a 2026-10-15 clean-room cross-check, 0x16E0/0x19E0/0x1B40 decode as
+> `[00][2-byte version/generation word][2-byte hash/CRC word]`, not one flat 32-bit CRC — the three
+> blocks' version words cluster tightly (not exact lockstep — ±1 drift observed) across reflashes/dumps.
+> Treat the single hex values above as one sample, not a fixed constant.
+>
+> **ALGORITHM UNVERIFIED (corrected 2026-10-15):** the 2-byte hash/CRC word in 0x16E0/0x19E0/0x1B40
+> has NOT been verified by byte-match. Binary cross-check disproves the simplest hypothesis: 0x16E0
+> and 0x1B40 share version word `0x5800` but their stored hash bytes differ (`0x9896` vs `0xAD9B`),
+> so the hash/CRC is NOT simply CRC of the version word alone. Coverage range and exact algorithm
+> remain UNKNOWN. Do not rely on earlier "confirmed" language — it was wrong.
+>
+> **This separate integrity-block structure (integrity word at a different address from its payload)
+> is NOT defined by AUTOSAR NvM** (which appends CRC to the same slot), nor by the Fee/Ea SWSs.
+> Origin undetermined.
+>
+> **0x1DC0 — ONLY CONFIRMED BYTE-MATCH:** CRC-16/CCITT-FALSE (poly `0x1021`, init `0xFFFF`, no
+> reflect, no output XOR) confirmed by byte-match across 5 images. Stored `0xBFD4` = computed
+> `0xBFD4`. This is the sole block where the algorithm and coverage are proven. See
+> `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §2.6/§0.15 and References below.
+
+**Warning:** The algorithm covering 0x16E0/0x19E0/0x1B40 is unknown — do not attempt to recalculate
+those fields. For 0x1DC0 the algorithm is confirmed (CRC-16/CCITT-FALSE — see above); modifying
+data it covers without recalculating may cause boot failures or factory reset behavior.
 
 ---
 
@@ -409,7 +464,7 @@ These tables can be modified to change display/audio behavior:
 | Table | Address | Modification |
 |-------|---------|--------------|
 | Brightness | 0x0F00 | Adjust curve points for brighter/dimmer response |
-| Volume | 0x0FE0 | Adjust audio curve for louder base volume |
+| Dimming | 0x0FE0 | Adjust backlight dimming curve (not audio — corrected 2026-10-15, see above) |
 | Color | 0x0F40 | Adjust ambient light color temperature |
 
 ---
@@ -489,7 +544,29 @@ Corrupting checksums may force the system into recovery or factory reset:
 
 2. **Checksum Validation**: Some modifications may require CRC recalculation to prevent boot issues.
 
-3. **Redundancy**: Many settings are duplicated (e.g., 0x0400/0x0420, 0x0440/0x0A80). Both copies should be modified.
+3. **Redundancy**: Settings are duplicated in two distinct ways — the mechanisms differ and must not be conflated:
+
+   - **0x0400/0x0420 — single AUTOSAR `NVM_BLOCK_REDUNDANT` entry (`NvMNvBlockNum=2`).** Both addresses are managed automatically by the AUTOSAR NvM layer (it keeps them in sync and falls back to the backup on read failure). **Do NOT patch both addresses manually** — write only the primary; NvM propagates the copy. Both currently contain `1900e4a4`.
+
+   - **0x0440/0x0A80 — two separate descriptor entries in different CalGroups (SBI primary / SBI backup).** These are an application-level mirror, not an AUTOSAR REDUNDANT block. They are NOT managed as a pair by NvM. **Update both independently** when modifying SBI data; failing to update both leaves mismatched copies.
+
+   > **AUTOSAR NvM mapping (added 2026-10-15).** The config region is defined by a firmware block-descriptor
+   > table of 12-byte entries `[u32 LE rel_addr][u16 LE payload_len][u8 type_byte][u8 copies][u32 0]`.
+   > Correlation with AUTOSAR_SWS_NVRAMManager R22-11 (Chapter 10, ECUC): `rel_addr` is a flat address
+   > (implementation-specific, not spec-stated: NvM spec defines NvMNvBlockBaseNumber range 1..65534 but not how the descriptor encodes it; role of `NvMNvBlockBaseNumber`; all 183 entries have high word `0x0000`, so the Melching
+   > `[u16 block_id][u16 offset]` hypothesis is REFUTED); `payload_len`→`NvMNvBlockLength`;
+   > `type_byte`=`0x01` in every entry — a **vendor constant** (format version / valid flag), **not** an AUTOSAR
+   > field (AUTOSAR assigns no numeric values to `NvMBlockManagementType`, ECUC_NvM_00062 — it is a symbolic
+   > `EcucEnumerationParamDef`; an earlier revision's "SINGLE=0, REDUNDANT=1, DATASET=2" packing was wrong);
+   > `copies`→`NvMNvBlockNum` (ECUC_NvM_00480), the **actual management-type discriminator**: `1`=NATIVE,
+   > `2`=REDUNDANT, `1..255`=DATASET; trailing `u32 0` unassigned. **AUTOSAR defines no C struct layout for the
+   > descriptor table** — the 12-byte format is a Harman/BSP vendor artifact whose size happens to match CC-RH
+   > natural packing of `(u32,u16,u8,u8,u32)` (Renesas R20UT2846EJ CC-RH ABI). Entries with `copies=02`
+   > (e.g. **0x0400/0x0420**) are `NVM_BLOCK_REDUNDANT, NvMNvBlockNum=2` — the standard AUTOSAR redundancy
+   > *behaviour* (both copies kept in sync, backup used on read failure); the descriptor *encoding* is
+   > vendor-specific. The `[M][payload][M]` marker framing around records is a Fee/Ea-layer or Harman concept,
+   > not AUTOSAR NvM (which defines only an optional Static Block ID header and an appended CRC). Full
+   > mapping and correction history: `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.16.
 
 4. **Factory Reset Risk**: Invalid EEPROM data may trigger a factory reset or brick the module.
 
@@ -509,6 +586,14 @@ Corrupting checksums may force the system into recovery or factory reset:
 - [ST M24C64 Datasheet](https://www.st.com/resource/en/datasheet/m24c64-f.pdf)
 - [NHTSA TSB - IOK Radio Software Y175](https://static.nhtsa.gov/odi/tsbs/2025/MC-11014087-0001.pdf)
 - [Chevrolet Infotainment Support](https://www.chevrolet.com/support/vehicle/entertainment/displays-radio/infotainment)
+
+### Standards & Cross-Platform Sources
+- **AUTOSAR_SWS_NVRAMManager R22-11**, Chapter 10 (ECUC) — `NvMBlockManagementType` (ECUC_NvM_00062, symbolic only) and `NvMNvBlockNum` (ECUC_NvM_00480, REDUNDANT discriminator). No C struct layout for the descriptor table is specified.
+- **AUTOSAR_SWS_CRCLibrary** — `Crc_CalculateCRC16()` (CRC-16/CCITT-FALSE, poly `0x1021`, init `0xFFFF`).
+- **Renesas AN R01AN2296EJ** — RH850 Flash Self-Programming Library, flash-block CRC-16 verification.
+- **Renesas R20UT2846EJ (CC-RH ABI)** — struct packing for the 12-byte descriptor entry.
+- **CVE-2025-32058 / Black Hat Asia 2025** — Nissan Leaf RH850 Virgin status byte (`0x00`=locked/`0xFF`=bypass), INC-protocol port map.
+- **Willem Melching, DEF CON 30 Automotive Village (2022)** — Toyota EPS RH850 NvM block-ID-first header hypothesis (REFUTED for this unit: all 183 `rel_addr` high words are `0x0000`).
 
 ### Community Research
 - [XDA Forums - GM Google Built-In Tinkering](https://xdaforums.com/t/general-motors-google-built-in-tinkering.4668105/)

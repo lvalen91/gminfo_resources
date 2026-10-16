@@ -45,15 +45,27 @@ By analyzing what GM specifically targets in their security fixes and calibratio
 
 > `[M]` = Marker byte (varies per EEPROM init cycle). See Section 13 for details.
 
-> **0x0B41 "Debug Mode" status — OPERATOR-TESTED, unconfirmed (2026-09-10):** the "Debug
-> Mode" label for 0x0B40/0x0B41 is a byte-diff inference (it changed between stock and
-> modified Y181 dumps alongside the two SBIs), not a confirmed code read-site. An operator
-> flipped 0x0B41 as part of the working bypass triad (`0x0441=FF / 0x0A81=FF / 0x0B41=01`,
-> §Appendix A) and observed **no change in AAOS behavior** — adb remained `uid 2000` and
-> SELinux stayed enforcing. No decompiled read-site has been found tying 0x0B41 to
-> `ro.debuggable`, SELinux-permissive, or OEM-unlock. Treat 0x0B41's runtime effect as
-> **OPEN / UNCONFIRMED**, under active VIP-disasm investigation; the ADB-enable effect of
-> the bypass triad is produced by 0x0441/0x0A81 (the two SBIs), not by 0x0B41.
+> **0x0B41 "Debug Mode" status — OPERATOR-TESTED, NO EFFECT FOUND (updated 2026-10-15):** the
+> "Debug Mode" label for 0x0B40/0x0B41 is a byte-diff inference (it changed between stock and
+> modified Y181 dumps alongside the two SBIs), not a confirmed code read-site. An operator has
+> now tested **all three plausible values — `0x00`, `0x01`, `0xFF`** — independently of the SBI
+> bytes, and observed **no visible change to the user and no ADB-visible change** in any state
+> (adb remained `uid 2000`, SELinux stayed enforcing; no new debug menu, log category, or
+> service-manager entry observed). This supersedes the earlier single-value (`0x01`-only) test
+> from 2026-09-10. No decompiled read-site has been found tying 0x0B41 to `ro.debuggable`,
+> SELinux-permissive, or OEM-unlock. The ADB-enable effect of the bypass triad is produced
+> entirely by `0x0441`/`0x0A81` (the two SBIs); 0x0B41 is not required and does not need to be
+> written. Treat 0x0B41 as **behaviorally inert across the full tested value range** — the
+> "Debug Mode" name should not be relied on, and the byte is no longer a useful target for
+> further blind bit-flip testing absent a code read-site. Remaining path to resolve what (if
+> anything) this byte does: a code read-site in VIP_APP or the SoC-side ALD/property layer, not
+> more bench A/B testing.
+
+> **CROSS-PLATFORM CONFIRMATION (added 2026-10-15):** the SBI data-byte encoding `0x00` = locked /
+> `0xFF` = bypass (at 0x0441/0x0A81) is a **standard RH850 convention, not a Harman-specific quirk.**
+> The Nissan Leaf RH850 uses an identical encoding — a Virgin status byte at RAM `0xFEDE0C03`, value
+> `0x00` = locked, `0xFF` = bypass — documented in **CVE-2025-32058 (Black Hat Asia 2025)**. See
+> `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.16.
 
 ### Observed Marker Assignments
 
@@ -200,8 +212,8 @@ EEPROM Address Map (M24C64 - 8KB)
 ├── 0x0400: Security config #1 (documented)
 ├── 0x0420: Security config #2 backup (documented)
 ├── 0x0440: ★ PRIMARY SBI - ADB BYPASS (documented)
-├── 0x0460: Security level config (documented)
-├── 0x0480: Security mode flags (documented)
+├── 0x0460: HW Part Number (ssecuhn) -- corrected 2026-10-15, was "Security level config"
+├── 0x0480: Unidentified second part-number-shaped value -- corrected 2026-10-15, was "Security mode flags"
 ├── 0x04A0: 0xFF unwritten (both dumps); zero real code refs (SUPERSEDED — see §2)
 ├── 0x04C0: 0xFF unwritten; real CalGroup 0x44 handler FUN_ram_00091f82, empty cell
 └── 0x04E0: Unknown flag (documented)
@@ -234,11 +246,15 @@ EEPROM Address Map (M24C64 - 8KB)
 0x0C00-0x0DFF: Extended Configuration
 └── 0x0C00: Unknown (ACTIVE in sample dump)
 
-0x0E00-0x13FF: Display/Audio Calibration
-├── 0x0E00: Display calibration
+0x0E00-0x13FF: Display/Backlight Calibration (corrected 2026-10-15; was "Display/Audio")
+├── 0x0E00: Power/thermal/suspend-timer calibration struct (tail 7 of 34 fields byte-match
+│            named VIP_APP firmware constants cal_str_min_temp_threshold/soc_min_threshold_1-3/
+│            max_suspend_time_1-3 @0xf8126-0xf8141) — broader than just "display calibration"
 ├── 0x0E80: ★ UI Flags Block
-├── 0x1100: Audio calibration
-└── Various: Brightness, color, volume curves
+├── 0x1100: Backlight dimming calibration (was mislabeled "Audio calibration" — structurally
+│            matches VIP_APP backlight LUT defaults @0xf8414-0xf8500: same shape, not byte-identical
+│            (different numeric encoding, caveat added 2026-10-16); not an audio table)
+└── Various: Brightness/dimming curves (not audio volume curves)
 
 0x1600-0x1FFF: Integrity/Security
 ├── 0x16E0: CRC Checksum #1
@@ -389,11 +405,16 @@ CAN `$27` path and the ICUSB/PROTOKEY path (same engine, not separate code). See
    - `0x0441`=`0xFF`, `0x0A81`=`0xFF`, `0x0B41`=`0x01`
    - Preserves whatever markers CalGroup assigned
 
-9. **0x0B41 "Debug Mode" write produced no observable effect (2026-09-10, OPEN)**
-   - Operator set 0x0B41=0x01 as part of the working bypass triad and saw adb stay at
-     `uid 2000` with SELinux enforcing — no behavioral change attributable to this byte
-   - The "Debug Mode" name is unverified; no code read-site confirmed
-   - Still under active VIP-disasm investigation — see note under §1 table
+9. **0x0B41 "Debug Mode" write produced no observable effect — now tested across full value
+   range, closed as behaviorally inert (updated 2026-10-15)**
+   - Operator tested `0x00`, `0x01`, and `0xFF` at 0x0B41, independently of the SBI bytes —
+     no visible user-facing change and no ADB-visible change in any state (adb stayed at
+     `uid 2000`, SELinux stayed enforcing)
+   - Supersedes the single-value (`0x01`-only) test from 2026-09-10
+   - The "Debug Mode" name is unverified; no code read-site confirmed. Not required for the
+     bypass triad — ADB enable comes entirely from `0x0441`/`0x0A81`
+   - No longer a productive target for bench A/B testing; resolving what this byte does (if
+     anything) now requires a VIP_APP or SoC-side code read-site, not more bit flips
 
 ---
 
@@ -403,12 +424,12 @@ CAN `$27` path and the ICUSB/PROTOKEY path (same engine, not separate code). See
 KNOWN BYPASS FLAGS (marker byte [M] varies per init cycle):
 ├── 0x0440: Primary SBI      → [M] FF [M] (bypass), [M] 00 [M] (locked)
 ├── 0x0A80: Backup SBI       → [M] FF [M] (bypass), [M] 00 [M] (locked)
-└── 0x0B40: Debug Mode (UNCONFIRMED, no observed effect — §1 note) → [M] 01 [M] (on), [M] 00 [M] (off)
+└── 0x0B40: Debug Mode — NOT REQUIRED, confirmed inert across 0x00/0x01/0xFF (§1 note, 2026-10-15)
 
 BYPASS PROCEDURE:
 ├── 1. Read current EEPROM to identify marker bytes at each address
 ├── 2. Change ONLY the data byte (offset+1) — preserve markers
-├── 3. Write: 0x0441=0xFF, 0x0A81=0xFF, 0x0B41=0x01
+├── 3. Write: 0x0441=0xFF, 0x0A81=0xFF (0x0B41 write is unnecessary — no observed effect at any value)
 └── 4. Marker bytes are irrelevant to security validation
 
 UNDOCUMENTED CANDIDATES — REFUTED (Aug–Sep 2026; "N refs" was string-proximity):
@@ -645,7 +666,7 @@ Not a consistent permutation — individual addresses map to different new marke
 The following regions kept their original markers across reflash:
 - Boot/init flags: 0x0000, 0x0020, 0x0040 (always `0x69`)
 - Security configs: 0x0400, 0x0420 (always `0x69`)
-- Security level/mode: 0x0460, 0x0480 (always `0xF0`)
+- HW part number / unidentified (0x0460, 0x0480; corrected 2026-10-15, was "Security level/mode"): (always `0xF0`)
 - Device ID strings: 0x0500-0x05A0 (always `0xF0`)
 - Tertiary security: 0x1A00 (always `0x69`)
 - Secure boot hash: 0x1F60 (always `0x69`)
@@ -694,6 +715,36 @@ CRC blocks contain what appears to be a calibration version counter in the upper
 | CRC #1 (0x16E0) | `00 0013 1531` | `00 0104 9F67` | Upper: 0x0013→0x0104 |
 | CRC #2 (0x19E0) | `00 0013 0DB5` | `00 0104 17F8` | Upper: 0x0013→0x0104 |
 | Data CRC (0x1B40) | `00 0013 189D` | `00 0104 A314` | Upper: 0x0013→0x0104 |
+
+> **CONFIRMING DATA POINT (added 2026-10-15, clean-room triple-pass on `dump.bin`, a 26_HC_A11
+> session dump):** this `[00][upper version word][lower hash/CRC word]` structure holds up exactly.
+> The three blocks read `00 00 58 96 98` (0x16E0), `00 00 57 F2 74` (0x19E0), `00 00 58 9B AD`
+> (0x1B40) — upper words (stored bytes `58 00`/`57 00`/`58 00`, read as LE u16 = `0x0058`/`0x0057`/
+> `0x0058`) cluster tightly (not exact lockstep — ±1 drift observed),
+> same behavior as the stock→post-reflash pair above. An earlier single-dump clean-room pass (no access to this section)
+> misread the whole 5-byte payload as one monotonic ~5.8M counter — **superseded by this
+> structural reading**; treat the "big counter" framing as wrong, not just unconfirmed.
+
+> **CRC ALGORITHM — CORRECTED (2026-10-15):** The algorithm for 0x16E0/0x19E0/0x1B40 is
+> **UNVERIFIED**. Binary proof rules out "CRC of the version word alone": version `0x0058` maps to
+> stored hash `0x9896` at 0x16E0 but to `0xAD9B` at 0x1B40 — same version word, different hash,
+> so coverage range is unknown and CRC-16/CCITT-FALSE is unconfirmed for these blocks.
+> The earlier claim ("Independently reproduced by a CRC-16 brute-force across 5 real EEPROM
+> images") is retracted; the brute-force did not pin down the input coverage and the byte-match
+> does not hold across blocks with identical version words.
+>
+> **CONFIRMED block (byte-match across 5 images): 0x1DC0 only.** Algorithm: CRC-16/CCITT-FALSE,
+> poly `0x1021`, init `0xFFFF`, no reflect, no output XOR. Stored `0xBFD4` = computed `0xBFD4`.
+> This is the only block where the algorithm and coverage are positively confirmed.
+>
+> The upper per-block version/generation word is a separate field, not part of the hash.
+> Full writeup: `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §2.6/§7/§0.15.
+
+> **AUTOSAR NOTE:** The `[marker][00][version][field][marker]` address structure at
+> 0x16E0/0x19E0/0x1B40 is **NOT defined by AUTOSAR NvM or Fee/Ea SWSs**. Neither NvM
+> (SWS_MemIf / SWS_NvM) nor the Fee/Ea abstractions specify a separate integrity-word
+> address at a fixed offset from the data block. Origin undetermined: either a vendor
+> BSP/middleware extension or an application-layer SWC convention.
 
 ### 13.8 USB Update Package
 

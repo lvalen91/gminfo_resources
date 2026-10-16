@@ -201,7 +201,26 @@ its `[D] CORRECTION`).
 
 ---
 
-## MEC (Module Event Counter)
+## MEC (Manufacturer Enable Counter)
+
+> **Naming note (standardized 2026-10-15):** this acronym was written three different ways across
+> this tree — "Manufacturer Enable Counter" (here and in the GDS2/AllData factory procedure, the
+> decompiled SoC class `ManufacturerEnableCounter`/`DiagnosticDataID.MANUFACTURER_ENABLE_COUNTER` in
+> `info3.jar`, and the HIDL method `IDiagnosticsObd::getManufacturingEnableCounter()` — see
+> `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.10-0.14), "Module Event Counter" (this
+> section's prior heading, unsourced), and "Reprogramming event count" (`hardware/teardown.md`,
+> also unsourced). **Manufacturer Enable Counter** is standardized on throughout as the reading
+> with the strongest evidence trail; see `research/EEPROM_MAPPING_FABLE_REPORT.md` Finding E for
+> the full comparison. The other two are unverified alternate readings, not confirmed definitions.
+>
+> The behavior table below (boot-failure counter disabling hypervisor/CSM recovery) is itself
+> grounded in literal VIP_APP firmware strings (`"[PLC] MEC is %d. Ignoring Hypervisor Startup
+> Timeout"` — see `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` §10.3/§11.6), so the counter's
+> *existence and hypervisor-timeout effect* are firmware-confirmed. What is **not** independently
+> confirmed is whether this is the *same* counter/semantics as the "manufacturing-mode
+> ∈[1,255]→ADB-bypass" MEC described above in §ProtoKey/ADB Authentication — the two sections may
+> describe one counter with two effects, or two distinct counters sharing an acronym. Treat that
+> as an open reconciliation question.
 
 The MEC counter tracks consecutive SoC boot failures and progressively disables recovery mechanisms:
 

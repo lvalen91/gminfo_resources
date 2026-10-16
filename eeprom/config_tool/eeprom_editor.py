@@ -4,12 +4,29 @@ GM IOK (Info 3.7/3.8 CSM) EEPROM Editor — ST M24C64 (8 KB) dumps.
 
 A zero-dependency, single-file local web UI for inspecting and editing
 GM Harman infotainment EEPROM flash dumps. Built from the research in
-EEPROM_Analysis_Report.md and EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md.
+EEPROM_Analysis_Report.md, EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md and
+research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md (§0.15 = the 2026-10-15
+clean-room triple-pass that added the ECU-ID / HW-part-number / F198 / F199 /
+0x1DC0 fields below and corrected 0x14A0 + 0x0680).
 
 KEY DESIGN PRINCIPLE — marker bytes are runtime-generated (CalGroup), so the
 tool NEVER assumes a fixed framing marker. For every flag it reads the LIVE
 marker at the base address and edits ONLY the data byte at base+1, preserving
 whatever marker the firmware assigned. (Report §"Framing Protocol", Feb 2026.)
+
+Field lists are data-driven: SECURITY_FLAGS / STRING_FIELDS / BINARY_FIELDS /
+FEATURE_FLAGS / UI_FLAGS / CRC_FIELDS each feed build_state() (JSON for the
+browser) and build_address_labels() (diff/compare annotation). Add a field to
+the list and it renders; nothing is hard-wired in the HTML.
+
+Every field carries a "conf" evidence tag (CONFIRMED / PLAUSIBLE / UNCONFIRMED)
+that renders as a pill in the UI, so a confident-sounding label can never again
+drift away from its backing silently. A 2026-10-15 six-agent survey (cross-checked
+against 5 real dumps + the raw VIP firmware) corrected several claims this file
+once asserted: 0x0500 is the MTC tail, NOT a part number (with 0x0520/0x0540/0x0560
+being the other MTC fragments, not HW version/revision); the 0x1DC0 payload's two
+u32s are UNIX timestamps, NOT a sequence/ID pair differing by 1; 0x0460/0x0480 are
+the ECU_GCI End/Base Model Numbers. See the per-field notes for the evidence.
 
 Usage:
     python3 eeprom_editor.py [path/to/dump.bin] [--port 8765] [--no-browser]
@@ -21,6 +38,7 @@ explicitly Save As to the same path; edits live in memory until you save.
 """
 
 import argparse
+import datetime
 import hashlib
 import http.server
 import json
@@ -31,7 +49,16 @@ import threading
 import webbrowser
 from urllib.parse import urlparse, parse_qs
 
+# 2026-10-15: never write .pyc for this tool. A stale config_tool/__pycache__/*.pyc from an
+# older revision was observed to be imported in preference to edited source, so the server
+# silently served OLD bytecode (e.g. a build_state() missing the whole "binary" JSON key) with
+# HTTP 200 and no error -- "it ran without exceptions" proved nothing. Single-file stdlib tool,
+# no reason to cache bytecode; disabling it removes the footgun at the source. (Survey 6, Part A.)
+sys.dont_write_bytecode = True
+
 EEPROM_SIZE = 8192
+# Marker values seen so far. Informational only (see KEY DESIGN PRINCIPLE) -- the
+# tool never requires a marker to be one of these; it just flags an unusual one.
 KNOWN_MARKERS = {0x5A, 0x69, 0xC3, 0xF0}
 DIR = os.path.dirname(os.path.abspath(__file__))
 # Dumps live in the parent EEPROM folder (this script sits in config_tool/).
@@ -42,12 +69,16 @@ DUMP_ROOT = os.path.dirname(DIR)
 VIN_BASE = 0x05C0
 VIN_DATA = 0x05C1
 VIN_LEN = 17
+# 2026-10-15: VIN-tail residual block (last 8 chars of a VIN + " A"), see STRING_FIELDS.
+VIN_TAIL_BASE = 0x14A0
+VIN_TAIL_LEN = 8
 
 # ── Field definitions (grounded in the analysis docs) ───────────────────────
 # Each flag is [marker][data][marker]; we read marker live, edit data at base+1.
 
 SECURITY_FLAGS = [
     {"key": "sbi1", "base": 0x0440, "name": "Primary SBI — NOT ADB-only (field-proven, Aug26)",
+     "conf": "CONFIRMED",
      "on": 0xFF, "off": 0x00, "on_label": "Bypass", "off_label": "Lock",
      "states": {0x00: ("LOCKED", "bad"), 0xFF: ("BYPASSED", "good")},
      "note": "0x00 = secured; 0xFF opens ADB. Aug26: the ADB path IS now confirmed -- VIP "
@@ -63,6 +94,7 @@ SECURITY_FLAGS = [
              "cells 0x43a-0x447 (vip_app.bin FUN_ram_00091938) -- see "
              "eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md."},
     {"key": "sbi2", "base": 0x0A80, "name": "Backup SBI — mechanism NOT located (Aug26)",
+     "conf": "UNCONFIRMED",
      "on": 0xFF, "off": 0x00, "on_label": "Bypass", "off_label": "Lock",
      "states": {0x00: ("LOCKED", "bad"), 0xFF: ("BYPASSED", "good")},
      "note": "Was 0xFF (empty) pre-Y181; now actively initialized. Aug26 correction: "
@@ -75,6 +107,7 @@ SECURITY_FLAGS = [
              "mechanism/claim about how it relates to sbi1 is. See "
              "eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md §5."},
     {"key": "debug", "base": 0x0B40, "name": "Debug / Developer Mode",
+     "conf": "PLAUSIBLE",
      "on": 0x01, "off": 0x00, "on_label": "On", "off_label": "Off",
      "states": {0x00: ("OFF", "neutral"), 0x01: ("ON", "good")},
      "note": "Developer/debug mode flag. 0x01 = on, 0x00 = off. Not covered by the "
@@ -82,17 +115,122 @@ SECURITY_FLAGS = [
 ]
 
 # Best-effort ASCII string fields: [marker][ascii...][marker][0xFF pad]
+# Optional "note" renders under the name in the identity panel. Binary (non-ASCII)
+# identity fields live in BINARY_FIELDS below -- never add them here, parse_string()
+# stops at the first non-printable byte and would silently truncate them.
+#
+# "conf" = evidence confidence, surfaced in the UI as a pill (CONFIRMED / PLAUSIBLE /
+# UNCONFIRMED). It exists so a confident-sounding label can never again drift away from
+# its evidence silently -- if a claim is a guess, the UI says so. Keep it honest.
 STRING_FIELDS = [
-    {"key": "vin",      "base": VIN_BASE, "maxlen": 24, "name": "VIN", "vin": True},
-    {"key": "partno",   "base": 0x0500, "maxlen": 24, "name": "Part Number"},
-    {"key": "hwver",    "base": 0x0520, "maxlen": 16, "name": "HW Version field"},
-    {"key": "rev",      "base": 0x0540, "maxlen": 16, "name": "Revision field"},
-    {"key": "hwrev",    "base": 0x0560, "maxlen": 16, "name": "HW Rev field"},
-    {"key": "progdate", "base": 0x0580, "maxlen": 16, "name": "Programming Date"},
-    {"key": "serial",   "base": 0x05A0, "maxlen": 24, "name": "Serial Number"},
-    {"key": "region",   "base": 0x04E0, "maxlen": 8,  "name": "Region Code"},
-    {"key": "unit",     "base": 0x0680, "maxlen": 24, "name": "Unit Serial"},
-    {"key": "fwid",     "base": 0x14A0, "maxlen": 24, "name": "Firmware ID"},
+    {"key": "vin",      "base": VIN_BASE, "maxlen": 24, "name": "VIN", "vin": True,
+     "conf": "CONFIRMED"},
+    # ── Manufacturing Traceability Code (MTC) ────────────────────────────────
+    # 2026-10-15 correction (survey 3, digit-exact): 0x0500 is NOT a GM "Part Number".
+    # It is the 9-digit TAIL of the 16-digit MTC (SPSVCS.LOG `mtc` / `infokey`), and the
+    # neighbouring 0x0520/0x0540/0x0560 "HW version/revision" guesses are the other MTC
+    # fragments, not version fields. Assembled order region(0x04E1)+0x0561+0x0541+0x0521+
+    # 0x0501 reproduces `4225051170003205` exactly (26_HC_A11 SPSVCS.LOG). The assembled
+    # value is shown as a derived row (see assemble_mtc() / build_state()).
+    {"key": "mtc_tail", "base": 0x0500, "maxlen": 24, "mtc": 5,
+     "name": "MTC tail (9 digits, SPS `mtc`/`infokey` — NOT a part number)",
+     "conf": "CONFIRMED",
+     "note": "2026-10-15 (survey 3): trailing 9 digits of the 16-digit Manufacturing Traceability "
+             "Code, digit-exact against 26_HC_A11 SPSVCS.LOG `mtc`/`infokey`. The old 'Part Number' "
+             "label was wrong -- no 8-digit GM part number in any SPS log matches these 9 digits."},
+    {"key": "mtc_g3",   "base": 0x0520, "maxlen": 16, "mtc": 4,
+     "name": "MTC fragment (3 digits; was mislabelled 'HW Version')", "conf": "CONFIRMED",
+     "note": "2026-10-15 (survey 3): MTC digits, not a HW version field. Position-confirmed in the "
+             "16-digit reconstruction."},
+    {"key": "mtc_g2",   "base": 0x0540, "maxlen": 16, "mtc": 3,
+     "name": "MTC fragment (2 digits; was mislabelled 'Revision')", "conf": "CONFIRMED",
+     "note": "2026-10-15 (survey 3): MTC digits, not a revision field."},
+    {"key": "mtc_g1",   "base": 0x0560, "maxlen": 16, "mtc": 2,
+     "name": "MTC fragment (1 digit; was mislabelled 'HW Rev')", "conf": "CONFIRMED",
+     "note": "2026-10-15 (survey 3): MTC digits, not a HW-rev field."},
+    # 2026-10-15: qualified "manufacture" to distinguish it from the BCD reprogramming
+    # date (UDS DID F199) at 0x06A0 in BINARY_FIELDS (EEPROM_LAYOUT §2.5).
+    {"key": "progdate", "base": 0x0580, "maxlen": 16, "name": "Programming Date (manufacture, ASCII)",
+     "conf": "PLAUSIBLE"},
+    # 2026-10-15: teardown.md reads the same bytes as a CVPPS "Calibration file ID";
+    # EEPROM_Analysis_Report.md keeps "Serial Number". Unresolved -- both shown.
+    {"key": "serial",   "base": 0x05A0, "maxlen": 24, "name": "Serial Number (CVPPS value; teardown: cal-file ID)",
+     "conf": "UNCONFIRMED"},
+    # 0x04E1 is both a plausible region/plant digit AND the first digit of the MTC (shared
+    # storage, not an independent field -- survey 3). Kept as its own row because it is the
+    # MTC's leading digit; "mtc": 1 wires it into the assembled value.
+    {"key": "region",   "base": 0x04E0, "maxlen": 8,  "mtc": 1,
+     "name": "Region/plant digit (also MTC digit 1)", "conf": "PLAUSIBLE",
+     "note": "2026-10-15 (survey 3): a single digit that is also the leading character of the "
+             "16-digit MTC -- shared storage, not a separately-stored region field. 'Region code' "
+             "is a reasonable interpretation of the leading plant/region digit, not confirmed."},
+    # 2026-10-15 correction (was key "unit" / "Unit Serial"): this is the SPS shop/dealer
+    # code, UDS DID F198 -- the SPSVCS.LOG `shopcode` field. In the analyzed dump the
+    # stored 10 chars were a truncation of the 11-digit code logged by the SPS tool
+    # (EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.15 / §2.5). Not a generic unit serial.
+    {"key": "shopcode", "base": 0x0680, "maxlen": 24, "name": "Shop/dealer code (UDS DID F198, SPS `shopcode`)",
+     "conf": "CONFIRMED",
+     "note": "2026-10-15: confirmed against the SPS tool's `shopcode` field (UDS DID F198). The EEPROM "
+             "holds 10 chars; the SPS log showed an 11-digit code, so the field is a truncation. "
+             "Was labelled 'Unit Serial' here and 'Repair-shop SN' in eeprom/README.md -- the "
+             "README name was closer."},
+    # 2026-10-15: name tightened; full mechanism in "note". Not a Firmware ID (that label
+    # was retired in a prior pass). Format observed: 8 VIN chars + " A" + 0x00.
+    {"key": "vin_tail", "base": VIN_TAIL_BASE, "maxlen": 24,
+     "name": "VIN-tail residual (last 8 of a VIN; can be STALE)",
+     "conf": "CONFIRMED",
+     "note": "2026-10-15 (EEPROM_LAYOUT §0.15): mirrors whichever VIN was active when its NvM block "
+             "was last written -- it is NOT a live copy of 0x05C1. After a re-VIN/reprogram it can "
+             "retain the PREVIOUS vehicle's VIN tail: proven by two SPS sessions on the same ECUID "
+             "where the module moved vehicles and this field did not update. Firmware strings "
+             "cal_vin_relearn_en / Theftlocked corroborate a VIN-relearn/theft-lock retention "
+             "mechanism. The pill at right compares chars 1-8 with the current VIN's last 8."},
+]
+
+# MTC assembly order: list of STRING_FIELDS "mtc" rank -> fragment. The 16-digit code is
+# region(rank1) + 0x0560(2) + 0x0540(3) + 0x0520(4) + 0x0500(5), per survey 3's digit-exact
+# reconstruction (`4225051170003205`). Driven off the "mtc" keys above so it can't drift.
+MTC_LEN = 16
+
+# ── Raw binary identity fields (2026-10-15) ───────────────────────────────────
+# [marker][len data bytes][marker]. NOT ASCII -- never route these through parse_string().
+# "decode" picks the display decoder in decode_binary(); raw hex is always shown too.
+# All from the clean-room triple-pass, EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.15 / §2.3 / §2.5.
+BINARY_FIELDS = [
+    {"key": "ecuid", "base": 0x03A0, "len": 16, "decode": "hex",
+     "name": "ECU-ID (16 bytes, SPS `ECUID`)", "conf": "CONFIRMED",
+     "note": "2026-10-15: confirmed byte-exact against the SPS tool's SPSVCS.LOG `ECUID` field in two "
+             "independent SPS sessions on the same physical module (§0.15). Raw binary, not ASCII. "
+             "Module identity -- treat as a device serial. Probably the ECUID the VIP folds into the "
+             "real (non-bypassed) UDS $27 seed (UNDOC doc: seed = ECUID + challenge), but that link "
+             "is an inference, not independently confirmed."},
+    # 2026-10-15 correction (survey 3): the value matches ECU_GCI_JSON "End Model Number", NOT the
+    # SPS `ssecuhn` field (which reads 0 in every SPSVCS.LOG VIT2 record). Relabelled accordingly.
+    {"key": "hwpn", "base": 0x0460, "len": 4, "decode": "be_u32",
+     "name": "End Model Number (BE u32, ECU_GCI `End Model Number`)", "conf": "CONFIRMED",
+     "note": "2026-10-15 (survey 3): big-endian u32 = 85086705 (0x051251F1) in the analyzed dump; "
+             "byte-exact match to ECU_GCI_JSON `End Model Number` for ecu_adr 80. Earlier passes "
+             "called it SPS `ssecuhn` -- that is a DIFFERENT, separate field that reads 0 in the logs, "
+             "so the ssecuhn label was wrong. (Also corrects the older 'Radio/Audio Settings' guess "
+             "for the 0x0460 region.)"},
+    # 2026-10-15 correction (survey 3): identified. Matches ECU_GCI_JSON "Base Model Number".
+    {"key": "hwpn_b", "base": 0x0480, "len": 4, "decode": "be_u32",
+     "name": "Base Model Number (BE u32, ECU_GCI `Base Model Number`)", "conf": "CONFIRMED",
+     "note": "2026-10-15 (survey 3): big-endian u32 = 84999439 in the analyzed dump; byte-exact match "
+             "to ECU_GCI_JSON `Base Model Number`. Same [marker][BE u32][marker] shape as 0x0460. "
+             "Previously labelled UNIDENTIFIED (\"not found in any source\") -- now confirmed."},
+    {"key": "progdate_f199", "base": 0x06A0, "len": 4, "decode": "bcd_date",
+     "name": "Reprogramming date (UDS DID F199, BCD)", "conf": "CONFIRMED",
+     "note": "2026-10-15: four BCD bytes YY YY MM DD -- e.g. 20 26 09 28 = 2026-09-28 -- matching the "
+             "firmware's `DIDF199` NvM string and the SPS `progdate` field format. In the analyzed dump "
+             "this POST-DATED the most recent logged SPS session (progdate 20260707): the module was "
+             "reprogrammed again after the available logs end. Distinct from the ASCII manufacture "
+             "date at 0x0580 (§0.15 / §2.5)."},
+    {"key": "hwpn2", "base": 0x06E0, "len": 4, "decode": "hex",
+     "name": "HW part-number word #2", "conf": "CONFIRMED",
+     "note": "2026-10-15: raw bytes 60 02 02 B1, matched against the VIP boot-log line "
+             "\"Send HW Partnum 0x60 0x2 0x2 0xb1\" (VIP_log_2B.174.4.1_10JUL24.txt, same log as "
+             "§0.14). Previously unidentified in every prior pass (§0.15)."},
 ]
 
 # Single-byte feature toggles (data byte at base+1). From report tables.
@@ -128,6 +266,7 @@ FEATURE_FLAGS = [
              "offset inside an unrelated UDS-style dispatcher). Testing this address "
              "is now low-expected-value; kept here for completeness, not as a lead."},
     {"base": 0x04C0, "name": "CONFIRMED real, purpose UNKNOWN (Aug26)", "risk": "high", "options": FF,
+     "conf": "PLAUSIBLE",
      "note": "Aug26: genuinely real -- CalGroup 0x44, cells 0x4b8-0x4c5, handler "
              "vip_app.bin FUN_ram_00091f82. Structurally identical to the primary SBI "
              "block (same interleaved pack/unpack pattern) but administratively "
@@ -177,12 +316,49 @@ UI_FLAGS = [
     {"off": 0x0D, "name": "Unknown toggle"},
 ]
 
-# CRC fields. kind='std' → [marker][3-byte version counter][2-byte CRC16][marker].
+# CRC fields.
+#  kind='std'    → [marker][3-byte version counter][2-byte CRC16][marker].
+#                  2026-10-15 CONFIRMED (independently re-derived, EEPROM_LAYOUT §0.15, UNDOC
+#                  §13.7): the leading counter byte has been 0x00 in every dump seen, so the
+#                  3-byte counter == the docs' "[00][2-byte version word]" -- same thing. The
+#                  three std blocks move in lockstep (0x0013→0x0104 stock→reflash; 0x0057/0x0058
+#                  in the 2026-10-15 dump, e.g. 0x16E0 payload 00 00 58 96 98 → counter 88,
+#                  crc16 0x9698). Decode left as-is on purpose.
+#  kind='raw'    → opaque bytes. Optional "mirror": {src, off, len} asserts that bytes
+#                  base+off.. equal src+1.. (2026-10-15: in both non-blank dumps on hand 0x1A80
+#                  bytes +3..+7 are byte-identical to 0x19E0's counter+crc payload -- supports
+#                  the "reference copy" label; teardown.md's "MEC NVM value" reading unresolved).
+#  kind='seqcrc' → [marker][payload_len bytes][CRC-16 LE][marker]. The trailing CRC is a
+#                  CONFIRMED CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF, MSB-first, no
+#                  refin/refout, no xorout) over the 16 payload bytes, stored little-endian --
+#                  independently brute-forced to an exact match across 5 real images (survey 5).
+#                  The tool recomputes it live (crc_ok).
+#                  2026-10-15 CORRECTION (survey 5): the two leading 32-bit fields are NOT a
+#                  "sequence/ID pair differing by exactly 1." Brute-force across 5 images decodes
+#                  them as two big-endian u32 UNIX timestamps at payload offsets 6 and 11, with a
+#                  gap that is NOT fixed (observed 11 / 421 / 1366 / 13799 s across images -- never
+#                  1). The old Δ=1 reading was an artifact of reading one byte early (offset 5/10
+#                  caught a leading 0x01 tag byte) on one dump where the boundary happened to line
+#                  up; it does not reproduce. ts_offs are the two timestamp payload offsets.
 CRC_FIELDS = [
-    {"base": 0x16E0, "name": "Primary CRC #1", "kind": "std"},
-    {"base": 0x19E0, "name": "Secondary CRC #2", "kind": "std"},
-    {"base": 0x1B40, "name": "Data CRC", "kind": "std"},
-    {"base": 0x1A80, "name": "Config CRC (reference copy)", "kind": "raw", "len": 10},
+    {"base": 0x16E0, "name": "Primary CRC #1", "kind": "std", "conf": "CONFIRMED",
+     "note": "2026-10-15: [00][version word][hash] structure re-confirmed. The three std rows' "
+             "version words CLUSTER TIGHTLY across reflashes (shared calibration-generation number) "
+             "but do NOT move in exact lockstep -- survey 5 measured a ±1 drift between blocks in 2 "
+             "of 5 images (e.g. ADB_enabled 0089/0089/008a). EEPROM_LAYOUT §0.15 / UNDOC §13.7."},
+    {"base": 0x19E0, "name": "Secondary CRC #2", "kind": "std", "conf": "CONFIRMED"},
+    {"base": 0x1B40, "name": "Data CRC", "kind": "std", "conf": "CONFIRMED"},
+    {"base": 0x1A80, "name": "Config CRC (reference copy of 0x19E0)", "kind": "raw", "len": 10,
+     "conf": "PLAUSIBLE", "mirror": {"src": 0x19E0, "off": 3, "len": 5}},
+    {"base": 0x1DC0, "name": "Timestamp pair + CRC-16/CCITT-FALSE", "kind": "seqcrc",
+     "payload_len": 16, "ts_offs": (6, 11), "conf": "PLAUSIBLE",
+     "note": "2026-10-15 CORRECTION (survey 5, 5 images): the trailing CRC-16/CCITT-FALSE over the 16 "
+             "payload bytes (stored LE) is CONFIRMED -- the only EEPROM block with a verified CRC "
+             "algorithm, recomputed live here. The two leading 32-bit fields are two BE u32 UNIX "
+             "timestamps (payload offsets 6 and 11), NOT a sequence/ID pair and NOT Δ=1: the gap is "
+             "variable (11-13799 s across images). The earlier 'monotonic pair differing by 1' "
+             "reading was a one-dump artifact of reading a byte early and does not reproduce. Which "
+             "component writes the block (VIP, SoC or SPS tool) is not established."},
 ]
 
 VIN_YEAR = {  # 10th VIN char -> model year (current cycle)
@@ -321,6 +497,103 @@ def decode_vin(vin):
     return " · ".join(info)
 
 
+def hexs(buf):
+    """'00 4B 41 ...' spaced-hex rendering used everywhere a raw span is shown."""
+    return " ".join(f"{b:02X}" for b in buf)
+
+
+def be_u32(data, addr):
+    """Big-endian u32 at addr (the model-number words at 0x0461/0x0481 are stored this way)."""
+    return int.from_bytes(data[addr:addr + 4], "big")
+
+
+def unix_ts(v):
+    """Render a u32 as a UTC timestamp string, or '' when it is 0 / not a plausible epoch.
+
+    2026-10-15 (survey 5): the two u32 fields in the 0x1DC0 block are BE UNIX timestamps.
+    Guard the range so an unwritten (0x00000000) or garbage field shows '' rather than 1970.
+    """
+    if not (1_000_000_000 <= v <= 4_000_000_000):  # ~2001-09 .. ~2096
+        return ""
+    try:
+        return datetime.datetime.fromtimestamp(v, datetime.timezone.utc).strftime(
+            "%Y-%m-%d %H:%M:%S UTC")
+    except (OverflowError, OSError, ValueError):
+        return ""
+
+
+def bcd_date(raw):
+    """Decode 4 BCD bytes YY YY MM DD -> 'YYYY-MM-DD'. None if any nibble isn't 0-9.
+
+    2026-10-15: UDS DID F199 at 0x06A1 (e.g. 20 26 09 28 -> 2026-09-28). Each byte is two
+    BCD digits, NOT ASCII digits -- that is why it never belonged in STRING_FIELDS.
+    """
+    if len(raw) != 4:
+        return None
+    digits = []
+    for b in raw:
+        hi, lo = b >> 4, b & 0x0F
+        if hi > 9 or lo > 9:
+            return None
+        digits.append(f"{hi}{lo}")
+    s = "".join(digits)
+    return f"{s[0:4]}-{s[4:6]}-{s[6:8]}"
+
+
+def crc16_ccitt_false(buf):
+    """CRC-16/CCITT-FALSE: poly 0x1021, init 0xFFFF, no reflection, no xorout.
+
+    2026-10-15: confirmed as the algorithm behind the 0x1DC0 block's trailing CRC
+    (EEPROM_LAYOUT §0.15). Bitwise, not table-driven -- 16 bytes once per state build.
+    """
+    crc = 0xFFFF
+    for b in buf:
+        crc ^= b << 8
+        for _ in range(8):
+            crc = ((crc << 1) ^ 0x1021) & 0xFFFF if crc & 0x8000 else (crc << 1) & 0xFFFF
+    return crc
+
+
+def decode_binary(kind, raw):
+    """Human-readable decode of a BINARY_FIELDS span; '' when the hex alone is the answer."""
+    if kind == "be_u32":
+        v = int.from_bytes(raw, "big")
+        return f"{v} (0x{v:08X})"
+    if kind == "bcd_date":
+        return bcd_date(raw) or "(not valid BCD)"
+    return ""
+
+
+def vin_tail_matches(d):
+    """2026-10-15 (§0.15): does the 0x14A1 residual match the CURRENT VIN's last 8 chars?
+
+    True = matches, False = stale (previous vehicle's tail retained after a re-VIN /
+    reprogram), None = not comparable (VIN in learn mode or residual empty/short).
+    """
+    vin, _ = parse_string(d, VIN_BASE, 24)
+    tail, _ = parse_string(d, VIN_TAIL_BASE, 24)
+    if len(vin) != VIN_LEN or len(tail) < VIN_TAIL_LEN:
+        return None
+    return tail[:VIN_TAIL_LEN].upper() == vin[-VIN_TAIL_LEN:].upper()
+
+
+def assemble_mtc(d):
+    """Reassemble the 16-digit Manufacturing Traceability Code from its scattered fragments.
+
+    2026-10-15 (survey 3): the MTC (SPSVCS.LOG `mtc`/`infokey`) is stored split across
+    region(0x04E1)+0x0561+0x0541+0x0521+0x0501. Concatenating the fragments in STRING_FIELDS
+    "mtc"-rank order reproduces e.g. `4225051170003205` digit-for-digit. Returns a dict with
+    the assembled value, the ordered pieces, and whether it looks complete (16 digits).
+    """
+    pieces = []
+    for f in sorted((x for x in STRING_FIELDS if "mtc" in x), key=lambda x: x["mtc"]):
+        s, _ = parse_string(d, f["base"], f["maxlen"])
+        pieces.append({"base": f["base"], "value": s})
+    code = "".join(p["value"] for p in pieces)
+    return {"code": code, "pieces": pieces, "complete": len(code) == MTC_LEN,
+            "conf": "CONFIRMED"}
+
+
 def state_for(value, states):
     if value in states:
         return states[value]
@@ -357,7 +630,9 @@ def fingerprint():
     elif sbi1 == 0xFF and backup_uninit:
         tags.append(("Primary SBI bypassed; backup SBI uninitialized", "warn"))
     elif (sbi1 == 0xFF) ^ (sbi2 == 0xFF):
-        tags.append(("Partial / mismatched SBI state — bypass may not hold", "warn"))
+        # Aug26: whether sbi2 must match sbi1 is UNVERIFIED (no code ref to 0x0A81 found) --
+        # report the mismatch as a fact, not as a prediction that the bypass fails.
+        tags.append(("Primary/backup SBI bytes differ — backup SBI's role is unverified (Aug26)", "warn"))
     elif sbi1 == 0x00 and sbi2 == 0x00:
         tags.append(("Locked / secured — stock security state", "bad"))
     else:
@@ -371,6 +646,10 @@ def fingerprint():
         tags.append(("VIN present but check digit INVALID", "warn"))
     if backup_uninit:
         tags.append(("Backup SBI slot uninitialized (FF FF FF) — pre-Y181 pattern", "warn"))
+    # 2026-10-15 (§0.15): a stale residual is evidence of a re-VIN / reprogram history.
+    if vin_tail_matches(d) is False:
+        tags.append(("VIN-tail residual @0x14A1 is STALE — previous vehicle's VIN tail "
+                     "(module was re-VIN'd / reprogrammed)", "warn"))
     return [{"text": t, "css": c} for t, c in tags]
 
 
@@ -384,6 +663,8 @@ def build_address_labels():
     for f in UI_FLAGS:
         lab[UI_FLAGS_BASE + f["off"]] = "UI: " + f["name"]
     for f in STRING_FIELDS:
+        lab[f["base"]] = f["name"]
+    for f in BINARY_FIELDS:
         lab[f["base"]] = f["name"]
     for f in CRC_FIELDS:
         lab[f["base"]] = f["name"]
@@ -425,7 +706,7 @@ def build_state():
         sec.append({
             "name": f["name"], "base": base, "addr": base, "data_addr": base + 1,
             "marker": marker, "value": val, "orig": o[base + 1],
-            "modified": val != o[base + 1],
+            "modified": val != o[base + 1], "conf": f.get("conf", ""),
             "label": label, "css": css, "note": f["note"],
             "interp": SBI_INTERP.get(val, "") if f["key"] in ("sbi1", "sbi2") else "",
             "reset_by": SBI_CAL_RESET,
@@ -439,7 +720,8 @@ def build_state():
     for f in STRING_FIELDS:
         s, marker = parse_string(d, f["base"], f["maxlen"])
         item = {"key": f["key"], "name": f["name"], "base": f["base"],
-                "marker": marker, "value": s,
+                "marker": marker, "value": s, "note": f.get("note", ""),
+                "conf": f.get("conf", ""),
                 "modified": region_modified(f["base"], f["maxlen"])}
         if f.get("vin"):
             learn = all(d[VIN_DATA + i] == 0xFF for i in range(VIN_LEN))
@@ -447,7 +729,28 @@ def build_state():
             item.update({"vin": True, "data_addr": VIN_DATA, "length": VIN_LEN,
                          "learn": learn, "check_ok": chk,
                          "decoded": "" if learn else decode_vin(s)})
+        if f["key"] == "vin_tail":
+            # 2026-10-15 (§0.15): surface stale-vs-current so a re-VIN'd module is obvious.
+            m = vin_tail_matches(d)
+            item["status"] = (
+                None if m is None else
+                {"label": "matches current VIN", "css": "good"} if m else
+                {"label": "STALE — previous vehicle's VIN tail", "css": "warn"})
         strs.append(item)
+
+    # raw binary identity fields (2026-10-15) -- hex + decoder, never parse_string()
+    binf = []
+    for f in BINARY_FIELDS:
+        base, n = f["base"], f["len"]
+        raw = bytes(d[base + 1:base + 1 + n])
+        marker, marker_end = d[base], d[base + 1 + n]
+        binf.append({"key": f["key"], "name": f["name"], "base": base,
+                     "data_addr": base + 1, "length": n, "conf": f.get("conf", ""),
+                     "marker": marker, "marker_end": marker_end,
+                     "framed": marker == marker_end,          # live check, no fixed marker assumed
+                     "known_marker": marker in KNOWN_MARKERS,
+                     "raw": hexs(raw), "decoded": decode_binary(f["decode"], raw),
+                     "modified": region_modified(base, n + 2), "note": f.get("note", "")})
 
     # feature flags
     feats = []
@@ -458,6 +761,9 @@ def build_state():
         feats.append({"name": f["name"], "base": base, "addr": base,
                       "data_addr": base + 1, "marker": d[base], "value": val,
                       "orig": o[base + 1], "modified": val != o[base + 1],
+                      # Feature flags are guesses by nature -- default UNCONFIRMED unless a
+                      # specific entry earned a higher tag (e.g. 0x04C0 = confirmed-real block).
+                      "conf": f.get("conf", "UNCONFIRMED"),
                       "label": label, "css": css, "risk": f["risk"], "note": f["note"],
                       "options": [{"val": v, "label": "0x%02X" % v} for v in f["options"]]})
 
@@ -476,27 +782,59 @@ def build_state():
         ui.append({"name": f["name"], "base": a, "addr": a, "data_addr": a,
                    "marker": ui_marker, "value": val, "orig": o[a],
                    "modified": val != o[a], "label": label, "css": css,
+                   # Survey 4: the 0x0E80 block bytes are confirmed but per-bit meanings have
+                   # ZERO firmware-string/xref backing -- every row name here is an unverified gloss.
+                   "conf": f.get("conf", "UNCONFIRMED"),
                    "options": opts})
 
     # CRCs
     crcs = []
     for f in CRC_FIELDS:
-        base = f["base"]
-        if f["kind"] == "std":
+        base, kind = f["base"], f["kind"]
+        item = {"name": f["name"], "base": base, "kind": kind, "marker": d[base],
+                "conf": f.get("conf", ""), "note": f.get("note", "")}
+        if kind == "std":
+            # Unchanged decode -- re-confirmed 2026-10-15, see CRC_FIELDS header comment.
             counter = (d[base + 1] << 16) | (d[base + 2] << 8) | d[base + 3]
             crc16 = (d[base + 4] << 8) | d[base + 5]
-            crcs.append({"name": f["name"], "base": base, "kind": "std",
-                         "marker": d[base], "counter": counter, "crc16": crc16,
-                         "raw": " ".join(f"{x:02X}" for x in d[base:base + 7])})
+            item.update({"counter": counter, "crc16": crc16,
+                         "raw": hexs(d[base:base + 7]),
+                         "modified": region_modified(base, 7)})
+        elif kind == "seqcrc":
+            # [marker][payload][CRC-16 LE][marker]; verify the CRC live. The CRC is the only
+            # CONFIRMED part. The two BE u32 fields at payload offsets 6/11 are UNIX timestamps
+            # (survey 5) -- NO Δ=1 check, their gap is not fixed. ts_a/ts_b carry decoded UTC.
+            n = f["payload_len"]
+            payload = bytes(d[base + 1:base + 1 + n])
+            crc_addr = base + 1 + n
+            stored = int.from_bytes(d[crc_addr:crc_addr + 2], "little")
+            calc = crc16_ccitt_false(payload)
+            a_off, b_off = f["ts_offs"]
+            ts_a, ts_b = be_u32(d, base + 1 + a_off), be_u32(d, base + 1 + b_off)
+            item.update({"ts_a": ts_a, "ts_b": ts_b,
+                         "ts_a_addr": base + 1 + a_off, "ts_b_addr": base + 1 + b_off,
+                         "ts_a_utc": unix_ts(ts_a), "ts_b_utc": unix_ts(ts_b),
+                         "ts_gap": ts_b - ts_a,
+                         "crc_addr": crc_addr, "crc_stored": stored, "crc_calc": calc,
+                         "crc_ok": stored == calc, "marker_end": d[crc_addr + 2],
+                         "raw": hexs(d[base:crc_addr + 3]),
+                         "modified": region_modified(base, n + 4)})
         else:
             n = f.get("len", 8)
-            crcs.append({"name": f["name"], "base": base, "kind": "raw",
-                         "raw": " ".join(f"{x:02X}" for x in d[base:base + n])})
+            item.update({"raw": hexs(d[base:base + n]),
+                         "modified": region_modified(base, n)})
+            mir = f.get("mirror")
+            if mir:
+                src, off, ln = mir["src"], mir["off"], mir["len"]
+                item.update({"mirror_src": src,
+                             "mirror_ok": d[base + off:base + off + ln] == d[src + 1:src + 1 + ln]})
+        crcs.append(item)
 
     return {
         "loaded": True, "name": EE.name, "path": EE.path, "files": list_dumps(),
-        "security": sec, "strings": strs, "features": feats,
+        "security": sec, "strings": strs, "binary": binf, "features": feats,
         "ui_marker": ui_marker, "ui": ui, "crcs": crcs, "diff": EE.diff(),
+        "mtc": assemble_mtc(d),
         "sha256": EE.sha256(), "fingerprint": fingerprint(),
     }
 
@@ -545,9 +883,8 @@ def hex_dump(start, length):
     lines = []
     for row in range(start, end, 16):
         chunk = d[row:row + 16]
-        hexs = " ".join(f"{b:02X}" for b in chunk)
         asci = "".join(chr(b) if 32 <= b < 127 else "." for b in chunk)
-        lines.append(f"{row:04X}  {hexs:<47}  {asci}")
+        lines.append(f"{row:04X}  {hexs(chunk):<47}  {asci}")
     return "\n".join(lines)
 
 
@@ -585,11 +922,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._send_json(build_state())
         if u.path == "/api/hex":
             q = parse_qs(u.query)
-            start = int(q.get("start", ["0"])[0], 0)
-            length = int(q.get("len", ["256"])[0], 0)
+            try:
+                start = int(q.get("start", ["0"])[0], 0)
+                length = int(q.get("len", ["256"])[0], 0)
+            except ValueError as e:  # bad hex in the view inputs -> 400, not a traceback
+                return self._send_json({"error": f"Bad start/len: {e}"}, 400)
             if not EE.loaded():
                 return self._send_json({"error": "No file loaded."}, 400)
-            return self._send_json({"text": hex_dump(start, length)})
+            return self._send_json({"text": hex_dump(start, max(0, length))})
         if u.path == "/api/report":
             if not EE.loaded():
                 return self._send_json({"error": "No file loaded."}, 400)
@@ -760,6 +1100,11 @@ PAGE = r"""<!doctype html>
  .deftag{font-size:10px;color:var(--mut);white-space:nowrap}
  .modbadge{font-size:10px;font-weight:700;color:#f0c674;background:rgba(210,153,34,.16);
    padding:1px 6px;border-radius:5px;margin-left:6px}
+ .cpill{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.4px;
+   padding:1px 6px;border-radius:5px;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+ .cpill.confirmed{color:#7ee787;background:rgba(46,160,67,.16);border:1px solid rgba(46,160,67,.4)}
+ .cpill.plausible{color:#f0c674;background:rgba(210,153,34,.16);border:1px solid rgba(210,153,34,.4)}
+ .cpill.unconfirmed{color:#aab4c2;background:rgba(120,130,150,.16);border:1px solid rgba(120,130,150,.4)}
  .hexview{white-space:pre;font-family:ui-monospace,Menlo,monospace;background:#0a0d12;
    border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;max-height:340px;font-size:12px}
  input.val{width:84px}
@@ -806,6 +1151,12 @@ async function api(path,body){
   return j;}
 function hx(n,w=2){return '0x'+n.toString(16).toUpperCase().padStart(w,'0');}
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+// Confidence/evidence tag, surfaced so a label can never silently drift from its backing.
+const CONF_TITLE={CONFIRMED:'CONFIRMED — backed by byte-exact match to a log/firmware string/CRC',
+  PLAUSIBLE:'PLAUSIBLE — structurally supported but not independently confirmed',
+  UNCONFIRMED:'UNCONFIRMED — label is a guess with no primary-evidence backing'};
+function cpill(c){if(!c)return '';return '<span class="cpill '+esc(c.toLowerCase())
+  +'" title="'+esc(CONF_TITLE[c]||'')+'">'+esc(c)+'</span>';}
 
 async function boot(){const j=await api('/api/state');fillFiles(j);if(j.loaded){S=j;render();}}
 function fillFiles(j){const s=$('#fileSel');s.innerHTML='';
@@ -896,7 +1247,7 @@ function flagRows(items){
     const interp=f.interp?('<div class="interp">→ '+esc(f.interp)+'</div>'):'';
     const reset=f.reset_by?('<div class="resetby" title="'+esc(f.reset_by)+'">⟲ reverts on SPS programming (cal SW ID 7/13)</div>'):'';
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${risk}${esc(f.name)}${f.note?('<div class="note">'+esc(f.note)+'</div>'):''}${interp}${reset}</td>
+    tr.innerHTML=`<td>${risk}${esc(f.name)}${cpill(f.conf)}${f.note?('<div class="note">'+esc(f.note)+'</div>'):''}${interp}${reset}</td>
       <td class="addr mono">${hx(f.addr,4)}</td>
       <td class="mono mut">${f.marker!=null?hx(f.marker):'—'}</td>
       <td><span class="pill ${f.css}">${esc(f.label)}</span>${f.modified?'<span class="modbadge">MOD</span>':''}</td>
@@ -942,15 +1293,40 @@ function idPanel(){const p=panel('Vehicle / module identity');
   const t=document.createElement('table');
   t.innerHTML='<tr><th>Field</th><th>Base</th><th>Marker</th><th>Value (ASCII)</th></tr>';
   S.strings.filter(s=>!s.vin).forEach(f=>{const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${esc(f.name)}${f.modified?'<span class="modbadge">MOD</span>':''}</td>
+    const st=f.status?(' <span class="pill '+f.status.css+'">'+esc(f.status.label)+'</span>'):'';
+    tr.innerHTML=`<td>${esc(f.name)}${cpill(f.conf)}${f.modified?'<span class="modbadge">MOD</span>':''}${f.note?('<div class="note">'+esc(f.note)+'</div>'):''}</td>
       <td class="addr mono">${hx(f.base,4)}</td>
       <td class="mono mut">${f.marker!=null?hx(f.marker):'—'}</td>
-      <td class="mono">${esc(f.value)||'<span class=mut>(empty)</span>'}</td>`;
+      <td class="mono">${esc(f.value)||'<span class=mut>(empty)</span>'}${st}</td>`;
     t.appendChild(tr);});
   p.appendChild(t);
+  // Assembled Manufacturing Traceability Code (derived from the MTC fragment rows above).
+  if(S.mtc){const m=S.mtc;const d=document.createElement('div');d.className='quick';d.style.marginTop='10px';
+    const okpill=m.complete?'<span class="pill good">16-digit MTC</span>':'<span class="pill warn">incomplete ('+m.code.length+'/16)</span>';
+    const frag=(m.pieces||[]).map(p=>hx(p.base,4)+'="'+esc(p.value)+'"').join(' + ');
+    d.innerHTML=`<div class="row"><b>MTC</b> ${cpill(m.conf)} <span class="mono">${esc(m.code)||'<span class=mut>(empty)</span>'}</span> ${okpill}</div>`
+      +`<div class="note">Manufacturing Traceability Code, reassembled from fragments: ${frag}. Digit-exact vs SPS <span class="mono">mtc</span>/<span class="mono">infokey</span> (survey 3).</div>`;
+    p.appendChild(d);}
   const n=document.createElement('div');n.className='note';n.style.marginTop='8px';
   n.textContent='Non-VIN identity strings are read-only here — use the Raw byte editor below to change them (each char = one ASCII byte starting at base+1).';
-  p.appendChild(n);return p;}
+  p.appendChild(n);
+  // Raw binary identity fields (2026-10-15) — hex, not ASCII; decoded column where an algorithm is confirmed.
+  const bh=document.createElement('div');bh.className='sub';bh.style.marginTop='14px';
+  bh.textContent='Binary identity fields (raw, not ASCII — added 2026-10-15 from the clean-room triple-pass, EEPROM_LAYOUT §0.15). Markers column shows open/close markers read live.';
+  p.appendChild(bh);
+  const bt=document.createElement('table');
+  bt.innerHTML='<tr><th>Field</th><th>Base</th><th>Markers</th><th>Raw (hex, data bytes only)</th><th>Decoded</th></tr>';
+  (S.binary||[]).forEach(f=>{const tr=document.createElement('tr');
+    const mk=hx(f.marker)+'/'+hx(f.marker_end)
+      +(f.framed?'':' <span class="pill warn" title="closing marker differs from opening marker">frame?</span>')
+      +(f.known_marker?'':' <span class="pill warn" title="marker value not in the set seen so far">new marker</span>');
+    tr.innerHTML=`<td>${esc(f.name)}${cpill(f.conf)}${f.modified?'<span class="modbadge">MOD</span>':''}${f.note?('<div class="note">'+esc(f.note)+'</div>'):''}</td>
+      <td class="addr mono">${hx(f.base,4)}<div class="deftag">data ${hx(f.data_addr,4)} · ${f.length} B</div></td>
+      <td class="mono mut">${mk}</td>
+      <td class="mono">${f.raw}</td>
+      <td class="mono">${f.decoded?esc(f.decoded):'<span class=mut>—</span>'}</td>`;
+    bt.appendChild(tr);});
+  p.appendChild(bt);return p;}
 
 const TRIM_ADDRS=[0x0AA0,0x0AE5];
 function trimPanel(){
@@ -963,32 +1339,51 @@ function featPanel(){
   p.appendChild(flagRows((S.features||[]).filter(f=>!TRIM_ADDRS.includes(f.data_addr))));return p;}
 
 function uiPanel(){
-  const p=panel('UI flags block @ 0x0E80','Marker '+hx(S.ui_marker)+'. Bitfield rows expose the hex input only.');
+  const p=panel('UI flags block @ 0x0E80','Marker '+hx(S.ui_marker)+'. Bitfield rows expose the hex input only. Per-bit names are UNCONFIRMED — the byte block is real but no firmware string/xref backs any individual meaning (survey 4).');
   p.appendChild(flagRows(S.ui));return p;}
 
-function crcPanel(){const p=panel('CRC / integrity','Structure: [marker][3-byte version counter][2-byte CRC16][marker].');
+function crcPanel(){const p=panel('CRC / integrity','std rows: [marker][00][2-byte version word][2-byte hash][marker] (re-confirmed 2026-10-15). 0x1DC0: [marker][16-byte payload][CRC-16/CCITT-FALSE, LE][marker] — recomputed live. The two u32s in the 0x1DC0 payload are UNIX timestamps, not a ±1 counter pair (survey 5).');
   const t=document.createElement('table');
-  t.innerHTML='<tr><th>Field</th><th>Base</th><th>Version counter</th><th>CRC16</th><th>Raw</th></tr>';
+  t.innerHTML='<tr><th>Field</th><th>Base</th><th>Version counter / timestamps</th><th>CRC16</th><th>Raw</th></tr>';
   S.crcs.forEach(f=>{const tr=document.createElement('tr');
+    const name=esc(f.name)+cpill(f.conf)+(f.modified?'<span class="modbadge">MOD</span>':'')+(f.note?('<div class="note">'+esc(f.note)+'</div>'):'');
     if(f.kind==='std'){
-      tr.innerHTML=`<td>${esc(f.name)}</td><td class="addr mono">${hx(f.base,4)}</td>
+      tr.innerHTML=`<td>${name}</td><td class="addr mono">${hx(f.base,4)}</td>
         <td class="mono">${hx(f.counter,6)} <span class="mut">(${f.counter})</span></td>
         <td class="mono">${hx(f.crc16,4)}</td><td class="mono mut">${f.raw}</td>`;
+    }else if(f.kind==='seqcrc'){
+      const gapTxt=(typeof f.ts_gap==='number')?('Δ '+f.ts_gap+' s'):'';
+      const tsA=f.ts_a_utc?('<div class="note">'+esc(f.ts_a_utc)+'</div>'):'';
+      const tsB=f.ts_b_utc?('<div class="note">'+esc(f.ts_b_utc)+'</div>'):'';
+      const gap=`<span class="pill neutral" title="gap between the two BE u32 UNIX timestamps @${hx(f.ts_a_addr,4)} / @${hx(f.ts_b_addr,4)} — not fixed across units (survey 5)">${esc(gapTxt)}</span>`;
+      const ok=`<span class="pill ${f.crc_ok?'good':'bad'}" title="CRC-16/CCITT-FALSE over the 16 payload bytes, stored LE @${hx(f.crc_addr,4)}">${f.crc_ok?'CRC OK':'CRC MISMATCH'}</span>`;
+      tr.innerHTML=`<td>${name}</td><td class="addr mono">${hx(f.base,4)}</td>
+        <td class="mono">${hx(f.ts_a,8)} / ${hx(f.ts_b,8)} ${gap}${tsA}${tsB}</td>
+        <td class="mono">stored ${hx(f.crc_stored,4)} · calc ${hx(f.crc_calc,4)} ${ok}</td>
+        <td class="mono mut">${f.raw}</td>`;
     }else{
-      tr.innerHTML=`<td>${esc(f.name)}</td><td class="addr mono">${hx(f.base,4)}</td>
-        <td class="mut">—</td><td class="mut">—</td><td class="mono mut">${f.raw}</td>`;}
+      const mir=(f.mirror_ok==null)?'':(` <span class="pill ${f.mirror_ok?'good':'warn'}" title="bytes +3..+7 vs ${hx(f.mirror_src,4)} payload">${f.mirror_ok?'mirrors '+hx(f.mirror_src,4):'≠ '+hx(f.mirror_src,4)}</span>`);
+      tr.innerHTML=`<td>${name}</td><td class="addr mono">${hx(f.base,4)}</td>
+        <td class="mut">—${mir}</td><td class="mut">—</td><td class="mono mut">${f.raw}</td>`;}
     t.appendChild(tr);});
   p.appendChild(t);
   const n=document.createElement('div');n.className='infonote';n.style.marginTop='10px';
-  n.innerHTML='<b>Can these CRCs be regenerated/corrected? No — and it is not necessary.</b> '
+  n.innerHTML='<b>Can the std CRCs be regenerated/corrected? No — and it is not necessary.</b> '
     +'Confirmed by reverse-engineering the VIP firmware (Y181, RH850): the firmware contains exactly <b>one</b> '
     +'CRC engine — a table-driven CRC16-CCITT at 0x8059a — and it is used <b>only by the HDLC/IPC serial link</b> '
     +'(TX 0x80712 / RX 0x80d9e), never by the EEPROM. No cal/NVM/EEPROM code computes or verifies a CRC. '
     +'Brute-forcing every standard CRC16 against the stored field/counter pairs yields no match, so the 2-byte '
-    +'value here is <b>not a standard CRC</b> of the counter. On the read side the SBI/cal bytes are taken raw into '
+    +'value in the std rows is <b>not a standard CRC</b> of the counter. On the read side the SBI/cal bytes are taken raw into '
     +'the RAM mirror (0xfebd38ea) with no checksum and a non-fatal fallback to ROM defaults; VIP_BOOT enforces no '
     +'EEPROM CRC at boot (a VIN wiped to 0xFF still boots). The tool therefore deliberately does <b>not</b> fabricate '
-    +'a "fix CRC" button. A stale CRC is harmless for boot; re-lock of edits happens via signed SPS cals, not a CRC.';
+    +'a "fix CRC" button. A stale CRC is harmless for boot; re-lock of edits happens via signed SPS cals, not a CRC.'
+    +'<br><br><b>2026-10-15 (survey 5, brute-forced across 5 images):</b> one EEPROM block, <b>0x1DC0</b>, does carry a real '
+    +'CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF) over its 16-byte payload — the row above recomputes it from the live bytes. '
+    +'The two leading u32 fields in that payload are <b>UNIX timestamps</b> (big-endian, payload offsets 6 and 11), <b>not</b> a '
+    +'monotonic sequence/ID pair — their gap is variable (11–13799 s observed), so no "Δ=1" check is made. '
+    +'The block covers only itself, not the SBI/VIN/cal fields, and which component writes it (VIP, SoC, '
+    +'or the SPS tool) is not established, so the "no fix-CRC button" conclusion for the security/identity edits stands. '
+    +'If you hand-edit 0x1DC1–0x1DD0 the row will show CRC MISMATCH; the tool still will not auto-correct it.';
   p.appendChild(n);return p;}
 
 function comparePanel(){const p=panel('Compare against a reference dump','Diff the working buffer vs. another dump; security-relevant bytes are flagged.');

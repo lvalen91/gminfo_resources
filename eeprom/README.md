@@ -11,7 +11,14 @@ EEPROM Modification to Enable ADB Access, Disables Authorized Secure ADB Client 
 > | `0x0501` | Unit serial | 9 |
 > | `0x05C1` | VIN (`XXXXXXXXXXXXXXXXX`) | 17 |
 > | `0x0681` | Repair-shop SN | 10 |
-> | `0x14A1` | VIN-suffix mirror (`XXXXXXXX` = last 8 of the VIN) | 8 |
+> | `0x14A1` | VIN-tail residual (`XXXXXXXX` = last 8 of a VIN) | 8 |
+>
+> **Refined 2026-10-15:** `0x14A1` is not a live "mirror" of the current VIN — it holds whichever
+> VIN was active the last time its NvM block was written, and can lag behind `0x05C1` after a
+> re-VIN/reprogram event (confirmed on a separate unit where this field retained a *previous*
+> vehicle's VIN tail after the module was reprogrammed onto a new one). In the dumps redacted here
+> it happens to equal the current VIN's tail, which is why the placeholder substitution above still
+> works, but don't assume it always matches `0x05C1` on an arbitrary dump.
 >
 > These fields lie **outside the CRC-checked regions** — the stored CRC words at
 > `0x16E0 / 0x19E0 / 0x1A80 / 0x1B40 / 0x1B60 / 0x1B80` are byte-identical to the

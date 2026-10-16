@@ -89,7 +89,7 @@ statically pinned. Everything downstream of it is resolved.
   (11 copies) — confirms a real per-CalGroup shadow→EEPROM writer with retry, downstream of the
   restore-defaults step.
 - `[INT_DID] DID41EB NvM ReadError Status:%d`, `[INT_DID] DID4787 NvM ReadError Status:%d` —
-  AUTOSAR NvM read-error/CRC status exposed via diagnostic DIDs.
+  application log strings referencing NvM semantics via diagnostic DIDs (these use a mixed-case application-level prefix, not the AUTOSAR `NvM_*` API prefix; they are not direct evidence of AUTOSAR NvM API calls). The strong AUTOSAR RTE evidence in the firmware is the `Rte_Pim_PLC_BootCounter_PIM` prefix in strings — an AUTOSAR RTE-generated PIM accessor naming pattern.
 
 ## 6. Best-supported mechanism for the observed SBI reset
 

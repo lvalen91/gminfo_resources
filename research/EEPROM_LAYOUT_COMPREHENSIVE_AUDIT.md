@@ -153,12 +153,15 @@ raw 4186-byte HC↔LTZ diff was this blank-vs-real artifact. LTZ vs stock is onl
   0x0A40/0x0AC0/0x0BE0 as distinct "security flags"). None of those are corroborated by code OR by the
   clean dump diffs. The real modification is far simpler than the doc's taxonomy implied.
 
-**CONFIRMED ADB RECIPE (owner, 3-yr reproducible):** set **`0x0441 = 0xFF` AND `0x0A80 = 0xFF`** — the two
-SBI *data* bytes — and nothing else. ADB enables; revert either and it disables. The `0x0440`/`0x0442`
+**CONFIRMED ADB RECIPE (owner, 3-yr reproducible), CORRECTED 2026-10-15:** set **`0x0441 = 0xFF` AND
+`0x0A81 = 0xFF`** — the two SBI *data* bytes — and nothing else. (Earlier text here named `0x0A80` as the
+second byte; that was wrong. `0x0A80` is the backup SBI's *marker* byte (framing, e.g. `0x69`), mirroring
+`0x0440` on the primary SBI — it is not one of the two data bytes. The backup SBI data byte, mirroring
+`0x0441`, is `0x0A81`.) ADB enables; revert either and it disables. The `0x0440`/`0x0442`
 framing bytes are **NOT** required (their `C3→5A` change in `Y181/ADB_enabled.bin` is unrelated). No CRC
-recompute is needed (the 1-byte `stock_modified` edit changed no CRC bytes and worked). Note on `0x0A80`:
+recompute is needed (the 1-byte `stock_modified` edit changed no CRC bytes and worked). Note on `0x0A81`:
 pre-Y181 stock ships it already `0xFF` (so only `0x0441` is left to flip — matches the `stock_modified`
-single-byte diff); **Y181 initializes `0x0A80` to a non-FF value, so on Y181 both bytes must be set.**
+single-byte diff); **Y181 initializes `0x0A81` to a non-FF value, so on Y181 both bytes must be set.**
 
 ---
 
@@ -373,6 +376,14 @@ vehicle delivery. So the SBI puts the VIP into a **manufacturing-mode MEC≠0 st
 the VIP's SBI-gated answer to that `$22` read is the single inferred hop (consistent with the proven VIP/EEPROM
 gating). This resolves the whole "how the guest knows to unblock ADB" question end to end.
 
+> **Caveat (added 2026-10-15):** DID `0xF1A0` is not present in the extracted firmware strings table
+> (`eeprom/config_tool/firmware_re/vip_app_strings.tsv`, 120-line Ghidra xref export) — this specific DID
+> value is unconfirmed by that source; the broader VIP→SoC `is_secure_mode` propagation mechanism may
+> still be correct via a different/unobserved DID. (Note: `platform/security.md` §ProtoKey/ADB
+> Authentication separately cites a live-vehicle `$22 F1A0` read returning `0xFF` — that is independent
+> on-vehicle corroboration of DID `0xF1A0` specifically, not derived from this firmware-strings table, so
+> the two findings are not in conflict: the string table's silence is simply not evidence either way.)
+
 **Bench confirmation (now exact):** with the SBI flipped, (1) read DID `0xF1A0` via diagnostics — MEC should be
 nonzero; (2) `getprop` / probe `gm_adb_is_secure_mode` — false; (3) inspect the `gmauthmanagerservice.socket.adb`
 `"MEC"` reply. Also note: that MEC socket is **unauthenticated plaintext**, so it is independently spoofable on a
@@ -509,6 +520,127 @@ invalid seed [1]/[2] from BCM` = the **anti-theft** VIP↔BCM ProtoKey handshake
 (`F1A0/F190/F0F3/F0B4/F1CB/F1DB/F1CC/F1DC`), but **no DID-18 Signature-Bypass Ticket appears at boot** (requested
 on-demand during OTA programming) — that specific read still needs the bench.
 
+### §0.15 CLEAN-ROOM TRIPLE-PASS VERIFICATION of a full EEPROM dump (2026-10-15)
+
+Method: two independent fresh agents mapped a separate 8 KB EEPROM dump (`dump.bin`, a `26_HC_A11`
+session unit) byte-by-byte with **no access to this repo** — restricted to the dump itself plus a
+VIP_APP firmware update package, an A11 calibration zip, and two `spsCacheInternal` SPS-log
+directories (`24_LTZ_A11` / `26_HC_A11`). A third agent then adversarially verified both maps
+against the same material plus `VIP_log_2B.174.4.1_10JUL24.txt` (the same log cited in §0.14) and
+general web research. Full outputs and per-claim verdicts are not retained in this repo (scratch
+artifacts); the findings below are the ones that survived adversarial verification and are folded
+into §2.3/§2.5/§2.6/§8 above.
+
+**Corrections to prior documentation in this repo:**
+- **0x14A0 is not a "Firmware ID."** It's a VIN-tail residual that mirrors whichever VIN was active
+  when its NvM block was last written, and can go stale (retain a *previous* vehicle's VIN tail)
+  after a re-VIN/reprogram event — proven by comparing two SPS sessions on the same ECUID
+  (`004B41DC0000160006104145610114AC`) where the module moved from one vehicle to another and this
+  field didn't update. `cal_vin_relearn_en`/`Theftlocked` firmware strings corroborate the mechanism.
+- **0x0FE0–0x12DF is backlight/display-dimming calibration, not audio.** Byte-matched against
+  VIP_APP firmware LUT defaults @0xf8414-0xf8500: 4 channels share one input-% axis, each with its
+  own output gamma curve (0–65535). The "Volume Curve / Fade-Balance / EQ-DSP" naming in §2.3/§8 and
+  in `eeprom/EEPROM_Analysis_Report.md` was wrong.
+- **0x16E0/0x19E0/0x1B40 are not flat 32-bit CRCs.** They decode as `[00][2-byte version/
+  generation word][2-byte hash/CRC word]`, confirmed by `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`
+  §13.7's own stock-vs-post-reflash diff (version word clusters tightly (not exact lockstep — ±1 drift observed; see §2.6 correction) across all three blocks)
+  plus a new sample where all three version words cluster at 0x0057–0x0058.
+- **0x0460–0x0465** is a confirmed HW part number (`ssecuhn`, BE u32 `85086705`), not part of
+  "Radio/Audio Settings" as previously guessed.
+
+**New, previously-undocumented findings added to §2.5/§2.6:**
+- 0x03A0–0x03B1: 16-byte ECU-ID block, confirmed byte-exact against SPSVCS.LOG `ECUID` in both SPS
+  sessions.
+- 0x0680–0x0689: shop/dealer code (UDS DID F198, `shopcode`), confirmed = `9999988888`.
+- 0x06A0–0x06A5: a second programming-date field (UDS DID F199, BCD `2026-09-28`) that **post-dates**
+  the most recently logged SPS session (`progdate 20260707`) — the module was reprogrammed again
+  after the logs available to this analysis end.
+- 0x06E0–0x06E5: a second HW part-number word (`60 02 02 B1`), confirmed against a VIP boot-log line
+  "Send HW Partnum 0x60 0x2 0x2 0xb1" — previously unidentified in every prior pass.
+- 0x1DC0–0x1DD3: two 32-bit timestamp-shaped fields (NOT a fixed Δ=1 sequence pair — corrected
+  2026-10-16: an independent CRC-16 brute-force check across 5 real EEPROM images found the gap
+  between the two values varies, 11–13799 seconds, never exactly 1; this specific unit's dump
+  happened to show Δ=1, which is not representative) followed by a confirmed CRC-16/CCITT-FALSE
+  (poly 0x1021, init 0xFFFF) over the preceding 16 bytes, stored little-endian — the CRC-16 finding
+  itself is independently reproducible across all 5 images and stands confirmed.
+
+**Still open (not resolved by this pass):**
+- The marker-byte semantics (`0x69`/`0xF0`/`0x5A`/`0xC3` record framing) — content-class tagging and
+  write-generation-counter theories were both tested and refuted by counterexamples; best surviving
+  guess is a per-NvM-block constant marker, unconfirmed.
+- The unit of the 0x16E0/0x19E0/0x1B40 version words (plausible: a shared calibration-generation
+  counter, consistent with §13.7, but not pinned to a specific meaning beyond "generation/version").
+- Whether the 0x0060–0x007F "walking-zero" bit pattern (a deterministic 9-bit-period pattern masking
+  what a firmware block-descriptor table says should be an 822-byte all-zero record ending at
+  0x0397) is a one-off read glitch or an actual EEPROM cell/row fault — recommend re-dumping that
+  page on physical hardware if this specific unit is accessible.
+- Full field-by-field naming of the 0x0E00 calibration struct's first 27 (of 34) fields — only the
+  last 7 are confirmed against named firmware constants (`cal_str_min_temp_threshold`,
+  `soc_min_threshold_1-3`, `max_suspend_time_1-3` @0xf8126-0xf8141); earlier field-name guesses
+  (screen timeout, brightness threshold, etc.) are unconfirmed and at least one specific guess
+  tested wrong.
+
+### §0.16 AUTOSAR NvM BLOCK-DESCRIPTOR MAPPING (2026-10-15) — the 12-byte table decoded
+
+The firmware block-descriptor table (referenced in §0.15 — the structure that defines records like the
+822-byte all-zero record ending at 0x0397) is an array of 12-byte entries. Each entry decodes as
+`[u32 LE rel_addr][u16 LE payload_len][u8 type_byte][u8 copies][u32 0]`. Correlated with the AUTOSAR NvM
+configuration parameters in **AUTOSAR_SWS_NVRAMManager R22-11, Chapter 10 (ECUC)**:
+
+| Field (12-byte entry) | AUTOSAR NvM config parameter | Meaning |
+|---|---|---|
+| `rel_addr` (u32 LE) | `NvMNvBlockBaseNumber` (role only) | flat block address within the config region (implementation-specific, not spec-stated: NvM spec defines NvMNvBlockBaseNumber range 1..65534 but does not specify how the firmware descriptor encodes it) — see Melching note below |
+| `payload_len` (u16 LE) | `NvMNvBlockLength` | stored payload length |
+| `type_byte` (u8) | **none** — vendor constant | always `0x01` across all 183 entries; most likely a descriptor format version or "entry valid" flag. **Not** an AUTOSAR field (see correction below) |
+| `copies` (u8) | `NvMNvBlockNum` (**ECUC_NvM_00480**) | number of NV blocks; **this is the actual management-type discriminator**: `1` = NATIVE, `2` = REDUNDANT, `1..255` = DATASET |
+| `[u32 0]` | unassigned (possibly `NvMRomBlockDataAddress` = NULL) | trailing zero in every entry; vendor padding or an unused pointer slot |
+
+**Correction (2026-10-15, verified against AUTOSAR_SWS_NVRAMManager R22-11).** An earlier revision of this
+section described `type_byte` as a packed `NvMBlockManagementType` + `NvMBlockCrcType` with
+"SINGLE=0, REDUNDANT=1, DATASET=2". That was wrong:
+
+- AUTOSAR assigns **no numeric values** to `NvMBlockManagementType` (ECUC_NvM_00062). It is an
+  `EcucEnumerationParamDef` with only the symbolic literals `NVM_BLOCK_NATIVE`, `NVM_BLOCK_REDUNDANT`,
+  `NVM_BLOCK_DATASET`; any integer encoding is a generator/vendor choice, and the "SINGLE=0, REDUNDANT=1"
+  mapping was invented. (There is no "SINGLE" literal in the standard — the term is NATIVE.)
+- `type_byte = 0x01` is invariant across all 183 entries. A byte that never varies cannot be carrying the
+  management type (REDUNDANT entries with `copies=2` have the same `0x01` as single-copy entries). It is a
+  vendor constant — format version or valid flag.
+- The management type is recoverable from **`copies` = `NvMNvBlockNum` (ECUC_NvM_00480)**: `NvMNvBlockNum`
+  is 1 for NATIVE blocks, 2 for REDUNDANT blocks, and 1..255 for DATASET blocks.
+- **AUTOSAR defines no C struct layout for the descriptor table.** `NvM_BlockDescriptorType` is an
+  implementation-specific type; the standard only lists the configuration parameters. The 12-byte
+  `(u32, u16, u8, u8, u32)` layout is a **Harman/BSP vendor implementation artifact**. The 12-byte total being
+  consistent with CC-RH natural struct packing (Renesas **R20UT2846EJ CC-RH ABI**) explains the *size*, not
+  the field semantics, and does not make the layout "standard AUTOSAR".
+- The `[M][payload][M]` marker framing seen around EEPROM records is **not an AUTOSAR NvM concept**. AUTOSAR
+  NvM only defines an optional Static Block ID header (placed first in the NV block, `NvMStaticBlockIDCheck`)
+  and an optional appended per-block CRC (`NvMBlockUseCrc` / `NvMBlockCrcType`). Record framing with leading
+  and trailing markers belongs to the **Fee/Ea (Flash/EEPROM Abstraction) layer below NvM**, or is Harman-custom.
+
+**REDUNDANT blocks explained.** Entries with `copies=02` (e.g. **0x0400/0x0420**, the long-noted
+"duplicated settings" / "both copies should be modified" pair) correspond to
+`NvMBlockManagementType = NVM_BLOCK_REDUNDANT, NvMNvBlockNum = 2` (ECUC_NvM_00480). This is the **standard
+AUTOSAR NvM redundancy feature**: both physical copies are maintained in sync, and on a read failure the
+backup copy is used. The *behaviour* is standard AUTOSAR; the *descriptor encoding* that configures it is
+vendor-specific (see correction above). (Note this is distinct from the SBI primary/backup pair
+0x0441/0x0A81, which sit in different descriptor entries.)
+
+**Melching hypothesis (REFUTED — checked against all 183 descriptor entries).** Per Willem Melching,
+DEF CON 30 Automotive Village (2022), Toyota EPS RH850 research (blog.willemmelching.nl), Toyota RH850 NvM
+block headers carry a **2-byte block ID as the first field** (the 2-byte width is inferred from NvM_BlockIdType being a uint16 range — not explicitly stated in the AUTOSAR NvM spec, which only names the "Static Block ID field" without specifying byte width), followed by length and CRC. The hypothesis that
+our `u32 LE rel_addr` was `[u16 block_id][u16 address_offset]` was tested by running the descriptor parser
+over the full 183-entry table: **every `rel_addr` has high 16 bits = `0x0000`**. `rel_addr` is therefore a
+flat address with no embedded block ID. The Toyota layout does not transfer to this unit.
+
+**SBI 0x00/0xFF encoding is a cross-platform RH850 convention (confirmed).** The Virgin/SBI status byte
+semantics (`0x00` = locked, `0xFF` = bypass) at 0x0441/0x0A81 match the Nissan Leaf RH850 Virgin status
+byte at RAM `0xFEDE0C03` (same `0x00` = locked / `0xFF` = bypass encoding) documented in **CVE-2025-32058
+(Black Hat Asia 2025)**. This confirms the SBI encoding is a **standard RH850 convention, not a
+Harman-specific quirk**. (The INC-protocol port map — base `0xc700`, `NET_BROADCAST = 0xc70f`,
+`DOWNLOAD = 0xc70b` — is independently confirmed in VIP_BOOT at 4 instruction sites (`ori 0xc700,r0,r1` at `0x0001b6c2`, `0x0001b9ac`, `0x00083510`, `0x000837fa`), and also appears in CVE-2025-32058 slides. The Harman EEPROM marker-framing quartet `0x69`/`0xF0`/`0x5A`/`0xC3` and the CalGroup dispatch
+table remain original to this research, with no published Harman byte-level documentation.)
+
 ---
 
 ## 1. EEPROM Layout Maturity & Detail Level
@@ -527,8 +659,8 @@ on-demand during OTA programming) — that specific read still needs the bench.
 | **Feature Flags (0x0B00–0x0BFF)** | Byte-level (0x0B40 debug mode) | 0x0B40 documented (0x0B41 debug-mode data byte); ~~0x0A40 (28 refs), 0x0BE0 (24 refs) via xref~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise. 0x0A40/0x0BE0 read all-0xFF (unwritten) in BOTH stock and ADB_enabled dumps (confirmed: /Volumes/.../csm_eeprom/gm_csm_stock.bin & EEPROM/gm_csm/Y181/ADB_enabled.bin) — no stored data** | Low-Medium | Only 0x0B40 is real; the "undocumented flags" hold no data |
 | **UI/Display Settings (0x0E00–0x0EBF)** | Field-level | Timing/threshold values (e.g., 0xE01=30 sec screen timeout) read from sample dump | Medium | Bit-field granularity guessed; interpretation inferred not verified |
 | **Display Calibration (0x0EC0–0x0F7F)** | Table-level | Brightness LUTs (11-point, 22-point), color RGB calibration (0x0F40) | Medium | Ambient-light compensation logic guessed |
-| **Audio Calibration (0x0FE0–0x12DF)** | Table-level | Volume curve (11 points), EQ/DSP (10 bands), fade/balance (22-point) | Medium | Link to actual audio codec/DSP unknown; calibration scale/units guessed |
-| **Checksums/CRCs (0x16E0–0x1FFF)** | Byte-level | Six CRC words identified; values in sample dump recorded | Low | CRC algorithm (CRC16? CRC32?), polynomial, coverage scope **not documented** |
+| **Backlight Dimming Calibration (0x0FE0–0x12DF)** (corrected 2026-10-15; was "Audio Calibration") | Table-level | Input-% axes + output gamma curves (0–65535), 4 channels | High | **Structurally** matched against VIP_APP firmware LUT defaults @0xf8414-0xf8500 (same shape: shared input-% axis, per-channel output curve) — caveat added 2026-10-16: not a literal byte-identical match (firmware uses 16-bit direct encoding, EEPROM uses 32-bit scaled encoding); not audio, see §2.3/§0.15 |
+| **Checksums/CRCs (0x16E0–0x1FFF)** | Byte-level | Six CRC words identified; values in sample dump recorded | **0x1DC0: CONFIRMED** by byte-match (CRC-16/CCITT-FALSE, poly 0x1021, init 0xFFFF, no reflect, no XOR — §0.15, §2.6). **0x16E0/0x19E0/0x1B40: UNRESOLVED** — algorithm UNVERIFIED; stored 2-byte values are NOT CRC-16/CCITT-FALSE of the version word alone (0x16E0 and 0x1B40 share version=`0x5800` but stored bytes differ); coverage range unknown. | See §2.6 for full status. |
 
 ### Summary:
 - **Enhanced since initial analysis:** Yes. Dec-2025 report = raw byte map. Jan–Feb 2026 = firmware xref analysis added undocumented flags. Aug-2026 = marker-rotation and CalGroup system discovery.
@@ -585,14 +717,15 @@ on-demand during OTA programming) — that specific read still needs the bench.
 
 **Caveat:** These are **inferred** from sample dump analysis. No disasm confirmation; no firmware xrefs found. May not be the actual display/resolution gate (see §5).
 
-### 2.3 Audio/Radio Tuning Tables
+### 2.3 Backlight/Display Dimming Tuning Tables (corrected 2026-10-15; was "Audio/Radio Tuning Tables")
 
 | Address Range | Type | Size | Documented | Notes |
 |---------------|------|------|-----------|-------|
-| 0x0460–0x04FF | Radio/Audio Settings | 160 bytes | Partial | Frequency tuning, codec config inferred |
-| 0x0FE0–0x103F | Volume Curve | 96 bytes | Yes | 11-point non-linear response; verified in dump |
-| 0x1040–0x109F | Fade/Balance Tables | 96 bytes | Yes | 22-point linear fade; front/rear balance |
-| 0x10A0–0x12DF | EQ/DSP Calibration | 576 bytes | Yes | 10-band equalizer; frequency response tuning |
+| 0x0460–0x0465 | **HW part number (ssecuhn)** | 4 bytes | **Confirmed 2026-10-15** | BE u32 `85086705`, byte-exact match to SPSVCS.LOG `ssecuhn` (ecu_adr 80) — NOT radio/audio settings |
+| 0x0466–0x04FF | Unidentified | remainder | Partial | 0x0480 holds a second part-number-shaped BE u32 (`84999439`), not found in any source; rest unwritten |
+| 0x0FE0–0x103F | Backlight dimming curve (was "Volume Curve") | 96 bytes | Yes | 11/21-point gamma curve; structurally matches VIP_APP firmware LUT defaults @0xf8414-0xf8500 (same shape, different numeric encoding — not literally byte-identical, corrected 2026-10-16), not an audio table |
+| 0x1040–0x109F | Backlight dimming curve (was "Fade/Balance Tables") | 96 bytes | Yes | Same LUT family, different channel/curve |
+| 0x10A0–0x12DF | Backlight dimming curve (was "EQ/DSP Calibration") | 576 bytes | Yes | 4 channels share one input-% axis, each with its own output gamma curve (0–65535) — a per-zone backlight map, not an equalizer |
 
 ### 2.4 Calibration References & Pointers
 
@@ -605,12 +738,17 @@ on-demand during OTA programming) — that specific read still needs the bench.
 
 | Address | Field | Sample | Documented |
 |---------|-------|--------|-----------|
-| 0x0500 | Part Number | \<REDACTED\> | Yes (structure) |
+| 0x0500 | MTC traceability-code tail (corrected 2026-10-16; was "Part Number") | \<REDACTED\> | Yes (confirmed digit-exact vs. SPSVCS.LOG `mtc`) |
 | 0x05C0 | VIN | XXXXXXXXXXXXXXXXX | Yes (17 bytes) |
-| 0x0580 | Programming Date | 20.02.2025 | Yes |
+| 0x0580 | Programming Date (manufacture) | 20.02.2025 | Yes |
 | 0x4E1 | Region Code | 34 (ASCII '4') | Yes |
-| 0x14A0 | Firmware ID | XXXXXXXX A | Yes |
+| 0x14A0 | **VIN-tail residual** (corrected 2026-10-15; was "Firmware ID") | XXXXXXXX A | Not a firmware ID — see §0.15 |
 | 0x5A0 | Serial Number | 7310500000000X | Yes (CVPPS) |
+| 0x03A0–0x03B1 | **ECU-ID** (16 bytes, added 2026-10-15) | device-specific | Confirmed byte-exact in SPSVCS.LOG `ECUID` field, both SPS sessions |
+| 0x0460–0x0465 | **HW part number (`ssecuhn`)** (added 2026-10-15) | BE u32 `85086705` | Confirmed, see §2.3 |
+| 0x0680–0x0689 | **Shop/dealer code** (`shopcode`, UDS DID F198; added 2026-10-15) | `9999988888` | Confirmed — 10-char truncation of logged 11-digit `99999888888` |
+| 0x06A0–0x06A5 | **Programming date (reprogram)** (UDS DID F199; added 2026-10-15) | BCD `2026-09-28` | Strong — post-dates the most recent logged SPS session (`progdate 20260707`); implies a later, unlogged reprogram |
+| 0x06E0–0x06E5 | **HW part-number word** (added 2026-10-15) | `60 02 02 B1` | Confirmed — matches a VIP boot-log line "Send HW Partnum 0x60 0x2 0x2 0xb1"; previously unidentified in all prior passes |
 
 ### 2.6 Checksums & Integrity Fields
 
@@ -621,9 +759,28 @@ on-demand during OTA programming) — that specific read still needs the bench.
 | 0x1A80 | Config CRC | uint24 LE | 0x000107 | Config region? |
 | 0x1B40 | Data CRC | uint32 LE | 0x128A0000 | Data section? |
 | 0x1B60 | Block CRC #1 | uint32 LE | 0x00000001 | Calibration block? |
-| 0x1B80 | Block CRC #2 | uint32 LE | 0x00000001 | Audio block? |
+| 0x1B80 | Block CRC #2 | uint32 LE | 0x00000001 | Not audio-related (corrected 2026-10-15) |
 
-**Critical gap:** No CRC algorithm specification (polynomial, seed, initialization). After Y181 reflash, upper word of CRCs changed from 0x0013 → 0x0104 (calibration version counter?). **Do not flip EEPROM values without understanding checksum coverage and recomputation.**
+> **REFINED 2026-10-15, caveat added 2026-10-16:** 0x16E0/0x19E0/0x1B40 decode as `[00][2-byte
+> version/generation word][2-byte hash/CRC word]`, confirmed by `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`
+> §13.7's stock-vs-post-reflash diff and by an independent dump where all three version words
+> cluster at 0x0057–0x0058. A single-dump clean-room pass (done without access to §13.7) misread
+> the whole 5-byte payload as one monotonic ~5.8M counter — that reading is superseded. **Caveat
+> (2026-10-16, re-checked across 5 real images):** the version word does not move in exact lockstep
+> across all three blocks — it drifts by ±1 between blocks in 2 of 5 images checked — so "clusters
+> tightly" is the accurate description, not "moves in lockstep." New finding: 0x1DC0–0x1DD3
+> (previously undocumented) holds two 32-bit timestamp-shaped fields (not a fixed Δ=1 sequence pair
+> — see the correction in §0.15/§2.5) plus a confirmed CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF)
+> over the preceding 16 bytes, stored little-endian — the CRC-16 finding is independently
+> reproducible across 5 images and stands confirmed.
+>
+> **Structure note:** This `[marker][00][version][field][marker]` structure at a separate address is NOT defined by AUTOSAR NvM (which appends CRC to the same NV slot) or by the AUTOSAR Fee/Ea SWSs. Origin undetermined — may be vendor Fee/Ea bookkeeping or application-level SWC.
+
+**CRC ALGORITHM STATUS (corrected).**
+
+**0x1DC0 — CONFIRMED by byte-match.** Payload `0130000000016abb1116016abb12bb01`, stored `0xBFD4` = computed CRC-16/CCITT-FALSE (poly `0x1021`, init `0xFFFF`, no reflect, no output XOR) `0xBFD4`. Independently reproduced across 5 images. Algorithm per AUTOSAR_SWS_CRCLibrary (`Crc_CalculateCRC16()`, seed `0xFFFF`, poly `0x1021`) and Renesas Application Note **R01AN2296EJ** (RH850 Flash Self-Programming Library).
+
+**0x16E0/0x19E0/0x1B40 — UNRESOLVED — algorithm and coverage range unknown.** Algorithm UNVERIFIED for these blocks. Binary verification confirmed the stored 2-byte values are NOT CRC-16/CCITT-FALSE of the version word alone: 0x16E0 and 0x1B40 share version=`0x5800` but stored bytes differ (`0x9896` vs `0xAD9B`). Coverage range unknown. The prior claim that the algorithm was "RESOLVED/CONFIRMED/CLOSED" for these addresses was incorrect and is retracted. The upper per-block "version/generation word" is a separate field whose relationship to the stored hash bytes is unresolved.
 
 ---
 
@@ -718,7 +875,9 @@ Per the CALDEF and firmware analysis:
 **Current documented practice (eeprom/README.md):**
 - Flip `0x0441` to 0xFF (primary SBI data byte).
 - Flip `0x0A81` to 0xFF (backup SBI data byte).
-- Optionally flip `0x0B41` to 0x01 (debug mode, observed in Y181 samples).
+- `0x0B41` ("debug mode") is **not required and has no observed effect** — operator-tested at
+  `0x00`/`0x01`/`0xFF` (2026-10-15), no visible user-facing or ADB-visible change at any value.
+  See `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §1 note. Do not write it as part of the bypass.
 - **Checksums:** The shipped sample `Y181_modified.bin` had CRCs **already recomputed**, so the precise algorithm is not public. Empirically, the CRCs changed across the reflash.
 
 **Risk:** If you flip SBI without recomputing the CRCs, the module may reject the image at boot (checksum validation failure) or trigger a factory reset.
@@ -730,7 +889,7 @@ Per the CALDEF and firmware analysis:
 - CRC at 0x16E0: Changed from original.
 - **Upper word** of CRCs: 0x0013 → 0x0104 (post-reflash). Suggests a **calibration version counter**, not just a data CRC.
 
-**Gap:** No CRC-32 algorithm (polynomial, seed) is documented. Empirical options:
+**CRC algorithm status — split verdict (see §2.6):** 0x1DC0 is CONFIRMED CRC-16/CCITT-FALSE (poly `0x1021`, init `0xFFFF`, no output XOR, little-endian) by byte-match across 5 images. **0x16E0/0x19E0/0x1B40 algorithm is UNRESOLVED** — stored 2-byte values are NOT CRC-16/CCITT-FALSE of the version word alone; coverage range unknown. The earlier "RESOLVED" claim for the integrity fields as a group was incorrect. The workarounds below remain valid until the 0x16E0/0x19E0/0x1B40 algorithm is identified:
 1. Use the shipped `Y181_modified.bin` as a template (extract intact, modify only the security bytes, preserve CRCs).
 2. Reverse-engineer the CRC polynomial from the Y181 samples (XOR analysis).
 3. Use a physical programmer with read-verify (minipro, XGecu) and test incrementally.
@@ -763,7 +922,7 @@ From firmware xref analysis (EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md §10):
 
 ## 7. Critical Gaps Before EEPROM Testing Starts
 
-1. **CRC algorithm:** No polynomial or seed public. Empirical reverse-engineering or use shipped samples as templates.
+1. **CRC algorithm — split status (see §2.6).** **0x1DC0: CONFIRMED** CRC-16/CCITT-FALSE (poly `0x1021`, init `0xFFFF`, no reflect, no output XOR) by byte-match across 5 images (AUTOSAR_SWS_CRCLibrary; Renesas AN R01AN2296EJ). **0x16E0/0x19E0/0x1B40: UNRESOLVED — algorithm and coverage range unknown.** Stored 2-byte values are NOT CRC-16/CCITT-FALSE of the version word alone; the prior "RESOLVED" verdict for these blocks is retracted. Do not assume a known algorithm for these fields when editing.
 2. **Undocumented flag polarity:** Which way to flip 0x04A0/0x04C0 (0xFF/0x00/0x01?)? Need static analysis or Tier-1 RAM test.
 3. **Cal-`$27` gate ownership:** Is it the ADB SBI (0x0440), a different flag (0x04A0/0x04C0), or code-based (not EEPROM-governed)?
 4. **Marker-byte independence:** Confirmed CalGroup assigns markers at runtime, not stored in firmware. Bypass is **marker-agnostic** — only data byte matters.
@@ -788,7 +947,7 @@ EEPROM MAP — ST M24C64 8KB (0x0000–0x1FFF)
   0x04C0       IPC Security Config #2 (?)         11 firmware refs [I]
   
 0x0500–0x05FF  Device Identification              [Field-level, verified]
-  0x0500       Part Number                        9 bytes
+  0x0500       MTC traceability-code tail (was "Part Number", corrected 2026-10-16)  9 bytes
   0x05A0       Serial Number (CVPPS)              9 bytes
   0x05C0       VIN                                17 bytes
   
@@ -802,24 +961,37 @@ EEPROM MAP — ST M24C64 8KB (0x0000–0x1FFF)
   0x0BE0       Late-region flag (danger!) (?)     24 refs [I]
   
 0x0E00–0x0EAF  Display/UI Settings                [Field-inferred, unverified]
-  0x0E01–0x0E4D Timing/brightness/touch params    Guessed from dump [I]
+  0x0E01–0x0E4D Timing/brightness/touch params    Guessed from dump [I] — CAVEAT (2026-10-15): the
+                                                   struct's LAST 7 of 34 fields byte-match named
+                                                   VIP_APP constants cal_str_min_temp_threshold /
+                                                   soc_min_threshold_1-3 / max_suspend_time_1-3
+                                                   @0xf8126-0xf8141 — i.e. this is at least partly a
+                                                   power/thermal/suspend-timer calibration struct,
+                                                   not purely display/UI. The early field-name
+                                                   guesses (screen timeout, brightness threshold…)
+                                                   are unconfirmed and at least one specific mapping
+                                                   tested wrong (not cal_startup_delay_wait_timeout_msec).
   0x0E80–0x0EAF UI Flags Block                    Touch/haptic/animation toggles [I]
   
 0x0EC0–0x0F7F  Display Calibration Tables         [Table-level, verified]
   0x0F00–0x0F3F Brightness LUT (11-point)
   0x0F40–0x0F7F Color/ambient calibration
   
-0x0FE0–0x12DF  Audio Calibration Tables           [Table-level, verified]
-  0x0FE0–0x103F Volume curve (11-point)
-  0x1040–0x109F Fade/balance (22-point)
-  0x10A0–0x12DF EQ/DSP (10 bands, 576 bytes)
+0x0FE0–0x12DF  Backlight Dimming Calibration Tables [Table-level, verified]
+                (corrected 2026-10-15; was "Audio Calibration Tables" — structurally matched
+                against VIP_APP firmware LUT defaults @0xf8414-0xf8500; same shape/different
+                numeric encoding, not literally byte-identical -- caveat added 2026-10-16)
+  0x0FE0–0x103F Dimming curve (11-point) [was "Volume curve"]
+  0x1040–0x109F Dimming curve (22-point) [was "Fade/balance"]
+  0x10A0–0x12DF Dimming curve (10 channels, 576 bytes) [was "EQ/DSP"]
   
-0x16E0–0x1FFF  Checksums & CRCs ★                 [Byte-level, algorithm unknown]
-  0x16E0       Primary CRC                        uint32 LE [I – no algorithm spec]
-  0x19E0       Secondary CRC                      uint32 LE [I – backup]
+0x16E0–0x1FFF  Checksums & CRCs ★                 [Byte-level, structure refined 2026-10-15]
+  0x16E0       Primary CRC                        [00][version word][hash/CRC word], not flat
+                                                    uint32 — see §2.6/§0.15 [S]
+  0x19E0       Secondary CRC                      same structure [S]
   0x1A00       Tertiary security (?)              Modified in ADB bypass [I]
   0x1A80       Config CRC                         uint24 LE [I – coverage scope unclear]
-  0x1B40–0x1B80 Data/Audio CRCs                   uint32 LE, three blocks [I]
+  0x1B40–0x1B80 Data CRCs (not audio-related)     uint32 LE / version+hash structure, three blocks [S]
 
 [C] = Confirmed (disasm, CAN capture, empirical)
 [I] = Inferred (firmware xref, byte patterns, educated guess)
@@ -832,6 +1004,24 @@ EEPROM MAP — ST M24C64 8KB (0x0000–0x1FFF)
 - **Enhancement:** EEPROM layout has evolved from a raw byte dump (Dec 2025) to a structured, xref-analyzed map (Feb 2026) with marker-byte discovery (Aug 2026).
 - **SBI bypass:** Seed **fully disabled** (all-0xFF) when data byte = 0xFF; key **unconditionally accepted**. No residual ADB gate. Confirmed by disasm + CAN.
 - **Calibration `$27`:** **NOT proven** to use the same SBI. Shares the VIP/EEPROM anchor, but validator may be separate code. Undocumented candidates (0x04A0, 0x04C0, 0x0A40, 0x0BE0) identified; Tier-0 static analysis needed before physical flip.
-- **Checksum risk:** CRC algorithm unknown; shipping modified samples with recomputed CRCs suggests it is required. Do not flip SBI without addressing checksum coverage (either reverse-engineer or use template approach).
+- **Checksum risk — split status (§2.6):** **0x1DC0: CONFIRMED** CRC-16/CCITT-FALSE (poly `0x1021`, init `0xFFFF`, no output XOR, little-endian) by byte-match across 5 images. **0x16E0/0x19E0/0x1B40: UNRESOLVED** — algorithm and coverage range unknown; stored 2-byte values are NOT CRC-16/CCITT-FALSE of the version word alone. Do not assume a known algorithm when editing fields covered by 0x16E0/0x19E0/0x1B40.
 - **Top action:** Tier-0 static xref analysis of undocumented flags into the `$27` handler to pin the cal-security gate before EEPROM testing.
+
+---
+
+## External Sources / References
+
+- **AUTOSAR_SWS_NVRAMManager R22-11**, Chapter 10 (ECUC) — `NvMBlockManagementType` (ECUC_NvM_00062,
+  symbolic enumeration only, no numeric values) and `NvMNvBlockNum` (ECUC_NvM_00480, the REDUNDANT/NATIVE
+  discriminator). The standard defines no C struct for the descriptor table (§0.16).
+- **AUTOSAR_SWS_CRCLibrary** — `Crc_CalculateCRC16()`, seed `0xFFFF`, poly `0x1021` (CRC-16 algorithm, §2.6/§7).
+- **Renesas Application Note R01AN2296EJ** — RH850 Flash Self-Programming Library; same CRC-16/CCITT-FALSE
+  for flash-block CRC verification (CRC algorithm closure, §2.6/§7).
+- **Renesas R20UT2846EJ (CC-RH ABI)** — natural struct packing for `(u32, u16, u8, u8, u32)` → 12-byte
+  descriptor entry; explains the vendor struct's size, not its field semantics (§0.16).
+- **CVE-2025-32058 / Black Hat Asia 2025** — Nissan Leaf RH850 Virgin status byte (`0xFEDE0C03`,
+  `0x00`=locked/`0xFF`=bypass); the INC-protocol port map (base `0xc700`) also appears in these slides, but is independently confirmed in VIP_BOOT at 4 instruction sites — see §0.16.
+- **Willem Melching, DEF CON 30 Automotive Village (2022)**, Toyota EPS RH850 research
+  (blog.willemmelching.nl) — 2-byte block-ID-first NvM header hypothesis for `rel_addr` (§0.16, REFUTED:
+  all 183 `rel_addr` high words are `0x0000`).
 

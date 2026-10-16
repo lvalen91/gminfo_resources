@@ -475,7 +475,7 @@ The VIP reads EEPROM at boot, sends state to the SoC via HDLC IPC, and the SoC *
 | Boot slot selection | A/B partition management | Could influence which slot boots? |
 | gm_update_engine interaction | OTA update state | Could trigger recovery/update mode? |
 | VIN relearn / calibration | Factory provisioning state | Could signal "factory virgin" state? |
-| MEC counter | Reprogramming event count (Y181=207) | Behavior at MEC=255 overflow? |
+| MEC counter (Manufacturer Enable Counter — standardized name, see §MEC Counter Variation Across Units; "reprogramming event count" below is an unverified alternate reading) | observed Y181=207 | Behavior at MEC=255 overflow? |
 
 #### Timing Limitation
 
@@ -786,6 +786,17 @@ Four framing byte patterns: `69`, `F0`, `C3`, `5A`. Each data record: `[framing]
 > they hold no stored data. The earlier "N firmware refs" framing (and the "0x04C0 = active
 > CalGroup 0x44 handler `FUN_ram_00091f82`" note) is **speculative and superseded** by the direct
 > hex read. Only 0x0A00 (871 refs) and 0x0B00 (311 refs) remain as genuine high-reference unknowns.
+>
+> **FURTHER CORRECTION (2026-10-16, propagated from `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`
+> §0):** the **871/311 "N firmware refs" numbers themselves are also retracted** — they came from a
+> radare2 string-proximity pass that is not reproducible from this repo's artifacts and disagreed
+> with itself between its own two passes (871 vs 854 for 0x0A00; 311 vs 305 for 0x0B00). Don't treat
+> "871" / "311" as hard counts. What does still hold (via separate evidence, not this ref-count
+> framing) is that 0x0A00/0x0B00 are real structure-base addresses, not individual flags — see the
+> audit doc's §2.1 for the current characterization. A 2026-10-15/16 cross-tree research survey
+> independently flagged this exact "871/311" framing as an uncorrected stale copy of an already-
+> discredited taxonomy — the three mentions below (test-plan priorities) still cite the raw number
+> as justification and should be read with that caveat.
 
 ---
 
@@ -1081,6 +1092,12 @@ Three-phase sequence during boot:
 ---
 
 ## MEC Counter Variation Across Units
+
+> **Naming note (standardized 2026-10-15):** MEC = **Manufacturer Enable Counter** (standardized
+> across this tree; see `platform/security.md` §MEC and `research/EEPROM_MAPPING_FABLE_REPORT.md`
+> Finding E). This file previously described it only functionally as a "reprogramming event
+> count" — that gloss is an unverified alternate reading, not corroborated by firmware strings or
+> decompiled code, and is kept below only as a descriptive label, not a confirmed definition.
 
 | Unit/Build | MEC | Behavior |
 |------------|-----|----------|
