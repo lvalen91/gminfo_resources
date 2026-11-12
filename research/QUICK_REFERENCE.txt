@@ -139,7 +139,7 @@ Crash Logs:        /data/gmlogger/gmcrashlogs/
 Version: 2B.174.4.1
 Build:   24Mar22-0256
 Bolo:    B2.9C.01.01
-MCU:     Renesas RH850/P1M-E
+MCU:     Renesas RH850/F1K
 
 === SOC INFO ===
 

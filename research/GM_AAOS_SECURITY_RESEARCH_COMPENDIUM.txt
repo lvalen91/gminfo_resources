@@ -28,8 +28,8 @@ these as SUPERSEDED:
     severities (SELinux-permissive 9.8 -> actual 2.0; ADB-5555 9.8 -> 4.0; I2C/GPIO
     8.8/7.1 -> 2.0; IOMMU 8.5 -> 5.5).
   - Port 6363 (here "NDN/ICN? UNEXPLORED") = GMVT service per the Y181 doc.
-  - VIP part number: UNCERTAIN -- this doc says RH850/P1M-E; the Y181 doc says both
-    RH850/P1M-E and TM52176. Verify before relying on either.
+  - VIP identification corrected 2026-11-12: RH850/F1K, R7F7015873AFP, 176 pins.
+    Marking 15873 is the device code; TM52176 is the trace code. See hardware/teardown.md.
 --------------------------------------------------------------------------------
 
 TABLE OF CONTENTS
@@ -122,7 +122,7 @@ Qualification:  AEC-Q100 Automotive Grade
 
 3.2 VIP MCU (Renesas)
 ---------------------
-Model:          Renesas RH850/P1M-E
+Model:          Renesas RH850/F1K
 Architecture:   RH850 (V850 successor)
 Role:           Vehicle Interface Processor
 Functions:      Power management, CAN gateway, security enforcement

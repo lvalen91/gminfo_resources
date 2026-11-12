@@ -29,7 +29,7 @@
 | Touchscreen | Atmel maXTouch, I2C bus 7 @ 0x4B (PCI `00:17.3` i2c_designware.7, `7-004b`) [C live: `vendor_sepolicy.cil:23`; IRQ thread `[irq/145-atmel_m]` Y181 `raw/processes.txt:123`; `CONFIG_TOUCHSCREEN_ATMEL_MXT=m` `kernel_config.txt:2397`]; the **16-point** figure comes only from the Y177 snapshot `platform/gminfo3.7_tech_specs.md:115` [UNVERIFIED on Y181: full-project searched 2026-10-10; no `getevent -p`/ABS_MT_SLOT artifact in any capture] |
 | OpenGL ES | 3.2 (Mesa 21.1.5) |
 | Kernel | Linux 4.19.305 LTS (Y181) / 4.19.283 (Y175) |
-| VIP MCU | Renesas RH850/P1M-E (TM52176) — power, CAN, early boot, EEPROM |
+| VIP MCU | Renesas RH850/F1K (R7F7015873AFP; trace TM52176) — power, CAN, early boot, EEPROM |
 | Hypervisor | GHS INTEGRITY IoT 2020.18.19 MY22-026 (Type-1 bare-metal) |
 | WiFi | Broadcom BCM (802.11ac), driver `dhd` |
 | Bluetooth | 5.0 |
@@ -112,18 +112,23 @@ The DalvikVM ISA variant is **silvermont** (x86_64 architecture, 64-bit only).
 └─────────────────┬───────────────────────────────────────────────┘
                   │ HDLC over UART /dev/ttyS1 (20 IPC channels 1-20, protocol v16)
 ┌─────────────────▼───────────────────────────────────────────────┐
-│ Renesas RH850/P1M-E (TM52176) — VIP MCU                        │
+│ Renesas RH850/F1K (R7F7015873AFP) — VIP MCU                     │
 │ Power management, CAN gateway, early boot, EEPROM, PLC timers  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-The system uses a dual-processor architecture where the Intel Atom x7-A3960 SoC handles all application-level processing under a GHS INTEGRITY Type-1 hypervisor, while the Renesas RH850/P1M-E VIP MCU manages low-level vehicle functions including power sequencing, CAN bus gateway, early boot, EEPROM access, and PLC timers.
+The system uses a dual-processor architecture where the Intel Atom x7-A3960 SoC handles all application-level processing under a GHS INTEGRITY Type-1 hypervisor, while the Renesas RH850/F1K VIP MCU manages low-level vehicle functions including power sequencing, CAN bus gateway, early boot, EEPROM access, and PLC timers.
 
 Communication between the two processors occurs over HDLC on UART `/dev/ttyS1` with 20 IPC channels (numbered 1-20; confirmed: `hardware/teardown.md` IPC Channel Map) using protocol version 16. The GHS hypervisor runs as bare-metal on the Intel SoC, with Android 12 running as a guest VM alongside 14+ native GHS tasks for AVB verification, Ethernet networking, camera processing, TEE keymaster, calibration services, and logging.
 
 ---
 
-## VIP MCU (Renesas RH850/P1M-E)
+## VIP MCU (Renesas RH850/F1K)
+
+Identification corrected 2026-11-12: **R7F7015873AFP**, marking **15873**, 176-pin LFQFP.
+**TM52176 is a trace code.** Owner-reported VIP console TX is **pin 52 / P1_9 / RLIN34TX**;
+pin 53 provides the matching RX function, with reception unverified. Package evidence,
+manual and full UART table: [hardware teardown](../hardware/teardown.md#rh850f1k-package--uart-pinout).
 
 > **Low-power sleep (external corroboration [X]).** Surrealdev *"Rooting the Cadillac Part 1"*
 > (Snipesy, 2026-08-15; `https://surrealdev.com/rooting-the-cadillac-part-1-lay-of-the-land/` —

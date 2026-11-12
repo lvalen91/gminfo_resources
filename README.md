@@ -61,7 +61,7 @@ gminfo_resources/
 | GPU | Intel HD Graphics 505 (Gen9, 18 EUs), Mesa 21.1.5, GLES 3.2 |
 | Audio HAL | HarmanHAL `android.hardware.audio@5.0` ("Titan" = SoC platform codename, not the HAL); 8 CarAudioService output buses; AVB transport |
 | OS | Android 12 (API 32) AAOS, guest VM under GHS INTEGRITY IoT 2020.18.19 |
-| VIP MCU | Renesas RH850/P1M-E (marking TM52176) |
+| VIP MCU | Renesas RH850/F1K (R7F7015873AFP, marking 15873; TM52176 is a trace code) |
 | EEPROM | ST M24C64, 8 KB, I2C (SBI security flags) |
 | Kernel | Linux 4.19.283 (Y175) / 4.19.305 (Y177, Y181) |
 | CAN | GM VIP/SDV1 (GB), CAN 2.0 29-bit · ECU 0x80 · Req 0x14DA80**F2** / Rsp 0x145AF2**80** in the captured DPS session (F1 = generic OBD tester address) |

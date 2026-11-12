@@ -297,7 +297,7 @@ Telematics (CGM module) operates independently of the A11 radio stack — cloud 
 
 - **ECU count:** 24
 - **CSM address:** 0x80
-- **Gateway:** VIP MCU (RH850/P1M-E) acts as CAN gateway between vehicle bus and SoC
+- **Gateway:** VIP MCU (RH850/F1K) acts as CAN gateway between vehicle bus and SoC
 
 The VIP MCU bridges CAN messages to the Intel SoC over the HDLC IPC link, translating vehicle bus traffic into structured IPC messages for Android services. The module at CAN address 0x80 (CSM = Center Stack Module) is the radio/head unit itself; the audio **amplifier** is a *separate* AVB endpoint (`192.168.1.103`, `AMP_ETH`) that the radio streams to over Ethernet AVB. *(Corrects earlier text calling 0x80 "the primary audio amplifier endpoint".)*
 

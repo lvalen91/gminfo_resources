@@ -148,7 +148,7 @@ one remaining step to name the precise UDS/session event, if pursued further.
 
 ## Methodology / tooling
 
-Note: the VIP MCU is a **Renesas RH850**/P1M-E; the authoritative SLEIGH module is **RH850:LE:32**,
+Note: the VIP MCU is a **Renesas RH850**/F1K; the authoritative SLEIGH module is **RH850:LE:32**,
 and the `vip_app_proj`/`86331656_ghidra` V850 language used here is an approximation of it (V850 and
 RH850 share the movhi/movea + branch encodings this pass's raw-byte scans rely on, so the
 branch-target/immediate findings hold regardless). Ghidra 12.1.3 required (12.1.2 fails to load

@@ -418,7 +418,7 @@ HARDWARE COMPONENTS IDENTIFIED
 |-------------|---------------|----------|----------------------------|
 | I2C EEPROM  | ST M24C64     | TSSOP8   | Security flags, VIN, config|
 | SPI Flash   | ISSI IS25LP016| SOIC8    | Logs, backup (non-critical)|
-| VIP MCU     | RH850/P1M-E   | -        | Security gatekeeper        |
+| VIP MCU     | RH850/F1K   | -        | Security gatekeeper        |
 | SoC         | Intel Atom x7 | -        | Android execution          |
 
 SPI Flash Details (IS25LP016):

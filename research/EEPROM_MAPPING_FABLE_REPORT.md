@@ -5,7 +5,7 @@
 firmware descriptor-table facts, (2) AUTOSAR R22-11 spec text, (3) community research, (4) today's
 binary/CRC re-computation.
 **Target:** GM IOK/Harman INFO3.7-3.8 CSM. ST M24C64 8KB I²C EEPROM (0x0000–0x1FFF), read by Renesas
-RH850/P1M-E (R7F701381), VIP_APP firmware 86331656. ECUID `004B41DC0000160006104145610114AC`.
+RH850/F1K (R7F7015873AFP), VIP_APP firmware 86331656. ECUID `004B41DC0000160006104145610114AC`.
 
 > This is a **verification/audit deliverable**, not a second EEPROM map. It cites the canonical
 > documents by `file:line` and does not restate their content. The substantive defects it finds in

@@ -56,7 +56,7 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
   GLES 3.2 (`ro.opengles.version=196610`).
 - **Boot/firmware:** GHS INTEGRITY IoT **2020.18.19 MY22-026** (ghs_analysis), kernelflinger-07.02
   (elk_strings), libavb chain, A/B-CRC failure strings, security-patch levels (Y175 2024-05-05,
-  Y181 2025-06-05), VIP **RH850/P1M-E** core (the "V850" Ghidra label was an abandoned prior-analyst
+  Y181 2025-06-05), VIP **RH850/F1K** G3KH core (the "V850" Ghidra label was an abandoned prior-analyst
   approximation), UDS $27 in DPS, identical VIP_BOOT/HOSTOS/ABL across Y177/Y181.
 - **Security:** Y181 Enforcing at runtime (user build ignores `selinux=permissive` cmdline);
   `untrusted_app` has usb_device ioctl/read/write/getattr but **not open** (plat_sepolicy.cil);

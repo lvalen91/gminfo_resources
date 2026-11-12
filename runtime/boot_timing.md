@@ -13,7 +13,7 @@
 | Phase | Description | Time Range |
 |-------|-------------|------------|
 | Phase 0 | Power On | T=0ms |
-| Phase 1 | VIP MCU Boot (Renesas RH850/P1M-E) | T=0-50ms |
+| Phase 1 | VIP MCU Boot (Renesas RH850/F1K) | T=0-50ms |
 | Phase 2 | Intel CSE + ABL (UEFI bootloader) | T=50-200ms |
 | Phase 3 | GHS Hypervisor Init (cal_hypervisor_startup_timeout_ms=300) | T=200-500ms |
 | Phase 4 | AVB Verification (cal_soc_soh_timeout_msec=1500) | T=500-1500ms |

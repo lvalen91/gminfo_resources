@@ -12,7 +12,7 @@
 | Component | Chip | Purpose |
 |-----------|------|---------|
 | **SoC** | Intel Atom x7-A3960 | Android host, 4-core 0.8-2.4GHz, 8GB LPDDR4 (GHS grants guest 7830 MiB; kernel MemTotal 5530 MiB = 5.40 GiB; gap = VMM E820 limit [UNVERIFIED]) |
-| **VIP MCU** | Renesas RH850/P1M-E | Security gateway, CAN bus, EEPROM control |
+| **VIP MCU** | Renesas RH850/F1K | Security gateway, CAN bus, EEPROM control |
 | **GPU** | Intel HD 505 | Gen9, 18 EUs, HW decode H264/HEVC/VP9 |
 | **Display** | 13.4" 2400x960 60Hz | Chimei Innolux DD134IA-01B |
 

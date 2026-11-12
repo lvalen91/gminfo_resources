@@ -123,11 +123,11 @@ Current status: XGecu direct read/write access to M24C64 already established. Th
 
 ### RH850 VIP JTAG
 
-**Target:** Renesas RH850/TM52176, QFP-144+, physically accessible.  
+**Target:** Renesas RH850/TM52176, QFP-176, physically accessible.
 **Tool:** Renesas E10A-USB debugger (~$150) + CS+ IDE (free download).
 
 **Attack sequence:**
-1. Probe QFP-144 for TCK/TMS/TDI/TDO/TRST pins (consult RH850/TM52176 datasheet).
+1. Probe QFP-176 for TCK/TMS/TDI/TDO/TRST pins (consult RH850/TM52176 datasheet).
 2. Connect E10A-USB, attempt connection in CS+.
 3. If OCD security fuse unblown (expected on most production IVI): full flash read/write, register access, live breakpoints.
 4. If OCD fuse blown: attempt VFI (icanHack.nl RAV4 technique) to bypass security sync validation → gain debug access.

@@ -78,7 +78,7 @@ The CSM module contains two processors communicating via SPI-IPC/HDLC:
 | Processor | Chip              | Function                          |
 |-----------|-------------------|-----------------------------------|
 | Main SoC  | Intel Atom x7-A3960 | Android AAOS, Display, Audio    |
-| VIP MCU   | Renesas RH850/P1M-E | Power mgmt, CAN, Amp, Security  |
+| VIP MCU   | Renesas RH850/F1K | Power mgmt, CAN, Amp, Security  |
 
 2.2 TWO-MODULE ARCHITECTURE
 ---------------------------

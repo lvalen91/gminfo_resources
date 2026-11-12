@@ -45,7 +45,7 @@ The GM Info 3.7 A11 module uses a **dual-processor architecture** with the Renes
 │                                                                              │
 │   ┌─────────────────────────┐         ┌─────────────────────────────────┐   │
 │   │  RENESAS VIP (TM52176)  │◄══════►│  INTEL ATOM x7-A3960 (J6/SoC)   │   │
-│   │  RH850/P1M-E MCU        │  HDLC   │  Apollo Lake (Broxton)          │   │
+│   │  RH850/F1K MCU        │  HDLC   │  Apollo Lake (Broxton)          │   │
 │   │                         │   IPC   │                                  │   │
 │   │  • VIP_BOOT (~128KB)    │         │  • SOC_ABL (Bootloader)         │   │
 │   │  • VIP_APP (~1.9MB)     │         │  • GHS INTEGRITY Hypervisor     │   │
@@ -122,7 +122,7 @@ Vehicle Battery → A11 Power Supply
 ## 4. Phase 1: VIP (Renesas RH850) Boot
 
 **Duration:** T=0-50ms
-**Processor:** Renesas TM52176 (RH850/P1M-E core)
+**Processor:** Renesas R7F7015873AFP (RH850/F1K, G3KH core; trace TM52176)
 
 ### 4.1 VIP_BOOT Execution
 

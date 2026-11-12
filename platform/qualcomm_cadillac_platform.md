@@ -74,7 +74,7 @@ Board has **no silkscreen**. Author-reported components:
 - **Aptiv AMEC 050**, Molex **stAK50h**
 
 > **Do not graft onto the Intel spec.** This repo's A11 board is **8 GB LPDDR4** (4× Micron),
-> **64 GB eMMC**, RH850/**P1M-E** — different RAM type/size, storage, and MCU variant. These are
+> **64 GB eMMC**, RH850/**F1K** — different RAM type/size, storage, and MCU variant. These are
 > genuine platform differences, not corrections to [`hardware.md`](hardware.md). (Molex HSAL2 /
 > stAK50h connector families do also appear on the A11 harness — see
 > [`../hardware/connectors.md`](../hardware/connectors.md) — but as different shells.)

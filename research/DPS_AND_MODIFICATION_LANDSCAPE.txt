@@ -96,7 +96,7 @@ Standalone DPS cannot unlock programming without GM connection.
 
 2.1 VIP MCU OVERVIEW
 --------------------
-Chip: Renesas RH850/P1M-E (or variant)
+Chip: Renesas RH850/F1K (R7F7015873AFP)
 Flash: Internal (contains VIP firmware)
 RAM: Internal (runtime data)
 External: M24C64 EEPROM via I2C

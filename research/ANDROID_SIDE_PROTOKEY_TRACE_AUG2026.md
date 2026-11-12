@@ -2,7 +2,7 @@
 
 **Goal:** backward-trace the SBI/EEPROM bypass's effect on the Android side
 (kernel init, ramdisk, vendor/system) rather than continuing to fight the
-VIP's proprietary RH850 firmware (RH850/P1M-E; "V850" is only the CPU core lineage). Cross-check against older corpus research
+VIP's proprietary RH850 firmware (RH850/F1K; "V850" is only the CPU core lineage). Cross-check against older corpus research
 on the ADB-cert-disablement topic.
 
 **Headline result: recovered the real raw `SOC_SYSTEM` (3.2GB) and

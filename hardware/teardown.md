@@ -59,7 +59,7 @@ Three-processor design on a single PCB:
 |  | RH850      |<-->| M24C64   |    | Samsung   |            |
 |  | VIP MCU    |I2C | EEPROM   |    | eMMC 64GB |            |
 |  | TM52176    |    | 8KB      |    | KLMCG4JEUD|            |
-|  | LFQFP144   |    | TSSOP-8  |    | BGA-153   |            |
+|  | LFQFP176   |    | TSSOP-8  |    | BGA-153   |            |
 |  +------+-----+    +----------+    +-----------+            |
 |         | IPC (HDLC)                                        |
 |  +------+-----+    +-----------+    +-----------+           |
@@ -88,7 +88,7 @@ Three-processor design on a single PCB:
 | eMMC | Samsung KLMCG4JEUD (SEC 228, B04P, NT24G0046) | BGA-153 | 64GB eMMC 5.1 |
 | BCM89551 FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — **Broadcom Ethernet switch firmware** (confirmed via partial dump; IC damaged during extraction) |
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — **confirmed** Apollo Lake IFWI/TXE boot flash (Intel docs mandate 8MB external SPI NOR on CS0). Contains Flash Descriptor, TXE 3.0 FW, UEFI, PMC FW, microcode, SMIP, Boot Guard v2. NOT dumped. |
-| VIP MCU | Renesas RH850/P1M-E (TM52176, 3TC 2251, lot 15873) | LFQFP144 (144-pin, 0.5mm pitch, 20x20mm) | [C] RH850 core (disassemble as RH850:LE:32, not V850), system/power/security controller. Family (2MB flash, LFQFP144): R7F701377/378/379/380 — 3x RS-CANFD, 2x RLIN3 UART. Source: `datasheets/Renesas_RH850_P1M-E_datasheet.pdf`. Board photo: `photos/rh850_vip_region_on_board.png` |
+| VIP MCU | Renesas RH850/F1K, R7F7015873AFP (15873; trace TM52176) | LFQFP176 (176-pin, 0.5 mm pitch, 24 x 24 mm) | [C] G3KH core; 2 MB code flash, 64 KB data flash, 192 KB RAM, up to 120 MHz. System/power/vehicle-interface controller. See corrected package/UART section and `datasheets/Renesas_RH850_F1K_HW_manual_rev110.pdf`. |
 | VIP EEPROM | ST M24C64 (464RQ, K228) | TSSOP-8 | 8KB I2C — SBI security flags |
 
 ### Networking & Connectivity
@@ -629,39 +629,47 @@ networked hypervisor bridge.
 
 ---
 
-## RH850/P1M-E Package & UART Pinout
+## RH850/F1K Package & UART Pinout
 
-[C] Renesas RH850/P1M-E, LFQFP144 package (144-pin, 0.5mm pitch, 20x20mm; JEITA code
-P-LFQFP144-20x20-0.50). 2MB flash variant → part family R7F701377/378/379/380
-(3x RS-CANFD, 2x RLIN3 UART). Source: `datasheets/Renesas_RH850_P1M-E_datasheet.pdf`
-(package outline Fig. 4.1; pin tables listing each alt-function column for the 144-pin
-package).
+**Corrected 2026-11-12:** the VIP is Renesas **RH850/F1K, R7F7015873AFP**
+(G3KH core), in **176-pin LFQFP** (44 leads per side, 24 x 24 mm body,
+0.5 mm pitch). The earlier 144-pin identification and derived UART assignments
+were incorrect. The abbreviated device marking is **15873**; **TM52176** is a
+manufacturing trace code, not the device model. Identification follows the
+observed marking and pin count, the F1K product table (p. 75), and Renesas
+[PCN HPLM-2024-0029, p. 4](https://www.renesas.com/en/document/pcn/addition-production-sites-and-material-changes-rh850f1k-seriespc-mcu-a034ae)
+showing the abbreviated part-marking/trace-code layout. Packaging/order suffixes
+beyond R7F7015873AFP have not been established from the board marking.
 
-**RLIN3 UART pins (144-pin package column):**
+Source: [RH850/F1K hardware manual, Rev. 1.10](datasheets/Renesas_RH850_F1K_HW_manual_rev110.pdf)
+(R01UH0562EJ0110, 2016-11-30). Device: 2 MB code flash, 64 KB data flash,
+192 KB RAM, up to 120 MHz. Table 2.3 (pp. 89-93) supplies the 176-pin assignments.
 
-| Pin | Signal | Direction |
-|-----|--------|-----------|
-| 64  | P5_10 / RLIN30RX | input |
-| 65  | P5_11 / RLIN30TX | output |
-| 66  | P5_12 / RLIN31RX | input |
-| 67  | P5_13 / RLIN31TX | output |
-| 3   | P4_1 / RLIN30TX (alt) | output |
-| 4   | P4_2 / SCI30SCO (alt) | output |
+**VIP console:** owner reports the previously captured VIP UART log came from
+physical **pin 52, P1_9 / RLIN34TX** (RLIN3 channel 4 transmit).
+The historical capture files preserve the VIP output but do not independently
+record the probe location; the physical pin attribution is owner-reported.
+The existing hardware inventory records 115200 baud, 8N1. Matching RX is an
+available pin function only; reception/command handling has not been verified.
 
-[C] `datasheets/Renesas_RH850_P1M-E_datasheet.pdf` pin tables. [UNVERIFIED] which of RLIN30
-vs RLIN31 is the VIP console TX vs the u-blox GNSS UART — not yet resolved from the
-`research/scripts/ghidra_rh850` pin-mux (PFC/PMC) dump; the other RLIN3 instance serves the
-on-board u-blox GNSS receiver (see VIP boot-log findings below, which confirm GNSS rides a
-VIP UART but do not by themselves disambiguate RLIN30 vs RLIN31).
+| Physical pin | Port / alternate function | Role |
+|---|---|---|
+| **52** | **P1_9 / RLIN34TX / DPIN20** | Owner-reported VIP console TX |
+| 53 | P1_8 / RLIN34RX / INTP14 | Matching channel 4 RX function; enabled state unverified |
+| 20 | P0_2 / RLIN30TX | Channel 0 TX alternative |
+| 21 | P0_3 / RLIN30RX | Channel 0 RX alternative |
+| 156 | P10_10 / RLIN30TX | Channel 0 TX alternative |
+| 155 | P10_9 / RLIN30RX | Channel 0 RX alternative |
+| 24 | P0_5 / RLIN31TX | Channel 1 TX alternative |
+| 23 | P0_4 / RLIN31RX | Channel 1 RX alternative |
+| 158 | P10_12 / RLIN31TX | Channel 1 TX alternative |
+| 157 | P10_11 / RLIN31RX | Channel 1 RX alternative |
+| 64 | P2_3 / RLIN28TX | RLIN2 channel 8 TX; not the console identification |
+| 65 | P2_2 / RLIN28RX | RLIN2 channel 8 RX; not the console identification |
 
-[C] Package pin-numbering per datasheet Fig. 4.1 (index mark at pin 1): **bottom edge =
-pins 1-36, right edge = 37-72, top edge = 73-108, left edge = 109-144** — pins 64-67 (the
-RLIN3 cluster) fall in the 37-72 bank, i.e. the package's **right edge as drawn in the
-datasheet**, not the "bottom edge" previously assumed here. [UNVERIFIED] which physical
-PCB edge this corresponds to once the chip is mounted/rotated on the board — not
-cross-checked against `photos/rh850_vip_region_on_board.png` this session; do not treat
-"right edge in the datasheet drawing" as "bottom edge on the board" without that photo
-correlation.
+Pin functions depend on the firmware's mux configuration. Do not use the old
+144-pin numbering, P5_10..P5_13 labels, or RLIN30/RLIN31 console guess on this
+board. The GNSS UART's channel remains unresolved; it must be traced separately.
 
 ---
 
@@ -709,8 +717,8 @@ state-of-health. The same module reads the boot counter from NVM at startup:
 receiver being physically present and polled), followed by repeated baud-rate probing —
 `Change the VIP UART BR to 115200 bps`, then after 15 failed `UBX_CFG_PRT` polls, `Change
 the VIP UART BR to 9600 bps`, ending in `u-blox UART BR unknown`. This confirms GNSS rides
-one of the VIP's RLIN3/UART channels (see pinout section above); it does not identify which
-of the two VIP UARTs this is. Source: `diagnostics/Y175_session.log` lines 173, 198,
+a VIP UART channel (see pinout section above); it does not identify the
+GNSS UART channel. Source: `diagnostics/Y175_session.log` lines 173, 198,
 270-271, 298-299.
 
 ### SBAT Ticket Validation (live boot) & ProtoKey Seed-from-BCM

@@ -62,7 +62,7 @@ TABLE OF CONTENTS
 1. EXECUTIVE SUMMARY
 ================================================================================
 
-The GM AAOS infotainment system uses a VIP MCU (Renesas RH850/P1M-E) as the
+The GM AAOS infotainment system uses a VIP MCU (Renesas RH850/F1K) as the
 security gatekeeper. The VIP reads configuration from an M24C64 I2C EEPROM
 (8KB) and controls Android system behavior including:
 
@@ -323,7 +323,7 @@ SBAT (Secure Boot Authorization Ticket):
 ```
 +------------------+     +-----------------+     +------------------+
 | EEPROM           |     | VIP MCU         |     | Android SoC      |
-| (M24C64)         |     | (RH850/P1M-E)   |     | (Intel Atom)     |
+| (M24C64)         |     | (RH850/F1K)   |     | (Intel Atom)     |
 +------------------+     +-----------------+     +------------------+
 | 0x0440: 5A FF 5A |---->| Read security   |     |                  |
 | 0x0A80: 5A FF 5A |     | flag at boot    |     |                  |
@@ -747,7 +747,7 @@ C.2 HARDWARE SUMMARY
 |-------------|-------------|----------------------------|-----------|
 | I2C EEPROM  | ST M24C64   | Security flags, VIN, config| YES       |
 | SPI Flash   | IS25LP016   | Logs, backup, extended cfg | NO        |
-| VIP MCU     | RH850/P1M-E | Security gatekeeper        | YES       |
+| VIP MCU     | RH850/F1K | Security gatekeeper        | YES       |
 | Intel SoC   | Atom x7     | Android execution          | YES       |
 
 ================================================================================

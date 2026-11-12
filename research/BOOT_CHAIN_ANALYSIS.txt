@@ -113,7 +113,7 @@ TABLE OF CONTENTS
 ------------------
 File: 85056831 (1.9 MB)
 Sign Type: NONE (UNSIGNED!)
-MCU: Renesas RH850/P1M-E
+MCU: Renesas RH850/F1K
 Format: GM proprietary with signed header
 
 2.2 HEADER STRUCTURE (from hex dump)
