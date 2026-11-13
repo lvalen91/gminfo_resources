@@ -4,7 +4,8 @@ gminfo_resources/research/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md)."""
 # --- network ---
 DEVICE_IP_DEFAULT = "192.168.171.2"      # MDI2 on the direct link
 DISCOVERY_GROUP   = "225.1.1.1"          # device announce multicast
-DISCOVERY_PORT    = 8194                 # ~1 Hz, 106-byte beacon from device:42178
+DISCOVERY_PORT    = 8194                 # ~1 Hz announce; serial = LE u32 @ byte 9
+                                         # (observed 41-byte beacon; src IP = device)
 
 # 14-socket "900x" service bank opened per Connect (fresh bank each connect)
 SERVICE_PORTS = [9001, 9003, 9006, 9007, 9008, 9009, 9010,

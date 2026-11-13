@@ -191,6 +191,15 @@ def resp_id_entries(req_canid: int, resp_canid: int,
     ]
 
 
+def _cop_marker(handle: int) -> int:
+    """u16 after copId in 0x463: ``(channel << 8) | 0x10``, channel = handle high byte.
+
+    Replicated from live_programming_transport._cop_marker; 0x2510 only for the
+    vehicle-tested channel 0x25. Not a fixed constant (corrects the §4 note).
+    """
+    return (((handle >> 24) & 0xFF) << 8) | 0x10
+
+
 def start_cop_payload(handle: int, cop_id: int, cop_type: int, data: bytes = b"",
                       time_ms: int = 0, num_send: int = 0, num_recv: int = 0,
                       flags: int = 0) -> bytes:
@@ -208,7 +217,7 @@ def start_cop_payload(handle: int, cop_id: int, cop_type: int, data: bytes = b""
     return (
         _u32le(handle)
         + _u16le(cop_id)
-        + _u16le(0x2510)          # fixed constant (§4)
+        + _u16le(_cop_marker(handle))   # (channel<<8)|0x10; 0x2510 only for channel 0x25 (§4)
         + _u16le(cop_type)
         + _u16le(0x0000)
         + _u32le(len(data))
@@ -284,14 +293,10 @@ class DpduLink:
         return self
 
     def _hello_payload(self, channel: int) -> bytes:
-        # GUESS: the exact 0x884 hello bytes were not captured byte-for-byte. We
-        # know only that a "channel field" is 0 on the command socket and the
-        # assigned id on the event socket, and that the reply carries the channel
-        # id at byte 12. Mirror that layout: a small struct with the channel byte
-        # at offset 12. THIS IS THE FIELD MOST LIKELY TO NEED A CAPTURE FIX.
-        buf = bytearray(16)
-        buf[12] = channel & 0xFF
-        return bytes(buf)
+        # Capture-pinned 0x884 hello: <u32 1><u32 channel><u32 0x1388>. channel=0 on
+        # the command socket; the assigned id (0x885 reply byte 12) on the event
+        # socket. Same layout as live_programming_transport.LiveDpduSession.hello.
+        return struct.pack("<III", 1, channel, 0x1388)
 
     def close(self):
         try:

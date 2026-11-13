@@ -1,0 +1,30 @@
+{
+  "_comment": "GM T1XX (Silverado/Sierra) ECU map. Addr is UDS logical / CAN node address. can_req/can_rsp are 29-bit extended arbitration IDs (hex). DoIP uses logical_addr (= 0x0000|addr unless overridden by capture). Sourced from DPS_MASTER_REFERENCE.md section 2.",
+  "tester_addr": "0xF1",
+  "ecus": {
+    "0x11": {"name": "ECM",   "desc": "Engine Control Module",            "can_req": "0x14DA11F1", "can_rsp": "0x142AF111", "sw_modules": 6,  "domain": "0114A6"},
+    "0x18": {"name": "TCM",   "desc": "Transmission Control Module",      "can_req": "0x14DA18F1", "can_rsp": "0x142AF118", "sw_modules": 3,  "domain": "0114A6"},
+    "0x1A": {"name": "EOCM",  "desc": "Electronic Steering (EOCM)",       "can_req": "0x14DA1AF1", "can_rsp": "0x142AF11A", "domain": "0114A6"},
+    "0x28": {"name": "BCM",   "desc": "Body Control Module",             "can_req": "0x14DA28F1", "can_rsp": "0x142AF128", "sw_modules": 8,  "domain": "000565"},
+    "0x31": {"name": "TCM2",  "desc": "Transmission Control Module 2",    "can_req": "0x14DA31F1", "can_rsp": "0x141AF131", "domain": "0114AA"},
+    "0x40": {"name": "VCM",   "desc": "Vehicle Control Module",          "can_req": "0x14DA40F1", "can_rsp": "0x142AF140", "sw_modules": 61, "domain": "0114A6"},
+    "0x41": {"name": "TEHCM", "desc": "Hybrid/Transmission EHCM",         "can_req": "0x14DA41F1", "can_rsp": "0x142AF141", "domain": "0114A6"},
+    "0x45": {"name": "CGM",   "desc": "Central Gateway / FSCM",          "can_req": "0x14DA45F1", "can_rsp": "0x14DAF145", "domain": "0114A6", "gateway": true},
+    "0x58": {"name": "IPC",   "desc": "Instrument Panel Cluster",        "can_req": "0x14DA58F1", "can_rsp": "0x141AF158", "domain": "614614B2"},
+    "0x59": {"name": "EBCM",  "desc": "Electronic Brake Control Module", "can_req": "0x14DA59F1", "can_rsp": "0x141AF159", "domain": "614614B2"},
+    "0x60": {"name": "RCDLR", "desc": "Remote Control Door Lock Rcvr",   "can_req": "0x14DA60F1", "can_rsp": "0x145AF160"},
+    "0x68": {"name": "HVAC",  "desc": "HVAC Control Module",             "can_req": "0x14DA68F1", "can_rsp": "0x145AF168"},
+    "0x6D": {"name": "TCCM",  "desc": "Transfer Case Control Module",    "can_req": "0x14DA6DF1", "can_rsp": "0x141AF16D"},
+    "0x75": {"name": "SDM",   "desc": "Sensing & Diagnostic (Airbag)",   "can_req": "0x14DA75F1", "can_rsp": "0x144AF175"},
+    "0x80": {"name": "Radio", "desc": "Radio / Infotainment (A11)",      "can_req": "0x14DA80F1", "can_rsp": "0x145AF180", "domain": "0114AC"},
+    "0x81": {"name": "AMP",   "desc": "Audio Amplifier",                 "can_req": "0x14DA81F1", "can_rsp": "0x145AF181"},
+    "0x97": {"name": "HUD",   "desc": "Head-Up Display",                 "can_req": "0x14DA97F1", "can_rsp": "0x145AF197"},
+    "0xA4": {"name": "TPMS",  "desc": "Tire Pressure Monitor",           "can_req": "0x14DAA4F1", "can_rsp": "0x144AF1A4"},
+    "0xA8": {"name": "PDM",   "desc": "Power Distribution Module",       "can_req": "0x14DAA8F1", "can_rsp": "0x144AF1A8"},
+    "0xB9": {"name": "Camera","desc": "Front/Surround Camera Module",    "can_req": "0x14DAB9F1", "can_rsp": "0x144AF1B9"},
+    "0xBA": {"name": "ParkAssist", "desc": "Park Assist Control Module", "can_req": "0x14DABAF1", "can_rsp": "0x144AF1BA"},
+    "0xBD": {"name": "TRLM",  "desc": "Trailer Integration Module",      "can_req": "0x14DABDF1", "can_rsp": "0x142AF1BD"},
+    "0xBE": {"name": "VGRS",  "desc": "Variable Gear Ratio Steering",    "can_req": "0x14DABEF1", "can_rsp": "0x145AF1BE"},
+    "0xBF": {"name": "PLGM",  "desc": "Power Liftgate Module",           "can_req": "0x14DABFF1", "can_rsp": "0x141AF1BF"}
+  }
+}

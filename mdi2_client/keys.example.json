@@ -1,0 +1,10 @@
+{
+  "_comment": "EXAMPLE GM SecurityAccess key map -- PLACEHOLDER KEYS ONLY, do not use.",
+  "_format": "{ecuid_hex: aes128_key_hex}. ECUID is the 16-byte 0x27 0x01 seed prefix. Key is 16 bytes (AES-128). Keys beginning with '_' are ignored.",
+  "_domain_note": "One key is shared across an ECUID domain (suffix); see DOMAIN_SUFFIXES in security_cmac.py. The ECUIDs below use real domain suffixes but fabricated prefixes.",
+  "_usage": "Copy to a git-ignored path (e.g. ~/.config/mdi2/keys.json) and fill in real keys captured separately. Load via GMSecurityAccess(key_map_path) or the --key-map CLI option. NEVER commit real keys.",
+
+  "000000000000000000000000000114ac": "000102030405060708090a0b0c0d0e0f",
+  "00000000000000000000000000000565": "0f0e0d0c0b0a09080706050403020100",
+  "00000000000000000000000000000000": "00000000000000000000000000000000"
+}

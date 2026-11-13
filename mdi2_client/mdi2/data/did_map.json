@@ -1,0 +1,39 @@
+{
+  "_comment": "GM/UDS Data Identifier map. fmt: ascii|hex|bcd_date|sw_inventory|ecuid. len is expected payload length (informational; var = variable). Sourced from DPS_MASTER_REFERENCE.md section 4.",
+  "dids": {
+    "F190": {"name": "VIN",                       "fmt": "ascii", "len": 17},
+    "F180": {"name": "Boot Software ID",          "fmt": "ascii", "len": 0},
+    "F181": {"name": "Application Software ID",    "fmt": "ascii", "len": 0},
+    "F182": {"name": "Calibration IDs",           "fmt": "ascii", "len": 0},
+    "F183": {"name": "Application Data ID",        "fmt": "ascii", "len": 0},
+    "F187": {"name": "Spare Part Number",         "fmt": "ascii", "len": 13},
+    "F188": {"name": "App SW Number",             "fmt": "ascii", "len": 0},
+    "F18A": {"name": "System Supplier ID",        "fmt": "ascii", "len": 0},
+    "F18C": {"name": "ECU Serial Number",         "fmt": "ascii", "len": 0},
+    "F190_alt": {"name": "VIN (alt)",             "fmt": "ascii", "len": 17},
+    "F191": {"name": "Hardware Part Number",      "fmt": "ascii", "len": 0},
+    "F192": {"name": "Supplier HW Number",        "fmt": "ascii", "len": 0},
+    "F193": {"name": "Supplier HW Version",       "fmt": "ascii", "len": 0},
+    "F194": {"name": "Supplier SW Number",        "fmt": "ascii", "len": 0},
+    "F195": {"name": "Supplier SW Version",       "fmt": "ascii", "len": 0},
+    "F197": {"name": "System Name",               "fmt": "ascii", "len": 0},
+    "F198": {"name": "Repair Shop Code",          "fmt": "ascii", "len": 10},
+    "F199": {"name": "Programming Date",          "fmt": "bcd_date", "len": 4},
+    "F19D": {"name": "Calibration Repair Date",   "fmt": "bcd_date", "len": 4},
+    "F1A0": {"name": "GM SW Module Inventory",    "fmt": "sw_inventory", "len": 0},
+    "F09A": {"name": "Diagnostic ID",             "fmt": "hex", "len": 2},
+    "F0AB": {"name": "CVPPS",                     "fmt": "hex", "len": 14},
+    "F0B3": {"name": "DUNS ID",                   "fmt": "hex", "len": 9},
+    "F0B4": {"name": "Traceability",             "fmt": "hex", "len": 16},
+    "F0F3": {"name": "ECUID",                     "fmt": "ecuid", "len": 16},
+    "F0F4": {"name": "SBAT",                      "fmt": "hex", "len": 829},
+    "F081": {"name": "MAC Config",                "fmt": "hex", "len": 0},
+    "F1B0": {"name": "GM Broadcast / Module Present", "fmt": "hex", "len": 0}
+  },
+  "routines": {
+    "020E": {"name": "wakeUpNetworks"},
+    "FF00": {"name": "eraseMemory_alt"},
+    "FF01": {"name": "checkProgrammingDependencies"},
+    "FF02": {"name": "eraseMemory"}
+  }
+}

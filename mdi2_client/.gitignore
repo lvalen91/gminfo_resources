@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 captures/
+# real SecurityAccess key maps -- never commit (keys.example.json is the only tracked map)
+keys.json
+*.keys.json
+keymap.json
+secrets/
