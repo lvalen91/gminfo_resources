@@ -3,7 +3,7 @@
 **Date:** 2026-01-05
 **Binary:** SOC_HOSTOS (85098662)
 **Size:** 14,929,320 bytes (extracted ELF)
-**Format:** ELF (header claims 32-bit LSB / Intel 80386) but **the code is x86-64** (CORRECTED 2026-08-26: `movabs`/REX-prefixed instructions, `crt_x64.86`/`libkernel.86_x64`; the EM_386 header is misleading — disassemble as `x86:LE:64`), statically linked, stripped
+**Format:** ELF (header claims 32-bit LSB / Intel 80386) but **the code is x86-64** (CORRECTED 2026-08-26: `movabs`/REX-prefixed instructions, `crt_x64.86`/`libkernel.86_x64`; the EM_386 header is misleading — disassemble as `x86:LE:64`), statically linked; kernel symbols retained, application/task symbol coverage incomplete
 
 > Companion doc: `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` covers boot/update/recovery
 > mechanics in depth (BCB/misc byte layout, USB/protokey/capsule trigger files,
@@ -79,66 +79,8 @@
 
 ## 2. Boot Process
 
-### Boot Sequence
-
-```
-1. Hardware Reset
-        │
-        ▼
-2. Intel ABL (Automotive Bootloader)
-   └── Loads GHS INTEGRITY
-        │
-        ▼
-3. GHS Kernel Initialization
-   ├── BSP_InitializeOnBootCpu
-   ├── ASP_PreCrtInitializeBootstrap
-   ├── ASP_VMX_InitializeOnBootCpu
-   ├── ASP_VTD_Init (IOMMU)
-   ├── BSP_Initialize
-   ├── BSP_BootSecondaryCpus
-   └── RunInitialTasks
-        │
-        ▼
-4. GHS Tasks Start
-   ├── VMM1_InitialTask (Android VMM)
-   ├── Camera_InitialTask
-   ├── Audio_InitialTask
-   ├── GPU_InitialTask
-   ├── Chimes_InitialTask
-   ├── VIP_InitialTask
-   ├── Lifecycle_InitialTask
-   ├── OTA_InitialTask
-   └── [Other tasks...]
-        │
-        ▼
-5. Android Boot
-   ├── CheckRecoveryMode()
-   ├── Read A/B slot from misc partition
-   ├── Load vbmeta partition
-   ├── VERIFY vbmeta signature
-   ├── Load boot partition
-   ├── VERIFY boot image
-   ├── Check rollback index
-   └── Launch Android kernel
-```
-
-### Boot Configuration Strings
-
-```
-clocksource=tsc tsc=reliable
-acpi_pm_good
-i915.avail_planes_per_pipe=0x000003
-i915.enable_pvmmio=0
-androidboot.diskbus=1c.0
-androidboot.boot_devices=pci0000:00/0000:00:1c.0
-androidboot.trustyimpl=-ghs
-androidboot.product.hardware.sku=gv221
-androidboot.slot_suffix=%s
-androidboot.verifiedbootstate=%s
-androidboot.vbmeta.avb_version=1.1
-```
-
----
+Boot sequence and boot-command construction are maintained in
+[the consolidated boot/recovery source](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#1-ghs-boot-process).
 
 ## 3. PCI Device Drivers
 
@@ -252,9 +194,15 @@ androidboot.vbmeta.avb_version=1.1
 
 ## 6. Security Mechanisms
 
+### Verification scope and unresolved security candidates (2026-11-12)
+
+Binary fingerprints, extraction boundaries, debugger evidence and historical CVE
+applicability are maintained in the [consolidated research](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#01-y181b-binary-provenance-and-security-evidence-2026-11-12).
+
 ### Android Verified Boot (AVB)
 
-GHS implements full AVB verification:
+Compiled VMM verification paths include the following checks; this inventory
+does not alone establish their live enforcement state:
 
 ```
 VMM Validation Functions:
@@ -302,7 +250,7 @@ IPC Channels:
 
 ```
 Boot Security:
-├── ABL.secureboot=1
+├── ABL.secureboot=1   [NOTE 2026-11-12 CAVEAT: 'ABL.secureboot=1' appears only as a token in retained kernel-log cmdlines (live `getprop ro.boot.ABL.secureboot` is empty; hit count ~188 per archive, earlier '386' not reproduced); it is a cmdline indicator, not a verified secure-boot state. See platform/boot_chain.md.]
 ├── CRC error in FLASH, failing
 ├── SHA-1 hash error in FLASH, failing
 ├── CRC error in RAM, failing
@@ -413,11 +361,36 @@ The 7830 MiB figure is byte-confirmed from the MR table and is **not an MMIO ove
 0x8000_0000-0xFFFF_FFFF (PCI window) is not part of any granted region. The ELF program headers under-report
 (RAM0/RAM1 only; RAM2-4 are plain physical ranges), so the boottable MR table is authoritative.
 
-The 7830 -> 5530 MiB gap (2300 MiB) is a **VMM-configured guest E820 limit**; **the cause is `[UNVERIFIED]`**.
-Resolving it needs root `/proc/iomem` or `dmesg` on the bench (denied to the shell user), or RE of the
-unsymbolized VMM1 E820 builder. A 2 GiB cap on RAM4 would give 5780 MiB, less ~250 MiB reserved, which
-fits 5530 MiB, but that is a hypothesis only. The `-m 5780` figure used for the gm_emu QEMU model is
-**unconfirmed pending a bench read**.
+**Corrected 2026-11-12 — measured Y181B recovery map:** the
+[recovery USB export](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12)
+supplies the previously unavailable kernel E820 evidence. In the first archive,
+`update_cache/recovery/last_kmsg`, lines 3–10, advertises these usable ranges:
+
+| Guest physical range, inclusive | Usable size |
+|---|---:|
+| `0x00000000–0x0009efff` | 0.62109375 MiB |
+| `0x00100000–0x7ffeffff` | 2046.9375 MiB |
+| `0x100000000–0x1e6ffffff` | 3696 MiB |
+| Total | **5743.55859375 MiB** |
+
+Line 94 reports `Memory: 5638316K/5877304K available`, including 238988K
+reserved. The denominator is about 5739.55 MiB; neither this early boot value
+nor its available numerator is a later `/proc/meminfo` `MemTotal`. The second
+export retains the same E820 ranges and denominator; its available numerator
+is 5638324K, an 8 KiB difference in this boot's reservations.
+
+The observed map narrows the visibility gap without identifying why it differs
+from the statically calculated 7830 MiB guest grant. The old 5780 MiB/RAM4-cap
+proposal is a hypothesis, not the measured E820 total. Do not charge the entire
+grant-to-`MemTotal` gap to GHS consumption, or treat emulator `-m` as an E820
+reproduction. Normal-AAOS parity with this recovery map and the VMM1 builder's
+range-selection logic still need verification.
+
+The same first-archive kernel log confirms `Hypervisor detected: GHS VMM`
+(line 23), four brought-up CPUs (line 157), Intel GVT-g virtual GPU detection
+(line 392), and a 124,993,536-sector virtio block disk (line 405). This is guest
+enumeration evidence; it does not expose the physical eMMC identity or prove
+that every peripheral is directly assigned.
 
 ### 7A.4 Device grants (who owns what)
 
@@ -677,42 +650,9 @@ Details:
 
 ## 12. Update/Recovery Handling
 
-### GHS Controls
-
-```
-1. A/B Slot Management
-   - Reads misc partition for BCB
-   - Manages slot switching
-   - Tracks boot attempts
-
-2. Verified Boot
-   - Validates vbmeta signature
-   - Verifies boot image
-   - Checks rollback counter
-
-3. Recovery Mode
-   - CheckRecoveryMode()
-   - "boot-recovery" command
-   - BCB parsing
-
-4. OTA Interface
-   - /dev/ghs/ota-isys
-   - ConnToOTA connections
-   - OTA_InitialTask
-```
-
-### Error Conditions
-
-```
-- "VMM: A/B Boot: ERROR: no valid boot slot"
-- "VMM: ERROR: failed to read A/B metadata from 'misc'"
-- "VMM: ERROR: both A/B and singleton boot partition found!"
-- "VMM: Failed to load Android from %s (recovery = %d)"
-- "VMM: I/O error loading boot slot: %d"
-- "VMM: A/B Boot: No more remaining attempts for slot %d"
-```
-
----
+Recovery, userspace fastbootd, ELK orchestration, USB markers and recovery
+arguments are maintained in
+[the consolidated source](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#23-special-boot-modes).
 
 ## 13. Privacy Capability Summary
 
@@ -760,8 +700,7 @@ Details:
 
 ## 15. Privacy Capability Assessment (consolidated)
 
-> Consolidated **verbatim** from the former standalone document
-> `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` (now archived/superseded). §13 above carried the
+> Canonical privacy assessment; `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` is a pointer. §13 above carried the
 > capability tables; this section adds the privacy-specific evidence strings, the
 > cross-boundary data-flow diagram, the privacy-risk severity ratings, and the
 > interpretive caveats that §13 did not contain.

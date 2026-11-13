@@ -81,9 +81,56 @@ PLSS_PMPAL reports at 1Hz via IPC: `health:48 10 0 0 0 0` (consistent across all
 
 ## CPC200 Adapter Issues
 
+> **Scope note (2026-11-12):** these items are from the February 2026 CPC200 + `zeno.carlink` rig. The
+> radio currently on the bench runs the OCBM-box + `zeno.gmccpa` (gm_ccpa) path instead; its observed
+> behaviour is in the Y181B section above and in `video/carplay_video_pipeline.md` /
+> `audio/carplay_audio_pipeline.md`. gm_ccpa is CarPlay-only (no Android Auto); "Android Auto" strings
+> in the logs are GM media-source labels.
+
 - Unrecovered AirPlay packets during Siri to media transitions
 - MFi IC: clone/compatible, fallback address works (not a real Apple MFi chip)
 - WiFi channel 161 (5.8GHz) — may have interference issues in some environments
+
+## Y181B live-radio observations (retained logs + live adb, 2026-11-12)
+
+Build `W231E-Y181.3.2-SIHM22B-499.3`, 30 boots recorded over 2026-11-10..12 (events log covers 29; `main`/`kernel` only the later ones). Sources: gmlogger `main`/`system`/
+`kernel`/`events` rotation set and `vendor/ghs.log` pulled 2026-11-12; live `getprop`/`getenforce`.
+Timing, shutdown-reason and DSP-retry detail lives in [`boot_timing.md`](boot_timing.md).
+
+- **SELinux is Enforcing at runtime even though the boot property says permissive.** Live:
+  `getenforce` -> `Enforcing` while `getprop ro.boot.selinux` -> `permissive`. Also measured: all 3596
+  retained `avc:` records show `permissive=0`; the kernel cmdline carries both an early `enforcing=0`/`selinux=permissive`
+  pair and a later `enforcing=1`/`selinux=enforcing` pair. Consistent with the
+  Y177 note below (init built with `ALLOW_PERMISSIVE_SELINUX=0` ignores the arg; that mechanism is from another doc and not re-derived here). Any doc claiming
+  "permissive" for Y181 from the boot arg alone is wrong. [read, live]
+- **No crash evidence:** 0 `FATAL EXCEPTION`, 0 kernel panic, 0 `ANR in` in the retained logs. The
+  February "12 FATAL EXCEPTION" corpus (memory_pressure.md) is a different, older capture; do not read
+  this as the Y181B crash rate. gm_ccpa (`zeno.gmccpa`) has no crash in these logs. [read]
+- **`/dev/watchdog` does not exist** (`watchdogd: Failed to open /dev/watchdog: No such file or
+  directory` every boot; absent live). [read, live]
+- **Abrupt vs clean power-down:** `ghs.log` has `ShutdownReason 0x23` (10 lines = 5 boot blocks), `0x37`
+  (24 lines = 12 blocks) and `0x00` (22 lines = 11 blocks); code meanings unknown, and the value describes the
+  previous cycle (see `boot_timing.md`; `0x23` is not simply "abrupt": it also follows `reboot,shell` and
+  recovery endings). Boots whose next-boot reason is `cold` have no Android shutdown path in the logs. [read counts; meaning unresolved]
+- **dabridge UDC request loop (correlation only):** kernel log is dominated by
+  `platform dabr_udc.0: Unhandled Setup(-95): 80.06 v0f00 i0000 l5 DATA_IN` -- a GET_DESCRIPTOR for the
+  USB BOS descriptor (type 0x0f, wLength 5) rejected with -95 (EOPNOTSUPP), repeated ~3.8-3.9k times/s
+  (21,575 lines per 5.5 s kernel-log rotation file). 813,398 `Unhandled Setup` lines in total = 761,122 on boot 26
+  (retained kernel window t=633.9-828.5 s only; earlier part rotated out) + 52,276 on boot 27 (t=62.5-76.3 s); boots 28 and 29 show none, and
+  earlier boots' kernel history is not retained. Boots 26 and 27 each ended with init `reboot,shell` within ~0.1-0.2 s of the last storm line
+  (so they were shell-initiated reboots, not power loss), but who issued them is not logged at caller-identity/reason level, so **no causal link is established** [2026-11-12 qualification: init does log the requesting process: `Received sys.powerctl='reboot,shell' from pid: 23174 (/system/bin/reboot)` on boot 26 (t=828.434) and `from pid: 6759 (/system/bin/reboot)` on boot 27 (t=76.048); only who invoked `/system/bin/reboot` and why is unlogged. On boot 26 the `reboot,shell` request (t=828.434) precedes the last storm line (t=828.531) by ~0.1 s; on boot 27 the last storm line is t=76.266, after the request at 76.048. Correlation only]). What `dabr_udc`
+  is wired to is not identified. [read; cause unknown]
+- **Rear camera (`ghs.log` `Camera:`):** 39 `[Recovery] State->CableFault`, 20 `CableFault cleared`, 83
+  sensor resets + 83 IPU resets, and 31 `Ignoring cable fault because frames were received`.
+  Android side: `camera_cable_fault_daemon` logs 12 `CABLE_FAULT ... status changed 1` / 5 `changed 0`
+  in `main`. [read]
+- **homescreen removal:** see boot_timing.md; caller unlogged.
+- **Box health (OCBM, gm_ccpa NETPROBE lines in `main`):** `BOX_HEALTH` normally `0x59
+  [HCI|carplayd|btd|rootfs-ok]` (only 4 of the 29 retained BOX_HEALTH lines; recount 2026-11-12: `0x59` x4, `0x51` x11, `0x50` x4,
+  `0x41` x4, `0x40` x6, of which only 3 carry `(replay)`: 06:09:41, 06:11:37, 06:13:36; the other 3 at 06:14:31, 06:55:26, 06:56:01 do not; corrected 2026-11-12, previously stated all 6 as replay). `0x51 [HCI|btd|rootfs-ok]` (carplayd bit clear) appears 11 times: 3 around the 11-11 18:16
+  shutdown, 5 at 11-12 06:09-06:14 (06:09:49, 06:11:51, 06:13:49, 06:14:28, 06:14:35) and 3 at 06:55-06:56 (06:55:22, 06:55:28, 06:56:05) [2026-11-12 correction: was stated 3/4/4; recounted from the merged `main` log, total 11 unchanged], so the 18:16 coincidence is only part of it. Not proven causal. [read]
+- **VHAL:** `VHAL-STATS: Frame 0x16 not handled, count 232025` (and many other unhandled frame ids)
+  is routine in `main`; unhandled frames are the norm, not an error signature. [read]
 
 ## Bench: SoftAP / WLAN stuck off after `adb reboot` (owner, 2026-10-06)
 On the bench, the WiFi SoftAP (br0 `192.168.5.1`) is not reliably brought up by the system process

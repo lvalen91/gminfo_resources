@@ -54,10 +54,17 @@ permissive cmdline alone does not yield a permissive runtime.
 | **Part / File** | 85759599 | 86283151 | 86331656 |
 | **Size** | 1,934,214 B | 1,934,214 B | 1,934,214 B |
 | **Build Date** | 24Apr23-2202 | 25Feb28-0330 | 25Jun19-2209 |
-| **VIP App Version** | 2B.175.1.5 | — | — |
+| **VIP App Version** | 2B.175.1.5 | — | 2B.B5.01.01 (live moduleinfo, 2026-11-12) |
 | **SHA-256** | d729fa4b…dd1ad239 | ed2bdff7…f81144aa | dbdbb9da…e0f87acc |
 
 **VIP_BOOT (85056831) is byte-identical across all three** (sha256 `2792ac3a4e7d…c27f746b`).
+
+**Live Y181 confirmation (2026-11-12, owner's bench radio `W231E-Y181.3.2-SIHM22B-499.3`):** `/update_cache/update/moduleinfo` lists
+`MODULE_ID_VIP_APP` part **86331656**, DLS CN, `2B.B5.01.01 Build date: 25Jun19-2209 Image name: appl` (matches the Y181 column above: part and build date)
+and `MODULE_ID_VIP_BOOT` part **85056831**, DLS AA, `B2.9C.01.01 Build date: 23Jul28-1212 Image name: bolo` (same Bolo string the Y175 VIP log prints, consistent
+with the byte-identical VIP_BOOT claim; the hash itself was not recomputed against the live module) [read]. The running VIP is cycling normally: `ghs.log`
+`VipBootCycle: 0x31e..0x339` and a populated power-state log (`NormalInit -> FullOperationStartup -> InfotainmentActive -> ... -> BackgroundSleepTimeout -> Shutdown`)
+show the validation-function-bearing image is the one executing on this unit [inferred from part/build match; function bytes not re-read live].
 
 ---
 

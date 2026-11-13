@@ -12,7 +12,11 @@
 
 GM AAOS implements CarPlay video projection using the **CINEMO** multimedia framework (developed by Harman/Samsung). The video pipeline receives H.264 streams via AirPlay protocol, processes NAL units through Cinemo's **software** H.264 decoder module (named `NvdecSW`), and renders to Android native windows via EGL surfaces.
 
-**Key Finding:** Despite having an Intel hardware H.264 decoder (`OMX.Intel.hw_vd.h264`), CarPlay video uses a **software decoder** path through CINEMO's `NvdecSW` library for AirPlay-specific NAL unit handling and timing synchronization.
+> **Scope (2026-11-12):** everything below describes the **stock GM CarPlay (Cinemo/NME)** path from static
+> analysis. A third-party app on the same radio (gm_ccpa) uses the Intel HW HEVC decoder instead; see the
+> scope correction before "Decoder Selection".
+
+**Key Finding (stock GM CarPlay):** Despite having an Intel hardware H.264 decoder (`OMX.Intel.hw_vd.h264`), CarPlay video uses a **software decoder** path through CINEMO's `NvdecSW` library for AirPlay-specific NAL unit handling and timing synchronization.
 
 > **Terminology — "NVDEC" in this document:** the names `NvdecSW`, `Cinemo/nvdec/H264DEC`,
 > `NmeCreateCodecNvdecSW()`, and `NvdecError_*` are **Cinemo NME's own internal module/symbol
@@ -332,11 +336,37 @@ OnSurfaceAllocate() {
 
 ---
 
+> **Scope correction, 2026-11-12 (live Y181B radio, `main` log, build `W231E-Y181.3.2-SIHM22B-499.3`):** the
+> "software NvdecSW decoder" finding in this document describes the **stock GM CarPlay (Cinemo/NME)**
+> path only. A third-party CarPlay app (gm_ccpa, `zeno.gmccpa`, wireless CarPlay via the OCBM box) on the
+> same radio decodes with the **Intel hardware HEVC decoder** through ordinary MediaCodec:
+> `NETPROBE ... video-decoder UP OMX.Intel.hw_vd.h265 video/hevc 2400x960 csd-0=105B` (45 periodic status lines plus 1 `(new) -> UP` transition; 3 periodic `DOWN (renderer stopped)` lines plus 1 `UP -> DOWN` transition at 06:54:50),
+> `mediasdk_omx: mfx_omx_vdec_component: Created OMX.Intel.hw_vd.h265`, and
+> frame counters such as `59100 frames rendered (332735539 B in)` and `seam ended - 62953 frames
+> rendered, 0 AUs dropped`. So the radio's H.264/AirPlay table below is not the only video path, the
+> negotiated stream on this rig is HEVC at 2400x960, and the Intel HW decoder is usable by a 3P app
+> (see `analysis/third_party_access.md`). The stock path remains documented below from static analysis.
+> [2026-11-12 correction: the earlier "25 create / 25 destroy" count for `Created OMX.Intel.hw_vd.h265` was wrong as
+> evidence. The pattern also matches `h265.secure`: plain `h265` = 13 Created / 13 Destroyed, `.secure` = 12 / 12
+> (reproduced from the merged `main` log). The same create/destroy pairs occur for h264, h264.secure, vp8 and vp9
+> (98 `Created OMX.` lines in total), i.e. codec-list enumeration at each boot (e.g. 11-11 22:00:47.282 Created, then
+> Destroyed within ms), not app decode sessions. Only 06:14:47.415 aligns with gm_ccpa (pid 3800,
+> `MediaCodec: [OMX.Intel.hw_vd.h265]` at 06:14:47.419). The evidence that gm_ccpa decodes with the HW decoder is the
+> NETPROBE `video-decoder UP ... h265 ... 2400x960` status lines, not the create/destroy count.]
+> Also seen: `CarPlay_PlayerManager: HW decoder property detected. set player option
+> is_zero_display_delay=1` (stock Cinemo player, 2 lines), i.e. the stock player has a HW-decoder
+> property branch, which the "always software" wording below should not be read to exclude. [read from the
+> retained `main` log, 2026-11-11 18:12 to 2026-11-12 13:04 (counts re-verified 2026-11-12: 45 status lines, 25 create/destroy, 2 `is_zero_display_delay` lines at 04:11 and 13:04). The earlier
+> "gm_ccpa not installed at the 14:00 AKST check" is not reconciled with these logs, which show
+> package `android.car.usb.handler` (gm_ccpa) added 11-10 17:06 and never removed in the retained streams; the
+> live check may have searched for the name `zeno.gmccpa` instead of the package name. Live state not re-checked
+> (device not attached during the 2026-11-12 audit).]
+
 ## Decoder Selection
 
-### Why Software Decoder?
+### Why Software Decoder? (stock GM CarPlay only; rationale is inferred from library structure, not stated by Cinemo)
 
-Despite Intel `OMX.Intel.hw_vd.h264` being available, CarPlay uses software NVDEC:
+Despite Intel `OMX.Intel.hw_vd.h264` being available, stock CarPlay uses software NVDEC (gm_ccpa does not; see scope correction above):
 
 1. **AirPlay Protocol Integration** - CINEMO framework handles AirPlay-specific timing/sync
 2. **SEI Processing** - Custom SEI handling for freeze/snapshot/stereo
@@ -491,7 +521,7 @@ vendor_iap2:x:2994:2994::/:/vendor/bin/sh
 
 - [video_codecs.md](video_codecs.md) - Hardware/software codec specifications
 - [display_subsystem.md](display_subsystem.md) - Display and SurfaceFlinger details
-- [hardware_rendering.md](../hardware_rendering.md) - GPU and EGL specifications
+- [hardware_rendering.md](hardware_rendering.md) - GPU and EGL specifications
 
 ---
 

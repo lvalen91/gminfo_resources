@@ -70,7 +70,7 @@ The GM Info 3.7 A11 module uses a **dual-processor architecture** with the Renes
 |-----------|------|----------|
 | **Main SoC** | Intel Atom x7-A3960 | 4-core CPU, GPU, runs GHS + Android |
 | **VIP MCU** | Renesas TM52176 (RH850) | Power control, CAN/LIN, security |
-| **RAM** | LPDDR4 | 8192 MiB physical; GHS grants guest 7830 MiB [FW 85098662; 3-Opus 2026-10-10], kernel `MemTotal` 5530 MiB (5.40 GiB); gap = VMM E820 limit [UNVERIFIED] |
+| **RAM** | LPDDR4 | 8192 MiB physical; static GHS guest grant 7830 MiB; historical kernel `MemTotal` near 5530 MiB. Y181B recovery E820 usable total **5743.55859375 MiB** measured 2026-11-12; grant-to-visible cause unresolved. [Map and limits](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
 | **Storage** | Samsung KLMCG4JEUD | 64GB eMMC |
 | **EEPROM** | ST M24C64 | 8KB configuration storage |
 | **CAN Transceiver** | NXP TJA1145T/FDJ | CAN with partial networking |
@@ -140,9 +140,25 @@ VIP_BOOT Sequence:
 
 | Property | Value |
 |----------|-------|
-| **Version (Y177)** | 2B.174.4.1 |
+| **Version (mislabeled "Y177", corrected 2026-11-12)** | 2B.174.4.1 |
 | **Build Date** | 24Mar22-0256 |
 | **Bolo Version** | B2.9C.01.01 |
+
+> **Corrected 2026-11-12:** the "Version (Y177)" label on this table was wrong. `2B.174.4.1`
+> (build `24Mar22-0256`) is the version string from `enumeration/VIP_log_2B.174.4.1_10JUL24.txt`, a
+> UART capture whose build date predates even Y175's own VIP_APP (`2B.175.1.5`, build
+> `24Apr23-2202`, part 85759599, per `enumeration/Y175/Y175_VIP.log` and
+> `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §1). Y177's actual VIP_APP (part 86283151) builds
+> `25Feb28-0330` and has no confirmed version string in this repo (`VIP_FIRMWARE_Y177_Y181_COMPARISON.md`
+> §1 lists it as `—`). So `2B.174.4.1` is an older/unidentified-unit capture, not a Y177 value — do
+> not read this row as Y177's VIP_APP version.
+>
+> **Updated 2026-11-12 (live Y181B `update_cache/update/moduleinfo`, directly read):** on Y181B,
+> VIP_APP (module 1, part 86331656, DLS CN) = `2B.B5.01.01`, build date 25Jun19-2209, image
+> `appl`; VIP_BOOT (module 71, part 85056831, DLS AA) = `B2.9C.01.01`, build date 23Jul28-1212, image
+> `bolo`. So the "Bolo Version" row above is the **VIP_BOOT** version, not a VIP_APP field, and it is
+> the same across Y175/Y177/Y181B (VIP_BOOT part number identical, per `platform/firmware_versions.md`).
+> SoC boot (module 72, 85738845, DLS AB) = `2344`; FIDM (module 81, 84961617) = `6`.
 | **ARXML Version** | 22.22.158 |
 | **IPC Version** | 4.1.0 |
 | **HwVariant** | 56 |
@@ -854,7 +870,7 @@ POWER ON (T=0ms)
 | **Intel CSE** | Hardware root of trust | No | OTP fuses |
 | **SOC_ABL** | Intel Boot Guard | **UNKNOWN-FROM-FILES (enforcement is FPF-fuse-dependent)** | Sign Type NONE (not GM TSS-signed). **[C] 2026-10-08 (avbtool/binary, module 85738845):** verified-boot-**capable**, not merely "verified by/with Intel CSE secure boot" — the IFWI contains a production-signed OEM Key Manifest (`oem.key`, `$MN2`), IBB manifest (`IBBP.man`), and a Boot Policy (`BPM.met`) whose three SHA-256 digests match the real IBBL/IBB/OBB bytes exactly. Whether a hash mismatch is REJECTED vs only measured depends on the Intel TXE FPF/OTP fuse state (not in this package) — UNKNOWN-FROM-FILES; settle via MSR `0x13A` or an ISSI SPI dump of the Flash Descriptor/FPF region. Boot Guard digests cover IBBL/IBB/OBB *code* only, not the UEFI NVRAM varstore (see F1 below). |
 | **GHS Signature** | ABL validation | **UNKNOWN-FROM-FILES** | Previously stated "Hardware enforced" — corrected 2026-10-08: not provable from files alone (see SOC_ABL row above); downgrade to "verified-boot-capable, enforcement FPF-dependent" until MSR 0x13A or an FPF-region dump settles it. |
-| **SOC_ABL lock state (`OEMLock`)** | UEFI NV variable, GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1` | Potentially (if varstore is SPI-backed, not RPMB — open question) | **[C] 2026-10-08 (CONFIRMED-FROM-BINARY, F1):** SOC_ABL is kernelflinger ("ELK"); `read_device_state_efi()` reads `OEMLock` and `device_is_unlocked()` returns true iff it exists, is readable, and bit 0 (`0x01`) is set — predicate is INTACT/unpatched. `USE_TPM` was NOT compiled (zero TPM2 NV-index constants/calls in the 1 MB module): the lock is **NOT fTPM/TPM2-backed and NOT RPMB** (`ABL.rpmb=` is only an androidboot cmdline token). UNKNOWN-FROM-FILES: whether the varstore itself is SPI-NOR- or RPMB-backed. |
+| **SOC_ABL lock state (`OEMLock`)** | UEFI NV variable, GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1` | Potentially (if varstore is SPI-backed, not RPMB — open question) | **[C] 2026-10-08 (CONFIRMED-FROM-BINARY, F1):** SOC_ABL is kernelflinger ("ELK"); `read_device_state_efi()` reads `OEMLock` and the ordinary successful stored-state read uses bit 0 (`0x01`); gated missing-state/provisioning fallbacks also exist (corrected 2026-11-12; see `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3.2) — predicate is INTACT/unpatched. `USE_TPM` was NOT compiled (zero TPM2 NV-index constants/calls in the 1 MB module): the lock is **NOT fTPM/TPM2-backed and NOT RPMB** (`ABL.rpmb=` is only an androidboot cmdline token). UNKNOWN-FROM-FILES: whether the varstore itself is SPI-NOR- or RPMB-backed. |
 | **AVB vbmeta** | RSA-2048/SHA-256 | No | Without signing key |
 | **A/B Metadata** | CRC32 only | Potentially | Weak integrity |
 | **Rollback Index** | Secure storage | No | Cannot decrement |
@@ -913,6 +929,13 @@ SELinux mode decided OS-side (ramdisk/init), independent of this function
 - **MEC ≠ 0** (bypass mode = 207): VIP ignores hypervisor issues
 
 ### 10.4 Three Consecutive Reset Behavior
+
+**Distinction verified 2026-11-12:** this section describes VIP reset-timer
+suppression, not the GHS lifecycle failed-Android-boot counter. Y181B lifecycle
+address `0x200E2D` compares that separate counter with 3 and takes the dealer
+branch at >=3. See `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.2.1 for original-SPS
+provenance and instruction addresses.
+
 
 ```
 [PLC] ****There have been 3 Consecutive SoC Startup Failures****

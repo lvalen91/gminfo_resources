@@ -68,7 +68,7 @@ UDS SERVICES DETECTED
    - 0x31 0x03 - requestRoutineResults
 
    Detected Routine IDs:
-   - 0x3208 (most prominent - likely main reset routine)
+   - 0x3208 (unverified candidate; not established by the saved CAN trace)
    - 0x10E7, 0x10FF, 0x1000
    - 0x008B, 0x00C9, 0x00C2
    - 0x3266, 0x320A
@@ -156,9 +156,12 @@ Radio module. It requires:
 - Security Access authentication
 - Vehicle in Run/Service power mode
 
-The reset uses RoutineControl (0x31) with routine ID 0x3208, followed by
-ECUReset (0x11). The security algorithm and actual CAN addressing are
-managed by the VCS layer and vehicle configuration data from GM servers.
+Correction 2026-11-07: the old SPS trace stopped before the wipe and did not
+establish 0x3208. Later Type 4 disassembly identified candidate RID 0x0247.
+With Service Mode and SecurityAccess, live CAN 31 01 02 47 returned pending
+then 71 01 02 47. The radio restarted and displayed wipe activity; after boot the owner confirmed
+user data was wiped and the radio was in its default post-reset state. See MDI2_RAW_UDS_BYPASS_GUIDE.
+This is separate from an 11 01 hard reboot.
 
 For manual execution outside SPS, you would need:
 1. The Security Access seed-key algorithm

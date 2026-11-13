@@ -7,7 +7,7 @@
 | Platform | gminfo37 (GM Info 3.7) |
 | ECU Address | 0x80 (A11 Radio) |
 | Manufacturer | Harman/Samsung |
-| VIN (test unit) | XXXXXXXXXXXXXXXXX (2024 Silverado 1500, ICE) |
+| VIN (test unit) | XXXXXXXXXXXXXXXXX (2024 Silverado 2500 HD LTZ, ICE — corrected 2026-11-12 from "1500"; see `../platform/vehicle_config.md`, `connectors.md`) |
 | RPO | IOK |
 | Device ID | <DEVSERIAL_REDACTED> |
 | GM Service P/N | 3765210 |
@@ -58,7 +58,7 @@ Three-processor design on a single PCB:
 |  +------------+    +----------+    +-----------+            |
 |  | RH850      |<-->| M24C64   |    | Samsung   |            |
 |  | VIP MCU    |I2C | EEPROM   |    | eMMC 64GB |            |
-|  | TM52176    |    | 8KB      |    | KLMCG4JEUD|            |
+|  | 15873      |    | 8KB      |    | KLMCG4JEUD|            |
 |  | LFQFP176   |    | TSSOP-8  |    | BGA-153   |            |
 |  +------+-----+    +----------+    +-----------+            |
 |         | IPC (HDLC)                                        |
@@ -75,6 +75,9 @@ Three-processor design on a single PCB:
 +-------------------------------------------------------------+
 ```
 
+> Diagram notes (2026-11-12): the VIP is marked `15873` (`TM52176` is only the trace code, see the corrected-identification notes below); the `BCM89551` block is the MY22/DV teardown unit's switch — the live Y181 bench radio reports a Marvell 88Q5050 (board variant, same spec; see the Ethernet-switch BOM row).
+
+
 ---
 
 ## Complete Bill of Materials (Photo-Verified)
@@ -83,7 +86,7 @@ Three-processor design on a single PCB:
 
 | Component | Part Number | Package | Notes |
 |-----------|-------------|---------|-------|
-| CPU | Intel Atom x7-A3960 (J238G327 e1, SREKE, 72MS459202251) | BGA on SOM | 14nm Goldmont, quad-core @ 1.88GHz |
+| CPU | Intel Atom x7-A3960 (J238G327 e1, SREKE, 72MS459202251) | BGA on SOM | 14nm Goldmont, quad-core; 1.88 GHz = hypervisor-visible reported clock (datasheet LFM/HFM/burst 0.8/1.6/2.0 GHz, `platform/hardware.md`) |
 | RAM | 4x Micron MT53E512M32D2DS-053 (2TE77) | BGA on SOM | 8GB LPDDR4 2400 MT/s, dual-die 3733 Mbps |
 | eMMC | Samsung KLMCG4JEUD (SEC 228, B04P, NT24G0046) | BGA-153 | 64GB eMMC 5.1 |
 | BCM89551 FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — **Broadcom Ethernet switch firmware** (confirmed via partial dump; IC damaged during extraction) |
@@ -95,7 +98,7 @@ Three-processor design on a single PCB:
 
 | Component | Part Number | Package | Notes |
 |-----------|-------------|---------|-------|
-| Ethernet Switch | Broadcom BCM89551B1BFBG (TN2224 P21, 395-34 P3 W) | BGA | Automotive BroadR-Reach Ethernet. **Board-variant IC**: this (MY22/DV) unit is Broadcom; MY23+ boards use Marvell 88Q5050 (`persist.vendor.harman.hardwareid` selects the driver) — same spec |
+| Ethernet Switch | Broadcom BCM89551B1BFBG (TN2224 P21, 395-34 P3 W) | BGA | Automotive BroadR-Reach Ethernet. **Board-variant IC**: this (MY22/DV) unit is Broadcom; MY23+ boards use Marvell 88Q5050 (`persist.vendor.harman.hardwareid` selects the driver) — same spec. **Updated 2026-11-12:** the *live Y181 bench radio* (`W231E-Y181.3.2-SIHM22B-499.3`) is the **Marvell** variant, not this Broadcom teardown unit: `ethmvlctrlmgr: vpdGetFwVersion: Marvell firmware version: 02_09_1003, config version: 234702AB` and `UpdateService-ModuleVersionUtil: getModuleVersion module=52, version=MVL88Q5050_globalB_234702AB_02_09_1003` (gmlogger `main.log`, 2026-11-12 13:05; part 85759612 per `platform/firmware_versions.md`). Two physical units, two switch ICs, one spec [read]. The `hardwareid` selector itself is *not* readable live: `getprop persist.vendor.harman.hardwareid` returns empty from the shell uid and `main.log` shows an avc denial reading that prop for `gm_update_engine`, so "hardwareid selects the driver" remains inferred [inferred] |
 | Ethernet FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — BCM89551 firmware (confirmed via partial dump; IC damaged during extraction) |
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — confirmed IFWI/TXE boot flash per Intel Apollo Lake platform requirements. NOT dumped. |
 | Ethernet MAC | Intel WGI210CL (I210) rev A3 (2214ASP) | QFN-48 | GbE for AVB audio, 25MHz xtal |
@@ -249,7 +252,7 @@ ECUID (constant): $004B41DC0000160006104145610114AC
 | Module ID | 86283151 (AC=CM) | 86331656 (AC=CN) |
 | Seed | Real random (different each time) | All 0xFF (33 bytes, deterministic) |
 | Outcome | "Security validation facility failed" | GCI read completed |
-| MEC | 0 | 207 |
+| MEC | 0 | 207 (earlier DPS bench read, undated in repo; 227 as of 2026-11-12 per gmlogger main.log RegistrationService MEC_counter / `getMECValue`, 241 on 2026-09-09 — the counter changed between captures) |
 
 All 4 DPS read sessions for Y181 returned identical results — fully deterministic in bench/BSOB mode. The all-0xFF seed maps to VIP function FUN_000b021e which fills the seed buffer at 0xfebe7220 with 0xFF when the SoC is not available.
 
@@ -353,8 +356,10 @@ The IS25WP064A-JHLA3 package is WSON-8/BGA — requires a WSON-8 clip/adapter or
 > The real OFFLINE unlock target is **not** the Boot Guard chain itself but the device
 > lock-state store. SOC_ABL is kernelflinger ("ELK"); it reads device lock state from
 > the UEFI NV variable `OEMLock` (GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1`) via
-> `read_device_state_efi()`, and `device_is_unlocked()` is INTACT/unpatched (true iff
-> `OEMLock` exists, readable, bit 0 set). `USE_TPM` was NOT compiled in — this is
+> `read_device_state_efi()`. The ordinary successful read derives state from
+> `OEMLock` bit 0. Correction 2026-11-12: a complete account must also include
+> the gated missing-state/provisioning fallbacks in the same getter;
+> see `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3.2. `USE_TPM` was NOT compiled in — this is
 > explicitly NOT fTPM/TPM2-backed and NOT RPMB. Boot Guard's Boot Policy (`BPM.met`)
 > hashes cover IBBL/IBB/OBB *code* only — **not** the UEFI NVRAM varstore — so the
 > `OEMLock` bit sits outside the Boot Guard hash chain entirely. The open question
@@ -397,6 +402,8 @@ Android OS
 Every link is cryptographically bound to the one above it. Breaking any single link requires either the private signing key for that level or a hardware vulnerability in the silicon.
 
 #### Why IFWI Modification Fails
+
+> **Qualified 2026-11-12:** the points below describe Boot Guard as Intel documents it. Whether THIS unit's FPF/OTP fuses are blown into the *verified* (enforcing) profile — i.e. whether a hash mismatch is rejected rather than only measured — is not established by any file here (`platform/security.md` F2, UNKNOWN-FROM-FILES; the package's BPM digests match the boot blocks, so it is verified-*capable*). Read "hard brick" / "permanent" as design intent, not a measured result on this unit.
 
 1. **OTP fuses are permanent** — During manufacturing, Harman/GM RSA key hashes are burned into one-time-programmable fuses inside the A3960 die. These are physically irreversible (antifuse technology).
 2. **TXE ROM verifies on every boot** — Before any OEM code runs, the TXE mask ROM (hardcoded in silicon, not in flash) checks the IFWI signature against the fused key hashes.
@@ -475,7 +482,7 @@ The VIP reads EEPROM at boot, sends state to the SoC via HDLC IPC, and the SoC *
 | Boot slot selection | A/B partition management | Could influence which slot boots? |
 | gm_update_engine interaction | OTA update state | Could trigger recovery/update mode? |
 | VIN relearn / calibration | Factory provisioning state | Could signal "factory virgin" state? |
-| MEC counter (Manufacturer Enable Counter — standardized name, see §MEC Counter Variation Across Units; "reprogramming event count" below is an unverified alternate reading) | observed Y181=207 | Behavior at MEC=255 overflow? |
+| Manufacturer Enable Counter | [Reading inventory](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) | Generation and reset side effects remain unresolved |
 
 #### Timing Limitation
 
@@ -502,7 +509,7 @@ Despite the timing limitation, several scenarios could reach deeper:
 
 4. **ghs_abl_update Partition** — Dedicated GHS ABL (Android BootLoader?) update partition. If the VIP can trigger an update cycle and the payload could be controlled...
 
-5. **MEC Counter** — Y181 bench unit shows MEC=207. Y177 via gateway shows MEC=0. Behavior differs significantly between them. What happens at MEC=255 (overflow)?
+5. **MEC Counter** — Y181 bench unit showed MEC=207 in an earlier, undated DPS bench read (no repo source gives its date; `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` MEC table lists it as "Y181 (bench, BSOB)"; **227 as of 2026-11-12**, main.log RegistrationService MEC_counter — the counter changed between captures; later readings on the same bench radio were 241 on 2026-09-09 and 227 in the 2026-11-12 recovery export — the value is not fixed; see the MEC table in `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`). Y177 via gateway shows MEC=0. Behavior differs significantly between them. What happens at MEC=255 (overflow)?
 
 6. **SPS Programming Flow** — GM SPS sends CAN → VIP → SoC to reprogram modules. The VIP is a transparent relay with no crypto. Capturing and replaying this sequence could reveal the authorized reprogramming path.
 
@@ -532,7 +539,7 @@ AM/FM/HD Antenna
       |  AudioFlinger -> PulseAudio
   Intel I210 (GbE MAC)
       |  AVB Ethernet (gPTP Master, 1000Mbps)
-  Broadcom BCM89551 (Ethernet Switch)
+  Broadcom BCM89551 (Ethernet Switch)   [2026-11-12: on the MY22/DV teardown unit; the live Y181 radio has the Marvell 88Q5050 variant]
       |  AVB Ethernet
   NXP TDF8532 (External DSP/Amplifier)
       |
@@ -684,6 +691,17 @@ board. The GNSS UART's channel remains unresolved; it must be traced separately.
 - SOC thresholds: 90%/75%/60%, temp threshold: -10C
 - Max suspend times: 84h/24h/16h (by SOC tier)
 
+**Live Y181 cross-check (2026-11-12, bench radio `W231E-Y181.3.2-SIHM22B-499.3`):**
+`/update_cache/update/moduleinfo` reports `MODULE_ID_VIP_BOOT` part 85056831 DLS AA, `B2.9C.01.01 Build date: 23Jul28-1212 Image name: bolo`
+(identical to the Y175 "Bolo Version" above, consistent with the byte-identical VIP_BOOT claim) and `MODULE_ID_VIP_APP` part 86331656 DLS CN,
+`2B.B5.01.01 Build date: 25Jun19-2209 Image name: appl` [read]. `MODULE_ID_SOC_BOOT` = 85738845 / `2344`; `ro.boot.bootloader=2344` live.
+The HW-variant word is in `/update_cache/update/hw.conf` (ASCII `0xB1020260`); recovery `last_log` decodes it as
+`Variant: 177 Global: 0 Region: 0 Project: 2 HD: 0 AMP: 1 SXM: 1 DAB: 0 GPS: 0 Gyro+Accel: 0 Gyro: 0 Accel: 0` [read]. This is a *hardware-option* word
+(amp present, SiriusXM present, no HD/DAB/GPS-option bit), not a software build number, even though 177 coincides with the "Y177" label; the Y175 log's
+`HwVariant: 56` above is a different unit/log and is not comparable without the same decode [inferred].
+`ghs.log` carries `VipBootCycle: 0x%02x` lines; this capture spans 0x31e..0x339 (798..825 decimal), i.e. the VIP has cycled ~800 times, versus the
+SoC-side recovery `boot_cycle_counter` (a separate counter, 0..55 across the retained `last_log.*`) [read].
+
 ### AUTOSAR SWC Modules Observed in Boot Log
 
 [C] `diagnostics/Y175_session.log` tags each line with an AUTOSAR software-component name.
@@ -718,7 +736,7 @@ receiver being physically present and polled), followed by repeated baud-rate pr
 `Change the VIP UART BR to 115200 bps`, then after 15 failed `UBX_CFG_PRT` polls, `Change
 the VIP UART BR to 9600 bps`, ending in `u-blox UART BR unknown`. This confirms GNSS rides
 a VIP UART channel (see pinout section above); it does not identify the
-GNSS UART channel. Source: `diagnostics/Y175_session.log` lines 173, 198,
+GNSS channel. Source: `diagnostics/Y175_session.log` lines 173, 198,
 270-271, 298-299.
 
 ### SBAT Ticket Validation (live boot) & ProtoKey Seed-from-BCM
@@ -736,9 +754,17 @@ the "SBAT failure is non-blocking" finding already documented below. Source:
 
 [C] `PROTOKEY` on the same trace logs `Receives invalid seed [1] from BCM` /
 `Receives invalid seed [2] from BCM` repeatedly before the BCM seed becomes valid later in
-boot — i.e. on this airgapped bench (no live BCM/vehicle network), ProtoKey seed exchange
+boot — i.e. on this airgapped bench (no live BCM/vehicle network -- inferred; not read from the log [2026-11-12 note]), ProtoKey seed exchange
 with the BCM over CAN fails by default, consistent with the three-phase ProtoKey sequence
 already documented below. Source: `diagnostics/Y175_session.log` lines 100-101, 197, 199.
+
+**Live Y181 confirmation (2026-11-12):** the bench radio's `viplog.log` + `viplog.log.rot` (2026-11-11/12) contain **7113** `Receives invalid seed [n] from BCM`
+lines by raw `grep` (7114 in the header-stripped re-derivation; 3556 for seed [1], 3557 for [2] raw — corrected 2026-11-12 from "3553/3556, remainder truncated", which the raw files do not support) against only 9 `Seed %d taken from GMLAN` lines (all in `viplog.log`, none in the `.rot`). Repeating every ~1 s
+with no BCM on the bench (inferred; not read from the log [2026-11-12 note]), this reads as a handshake no body-control module ever answers (bench artifact, not a fault) [read: counts; inferred: cause].
+The VIP power-state machine (`SS_LOG evt=` / `st=` lines) in the same log walks `NormalInit -> StartupDelayWait -> FullOperationStartup ->
+InfotainmentActive`, `Propulsion` / `Accessory` / `OffModeActive` vehicle states, `INFOTAINMENT_ACTIVITY_TIMEOUT -> BackgroundSleepTimeout -> Shutdown`;
+events seen include `evDriverDoorOpen`/`evDriverDoorClosed` (14/15 raw line counts, corrected 2026-11-12 from 14/14), `evRemoteReflashProgrammingEnd` (15), `evPowerModeOn/Off`, `evKeyIdentificationDeviceRemoved`,
+`evResetLocalInfotainmentTimer` (576) [read, counts over both files]. The door events on a bench unit mean the VIP receives (or synthesises) body state; their source is not identified here.
 - Calibrations: VIN relearn, cluster animation, shutdown animation failsafe (15s)
 
 ---
@@ -821,7 +847,7 @@ SELinux mode is OS-side (ramdisk/init), not controlled by the VIP.
 | | Y177 (86283151) | Y181 (86331656) |
 |---|---|---|
 | FUN_000b67d0 (validator) | **~906 bytes, full — @0xb67d4** | ~906 bytes, full — @0xb67d0 |
-| MEC | 0 | 207 |
+| MEC | 0 | 207 (earlier DPS bench read, undated in repo; 227 as of 2026-11-12 per gmlogger main.log RegistrationService MEC_counter / `getMECValue`, 241 on 2026-09-09 — the counter changed between captures) |
 | Bootloader | 2121-1 | 2344 |
 | SBI/VIP-fn effect | ADB/seed auth gate only | ADB/seed auth gate only |
 | Kernel | 4.19.283 | 4.19.305 |
@@ -908,10 +934,17 @@ GHS INTEGRITY Hypervisor (always running, bare metal on A3960)
          └── ... (everything else)
 ```
 
-When Android fails, GHS reads the BCB from misc and enters its own recovery flow. The "return to dealer" screen is rendered by GHS, not Android.
+GHS selects the boot/recovery flow using BCB state. Y181B Android recovery
+recognizes `boot-see-dealer` and selects its dealer-screen path; this must not
+be attributed exclusively to GHS or confused with the normal AAOS UI
+(corrected 2026-11-12).
 
 ### 3x Failure Bypass
-After 3 consecutive SoC startup failures, GHS disables hypervisor timer and CSM reset for that boot cycle. Lifecycle strings: `"Android failed to boot (count=%lu)"`, `"Too many failures, need to see dealer!"`.
+Two mechanisms were conflated here. **VIP** logs three startup/SoC-only reset
+failures and suppresses reset timers. **GHS lifecycle** separately increments its
+Android failed-boot counter and compares it with 3 at task address `0x200E2D`;
+>=3 takes the see-dealer branch. Verified against original Y181B SPS bytes on
+2026-11-12; see [code and provenance](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12).
 
 ### GHS Device Interfaces (from ADB)
 `/dev/ghs/{textlog, audit, snapshot-dbg, ipc, cal, camera, chime, tee-att, emmc-health, ota-isys, gpu-dbg}`
@@ -1101,21 +1134,10 @@ Three-phase sequence during boot:
 
 ## MEC Counter Variation Across Units
 
-> **Naming note (standardized 2026-10-15):** MEC = **Manufacturer Enable Counter** (standardized
-> across this tree; see `platform/security.md` §MEC and `research/EEPROM_MAPPING_FABLE_REPORT.md`
-> Finding E). This file previously described it only functionally as a "reprogramming event
-> count" — that gloss is an unverified alternate reading, not corroborated by firmware strings or
-> decompiled code, and is kept below only as a descriptive label, not a confirmed definition.
+Reading contexts, source distinctions and counter/registration limits are
+maintained in
+[the consolidated MEC source](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 
-| Unit/Build | MEC | Behavior |
-|------------|-----|----------|
-| Y175 (DPS A11_CSM_x80.Txt) | **244** | — |
-| Y177 (via gateway) | **0** | Real seeds, SPS security validation failed |
-| Y181 (bench, BSOB) | **207** | 0xFF seeds, GCI completed |
-| Y175 VIP UART log | **0xFF** (transmitted) | MEC at maximum — manufacturing/test mode? |
-
-MEC≠0 causes VIP to ignore hypervisor startup failures.
-EEPROM NVM at 0x1A80 stores a different MEC value than what's transmitted (0x0167=359 vs transmitted 0xFF).
 
 ---
 
@@ -1381,7 +1403,7 @@ Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS
 
 **Option 4: 3x Boot Failure → ELK Escalation**
 
-After 3 consecutive boot failures, GHS disables hypervisor timer + CSM reset. If failures continue to escalate, lifecycle state machine reaches `BootELKSendAblUserCommand` — the last resort.
+After 3 consecutive boot failures, GHS disables hypervisor timer + CSM reset. [Qualified 2026-11-12: this conflates two mechanisms — the VIP's three-failure reset-timer suppression and GHS lifecycle's separate failed-Android-boot counter (>=3 -> see-dealer branch); see "3x Failure Bypass" above. Neither is shown to "disable hypervisor checks", and the ELK escalation is unproven (`boot_chain.md` execution-boundary note).] If failures continue to escalate, lifecycle state machine reaches `BootELKSendAblUserCommand` — the last resort.
 
 From ADB shell, boot failures could be induced by:
 - Killing critical system processes

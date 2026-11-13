@@ -160,7 +160,7 @@ The large multi-bay Stac64 housings carry the vehicle harness. Circuit names/num
 |---------|------|-------|
 | AUTOSAR CAN bus (+) | `BLU/WHT` | GM VIP/SDV1-GB, 29-bit — 5-series data |
 | AUTOSAR CAN bus (−) | `BLU/YEL` | Twisted pair with (+) |
-| Ethernet Bus 2 (±) | `YEL` / `BLU` (4757/4758) | Automotive Ethernet (BroadR-Reach via BCM89551) |
+| Ethernet Bus 2 (±) | `YEL` / `BLU` (4757/4758) | Automotive Ethernet (BroadR-Reach via the on-board switch: BCM89551 on the photographed MY22/DV unit, Marvell 88Q5050 on the live Y181 radio — board variant, same spec; 2026-11-12) |
 | Ethernet Bus 4 (±) | `BRN` / `GRY` (7211/7210) | " |
 | Ethernet Bus 6 (±) | `YEL` / `GRN` (7215/7214) | " |
 
@@ -196,7 +196,7 @@ The amp is a **networked AVB endpoint, not analog-driven** ([`platform/networkin
 `research/GM_REMOTE_ACCESS_ANALYSIS.txt`):
 
 ```
-SAF7751 tuner/DSP → A3960 SoC → Intel I210 GbE → BCM89551 Eth switch
+SAF7751 tuner/DSP → A3960 SoC → Intel I210 GbE → Eth switch (BCM89551 or 88Q5050 by board variant)
    → (Automotive-Ethernet AVB pair, in the Stac64 harness) → Bose amp @ 192.168.1.103 (TDF8532) → speakers
 ```
 
@@ -312,7 +312,7 @@ wording was wrong) [FW/HW, USB_ADB_SESSION_FINDINGS_2026-10-10 §1].
 > of the top-row pins to the SoC/PHY and `/sys/bus/usb` + dmesg when a device is attached. Until
 > then, treat "one USB 2.0 port" as "one *wired* port," not a hardware maximum. (Same PCB photo
 > confirms the neighbouring silicon:
-Intel Atom **A3960** Apollo Lake, Broadcom **BCM89551** Ethernet switch, TI **DS90UB954-Q1**
+Intel Atom **A3960** Apollo Lake, Broadcom **BCM89551** Ethernet switch (this photographed unit; the live Y181 bench radio has the Marvell 88Q5050 variant — see `teardown.md`), TI **DS90UB954-Q1**
 `AVG3 G4` deserializer — see [`teardown.md`](teardown.md).)
 
 ---

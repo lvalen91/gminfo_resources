@@ -98,7 +98,7 @@ is built but blocked on this. Critical to validate the OTA path. Lower than
 than A because A has stronger convergence signal.
     *   *Priority 6:* Track B - `.vmm1` Disassembly. Why? Bundle 1 tooling 
 is built but blocked on this. Similar to C, but AVB is generally harder to 
-exploit than UDS parsing (upstream guards worked).
+trigger than UDS parsing (upstream guards worked).
     *   *Priority 7:* Track A - `*.calovride` Backdoor Check. Why? [O] find
 finding. Requires checking binary strings/RE of `calserviced`.
 

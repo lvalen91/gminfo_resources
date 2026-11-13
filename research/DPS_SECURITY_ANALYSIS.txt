@@ -241,6 +241,7 @@ BYPASSED STATE (A11_CSM_x80.Txt - EEPROM modified):
 MEC COUNTER OBSERVATIONS:
   - Normal state (Y177): MEC = 0 (development/unlocked)
   - Bypassed state:      MEC = 244 (production/locked)
+  [2026-11-12 NOTE: the 'production/locked' label for MEC 244 contradicts this document's own capture data (A11_CSM_x80 'bypassed': EEPROM 0x0440 = 5A FF 5A, MEC 244, 'ADB accessible with standard platform-tools'; see VIP_CONTROL_ANALYSIS.txt s5.2) and the Y181 convention (nonzero MEC = unlocked/bypass; EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md s0.11/s0.14). What MEC 244 means beyond that is not asserted here.]
 
 ALGORITHM RESEARCH INSIGHT:
   The seed-key algorithm must:

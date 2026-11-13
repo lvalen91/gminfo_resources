@@ -40,8 +40,8 @@ Offset  Size  Field
 ```
 
 All multi-byte integers are **big-endian**. The constant `0x5AA5` at offset 10
-is a frame sync/magic value used to validate framing (matches the cluster wire
-format documented in `cluster_navigation.md`). The 20-byte header size is
+is a frame sync/magic value written on send (matches the cluster wire
+format documented in `cluster_navigation.md`); **corrected 2026-11-12:** per the jadx-RE note under *Security Notes* below it is never checked on receive, so it is not a framing gate. The 20-byte header size is
 confirmed by the runtime log `FSA: Read Header size 20`.
 
 > **Reserved field (offset 12).** `0` in the CSM (Android) implementation, but
@@ -197,7 +197,7 @@ accepts only its vlan4 source IP (172.16.4.112).
 > cellular antenna connected, `172.16.4.1` (MAC identical to `192.168.1.102`,
 > confirming same physical module) now also answers on 9010
 > (`DeviceInformation`) and 9012 (`RemoteReflash`) — previously dead on bench,
-> see [`networking.md`](networking.md#vlan-4--vcs--eocm-network-17216-4x24).
+> see [`networking.md`](networking.md#vlan-4--vcs--eocm-network-172164x24).
 > Same accept-then-close single-client behavior as the vlan5 face; a raw
 > `rmIdentification`/RemoteModuleHMI frame (wrong serviceId for this port) got
 > no response, as expected, since 9010/9012 use serviceId 1001/1025, not 1007.
@@ -386,18 +386,39 @@ kernel error code). See [`research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](../
   `research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt` for the broader posture.
 - The Android guest's FSA servers (9002/9010/9016) accept unauthenticated
   Subscribe/Get/RequestResponse from the unprivileged shell (confirmed above).
-- **[C] No authentication, confirmed by jadx RE + live validation (2026-09).**
-  The accept loop caps clients at 6 and dedups by source IP; the only gates
-  ever checked are equality of `serviceId`/`instanceId` against constants that
-  are public in every FSA client APK. There is no TLS, no crypto, no allow-list.
-  Magic `0x5AA5` (offset 10) is **written on send but never checked on receive**
-  — it is not a framing gate. **Live-proven:** an anonymous vlan5 TCP peer sent
-  one 22-byte fkt120 SUBSCRIBE frame (`opType=674`) and the real cluster service
-  subscribed it to StateOfHealth and streamed live HEARTBEAT data; a follow-up
-  GET (`opType=421`) returned a live property value. Tools:
-  `~/gm_emu/ae/{fsaprobe,fsalisten4}` (raw-syscall `connect`/`accept4` to bypass
-  the netd fwmark handshake, required because the emulator has no default data
-  NIC). Full writeup: [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md).
+- **[C] No authentication at the FSA protocol/app layer, confirmed by jadx RE + live
+  validation (2026-09).** The accept loop caps clients at 6 and dedups by source IP;
+  the only gates ever checked **inside the FSA code itself** are equality of
+  `serviceId`/`instanceId` against constants that are public in every FSA client APK.
+  There is no TLS, no crypto, and no allow-list *in the protocol*. Magic `0x5AA5`
+  (offset 10) is **written on send but never checked on receive** — it is not a
+  framing gate. **Live-proven:** an anonymous vlan5 TCP peer sent one 22-byte fkt120
+  SUBSCRIBE frame (`opType=674`) and the real cluster service subscribed it to
+  StateOfHealth and streamed live HEARTBEAT data; a follow-up GET (`opType=421`)
+  returned a live property value. Tools: `~/gm_emu/ae/{fsaprobe,fsalisten4}`
+  (raw-syscall `connect`/`accept4` to bypass the netd fwmark handshake, required
+  because the emulator has no default data NIC). Full writeup:
+  [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md).
+  **[Corrected 2026-11-11 per Y175_2026-11-02 external Bus 2 tap bench finding:**
+  this "anonymous peer, no allow-list" result was captured **on the `gm_emu`
+  emulator** (`~/gm_emu/ae/...`, no default data NIC, "no real bus and no real
+  peers" per `research/AE_RESEARCH_HANDOFF.md:184`), which runs the real FSA/Android
+  binaries but does **not** reproduce the physical radio's kernel-level `iptables`
+  firewall. The live Y175 bench tap (full 1–65535 scan from the external wire,
+  2026-11-02) found 9002 and 9016 on the real radio **are** gated by a source-IP
+  allowlist (`{.106,.109,.112}` and `{.102,.112}` respectively) — any non-allowlisted
+  source gets no reply at the TCP level, before an FSA frame is ever parsed. The two
+  findings do not contradict: the FSA **protocol itself** has zero app-layer
+  authentication (true on both the emulator and the real radio — confirmed by this
+  file's own frame-format analysis), but the **physical radio** additionally fronts
+  the exposed FSA ports with a network-layer (netfilter) source-IP gate that the
+  emulator does not model. "Any client able to reach a CSM FSA port... can speak it"
+  (above) is accurate as a statement about the protocol, but is no longer accurate as
+  a statement about real-radio *network* reachability for 9002/9016 specifically —
+  reaching those two ports from the external wire now requires an allowlisted source
+  IP. Whether other FSA-hosting ports/instances (vlan4, other partitions) carry the
+  same gate is unverified; see `research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt`
+  and `T1_RADIO_NETWORK_STRUCTURE.txt` (external bench corpus, not in this repo; full path recorded in `research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md:382`) for the full allowlist table.]
 
 ### [F-inject] Cluster-injection surface
 

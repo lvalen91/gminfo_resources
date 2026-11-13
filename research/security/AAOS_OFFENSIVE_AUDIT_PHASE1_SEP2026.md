@@ -230,7 +230,7 @@ Traced `com.gm.server.update.installer.InstallRunner` + `UpdatePackage`/`Signatu
   USB-media mount detection, not reachable via `IUpdateService.install()` or any other IPC method
   traced. **This is the single most promising remaining thread for a future update-path
   escalation** — closing it out requires RE of `USBNotifier.java` (what actually decides
-  `container_type==2` and the file list on USB mount; not yet reviewed) to determine whether any
+  `container_type==2` and the file list on USB mount) to determine whether any
   non-removable-media path could be spoofed as a mounted USB volume.
 - Downgrade/rollback: not directly evaluated via this trace (`PNVersionVerifier` compares against
   the manifest's own declared expected versions, protected by the same signature chain — state as
@@ -242,7 +242,13 @@ attacker-content-injection.** The unguarded `install()` Binder call is a real bu
 without contradicting, the already-committed "no network→install path" finding — extend it with:
 "and even the local (priv_app/platform_app) unguarded IPC path cannot substitute payload content;
 the one theoretical zero-signature-check gap (`DevCaloverrideInstaller`/containerType 2) requires
-physical USB media, not network/IPC, and its trigger path (`USBNotifier`) is not yet RE'd."
+physical USB media, not network/IPC, and its Y181 trigger path (`USBNotifier`) is not yet RE'd."
+
+**Y175, 2026-10-30:** The installed build's notifier was decompiled and selects
+type 2 only on non-`user` builds; the tested radio reports a `user` build. Its
+type-2 `verify()` branch returns true without the normal manifest checks. This
+does not establish that Y181 has the same notifier or exclude alternate entry
+points. See `platform/ota_update_stack.md` for the live-state observations.
 
 ## [PRIVESC-4] HIGH, systemic root cause — GM permissions declared `prot=normal` en masse (telemetry/location exfil class)
 

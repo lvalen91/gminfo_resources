@@ -180,7 +180,9 @@ DID `0xF1A0` → SoC `gm_adb_auth_init` sets `is_secure_mode` (the guest-side ga
 seed is a **separate** CAN/UDS-only effect, not the ADB path. Canonical marker/mechanism detail:
 `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.10-0.14. (This file duplicates that report; prefer it.)
 
-**Note:** Both locations must be modified for the bypass to work. OTA updates reset these to 0x00.
+**Note:** Both locations must be modified for the bypass to work. **Corrected 2026-11-12 (see
+`eeprom/README.md`):** OTA updates resetting these to 0x00 is owner-reported, not universal — a
+2026-11-10 stock calibration write retained ADB access. The actual reset trigger is unidentified.
 
 ---
 
@@ -453,7 +455,7 @@ These follow the documented ADB flag pattern and are likely safe to experiment w
 | Address | Current | Try | Expected Effect |
 |---------|---------|-----|-----------------|
 | 0x0020 | 0x00 | 0xFF | Enable unknown feature #1 |
-| 0x0B40 | 0x00 | 0xFF | Possible developer mode |
+| 0x0B40 | 0x00 | 0xFF | **Corrected 2026-11-12:** operator-tested across the full value range (`0x00`/`0x01`/`0xFF`) with no observed effect — see `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §"0x0B41". Not a useful candidate for further testing. |
 | 0x0B80 | 0x00 | 0xFF | Unknown feature |
 | 0x0BC0 | 0x00 | 0xFF | Unknown feature |
 | 0x1500 | 0x00 | 0xFF | Unknown feature |
@@ -540,7 +542,10 @@ Corrupting checksums may force the system into recovery or factory reset:
 
 ## Warnings and Considerations
 
-1. **OTA Updates**: Android OTA updates will reset security flags to 0x00, re-enabling ADB authentication requirements.
+1. **OTA Updates**: Android OTA updates have been owner-reported to reset security flags to
+   0x00, re-enabling ADB authentication requirements — **corrected 2026-11-12: not universal**
+   (a 2026-11-10 stock calibration write retained ADB); the actual reset trigger is unidentified
+   (see `eeprom/README.md`).
 
 2. **Checksum Validation**: Some modifications may require CRC recalculation to prevent boot issues.
 

@@ -6,6 +6,8 @@
 **Research Date:** December 2025 - February 2026
 
 > **Note:** All audio/video/codec configuration files are IDENTICAL between Y177 and Y181 builds. Both builds run SELinux **enforcing** at runtime (byte-identical init forces enforcing; the "Y177 permissive" claim is retracted), and both carry the full ~906 B VIP validator with no 4-byte stub — so build differences reduce to kernel/security-patch level, not SELinux mode.
+>
+> **Verification note (2026-11-12):** for Y181 (`W231E-Y181.3.2-SIHM22B-499.3`) enforcing is measured, not only inferred: all 3596 `avc:` records in the retained logs carry `permissive=0` (2026-11-12 clarification: 3596 = 194 kernel-log `avc:` lines + 1055 `main` lines tagged `auditd` + 2347 `events` lines, de-duplicated per tag over overlapping streams (reproduced); a raw `avc:` count over the merged streams is ~4688 (194 + 2147 + 2347) because echoed comm-tag lines in `main` add to it. `permissive=0` holds for all of them.) and live `getenforce` reported `Enforcing` (earlier live check; device not attached during this audit), even though `ro.boot.selinux=permissive` and the kernel cmdline carries both an early `enforcing=0`/`selinux=permissive` pair and a later `enforcing=1`/`selinux=enforcing` pair. The "byte-identical init forces enforcing" mechanism and the Y177 statements come from separate research docs and were not re-derived here; "last cmdline pair wins" is likewise an inference.
 
 ---
 

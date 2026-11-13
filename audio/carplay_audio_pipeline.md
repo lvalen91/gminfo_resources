@@ -116,6 +116,13 @@ GM AAOS implements CarPlay audio through a multi-layer architecture:
                     └─────────────────┘
 ```
 
+> **2026-11-12 reconciliation (diagram lines ~33 and ~52, and the Opus table below):** the "Opus" Siri codec in this diagram and in
+> `NmeCarPlayAudioDecoderConfigOpus (Voice Assistant)` is the **stock GM CarPlay (Cinemo/NME) path**, from static analysis and
+> not observed in these logs. On the gm_ccpa path measured on the Y181B radio, Siri arrives as AAC-ELD 16 kHz mono
+> (`aot=39`, see the stream-identifier note below) and is decoded app-side: `siri: sink built: AAC-ELD 16000Hz 1ch ->
+> AudioTrack(usage=16, ...), decoder=c2.android.aac.decoder` at 11-12 06:30:16. Which codec the stock path negotiates for Siri on
+> this radio is not established by these logs; the two statements are about different paths, not a contradiction.
+
 > Note: "CSM = Cabin Sound Manager" (above) is an UNCONFIRMED expansion. CSM is used unexpanded
 > elsewhere in the corpus; the external DSP/amplifier is the NXP TDF8532 / Dirana3 reached over
 > Ethernet AVB. Treat the "Cabin Sound Manager" gloss as tentative.
@@ -144,7 +151,32 @@ GM AAOS implements CarPlay audio through a multi-layer architecture:
 > (`aot=39`) 16 kHz mono, 480 frames/packet (no adapter mic — uplink uses the IHU mic via
 > Harman AEC/NS/AGC).
 
+> **Measured on the Y181B radio with gm_ccpa (`zeno.gmccpa`), 2026-11-12** (source: gmlogger `main` log
+> `NETPROBE`/`CarAudioFocus`/`MediaSessionService` lines, build `W231E-Y181.3.2-SIHM22B-499.3`; wireless
+> CarPlay through the OCBM box, iAP tunnel (the logs say "iAP tunnel"; "iAP2" is not stated), not CPC200). gm_ccpa is CarPlay-only; no Android Auto session
+> exists in these logs.
+> - Media: `configured AAC-LC 48000Hz 2ch -> AudioTrack (USAGE_MEDIA), decoder=c2.android.aac.decoder`;
+>   AudioTrack 48 kHz stereo, buffer asked 144000 B (750 ms), granted 36000 frames; `getMinBufferSize`
+>   6160 B (32 ms). Focus: `CarAudioFocus ... GAIN ... REQUEST_GRANTED` for `zeno.gmccpa.av.AacPlayer`
+>   with USAGE_MEDIA. This is an app-side AAC decode (platform `c2.android.aac.decoder`), not the
+>   Cinemo/NME `libNmeAudioAAC` path described in the rest of this file (which is stock GM CarPlay).
+> - Voice: focus is requested as `USAGE_VOICE_COMMUNICATION` / `CONTENT_TYPE_SPEECH` `GAIN_TRANSIENT`
+>   (`zeno.gmccpa.av.VoiceRouter`), granted by CarAudioFocus. A playback of `USAGE_ASSISTANT` from the
+>   same uid is also seen (`MediaSessionService`). NAV: `voice-router ... NAV focus none (stock)`.
+>   [2026-11-12 correction: the above framed VOICE_COMMUNICATION as the observed focus and ASSISTANT as a side
+>   observation; recount of uid 1010123 `requestAudioFocus` (merged `main`) = 10 calls: 7 USAGE_ASSISTANT/SPEECH
+>   (VoiceRouter, Siri; Siri AudioTrack usage=16, AAC-ELD 16 kHz mono, 06:30:16), 2 USAGE_VOICE_COMMUNICATION/SPEECH
+>   (call path; call sink usage=2, 18:13:19), 1 USAGE_MEDIA. Both usages occur; no mismatch with the "Voice" block's
+>   USAGE_ASSISTANT for Siri.]
+> - Mic uplink: `capturing VOICE_COMMUNICATION 16000Hz 1ch, 640B/chunk` (20 ms chunks, 320 samples),
+>   gate opens only during voice; the source is the IHU mic, not the box. 
+> - Underruns: the app's own `[aac]` stats lines (cumulative counters, 151 lines) show 0 underruns in 80,
+>   1-3 in 8, and 5-7 in 63 (the latter also carry "N discarded (paused)", i.e. gaps around pause/Siri);
+>   no `AUDIO_UNDERRUN` tag (that was the CarLink app's tag) appears in this log set.
+
 #### Opus Formats (Voice Assistant)
+
+> *Stock GM CarPlay (Cinemo/NME) path only, from static analysis; gm_ccpa receives Siri as AAC-ELD 16 kHz mono (2026-11-12, see reconciliation note after the diagram above).*
 
 | Format ID | Sample Rate | Channels | Use Case |
 |-----------|-------------|----------|----------|

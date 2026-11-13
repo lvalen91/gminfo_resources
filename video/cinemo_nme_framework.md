@@ -374,6 +374,8 @@ From binary debug strings:
 | Protocol | N/A | AirPlay integrated |
 | Error Recovery | MediaCodec callbacks | ForceKeyframe() |
 
+> **2026-11-12 scope:** the CINEMO/NME column is the **stock GM CarPlay path** (static analysis). The NvdecSW row is not what gm_ccpa uses: on the Y181B radio gm_ccpa decodes HEVC 2400x960 through ordinary MediaCodec on `OMX.Intel.hw_vd.h265` (NETPROBE `video-decoder UP`; see `carplay_video_pipeline.md`).
+
 ---
 
 ## Performance Notes
@@ -386,6 +388,8 @@ From binary debug strings:
 | CINEMO SW | NvdecSW | ~10-15 ms | Medium |
 
 ### Why CINEMO Uses Software Decode
+
+> **2026-11-12:** applies to the stock GM CarPlay (Cinemo/NME) path only, and the *reasons* below are **inference**, not documented or logged. Evidence is limited to the strings `video_hardware_decode` (config option, ~line 224) and `Video device based HW decoder not available` (~line 298), plus 2 `CarPlay_PlayerManager: HW decoder property detected` lines in the live `main` log, which show a HW-decoder option exists in the stock player; none states why software decode is used. The CINEMO-SW latency/CPU figures above are likewise not measured.
 
 1. **AirPlay Protocol Integration** - Timing sync requirements
 2. **Custom SEI Handling** - Freeze/snapshot/stereo support

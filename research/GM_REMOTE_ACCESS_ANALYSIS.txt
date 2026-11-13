@@ -35,6 +35,9 @@ These capabilities exist through TWO independent systems:
 GM vehicles use a complex internal network connecting multiple ECUs:
 
 PHYSICAL LAYER - Broadcom BCM8953x Ethernet Switch:
+[2026-11-12 NOTE: switch IC is a board variant -- Broadcom BCM89551 on the MY22/DV teardown unit; the live Y181
+ bench radio reports a Marvell 88Q5050 (module52 MVL88Q5050_globalB_234702AB_02_09_1003, part 85759612). Same
+ port spec; variant, not contradiction. 'BCM8953x' below is a family label, not verified for the bench radio.]
 +------------------------------------------------------------------+
 |  Port 0: RSI (Rear Seat Interface)                               |
 |  Port 1: AMP (Amplifier)                                         |
@@ -83,6 +86,23 @@ EXTERNAL CONNECTIVITY:
 |                                    BCM, ECM, HVAC, etc.          |
 |                                                                  |
 +------------------------------------------------------------------+
+
+[Updated 2026-11-11 per Y175_2026-11-02 Bus 2 tap bench finding:] a direct physical T1 tap
+on Ethernet Bus 2 (A11 Radio <-> K56 gateway) confirms a third VLAN not shown above: VLAN 2
+(PCP 2) carries AVB/TSN audio (IEEE-1722 AVTP, ~2,900 pps bench flood) and gPTP, with no IP
+addressing of its own -- it is not a service or diagnostic plane. Separately, this radio's
+internal bridge `br0` (192.168.5.1/24, members wlan1/wlan2) is the Wi-Fi/phone-projection AP
+bridge serving DHCP+DNS to paired-phone clients -- it is NOT a diagnostic or telematics
+plane, correcting any reading of it as such. An exhaustive full-port (1-65535) x full-source
+(/24) sweep of VLAN 5 and VLAN 4 from a direct tap found exactly three reachable services --
+192.168.1.100:9016 (NetworkAccessManager, source allow-list {.102,.112}), :9002
+(RemoteModuleHMI, {.106,.109,.112}), and 172.16.4.100:49156 (diagnosticsd, {.107,.112}) --
+with no undocumented allow-listed identity and no undocumented listening port anywhere in
+either /24. The "Port 2: CGM" switch-port labeling above is a separate claim (physical
+switch port enumeration, not VLAN/bus identity) that this bus-2 tap finding does not confirm
+or refute; it is left as-is pending its own verification. See
+.../Y175_2026-11-02/Y175_LIVE_RADIO_T1_SECURITY_ASSESSMENT_2026-11-02.md and
+.../source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md.
 
 ================================================================================
                  SECTION 2: REMOTE ACCESS COMPONENTS
@@ -248,6 +268,16 @@ Contains encrypted payload that resets:
   - EEPROM 0x0B40 -> 6900 (Debug mode OFF)
 
 This means SPS calibration visits can reset security modifications.
+
+[CORRECTED 2026-11-12: this "Encrypted EEPROM Payload (0x050-0x367) in file
+85783460" claim is refuted byte-for-byte per AUG24_25_DOC_REVIEW_CORRECTIONS_
+AUG2026.md's correction #1 -- the quoted bytes sit inside the gzip-compressed
+CalOvride XML stream, not an EEPROM address:value table, and all 14
+decompressed CSM cal files have zero hits for "0440/0a80/0b40/eeprom/security/
+SBI/bypass". The owner-observed EEPROM-bypass reset after SPS visits (see
+AUG24_SESSION_FULL_PCAP_TIMELINE.md §5) is real, but this specific file/
+payload mechanism is NOT its confirmed cause -- treat the three bullets above
+as an unverified/superseded hypothesis, not a documented mechanism.]
 
 ================================================================================
                SECTION 6: TELEMATICS vs INFOTAINMENT

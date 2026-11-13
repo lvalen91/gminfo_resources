@@ -173,6 +173,19 @@ encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 encoder.start();
 ```
 
+> **Measured confirmation, 2026-11-12 (Y181B radio, `main` log):** the `H.265 Decode` row is exercised in
+> practice. gm_ccpa (`zeno.gmccpa`, a normal user-10 app, uid 1010123 [2026-11-12 correction: was
+> written as "10123", missing a digit — `am_proc_start` reads `[10,pid,1010123,...]` (user, pid, uid) and NETPROBE reads `uid 1010123`; 2026-11-12 wording fix: they do not both read `uid=1010123 user=10`],
+> process name
+> `android.car.usb.handler`) creates `OMX.Intel.hw_vd.h265` via MediaCodec and renders `video/hevc`
+> 2400x960 (`NETPROBE ... video-decoder UP OMX.Intel.hw_vd.h265 video/hevc 2400x960`; 13 plain `Created`/
+> `Destroyed OMX.Intel.hw_vd.h265` pairs (25 including `.secure`) in `mediasdk_omx` [2026-11-12 recount: was "26"; these are mostly per-boot codec-list enumeration, only the 06:14:47.415 create aligns with gm_ccpa pid 3800]; up to ~63k frames rendered in one session, 0 AUs
+> dropped). The `.secure` variants were also instantiated by the platform (24 `makeComponentInstance` lines, 12 each for `hw_vd.h264.secure` and `hw_vd.h265.secure`
+> lines; the instantiating process was not checked, so do not attribute them to this app or to the platform). Audio side: the same app uses plain `AudioTrack` (USAGE_MEDIA, 48 kHz
+> stereo), `AudioManager` focus requests, and `AudioRecord`-style `VOICE_COMMUNICATION` capture, all
+> granted -- consistent with the "What Apps CAN Do" table below. `Access denied finding property
+> "OMX.Intel.debug"` (98 lines) is a harmless SELinux property denial seen from the codec process.
+
 ### Performance Specifications
 
 | Resolution | Max FPS | Max Bitrate | Notes |
@@ -398,6 +411,13 @@ AudioAttributes callAttrs = new AudioAttributes.Builder()
 ---
 
 ## SELinux Context
+
+> **2026-11-12 runtime note:** SELinux is **Enforcing** on the live Y181B radio (`getenforce` ->
+> `Enforcing`) even though `getprop ro.boot.selinux` reads `permissive`; do not treat the boot property
+> as the runtime mode. gm_ccpa's process runs under the `android.car.usb.handler` process name with the
+> app's own uid (u10a123), i.e. it is an unprivileged app that the car usb handler framework launches for
+> the box's USB device, not a system component. [read: main/system logs `Start proc ...android.car.usb.handler/u10a123`; getenforce live]
+
 
 From analysis of `vendor_sepolicy.cil`:
 

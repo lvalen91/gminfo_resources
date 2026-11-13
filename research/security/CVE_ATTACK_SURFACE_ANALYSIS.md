@@ -153,10 +153,14 @@ ranked list. There is no known stock path to permissive SELinux at all: Y175/Y17
 - **(a)** 8-byte framing: `[SRC:2 BE][TGT:2 BE][LEN:4 BE][UDS payload]`. Send SRC=0x00FA (factory tester address); compare NRC vs SRC=0x0001. Changed NRC = trust-tier routing confirmed.
 - **(b)** `readHeader()` may `malloc(PAYLOAD_LEN)` before bounds-checking — heap corruption in uid=0, ALL caps, no-seccomp, no-NoNewPrivs daemon. Confirm in Ghidra before exploiting.
 
-### NEW-6 — RSA-1024 Private Key in ghs_integrity.elf (Offset 12924442)
-- **Status:** Function unknown. Only private key in entire corpus. 609 bytes, sha1=78d9a50f.
-- **Value:** If it signs any GHS-accepted artifact (lifecycle blob, ELK payload, IPC auth token), unique signing primitive present on every unit.
-- See `research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md`.
+### NEW-6 — Reported RSA-1024 Private-Key Candidate in ghs_integrity.elf (Offset 12924442, UNVALIDATED)
+- **Status:** [Corrected 2026-11-12] Not an established finding — the owning doc
+  (`research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md`, corrected 2026-11-11) states parsing,
+  source location, and function remain unverified; the reported decimal offset 12924442 does not
+  equal the earlier-cited hex offset `0xC53DBA` (converts to `0xc5361a`). Treat as an unvalidated
+  scan candidate (609 bytes, sha1=78d9a50f), not a confirmed key.
+- **Value (if ever validated):** If it signs any GHS-accepted artifact (lifecycle blob, ELK payload, IPC auth token), unique signing primitive present on every unit.
+- See `research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md` for current status.
 
 ---
 

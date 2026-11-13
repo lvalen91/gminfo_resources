@@ -18,7 +18,7 @@ high-value bench targets instead:
 
 | Target | Bytes | Effect (evidence) |
 |---|---|---|
-| **ADB (SBI)** | `0x0441=FF` **AND** `0x0A80=FF` | **Owner-confirmed, 3-yr reproducible.** Both `00→FF` enables ADB; revert disables. Pre-Y181 stock ships `0x0A80` already `FF` (flip only `0x0441`); **Y181 needs both.** Framing `0x0440/0x0442` NOT required; no CRC recompute needed (the 1-byte `stock_modified` edit worked). |
+| **ADB (SBI)** | `0x0441=FF` **AND** `0x0A81=FF` | **Owner-confirmed, 3-yr reproducible.** Both `00→FF` enables ADB; revert disables. Pre-Y181 stock ships `0x0A81` already `FF` (flip only `0x0441`); **Y181 needs both.** Framing `0x0440/0x0442` and `0x0A80/0x0A82` NOT required (0x0A80 is the backup SBI's marker byte, not a data byte — corrected 2026-11-12 per `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.3); no CRC recompute needed (the 1-byte `stock_modified` edit worked). |
 | **Trim/theme** | `0x0AA0` / `0x0AE5` (candidate, UNCONFIRMED) | trim cal → boot animation + AAOS theme (HC=`0xF0`, LTZ=`0xC3`, stock=`0x69`; not the raw enum — VIP-translated). |
 
 **Static RE is exhausted** (VIP_APP + VIP_BOOT + GHS HOSTOS all at high coverage): the EEPROM read, the SBI
@@ -28,12 +28,14 @@ protocol is the path.
 
 ### ADB test (validate the minimal set + scope the effect)
 1. Golden-dump the full 8 KB (×2, sha256) per §6.
-2. Set `0x0441=0xFF` (and `0x0A80=0xFF` on Y181). Reboot.
+2. Set `0x0441=0xFF` (and `0x0A81=0xFF` on Y181 [2026-11-12: corrected from `0x0A80`, which is the
+   backup SBI's marker byte, not its data byte — see `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.3]).
+   Reboot.
 3. Observe: `adb devices` (authorizes without the GM key?), shell context (`id`, `getenforce` — expect
    `u:r:shell:s0`, enforcing), whether `$27` SecurityAccess over CAN/DoIP now succeeds, and diff
    `/data/gm_adb/{policy,password}` before/after. **Likely mechanism:** SBI → trivial `$27` seed → `$27`
    passes → a diagnostic enables adb (runtime, `/data`).
-4. **Isolate:** flip `0x0441` alone vs. `0x0441`+`0x0A80` — confirm the minimal set on THIS build.
+4. **Isolate:** flip `0x0441` alone vs. `0x0441`+`0x0A81` — confirm the minimal set on THIS build.
 5. **Scope:** does anything **beyond** ADB change? (the original open question).
 
 ### Trim test (find the real trim byte)

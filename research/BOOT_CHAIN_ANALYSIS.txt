@@ -355,6 +355,9 @@ i915.fastboot=1
 
 CRITICAL: cmdline contains "enforcing=0 androidboot.selinux=permissive"
 This is embedded in the boot image - the cmdline requests permissive, BUT (CORRECTED 2026-08-26) init on a user build ignores it and forces ENFORCING; the runtime is NOT permissive (see KERNEL_CVE_ANALYSIS.txt Appendix E.8).
+[2026-11-12 NOTE: the live Y181 runtime cmdline carries BOTH enforcing=0/selinux=permissive AND a later
+ enforcing=1/selinux=enforcing pair, plus ro.boot.selinux=permissive; runtime getenforce=Enforcing and all 3596
+ avc records permissive=0. "Last pair wins" is inference; the init-forces-enforcing mechanism is derived in KERNEL_CVE_ANALYSIS.txt E.8 from boot-image bytes.]
 
 5.4 AVB PROTECTION
 ------------------
@@ -541,6 +544,8 @@ From VIP log:
   [PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
 
 "Invalid seed" indicates bench mode (no BCM connection).
+[2026-11-12 NOTE: "no BCM answering" is the INFERRED cause, not read from the log (live Y181 bench radio: 7114
+ invalid-seed lines = 2245 viplog.log + 4869 viplog.log.rot); the log does not state why the seed is invalid.]
 In vehicle, BCM provides valid seeds for authentication.
 
 8.4 MEC (Message Authentication Counter)

@@ -227,6 +227,9 @@ Size: 8KB (0x0000 - 0x1FFF)
 Critical Addresses:
   0x0440: ADB security flag (5A FF 5A = bypass)
   0x0A80: Backup ADB flag (5A FF 5A = bypass)
+  [2026-11-12 QUALIFIER: 0x0440 and 0x0A80 are the SBI MARKER bytes (framing), not the data bytes
+  that actually need to be flipped. The data byte to flip is 0x0441 (primary) / 0x0A81 (backup) --
+  see EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.3/§0.16 and EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md.]
   0x0B40: Suspected developer mode flag
   0x5C0:  VIN storage
 
@@ -398,6 +401,7 @@ UNLESS: A calibration index controls a variable that influences
 [5] Y177 DOWNGRADE + EXPLORATION (Medium-term)
     - Flash Y177 via DPS (version check disabled)
     - SELinux permissive allows more exploration
+      [2026-11-12 NOTE: runtime SELinux is Enforcing on Y181 (getenforce; 3596 avc records show permissive=0), and the 'Y177 permissive' reading is a refuted cmdline-token inference (research/security/KERNEL_CVE_ANALYSIS.txt Appendix E.8). Do not plan on a permissive Y177.]
     - Test if GSI works with permissive policy
 
 [6] VIP JTAG ANALYSIS (Long-term)
@@ -448,6 +452,34 @@ BYPASSED STATE (A11_CSM_x80.Txt - EEPROM modified):
   All-FF when EEPROM bypass is active => VIP is NOT performing real security.
 
 MEC counter: Normal (Y177) = 0 (development/unlocked); Bypassed = 244 (production/locked).
+[2026-11-12 QUALIFIER (RESOLUTION below the original text): this Dec-2025 label pairing ("0=development/unlocked",
+"244=production/locked") is the OPPOSITE sense from the Manufacturer Enable Counter
+convention later established and repo-wide-confirmed for the Y181 AAOS auth-manager path
+(EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.14/§0.11, VERIFICATION.md,
+GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7): there, MEC=0 -> adb cert REQUIRED
+(production/locked, stock) and MEC nonzero (0xFF/241/227 all independently observed) ->
+adb cert BYPASSED (manufacturing/development, unlocked). Whether this older Y177
+DPS-$27/ProtoKey "MEC 0 vs 244" reading is the SAME counter under an inverted label, or a
+genuinely different counter on a different transport (CAN ProtoKey vs the AAOS-side
+DID 0xF1A0 auth-manager value), is NOT established -- flagged, not corrected, per the
+cross-tree MEC-naming confusion already tracked in EEPROM_MAPPING_FABLE_REPORT.md item E.
+Current confirmed live bench readings (date-scoped, not interchangeable -- MEC is a
+counter that changes between captures, not a fixed constant): Y181 target capture
+2026-09-09 = 241; Y181B recovery-export + VERIFICATION.md, 2026-11-12 = 227; a separately
+reported 2026-11-12 bench figure of 207 (coordinator-supplied, source capture not in this
+partition) is a distinct, earlier capture and is NOT being overwritten as wrong here --
+both 227 and 207 stand as readings from different capture instants on a counter that is
+documented to move between reads, not a single fixed "the" value.
+2026-11-12 RESOLUTION OF THE LABEL QUESTION: the 'inverted' framing above is right. The mislabel
+sits in the 'MEC 244 = production/locked' rows of DPS_SECURITY_ANALYSIS.txt,
+GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt, PROJECT_MASTER_CHECKLIST.txt and VIP_CONTROL_ANALYSIS.txt
+(and the 0=development/unlocked half above): the source capture itself (A11_CSM_x80, EEPROM 0x0440 =
+5A FF 5A, MEC 244) records 'ADB accessible with standard platform-tools', which contradicts 'locked',
+and VIP_CONTROL_ANALYSIS.txt:309 ('244+ = extended development mode') plus the Y181 convention agree
+(nonzero MEC = unlocked/bypass). Each of those rows now carries a dated qualifier. Y181 readings:
+227 @2026-11-12 (main.log), 241 @2026-09-09, 207 earlier undated.
+STILL UNRESOLVED: whether the Y177 DPS 0/244 counter is the same counter as the Y181 AAOS MEC
+241/227 readings.]
 
 Seed-key mechanism (UDS SecurityAccess $27): $27 $01 (request seed, level 1) ->
 $67 $01 [seed]; tester computes key; $27 $02 [key]; valid -> $67 $02; invalid ->
@@ -644,8 +676,9 @@ calibration flashed onto a manual-transmission PCM), and (b) a manually
 "corrected" checksum. Lesson for bench work: verify the target
 calibration matches the actual unit's configuration before writing, and
 do not hand-patch checksums without verifying the checksum algorithm
-first (see eeprom/CORRECTIONS_AUG2026.md and CALSETSDB_HAND_EDITING_
-CHECKSUM_SHA256.md for the CalSets checksum scheme already documented in
+first (see eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md [2026-11-12: corrected from
+eeprom/CORRECTIONS_AUG2026.md, which does not exist in this repo or the GM_research tree] and
+CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md for the CalSets checksum scheme already documented in
 this repo).
 
 8.5 THE #1 RECURRING MISTAKE: "TYPE4" BUTTON VS REGULAR PROGRAM FLOW
@@ -871,7 +904,10 @@ docs, but two items are new and load-bearing:
   BATCH SST / Sequential Programming (multi-ECU convenience flows, Appendix
   A); Vehicle Key Provisioning (Global B/GEM-only, message-authentication key
   assignment across the whole vehicle via the gateway module -- not
-  applicable to this Global A-era A11/CSM platform); the `Options` menu
+  applicable to this Global A-era A11/CSM platform [2026-11-12 QUALIFIER: the live Y181 bench radio's GHS
+  log reports "GM Architecture: Global B" (29/29 boots, no "Global A" string) and its Ethernet-switch module is
+  *_globalB_*; whether the A11/CSM is "Global A-era" for SPS key-provisioning applicability is NOT established
+  here -- the "Global A" label presumably comes from the GLOBALA-suffixed calibration sets]); the `Options` menu
   toggles (Disable Class2 ID Filtering, Disable SST VinLog.Dat Writing,
   Disable Automatic P/N VIT Setting, Enable Prog Event Logging, Disable Auto
   File Conversion, Enable GMLAN `$28`/`$A5` Error Toleration) -- ordinary

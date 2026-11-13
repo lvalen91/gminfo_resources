@@ -11,7 +11,7 @@
 
 | Component | Spec |
 |-----------|------|
-| CPU | Intel Atom x7-A3960 (Goldmont/Apollo Lake), 4 cores, base 800MHz / HFM 1.6GHz / burst 2.0GHz [Intel 336256], 14nm, 10W TDP, AEC-Q100 |
+| CPU | Intel Atom x7-A3960 (Goldmont/Apollo Lake), 4 cores, base 800MHz / HFM 1.6GHz / burst 2.0GHz [Intel 336256], 14nm, 12 W TDP @ TjMax [Intel 336256; corrected 2026-11-12 from "10W" — the 10 W figure is only the Y177 snapshot `thermal.tdp` in `gminfo3.7_tech_specs.md`, which the same file's `cpu.tdp: 12` and `intel_apl_external_resources.md` contradict], AEC-Q100 |
 | Compute module | The Intel A3960 + RAM form a **discrete compute module** soldered on the Bosch/Harman carrier (photo-confirmed — see `hardware/photos/soc_a3960_ram_rf_module.jpeg`) |
 | CPU Part# | LH8066803226000 |
 | CPU ID | "IoT CPU 1.0" (cpu family 6, model 92, stepping 10) |
@@ -21,9 +21,9 @@
 | DalvikVM ISA | x86_64, variant: silvermont |
 | GPU | Intel HD Graphics 505 (Gen9, 18 EUs) at PCI `00:02.0` [C: Mesa renderer `VERIFICATION.md:114-115`; 18 EU = datasheet 336256]. The 300-750 MHz range is the Y177 snapshot (`gminfo3.7_tech_specs.md:41-42`); datasheet burst is 650 MHz (`:32`, `intel_apl_external_resources.md:158`), so 750 is [UNVERIFIED] (full-project searched 2026-10-10; no GPU frequency node is shell-readable) |
 | GPU Driver | Intel iHD driver 2.0.0 [UNVERIFIED — full-project searched 2026-10-10; no iHD string in any Y175/Y181 capture; live evidence is Mesa 21.1.5 GLES renderer `VERIFICATION.md:114-115`, `ro.hardware.gralloc/hwcomposer=broxton` `all_properties.txt:464-465`] (GLES backend — Vulkan driver exists but NOT used at runtime) |
-| RAM | 8 GiB LPDDR4 physical (4× 2 GiB Micron MT53E512M32D2DS-053, teardown-verified); GHS grants the Android guest 7830 MiB DRAM (+34 MiB RO IPU window) [FW 85098662; 3-Opus verified 2026-10-10] and reserves ~362 MiB below 4 GiB; guest `MemTotal` 5,663,43x kB = 5530 MiB (5.40 GiB / 5.80 GB) [/proc/meminfo]; 7830→5530 gap (~2300 MiB) is a VMM-configured guest E820 limit, cause [UNVERIFIED] (full-project searched 2026-10-10; `/proc/iomem`, cmdline, dmesg are shell-inaccessible: Y181 `raw/dmesg.txt` is 1 line, `raw/cmdline.txt` 77 bytes of denial; e820-dependent causes need root). No swap (SwapTotal=0). Committed_AS: ~76 GB virtual (heavy overcommit) |
+| RAM | 8 GiB LPDDR4 physical (4× 2 GiB Micron MT53E512M32D2DS-053, teardown-verified); static GHS guest grant 7830 MiB (+34 MiB RO IPU window), ~362 MiB outside that grant; historical Android `MemTotal` near 5530 MiB (5.40 GiB / 5.80 GB). **Updated 2026-11-12:** Y181B recovery E820 usable **5743.55859375 MiB**; early Linux denominator 5877304K. Grant-to-visible cause and normal-AAOS map parity unresolved; [measured map](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory). Historical `SwapTotal=0`, `Committed_AS` ~76 GB virtual. |
 | Storage | 64GB Samsung KLMCG4JEUD eMMC |
-| SPI Flash | IS25LP016D SPI NOR, 16Mbit/2MB, SOIC8, Quad SPI 3.3V, week 43/2022. Purpose: **BCM89551 Ethernet-switch firmware** (corrected per `hardware/teardown.md`, confirmed via partial dump — NOT "logs/backup"). NOTE: a separate **8MB IS25WP064A** (BGA) is the Apollo Lake IFWI/TXE boot flash (Flash Descriptor, TXE 3.0, UEFI, Boot Guard v2) — see teardown. |
+| SPI Flash | IS25LP016D SPI NOR, 16Mbit/2MB, SOIC8, Quad SPI 3.3V, week 43/2022. Purpose: **Ethernet-switch firmware (BCM89551 on the MY22/DV teardown unit; the live Y181 bench radio carries a Marvell 88Q5050 — whether its switch firmware sits in the same NOR is not established, 2026-11-12)** (corrected per `hardware/teardown.md`, confirmed via partial dump — NOT "logs/backup"). NOTE: a separate **8MB IS25WP064A** (BGA) is the Apollo Lake IFWI/TXE boot flash (Flash Descriptor, TXE 3.0, UEFI, Boot Guard v2) — see teardown. |
 | Display | Chimei Innolux DD134IA-01B, 2400x960 @ 60Hz, ~13.4" [C live: Y181 `dumpsys_display.txt:26,49-52`, CMN/41268, 60.001434 fps, single mode]. SoC-side output is **eDP** (`00:02.0` `card0-eDP-1` + `intel_backlight`, `vendor_sepolicy.cil:21-22`) [C live]; the panel link continues through the FPD-Link III serializer chain (`platform/vehicle_network.md:545`) |
 | Display DPI | Physical: xDpi=192.911 yDpi=193.523; system lcd_density=200 (xhdpi) |
 | Touchscreen | Atmel maXTouch, I2C bus 7 @ 0x4B (PCI `00:17.3` i2c_designware.7, `7-004b`) [C live: `vendor_sepolicy.cil:23`; IRQ thread `[irq/145-atmel_m]` Y181 `raw/processes.txt:123`; `CONFIG_TOUCHSCREEN_ATMEL_MXT=m` `kernel_config.txt:2397`]; the **16-point** figure comes only from the Y177 snapshot `platform/gminfo3.7_tech_specs.md:115` [UNVERIFIED on Y181: full-project searched 2026-10-10; no `getevent -p`/ABS_MT_SLOT artifact in any capture] |
@@ -33,7 +33,7 @@
 | Hypervisor | GHS INTEGRITY IoT 2020.18.19 MY22-026 (Type-1 bare-metal) |
 | WiFi | Broadcom BCM (802.11ac), driver `dhd` |
 | Bluetooth | 5.0 |
-| Ethernet | Intel **I210** GbE, 1Gbps, gPTP master, feeding the BCM89551 automotive-Ethernet switch (only `I210` appears in artifacts; the `WGI210CL rev A3` variant marking is prose-only, not artifact-backed; "I211" was an unverified near-twin reading — see `hardware/teardown.md`). Kernel uses a custom `igb_avb` driver; mainline `igb`/`CONFIG_IGB` is disabled per the Jun-2026 capture |
+| Ethernet | Intel **I210** GbE, 1Gbps, gPTP master, feeding the on-board automotive-Ethernet switch — **board-variant IC**: Broadcom BCM89551 on the MY22/DV teardown unit, **Marvell 88Q5050 on the live Y181 bench radio** (part 85759612, `MVL88Q5050_globalB_234702AB_02_09_1003`; `ethmvlctrlmgr` / `UpdateService-ModuleVersionUtil module=52` in `main.log`, 2026-11-12 [read]). Same spec, not a contradiction (only `I210` appears in artifacts; the `WGI210CL rev A3` variant marking is prose-only, not artifact-backed; "I211" was an unverified near-twin reading — see `hardware/teardown.md`). Kernel uses a custom `igb_avb` driver; mainline `igb`/`CONFIG_IGB` is disabled per the Jun-2026 capture |
 | Audio HAL | Harman HarmanAudioControl — HAL interface `android.hardware.audio@5.0`, provided by service instance `vendor.hardware.audio@5.0-harman-custom-service` (confirmed: `aaos/gm_aaos/2024_Silverado_ICE/analysis/adb/Y181/.../processes.txt`); Dirana3 amplifier plugin, speakerNum=4, micNum=0. ("Titan" is the SoC platform codename, not the HAL name.) |
 | Audio Transport | Ethernet AVB to NXP TDF8532 codec → external amplifier (CSM) |
 | GPS | u-blox receiver, GPS+DR fusion, UART to GENIVI pipeline |
@@ -264,10 +264,39 @@ Backup camera works **DURING Android reboot**. GHS receives CAN gear position an
 |----------|-------|
 | persist.sys.cal.brand | GM_Brand_Chevrolet |
 | persist.sys.cal.model | Silverado |
+| ro.product.name / ro.boot.hardware | full_gminfo37_gb |
+| ro.boot.bootloader | 2344 |
+| ro.soc.model | A3960 |
 | ro.boot.product.hardware.sku | gv221 |
 | persist.sys.wifi.only2g | 1 |
 | config.disable_cameraservice | 1 |
 | ro.radio.noril | true |
+
+> **Verified live 2026-11-12 (Y181 `W231E-Y181.3.2-SIHM22B-499.3`, `adb shell getprop`):** all rows above
+> [read]; `ro.boot.product.hardware.sku=gv221`. The `androidboot.product.hardware.sku` spelling returns empty
+> (only the `ro.boot.` form is populated). **`persist.vendor.gm.brand` / `.model` are NOT present** on the real radio —
+> only `persist.sys.cal.brand/.model` (see `vehicle_config.md`). `persist.vendor.harman.hardwareid` is unreadable from
+> the shell uid (empty; `main.log` shows an avc denial on `persist_vendor_harman_hardwareid_prop` for `gm_update_engine`).
+> **Addendum 2026-11-12:** the value IS present in the `/cache` gmlogger `props` snapshots (29 of 30 boots): `persist.vendor.harman.hardwareid=MY23DV1` (also `persist.vendor.veh.variant=GB`, `persist.vendor.hw.variant=0xB1020260` in all 30) [read from the dump, not from the live shell]. `MY23`-class id agrees with the Marvell module string; that the prop is what selects the switch driver remains inferred.
+> Kernel `4.19.305-240125T145315Z-gf1edde901aa7` x86_64, `ro.build.version.security_patch=2025-06-05`.
+
+### Hardware-variant word (`hw.conf`)
+
+`/update_cache/update/hw.conf` holds the ASCII string `0xB1020260` (live Y181 bench, 2026-11-12). The recovery log decodes it:
+
+| Field | Value |
+|-------|-------|
+| Variant | 177 (decoder's label; its relation to the "Y177" firmware label is undefined — forensic U13) |
+| Global / Region | 0 / 0 |
+| Project | 2 |
+| HD radio / DAB / GPS option | 0 / 0 / 0 |
+| AMP | 1 |
+| SXM | 1 |
+| Gyro+Accel / Gyro / Accel | 0 / 0 / 0 |
+
+Source: `recovery/last_log*` line `Value: 0xB1020260  Variant: 177 Global: 0 Region: 0 Project: 2 HD: 0 AMP: 1 SXM: 1 DAB: 0 GPS: 0 ...`
+and `HW variant is 0xB1020260` [read]. Consistent with the donor truck's U2K (SiriusXM) and UQA (branded amp) RPOs in
+`vehicle_config.md` [inferred]. The bit layout (which nibbles map to which field) is taken from the decoder's own printout, not reverse-engineered here.
 
 ---
 

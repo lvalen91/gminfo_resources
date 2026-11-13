@@ -41,7 +41,7 @@
 
 ## Ethernet VLAN Detail
 
-Broadcom BCM8953x managed switch. Switch port assignments:
+Managed automotive-Ethernet switch (board-variant IC — Broadcom BCM8953x/BCM89551 or Marvell 88Q5050, see the note below; the live Y181 bench radio reports Marvell 88Q5050, 2026-11-12). Switch port assignments:
 
 > **Switch-vendor is board-variant, not a discrepancy.** The backbone switch IC is
 > selected by `persist.vendor.harman.hardwareid`: **Broadcom BCM8953x/BCM89551** on
@@ -131,7 +131,7 @@ Broadcom BCM8953x managed switch. Switch port assignments:
 | 192.168.1.100 | 9016 | TCP | **FSA NetworkAccessManager** (serviceId 1026), IPv6-mapped IPv4 |
 | 127.0.0.1 / 192.168.5.1 | 53 | TCP/UDP | dnsmasq (loopback + br0 WiFi-AP side) |
 
-> **Re-verified against live `enumeration/Y181/jun2026/` capture.** 9002/9010/9016 listen bound to the IHU's own **192.168.1.100** (IPv6-mapped IPv4), *not* 192.168.1.1 — the guest has no `.1` interface or route. **7000 (ADB) is listening** (`0.0.0.0:7000` + `*:7000`), and **9010 is a listener**, not outbound-only. DNS (dnsmasq, TCP/UDP 53) is served locally on **127.0.0.1** and **192.168.5.1 (br0, the WiFi-AP bridge)**.
+> **Re-verified against live `enumeration/Y181/jun2026/` capture.** 9002/9010/9016 listen bound to the IHU's own **192.168.1.100** (IPv6-mapped IPv4), *not* 192.168.1.1 — the guest has no `.1` interface or route. **7000 is listening** (`0.0.0.0:7000` + `*:7000`; this is the AirPlay/AirTunes listener per the table above, NOT ADB — ADB is 5555; corrected 2026-11-12), and **9010 is a listener**, not outbound-only. DNS (dnsmasq, TCP/UDP 53) is served locally on **127.0.0.1** and **192.168.5.1 (br0, the WiFi-AP bridge)**.
 >
 > The earlier apr2026 note (only 9002/9016 @ .1; 9010 outbound; 7000 gone; DNS on .102) reflected one snapshot and is **withdrawn** — listener set varies with projection-session state; the Jun-2026 live set above supersedes it.
 
@@ -335,7 +335,7 @@ The IHU serves as the gPTP grandmaster on the AVB network, providing time synchr
 ### Physical Automotive-Ethernet bus map (GM service data)
 
 The AVB/Ethernet links are point-to-point automotive-Ethernet pairs (single twisted pair, 100/1000
-Mbit, **no terminating resistors**) off the A11 Radio's on-board switch (BCM89551). Two nodes host
+Mbit, **no terminating resistors**) off the A11 Radio's on-board switch (BCM89551 on the MY22/DV teardown unit; Marvell 88Q5050 on the live Y181 bench radio — board variant, same spec; 2026-11-12). Two nodes host
 switches — the **A11 Radio** and the **K56 Serial Data Gateway Module**; every other node is a leaf
 `[Module ↔ Switch ↔ Module]`. GM service data names each bus and circuit: ALLDATA *Radio-Audio System
 → Data Link Communications* + connector end-view `A11 Radio X11`, corroborated by the **GM Silverado

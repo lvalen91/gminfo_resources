@@ -24,7 +24,13 @@ The GM AAOS infotainment system uses a unique update architecture that differs
 from standard Android recovery/fastboot mechanisms:
 
 KEY FINDINGS:
-  - Updates are RAW PARTITION IMAGES, not delta/incremental
+  - GM packages contain module-specific images/scripts; Redbend is also present.
+    The blanket "not delta/incremental" claim is withdrawn: the retained dealer
+    dummy package exercises Redbend without writing a replacement vbmeta image.
+    Y181B runtime evidence (2026-11-12), retained update results and coordinated
+    VIP-reset/A-B checkpoints are maintained in platform/ota_update_stack.md,
+    section "Y181B recovery export evidence"; archive identity and chronology
+    are in research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md sections 0.2-0.3.
   - gm_update_engine (Android service) orchestrates updates
   - VIP MCU handles ECU module flashing via UDS/CAN protocol
   - GHS INTEGRITY hypervisor controls boot chain, not Android
@@ -85,9 +91,12 @@ KEY FINDINGS:
 
 2.2 KEY OBSERVATION
 -------------------
-There is NO traditional Android recovery partition or fastboot mode.
-Updates occur while the system is running (A/B seamless updates) with
-reboot to activate the new slot.
+CORRECTED 2026-11-12: Y181B contains Android recovery in the boot ramdisk
+and userspace fastbootd. A separate recovery partition is not required for
+either. GHS VMM selects guest normal/recovery boot; recovery recognizes
+boot-fastboot/--fastboot. Normal AAOS update handling and A/B slot activation
+coexist with recovery installation. See GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md
+sections 2.3 and 4.2-4.5. These do not establish unlocked ABL/Kernelflinger.
 
 ================================================================================
 3. GHS INTEGRITY HYPERVISOR ROLE
@@ -224,6 +233,14 @@ Evidence that updates are RAW, not delta:
 
 5.1 MODULE SIGNING STATUS
 -------------------------
+NOTE (2026-11-12, live Y181B moduleinfo, directly read): the table below follows the USB
+package's delivery_manifest.csv (15 modules). The radio's installed-module inventory lists 18
+(adds 53 SOC_ANDROID_ODM, 54 SOC_ANDROID_ACPI, 81 FIDM) and names module 72 "SOC_BOOT" (part
+85738845, version 2344) and module 23 "SOC_ANDROID_BOOT"; module 52 reports a Marvell 88Q5050
+switch image (MVL88Q5050_globalB_..., board variant) rather than BCM89551. TUNER_XM (28) is
+86404694 on the radio vs 85843750 in the package. Signing types for 53/54/81 are not in this
+table and are unverified here.
+
 Source: update_packages/Y181/delivery_manifest.csv
 
 SIGNED (TSS - GM Signing):
@@ -318,7 +335,8 @@ Result: FAILED - Blocked by GHS hypervisor
 4. Progress bar incremented (partitions written to inactive slot)
 5. System rebooted multiple times
 6. "Update Failed" screen displayed
-7. Used gm_reboot_normal file to exit error screen
+7. Used the gm_reboot_normal recovery trigger to exit the error screen
+   (encoded filename Z21fcmVib290X25vcm1hbA==; clarified 2026-11-12).
 8. System returned to UNCHANGED Y181
 
 KEY OBSERVATION: Y181 remained completely unchanged. The partition writes
@@ -395,7 +413,7 @@ See: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt for complete technical details.
 
 7.1 UPDATE ARCHITECTURE SUMMARY
 -------------------------------
-- NO traditional recovery/fastboot
+- Recovery ramdisk and userspace fastbootd are present (corrected 2026-11-12)
 - gm_update_engine runs in Android
 - VIP MCU handles ECU flashing via UDS
 - GHS provides virtualized storage

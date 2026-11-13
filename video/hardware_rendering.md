@@ -358,7 +358,7 @@ ro.hardware.type=automotive
 ### CPU Power States During Boot
 - **C-states (C1-C3):** Disabled during boot for deterministic init timing
 - **C-states:** Re-enabled on `boot_completed` trigger
-- **Suspend:** Disabled permanently via `nosleeptillbrooklyn` wake_lock — the system never enters suspend
+- **Suspend:** Disabled permanently via `nosleeptillbrooklyn` wake_lock — the system never enters suspend *(init-script reading; qualified 2026-11-12: the update-engine log from the same unit counts 43 engine restarts/prefs reloads beyond its 1797 boots that the forensic parse labels "resume-from-suspend", and GM PowerMode `SLEEP` states appear, so "never" is not confirmed by runtime data; unresolved). Omitted counter-evidence to the doubt above, added 2026-11-12: the retained kernel logs (38 `kernel.log` files) contain 0 `PM: suspend entry`/`PM: suspend exit` lines, consistent with no kernel suspend, though the retained windows are short and do not prove it for the whole uptime)*
 
 ### GPIO Assignments (External Processors)
 | GPIO | Function |

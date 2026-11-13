@@ -9,7 +9,7 @@
 
 ## Overview
 
-The GM AAOS CarPlay implementation processes H.264 NAL (Network Abstraction Layer) units through the CINEMO framework's `NvdecSW` software decoder. This document details the NAL unit parsing, RBSP extraction, and frame handling mechanisms.
+The stock GM AAOS CarPlay implementation (not the third-party gm_ccpa app, which decodes HEVC with `OMX.Intel.hw_vd.h265`; see carplay_video_pipeline.md, 2026-11-12) processes H.264 NAL (Network Abstraction Layer) units through the CINEMO framework's `NvdecSW` software decoder. This document details the NAL unit parsing, RBSP extraction, and frame handling mechanisms.
 
 > **Terminology:** "NVDEC"/`NvdecSW`/`NvdecError_*` here are **Cinemo NME's internal names** for its
 > **software** H.264 decoder — NOT NVIDIA hardware (gminfo37 uses an Intel HD Graphics 505 GPU, no

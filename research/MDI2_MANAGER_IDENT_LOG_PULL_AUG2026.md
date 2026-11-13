@@ -17,7 +17,8 @@ USB with no Windows, repeatably. The final, correct facts:
   decrypted log body is a SID-tagged container (`0x8a9` meta / `0x8a8` data → e.g. `messages`=Varlog).
 - **Cipher:** standard **Blowfish-ECB** (big-endian, pycryptodome-compatible).
 - **Key (computable, no extraction):** `key[i] = base_key[MODULE_TYPE_ID_MDI_2][i] + device_serial`
-  (14 dwords, 32-bit add). `base_key` = static const in `bvtx_vci_rt.dll` table `DAT_10309d60`
+  (14 dwords, 32-bit add; dwords taken **little-endian** — `mdi2_client/mdi2/crypto.py:17-19`,
+  re-computed 2026-11-12 to match the §4.10 captured key). `base_key` = static const in `bvtx_vci_rt.dll` table `DAT_10309d60`
   (id `0x1c`, +0xC4) = `42197fad58f363fe…`; `device_serial` = uint32 from the `225.1.1.1:8194`
   beacon (LE u32 at byte offset 9) or the logs. Formula in `FUN_10268960` (RVA `0x268960`).
 - **Session:** the device holds ONE session; release it with `{"data":<session_id>,"has_data":true,
@@ -101,11 +102,11 @@ either. **Net effect: the actual port-10123 gate remains unexplained.**
 ## 3. Device log-pull mechanism (the actual finding this doc is mainly for)
 
 Motivation: three real pulled log files exist on disk
-(`gm_dps/docs/live_captures_20260824_2/GM {Dmesg,Varlog,VCIHistory} 2026-08-24T11-54-5{1,6}-D88985275.txt`),
+(`gm_dps/docs/live_captures_20260824_2/GM {Dmesg,Varlog,VCIHistory} 2026-08-24T11-54-5{1,6}-<MDI_SERIAL>.txt`),
 confirming the MDI2 Manager can retrieve device logs — but no corresponding network capture
 exists (the pull happened at 11:54, before any of the six known pcaps start at 12:03+; content
 search for distinctive log strings — `"Booting Linux"`, `"Bosch LP518"`, hostname
-`"2505-88985275"` — is a confirmed zero-hit across all six captures).
+`"<MDI_HOSTNAME>"` — is a confirmed zero-hit across all six captures).
 
 ### 3.1 Transport: FTPS, not the SID/IPC protocol
 
@@ -201,7 +202,7 @@ First successful end-to-end network capture of the **real Bosch VCI Manager 9.1.
 (`GM_MDI_Manager.exe`, not Wine) driving a live MDI2. Bench: Win11 Surface Pro (host
 `192.168.171.30`) cabled USB to a Bosch VCI MDI2 (device `192.168.171.2`, MAC `70-C6-AC-00-05-38`;
 host-side NIC MAC `...39` — paired). Device internals (from the pulled plaintext): **Linux
-4.14.162-gvci, ARMv7, "Bosch LP518 Board", hostname `2505-88985275`, serial `D88985275`**.
+4.14.162-gvci, ARMv7, "Bosch LP518 Board", hostname `<MDI_HOSTNAME>`, serial `<MDI_SERIAL>`**.
 Capture driven remotely over SSH: `dumpcap -i <MDI2> -i <loopback>`, launched **detached via
 WMI `Win32_Process.Create`** (a plain `Start-Process`/SSH-child dumpcap is killed when the SSH
 session closes; the scheduled-task route failed on account-SID mapping). Artifacts (working tree,
@@ -278,8 +279,13 @@ connect state.
 
 ### 4.6 Device discovery beacon (free win for a macOS client)
 
-The MDI2 continuously multicasts `192.168.171.2:42178 → 225.1.1.1:8194`, 106-byte UDP payload
-(~1/s). A native macOS tool can **passively discover the device and confirm liveness by joining
+The MDI2 continuously multicasts `192.168.171.2:42178 → 225.1.1.1:8194`, 106-byte UDP datagram
+(~1/s). **Corrected 2026-11-12:** 106 is the UDP length field (8-byte header included), so the
+payload is 98 bytes (first u32 = `0x62`, then `0x86d`; serial = LE u32 at byte offset 9, which
+decodes to the unit serial in the Aug-2026 capture); a shorter 41-byte variant (UDP length 49) is
+also present in the same captures (measured with tshark on `mdi_session_full_with_handshake.pcapng`
+and `session2.pcapng`; the `mdi2_client/mdi2/const.py` comment "observed 41-byte beacon" refers to
+that variant). The §4.21 "41 bytes" figure is therefore the short variant, not a contradiction of the 98. A native macOS tool can **passively discover the device and confirm liveness by joining
 `225.1.1.1:8194`** — no handshake, no auth. The idle keepalive/"watchdog" the operator asked
 about is this UDP beacon, not TCP.
 
@@ -446,7 +452,7 @@ the time it was tested. With the corrected stock-Blowfish decryptor, the key
 
 `BCryptGenRandom` never fires for it (hooked live), and the 56 key bytes appear **nowhere** as a
 literal in `bvtx_vci_rt*.dll` / `bvtx4j32.dll` / `device_res.dll` / the Manager exe. So the key
-is **computed deterministically at runtime from a stable input** (device serial `D88985275` /
+is **computed deterministically at runtime from a stable input** (device serial `<MDI_SERIAL>` /
 the keyring key / a fixed constant via a KDF — derivation still being traced). It is **not** one
 of the static `MODULE_TYPE_ID_*` keyring keys.
 
@@ -475,7 +481,7 @@ Live tracing (Frida on a fresh Manager, attached *before* Connect) of how the 56
 
 **Conclusion:** the key is a **deterministic function of stable input, computed once at init via
 inline stores** — not negotiated with the device at Connect and not randomly generated. Whether
-the input is the device serial (`D88985275`), a fixed constant, or a transform of the keyring
+the input is the device serial (`<MDI_SERIAL>`), a fixed constant, or a transform of the keyring
 default is still open.
 
 **Next step to pin it (either):** (a) `frida.spawn` the Manager suspended, install the
@@ -546,7 +552,7 @@ functions), not answerable from the traces alone.
 **New capability delivered this session:** full **headless GUI automation** of the Manager over
 SSH — a `/it` scheduled task (runs in the interactive session) + `SetForegroundWindow`+mouse-click
 drives open/close/**Connect** (auto-id 1121)/**Disconnect** (1122); verified Connect →
-"Connected: SN 88985275". Scripts in `mdi2_macos/ps/` (`uia_drive.ps1`, launchers). This makes
+"Connected: SN <MDI_SERIAL_DIGITS>". Scripts in `mdi2_macos/ps/` (`uia_drive.ps1`, launchers). This makes
 future capture/experiments fully self-driving (no human clicks).
 
 **Bottom line unchanged:** the macOS foundation is complete and validated — only the exact inline
@@ -669,7 +675,7 @@ so **`session_key[i] = base_key[module_type][i] + addend`** (per 32-bit word, mo
 - `base_key + 0x054dcebb == fde7ccb2…` → **VERIFIED True** (full 56 bytes).
 
 **Addend is per-device (not a literal — 0 occurrences in the binary; computed at connect).** It
-is strikingly close to the device serial: **serial `88985275` = `0x054DD0BB`; addend `0x054DCEBB`
+is strikingly close to the device serial: **serial `<MDI_SERIAL_DIGITS>` = `0x054DD0BB`; addend `0x054DCEBB`
 = serial − 512 (0x200)**. So the key is **per-device, derivable from the serial** (which a macOS
 client can read from the device ident/logs) — pending confirmation of the exact serial→addend
 transform (traced to `FUN_10268960 ← FUN_1006d3d0(generic_client ctor) ← FUN_1007b0b0`; the
@@ -682,8 +688,8 @@ key. Confirming the serial→addend formula (one more trace, or a second unit) c
 
 ### 4.19 FINAL — the addend IS the device serial (correction to §4.18's "−512")
 
-Verified programmatically: **`0x054dcebb` = `88985275` decimal = the device serial exactly**
-(§4.18's "serial − 512" was an arithmetic error — `0x054DD0BB ≠ 88985275`; `0x054DCEBB = 88985275`).
+Verified programmatically: **`0x054dcebb` = `<MDI_SERIAL_DIGITS>` decimal = the device serial exactly**
+(§4.18's "serial − 512" was an arithmetic error — `0x054DD0BB ≠ <MDI_SERIAL_DIGITS>`; `0x054DCEBB = <MDI_SERIAL_DIGITS>`).
 
 **Complete, byte-verified derivation formula:**
 
@@ -692,13 +698,13 @@ Verified programmatically: **`0x054dcebb` = `88985275` decimal = the device seri
 - `module_type` = `0x1c` = `MODULE_TYPE_ID_MDI_2` → base key `42197fad58f363fe07cc137065da2a56
   04a89114b2fd3b2f57d1bbb516cb75461f08260d1ac2465e584013641aba6176025816164629b007` (static, in
   `bvtx_vci_rt.dll` table `DAT_10309d60`, entry id 0x1c, `+0xC4`).
-- `device_serial` = the unit's serial as a `uint32` (this unit `88985275`; `uiSerialNumber` /
+- `device_serial` = the unit's serial as a `uint32` (this unit `<MDI_SERIAL_DIGITS>`; `uiSerialNumber` /
   `VtxRtSglReadSerialNumber` / `VTX_RT_CFG_SERIAL_NUMBER`).
 - Result for this unit: `fde7ccb213c2b103…01f8fd0c` — recomputed == captured, exact.
 
 **This fully closes the macOS story.** The Blowfish key is **computable with no Windows and no
 per-session extraction**: a native client reads the device serial (present in the `225.1.1.1:8194`
-announce / ident / the pulled logs as `2505-88985275`), takes the static per-module base key,
+announce / ident / the pulled logs as `<MDI_HOSTNAME>`), takes the static per-module base key,
 adds the serial to each 32-bit word → the exact key. Per-device, deterministic, reproducible.
 Nothing remains blocked on the crypto/key side for a standalone macOS MDI Manager.
 
@@ -770,7 +776,7 @@ responds immediately from macOS. Two more findings closed the live path:
 With both fixed, a **client-constructed `session_open` is byte-identical to the real one** and the
 **live device returns full success**: `{"data":{"port":9011,"session":<id>},"error":0,"has_data":
 true,"id":1}` — confirmed on the real MDI2 over macOS USB. Discovery works too: the
-`225.1.1.1:8194` beacon carries the serial (`0x054dcebb`=88985275) and module type `0x1c`, so the
+`225.1.1.1:8194` beacon carries the serial (`0x054dcebb`=<MDI_SERIAL_DIGITS>) and module type `0x1c`, so the
 client auto-derives the key.
 
 **Net: the macOS client is validated end-to-end live** — discover → derive key → control
@@ -841,7 +847,7 @@ The complete loop runs end-to-end against the real MDI2 over macOS USB, **no Win
     discover (beacon serial) -> derive key -> per-channel control handshake ->
     session_open (device: {"port":9011,"session":<id>,"error":0}) -> poll -> get-logs ->
     Blowfish-ECB decrypt -> SID container -> "messages" = 56811 bytes of live Varlog
-    ("Aug 26 00:31:46 2505-88985275 syslog-ng... Booting Linux... 4.14.162-gvci").
+    ("Aug 26 00:31:46 <MDI_HOSTNAME> syslog-ng... Booting Linux... 4.14.162-gvci").
 
 **The last bug — the message counter must have its HIGH BIT set.** The `[u32be 0][u32be len]
 [u32 counter][body]` counter is not a plain 1..N sequence: values with bit31 clear (`1`,

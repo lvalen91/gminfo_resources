@@ -94,29 +94,27 @@ ProgrammingMaster, 9012/9018 RemoteReflash(UI), 9016 NAM, 9020 DisplaysCoordinat
   (2) on serviceId/instanceId rejection the payload bytes are **not drained** → next 20 bytes misread as a
   header → permanent TCP framing desync. Decompiled sources: `~/gm_emu/ae/re/`.
 
-## Link-2 (vlan4 `172.16.4.x`) diagnostic surface — from the real-radio logs (redacted)
-- `diagnosticsd` (root) `0.0.0.0:49156` TCP → RTOS peer `172.16.4.107`, **custom 8-byte GM header**
-  (SRC/TGT addr + PAYLOAD_LEN; ECU `0x0084`, tester `0x0FA0`) — **not DoIP**. Unauthenticated `$27/$10/$22`
-  from the shell side all return NRC `0x10` generalReject.
-- **`$27` SecurityAccess (via the tester/CAN path):** valid SPS session = 8-byte seed / 6-byte key, **granted**
-  on `0x80`/`0x81`/`0xBE` (`67 02`); a failed-SPS read returned an **all-`0xFF` seed** — this specific read is
-  the **SPS-credential-absent path**, not necessarily a hardware SBI flip (see `vehicle_network.md`). `F1A0=0xFF`
-  (secure mode) live-confirmed on the radio.
-- **[S] RESOLVED (2026-09) — SBI/`$27` fail-open is real, off-SoC, VIP-side.** The Ethernet `diagnosticsd`
-  (`:49156`) `$27` path for the `VIP` tier is *forwarded*, not locally checked: `ProxyOfExtComp::
-  handleUDSRequest` relays `MESSAGE_SECURITY_ACCESS_VIP` via a `SockAdaptor` TCP socket to the external VIP
-  MCU, where the real seed/key compare and the SBI EEPROM read happen. No SoC binary reads the SBI EEPROM
-  directly; the SoC only relays the SBI/MEC-derived byte via `$22 F1A0`
-  (`IDiagnosticsObd::getManufacturingEnableCounter()`, returned verbatim, unchecked). SBI EEPROM byte `0xFF` =
-  "Bypass Active" relaxes the **VIP's own** key-compare (same SBI flag as the ProtoKey/ADB bypass in
-  `platform/security.md`, different enforcement point). Under normal (SBI-inactive) posture, an untrusted
-  Ethernet peer's `$27` requestSeed still fails closed (`7F 27 10`) before any seed is issued. VIP MCU
-  firmware is not in the artifact set, so the VIP-side compare can't be re-derived statically. **This
-  supersedes the "possible fail-open" hedge above and in earlier revisions of this doc.** Not reproducible on
-  the hybrid emulator (`IDiagnosticsObd` unregistered, `diagnosticsd` absent, Secure-ADB replaced by stock
-  `adbd`) — would need a modeled synthetic VIP/`$27` endpoint, a substantial un-stub. Full detail:
-  [`../platform/security.md`](../platform/security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09)
-  and [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md).
+## Link-2 diagnostic surface — corrected 2026-11-11
+
+`diagnosticsd` uses the custom 8-byte GM UDS header, not ISO DoIP. Target shell and
+Bus-2 probes receive NRC `0x10` before a seed is issued. Socket reachability does not
+establish programming authority. The former `ProxyOfExtComp` symbol attribution and
+asserted external forwarding topology were withdrawn by the diagnostic-source correction;
+that route remains unproven.
+
+On the authorized target CAN path, fresh radio `0x80` reconstruction shows **31-byte
+normal seeds (16-byte fixed ID + 15-byte varying suffix), 12-byte responses and `67 02`**.
+`DPS+SPS.pcapng` programs amplifier `0x81`, not the radio; its radio observations are DID
+reads and seed-only probes. An SPS host error banner does not establish why the ECU
+returned an all-FF seed.
+
+The bench-reported SBI-flipped radio accepts exactly 12 zero bytes after a 31-all-FF seed;
+on November 10 it accepted 14 stock signed calibration containers with readback and ADB
+retained. This is not arbitrary-key or arbitrary-custom-calibration proof. ADB's separate
+certificate bypass uses MEC 1–255 through SoC `is_secure_mode`; `F1A0=FF` is an open-cert
+MEC value, not proof of enforced GM Secure ADB. ProtoKey and Signature Bypass Tickets are
+separate mechanisms. See [the central evidence guide](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
+and [the diagnostic correction](../diagnostics/ethernet_uds_diagnosticsd.md).
 
 ## Update / rollback / influence verdicts (network peer over Ethernet, resolved 2026-09)
 

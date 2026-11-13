@@ -12,6 +12,8 @@
 
 This directory documents runtime behavior observed from 3.7GB of captured logs collected Feb 6-19, 2026 from a 2024 Chevrolet Silverado ICE.
 
+> **Scope note (2026-11-12):** the figures in this README (12 FATAL, 7,811 denials, 513 LMK kills, 94.8% CPC200 success) are from the February 2026 corpus on a different rig (CPC200 + `zeno.carlink`). Build `W231E-Y181.3.2-SIHM22B-499.3` on the current bench radio was re-checked from retained logs (30 boots, 2026-11-10..12; 0 FATAL, 25 LMK kills, 3596 `avc:` records all `permissive=0` [2026-11-12 clarification: 3596 = 194 kernel-log `avc:` lines + 1055 `main` lines tagged `auditd` + 2347 `events` lines, de-duplicated per tag over overlapping streams (reproduced); a raw `avc:` count over the merged streams is ~4688 (194 + 2147 + 2347) because echoed comm-tag lines in `main` add to it. `permissive=0` holds for all of them.]); those results are in `boot_timing.md`, `memory_pressure.md` and `known_issues.md` and are not comparable samples.
+
 ## Log Sources
 
 - **Logcat:** 3.7GB across 27 files (Feb 11-19)

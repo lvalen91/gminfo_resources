@@ -1,5 +1,11 @@
 # `.vmm1`/`.ota_update` Static RE — Status (Aug 2026 session)
 
+> Historical tool-status record. Current architecture, extraction boundaries,
+> task-runtime mappings and verified ELK/HECI branches are maintained in
+> [the consolidated source](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#01-y181b-binary-provenance-and-security-evidence-2026-11-12).
+> The unresolved tool setup below describes the August state, not the current
+> availability of original binaries or disassembly.
+
 **Goal:** unblock Bundle 1 (does GHS's `.vmm1` port keep upstream `libavb`'s
 overflow guards?) and Bundle 2 (`.ota_update.text` opcode/frame layout) by
 getting real disassembly of the GHS INTEGRITY hypervisor image (module
@@ -500,9 +506,13 @@ against **this binary's own compiled-in `AVB_VERSION_MINOR = 1`**.
 **Conclusion: `elk_inner.elf` (kernelflinger, the early-boot-stage
 verifier) enforces compatibility with libavb 1.1, not 1.2.** This is a real
 version skew between boot-chain components, not a coincidence or misread —
-the live device separately reports `ro.boot.vbmeta.avb_version=1.2`
-elsewhere (a different, presumably later-stage GHS-side check). Two boot
-stages verify against two different libavb minor versions. Not yet explored
+the live device reports `ro.boot.avb_version=1.2` while
+`ro.boot.vbmeta.avb_version=1.1` (the two props disagree; the vbmeta one matches
+this kernelflinger/GHS-passed value). **[2026-11-12 correction: this paragraph
+previously said `ro.boot.vbmeta.avb_version=1.2`; live /cache dump of Y181.3.2 shows
+`ro.boot.avb_version=1.2` and `ro.boot.vbmeta.avb_version=1.1`.]** Which component sets
+`ro.boot.avb_version=1.2` is unverified ("later-stage GHS-side check" is a guess), so
+"two boot stages verify against two different libavb minor versions" is an inference. Not yet explored
 further: whether this skew has any practical security implication (e.g. a
 vbmeta feature/flag introduced between 1.1 and 1.2 that kernelflinger's
 earlier-stage check wouldn't know to enforce) — worth a dedicated diff of

@@ -15,6 +15,11 @@ SELinux domain and its UDS SID list are summarized in
 [`platform/security.md`](../platform/security.md#can--uds-diagnostic-services);
 this doc adds the live Ethernet wire format and trust model.
 
+**2026-10-30, Y175:** A shell running as UID 1000 in `system_app` connected to
+the UID 0 listener on port 49156 without sending protocol data. This confirms
+TCP reachability from that domain, not service identity on that connection,
+request authorization, or calibration-write access.
+
 Binary obtained by extracting `/bin/diagnosticsd` from vendor ext4 image
 `86331650` (`debugfs -R 'dump ...'`); a live pull is blocked by SELinux from the
 `adbd` context.
@@ -338,6 +343,22 @@ to a standard Ethernet PHY, then repoint existing DoIP tooling (e.g. the fsa_pro
 stack) at the resulting IP endpoint. This bypasses the Android-guest permission question
 entirely by talking to the vehicle's diagnostic network directly, same as a dealer MDI2
 would. Route noted, not yet executed on this bench. OPEN.
+
+**[Updated 2026-11-11 per Y175_2026-11-02 Bus 2 tap bench finding:]** This has now been
+**executed** on the Y175 bench, specifically against `172.16.4.100:49156` (diagnosticsd,
+vlan4, reached by posing as CGM `.112` or RTOS `.107` on a direct T1 tap — BUELEC media
+converter, no switch in path, since a switch was found to silently strip the 802.1Q VLAN
+tags needed to reach vlan4/vlan5 at all). Result: diagnosticsd **is** externally reachable
+over this plane — it is a root TCP server bound `0.0.0.0:49156`, gated only by a source-IP
+allow-list of exactly `{172.16.4.107, 172.16.4.112}` (an exhaustive sweep of all 253 vlan4
+source addresses and the full TCP 1–65535 range found no other allow-listed identity or
+listening port). However it remains **UDS-application-layer locked, source-IP-independent**:
+every request from an allowed source (`$10 03`, `$27 01`, `$31 01 0332…`) returned
+`generalReject` NRC `0x10` for an unregistered tester/no SecurityAccess, matching the
+adb-loopback result in this doc. No DoIP (13400) listener exists on this radio; diagnosticsd
+is the only Ethernet UDS endpoint. See
+`Y175_LIVE_RADIO_T1_SECURITY_ASSESSMENT_2026-11-02.md` and
+`source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §9.
 
 ---
 

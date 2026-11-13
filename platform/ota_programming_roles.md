@@ -39,7 +39,7 @@ GIS-646 CalDef database ([`../reference/`](../reference/)); the DPS logs
 ## What GM actually pushes — the Y181 package
 
 The last major release, **Y181** (`W231E-Y181.3.2-SIHM22B-499.3`, USB full package `86334732`),
-is an 18-part bundle — **all parts are CSM/radio-domain**, none are foreign vehicle ECUs
+is a 15-part bundle (15 rows in the archived `delivery_manifest.csv`; corrected 2026-11-12 from "18-part" — 18 is the radio's installed-module inventory, see note below the table; `research/UPDATE_PROCESS_ANALYSIS.txt:237`) — **all parts are CSM/radio-domain**, none are foreign vehicle ECUs
 (from the archived `delivery_manifest.csv`; cross-ref [`firmware_versions.md`](firmware_versions.md)):
 
 | Module ID | Part # | Image | Sign |
@@ -53,12 +53,31 @@ is an 18-part bundle — **all parts are CSM/radio-domain**, none are foreign ve
 | 28 | 85843750 | SXM | NONE |
 | 29 | 85121980 | GPS | NONE |
 | 51 | 85155539 | TUNER | NONE |
-| 52 | 85759612 | ETH_SWITCH (BCM89551 cfg) | NONE |
+| 52 | 85759612 | ETH_SWITCH (switch cfg; Marvell 88Q5050 on this unit — see note below) | NONE |
 | 55 | 86331630 | SOC_ACPIO | NONE |
 | 56 | 86331644 | SOC_VBMETA (AVB) | NONE |
 | 57 | 86331636 | SOC_PRODUCT (/product) | NONE |
 | 71 | 85056831 | VIP_BOOT | NONE |
 | 72 | 85738845 | SOC_ABL (Intel bootloader) | NONE |
+
+> **Corrected 2026-11-12 against the live Y181B radio's on-radio module inventory**
+> (`update_cache/update/moduleinfo` pulled from `/cache`, timestamp field written 2026-11-12 13:10 AKST; directly read):
+> - Module 52 reports `MVL88Q5050_globalB_234702AB_02_09_1003` (part 85759612, DLS AA) = **Marvell 88Q5050**, not
+>   BCM89551. The switch IC is board-variant (BCM89551 on MY22/DV boards, 88Q5050 on MY23+; see
+>   [`networking.md`](networking.md)); the part number is the same, so the former "BCM89551 cfg" label was a
+>   teardown-unit assumption. Module identity here is the updater's report, not a chip read; live `init.svc.ethmvlctrlmgr=running` / `ethctrlmgr=stopped` (adb) agrees (inferred).
+> - The radio inventories **18 modules**, this table lists 15. Not in the table: 53 `SOC_ANDROID_ODM` (part 0,
+>   DLS AA), 54 `SOC_ANDROID_ACPI` (part 0, AA), 81 `FIDM` (84961617, AA, version `6`). Whether those three ship as
+>   separate package parts or ride inside others is **not established**.
+> - Naming: the radio calls module 72 (85738845, DLS AB, version `2344`) `SOC_BOOT` and module 23 (86331652)
+>   `SOC_ANDROID_BOOT`; module 24 is `SOC_ANDROID_BOOTLOADER_UTILS`. This table's `SOC_BOOT`/`SOC_ABL`/`SOC_UTILS`
+>   labels are the package-side names.
+> - Modules 28/29/51 are listed above with the USB package's part numbers (85843750 / 85121980 / 85155539). The
+>   radio currently reports `TUNER_XM` 86404694 (DLS AC), `GPS` part 0, `TUNER_DIGITAL` part 0 (DLS AA each).
+>   The installed set therefore differs from this package for those three; unreconciled.
+> - Installed versions: VIP_BOOT (71) 85056831 DLS AA `B2.9C.01.01` (build 23Jul28-1212, image `bolo`);
+>   VIP_APP (1) 86331656 DLS CN `2B.B5.01.01` (build 25Jun19-2209); SOC_HOSTOS (21) 85098662 DLS BM
+>   `INTEGRITY IoT 2020.18.19 MY22-026`.
 
 Every row: `Release Type = DEV_REL`, **`Bypass P/N & Module ID Check = TRUE`**, `CVN = EMPTY`,
 `Fill/Pad = 0xFF`, signing issuer `CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC`.
@@ -153,7 +172,9 @@ self-programming addressing gateway 0x45 (Global B Phase 1) → RRM/FSA with inf
 > already-staged update (consent-bypass/DoS), **not** attacker-content substitution. One open item —
 > `DevCaloverrideInstaller` (containerType 2) skips signature verification entirely, but its only
 > trigger (`USBUpdateSource$1.onUSBMounted`) requires physical USB media and is not IPC-reachable;
-> closing this out needs `USBNotifier.java` RE. Full trace:
+> Y175's installed `USBNotifier` was examined on 2026-10-30: it selects type 2
+> only on non-`user` builds, and the tested Y175 is a `user` build. Y181's
+> notifier and alternate entry points remain to be independently verified. Full trace:
 > [`ota_update_stack.md`](ota_update_stack.md) and
 > [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
 

@@ -1,5 +1,12 @@
 > **⚠ SUPERSEDED SNAPSHOT (Y177, 2025).** This YAML was captured from a **Y177.6.1** build (note `selinux: permissive`, `Intel_I211`, `vulkan: 1.1.128`). Several values were corrected on Y181 — see [`../VERIFICATION.md`](../VERIFICATION.md), [`hardware.md`](hardware.md), and [`../hardware/teardown.md`](../hardware/teardown.md). In particular the Ethernet MAC is **I210** (not I211) and AV1 is **software-only** (Gen9 HD505 has no AV1 hardware decode). Treat this file as a historical Y177 snapshot, not current truth.
 
+> **Y181B live values, 2026-11-12 (adb getprop, directly read):** build `W231E-Y181.3.2-SIHM22B-499.3` (fingerprint
+> `gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys`, build date Tue Jul 22 2025 07:45 EDT),
+> Android 12 / SDK 32, `security_patch` **2025-06-05** (not 2025-02-05), kernel `4.19.305-240125T145315Z-gf1edde901aa7`,
+> bootloader `2344`, SKU `gv221`, verified boot green / vbmeta locked, slot `_a`. Ethernet switch module reports Marvell
+> `MVL88Q5050_globalB_234702AB_02_09_1003` (board-variant; this YAML's I210/BCM context came from the MY22 teardown unit).
+> The `android`, `security_patch`, `build_date`, `build_fingerprint` and `kernel` lines below are the Y177 values.
+
 ```yaml
 gminfo37_specifications:
   device: gminfo37
@@ -57,7 +64,7 @@ gpu:
 
 memory:
   physical_capacity: 8192    # 8 GB LPDDR4 (4x Micron MT53E512M32D2DS-053), teardown-verified
-  total: 5530                # guest kernel MemTotal in MiB (5,663,43x kB = 5.40 GiB / 5.80 GB) [/proc/meminfo, Y175/Y181]. GHS grants the guest 7830 MiB (+34 MiB RO IPU window) [FW 85098662; 3-Opus 2026-10-10], reserves ~362 MiB; 7830->5530 gap = VMM guest E820 limit, cause [UNVERIFIED] (needs root /proc/iomem)
+  total: 5530                # Historical Android MemTotal, MiB; not the E820 total. Updated 2026-11-12: Y181B recovery E820 usable 5743.55859375 MiB; static GHS grant 7830 MiB, cause of grant/visibility difference unresolved. See ../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md section 7A.3.
   available: 3584
   utilization: 56
   committed_oversubscription: 88800
@@ -183,23 +190,24 @@ network:
     driver: Intel_I210   # only 'I210' appears in artifacts; WGI210CL variant marking is prose-only; "I211" was an unverified near-twin reading — see hardware/teardown.md
     mac: 02:04:00:00:01:00
     speed: 1000mbps
+    switch: Broadcom_BCM89551_or_Marvell_88Q5050  # board variant: BCM89551 on MY22/DV; live Y181 bench radio = Marvell 88Q5050 (MVL88Q5050_globalB_234702AB_02_09_1003, main.log 2026-11-12); same spec
     vlans: [vlan4_172.16.4.100, vlan5_192.168.1.100]
   wifi:
     chipset: Broadcom_BCM
     driver: dhd
-    mac: F8:6D:CC:DC:32:D4
+    mac: <WIFI_MAC_REDACTED>
     bands: [2.4GHz, 5GHz]
     standards: [802.11a, 802.11b, 802.11g, 802.11n, 802.11ac]
     hotspot: supported
-    current_ssid: ZSmart
+    current_ssid: <HOME_SSID_REDACTED>
     current_rssi: -39dBm
     current_ip: <LAN_IP_REDACTED>
   bluetooth:
     version: 5.0
-    mac: F8:6D:CC:DC:32:D6
+    mac: <BT_MAC_REDACTED>
     profiles: [HFP, A2DP, AVRCP, PBAP, MAP, HID]
     name: myChevrolet
-    paired_devices: [iPhone_64:31:35:8C:29:69]
+    paired_devices: [iPhone_<PAIRED_BT_MAC_REDACTED>]
     active_hfp: true
 
 usb:
@@ -214,7 +222,7 @@ usb:
   mcp2200_serial: debug_interface_VID_1240_PID_223
 
 thermal:
-  tdp: 10
+  tdp: 10   # Y177 snapshot value; datasheet TDP @ TjMax is 12 W (see cpu.tdp above, Intel 336256) — noted 2026-11-12
   cooling: passive
   automotive_qualified: true
   extended_temp_range: true

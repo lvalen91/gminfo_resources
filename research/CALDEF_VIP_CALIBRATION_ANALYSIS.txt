@@ -6,6 +6,42 @@ Created: December 28, 2025
 Purpose: Map CalDef entries to system components and analyze VIP calibration
 ================================================================================
 
+2026-11-07 — direct audit of the two cached A11 calibration sets
+Each set contains 14 CSM CalOvride payloads (slots 02–0F): LTZ has 983
+OverrideValue entries and High Country 984. Every entry's CalID matched the
+local 2023 GIS-646 CalDefs. The local CalDefs may differ in version from the
+payload, and a name/description search cannot exclude undocumented indirect effects.
+
+Slot 05 (LTZ 87846416; High Country 85877786) explicitly includes:
+  DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE = false (both, version 1).
+    SFS2 calls this a development override for the MEC check that gates
+    automatic device registration. It describes bypassing that check, not
+    changing MEC, SBI or EEPROM. An ADB effect has not been demonstrated.
+  EXPIRATION_ENFORCEMENT = true (both). The CalDef addresses certificate
+    expiration enforcement; its relationship to ADB authorization is unproven.
+  SECURITY_EVENT_LOGGING_ENABLED = false (both). The CalDef calls this a
+    logging-feature switch; it is not evidence of an SBI or MEC setter.
+Slot 09 includes VIN_RELEARN_EN = true (both), a vehicle theft-lock/VIN
+learning control; the definition does not identify it as an SBI setter.
+
+No explicit SBI/EEPROM/MEC setter was identified in those CalOvride entries.
+This does not rule out an indirect reinitialization or reset triggered by SPS
+session, the calibration sequence or ECU firmware. The owner has observed
+SPS-related EEPROM bypass resets. Package reconstruction and modified-
+calibration acceptance remain unverified.
+
+2026-11-07 — independent Windows DPS utility finding
+The installed DPS archive UDS_SetMecToZero_Radio.zip is a generic programming
+utility, not one of those CalOvride entries. Its table describes writing radio
+MEC to zero if it is not already zero. Its script selects ECU 80, contains
+read F1A0, compare, and write F1A0 operations; its routine table contains one
+byte 00. Static examination of the pp.dll interpreter supports the candidate
+wire sequence read 22 F1 A0, conditional write 2E F1 A0 00. This is a static
+inference, not a captured or attempted write. Its session/security requirements,
+acceptance, EEPROM persistence, and relationship to ADB are unverified. The
+existence of a zeroing operation does not establish that a nonzero inverse is
+accepted. See research/MDI2_RAW_UDS_BYPASS_GUIDE.md for the Windows path.
+
 --------------------------------------------------------------------------------
 RELATED: DPS_AND_MODIFICATION_LANDSCAPE.txt is the consolidated DPS doc (DPS + memory
 + I2C + modification landscape + DPS security forensics). This file is the dedicated
@@ -40,9 +76,9 @@ a critical architectural insight has been discovered:
   1. CalDef Database Calibrations -> Android/SoC software (Palto)
   2. VIP Firmware Calibrations -> VIP MCU (RH850)
 
-The EEPROM security flags (0x0440, 0x0A80 for ADB) are controlled by VIP
-firmware, NOT by CalDef calibrations. Therefore, modifying CalDef calibrations
-via DPS calibration files (.cfx) CANNOT affect EEPROM security flags.
+The known EEPROM security flags are read by VIP-side logic. No direct setter
+has been identified in the examined CalOvride payloads; an indirect effect of
+calibration workflows or firmware has not been ruled out (see audit above).
 
 ================================================================================
 2. CRITICAL FINDING: TWO SEPARATE CALIBRATION SYSTEMS
@@ -128,8 +164,8 @@ A) DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE (SFS2)
    IF TRUE:  Device registration proceeds regardless of MEC state
    IF FALSE: Registration waits for MEC == 0
 
-   IMPORTANT: This does NOT affect ADB authentication!
-              ADB auth is VIP firmware (PROTOKEY + EEPROM flags)
+   The CalDef documents device registration, not ADB authentication or an
+   EEPROM write. Whether changing this setting affects ADB has not been tested.
 
 B) EXPIRATION_ENFORCEMENT (SFS2)
    File:    SFS2_SecurityExtensionsFRD.caldef

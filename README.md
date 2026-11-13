@@ -5,6 +5,10 @@ Canonical reference for the **GM Info 3.7** (`gminfo37`) infotainment system —
 **Hardware:** Harman/Samsung · Intel Atom x7-A3960 (Apollo Lake) · Android 12 AAOS · GHS INTEGRITY IoT hypervisor  
 **Research builds:** Y175 (Jun 2024) · Y177 (Mar 2025) · Y181 (Jul 2025, baseline)
 
+The consolidated Y181B investigation is maintained in
+[research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
+Use [the research index](research/MASTER_REFERENCE.md) to find topic owners.
+
 ---
 
 ## Directory Layout
@@ -55,7 +59,7 @@ gminfo_resources/
 | ECU address | `0x80` (A11 Radio) |
 | Manufacturer | Harman/Samsung |
 | CPU | Intel Atom x7-A3960, 4-core, 0.8–2.4 GHz, 14nm Goldmont |
-| RAM | 8 GiB LPDDR4 physical (4× 2 GiB Micron MT53E512M32D2DS-053) [teardown]; GHS grants the Android guest 7830 MiB DRAM (+34 MiB read-only IPU frame window) [FW 85098662; 3-Opus verified 2026-10-10] and reserves ~362 MiB below 4 GiB (kernel + 19 servers + PMRs); guest kernel `MemTotal` = 5,663,43x kB = 5530 MiB (5.40 GiB, 5.80 GB decimal) [/proc/meminfo, Y175/Y181]; the 7830-granted to 5530-visible gap (~2300 MiB) is a VMM-configured guest E820 limit, cause [UNVERIFIED] (needs root /proc/iomem + dmesg) |
+| RAM | 8 GiB LPDDR4 physical; static GHS guest grant 7830 MiB (+34 MiB RO IPU window); historical Android `MemTotal` near 5530 MiB. Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; grant-to-visible cause unresolved. [Map and limits](research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
 | Storage | 64 GB Samsung eMMC (KLMCG4JEUD, BGA-153) |
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, density 200 |
 | GPU | Intel HD Graphics 505 (Gen9, 18 EUs), Mesa 21.1.5, GLES 3.2 |
@@ -76,18 +80,13 @@ gminfo_resources/
 
 All three stock builds boot SELinux **Enforcing** and carry the **full ~906-byte** VIP security-validation function — the earlier "Y177 = permissive SELinux + 4-byte VIP stub" claim is refuted (three-way byte-level VIP_APP diff; `system/bin/init` is byte-identical across builds and forces Enforcing, so any live permissive Y177 was a modified/eng unit). The VIP function gates ADB/seed auth only, not SELinux or AVB. Y181→Y177 downgrade is blocked by GHS/AVB anti-rollback (the AB0 rollback counter in `misc`/vda9) — owner-verified 2026-08-17 bench re-test.
 
-### EEPROM ADB Unlock (M24C64, XGecu)
+### EEPROM ADB research
 
-Flip these bytes to `0xFF` to disable the authorized-ADB-client requirement (shell uid=2000, not root). OTA resets to `0x00`.
+The programmer workflow and supported edit scope are maintained in
+[the EEPROM guide](eeprom/README.md). Certificate authentication, root gates,
+historical MEC readings and unresolved registration behavior are maintained in
+[the consolidated MEC section](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 
-| Offset | Stock | Unlocked | Role |
-|--------|-------|----------|------|
-| `0x0441` | `0x00` | `0xFF` | Primary SBI flag |
-| `0x0A81` | `0x00` | `0xFF` | Mirror |
-| `0x1A01` | `0x00` | `0xFF` | Second mirror |
-| `0x0B41` | `0x00` | `0x01` | Debug mode |
-
-Framing bytes at ±1 vary per firmware version — locate by offset, not pattern. See [`eeprom/README.md`](eeprom/README.md) for programmer commands and [`hardware/teardown.md`](hardware/teardown.md) for the full 8 KB EEPROM map.
 
 ---
 

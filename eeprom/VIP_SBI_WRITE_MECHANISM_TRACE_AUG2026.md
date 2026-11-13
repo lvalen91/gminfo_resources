@@ -6,6 +6,25 @@ a dedicated deep firmware RE pass (raw V850 disassembly, `vip_app.bin`/GM part 8
 project `vip_app_proj`, Ghidra 12.1.3 — 12.1.2 fails to load the project's V850 language
 version). Full methodology and scripts referenced at the end.
 
+## Cross-version lead (2026-11-07)
+
+An older calibration is not required for a firmware comparison: the local archive contains
+Y175 VIP_APP part 85759599 (build dated April 2023) and Y177/Y181 parts 86283151/86331656
+(2025). A raw-byte search of the Y181 candidate regions found 16-byte matching chunks in both
+earlier images. For Y175 the matching chunks in the candidate re-initializer (`0xa35dc`),
+restore loop (`0xc6564`), SBI accessor (`0x91938`) and dispatcher (`0xba15e`) consistently
+map 200 bytes earlier; for Y177 they map 4 bytes later. Exact matches covered respectively
+6/16, 3/16, 14/16 and 16/16 sampled chunks for Y175, and 13/16, 5/16, 14/16 and 16/16 for
+Y177. These are similarity leads, not function-boundary, behavior, or trigger proof; relocated
+operands can make otherwise similar instructions differ. Decode and compare the full functions,
+their callers and data tables before drawing conclusions about a 2024-to-2025 change.
+
+The owner reports that SPS reads and updates did not reset the bypass in 2024, but do so from
+2025 onward, with EEPROM dump confirmation. The exact installed VIP and SPS/tool versions at
+each observation are not established by this comparison. The CRC-failure explanation below is a
+hypothesis, and the code analysis has not proven a diagnostic trigger, an EEPROM write-back, or
+an inverse setter. In particular, a diagnostic read can invoke surrounding setup actions.
+
 ## 0. Why the caller was never found before
 
 Prior passes concluded `FUN_ram_00091938` (the SBI CalGroup `0x3b` accessor) was "reached only

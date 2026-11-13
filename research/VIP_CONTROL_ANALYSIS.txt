@@ -402,6 +402,7 @@ BYPASSED STATE (A11_CSM_x80.Txt):
 1. The frame byte changes from 0xC3 (Calibration) to 0x5A (Security)
 2. BOTH addresses (0x0440 AND 0x0A80) must be modified
 3. MEC increases to 244 after bypass (counter increments)
+   [2026-11-12 NOTE: other docs (DPS_SECURITY_ANALYSIS.txt, the compendium, PROJECT_MASTER_CHECKLIST.txt) label MEC 244 'production/locked'. That label contradicts this section's own capture (ADB accessible at MEC 244, s5.2), line 309 ('244+ = extended development mode') and the Y181 convention (nonzero MEC = unlocked/bypass; EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md s0.11/s0.14). Meaning of 244 beyond that not asserted.]
 4. SBAT status remains unchanged ($0000)
 5. VIP log shows: "[PROTOKEY] Receives invalid seed [1] from BCM"
    When BCM returns invalid seed, VIP returns 0x00 bytes with checksum 524289 (0x80001 = error)

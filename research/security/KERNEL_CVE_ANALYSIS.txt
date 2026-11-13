@@ -4,7 +4,16 @@ GM AAOS Y181 KERNEL CVE ANALYSIS
 Analysis Date: 2026-01-04
 Kernel Version: 4.19.305
 Local Version: -240125T145315Z (compiled January 25, 2024)
-Build Date: Tue Jul 22 07:45:29 EDT 2025
+Build Date: Tue Jul 22 07:45:29 EDT 2025  (image build date, ro.build.date)
+Kernel Build: Tue Jul 22 07:52:16 EDT 2025 (uname -v)
+[LIVE-VERIFIED 2026-11-12, adb read-only probes on Y181.3.2 (W231E-Y181.3.2-SIHM22B-499.3, user/release-keys):
+ uname -r = 4.19.305-240125T145315Z-g..., security_patch = 2025-06-05, Android 12, ro.build.date as above,
+ getenforce = Enforcing, /sys/fs/selinux/enforce = 1, ro.boot.selinux = permissive (cmdline token, inert).
+ Boot logs (decompressed 2026-11-12 /cache dumps): 3596 avc lines, all permissive=0.
+ The 07:52:16 kernel build time is read from uname; the earlier header carried only the 07:45:29 image time.
+ [Corrected 2026-11-12: prior text said 8270; the owning forensic reference (gminfo37_update_cache_FORENSIC_LLM.txt,
+ lines 31/743/843) counts ALL 3596 runtime avc records permissive=0 (194 kernel + 1055 main + 2347 events). 8270 does
+ not appear in that source and is not reproduced anywhere else in it.]
 Security Patch Level: 2025-06-05
 Compiler: Clang 12.0.7 (Android NDK r416183b1)
 ================================================================================
@@ -41,7 +50,7 @@ POTENTIALLY VULNERABLE:
 - BPF verifier issues: BPF_SYSCALL enabled
 
 EXPLOITATION DIFFICULTY: HIGH
-- SELinux enforcing blocks most local exploitation paths
+- SELinux enforcing blocks most local triggering paths
 - Physical USB access required for UVC exploit
 - No unprivileged user namespaces (blocks many POCs)
 - Strong stack protection enabled
@@ -100,7 +109,7 @@ Applicability to Y181:
 - CONFIG_USB_VIDEO_CLASS=y (ENABLED)
 - VULNERABLE, but requires physical USB access
 - Attacker must connect malicious USB video device
-- SELinux may limit exploitation impact
+- SELinux may limit practical impact
 
 Attack Vector: Physical USB device connection
 Exploitation: POC publicly available (March 2025)
@@ -203,7 +212,7 @@ Many kernel race condition exploits use userfaultfd for timing control:
 WHY NOT APPLICABLE:
 # CONFIG_USERFAULTFD is not set
 
-This significantly increases exploitation difficulty for race conditions.
+This significantly increases triggering difficulty for race conditions.
 
 ================================================================================
 5. ACTIVELY EXPLOITED CVEs (CISA KEV)
@@ -243,7 +252,7 @@ Remaining attack surface:
 Difficulty: MEDIUM
 
 Factors:
-- UVC driver vulnerability (CVE-2024-53104) is exploitable
+- UVC driver vulnerability (CVE-2024-53104) is triggerable
 - USB subsystem vulnerabilities (CVE-2024-53150/53197)
 - Requires physical access to USB port
 - SELinux may still limit impact
@@ -375,7 +384,7 @@ Attack Requirements:
   2. PLUS compromise of hal_camera, mediaserver, surfaceflinger, or system_server
 
 CONCLUSION: Exploitation requires BOTH physical access AND prior compromise
-of a privileged media domain. NOT exploitable from untrusted_app or shell.
+of a privileged media domain. NOT triggerable from untrusted_app or shell.
 
 C.2 CVE-2024-36971 (Network dst_cache UAF) - RESTRICTED
 --------------------------------------------------------
@@ -394,8 +403,8 @@ Attack Requirements:
   2. Execution context with network socket permissions
   3. Ability to trigger dst_cache race condition
 
-CONCLUSION: NOT exploitable from untrusted_app or shell.
-Potentially exploitable from system_server, netd if those are compromised.
+CONCLUSION: NOT triggerable from untrusted_app or shell.
+Potentially triggerable from system_server, netd if those are compromised.
 
 C.3 CVE-2024-53150/53197 (USB Subsystem) - RESTRICTED
 -----------------------------------------------------
@@ -446,7 +455,7 @@ SELinux Policy Analysis (plat_sepolicy.cil):
   - CAP_SYS_ADMIN required for some BPF operations
   - No domain grants these capabilities to shell or untrusted_app
 
-CONCLUSION: BPF vulnerabilities CANNOT be exploited from shell or any app domain.
+CONCLUSION: BPF vulnerabilities CANNOT be triggered from shell or any app domain.
 Would require prior compromise of bpfloader, netd, gpuservice, network_stack,
 system_server, or lmkd.
 
@@ -480,8 +489,8 @@ For an attacker with:
    - CONCLUSION: Kernel CVE exploitation NOT VIABLE from untrusted apps
 
 3. COMPROMISED system_server:
-   - Has video_device access (could exploit CVE-2024-53104 with physical USB)
-   - Has network access (could potentially exploit CVE-2024-36971)
+   - Has video_device access (could trigger CVE-2024-53104 with physical USB)
+   - Has network access (could potentially trigger CVE-2024-36971)
    - Has usb_device access (could exploit USB CVEs with physical access)
    - Has BPF access (could exploit BPF verifier issues)
    - CONCLUSION: Kernel CVEs become viable ONLY AFTER system_server compromise

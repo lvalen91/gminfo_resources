@@ -15,13 +15,15 @@ what needs correcting, what's genuinely new, and consolidates the SBI-reset inve
    `DPS_MASTER_REFERENCE.md` was never updated after this correction landed — treat §6.2/7.4/12.2
    as superseded, not authoritative.
 2. **The `0x0A80`/`0x0A81` "backup SBI, both must match" claim is likely wrong.**
-   `eeprom/CORRECTIONS_AUG2026.md` found zero code references to this dual-SBI mechanism in the
+   `eeprom/CORRECTIONS_AUG2026.md` [2026-11-12: this file does not exist in this repo's eeprom/ nor under
+   /Volumes/stuff/misc/research/GM_research; the cited findings are traceable only via
+   eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md and eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md] found zero code references to this dual-SBI mechanism in the
    VIP binaries via the confirmed accessor path. The empirical EEPROM-bypass behavior itself
    isn't disputed — only the claimed second-address mechanism. Real, confirmed SBI storage:
    **CalGroup `0x3b`, EEPROM cells `0x43a-0x447` (14 bytes), real bytes at `0x440`/`0x441`**,
    handled by a pure pack/unpack accessor (`FUN_ram_00091938`) that does not itself branch on
    the value.
-3. **`eeprom/CORRECTIONS_AUG2026.md` also retracts**: RAM `0x3e06` (was claimed "processed
+3. **`eeprom/CORRECTIONS_AUG2026.md` also retracts** [2026-11-12: that file does not exist in this repo (see item at line 18); the retractions below are unverified here, and `eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md` is the nearest existing doc]: RAM `0x3e06` (was claimed "processed
    EEPROM SBI value at boot" — actually a generic "security module initialized" readiness flag,
    unrelated to the SBI's actual value); `0xecd84` (was framed as head of a "VIP validation
    chain" — actually a generic RTOS mutex primitive, 285 call sites); `0x04A0`/`0x0A40`/`0x0BE0`

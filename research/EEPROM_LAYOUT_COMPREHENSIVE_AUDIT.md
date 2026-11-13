@@ -109,8 +109,8 @@ stock reference (`gm_csm_stock.bin`, sha `bbe4528c…`) resolves the code/empiri
   confirmed* EEPROM→AAOS channels. The code analysis below did not *locate* the reader — that is a **coverage
   gap**, **NOT** evidence against the mechanism. The reader provably exists (3-yr witness); it is unlocated.
   VIP_BOOT is now **fully disassembled and ruled out** (§0.4) — the search relocates to VIP_APP.
-- **TWO channels now distinguished:** (a) **SBI bytes** (`0x0441`+`0x0A80`) → **ADB**; (b) **trim/model
-  calibration** → **AAOS boot-animation + theme**. See §0.3 for channel (b) fully code-traced.
+- **TWO channels now distinguished:** (a) **SBI bytes** (`0x0441`+`0x0A81`) → **ADB**; (b) **trim/model
+  calibration** → **AAOS boot-animation + theme**. See §0.3 for channel (b) fully code-traced. [2026-11-12: corrected from "0x0A80" — that is the backup SBI's marker byte, not the data byte, per §0.3]
 
 ### §0.3 CHANNEL (b) — trim/theme pipeline, SoC side CODE-VERIFIED (2026-08-26)
 
@@ -277,7 +277,7 @@ configuration**, plus a little HMI config, plus the security region:
   `cal_cluster_animation_ignore`/`cal_rsi_animation_ignore`/`*_hmiready_ignore`, `cal_local_valet_timeout_sec`,
   `cal_master_offmode_active_timeout_min`, `cal_remote_reflash_programming_complete_timeout_sec`, etc.
 - **`[J6_CDD]` × 2 — HMI/display:** `LngSelSignal` (language), `TimeDispFormat` (time format).
-- **Security region:** the SBI (`0x0441`/`0x0A80`) + the `0x40F–0x45A` calItem block (empirically the ADB gate).
+- **Security region:** the SBI (`0x0441`/`0x0A81`) + the `0x40F–0x45A` calItem block (empirically the ADB gate). [2026-11-12: corrected from "0x0A80" — that is the backup SBI's marker byte, not the data byte, per §0.3]
 - **Write path (`[CAL]`):** `EEPROM Write Failure for CalGroup-%d`.
 > Caveat: only 2 of 48 cal-string addresses have real code xrefs; Ghidra's function boundaries in that region
 > are unreliable, so the *string list is solid* but *which function reads each item* is unresolved (dispatch wall).
@@ -331,63 +331,23 @@ sub-queries back the checks.
 - ADB unblock = **VIN + CSM-ID + cloud-signed policy + not-expired** (or the test property, or a local password).
 - Nuance: VIN itself is VIP-forwarded (Vehicle HAL) — ordinary vehicle identity, not the SBI/seed channel.
 
-**Reconciliation with the owner's SBI→ADB witness:** an EEPROM SBI flip **cannot forge a cloud ECDSA
-signature**, so the SBI's ADB effect operates **outside** this guest gate — most likely the VIP-side `$27`/SBI
-route writes/relaxes `/data/gm_adb/policy` or sets `persist.gm.adb.secure` via a path not present in these
-binaries (dispatch-hidden VIP + external diagnostic). **Now a precise bench test:** with the SBI flipped, diff
-`/data/gm_adb/policy`, `getprop persist.gm.adb.secure`, and `gmauthmanagerservice.socket.adb` traffic — that
-shows exactly what the SBI changes. This is the definitive guest-side instrumentation the static wall couldn't reach.
+**Corrected 2026-11-12:** the later `gm_adb_auth_init` trace in §0.10
+identifies the local MEC-dependent certificate bypass. The earlier speculation
+that SBI must rewrite a cloud policy file or force a guest property is
+withdrawn; no such write was established by the inspected chain.
 
 ### §0.10 THE COMPLETE SBI → ADB CHAIN — the local cloud-cert bypass, found (2026-08-26)
 
-Backward-trace from the guest ADB gate found the exact local conditional that removes the cloud-cert
-requirement — and it matches the owner's SBI witness (an EEPROM flip makes a *requirement* fail, so no cloud
-signature is needed).
+The detailed certificate-authentication chain, range checks and Boolean inversion
+are maintained in
+[the consolidated source §2.3.7](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 
-**The bypass (code-verified: `adbd` x86-64 disasm + jadx):**
-- Master switch: static bool `is_secure_mode` (`.bss 0x219200`). `gm_adb_check_authentication` (`0xa5620`) and
-  `gm_adb_auth_verify` (`0xa60f0`): **`if (is_secure_mode==1) return ALLOWED`** — the `GMAdbPolicy`/ECDSA cert
-  chain is **never reached**. `==0` → full cert check. (Name inverted: `==1` = *enforcement off* = open.)
-- `gm_adb_auth_init` (`0xa6650`) sets it from **MEC** (queried `"MEC\n"` over `gmauthmanagerservice.socket.adb`,
-  `mec=atoi(reply+3)`). **Direct-disassembly VERIFIED (2026-08-26), fail-CLOSED:**
-  - `cmp eax,0x100; jae 0xa6841` and `test eax,eax; je 0xa6841` → **`mec==0` OR `mec≥256` OR query-fail all →
-    `xor ebx,ebx; is_secure_mode=0` = cert REQUIRED** (log `"GM Secure ADB enabled...MEC=%d"`).
-  - **Only `mec ∈ [1,255]` → `mov bl,1; is_secure_mode=1` = cloud cert BYPASSED** (log `"GM Secure ADB
-    disabled...MEC=%d"`).
-  - `persist.gm.adb.secure=="1"` logs `"enabled via property... Feature test Only!"` → `is_secure_mode=0` =
-    **force-ENFORCE** (a test hook to *lock* secure-adb ON — NOT an opener; the earlier "bypass/open" label was wrong).
-  > Net: the gate **fails closed** — a broken/absent/out-of-range MEC keeps the cert requirement. The *only* local
-  > path that opens adb is a genuine `MEC∈[1,255]` returned by the auth-manager, which reads DID `0xF1A0` off the VIP.
+### §0.10.1 Y181B MEC readings, root gate and registration limits (2026-11-12)
 
-**The full chain (guest = code-verified; final hop = the VIP/EEPROM domain already established):**
-```
-EEPROM SBI (VIP)
- → VIP answer to UDS $22 / DID 0xF1A0 (MANUFACTURER_ENABLE_COUNTER) over CAN
- → IDiagnosticsService.requestDiagnosticData(CANBUS, 0xF1A0)   [vendor.gm.diagnostics*.so]
- → ManufacturerEnableCounter.getValue()                        [info3.jar]
- → GMMecHandler replies "MEC<n>" (plaintext, UNauthenticated socket)
- → gm_adb_auth_init: is_secure_mode = (mec != 0)
- → gm_adb_check_authentication short-circuits to ALLOWED, no cert
-```
-
-**MEC = Manufacturer Enable Counter:** nonzero during manufacturing/pre-delivery (security relaxed), zeroed at
-vehicle delivery. So the SBI puts the VIP into a **manufacturing-mode MEC≠0 state**; the guest reads that as
-"secure-ADB enforcement off," and adb opens with no cloud policy. **DID `0xF1A0` is the guest↔VIP crossover** —
-the VIP's SBI-gated answer to that `$22` read is the single inferred hop (consistent with the proven VIP/EEPROM
-gating). This resolves the whole "how the guest knows to unblock ADB" question end to end.
-
-> **Caveat (added 2026-10-15):** DID `0xF1A0` is not present in the extracted firmware strings table
-> (`eeprom/config_tool/firmware_re/vip_app_strings.tsv`, 120-line Ghidra xref export) — this specific DID
-> value is unconfirmed by that source; the broader VIP→SoC `is_secure_mode` propagation mechanism may
-> still be correct via a different/unobserved DID. (Note: `platform/security.md` §ProtoKey/ADB
-> Authentication separately cites a live-vehicle `$22 F1A0` read returning `0xFF` — that is independent
-> on-vehicle corroboration of DID `0xF1A0` specifically, not derived from this firmware-strings table, so
-> the two findings are not in conflict: the string table's silence is simply not evidence either way.)
-
-**Bench confirmation (now exact):** with the SBI flipped, (1) read DID `0xF1A0` via diagnostics — MEC should be
-nonzero; (2) `getprop` / probe `gm_adb_is_secure_mode` — false; (3) inspect the `gmauthmanagerservice.socket.adb`
-`"MEC"` reply. Also note: that MEC socket is **unauthenticated plaintext**, so it is independently spoofable on a
-compromised guest (a separate finding).
+Target readings, normal/recovery privilege gates and registration/reset
+uncertainties are maintained in the same
+[consolidated MEC section](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+This audit continues to own EEPROM layout and VIP binary analysis.
 
 ### §0.11 SECURITY-RELAXATION LANDSCAPE — MEC domino + other permissive gates (2026-08-26)
 
@@ -426,7 +386,7 @@ they outrank MEC (gate ECU *programming*, not just a debug shell).
 ### §0.12 REFLASH-SECURITY PRIMITIVES — `SIGNATURE_BYPASS_TICKET` is LIVE (dev-signed VIP flashing) (2026-08-26)
 
 > ⚠ **NAMING COLLISION:** this "SBI" = **Signature-Bypass ticket** (DID CUSTOM 18, CAN) — a DIFFERENT mechanism
-> from the EEPROM **Seed-Bypass Indicator** (`0x0441`/`0x0A80`, the adb/MEC path). Same abbreviation, distinct things.
+> from the EEPROM **Seed-Bypass Indicator** (`0x0441`/`0x0A81`, the adb/MEC path). Same abbreviation, distinct things. [2026-11-12: corrected from "0x0A80" — that is the backup SBI's marker byte, not the data byte, per §0.3]
 
 **`SECURE_UNLOCK_LEVEL` (DID CUSTOM 17, Ethernet): DEAD in this build** — `DelayedWKSApp.DiagnosticDispatcher.
 getSecurityLevel()` wraps it but has **no caller** anywhere in the guest (consumed by an external SPS/DoIP
@@ -516,7 +476,7 @@ answers DID `0xF1A0`.** So the full chain is now closed end to end, no inferred 
 
 Other boot-log notes: `[PROTOKEY] ICUSB module enabled` (the ADB/ICUSB module) + repeated `[PROTOKEY] Receives
 invalid seed [1]/[2] from BCM` = the **anti-theft** VIP↔BCM ProtoKey handshake (failing on the disconnected bench
-— the DATA_LOCKED channel, separate from the adb path). The VIP serves the manufacturer DID block
+(inferred, not read from the log [2026-11-12]) — the DATA_LOCKED channel, separate from the adb path). **Live Y181 recount (2026-11-12):** the bench radio's `viplog.log`+`viplog.log.rot` hold 7113 such lines by raw grep (3556 seed [1], 3557 seed [2]; **corrected 2026-11-12:** previously written "3553 / 3556", which does not sum to 7113; the verified forensic header-stripped count is 7114 = viplog.log 2245 + viplog.log.rot 4869, [1]=3556 / [2]=3558) against 10 `Seed %d taken from GMLAN` (forensic count; 10 in viplog.log, 0 in .rot; this paragraph previously said 9), ~1 per second whenever the VIP is up; the Y181 VIP log does not carry the Y175-style `MEC`/`0xF1A0` value text (no `MEC` string in either file), so the MEC-value column above was not re-verified on Y181 from the VIP log [read: counts]. A body-control module that never answers is the inferred cause on a bench unit. The VIP serves the manufacturer DID block
 (`F1A0/F190/F0F3/F0B4/F1CB/F1DB/F1CC/F1DC`), but **no DID-18 Signature-Bypass Ticket appears at boot** (requested
 on-demand during OTA programming) — that specific read still needs the bench.
 
@@ -646,17 +606,17 @@ table remain original to this research, with no published Harman byte-level docu
 ## 1. EEPROM Layout Maturity & Detail Level
 
 > **§0 supersedes the "Verified" / "Evidence" columns in this section for all security rows.**
-> "disasm-confirmed" for 0x0440/0x0A80 is retracted; the xref counts are non-reproducible.
+> "disasm-confirmed" for 0x0440/0x0A80 is retracted; the xref counts are non-reproducible. [2026-11-12: 0x0440/0x0A80 are the SBI marker bytes, not the data bytes; the flippable SBI data bytes are 0x0441/0x0A81, per §0.3]
 
 ### Current documentation status:
 
 | Region | Detail Level | Evidence | Verified | Gaps |
 |--------|--------------|----------|----------|------|
 | **Boot/Init (0x0000–0x03FF)** | Field-level | Byte reads + structure inference | Partial | Exact bit fields for boot flags unclear |
-| **Security Config (0x0400–0x04FF)** | Byte-level (SBI only) | ~~`0x0440/0x0A80` SBI disasm-confirmed; 0x04A0/0x04C0 via xrefs (17/11 refs)~~ **RETRACTED (§0): SBI is empirical, not disasm-confirmed; 0x04A0/0x04C0 are NOT security flags (fabricated ref-counts)** | SBI empirical | Only `0x0441`+`0x0A80` real |
+| **Security Config (0x0400–0x04FF)** | Byte-level (SBI only) | ~~`0x0440/0x0A80` SBI disasm-confirmed; 0x04A0/0x04C0 via xrefs (17/11 refs)~~ **RETRACTED (§0): SBI is empirical, not disasm-confirmed; 0x04A0/0x04C0 are NOT security flags (fabricated ref-counts)** | SBI empirical | Only `0x0441`+`0x0A81` real [2026-11-12: corrected from "0x0A80" — that is the marker byte, not the SBI data byte, per §0.3] |
 | **Device ID (0x0500–0x05FF)** | Field-level | VIN, serial, part# reads verified from dump | High | — |
-| **Backup Security (0x0A00–0x0AFF)** | Byte-level (0x0A80 SBI) | ~~0x0A00 (871 refs), 0x0B00 (311 refs)~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise, not semantic xrefs** | Low | Only 0x0A80 (SBI) is real |
-| **Feature Flags (0x0B00–0x0BFF)** | Byte-level (0x0B40 debug mode) | 0x0B40 documented (0x0B41 debug-mode data byte); ~~0x0A40 (28 refs), 0x0BE0 (24 refs) via xref~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise. 0x0A40/0x0BE0 read all-0xFF (unwritten) in BOTH stock and ADB_enabled dumps (confirmed: /Volumes/.../csm_eeprom/gm_csm_stock.bin & EEPROM/gm_csm/Y181/ADB_enabled.bin) — no stored data** | Low-Medium | Only 0x0B40 is real; the "undocumented flags" hold no data |
+| **Backup Security (0x0A00–0x0AFF)** | Byte-level (0x0A81 SBI data byte) | ~~0x0A00 (871 refs), 0x0B00 (311 refs)~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise, not semantic xrefs** | Low | Only 0x0A81 (SBI data byte; 0x0A80 is its marker) is real [2026-11-12: corrected from bare "0x0A80" per §0.3] |
+| **Feature Flags (0x0B00–0x0BFF)** | Byte-level (0x0B40 debug mode) | 0x0B40 documented (0x0B41 debug-mode data byte); ~~0x0A40 (28 refs), 0x0BE0 (24 refs) via xref~~ **ref-counts RETRACTED (§0) — fabricated/grep-noise. 0x0A40/0x0BE0 read all-0xFF (unwritten) in BOTH stock and ADB_enabled dumps (confirmed: GM_RESEARCH/csm_eeprom/gm_csm_stock.bin & EEPROM/gm_csm/Y181/ADB_enabled.bin) — no stored data** | Low-Medium | Only 0x0B40 is real; the "undocumented flags" hold no data |
 | **UI/Display Settings (0x0E00–0x0EBF)** | Field-level | Timing/threshold values (e.g., 0xE01=30 sec screen timeout) read from sample dump | Medium | Bit-field granularity guessed; interpretation inferred not verified |
 | **Display Calibration (0x0EC0–0x0F7F)** | Table-level | Brightness LUTs (11-point, 22-point), color RGB calibration (0x0F40) | Medium | Ambient-light compensation logic guessed |
 | **Backlight Dimming Calibration (0x0FE0–0x12DF)** (corrected 2026-10-15; was "Audio Calibration") | Table-level | Input-% axes + output gamma curves (0–65535), 4 channels | High | **Structurally** matched against VIP_APP firmware LUT defaults @0xf8414-0xf8500 (same shape: shared input-% axis, per-channel output curve) — caveat added 2026-10-16: not a literal byte-identical match (firmware uses 16-bit direct encoding, EEPROM uses 32-bit scaled encoding); not audio, see §2.3/§0.15 |
@@ -668,6 +628,7 @@ table remain original to this research, with no published Harman byte-level docu
   **RETRACTED per §0** — the "disasm-confirmed" claim was not reproducible; those offsets show only
   ordinary calibration handling in VIP_APP, and the real EEPROM read logic is in VIP_BOOT (not yet
   disassembled). Undocumented-flag "xref counts" are grep noise, not semantic references.
+  [2026-11-12: 0x0440/0x0A80 are the SBI marker bytes, not the data bytes; the flippable SBI data bytes are 0x0441/0x0A81, per §0.3]
 
 ---
 
@@ -677,14 +638,14 @@ table remain original to this research, with no published Harman byte-level docu
 
 > **⚠ SEE §0 — the "Evidence Level" column in this table is largely FALSE.** "Disasm-confirmed"
 > for 0x0440/0x0A80 is retracted; "IPC Security Config" for 0x04A0/0x04C0 rests on a misread of the
-> `[IPC_S]` *serial-transport* log tag; the ref-counts are non-reproducible. No security offset here
+> `[IPC_S]` *serial-transport* log tag; the ref-counts are non-reproducible. [2026-11-12: 0x0440/0x0A80 are the SBI marker bytes, not the data bytes; the flippable SBI data bytes are 0x0441/0x0A81, per §0.3] No security offset here
 > is code-verified in VIP_APP. Treat every row as an UNVERIFIED historical hypothesis pending the
 > VIP_BOOT + CalGroup-table decode.
 
 | Address | Field | Documented | Polarity | Evidence Level | Notes |
 |---------|-------|-----------|----------|----------------|-------|
 | **0x0441** (data; framing 0x0440/0x0442) | Primary SBI (Seed Bypass Indicator) | Yes | 0xFF=bypass, 0x00=locked | ~~Disasm-confirmed (VIP 0xb67d0 validator)~~ **empirically flips ADB + code-read via CalGroup accessor; NOT via 0xb67d0 (retracted §0)** | ADB gate is SoC-side (MEC/`is_secure_mode`) |
-| **0x0A80** | Backup SBI | Yes | 0xFF=bypass, 0x00=locked | ~~Disasm-confirmed~~ **empirical only; static reader not located (§0)** | Both SBI bytes required on Y181 (owner-verified) |
+| **0x0A81** (data; framing 0x0A80/0x0A82) | Backup SBI | Yes | 0xFF=bypass, 0x00=locked | ~~Disasm-confirmed~~ **empirical only; static reader not located (§0)** | Both SBI data bytes (0x0441/0x0A81) required on Y181 (owner-verified) — [2026-11-12: row corrected from bare "0x0A80" per §0.3's own correction, which this row had not inherited; 0x0A80 is the marker, 0x0A81 is the flippable data byte] |
 | **0x0B40** | Debug Mode Flag | Yes | 0x01=enabled, 0x00=disabled | Firmware refs (9 xrefs) | Enables additional diagnostic output or feature access |
 | ~~**0x04A0**~~ | ~~IPC Security Config #1~~ **RETRACTED (§0)** | — | — | **Not a security flag** — `[IPC_S]`=serial-transport log, not "IPC Security"; the "17 refs" is fabricated | — |
 | ~~**0x04C0**~~ | ~~IPC Security Config #2~~ **RETRACTED (§0)** | — | — | **Not a security flag** — "11 refs" fabricated | — |
@@ -814,7 +775,7 @@ The VIP firmware's security validation function at **address 0xb67d0** (Y181, 90
 
 - **ADB PROTOKEY/ICUSB module:** No residual gate once seed=0xFF and key is accepted. The module escalates to limited ADB (no GM-cert required). Session-level checks unknown; time-based gates not documented.
 - **Other security layers:** Yes. The SBI flip **does not** unlock bootloader, secure boot, or Android kernel SELinux. It only bypasses the PROTOKEY seed/key for ADB (ICUSB module).
-- **OTA/SPS resets:** Confirmed. Y181 stock → modified diff: both 0x0441 and 0x0A81 are reset by OTA. Must be re-applied after each update.
+- **OTA/SPS resets:** Confirmed. Y181 stock → modified diff: both 0x0441 and 0x0A81 are reset by OTA. Must be re-applied after each update. **Corrected 2026-11-12 (see `eeprom/README.md`, `eeprom/EEPROM_Analysis_Report.md`):** owner-reported, not universal — a 2026-11-10 stock calibration write retained ADB; the actual reset trigger is unidentified.
 
 ---
 
@@ -900,7 +861,8 @@ Per the CALDEF and firmware analysis:
 
 ### 6.1 Candidates for Cal-`$27` Gate
 
-From firmware xref analysis (EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md §10):
+From firmware xref analysis (`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §10) [2026-11-12: corrected
+missing `eeprom/` path prefix — the bare filename does not resolve from `research/`]:
 
 | Address | Refs | Region | Hypothesis | Test Priority | Risk |
 |---------|------|--------|-----------|---|---|
@@ -954,7 +916,7 @@ EEPROM MAP — ST M24C64 8KB (0x0000–0x1FFF)
 0x0A00–0x0AFF  BACKUP SECURITY & FEATURE FLAGS ★  [Mixed: 0x0A80 confirmed, others inferred]
   0x0A00       Structure base address             871 xrefs (not a flag) [I]
   0x0A40       Feature enable (?)                 28 refs [I]
-  0x0A80       Backup SBI (ADB bypass)            0xFF=bypass, 0x00=locked [C]
+  0x0A81       Backup SBI data byte (ADB bypass)  0xFF=bypass, 0x00=locked [C] (0x0A80 is this byte's marker, not the data byte — corrected 2026-11-12 per §0.3)
   0x0AC0       Feature flag (?)                   14 refs [I]
   0x0B00       Feature structure base             311 xrefs (not a flag) [I]
   0x0B40       Debug Mode                         0x01=enabled [C]

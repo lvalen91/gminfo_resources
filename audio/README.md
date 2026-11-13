@@ -149,6 +149,16 @@ Voice:
 | Voice Assistant | GAIN_TRANSIENT_MAY_DUCK | Ducks media |
 | Phone Call | GAIN_TRANSIENT | Ducks/pauses media |
 
+> **Y181B measured, 2026-11-12 (gm_ccpa; `main` log):** a third-party CarPlay app on this radio requested
+> media focus as `GAIN` / `USAGE_MEDIA` and voice focus as `GAIN_TRANSIENT` / `USAGE_VOICE_COMMUNICATION`
+> (both `REQUEST_GRANTED` by `CarAudioFocus`), and captured the mic as `VOICE_COMMUNICATION` 16 kHz mono.
+> The "Voice" block above lists `USAGE_ASSISTANT`. [2026-11-12 correction: this is not a mismatch. Recount of
+> `requestAudioFocus` from uid 1010123 in the merged `main` log gives 10 calls: 7 `USAGE_ASSISTANT/CONTENT_TYPE_SPEECH`
+> (`VoiceRouter`, the Siri path; first 06:30:16), 2 `USAGE_VOICE_COMMUNICATION/CONTENT_TYPE_SPEECH` (18:13:19 and
+> 06:14:51) and 1 `USAGE_MEDIA` (06:14:44). The Siri sink is `AudioTrack(usage=16 = ASSISTANT)`, AAC-ELD 16 kHz mono
+> (06:30:16); the call sink uses usage 2 (VOICE_COMMUNICATION). So both usages occur and `USAGE_ASSISTANT` for Siri is
+> largely right.] Details in [carplay_audio_pipeline.md](carplay_audio_pipeline.md).
+
 ### Below-HAL Audio Architecture
 
 Audio from the 8 CarAudioService output buses (plus the Harman-HAL-internal routing nodes) passes through several layers below the Android HAL barrier:

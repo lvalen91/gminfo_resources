@@ -211,6 +211,40 @@ mempalace cross-references:
 
 ---
 
+## 2026-11-12 live Y181B boot-log check (Info 3.7 / Silverado, build `W231E-Y181.3.2-SIHM22B-499.3`)
+
+Source: gmlogger `main` log rotation set (2026-11-11 18:11 to 2026-11-12 13:10, the later boots of the 30 recorded 2026-11-10..12), pulled from the bench radio. All
+lines below were read from that log; nothing here is a packet capture or a cluster-pixel observation.
+
+- **Cluster nav service wiring is confirmed on every boot:** `CAR.CLUSTER: initClusterNavigationService`
+  and `bindInstrumentClusterRendererService, component: com.gm.vmsplugin/.VMSClusterService` (12 occurrences, one per
+  boot whose early-boot lines were retained in `main`), with `onServiceConnected ... VMSClusterService` seen in the boots that
+  got far enough. This supports the "`com.gm.vmsplugin/.VMSClusterService` is the nav path" reconciliation
+  note below.
+- **AAOS ClusterHal declares no nav support:** `ClusterHalService: takeProperties: coreSupported=false,
+  navigationStateSupported=false` (12 occurrences, same boots), matching the `mIsCoreSupported:false` figure quoted below.
+  Navigation to the cluster therefore does not go through the standard AAOS ClusterHal navigation-state
+  property on this build; it goes through the GM VMSPlugin path described here.
+- **Media metadata does reach the cluster presenter for a 3P CarPlay app:** `AudioClusterPresentationService`
+  lists two media sources, `GM CCPA` (class `zeno.gmccpa.av.CarPlayMediaBrowserService`, 51-52 lines) and
+  stock `Apple CarPlay` (class `com.gm.server.carplay.service.internals.CarPlayMediaService`, 52 lines), and
+  logs `onMyMediaResponse : title - ..., package name - android.car.usb.handler, pageTitle - GM CCPA`.
+  (gm_ccpa's service is hosted in the `android.car.usb.handler` process.) Track titles are in that log and
+  are intentionally not reproduced.
+- **Route-guidance state (and, per the 2026-11-12 correction below, maneuver data) reaches gm_ccpa, not (visibly) the cluster:** the app's voice router logs
+  `route: routeGuidanceState=3 (was 0)` and `route: ended (routeGuidanceState=0 and turns=0)`, i.e. the
+  iPhone's route-guidance state (the log says `routeGuidanceState`; the transport being iAP2 is not stated) is seen by the app and used for NAV audio handling (`NAV focus none
+  (stock)`). [2026-11-12 correction: the app also receives maneuver data, not only state. Its NETPROBE lines read
+  `route_guidance: comp=42 state=NoRouteSet(0) maneuvers=18 current=13` and `route_guidance: maneuver burst count=19
+  idx=0..18`; 17 of 20 `route_guidance:` lines carry maneuvers (merged `main` log).] No `maneuver`/`NavigationState`
+  line from gm_ccpa to VMSPlugin appears in the log, so whether
+  gm_ccpa feeds the cluster glyph path is **not established** by this evidence; absence in an
+  INFO/DEBUG log is not proof. Only `OnStar.OnStarTurnByTurn*` (OnStar's own TBT service, onboard + offboard
+  navigation available = true) and `MapsNavigationStateSupp: Unable to connect to Awareness API` (Google
+  Maps) appear as nav producers in this log set.
+- gm_ccpa is a CarPlay-only reference app (no Android Auto path); the "Android Auto" wording in this
+  document's source tables is about the platform, not about this app.
+
 ## Overview
 
 This document describes how navigation turn-by-turn data flows from projection sources (CarPlay, Android Auto) and built-in navigation (Google Maps) to the vehicle instrument cluster display. The cluster shows basic directions including turn arrows, street names, and distance to the next turn.
@@ -233,7 +267,7 @@ This document describes how navigation turn-by-turn data flows from projection s
 
 ### Why Not Alternate Video?
 
-1. **Cluster is a Separate ECU** - Connected via CAN bus (~500kbps), insufficient for video
+1. **Cluster is a Separate ECU** - Connected via CAN bus (~500kbps), insufficient for video *[2026-11-12 qualification: the CAN ~500 kbps link description is the older static-analysis assumption. The 2026-06-21 live confirmation in the addendum near the top of this file (and `platform/fsa_protocol.md`) describes the cluster/renderer link on Info 3.7 as FSA (NFSA/FSA) over the Automotive Ethernet backbone (RemoteModuleHMI, serviceId 1007); the bandwidth reasoning here is not established.]*
 2. **Local Rendering** - ClusterService.apk contains pre-rendered PNG icon assets
 3. **Protocol Evidence** - libNmeIAP.so implements RGD (text), not video streaming
 
@@ -251,7 +285,7 @@ Structured Data (NOT video frames):
 
 ### How the Cluster Renders
 
-ClusterService.apk renders navigation using **local PNG assets**:
+ClusterService.apk renders navigation using **local PNG assets**: *[2026-11-12 qualification: superseded by the firmware-verified addendum near the top of this file: on Silverado the cluster renders the app-provided bitmap (URI resolved by a parallel channel, mechanism unverified), while the enum-driven local-glyph rendering is the CT5/VCU (AAOS 14) behaviour.]*
 
 ```
 /assets/Extended/C1/
@@ -588,7 +622,7 @@ iPhone App → iAP2 RGD Message → libNmeIAP.so
 ```
 
 **Why RGD Instead of Alternate Video:**
-1. Lower bandwidth - CAN bus to cluster ECU is ~500kbps
+1. Lower bandwidth - CAN bus to cluster ECU is ~500kbps *[2026-11-12 qualification: the CAN ~500 kbps link description is the older static-analysis assumption. The 2026-06-21 live confirmation in the addendum near the top of this file (and `platform/fsa_protocol.md`) describes the cluster/renderer link on Info 3.7 as FSA (NFSA/FSA) over the Automotive Ethernet backbone (RemoteModuleHMI, serviceId 1007); the bandwidth reasoning here is not established.]*
 2. Local rendering - Consistent look with vehicle cluster design
 3. Reliability - Text survives connection hiccups better than video
 4. Battery - Less processing on iPhone
@@ -723,9 +757,9 @@ The navigation-to-cluster pipeline in GM AAOS follows this chain:
 1. **Source Layer:** CarPlay (iAP2 RGD), Android Auto (NavigationStateProto), or Google Maps
 2. **Navigation Service:** `com.gm.server.NavigationService` receives navigation metadata
 3. **TBT Manager:** `OnStarTurnByTurnManager` processes maneuvers
-4. **Cluster Service:** `clusterService` renders using local PNG assets
+4. **Cluster Service:** `clusterService` renders using local PNG assets *[2026-11-12 qualification: superseded by the firmware-verified addendum near the top of this file: on Silverado the cluster renders the app-provided bitmap (URI resolved by a parallel channel, mechanism unverified), while the enum-driven local-glyph rendering is the CT5/VCU (AAOS 14) behaviour.]*
 5. **HAL Layer:** `vehiclepanel` (vendor.gm.panel@1.0) bridges to hardware
-6. **Physical Layer:** CAN bus or internal bus to instrument cluster ECU
+6. **Physical Layer:** CAN bus or internal bus to instrument cluster ECU *[2026-11-12 qualification: the CAN ~500 kbps link description is the older static-analysis assumption. The 2026-06-21 live confirmation in the addendum near the top of this file (and `platform/fsa_protocol.md`) describes the cluster/renderer link on Info 3.7 as FSA (NFSA/FSA) over the Automotive Ethernet backbone (RemoteModuleHMI, serviceId 1007); the bandwidth reasoning here is not established.]*
 
 ### Important Distinction
 
@@ -738,7 +772,7 @@ The navigation-to-cluster pipeline in GM AAOS follows this chain:
 | Road names as strings | CarPlay Alternate Video Stream |
 | Lane guidance array | Real-time rendered graphics |
 
-This architecture ensures consistent cluster appearance regardless of navigation source and works within the CAN bus bandwidth limitations (~500kbps) between the infotainment SoC and the cluster ECU.
+This architecture ensures consistent cluster appearance regardless of navigation source and works within the CAN bus bandwidth limitations (~500kbps) between the infotainment SoC and the cluster ECU. *[2026-11-12 qualification: the CAN ~500 kbps link description is the older static-analysis assumption. The 2026-06-21 live confirmation in the addendum near the top of this file (and `platform/fsa_protocol.md`) describes the cluster/renderer link on Info 3.7 as FSA (NFSA/FSA) over the Automotive Ethernet backbone (RemoteModuleHMI, serviceId 1007); the bandwidth reasoning here is not established.]*
 
 ---
 
@@ -1014,7 +1048,7 @@ Instrument Cluster ECU
 
 2. **For Main Screen:** Video streaming (H.264 via AirPlay/AAP) is only for the main infotainment display, not the cluster
 
-3. **Maneuver Icons:** The cluster will render its own icons from ClusterService.apk assets based on the maneuver type enum received - custom icons cannot be displayed
+3. **Maneuver Icons:** The cluster will render its own icons from ClusterService.apk assets based on the maneuver type enum received - custom icons cannot be displayed *[2026-11-12 qualification: superseded by the firmware-verified addendum near the top of this file: on Silverado the cluster renders the app-provided bitmap (URI resolved by a parallel channel, mechanism unverified), while the enum-driven local-glyph rendering is the CT5/VCU (AAOS 14) behaviour.]*
 
 4. **Text Limits:** Road names and descriptions have maximum length limits defined by RGD metadata constants
 
@@ -1028,7 +1062,7 @@ Instrument Cluster ECU
 
 4. **Handle Separate Sessions:** Implement `onCreateSession(SessionInfo)` to handle cluster display separately
 
-5. **Limited Control:** Cannot display custom icons or arbitrary graphics on cluster - only standard template elements
+5. **Limited Control:** Cannot display custom icons or arbitrary graphics on cluster - only standard template elements *[2026-11-12 qualification: superseded by the firmware-verified addendum near the top of this file: on Silverado the cluster renders the app-provided bitmap (URI resolved by a parallel channel, mechanism unverified), while the enum-driven local-glyph rendering is the CT5/VCU (AAOS 14) behaviour.]*
 
 ---
 

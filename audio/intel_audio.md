@@ -17,7 +17,7 @@ GM AAOS uses a **mixed proprietary audio stack** combining:
 
 Unlike Intel Media SDK (video), Intel's audio frameworks have **limited public documentation**.
 
-**Third-Party Access:** NO - Intel IAS SmartX is below the HAL barrier and not accessible to third-party apps. Apps must use standard Android AudioTrack/AudioRecord APIs. See [../third_party_access.md](../third_party_access.md) for details.
+**Third-Party Access:** NO - Intel IAS SmartX is below the HAL barrier and not accessible to third-party apps. Apps must use standard Android AudioTrack/AudioRecord APIs. See [../analysis/third_party_access.md](../analysis/third_party_access.md) for details.
 
 ---
 
@@ -230,6 +230,9 @@ snd-soc-sst_bxt_tdf8532.ko
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+> **2026-11-12 scope note:** the "CarPlay (CINEMO/NME)" box in the diagram above is the stock GM CarPlay path only. gm_ccpa instead behaves like the
+> "Android Apps (AudioTrack)" box: app-side `c2.android.aac.decoder` -> `AudioTrack` -> AudioFlinger (measured, `main` log 2026-11-12).
 
 ---
 
@@ -556,6 +559,11 @@ iPhone → AirPlay → libNmeCarPlay.so → libNmeAudioAAC.so
     → AudioFlinger → Intel HAL → IAS SmartX → PulseAudio
     → AVB → TDF8532 → Amplifier → Speakers
 ```
+
+> **2026-11-12 scope note:** the CarPlay path above (AirPlay -> `libNmeCarPlay.so` -> `libNmeAudioAAC.so`) is the **stock GM CarPlay (Cinemo/NME)**
+> path, from static analysis. gm_ccpa (`zeno.gmccpa`, uid 1010123, the CarPlay app on the Y181B bench radio) does not use it: it decodes AAC app-side
+> with `c2.android.aac.decoder` and plays through `AudioTrack` -> AudioFlinger -> the same Intel HAL chain below (measured in `main`; see
+> `carplay_audio_pipeline.md`).
 
 Microphone path:
 ```

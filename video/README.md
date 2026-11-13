@@ -53,7 +53,7 @@
 
 ### CarPlay Video Pipeline (Native)
 
-**Key Discovery:** GM Native CarPlay uses the **Cinemo NME software H.264 decoder**, not Intel hardware:
+**Key Discovery (stock GM CarPlay only; scoped 2026-11-12):** GM Native CarPlay uses the **Cinemo NME software H.264 decoder**, not Intel hardware:
 
 ```
 Framework: CINEMO (Harman/Samsung NME)
@@ -63,7 +63,7 @@ Library: libNmeCarPlay.so (1.0 MB)
 Transport: USB NCM + IPv6 (carplay.sh)
 ```
 
-See [carplay_video_pipeline.md](carplay_video_pipeline.md) for full analysis.
+See [carplay_video_pipeline.md](carplay_video_pipeline.md) for full analysis. The third-party app gm_ccpa on the same radio decodes HEVC 2400x960 with `OMX.Intel.hw_vd.h265` (retained `main` log, 2026-11-12), so "CarPlay = software decode" holds for the stock path only.
 
 ### Android Auto Video Pipeline
 
@@ -107,7 +107,7 @@ Color: NV12 (YUV420SemiPlanar)
 - No wide color gamut display
 - Single 60Hz display mode (no VRR)
 - Software decode at 1080p achieves only 11-32 fps
-- Native CarPlay uses software decoder (AirPlay timing requirements)
+- Stock native CarPlay uses the software decoder (the AirPlay-timing reason is an inference); a third-party app can use the HW decoder (HEVC observed)
 
 ### Recommendations
 1. Always use hardware codecs (`OMX.Intel.*`) for real-time playback

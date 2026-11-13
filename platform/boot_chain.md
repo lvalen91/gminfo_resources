@@ -81,7 +81,24 @@ GHS supports multiple boot modes selected via BCB (Boot Control Block) or extern
 | 4. ELK | GHS lifecycle recovery target | Fallback boot target for diagnostics/recovery |
 | 5. Diagnostic | Service tool | Factory/dealer diagnostic mode |
 
+**Recovery fastbootd is separate from ELK** (verified 2026-11-12): Y181B
+recovery recognizes `boot-fastboot`/`--fastboot`, sets `sys.usb.config=fastboot`,
+and enters a persistent wait. This establishes a protocol mode, not a developer
+build or root shell. [Code and init rules](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#231-recovery-fastbootd-path-verified-2026-11-12).
+
+
 ---
+
+**Execution boundary (2026-11-12):** VMM maps both `boot-recovery` and
+`boot-see-dealer` into the Linux/Android guest recovery flag. Ordinary recovery,
+dealer UI and recovery-fastbootd therefore must not be classified as three
+bare-metal environments. ELK's reciprocal lifecycle/OTA IPC and HECI request
+are now traced, as is lifecycle's ACPI driver binding: its callback disables
+interrupts, flushes caches, synchronizes four CPUs, writes the power-control
+port and halts. This is a platform power-state transition, not just a guest
+selection. ME/CSE acceptance, the next boot and GHS residency during actual
+ELK execution remain unproven.
+[Instruction-level evidence and limits](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#233-recovery-execution-boundary-and-mode-selection-verified-2026-11-12).
 
 ## Boot Timing
 
@@ -150,6 +167,21 @@ AVB (Android Verified Boot) is performed by GHS `VMM1_InitialTask`, NOT by Andro
 > RSA-2048 signing key, the AVB0/vbmeta parse, the CRC32 slot metadata, and the GHS rollback
 > counter in `misc`. `verity.txt` captured only `green`/`1` and an empty `===VERITY` section — no
 > dm-verity status line — so runtime dm-verity state is NOT independently evidenced by this capture.
+
+> **[C] live-Y181B 2026-11-12 — same end-state on the current build (adb getprop, directly read).**
+> `W231E-Y181.3.2-SIHM22B-499.3`, Android 12/SDK 32, patch `2025-06-05`, `ro.bootloader=2344`,
+> `ro.boot.verifiedbootstate=green`, `ro.boot.vbmeta.device_state=locked`, `ro.boot.flash.locked=1`,
+> `ro.boot.slot_suffix=_a`, `ro.boot.product.hardware.sku=gv221`, `ro.boot.vbmeta.avb_version=1.1`,
+> `ro.boot.avb_version=1.2` (the "AVB 1.1" shorthand applies only to the vbmeta-side token), kernel
+> `4.19.305-240125T145315Z-gf1edde901aa7`. The kernel command lines retained in the boot logs and recovery
+> `last_kmsg*` also carry `ABL.secureboot=1` (386 hits -- [2026-11-12: count not reproduced; ~188 per archive, 376 if the duplicate export is double counted; the token still appears only in retained kernel-log cmdlines, live getprop is empty]), `androidboot.selinux=permissive`/`enforcing=0` (early tokens; the same cmdlines ALSO carry a later
+> `enforcing=1`/`androidboot.selinux=enforcing` pair -- corrected 2026-11-12; runtime is Enforcing, "later pair wins" is inferred; see
+> [`security.md`](security.md)), `androidboot.trustyimpl=-ghs`, `androidboot.force_normal_boot=1`, `androidboot.bootreason=cold|reboot`;
+> `getprop ro.boot.ABL.secureboot` is empty at runtime, so that flag is cmdline-only.
+> **Slot history:** the recovery kernel logs retained on the radio (31 boots, `last_kmsg`..`.30`) read
+> oldest->newest A x2, B x5, A x7, B x5, A x12 -- the radio did alternate slots (two B episodes in the window;
+> the 2026-09-28 recovery install flipped active slot 1 -> 0), currently on A with `slot_switched=N`.
+> Active slot per the update-engine logs (2026-11-12; `rg -n 'Loaded metadata from source slot' ~/Desktop/gminfo37_update_cache_FORENSIC_LLM.txt`, forensic ref 'Active slot per engine log'): A (from 02-03) -> B 02-10 10:45:17 -> A 04-30 20:46:48 -> B 08-25 07:09:17 -> A 09-28 17:33:45 -> still A at 11-12 13:10; four changes, matching the four USB installs. (Superseded 2026-11-12: the earlier 'cannot be derived from these exports' wording was wrong; the retained recovery kernel logs alone still cover only 31 boots.)
 
 ### A/B Metadata Structure
 
@@ -304,6 +336,14 @@ flags). Net effect on this hardware: **static A/B, no `super`, no dm-linear** �
 static-A/B note already carried in [`emulator.md`](emulator.md#method-hybrid) (`mkdisk.py` comment: "Y181
 is static A/B, no super").
 
+> **Qualified 2026-11-12 (live Y181.3.2 radio, `/cache` update-engine logs, read):** the on-radio `gm_update_engine` logs
+> `DynamicPartitionControlAndroid.cpp:223 ... Loaded metadata from source slot A|B in /dev/block/by-name/super` on every
+> slot-history step (02-03 ... 09-28), the package install script calls `update_dynamic_partition_config()` +
+> `extract_logical_partition` for system(22)/vendor(26)/product(57), and `ro.boot.dynamic_partitions=true`. On the real
+> radio a `super` partition with logical system/vendor/product is therefore in active use; "static A/B, no `super`, no
+> dm-linear" above holds at most for the emulator/reference-image path (it was inferred from the ACPI SSDT, which the
+> 2026-09-27 note below already says is unconfirmed as the real mechanism). The partition map's `super` row stands.
+
 **[C] Corrected (2026-09-27) — the SSDT is NOT the fstab mechanism actually consumed at boot, and does NOT
 transfer to QEMU.** An earlier version of this note asserted the SSDT was "the AUTHORITATIVE first-stage
 fstab actually consumed at boot" and that a QEMU port would just need an equivalent `-acpitable` injection —
@@ -332,6 +372,12 @@ GHS `Lifecycle_InitialTask` manages Android guest health and coordinates shutdow
 | Boot failure tracking | `"Android failed to boot (count=%lu)"` |
 | Panic recovery failure | `"Guest failed to reboot after panic"` |
 | Slot mismatch | `"Android and INTEGRITY slot mismatch. INTEGRITY: %s Android: %s"` |
+
+**Y181B threshold, verified 2026-11-12:** the failed-Android-boot handler
+increments its count and compares it with **3** at task address `0x200E2D`
+(`.lifecycle.text+0xE2D`); >=3 takes the see-dealer branch. This is separate
+from VIP's three-failure timer suppression and recovery's boot-cycle file.
+[Code and SPS provenance](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12).
 
 ### Shutdown Sequence
 
@@ -372,13 +418,39 @@ Critical service failures that trigger automatic reboot:
 
 ### USB Trigger Files
 
-Placing specific files on a FAT32 USB drive root triggers special boot behavior:
+**Corrected 2026-11-12:** [GM PIT6209](https://static.nhtsa.gov/odi/tsbs/2024/MC-11007670-0001.pdf)
+prescribes the encoded reboot filename below, without `.txt`. Y181B recovery
+Base64-encodes the source label before matching; plain-name equivalence is not
+established. Other listed update controls are not additional bulletin-backed
+Base64 procedures. [Handler and evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#45-known-usb-trigger-files).
+
+When recovery reaches its USB scanner, the encoded markers below select
+recovery actions. They do not independently enter recovery. The normal-AAOS
+flags have separate consumers; their full effects were not reverified here.
 
 | Filename | Action |
 |----------|--------|
-| `gm_reboot_normal` | Force normal reboot |
-| `gm_usb_ignore_battery` | Ignore battery state during update |
-| `gm_usb_auto_install` | Auto-install update from USB |
+| `Z21fcmVib290X25vcm1hbA==` | Dealer recovery normal reboot; label `gm_reboot_normal` |
+| `Z21fY2FwdHVyZV9sb2c=` | Recovery log capture under USB-root `update_cache/`; existing output files may be cleared |
+| `gm_usb_ignore_battery` | Normal-AAOS updater flag; discovery/copy confirmed, full battery-bypass path not traced |
+| `gm_usb_auto_install` | Normal-AAOS updater flag; discovery/copy confirmed, full automatic-install path not traced |
+
+**Interpretation of `--show_return_to_dealer` (2026-11-12; read vs inferred):** *Read:* in the retained
+recovery logs (counters 54/55) recovery logs `Not get boot-see-dealer mode, start normal update process.`
+and then `Dump log to USB` / `Saving log completed.`; normal Android was up afterwards
+(live `sys.boot_completed=1`, uptime 11 min at 13:59 AKST; `moduleinfo` timestamp 13:10:49 AKST).
+*Inferred:* these recovery entries are the dealer-screen / USB log-export path, not a bricked or unflashable
+state. The earlier wipe-reason boots (47-50: `bcm_replacement`, delayed GM server wipe 2026-11-07,
+MasterClear 2026-11-10) are separate data-wipe recoveries.
+
+**Bench verified 2026-11-12:** deliberately removing `com.gm.homescreen`
+for users 0 and 10 produced incomplete startup; the operator observed automatic
+dealer/recovery entry after three failed attempts. The encoded capture marker
+then produced the retained USB export. Its final recovery records show
+`boot-recovery` plus `--show_return_to_dealer`, not literal BCB
+`boot-see-dealer`. A later export repeats capture with recovery counter 55
+versus 54. Rotated logs include multiple saves from one recovery run; do not
+count rotations as boots. [Provenance and startup limits](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12).
 
 ---
 
@@ -445,8 +517,8 @@ that `dontaudit gm_update_engine gsi_metadata_file` blocks GSI installs — see 
 `gsid`/`gsi_tool` daemon and keep the `com.android.dynsystem` entry in
 `privapp-permissions-platform.xml`, but none of the three include the `com.android.dynsystem`
 APK in any app dir. The removal predates the oldest build in the sample (Y175) — it is a
-standing GM build policy, not a lockdown added in a later release. Note Y177 (the
-permissive-SELinux build) also lacks the app, so a Y177 downgrade does not restore DSU.
+standing GM build policy, not a lockdown added in a later release. Note Y177 (earlier
+mislabeled "the permissive-SELinux build" — retracted 2026-08-26, it runs enforcing like the others) also lacks the app, so a Y177 downgrade does not restore DSU.
 
 What is actually present vs. removed:
 
@@ -480,37 +552,11 @@ What is actually present vs. removed:
 - **(2026-09-10, assessment — OPEN) CSM-ownership / AOSP-replacement chain.** The device is
   locked (`ro.boot.verifiedbootstate=green`, `ro.boot.flash.locked=1`,
   `sys.oem_unlock_allowed=0`, dm-verity RO), so this is a gate description, not a solved path.
-  The only realistic route to a custom OS is: reach ELK (Intel Kernelflinger fastboot, see
-  `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3) → set `oem_unlock_allowed` → `fastboot
-  flashing unlock` → flash unsigned images. **Both gates are currently OPEN:** (1) no confirmed
-  path to reach ELK from a locked, running unit is documented; (2) no confirmed method to flip
-  `oem_unlock_allowed` off-Android (normally an Android Settings toggle, unavailable here) has
-  been demonstrated. Do not read this as a working unlock procedure.
-
-> **[C] 2026-10-08 (avbtool/binary, SOC_ABL 85738845 / SOC_VBMETA 86331644):**
-> - **F1 — the `device_state=locked` gate, decoded (CONFIRMED-FROM-BINARY).** SOC_ABL is
->   kernelflinger ("ELK"); lock state is read from the UEFI NV variable `OEMLock` (GUID
->   `1ac80a82-4f0c-456b-9a99-debeb431fcc1`) via `read_device_state_efi()`.
->   `device_is_unlocked()` is INTACT/unpatched, true iff `OEMLock` exists, is readable,
->   and has bit 0 (`0x01`) set. `USE_TPM` was NOT compiled (zero TPM2 NV-index
->   constants/calls in the module) — the lock is **NOT fTPM/TPM2-backed and NOT RPMB**
->   (`ABL.rpmb=` is only an androidboot cmdline token). UNKNOWN-FROM-FILES: whether the
->   varstore holding `OEMLock` is SPI-NOR- or RPMB-backed.
-> - **F2 — Boot Guard nuance (UNKNOWN-FROM-FILES for enforcement).** The IPK is a full
->   Apollo Lake IFWI with a production-signed OEM Key Manifest, IBB manifest, and a Boot
->   Policy whose SHA-256 digests match the real IBBL/IBB/OBB bytes exactly — verified-boot
->   **capable**. Whether a mismatch is rejected vs only measured depends on the Intel TXE
->   FPF/OTP fuse state (outside this package); settle via MSR `0x13A` or an ISSI FPF dump.
->   Boot Guard digests cover IBBL/IBB/OBB code only, not the `OEMLock` NVRAM varstore.
-> - **F3 — vbmeta signing, no second key (CONFIRMED).** `SOC_VBMETA` (86331644) is
->   GM-signed, `SHA256_RSA2048`, pubkey sha1 `ccf9677f9683d9fec7dc372a9bc592a11d8e4000`
->   (same AVB key as the CT5/burmese build), with ONLY hash/hashtree descriptors
->   (acpio/boot/product/system/vendor) — **no chain-partition descriptors**, so no
->   partition is delegated to a second key. The Google-GSI trust noted above
->   (`q/r/s-gsi.avbpubkey`) comes only from the Android fstab/DSU (`gsid`) path, an
->   Android-system-layer mechanism (loader `com.android.dynsystem` removed/gated) that
->   cannot replace GHS or ABL — it does not generalize to ABL, which has a single
->   fuse-anchored OEM key.
+  Compiled ELK eligibility/provisioning checks and transition limits are maintained in
+  [the consolidated source §2.3.2–§2.3.3](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#232-elk-unlock-eligibility-is-a-separate-gate-verified-2026-11-12).
+  There is no demonstrated unlock procedure. Boot Guard, signature trust and
+  varstore-backing questions remain owned by
+  [the security architecture](security.md).
 
 **Confirmed at firmware-image level (Sep 2026), not just runtime.** Unpacked the Y181
 USB full package (SOC_SYSTEM 86331654, SOC_VENDOR 86331650, SOC_PRODUCT 86331636):

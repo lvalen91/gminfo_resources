@@ -26,6 +26,13 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
 - `[C]` **`br0` is DOWN with no IP** in the captured dumps (`raw/ip_addr.txt`,
   `raw/network_interfaces.txt`); its bring-up services (`brctl_add`, `setip`) are stopped. The old
   "br0: 192.168.5.1/24" seed is stale — br0 is the Android Wi-Fi-hotspot bridge, inactive at capture.
+  **[Corrected 2026-11-11 per Y175_2026-11-02 external Bus 2 tap bench finding and
+  `VERIFICATION.md:229-233`: this is a point-in-time capture artifact, not a standing property of the
+  interface.** `VERIFICATION.md` already refuted this in full on a live check of the same claim
+  ("br0 is genuinely UP, not just IP-assigned... `inet 192.168.5.1/24`"), and the independent Y175
+  bench tap (2026-11-02) confirms `br0 = 192.168.5.1/24`, a real WiFi-AP bridge, genuinely UP. Do not
+  cite this line as evidence br0 is down — it was down only at this particular Aug-2026 capture (build
+  `W231E-Y181.3.2`), not generally.
 - `[C]` The real IVI stack is **`eth0` (driver `igb_avb`, MAC `02:04:00:00:01:00`)** — the physical
   100BASE-T1 uplink — carrying two 802.1Q VLANs:
   | Iface | Subnet | Role |
@@ -33,7 +40,7 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
   | `eth0` | 192.168.1.100/24 (untagged) | physical T1 MAC; also L2 gPTP/AVB |
   | `vlan5@eth0` | 192.168.1.100/24 | GM "service network" (inter-ECU, SOME/IP, diag peers) |
   | `vlan4@eth0` | 172.16.4.100/24 | internal vehicle/telematics/AVB network |
-- `[C]` The on-board automotive-Ethernet switch is a **Broadcom BCM89551** (hardware authority:
+- `[C]` The on-board automotive-Ethernet switch is a **Broadcom BCM89551** (2026-11-12 label: on the MY22/DV teardown unit; the live Y181 radio has the Marvell 88Q5050 variant; hardware authority:
   `hardware/connectors.md`, `MASTER_REFERENCE.md §1.3`; the 2MB IS25LP016D SPI flash holds its
   dump-confirmed firmware). The guest ships a **Marvell `ethmvlctrl` VLAN-control stack**
   (`vendor/etc/ethmvlctrl_globalB.cfg`, driven by `ethmvlctrlmgr`; a `88Q5050` config string appears in
@@ -57,12 +64,32 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
 | TCP 6363 | `0.0.0.0` | NFD (Named-Data-Networking fwd), Android guest | **Yes** | none observed |
 | UDP 5353 | multicast | `mdnsd` | on-link only | none |
 | TCP 9002/9005/9010/9012/9016/9018 | `::ffff:192.168.1.1` | GHS↔Android paravirtual IPC (all six present) | **No** from the external T1 wire (paravirtual VM↔host IPC, not exposed off-box). NB: it is **reachable by the guest as a client** — the guest holds ESTABLISHED sessions to `.1:9005/9010/9012/9018` (see §6; earlier "No route to host even locally" was an overstatement) | internal transport |
+
+> **[Corrected 2026-11-11 per Y175_2026-11-02 external Bus 2 tap bench finding.]** On the Y175 bench
+> (build `W213E-Y175.5.2-SIHM22B-383.1`, 2026-11-02), there is no `.1` address at all: the radio's real
+> vlan5 address is `192.168.1.100` (not `.1`), and a full 1–65535 external-wire scan found **9016**
+> (NetworkAccessManager) and **9002** (RemoteModuleHMI) bound directly to `192.168.1.100` and
+> **reachable from the external T1 wire**, gated by a source-IP allowlist (`{.102,.112}` and
+> `{.106,.109,.112}` respectively) rather than closed off-box. `9005/9010/9011/9012/9018` were **not**
+> found open anywhere in that same exhaustive scan — consistent with this row's "internal/not
+> externally bound" characterization for those five, but not for 9002/9016. This row's `::ffff:192.168.1.1`
+> paravirtual-IPC addressing model is **not corroborated** by the Y175 bench's `ss -tln` output, which
+> shows 9016/9002 bound to the vlan5 address itself, not to a separate `.1` host-IPC alias. This doc is
+> a different build (Y181 `W231E-Y181.3.2`, Aug-2026 capture) than the Y175 bench, so the discrepancy
+> may be build-specific rather than a direct contradiction — treat the `.1`/paravirtual-IPC framing for
+> 9002/9016 as **superseded and unconfirmed** pending a same-build re-check, and rely on the Y175 bench
+> table (`T1_RADIO_NETWORK_STRUCTURE.txt`) for current externally-reachable-port facts.
 | UDP 30490 (SOME/IP-SD) | — | on gateway **.102**, not IVI | IVI is a client | out of scope |
 | TCP 13400 (standard DoIP) | — | **not present on IVI** | — | — |
 
 - `[C]` **No perimeter firewall** in vendor init (`init.full_gminfo37_gb.rc`, `init.bxtp_gm.rc` have no
   INPUT/DROP; `netd` runs stock bandwidth chains only) — so the two `0.0.0.0` listeners are genuinely
-  wire-reachable from an on-VLAN tap.
+  wire-reachable from an on-VLAN tap. **[Note 2026-11-11: the Y175 bench (different build, 2026-11-02)
+  found an iptables INPUT=DROP source-IP allowlist exhaustively verified in front of 9002/9016/49156 —
+  see the correction above and `platform/fsa_protocol.md`'s Security Notes. Whether that is a build
+  difference (Y181 `W231E-Y181.3.2` here vs Y175 `W213E-Y175.5.2` there) or this doc's rc-file-only
+  check missed a runtime-applied ruleset is unresolved; do not treat "no perimeter firewall" as current
+  without re-checking on this build.]**
 - `[C]` It is **GM-custom UDS-over-TCP on 49156**, *not* standard DoIP — no `13400`, no
   vehicle-announcement / routing-activation. Framing: `[SRC:2 BE][TGT:2 BE][LEN:4 BE][UDS payload]`,
   target address unvalidated, app-layer source-address trust tiers (`0x00FA` factory tester, `0x00F1`,

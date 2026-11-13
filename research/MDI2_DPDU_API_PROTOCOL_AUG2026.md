@@ -163,11 +163,17 @@ indication for anything long, e.g. the ~230-byte `F182` software-inventory recor
 
 **`PDUStartComPrimitive` payload layout** (resource 0x2A, the actual send):
 ```
-u32 CLLhandle | u16 copId | u16 0x2510 | u16 copType | u16 0x0000 | u32 dataLen
+u32 CLLhandle | u16 copId | u16 (channel<<8)|0x10 | u16 copType | u16 0x0000 | u32 dataLen
 | dataLen bytes: [u32 CANid_BE][UDS payload]
 | u8 0x01 | u32 Time_ms | u32 NumSendCycles | u32 NumReceiveCycles
 | u32 0 | u32 0x00000004 | u32 flags | u32 0
 ```
+> **[Updated 2026-11-08:** the u16 after `copId` is **`(channel << 8) | 0x10`**, not a fixed
+> `0x2510`. `channel` is the D-PDU channel = the CLL handle's high byte (`handle >> 24`). The
+> captured `0x2510` is only the vehicle-tested channel-0x25 case; the `mdi2_direct_client_WIP`
+> capture on channel 0x1E shows `0x1E10`, and channel 0x2C would be `0x2C10`. Code derives this
+> via `_cop_marker(handle)` in `live_programming_transport.py` /
+> `programming_transport.build_one_shot`.**]**
 `Time_ms`/`NumSendCycles`=-1 on a *separate* CLL is how DPS offloads **cyclic TesterPresent**
 to the MDI hardware: `3E 80` on functional id `0x10DBFEF1`, Time=1000ms, NumSendCycles=-1 —
 confirmed by `0x863` TX-confirm events landing at exactly 1.000s spacing for the life of the
@@ -508,6 +514,56 @@ are Winsock-free. This has **no** relation to the TCP/10123 D-PDU port or 13400/
 
 ## 11. Port 10123 pre-activation sequence (live hardware + capture reconstruction, 2026-08-25)
 
+**2026-11-07 correction — decoded application-start request:** Decrypting the original capture's
+port-9050 traffic using the documented per-device Blowfish key reveals that the three preceding
+queries return a `PDU` application entry and frame 7762 requests `APP_NAME=PDU` and
+`COMMAND=START`. The request ends in the current management session ID as a little-endian u32;
+it matches the session ID in the preceding successful `session_open` response. The response echoes
+the command, and the diagnostic port accepted connections immediately afterward. This identifies
+a strong startup candidate, but does not prove that this command alone starts the service. Replaying
+the old ciphertext also reuses the old session ID, so identical replies do not establish that the
+request was authorized or took effect. A new request must use the current session ID and key.
+
+Live follow-up: after a complete MDI2 power cycle, the native Python client opened the 13 captured
+management channels, successfully opened a session (`master=false`), opened the 9011 channel,
+queried the PDU entry, and sent the captured `PDU START` request with the fresh session ID. The
+device replied and port 10123 opened; it remained open after the management session closed. The
+Python D-PDU client then opened its command and event sockets and obtained a channel ID.
+Subsequently, with the engine off and ignition on, a capture-derived resource-0x2A link was
+configured for radio ECU 0x80 (request `14DA80F1`, response `145AF180`). A single read-only
+`22 F1 A0` produced an MDI transmit confirmation and ECU response `62 F1 A0 F2`. The link was
+disconnected and destroyed. This validates native Python CAN transmit and receive for this read;
+it does not validate the ADB routine or identify its domain byte.
+In the same bench session, a user-requested radio hard reset (`11 01`) returned `7F 11 7F`
+in the initial session. Extended session `10 03` then returned `50 03 00 64 01 F4`, but a
+second `11 01` returned `7F 11 22` (conditions not correct). A subsequent extended-session soft
+reset `11 03` returned `7F 11 12` (subfunction not supported). No reset was confirmed; the unmet
+condition for hard reset is unknown. One earlier event socket closed during cleanup (`closed mid-frame`).
+Follow-up: native CAN `10 03` returned `50 03`, `27 01` returned a 31-byte all-FF seed, and
+`27 02` with a 12-byte zero key returned `67 02`. The subsequent `11 01` returned `51 01`:
+the radio accepted the hard reset after level-1 SecurityAccess; the radio was observed turning off
+immediately afterward. Reboot completion was not verified. The test did not include any
+calibration write or programming routine. This establishes the successful sequence on this
+unit in its observed state, not that SecurityAccess was the sole missing precondition on all units.
+The SPS calibration capture independently shows `11 01` followed by `51 01` (event frame 29532),
+after security access and programming operations; it is not a standalone-reset capture.
+Repeat after the ADB routine-domain tests: `10 03` returned `50 03`, level-1 SecurityAccess
+returned `67 02`, and `11 01` returned `7F 11 22` (conditions not correct). The radio did not
+confirm a reset on this attempt; the unmet condition and current power-mode state were not determined.
+After another rejected retry, a fresh management session issued `PDU START` again, then a new
+D-PDU CAN session repeated `10 03`, `27 01`/`27 02` (all-FF seed, 12-byte zero key), and `11 01`.
+The radio returned `50 03`, `67 02`, and `51 01` respectively. This confirms reset acceptance on
+that retry. Other state may also have changed, so it does not establish that repeating `PDU START`
+caused acceptance or that `PDU START` is necessary before each reset.
+Another fresh `PDU START` preceded a rejected reset (`7F 11 22`), and the next fresh `PDU START`
+preceded an accepted reset (`51 01`). Vehicle power mode was not independently measured for these
+attempts. The first successful reset followed a reported engine-off, accessory-on setup; the exact
+power mode at the instant of reset was not captured. These observations do not establish whether
+accessory-off is required. The separate SPS `Power Mode Control Off` Type 4 application establishes
+that such a workflow exists, not that SPS used it in the captured radio-reset sequence.
+Before the power cycle the 9052 handshake and `session_open` had timed out; their cause was not
+independently established.
+
 Real capture `DPS+SPS.pcapng` (frames 7447-7791) shows port **10123 refuses connections until a
 specific 7-step sequence completes on other ports first**. Reconstructed byte-for-byte from the
 capture and replayed against live MDI2 hardware (IP `192.168.171.2`, our host `.10`, real capture
@@ -579,6 +635,48 @@ response both times. This rules out "wrong nonce" as the reason 10123 stayed ref
 test, and strengthens the leading hypothesis in §11 that **live-device internal state was left
 desynced by this session's earlier partial/malformed manual attempts**, recoverable only by a
 power cycle (untested at time of writing — requires physical MDI2 USB replug).
+
+### 11.2 Native in-package live client — findings 2026-11-07 (`mdi2_client/mdi2/`)
+
+A native D-PDU writer was built and partially live-validated this session
+(`mdi2_client/mdi2/live_programming_transport.py`, `live_calibration.py`). Established on this
+bench's MDI2 (serial-derived Blowfish key, radio ECU 0x80, tester byte F1):
+
+- **`PDU START` re-arm works and is now reconstructed field-by-field.** Flow:
+  `session_open` on 9052 (`master=True`) returns `{"session": <id>, "port": 9011}`; then on **9050**
+  send three polls (`2e08000001000000`) and the START message
+  (`30080000…APP_NAME…PDU…COMMAND…START` + **session id as trailing LE u32**). This reopens TCP/10123
+  reliably (`live_calibration.rearm_dpdu_tunnel`). The §11-era "PDU START" is on **9050**, not 9011.
+- **The 10123 tunnel is non-idempotent and fragile — confirmed first-hand.** One malformed D-PDU
+  frame closed 10123; it did **not** self-rearm. Repeated connection attempts then **wedged the
+  device's session service** (9052/9050/9011/9009 stopped answering their control handshake),
+  which did not recover after 75 s idle and required a **USB power-cycle** (README's documented fix).
+  After the power-cycle + `rearm_dpdu_tunnel`, full function returned. Note: after a USB replug macOS
+  re-assigns `en17` a /32, so `sudo ifconfig en17 inet 192.168.171.30 netmask 255.255.255.0` is
+  required before the device is reachable.
+- **Resource-0x2A bring-up + a radio read round-trips live.** A full bring-up (CreateCLL 0x2A,
+  GetComParam×4, 174-byte SetUniqueRespIdTable for 0x80, SetComParam set, Connect, persistent-RX
+  StartComPrimitive, STARTCOMM, UPDATEPARAM) followed by `22 F190` returned the real VIN
+  (`62 F190` + 17 ASCII bytes) on the **persistent RX cop (cop 1), event type 1**, preceded by a
+  `mid 1505` length indication — validating the correlation design against hardware. TX confirms are
+  **event type 2**; the strict `parse_radio_rx` allow-filter + skip-None discipline classifies them
+  correctly.
+- **Correction 2026-11-07 — malformed one-shot framing, not a proven power-mode gate.**
+  `build_one_shot()` already returns the complete D-PDU frame, but the live sender wrapped it
+  in another length/message header. That is now corrected, with a regression against the
+  captured stream-317 seed request. ComParam `0x19` and UPDATEPARAM trailers also now match
+  the capture (`0x22` and a 25-byte trailer, respectively). Previous `0x2830` adapter rejections
+  do not establish ECU power mode or resource-lock state; no ECU response was obtained from
+  those malformed sends. The calibration workflow checks BCM F085 directly for the observed
+  OFF value `00`. The data-wipe Service Mode prerequisite must not be generalized to calibration.
+- **CLL resource hygiene.** `LiveDpduSession.close` destroys its CLLs; partial link construction
+  now closes the session too. Cleanup remains necessary, but the malformed-send rejection
+  does not independently demonstrate a leaked CLL or identify a resource-lock status.
+- **Not yet done:** the single live LTZ **write**. The corrected transport requires live
+  revalidation; an open diagnostic port alone does not establish radio communication. The
+  source-profile gate now accepts the documented High Country baseline as well as LTZ,
+  while the target still requires all fourteen pinned, unchanged LTZ containers. Reset,
+  reconnect, identity, BCM OFF and post-reset voltage checks precede any programming.
 
 ## 12. MAJOR FINDING: local loopback Manager IPC (127.0.0.1:8125) precedes/interleaves the
     device-side low-port dance — likely explains why byte-perfect §11 replay still fails

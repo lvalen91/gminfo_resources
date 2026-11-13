@@ -94,7 +94,12 @@ Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slo
 - **Build path:** `/home/mal/gm_release/MY22-026/final/iot/cust-build_sb/gm-i35/rel/gm_i35_my22_gb/gm-i35-kernel`
 - **Android signing key** (.mr_r_mod_android_key, 0x02201000–0x02201fff, 4KB NOBITS): NOT present in the file; delivered at runtime from Intel CSE via multiboot.
 - **Keymaster log string:** `"VMM reported green boot state but device is not locked. Treating as unverified boot"` (offset 0x00eecdd8).
-- **RSA-1024 private key** found in ghs_integrity.elf at byte offset 12924442 (609 bytes, sha1=78d9a50f). This is the only private key in the entire corpus. Function is unknown — candidates include attestation, IPC authentication, or signing.
+- **RSA-1024 private-key candidate** (unvalidated) reported in ghs_integrity.elf at decimal byte offset 12924442 (609 bytes, sha1=78d9a50f). *[Corrected 2026-11-12: this Jun-2026 entry stated the finding as a confirmed recovered private key. The owning doc,
+  `research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md` (corrected 2026-11-11), establishes that parsing/validation never
+  completed, that the reported decimal offset does not equal the earlier-cited hex offset `0xC53DBA` (converts to `0xc5361a`),
+  and that the source location, DER parse, and any public-key match remain unverified. Treat this line as an unvalidated scan
+  candidate, not a recovered key, and see that doc for current status.]* Function, if any, is unknown — candidates include
+  attestation, IPC authentication, or signing.
 
 ### VIP Security Function 0xb67d0
 
@@ -103,6 +108,8 @@ Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slo
 > validator in every build (Y177 @0xb67d4, Y175 @0xb6708); the "4-byte stub" was a fixed-address
 > misread of shifted code. Y177's permissive SELinux is OS-side (ramdisk/init), not a VIP signaling
 > path — the VIP function gates ADB/seed auth. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2.
+>
+> **NOTE 2026-11-12:** runtime SELinux is Enforcing on Y181 (getenforce; 3596 avc records show permissive=0), and the 'Y177 permissive' reading is a refuted cmdline-token inference (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8). The 'Y177's permissive SELinux is OS-side' sentence above inherits that refuted premise.
 
 **Y177 stub (4 bytes):**
 ```asm

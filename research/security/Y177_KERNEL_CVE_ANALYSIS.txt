@@ -12,7 +12,9 @@ GM AAOS Y177 KERNEL CVE ANALYSIS
 Analysis Date: 2026-01-04
 Firmware Version: Y177.6.1 GAS
 Kernel Version: 4.19.305-240125T145315Z (SAME as Y181)
-SELinux Runtime: PERMISSIVE (CRITICAL DIFFERENCE FROM Y181)
+SELinux Runtime: [CORRECTED 2026-11-12: ENFORCING -- original "PERMISSIVE" header value is refuted, see banner above;
+                 only the permissive CMDLINE token differs from runtime. Live Y181.3.2 radio shows the same pattern:
+                 ro.boot.selinux=permissive + getenforce=Enforcing, /sys/fs/selinux/enforce=1]
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -62,7 +64,7 @@ KEY DIFFERENCES FROM Y181:
 
 CONCLUSION: A radio running Y177 IS VULNERABLE to multiple kernel CVEs.
 The SELinux permissive mode removes the primary protection layer that
-blocks exploitation on Y181.
+blocks practical triggering on Y181.
 
 ================================================================================
 2. Y177 VS Y181 SECURITY COMPARISON
@@ -334,13 +336,13 @@ On Y177 (Permissive):
 If your vehicle is running Y177 firmware:
 
 1. DO NOT connect unknown USB devices to the infotainment system
-   - CVE-2024-53104 and CVE-2024-53150/53197 are exploitable via USB
+   - CVE-2024-53104 and CVE-2024-53150/53197 are triggerable via USB
 
 2. Be aware that Y177 has reduced security compared to Y181
    - Consider requesting firmware update from dealer if available
 
 3. Restrict physical access to USB ports
-   - USB-based attacks are the most practical exploitation vector
+   - USB-based attacks are the most practical entry-point path
 
 7.2 FOR GM/HARMAN
 -----------------

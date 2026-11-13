@@ -180,6 +180,19 @@ rich iAP2 data is therefore **gminfo3.7-only** (where the app composes/forwards 
 
 ---
 
+> **2026-11-12 scope note (live Y181B boot logs):** the "App mapping" and "Current gap" items in this
+> document (`ManeuverMapper.kt`, the carlink app) belong to the `zeno.carlink` + CPC200 rig. The radio
+> currently on the bench runs `zeno.gmccpa` (CarPlay-only, OCBM box). Its logs show route-guidance *state*
+> (`routeGuidanceState=3 (was 0)`) reaching the app but no maneuver or `NavigationState` emission toward
+> `com.gm.vmsplugin`, so the table above is **not** confirmed as exercised by gm_ccpa; that is a log-absence
+> observation, not proof. [2026-11-12 correction: "no maneuver" was too strong. gm_ccpa's own NETPROBE
+> lines do carry maneuver data: `route_guidance: comp=42 state=NoRouteSet(0) maneuvers=18 current=13`,
+> `route_guidance: maneuver burst count=19 idx=0..18`; 17 of 20 `route_guidance:` lines carry maneuvers (bursts counted;
+> merged `main` log). Maneuver data reaches the app; only emission toward the cluster VMSPlugin is unobserved, and
+> absence in INFO/DEBUG logs is not proof of absence.] The firmware-derived links (Templates Host -> VMSPlugin -> TurnType) are
+> unchanged. Same boot logs confirm `VMSClusterService` is bound by `CAR.CLUSTER` and that
+> `ClusterHalService` reports `navigationStateSupported=false`; see `cluster_navigation.md`.
+
 ## 6. Provenance
 
 - iAP2 wire/field catalog + cpManeuverType 0–53: `../adapter/RE_Documention/02_Protocol_Reference/iap2_message_catalog.md`,

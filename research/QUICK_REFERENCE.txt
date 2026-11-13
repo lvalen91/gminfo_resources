@@ -100,7 +100,7 @@ Total ECUs on LS-CAN: 24
 
 === NETWORK PORTS (UNEXPLORED) ===
 
-7000/tcp  - 0.0.0.0 - Unknown
+7000/tcp  - 0.0.0.0 - Unknown  [2026-11-12: AirPlay/AirTunes per platform/networking.md; not ADB (5555, not listening)]
 6363/tcp  - 0.0.0.0 - NDN?
 49156/tcp - 0.0.0.0 - Dynamic
 
@@ -116,10 +116,11 @@ SELinux: ENFORCING on ALL stock builds (Y175/Y177/Y181, identical init) -- no st
 === HARDWARE COMPONENTS ===
 
 I2C EEPROM:  ST M24C64 (8KB) - Security flags, VIN, config
-SPI Flash:   ISSI IS25LP016D (2MB) - BCM89551 Ethernet-switch firmware (NOT logs/backup; corrected per hardware/teardown.md). Separate 8MB IS25WP064A = Apollo Lake IFWI/TXE boot flash.
+SPI Flash:   ISSI IS25LP016D (2MB) - BCM89551 Ethernet-switch firmware [on the MY22/DV teardown unit; the live Y181 radio has the Marvell 88Q5050 variant; 2026-11-12 label] (NOT logs/backup; corrected per hardware/teardown.md). Separate 8MB IS25WP064A = Apollo Lake IFWI/TXE boot flash.
   Location:  Opposite side of PCB from EEPROM
   Markings:  IS25LP016, DNL3, 2243, P3A368L2
   Critical:  NO (module likely boots without it)
+  [2026-11-12 CAVEAT: criticality not independently re-verified; do not rely on the old claim (see PROJECT_MASTER_CHECKLIST.txt SPI Flash Details, correction 2026-11-12).]
 
 === UART CONSOLE ===
 
@@ -136,7 +137,7 @@ Crash Logs:        /data/gmlogger/gmcrashlogs/
 
 === VIP FIRMWARE ===
 
-Version: 2B.174.4.1
+Version: 2B.174.4.1  [2026-11-12: Jul-2024 capture, not Y181; Y181 live VIP_APP is 2B.B5.01.01, Y175's own is 2B.175.1.5]
 Build:   24Mar22-0256
 Bolo:    B2.9C.01.01
 MCU:     Renesas RH850/F1K

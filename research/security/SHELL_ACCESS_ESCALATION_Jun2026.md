@@ -26,7 +26,16 @@ extraction + KASLR measurement, the GM Secure ADB architecture, and a
 consolidated escalation-gate inventory.
 
 Current shell context: groups include `readtracefs(3012)`, `readproc(3009)`,
-`inet(3003)`, `log(1007)`. `NoNewPrivs=0`, no seccomp on the shell process.
+`inet(3003)`, `log(1007)`.
+
+> **[C] live-Y181.3.2 2026-11-12 (read-only `adb shell id`):** `uid=2000(shell) gid=2000`, context `u:r:shell:s0`,
+> full group set `shell(2000), input(1004), log(1007), adb(1011), sdcard_rw(1015), sdcard_r(1028), ext_data_rw(1078),
+> ext_obb_rw(1079), net_bt_admin(3001), net_bt(3002), inet(3003), net_bw_stats(3006), readproc(3009), uhid(3011),
+> readtracefs(3012)`; `getenforce`=Enforcing; `ro.secure=1`, `ro.debuggable=0`, `ro.adb.secure=1`; no `su` binary
+> at `/system/bin/su` and no `su` process in `ps -A`; build tags `release-keys`. Any "shell can do X" claim in this doc
+> must fit this set: still no `system(1000)` group. Not re-run today: the Binder `service call` results and tracefs/
+> `perf_event_open` statements (carried from the Jun2026 capture, not re-probed).
+ `NoNewPrivs=0`, no seccomp on the shell process.
 SELinux Enforcing blocks `tracefs` writes (`current_tracer`, `kprobe_events`)
 but **not** `perf_event_open`.
 
@@ -213,7 +222,7 @@ GM-signed root-permitting policy.
 | HIGH | Kernel exploit (4.19.305, KASLR ~0x0D000000) | In progress | Symbols known; need exact slide + exploit. SELinux Enforcing contains documented CVEs by policy. `perf_event_open`/`ptrace`/no-seccomp available |
 | HIGH | diagnosticsd UDS SecurityAccess (0x27) | New path | No OS-level peer gate (binary-confirmed). **CORRECTED 2026-09:** `ETHERNET`/`NOTIFICATION` tiers are checked in-process (`libuds`), not by `gm_protokey`; `VIP` tier is forwarded off-SoC to the VIP MCU (`ProxyOfExtComp`/`SockAdaptor`), gated by the SBI EEPROM byte. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) and [`platform/security.md`](../../platform/security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09) |
 | HIGH | diagnosticsd oversized-payload alloc | Potential | Confirm `malloc(PAYLOAD_LEN)`-before-check via Ghidra |
-| MEDIUM | diagnosticsd IP source spoof (vlan4) | Speculative | If any trust check is IP-based, a 172.16.4.x source bypasses |
+| MEDIUM | diagnosticsd IP source spoof (vlan4) | Partially confirmed [Corrected 2026-11-11 per Y175_2026-11-02 external Bus 2 tap bench finding: the IP-based trust check this row hypothesizes about is now bench-confirmed real -- diagnosticsd's TCP 49156 on vlan4 (172.16.4.100) is gated by an exhaustively-verified netfilter/iptables source-IP allowlist, `{172.16.4.107, 172.16.4.112}`, matching this row's "172.16.4.x source" framing almost exactly. However: (1) the gate lives at the netfilter layer, not inside diagnosticsd itself; (2) no spoofed-source test was actually run on the bench -- only real source IPs were scanned, so "a spoofed 172.16.4.x source reaches the port" remains untested, not demonstrated; (3) even an allowlisted/spoofed source does NOT get further than the TCP port -- the bench confirms the UDS app layer behind it rejects every request with generalReject (NRC 0x10) for lack of a registered tester/SecurityAccess, and that this rejection is source-IP-independent, so spoofing alone does not complete an escalation. Net: upgrade from "Speculative" (does the check even exist?) to "mechanism confirmed, full bypass unconfirmed" -- not "Confirmed" as an escalation.] | If any trust check is IP-based, a 172.16.4.x source bypasses the netfilter gate but still faces the source-IP-independent UDS SecurityAccess (0x27) reject; see the row above and `platform/fsa_protocol.md` Security Notes / `source_notes/T1_RADIO_core.txt` (external bench corpus, not in this repo -- see `research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` [S110]) |
 | MEDIUM | `IDiagnosticsInternalService` HIDL | Untested | Needs vendor SELinux domain (vndbinder) |
 | MEDIUM | GM Secure ADB fake `gmauthmanagerservice` socket | Theoretical | Feed MEC 1–255; still needs GM-signed policy to complete auth |
 | MEDIUM | `gm_protokey` extraction | Blocked | Permission Denied from uid=2000 |

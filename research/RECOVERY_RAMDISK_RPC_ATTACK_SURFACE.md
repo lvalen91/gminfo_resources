@@ -5,42 +5,21 @@ GHS `ota_update` INTEGRITY partition — opcodes, validation, error handling, st
 fuzz targets.
 
 **Analyst model:** Opus. **Date:** 2026-08-17.
-**Corpus:** `/Users/zeno/Downloads/github/gminfo_resources` (no live device this session; static
+**Corpus:** `gminfo_resources/` (no live device this session; static
 artifacts only).
 
 ---
 
-## 0. Provenance caveat — READ FIRST (the named binaries are not in this corpus)
+## 0. Scope and canonical evidence
 
-The brief posits an extracted 46 MB recovery ramdisk containing `system/bin/gm_updater` and
-`system/bin/recovery`. **Neither is present in this repository, and no ramdisk/cpio/img
-artifact exists here.** Verified:
+This document owns the older RPC/schema hypotheses and their
+confirmed/inferred/unknown labels. Current binary provenance, the verified
+ELK IPC/HECI path and recovery behavior are maintained in
+[the consolidated source](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
+The original recovery and `gm_updater` binaries are available in the Y181B
+boot payload. A complete guest-to-host RPC schema remains unproven; the
+hypotheses below must not be read as demonstrated vulnerabilities.
 
-- `grep -rli gm_updater .` (incl. `.llm_index.jsonl`, `.serena/cache`) → **0 hits**. The string
-  `gm_updater` appears nowhere.
-- `find . \( -name '*ramdisk*' -o -name '*.img' -o -name '*.cpio*' \)` → **0 hits**. No recovery
-  ramdisk was dumped into this tree.
-- The update-process analysis states plainly: *"There is NO traditional Android recovery
-  partition or fastboot mode … Updates occur while the system is running (A/B seamless updates)"*
-  (`research/UPDATE_PROCESS_ANALYSIS.txt:88`). The live downgrade test nonetheless reports the
-  system *"rebooted into recovery mode"* with a progress bar (`:317-318`), so an AOSP-style
-  recovery/updater flow does execute — but the specific binary name `gm_updater` is **not
-  attested** in any extracted material and is likely a mislabel.
-
-**What the corpus actually contains, and what maps to the described role.** I mapped the real
-components that fill the "recovery updater ↔ GHS ota_update RPC" slot:
-
-| Described component | Real, extracted equivalent | Evidence file |
-|---|---|---|
-| GHS `ota_update` partition | INTEGRITY `ota_update` task/partition in **SOC_HOSTOS (85098662)**, INTEGRITY IoT 2020.18.19; dedicated ELF sections `.ota_update.text` (71,451 B), `.ota_update.rodata` (6,588 B), `.ota_update.data` (700 B), `.OTA.Initial.stack` (20 KB) | `research/decompiled/ghs_analysis.txt:37-69`, `ghs_str.txt:45605,46261` |
-| recovery-side updater (`gm_updater`) | **Edify updater-script** (`gmext.*` verbs) in the `.mnf`, interpreted by AOSP recovery `updater`; **`gm_update_engine`** (`/vendor/bin/hw/`); **`rb_ua`** (Red Bend UA, `/vendor/bin/`) | `research/UPDATE_PROCESS_ANALYSIS.txt`, `platform/ota_update_stack.md`, `platform/ota_programming_roles.md` |
-| RPC/IPC transport to `ota_update` | Android device node **`/dev/ghs/ota-isys`** → INTEGRITY IPC **`ConnToVMM_OTA`** (data) + **`ConnToVMM_OTA_Control`** (control) → **`OTA_InitialTask`** | `ghs_str.txt:44239,45939-45942,46074-46075` |
-
-Everything below is derived from **string/symbol evidence of the GHS `ota_update` binary side**
-plus the Android-side updater analyses. The actual `ota_update.text` was **not disassembled**
-(only section boundaries + rodata strings are available), so opcode *numbers* are largely not
-recoverable — I say so explicitly at each point. Confidence tags: **[C]** confirmed string/symbol,
-**[I]** inferred from strings, **[U]** unknown / needs deeper RE.
 
 ---
 
@@ -171,7 +150,10 @@ downgrade test (`UPDATE_PROCESS_ANALYSIS.txt:313-326`) is the ground truth for t
 2. Reboot → **GHS boot verify rejects** the slot (AVB and/or rollback index).
 3. A/B logic **falls back to the original slot** (tries_remaining / priority).
 4. Android renders an **"Update Failed"** screen (rendered by `gm_update_engine`, not GHS).
-5. Operator drops `gm_reboot_normal` on USB to exit; system returns to the **unchanged** prior build.
+5. Operator uses the encoded `gm_reboot_normal` marker,
+   `Z21fcmVib290X25vcm1hbA==`, on USB to exit; system returns to the **unchanged**
+   prior build. Filename/handler corrected 2026-11-12; see
+   [recovery analysis §4.5](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#45-known-usb-trigger-files).
 
 So an RPC/verification failure is **recoverable and non-bricking by design** (A/B fallback), but
 the failure is caught at *boot*, after blind writes — there is no write-time abort. Rollback-index
@@ -246,9 +228,9 @@ gate on `/dev/ghs/ota-isys` (DAC is world-rw).
 
 **To actually build the opcode table and fuzz harness you still need:** (1) disassembly of
 `.ota_update.text` (71 KB, present in SOC_HOSTOS 85098662 but not decompiled here), and (2) RE of
-`/system/lib64/libghs_lip.so` for the ota-isys ioctl dispatch + frame layout. Both are the
-standing blockers noted in the repo, and neither the posited `gm_updater` binary nor a recovery
-ramdisk is present to shortcut them.
+`/system/lib64/libghs_lip.so` for the ota-isys ioctl dispatch + frame layout. Specific ELK/HECI branches have since been disassembled, and original recovery/
+updater binaries are available. The remaining gap is a complete guest RPC schema,
+not the absence of those binaries; see the consolidated source for verified paths.
 
 ---
 

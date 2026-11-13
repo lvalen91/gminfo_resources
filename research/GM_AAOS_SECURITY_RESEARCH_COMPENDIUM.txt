@@ -117,7 +117,7 @@ Process:        14nm
 Cores:          4 cores / 4 threads
 Base Freq:      800 MHz
 Boost Freq:     2.4 GHz
-TDP:            10W
+TDP:            12W @ TjMax  [2026-11-12: corrected from 10W; platform/hardware.md:14, platform/intel_apl_external_resources.md:~160]
 Qualification:  AEC-Q100 Automotive Grade
 
 3.2 VIP MCU (Renesas)
@@ -128,6 +128,14 @@ Role:           Vehicle Interface Processor
 Functions:      Power management, CAN gateway, security enforcement
 EEPROM:         ST M24C64 (8KB I2C EEPROM)
 Firmware:       VIP App 2B.174.4.1 (March 2022)
+                [2026-11-12, corrected: this is the value from a Jul-2024 UART capture
+                 (enumeration/VIP_log_2B.174.4.1_10JUL24.txt) whose internal build date (24Mar22-0256)
+                 predates even Y175's own VIP_APP (2B.175.1.5, build 24Apr23-2202, part 85759599) --
+                 it is NOT a Y177 value. Y177's actual VIP_APP (part 86283151, build 25Feb28-0330) has
+                 no confirmed version string in this repo (VIP_FIRMWARE_Y177_Y181_COMPARISON.md Sec.1
+                 lists it as "--"). Do not read 2B.174.4.1 as Y177's VIP_APP version. The live Y181
+                 bench radio runs VIP_APP 2B.B5.01.01 (part 86331656, build 25Jun19-2209) / VIP_BOOT
+                 B2.9C.01.01 (part 85056831) -- see GM_INFO37_BOOT_CHAIN_ANALYSIS.md Sec.4.2]
                 Bolo Version B2.9C.01.01
 
 3.3 EEPROM (Security Storage)
@@ -212,6 +220,11 @@ Security Patch: June 2025 (Y181) / February 2025 (Y177)
 CRITICAL OBSERVATION:
 Kernel boots with androidboot.selinux=permissive but runtime shows Enforcing.
 Something in boot chain FORCES enforcing mode (likely init.rc or GM service).
+[2026-11-12 NOTE: the live Y181 cmdline carries BOTH enforcing=0/androidboot.selinux=permissive
+(early tokens) AND a later enforcing=1/androidboot.selinux=enforcing pair (all 30 retained
+cmdline files); ro.boot.selinux prop=permissive. Runtime Enforcing is evidenced by getenforce
+and all 3596 avc records permissive=0; that the later pair wins is INFERENCE; init forcing enforcing is derived in
+security/KERNEL_CVE_ANALYSIS.txt E.8 from boot-image bytes.]
 
 4.4 GM-SPECIFIC SERVICES
 ------------------------
@@ -625,7 +638,7 @@ The PROTOKEY service runs on VIP and mediates ADB authentication:
 
 9.2 SEED-KEY EXCHANGE (from VIP log)
 ------------------------------------
-Observed behavior on bench (no BCM connected):
+Observed behavior on bench (no BCM connected -- inferred; not read from the log [2026-11-12 note]):
 
 [PROTOKEY] ICUSB module enabled
 [PROTOKEY] Receives invalid seed [1] from BCM
@@ -662,6 +675,7 @@ BYPASSED STATE (EEPROM modified, A11_CSM_x80.Txt):
 
   Seed = ALL 0xFF (32 bytes of 0xFF)
   MEC Counter: 244 (locked production state)
+  [2026-11-12 NOTE: the 'production/locked' label for MEC 244 contradicts this document's own capture data (A11_CSM_x80 'bypassed': EEPROM 0x0440 = 5A FF 5A, MEC 244, 'ADB accessible with standard platform-tools'; see VIP_CONTROL_ANALYSIS.txt s5.2) and the Y181 convention (nonzero MEC = unlocked/bypass; EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md s0.11/s0.14). What MEC 244 means beyond that is not asserted here.]
   SBI: $0000 (Bypass Inactive - misleading when EEPROM bypassed)
 
 KEY INSIGHT:
@@ -769,6 +783,7 @@ Dynamic partition group "group_sys": 9,432,989,696 bytes total
 | Port  | Binding     | Service Type | Status      |
 |-------|-------------|--------------|-------------|
 | 7000  | 0.0.0.0     | Unknown      | UNEXPLORED  |
+  [2026-11-12: 7000 = AirPlay/AirTunes per platform/networking.md (uid 1001000); not ADB (5555, not listening); no longer unexplored]
 | 6363  | 0.0.0.0     | NDN/ICN?     | UNEXPLORED  |
 | 49156 | 0.0.0.0     | Dynamic      | UNEXPLORED  |
 | 9002  | 192.168.1.1 | VLAN         | Internal    |
@@ -776,6 +791,7 @@ Dynamic partition group "group_sys": 9,432,989,696 bytes total
 | 9016  | 192.168.1.1 | VLAN         | Internal    |
 
 RECOMMENDATION: Port scan and service identification on 7000, 6363, 49156
+  [2026-11-12: 7000 already identified as AirPlay/AirTunes per platform/networking.md; 6363 = AVB audio daemon per same doc]
 
 11.2 DEVICE NODES
 -----------------
@@ -800,7 +816,7 @@ Connected USB devices:
 - 2x Vendor DFU devices (VID:10646 PID:288)
 - MCP2200 serial debug (VID:1240 PID:223)
 
-DFU (Device Firmware Update) devices are potential attack vectors.
+DFU (Device Firmware Update) devices are potential entry-point paths.
 
 11.4 CAN BUS / UDS DIAGNOSTIC
 -----------------------------
@@ -825,7 +841,7 @@ Security levels:
 
 | Aspect              | Y177 (499.2)        | Y181 (499.3)        |
 |---------------------|---------------------|---------------------|
-| SELinux Runtime     | Permissive          | ENFORCING           |
+| SELinux Runtime     | ENFORCING (corrected 2026-11-12 -- this row previously read "Permissive"; stock Y177 is NOT permissive, byte-identical init to Y181 forces enforcing, see §12 correction + KERNEL_CVE_ANALYSIS.txt E.8) | ENFORCING           |
 | Security Patch      | February 2025       | June 2025           |
 | Kernel Build        | March 2025          | July 2025           |
 | VIP Bootloader      | 85056831            | 85056831 (SAME)     |
@@ -956,7 +972,7 @@ CONCLUSION: SELinux enforcement is controlled by Android init, not VIP.
    - Verify 74LVC08A gate status
 
 5. NETWORK SERVICE ENUMERATION
-   - Port scan 7000, 6363, 49156
+   - Port scan 7000, 6363, 49156  [2026-11-12: 7000 = AirPlay/AirTunes per platform/networking.md]
    - Identify protocols and services
    - Test for unauthenticated access
    - Fuzz for vulnerabilities

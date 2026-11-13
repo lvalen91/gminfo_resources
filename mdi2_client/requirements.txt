@@ -1,9 +1,15 @@
-pycryptodome>=3.20     # Blowfish-ECB (the 900x/9052 cipher)
+pycryptodome>=3.20     # Blowfish-ECB (900x/9052 cipher) + AES-128-CMAC (SecurityAccess)
 typer>=0.12            # CLI
 construct>=2.10        # declarative binary parsing (framing + inner container)
 # --- optional, recommended ---
 # scapy>=2.5            # continued protocol RE / pcap analysis
 # rich>=13              # nice CLI/log output
+# --- optional: SocketCAN + ISO-TP bench transport (mdi2/can_transport.py) ---
+# imported lazily; `read-all --transport can` needs both. NOT hard deps.
+# python-can>=4.2       # SocketCAN bus access
+# can-isotp>=2.0        # ISO 15765-2 (ISO-TP) stack
+# --- optional: AES-CMAC alternative backend (pycryptodome above already suffices) ---
+# cryptography>=42      # fallback AES-CMAC provider if pycryptodome is absent
 # --- future: DPS/SPS diagnostic side (separate 10123 D-PDU / 13400 DoIP stack) ---
 # udsoncan>=1.21        # UDS (ISO 14229) client
 # doipclient>=1.1       # DoIP (ISO 13400) transport

@@ -32,7 +32,7 @@ left intact (airgapped bench — not sensitive). Cross-reference `../teardown.md
 ## Module labels
 | File | Shows |
 |---|---|
-| `module_label_region.jpeg` | Module-with-label in board context (`P/N 91.LUMAF2HG.GS6FAAG` / `3765210`) |
+| `module_label_region.jpeg` | Module-with-label in board context (`P/N 91.UMAF2HG.GS6FAAG` / `3765210`; the label OCRs with a stray leading `L` — `teardown.md` treats it as the same single P/N, corrected 2026-11-12) |
 | `module_label_closeup.jpeg` | Close-up of the same module label (P/N + PSN + DataMatrix) |
 
 ## IC close-ups

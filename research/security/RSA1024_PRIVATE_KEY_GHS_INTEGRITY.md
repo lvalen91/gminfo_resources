@@ -1,17 +1,25 @@
-# RSA-1024 Private Key Discovery in GHS INTEGRITY Hypervisor
+# Reported RSA-1024 candidate in GHS INTEGRITY Hypervisor
 
 **Classification:** Security Research Finding
 **Date:** 2026-06-29
-**Severity:** HIGH — Embedded private key in production hypervisor binary
-**Status:** Key identified; function under investigation
+**Evidence status:** unvalidated scan candidate; security impact not established
+**Status (corrected 2026-11-11):** private-key parsing, source location, function and signer relationship remain unverified. This is not a recovered calibration-signing key. See the [central reference](../GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 ---
 
 ## Finding Summary
 
-During binary analysis of `ghs_integrity.elf` (the GHS INTEGRITY IoT 2020.18.19 hypervisor binary shipped in GM Info 3.7), an RSA-1024 private key was found embedded at byte offset **12924442**, 609 bytes in length (SHA1: `78d9a50f`).
+An earlier automated scan reported a 609-byte RSA-1024 private-key candidate in the
+`ghs_integrity.elf` SOC_HOSTOS artifact. The status table in this document has always left
+parsing/validation, matching public key and code usage pending. The earlier headline and
+claims of a confirmed embedded private key therefore overstated the evidence.
 
-This is the **only private key** found across the entire GM Info 3.7 binary corpus in all analyzed firmware files. Its presence in the hypervisor image itself — rather than in a keystore, certificate partition, or protected enclave — is anomalous and warrants immediate investigation to determine what it signs or authenticates, and whether possession of it confers any exploitable capability.
+**Correction reason/date (2026-11-11):** no retained validation result establishes that these
+bytes are a valid private key, what they do, or that the radio accepts signatures made with
+them. The reported decimal offset `12924442` also does not equal the earlier hexadecimal
+`0xC53DBA`; its arithmetic conversion is `0xc5361a`. The source location must be
+re-established before any extraction result is trusted. Independent stock CSM verification
+uses RSA-2048 signers; no relationship to this alleged RSA-1024 candidate was found.
 
 ---
 
@@ -24,29 +32,26 @@ This is the **only private key** found across the entire GM Info 3.7 binary corp
 | **File ID** | 85098662 |
 | **File size** | 14,929,956 bytes |
 | **Binary format** | ELF — header says 32-bit x86 but code is **x86-64** (corrected 2026-08-26: `movabs`/REX, `crt_x64.86`) |
-| **Key offset** | 12924442 (0xC53DBA) |
-| **Key size** | 609 bytes (DER-encoded) |
-| **Key type** | RSA-1024 PRIVATE KEY |
-| **SHA1** | 78d9a50f... |
+| **Reported candidate offset** | Decimal 12924442; earlier hex 0xC53DBA disagrees; source location unverified |
+| **Reported candidate size** | 609 bytes; DER/private-key interpretation unvalidated |
+| **Claimed type** | RSA-1024 private-key candidate, not validated |
+| **Validation result** | Not supplied |
 | **Location** | Embedded directly in the hypervisor image — not a separate partition |
 
-### Extraction Command
+### Validation boundary
 
-```bash
-dd if=ghs_integrity.elf bs=1 skip=12924442 count=609 | openssl rsa -inform DER -check
-```
+The former extraction command used an unverified offset. Re-establish the original artifact
+and candidate location, then check parsing and public-key relationships without emitting
+private-key material into documentation or logs. No such validation was performed here.
 
 ---
 
-## RSA-1024 Security Posture
+## Security relevance
 
-RSA-1024 is cryptographically weak by contemporary standards and has been for over a decade:
-
-- **NIST deprecation:** NIST deprecated RSA-1024 in 2013 (SP 800-131A) and prohibited its use in federal systems as of 2014
-- **Factorization feasibility:** Academic and commercial literature estimates factorization of a 1024-bit RSA modulus costs on the order of $1–10M USD in compute as of 2020; this cost has decreased with improved hardware and algorithms since then
-- **Practical risk:** If the modulus is factorizable, an attacker who derives the private key from the public modulus could forge any artifact this key is used to sign — regardless of whether the embedded key itself is extracted
-
-The embedded private key exacerbates this: even without performing the factorization, an attacker already possesses the private key material directly.
+A valid private key would matter only for a verifier that trusts its corresponding public
+key and an artifact format that the key can sign. Neither condition is established here.
+RSA-1024 sizing or a scan classification alone does not make a key useful for the observed
+RSA-2048 CSM containers, Android platform APKs, or signed OTA manifests.
 
 ---
 
@@ -70,50 +75,13 @@ These hypotheses are mutually exclusive only in degree — the key could serve m
 
 ## Investigation Steps
 
-### Step 1: Confirm key type and validity
+### Steps 1–3: Establish the artifact, validate the candidate, compare public identities
 
-Extract the key material and verify it parses as a valid RSA-1024 private key rather than a public key, certificate, or coincidental byte pattern:
-
-```python
-import subprocess
-
-# Extract 609 bytes at offset 12924442
-result = subprocess.run(
-    ["dd", "if=ghs_integrity.elf", "bs=1", "skip=12924442", "count=609"],
-    capture_output=True
-)
-
-# Write to temp file
-with open("/tmp/candidate_key.der", "wb") as f:
-    f.write(result.stdout)
-
-# Attempt to parse as RSA private key
-subprocess.run(["openssl", "rsa", "-inform", "DER", "-in", "/tmp/candidate_key.der", "-check", "-text", "-noout"])
-```
-
-Alternatively, if the key is PEM-encoded within the binary, extract the PEM block directly:
-
-```bash
-strings -n 20 ghs_integrity.elf | grep -A 50 "BEGIN RSA PRIVATE KEY"
-```
-
-### Step 2: Extract the public modulus
-
-Once confirmed, extract the public modulus from the private key. This modulus is what can be matched against signatures or public keys found elsewhere:
-
-```bash
-openssl rsa -inform DER -in /tmp/candidate_key.der -pubout -out /tmp/candidate_pubkey.pem
-openssl rsa -pubin -in /tmp/candidate_pubkey.pem -text -noout | grep -A 20 "Modulus"
-```
-
-### Step 3: Search the binary corpus for matching public keys
-
-Search all other firmware files in the GM Info 3.7 corpus for the extracted public modulus. If any file contains the corresponding public key or a certificate embedding this modulus, that narrows the key's role:
-
-```bash
-# Search for the modulus bytes in all ELF/binary files
-grep -rl <modulus-hex-pattern> /path/to/firmware/corpus/
-```
+First resolve the conflicting offsets against the original SOC_HOSTOS package. Check whether
+the candidate parses as a private key rather than a certificate, public key, test vector or
+coincidental bytes. Keep private components out of files, reports and logs. Only after a
+successful parse should its public identity be compared in memory with known verifier keys.
+Record equality and provenance, not key values. These steps are pending, not completed.
 
 ### Step 4: Locate key usage in decompiled code
 
@@ -149,8 +117,8 @@ The GHS INTEGRITY binary (file ID 85098662) is **byte-for-byte identical** betwe
 
 This means:
 
-- This private key is present in **both Y177 and Y181**
-- Any capability conferred by this key applies regardless of which version is currently running
+- The same reported candidate bytes would be present in **both Y177 and Y181**, if located in their shared artifact
+- Any capability would still require validation of the candidate and its actual verifier usage
 - A downgrade to Y177 does not change the exposure surface with respect to this key
 
 ---
@@ -159,16 +127,16 @@ This means:
 
 | Item | Status |
 |---|---|
-| Key identified in binary | YES |
-| Key offset confirmed | YES (12924442 / 0xC53DBA) |
+| Scan candidate reported | YES; independently unvalidated |
+| Candidate offset confirmed | NO; reported decimal/hex disagree |
 | Key parsed and validated | PENDING |
 | Key function determined | UNKNOWN — REQUIRES INVESTIGATION |
 | Matching public key located in corpus | PENDING |
 | Key usage found in decompiled code | PENDING |
-| Key strength | WEAK — RSA-1024, deprecated since 2013 |
+| Claimed key size | RSA-1024; parsing pending |
 | Exploitation attempted | NO |
-| Present in Y177 | YES (binary identical to Y181) |
-| Present in Y181 | YES |
+| Present in Y177 | Candidate location unverified; shared artifact reported |
+| Present in Y181 | Candidate location unverified |
 
 ---
 

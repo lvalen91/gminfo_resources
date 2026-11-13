@@ -92,10 +92,16 @@ The CSM module contains two processors communicating via SPI-IPC/HDLC:
 | Chip              | Function                    | Security Relevance    |
 |-------------------|-----------------------------|-----------------------|
 | Intel Atom x7-A3960| Main SoC                   | Runs Android          |
-| Renesas TM52176   | VIP MCU                     | Security gatekeeper   |
+| Renesas RH850/F1K (R7F7015873AFP; TM52176 trace mark, not a separate chip) | VIP MCU | Security gatekeeper |
 | ST M24C64         | I2C EEPROM (8KB)            | ADB bypass flags      |
 | IS25LP016         | SPI Flash (2MB)             | Logs, non-critical    |
 | NXP TJA1145T      | CAN transceiver             | Vehicle network       |
+
+[Corrected 2026-11-12: this table previously listed "Renesas TM52176" as a distinct VIP MCU chip,
+contradicting §2.1's own "Renesas RH850/F1K" two rows above. `hardware/teardown.md` (corrected
+2026-11-12, lines 636-646) is the owning doc: the VIP is Renesas RH850/F1K, part R7F7015873AFP,
+abbreviated device marking 15873; TM52176 is a trace/mask marking on that same package, not a
+second chip.]
 
 2.4 MEMORY MAP
 --------------
@@ -159,6 +165,13 @@ PHASE 2 (GHS at boot): Verifies and decides if new slot boots
 ------------------
 BOOT PARAMETERS: enforcing=0 androidboot.selinux=permissive
 RUNTIME STATUS: ENFORCING
+[LIVE-VERIFIED 2026-11-12, read-only adb on Y181.3.2: getprop ro.boot.selinux = permissive, getenforce = Enforcing,
+ /sys/fs/selinux/enforce = 1; 3596 avc lines in the 2026-11-12 boot-log dumps, every one permissive=0.
+ [Corrected 2026-11-12: prior text said 8270; the owning forensic reference
+ (gminfo37_update_cache_FORENSIC_LLM.txt:31,743,843) counts ALL 3596 runtime avc records
+ permissive=0 (194 kernel + 1055 main + 2347 events); 8270 does not appear in that source.]
+ /proc/cmdline itself is unreadable to the shell (Permission denied), so the "enforcing=0" token above is from
+ earlier boot-image analysis, not re-read today; the ro.boot.selinux prop is the live evidence of the cmdline value.]
 
 Init overrides boot parameters before untrusted code executes.
 Neverallow rules prevent any domain from calling setenforce.
@@ -207,6 +220,7 @@ External interfaces (0.0.0.0):
 |-------|--------|------------------------------------|
 | 6363  | HIGH   | GMVT service                       |
 | 7000  | HIGH   | Unknown                            |
+  [2026-11-12: 7000 = AirPlay/AirTunes per platform/networking.md (uid 1001000); not ADB (5555, not listening)]
 | 49156 | HIGH   | Unknown                            |
 
 Internal network (192.168.1.1):
@@ -218,6 +232,28 @@ Internal network (192.168.1.1):
 | 9012  | MEDIUM | Internal VLAN service              |
 | 9016  | MEDIUM | Internal VLAN service              |
 | 9018  | MEDIUM | Internal VLAN service              |
+
+[Corrected 2026-11-11 per Y175_2026-11-02 external Bus 2 tap bench finding (build
+W213E-Y175.5.2-SIHM22B-383.1 -- a different build than this document's W231E-Y181.3.2-SIHM22B-499.3,
+so treat as confirmation of mechanism/identity, not a line-for-line re-verification of this exact
+build):
+ - 49156 is identified: diagnosticsd (GM-custom UDS-over-TCP), bound 0.0.0.0 on vlan4 (172.16.4.100),
+   externally reachable only from source IPs {172.16.4.107, 172.16.4.112} (source-IP allowlist at the
+   netfilter layer); the UDS app layer additionally rejects every request without a registered
+   tester/SecurityAccess (generalReject, NRC 0x10). Not "Unknown" -- it is GM's custom diagnostic
+   bridge, and reachability is gated, not open-to-anyone.
+ - "Internal network (192.168.1.1)" is superseded: the radio's real vlan5 address is 192.168.1.100,
+   not .1 -- no .1 host was found on the Y175 bench. Of the six ports listed, a full external 1-65535
+   scan from the wire found only 9002 (RemoteModuleHMI) and 9016 (NetworkAccessManager) actually open,
+   both bound to 192.168.1.100 and both gated by a source-IP allowlist ({.106,.109,.112} and
+   {.102,.112} respectively) -- reachable from the external T1 wire, not "internal-only" in the sense
+   of unreachable off-box, but also not open to an arbitrary peer.
+ - 9005, 9010, 9011 (not listed here but referenced elsewhere in this corpus), 9012, and 9018 were NOT
+   found open anywhere in that same exhaustive external scan on the Y175 bench -- consistent with
+   "internal"/not wire-exposed for those five specifically, but this has not been re-verified on this
+   document's own Y181 build. See platform/fsa_protocol.md Security Notes and
+   source_notes/T1_RADIO_NETWORK_STRUCTURE.txt (external bench corpus, not in this repo -- see
+   research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md [S108]) for the full allowlist table.]
 
 ADB TCP 5555: Configured in init.rc but NOT actively listening.
 

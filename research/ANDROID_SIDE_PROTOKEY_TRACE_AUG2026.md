@@ -226,7 +226,7 @@ whatever 16 bytes follow, unconditionally.
 **This directly answers the user's original question.** It doesn't by itself
 prove the SBI bypass forces `status = 1` from the VIP (that mechanism is
 VIP-side, in the still-unresolved `FUN_ram_000b67d0` seed/key state machine —
-see `eeprom/CORRECTIONS_AUG2026.md`), but it proves conclusively that **if**
+see `eeprom/CORRECTIONS_AUG2026.md` [2026-11-12: file not found in repo or GM_research tree; see eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md]), but it proves conclusively that **if**
 the VIP can be made to report success for a degenerate/non-genuine key (which
 is exactly what the SBI-driven CAN `$27` seed evidence already suggests),
 **there is no independent SoC-side check that would catch or reject it.**
@@ -261,7 +261,8 @@ appears to be exploiting.
 6. **Still fully open, VIP-side (out of scope for this Android-side trace):**
    what drives the VIP to emit `status = 1` for a degenerate/SBI-bypassed
    seed in the first place — the `FUN_ram_000b67d0` state machine and its
-   callers, per `eeprom/CORRECTIONS_AUG2026.md`.
+   callers, per `eeprom/CORRECTIONS_AUG2026.md` [2026-11-12: file not found in
+   repo or GM_research tree; see eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md].
 
 ## Artifacts
 

@@ -13,7 +13,7 @@ method + the CT5-vs-Y181 delta table: `GM_research/aaos/gm_aaos/EMULATOR_PLAYBOO
 
 ## Method (hybrid)
 GM `system`/`product` **as-is** on Google's **android-32** goldfish kernel + vendor + vbmeta +
-system_dlkm, packed into an LP `super` (`mkdisk.py`; Y181 is static A/B, no super). GM's real vendor
+system_dlkm, packed into an LP `super` (`mkdisk.py`; Y181 is static A/B, no super) [qualified 2026-11-12: this describes the emulator disk layout only; the live Y181.3.2 radio's update engine reads `/dev/block/by-name/super` and sets `ro.boot.dynamic_partitions=true` — see `boot_chain.md` partition-layout note]. GM's real vendor
 firmware (Intel/GHS) can't boot on **goldfish/ranchu specifically** — that backend is virtio-mmio and
 the wrong machine type (see Kernel characterization + portability below) — so it's a source only here. Blockers solved,
 in boot order:
@@ -358,8 +358,15 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   it one), and macOS mic-privacy (TCC) denies mic to SSH-launched processes and can't be granted over SSH.
   Closing it needs a GUI/Screen-Sharing console session on the Mac Pro to grant the emulator mic permission
   (same as how CT5's mic was closed) — not an emulator defect.
-- **Memory/touch parity [DONE].** RAM now mirrors the radio: 6144M (guest `MemTotal` ~5.8GB vs radio 5530 MiB = 5.40 GiB / 5.80 GB decimal; the emulator `-m` value needs a bench root `/proc/iomem` to confirm - the "-m 5780/RAM4-capped" split is [UNVERIFIED]),
-  zram swap disabled (radio `SwapTotal=0`). Touch stays 2400×960@200 (already correct).
+- **Memory approximation; touch parity.** Emulator RAM is configured as 6144M;
+  this is not measured guest-memory-map parity. **Corrected 2026-11-12:** the
+  Y181B recovery export exposes **5743.55859375 MiB E820 usable**, with an early
+  Linux denominator of 5877304K, distinct from historical radio `MemTotal`
+  near 5530 MiB. The 5780 MiB/RAM4-cap hypothesis is not the measured map;
+  [source and remaining limits](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
+  No emulator RAM change or runtime parity test is established by this documentation update.
+  Zram swap remains disabled in the documented recipe (radio `SwapTotal=0`).
+  Touch stays 2400×960@200.
 - **Durability.** `boot.sh` runs `emu_integration/scenario.sh` ~20s after `boot_completed`: re-pushes VhalCtl,
   injects temp/speed/ignition/GPS frames, deploys+bind-mounts the `libpal_tod` stub, restarts rtcd, re-asserts
   IGNITION=RUN, and runs `emu geo fix -73.9654 40.7829`. Survives `-wipe-data` cold boots. Artifacts under

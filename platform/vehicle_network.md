@@ -48,15 +48,14 @@ MDI2 DoIP read (`dps_readx80`, F1B0 broadcast, 2nd pass) found **27** — adding
 radio `0x80` is CAN-via-gateway). Combined 27:
 `0x11 0x18 0x1A 0x28 0x31 0x40 0x41 0x45(gw) 0x58 0x59 0x60 0x68 0x6B(eth) 0x6D 0x75 0x80(radio) 0x81 0x84(eth) 0x96(eth) 0x97 0xA4 0xA8 0xB9 0xBA 0xBD 0xBE 0xBF`
 
-Response-ID priority nibbles (`145A`/`142A`/`141A`/`144A`) group modules by bus/priority. Decode
-of the others → GM Global-B address table (**open**). Scanned unit (A11_CSM_x80): `SBI = Bypass
-Inactive`, `MEC = 244`, fully programmed. **Live corroboration (`dps_readx80`, MDI2 DoIP read of the
-radio):** `0x80` ECUID (`$22 F0F3`) = `004B41DC…14AC` **byte-identical** to the value above;
-ProgrammedState (`$31 FF01`) = `00` fully programmed on both `0x45` and `0x80`; radio `F1A0` = `0xFF`
-on that read (secure-mode; differs from the A11 scan's `MEC=244`, i.e. per-capture unit state — see
-[`security.md`](security.md)). `$27` on that read returned an all-`0xFF` seed under a failed SPS
-validation, whereas valid SPS sessions used an 8-byte seed / 6-byte key and succeeded (so the all-FF
-seed is the **SPS-cred-absent path**, not necessarily a hardware SBI flip).
+Response-ID priority nibbles group modules by bus/priority; the complete address→function
+map remains open. **Corrected 2026-11-11:** target radio `0x80` normal SecurityAccess is
+31 seed bytes (16-byte fixed identifier + 15-byte varying suffix), 12 response bytes and
+`67 02`. The earlier 8/6 count was incorrect. The SPS host-authorization error does not
+prove the cause of an all-FF ECU seed. A returned MEC `F1A0=FF` lies in the 1–255 range
+that bypasses the SoC's GM ADB client-certificate requirement; it is not enforced-secure
+mode. The EEPROM/ADB, UDS, ProtoKey and signing gates must remain separate.
+See [the central evidence guide](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 ---
 
@@ -87,30 +86,13 @@ MAC = CMAC_AES128_k( data_id(u8) ‖ BE32(can_id) ‖ BE64(freshness) ‖ payloa
 - MAC on the wire is the CMAC **truncated to 27 bits** (3 bytes + 3 bits).
 - Freshness is a 64-bit BE counter, often combined with a secondary companion ID; padding and
   payload position vary per frame.
-- Worked example — gateway status/power frame **`0x370`** (`bit37:3` = power mode):
-  `Off E8EE8A69…` `Acc 68A66F49…` `Run 7C8CB069…` `Crank 69F65949…` `Propulsion 6BFE8B49…`
-  ```
-  data_id  01
-  can_id   00000370
-  freshness 000000005FEEE249
-  payload  3810
-  key      0814586a72522fd9b57685de676eb246   (real key, source's totaled donor car)
-  CMAC     e8ee8a78 b7ba268d 25473fb3 5bf2067c
-  trunc27  E8EE8A|011  -> on wire E8EE8A|011
-  ```
+- Donor-vehicle key and worked MAC values are omitted; they are not target-radio credentials.
 
-**$27 SecurityAccess (level 1) key algorithm** — precondition for provisioning: [X]
-
-```
-$27 01                -> 67 01 <31B seed>   seed = ecuid(16B) ‖ nonce(15B)
-$27 02 <12B key>      -> 67 02 accepted  |  7F 27 35 (NRC 0x35 invalidKey)
-
-K1  = CMAC_AES128( root_key, subfn(1B) ‖ ecuid(16B) ‖ nonce(15B) )
-key = CMAC_AES128( K1, 0xFF×16 )[0:12]
-```
-
-Worked vector (AES test key `root_key=2b7e1516…4f3c`, subfn `01`, ecuId `0102…0f10`, nonce
-`1122…eeff`): `K1 = 344944c7c7a8e103f1c9703cca19bf52`, `key_response = ad3ccd21e367a121640b2a23`.
+**SecurityAccess formula scope (corrected 2026-11-11):** the Cadillac source's proposed
+CMAC construction is not target-radio evidence. The gminfo37 capture independently
+establishes 31-byte normal seeds and 12-byte accepted responses; the exact target
+key derivation and usable master secret remain unresolved. No Cadillac vector or key
+is a gminfo37 signing/unlock credential. See the central evidence guide linked above.
 
 **SecOC key provisioning** (UDS RoutineControl, after $27): the on-wire key is itself encrypted
 against a factory key. Provisioning needs three secrets, all OEM-held: the module's unique **$27
@@ -139,7 +121,7 @@ The author claims (unpublished, zero-days withheld) that all SecOC keys are dump
 
 Backbone: 100BASE-T1 via on-board switch (host on port 5; gateway/telematics on
 port 2). Switch IC is board-variant — **Broadcom BCM89551** on MY22/DV boards, **Marvell 88Q5050**
-on MY23+ (per `persist.vendor.harman.hardwareid`); same port layout and spec. **The vehicle trim
+on MY23+ (per `persist.vendor.harman.hardwareid`; selector inferred — the prop is not shell-readable; its logged value on this bench radio is `MY23DV1` per the `/cache` gmlogger props snapshots, 2026-11-12, see `hardware.md`); same port layout and spec. **Live Y181 bench radio (2026-11-12) = Marvell** (`ethmvlctrlmgr: Marvell firmware version: 02_09_1003, config version: 234702AB`, part 85759612). **The vehicle trim
 carries three physical automotive-ethernet connections to this switch** (owner, in-vehicle; not
 wired on the bench).
 
@@ -187,7 +169,7 @@ wired on the bench).
 > module. The `.107` "RTOS partition" is **SoC-internal** (a GHS-hosted INTEGRITY partition on the
 > same Intel A3960), corroborated by its response **TTL=255** vs the external `.112`'s **TTL=64**
 > (Linux) — see [`networking.md`](networking.md) vlan4 table and the "vlan4 internal-vs-external"
-> finding in [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md#vlan4--internal-ghs-fabric-diagnosticsd-forwarding-target--bench-reachability-of-the-vipuds-path-2026-10-06).
+> finding in [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md#vlan4--internal-ghs-fabric-diagnosticsd-forwarding-target-bench-reachability-of-the-vipuds-path-2026-10-06).
 
 ### vlan4 · `172.16.4.0/24` (internal vehicle network)
 `.100` IVI (radio's vlan4 face) · `.1` router (shares MAC with `.102`) · `.14` **ACP** ·
@@ -268,6 +250,19 @@ readable by anything on the switch fabric. [X]
    rear video; **6** (7214/7215) = **A11↔T3 Bose amp** (the AVB audio pair); **14** (7230/7231) =
    A11↔P29 HUD. IP-segment↔bus correlation still needs a per-pair capture. See
    [`networking.md`](networking.md) §Physical Automotive-Ethernet bus map.
+   **[Updated 2026-11-11 per Y175_2026-11-02 Bus 2 tap bench finding:]** Ethernet Bus 2
+   (A11↔K56 gateway, circuits 4757/4758) is now directly confirmed by live tap: it carries
+   **VLAN 2** (PCP 2, AVB/TSN audio, ~2,900 pps flood, harmless bench artifact), **VLAN 5**
+   (PCP 1, `192.168.1.0/24` Info3.x service plane, radio `.100`), **VLAN 4** (PCP 1,
+   `172.16.4.0/24` internal/diag plane, radio `.100`), and untagged native traffic, all on
+   the same physical pair, tag-multiplexed rather than per-pair-segregated. Root cause of
+   the earlier "IP-segment↔bus correlation needs a per-pair capture" blocker: a plain
+   Ethernet switch in the tap path was silently stripping 802.1Q tags, not a duplex
+   mismatch; a direct media-converter → USB-GbE NIC link (no switch) preserves tags
+   end-to-end. `br0` (`192.168.5.1/24`) was also checked and is the Wi-Fi/phone-projection
+   AP bridge (members `wlan1`/`wlan2`), **not** a diagnostic plane. See
+   `Y175_LIVE_RADIO_T1_SECURITY_ASSESSMENT_2026-11-02.md` and
+   `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md`.
 2. CAN address→function decode for the other 22 ECUs.
 3. Whether `.102` (router) and `.107/.112` (CGM/telematics) are one GM TCP/CGM function split
    across faces, or distinct modules.
@@ -278,6 +273,16 @@ readable by anything on the switch fabric. [X]
    (Plane 1a) against a live A11 capture; identify which frame IDs carry a MAC on gminfo37.
 6. **VLAN-502 CAN mirror:** bench-pcap this unit for a 502 UDP-multicast CAN mirror (Plane 2);
    the Cadillac source was `172.16.50.207→239.192.0.9:59200`.
+7. ~~Full port-scan/allowlist sweep of vlan4/vlan5 from a direct physical tap.~~
+   **[Updated 2026-11-11 per Y175_2026-11-02 Bus 2 tap bench finding:]** **DONE/RESOLVED.**
+   Exhaustive sweep of all 253 source IPs per /24 plus the full TCP 1–65535 port range found
+   exactly two reachable services on vlan5 — `192.168.1.100:9016` NetworkAccessManager
+   (allow-listed `.102`, `.112`) and `:9002` RemoteModuleHMI (`.106`, `.109`, `.112`) — and one
+   on vlan4 — `172.16.4.100:49156` diagnosticsd (`.107`, `.112`). No undocumented allow-listed
+   identity and no undocumented listening port exist anywhere in either /24; `9010/9011/9012/
+   9021/9022/9025/5555` are not even listening on the bench (absence, not a hidden plane).
+   `.112` (CGM) is the single identity reachable on both planes. See
+   `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §7.1–7.2.
 
 ---
 
@@ -432,12 +437,24 @@ camera** are.
 Nothing below has been done — this is a plan. Redact VIN and any real MACs/IPs before sharing
 captures (this doc already flags synthetic vs. real MACs).
 
+**[Updated 2026-11-11 per Y175_2026-11-02 Bus 2 tap bench finding:]** Item 1 below — the
+Ethernet Bus 2/4 (gateway/telematics) capture — has now been **executed** on the bench via a
+direct T1 tap (BUELEC 100/1000Base-T1-TX-L media converter, Marvell 88Q2112 + Realtek
+RTL8211FI, run at 100M, direct to a USB-GbE NIC with no intervening switch — a switch in the
+path was found to silently strip 802.1Q tags, which was the actual blocker, not duplex). It
+confirmed the VLAN 2 (AVB)/VLAN 5 (service)/VLAN 4 (internal) tag structure on that pair and
+the exhaustive port/allowlist map (see Open items #1 and #7 above). The bus 6 (amp/AVB) tap,
+the ignition-transition power-mode capture, and the IPC `/dev/ipc/ipc3` decode in item 2 below
+remain **not done**.
+
 1. **P0 — Ethernet is the real interface: capture it first.** Tap the radio's 100BASE-T1 pairs
    (bus 6 `A11↔T3` amp, bus 2/4 gateway/telematics per Open-items #1) with a **BroadR-Reach/100BASE-T1
    media converter** into a mirror port; `pcap` on `eth0`/vlan4/vlan5 during **power-on, ignition
    on→acc→run→crank, and ignition-off**. Goals: (a) observe the FSA `0x5AA5` power-mode/system-state
    exchange the `vendor.gm.powermode` service consumes; (b) map which SOME/IP-SD services vanish when
    the radio is pulled; (c) confirm/deny a **VLAN-502 CAN mirror** on this unit (Open-items #6).
+   **Bus 2/4 tagging and the port/allowlist map are now DONE (bench, no gateway peer present) —
+   the power-mode/ignition-transition capture and bus 6 tap remain open.**
 2. **P0 — decode the IPC vehicle channel.** With the radio powered on a bench harness, log
    **`/dev/ipc/ipc3`** (lchannel 3) and correlate against known transitions (ignition, gear, speed)
    to finish the raw-frame→VHAL-property map (ties into the emulator VHAL work). This is the payload
@@ -553,7 +570,7 @@ VideoCore/DSI) is a different silicon family at both ends.
   lives in the **EVS/camera** mixin).
 - **[confirmed-fw]** Touch = **Atmel maXTouch** (`atmel_mxt_ts.ko`, `insmod` at
   `init.bxtp_gm.rc:73`), on **I2C bus 7 at address 0x4B** (`.../atmel_mxt_ts/7-004b/reinit_mxt`;
-  matches `hardware.md`: "Atmel maXTouch, 16-point, I2C-7 @ 0x4B"). 16-point multitouch.
+  matches `hardware.md`: "Atmel maXTouch, I2C-7 @ 0x4B"). The "16-point multitouch" figure is from the Y177 snapshot only; `hardware.md` marks it UNVERIFIED on Y181 (no `getevent -p` capture) — qualified 2026-11-12.
 - **[inferred, high confidence] Touch I2C is tunneled back over FPD-Link III.** The maXTouch and
   the DS90UB949 serializer share the *same* i2c-7 bus, and `reinit_mxt` is paired with
   `reinit_ti949_948` (re-init serdes → re-init touch after a link drop). In FPD-Link III the

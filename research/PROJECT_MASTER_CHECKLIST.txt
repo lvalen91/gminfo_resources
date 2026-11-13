@@ -244,6 +244,7 @@ KEY FILES PREVIOUSLY OVERLOOKED
 2. A11_CSM_x80.Txt vs Y177update_CSM.Txt
    - Shows exact difference between bypassed and normal state
    - Bypassed: Seed = 0xFF (32 bytes), MEC = 244
+     [2026-11-12 NOTE: DPS_SECURITY_ANALYSIS.txt / the compendium label MEC 244 'production/locked'; that label contradicts the A11_CSM_x80 capture itself (ADB accessible at MEC 244, VIP_CONTROL_ANALYSIS.txt s5.2) and the Y181 convention (nonzero MEC = unlocked/bypass). Meaning of 244 beyond that not asserted.]
    - Normal: Seed = ECUID+Challenge, MEC = 0
 
 3. delivery_manifest.csv (Y177/Y181)
@@ -417,7 +418,7 @@ HARDWARE COMPONENTS IDENTIFIED
 | Component   | Chip          | Package  | Purpose                    |
 |-------------|---------------|----------|----------------------------|
 | I2C EEPROM  | ST M24C64     | TSSOP8   | Security flags, VIN, config|
-| SPI Flash   | ISSI IS25LP016| SOIC8    | Logs, backup (non-critical)|
+| SPI Flash   | ISSI IS25LP016| SOIC8    | BCM89551 Ethernet-switch firmware (NOT logs/backup) [on the MY22/DV teardown unit; the live Y181 radio has the Marvell 88Q5050 variant; 2026-11-12] |
 | VIP MCU     | RH850/F1K   | -        | Security gatekeeper        |
 | SoC         | Intel Atom x7 | -        | Android execution          |
 
@@ -425,8 +426,13 @@ SPI Flash Details (IS25LP016):
   - Location: Opposite side of PCB from EEPROM
   - Markings: IS25LP016, DNL3, 2243, P3A368L2
   - Size: 16Mbit (2MB)
-  - Critical: NO - module likely boots without it
-  - Recovery: Blank chip may self-populate via OTA/SPS
+  - **Correction (2026-11-12):** this entry's old "Logs, backup (non-critical)" / "Critical: NO"
+    / "blank chip may self-populate via OTA/SPS" claims are superseded. Confirmed by partial
+    dump (`hardware/teardown.md:89,99`): this chip holds the **BCM89551 Ethernet-switch
+    firmware** (on the MY22/DV teardown unit; the live Y181 radio has the Marvell 88Q5050 variant; 2026-11-12 label), not logs/backup, and this partition's own `QUICK_REFERENCE.txt:119` already
+    carries the corrected statement ("NOT logs/backup; corrected per hardware/teardown.md").
+    Criticality to boot/Ethernet-switch function is not independently re-verified here; do not
+    rely on the old "non-critical / self-populates" claim.
 
 ================================================================================
 END OF CHECKLIST

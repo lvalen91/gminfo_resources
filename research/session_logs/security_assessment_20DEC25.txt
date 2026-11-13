@@ -26,8 +26,14 @@ hypotheses since RESOLVED/REFUTED. Do NOT trust the following as current:
     tested FAILED.
   - "SELinux is software/EEPROM-controlled" framing (L57-69, 350-355): misleading -- the
     cmdline carries duplicate enforcing=0 then enforcing=1 (last value wins); see L817-822.
-  - Section 15.1 L821-822 "Both Y177 and Y181 boot ENFORCING by design" contradicts the rest
-    of this doc and the verified posture: Y177 runs PERMISSIVE, Y181 ENFORCING.
+  - Section 15.1 L821-822 "Both Y177 and Y181 boot ENFORCING by design" was flagged here (at
+    the time this banner was written) as contradicting this doc's then-"verified posture" that
+    Y177 runs PERMISSIVE. [Corrected 2026-11-12: that framing is now itself superseded by the
+    top-of-file 2026-08-25 refutation banner (lines 8-12) -- no stock build (Y175/Y177/Y181) runs
+    SELinux permissive, confirmed again live 2026-11-12 on Y181.3.2 (getenforce=Enforcing,
+    /sys/fs/selinux/enforce=1, all runtime avc records permissive=0). Section 15.1's L821-822
+    "Both ... ENFORCING by design" was the correct statement; "Y177 runs PERMISSIVE" in this
+    banner line is the stale one. See `research/security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8.]
 For current verified facts see VERIFICATION.md and the research/ docs.
 --------------------------------------------------------------------------------
 
@@ -64,7 +70,7 @@ TABLE OF CONTENTS
 Analysis of GM Infotainment 3 (IOK) module comparing Y177 and Y181 firmware
 reveals significant security architecture changes and multiple potential attack
 vectors. The critical finding is that SELinux enforcement was hardened between
-versions, but several exploitable paths remain.
+versions, but several triggerable paths remain.
 
 Key Findings:
 - SELinux changed from PERMISSIVE (Y177) to ENFORCING (Y181)
@@ -354,7 +360,7 @@ BOOT CHAIN:
 ================================================================================
 
 The Y181 update significantly hardened security by enabling SELinux enforcement.
-However, multiple attack vectors remain viable:
+However, multiple entry-point paths remain viable:
 
 1. UART console via world-accessible /dev/ttyACM1
 2. Y177 downgrade due to disabled version checking
@@ -1420,7 +1426,7 @@ Impact: Local privilege escalation to root
 Requirements:
   - User namespace enabled (CAP_NET_ADMIN in netns)
   - nf_tables module loaded
-  - SELinux may block exploitation
+  - SELinux may block triggering
 
 Exploitation from ADB shell:
 1. Create user namespace (if permitted)
@@ -1429,7 +1435,7 @@ Exploitation from ADB shell:
 4. Execute arbitrary kernel code
 5. Disable SELinux, gain root
 
-BARRIER: SELinux enforcing mode blocks most exploitation steps.
+BARRIER: SELinux enforcing mode blocks most triggering steps.
          Would work with Y177 (permissive) or after SELinux bypass.
 
 20.5 CVE-2019-2215 ANALYSIS
@@ -2427,7 +2433,7 @@ POTENTIAL EXPLOITS:
    adb shell settings put secure com.gm.vac.SWC_PTT_APP com.malicious.app
 
 2. Media Control via Shell Execution:
-   Any app exploiting a shell vulnerability can control radio/media
+   Any app triggering a shell vulnerability can control radio/media
 
 3. Accessibility Service Attack:
    Install app with AccessibilityService, user enables it, then:

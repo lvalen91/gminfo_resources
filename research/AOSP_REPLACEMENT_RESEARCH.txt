@@ -268,9 +268,11 @@ The "device_state=locked" gate above is not an abstract fastboot flag -- it is b
 by a concrete, decoded mechanism. SOC_ABL is kernelflinger ("ELK"), a 32-bit x86 ELF at
 container offset 0x301288. Device lock state is read from the UEFI NV variable
 `OEMLock` (GUID 1ac80a82-4f0c-456b-9a99-debeb431fcc1) via read_device_state_efi().
-device_is_unlocked() returns true iff OEMLock exists, is readable, and has bit 0 (0x01)
-set -- this predicate is INTACT/unpatched; the unit is LOCKED only because that byte is
-absent/clear. USE_TPM was NOT compiled into this module (zero TPM2 NV-index constants
+The ordinary successful OEMLock read uses bit 0 (0x01). Correction 2026-11-12:
+this is not a complete predicate; gated missing-state/provisioning fallbacks
+also exist. See GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md section 2.3.2.
+The observed locked state is consistent with the ordinary zero-state path;
+the actual live EFI variable contents were not established by this static trace. USE_TPM was NOT compiled into this module (zero TPM2 NV-index constants
 or TPM2 calls found) -- so this is explicitly NOT an fTPM/TPM2-backed lock, and NOT
 RPMB-backed (`ABL.rpmb=` is only an androidboot cmdline token, not the lock store).
 A secondary provisioning-UNLOCKED path (OEMLock NOT_FOUND + non-virtual boot +

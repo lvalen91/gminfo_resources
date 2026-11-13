@@ -34,7 +34,8 @@ gm_update_engine, not GHS boot-time verification.
 5. Progress bar incremented (partitions being written)
 6. System rebooted multiple times
 7. "Update Failed" screen displayed
-8. Used gm_reboot_normal file to exit error screen
+8. Used the gm_reboot_normal recovery trigger to exit the error screen
+   (encoded filename Z21fcmVib290X25vcm1hbA==; clarified 2026-11-12).
 9. System booted back to UNCHANGED Y181
 
 2.2 KEY OBSERVATION
@@ -240,7 +241,9 @@ Size: 14,929,956 bytes
 Structure:
   - Offset 0x000: GM package header
   - Offset 0x220: Intel ipk header ("ipk.")
-  - Offset 0x27C: ELF binary — **EM_386 / 32-bit** per the ELF header (byte-verified 2026-09-10, matches INVENTORY.md's "correct 32-bit i386"). NOTE: `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md` argues certain task-code sections (`.vmm1.text`/`.ota_update.text`) contain x86-64 prologues — that section-level claim is DISPUTED/unreconciled and does NOT make the whole binary x86-64. (The earlier "code is x86-64, see EEPROM_LAYOUT §0.8" note was wrong: §0.8 disassembles `adbd`, an Android-userspace 64-bit binary, not this HOSTOS image.)
+  - Offset 0x27C: ELF header declares ELF32/i386; actual kernel/task code is x86-64.
+    Architecture, extraction boundaries and hashes: gminfo_resources/research/
+    GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md section 0.1.
 
 5.2 GHS VERSION STRINGS
 -----------------------
@@ -432,38 +435,46 @@ Relevant partitions for downgrade protection:
 9.1 FILENAME-TRIGGERED BEHAVIORS
 --------------------------------
 GM's update system uses empty files with specific names to trigger behaviors.
-This pattern is implemented in gm_update_engine (Android service), NOT in GHS.
+The encoded Y181B recovery marker is handled by /system/bin/recovery, not GHS.
+Normal-AAOS gm_update_engine is a separate update component.
 
 Known trigger files:
 | Filename              | Effect                                  |
 |-----------------------|-----------------------------------------|
-| gm_reboot_normal      | Exit "Update Failed" screen, boot normal|
+| Z21fcmVib290X25vcm1hbA== | Exit dealer recovery; label gm_reboot_normal |
 | gm_usb_ignore_battery | Skip battery level check during update  |
 
 9.2 gm_reboot_normal DETAILS
 ----------------------------
-The "gm_reboot_normal" file (base64: Z21fcmVib290X25vcm1hbA==):
+The filename is Z21fcmVib290X25vcm1hbA==; its decoded label is gm_reboot_normal.
+Corrected 2026-11-12 against Y181B recovery code and GM PIT6209:
+https://static.nhtsa.gov/odi/tsbs/2024/MC-11007670-0001.pdf
+The traced recovery path encodes the label before matching; plain-name
+equivalence is not established. See GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md
+sections 2.2.1 and 4.4-4.5 for code and original-SPS provenance. No other
+bulletin-backed encoded trigger procedure was identified.
 
 - File must be present on USB root directory
 - File content can be empty (0 bytes)
 - Filename triggers recovery to reboot normally
 - Does NOT affect the update result or partition contents
 - Simply exits the error state gracefully
-- NOT found in GHS binary - implemented in Android gm_update_engine
+- Filename matching is verified in Y181B /system/bin/recovery, not GHS
 
 9.3 IMPLEMENTATION LOCATION
 ---------------------------
-The filename trigger logic is in the gm_update_engine service:
+Recovery itself handles the encoded marker. The following normal-AAOS updater
+permissions do not establish the recovery handler:
 
 Evidence from SELinux policy (vendor_sepolicy.cil):
 - gm_update_engine has permissions to read vfat (USB) filesystem
 - gm_update_engine can read/write files on mounted USB
 - Service runs continuously: [init.svc.gm_update_engine]: [running]
 
-The gm_update_engine service polls USB for:
-1. Update package manifests (*.mnf files)
-2. Trigger files (gm_reboot_normal, gm_usb_ignore_battery)
-3. Status/indication files
+The previously listed normal-updater inputs were manifests, battery-control
+markers and status/indication files; these were not reverified in this pass.
+The encoded gm_reboot_normal marker must not be attributed to that service from
+USB permissions alone: its Y181B recovery handler is verified separately.
 
 9.4 SECURITY IMPLICATIONS
 -------------------------
@@ -673,7 +684,9 @@ Key module management:
 8. The SOC_HOSTOS (GHS) binary is IDENTICAL in Y177 and Y181
 9. Signing key extraction via software is NOT FEASIBLE
 10. Keys protected by Intel CSE hardware and loaded at runtime
-11. Filename triggers (gm_reboot_normal) are in gm_update_engine, not GHS
+11. CORRECTED 2026-11-12: encoded gm_reboot_normal/gm_capture_log markers
+    are parsed by guest recovery, not GHS or the normal-AAOS gm_update_engine.
+    See GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md sections 4.2-4.7.
 
 11.2 OPEN QUESTIONS
 -------------------
@@ -698,7 +711,8 @@ APPENDIX A: KEY FILE REFERENCES
 GHS Binary Analysis:
 - Source: update_packages/Y181/85098662
 - ELF offset: 636 bytes into file
-- Architecture: **EM_386 / 32-bit ELF**, statically linked (header byte-verified 2026-09-10). A disputed x86-64-task-section claim exists (see `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md`); it is unreconciled and not established for the whole binary.
+- Architecture evidence: see gminfo_resources/research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md
+  section 0.1. The declared ELF32/i386 header is not the instruction-set conclusion.
 - Strings extracted at: /tmp/ghs_elf.bin (temporary)
 
 vbmeta Files:

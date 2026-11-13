@@ -46,55 +46,33 @@ minipro -p "M24C64" -r verify.bin
   - Byte 0xa81: 0x00 ← Security flag = ENABLED
   - Byte 0xa82: 0x5A (framing byte)
 
-> **The "flip to 0xFF" you were told about** = set the *data* byte (`0x0441` and the
-> backup `0x0A81`) to `0xFF`. That makes the VIP return an all-`0xFF` seed instead of the
-> real ECUID+Challenge, so the PROTOKEY/ICUSB module skips BCM auth → traditional (limited)
-> ADB. Marker/frame bytes are CalGroup-assigned at runtime and are NOT validated — only the
-> data byte matters. OTA/SPS resets both to locked; re-apply after updates.
->
-> **This same VIP/PROTOKEY+EEPROM layer also anchors the diagnostic/calibration UDS `$27`
-> SecurityAccess** (the gate on writing `SCREEN_RESOLUTION` and other `CalSets.db` cals — the
-> CarPlay-fullscreen lever). Flipping the *ADB* SBI is NOT proven to open the *calibration*
-> gate, but they share the anchor — so whether a different EEPROM flag governs the cal/diag
-> security level is an open, testable question. See
-> `../research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` (§4). The undocumented-flag
-> candidates `0x04A0`/`0x04C0`/`0x0A40`/`0x0BE0` all read `0xFF` (unwritten, no stored data) in
-> both the stock and ADB_enabled dumps (confirmed: `csm_eeprom/gm_csm_stock.bin` &
-> `.../gm_csm/Y181/ADB_enabled.bin`), so none is a usable flag lever. `0x04A0`/`0x0A40`/`0x0BE0`
-> also have zero real VIP code references; `0x04C0` alone is touched by a real CalGroup 0x44 code
-> handler (`FUN_ram_00091f82`) that references the cell region even though the cell itself is
-> empty. See `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`.
-> NB: EEPROM `0x0E00` "display" bytes are touch-region/backlight/timing (guessed) — the actual
-> resolution lever is `CalSets.db SCREEN_RESOLUTION`, not those bytes (§5).
+**Corrected 2026-11-11:** the owner-corroborated minimal EEPROM recipe changes only
+**data bytes `0x0441` and `0x0A81` to `0xFF`**. Pre-Y181 stock reportedly already has
+`0x0A81=FF`; Y181 requires both. Leave framing bytes unchanged. The successful minimal
+edit needed no CRC recomputation; this does not establish that every EEPROM region lacks
+integrity checks. `0x1A01` is not an established second SBI mirror, and `0x0B41` changes
+were not required and produced no observed ADB/SELinux effect.
 
-===============================================
+Separate effects must remain separate:
 
-  - Byte 0x440: 0x5A (framing byte)
-  - Byte 0x441: 0xFF ← Security flag = DISABLED
-  - Byte 0x442: 0x5A (framing byte)
+- **ADB:** [Certificate and privilege behavior](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) is maintained in the consolidated source.
+- **UDS SecurityAccess:** the tested radio returns 31 all-FF seed bytes, and the client
+  sends exactly 12 zero bytes and receives `67 02`. Arbitrary-key acceptance is unproven.
+- **Programming:** on 2026-11-10 the client wrote 14 stock GM-signed radio calibration
+  containers, finalized/reset, and verified High Country→LTZ readback with ADB retained.
+  Edited containers have failed; their format is signed, while the active UDS signature
+  enforcement path remains unresolved. This does not establish arbitrary custom-calibration access.
+- **ProtoKey and Signature Bypass Tickets:** these are separate mechanisms from the
+  UDS seed and the EEPROM SBI; do not use the shared terminology as proof of a shared gate.
 
-  - Byte 0xa80: 0x5A (framing byte)
-  - Byte 0xa81: 0xFF ← Security flag = DISABLED
-  - Byte 0xa82: 0x5A (framing byte)
+See [the EEPROM audit](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
+[the client bench report](../mdi2_client/README.md), and
+[the central evidence guide](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+The candidate cells `0x04A0`, `0x04C0`, `0x0A40`, and `0x0BE0` are unwritten in the compared
+dumps; their existence is not a demonstrated calibration-unlock lever. Actual Android
+`SCREEN_RESOLUTION` is a `CalSets.db` value, not a proven EEPROM display-width field.
 
-  - Byte 0x1A01: 0xFF ← second SBI mirror = DISABLED  (stock 0x00)
-  - Byte 0x0B41: 0x01 ← "debug-mode" flag, label UNCONFIRMED (stock 0x00) — see note below
-
-> NOTE: the Y181 stock→modified diff toggles **all four** bytes — 0x441→0xFF,
-> 0xa81→0xFF, 0x1A01→0xFF, 0x0B41→0x01 (verified by byte-diff of stock vs modified Y181
-> dumps in the external GM_research corpus, not in this repo). The 0x5A shown above is one firmware's
-> framing marker; the shipped Y181 bins actually use F0 @0x440 and C3 @0xa80 —
-> locate each security byte by **offset**, not by the framing value.
-
-> **0x0B41 OPERATOR-TESTED, no observable effect (2026-09-10):** an operator flipped
-> 0x0B41=0x01 as part of the above triad and saw **no change in AAOS behavior** — adb stayed
-> `uid 2000`, SELinux stayed enforcing. The "debug-mode" name comes only from the byte-diff
-> above, not from a confirmed code read-site (no decompiled reference to
-> `ro.debuggable`/SELinux-permissive/OEM-unlock found). ADB enablement tracks 0x441/0xa81
-> (the two SBIs); 0x0B41's function is OPEN, under active VIP-disasm investigation. See
-> `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §1 for detail.
-
-IC in question is an ST M24C64 TSSOP8, using a Tool like XGecu Programmer. The framing byte appears to change depending on Firmware Version (Android OTA). Each update will reset back to 0x00 and lock ADB access.
+IC in question is an ST M24C64 TSSOP8, using a Tool like XGecu Programmer. The framing byte appears to change depending on Firmware Version (Android OTA). Some owner-reported updates reset the bypass, but this is not universal: the November 10 stock calibration write retained ADB. The reset trigger remains unidentified.
 
 Last Known modifiable Build was Y181 for RPO: IOK identified radios.
 I have had issues with HexEdit on macOS not saving changes to the file. So double check any modifications to the file have been saved properly before writing back to IC.

@@ -25,6 +25,8 @@ GM AAOS implements **fundamentally different architectures** for CarPlay and And
 > `video/carplay_video_pipeline.md`. Adapter-internal mechanics (CPC200 MFi handling, AAC→PCM, AirPlay
 > termination) are documented in the separate CPC200-CCPA repo; this doc covers the native-vs-adapter
 > *comparison*.
+>
+> **Scope note (2026-11-12):** the "via CPC200" column and every CPC200 section below come from the February 2026 CPC200 + `zeno.carlink` rig. The radio now on the bench runs a different third-party path: gm_ccpa (package `android.car.usb.handler`, CarPlay-only) with wireless CarPlay through the OCBM box, which the retained `main` log shows decoding HEVC 2400x960 with `OMX.Intel.hw_vd.h265` and playing AAC-LC 48 kHz (see `../video/carplay_video_pipeline.md`, `../audio/carplay_audio_pipeline.md`). Do not read CPC200 figures (H.264, 36-byte header, adapter-side AAC->PCM) as properties of that path.
 
 ---
 
@@ -193,6 +195,8 @@ The CPC200 adapter terminates the AirPlay protocol entirely on the adapter itsel
 | H.264 | libNmeVideoSW.so | NVDEC Software | AirPlay-specific timing |
 
 ### Why Native CarPlay Uses Software Decode
+
+> **2026-11-12 scope:** stock GM CarPlay path only, and the reasons listed are inference, not logged. A fourth path now exists: gm_ccpa (`zeno.gmccpa`, wireless CarPlay via the OCBM box) decodes HEVC 2400x960 in hardware via MediaCodec `OMX.Intel.hw_vd.h265` (see `../video/carplay_video_pipeline.md`), so software decode is not a property of CarPlay on this radio in general.
 
 Despite Intel hardware decoder availability, native CarPlay uses software decode for:
 
@@ -504,6 +508,7 @@ Uses standard Bluetooth HFP SCD files (no Android Auto specific tuning)
 - `media_projection` - Screen mirroring
 - `companiondevice` - Device pairing
 - `android.car.usb.handler` - USB handling
+  > 2026-11-12 correction: on the Y181B bench radio the package named `android.car.usb.handler` is gm_ccpa (`zeno.gmccpa`, uid 1010123, CarPlay-only), not an Android Auto USB component; the Android Auto attribution here is from the earlier CPC200-rig era/stock naming and is not confirmed for this radio.
 
 **Security Certificates:**
 ```
@@ -704,7 +709,11 @@ mediaCodec.setCallback(new MediaCodec.Callback() {
 
 1. **Three Distinct Paths**: Native CarPlay (CINEMO/SW decode), CPC200 CarPlay (MediaCodec/HW decode), and Android Auto (MediaCodec/HW decode)
 
+   > 2026-11-12: now four paths: add gm_ccpa CarPlay via OCBM box (MediaCodec HW HEVC, `OMX.Intel.hw_vd.h265`, 2400x960; measured in the Y181B `main` log). The three-path statement predates it.
+
 2. **Native CarPlay is the Outlier**: Only path that uses software decode and proprietary CINEMO/NME framework
+
+   > 2026-11-12: still true among the four paths (gm_ccpa also decodes in hardware); stated for the stock path only, with the earlier "why" being inference.
 
 3. **CPC200 Matches Android Auto Architecture**: Both use standard Android MediaCodec with Intel hardware acceleration
 

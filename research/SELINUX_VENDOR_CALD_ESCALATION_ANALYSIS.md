@@ -1,5 +1,11 @@
 # `vendor_cald` / `calserviced` Reachability from `untrusted_app` — SELinux Audit
 
+**2026-10-30, Y175:** A UID 1000 shell in the `system_app` SELinux domain
+received `Permission denied` when attempting to inspect `/mnt/vendor/calibration`
+and its `overrides` directory. This is a metadata-access test, not a write or
+Binder authorization test; it does not establish whether that identity can use
+another calibration interface.
+
 **Verdict: SEALED.** Neither `untrusted_app` (sideloaded app) nor `shell` (adb) can write
 `/mnt/vendor/calibration/overrides/` or reach `calserviced`'s IPC. The `*.calovride`
 OVERRIDE_BACKDOOR is real and (per provenance audit #37/#38) present in the binary, but it is only
@@ -55,6 +61,10 @@ neverallows retained). Cross-checked against `apr2026` and base `Y181` CILs — 
 > = `dangerous` and `gm.permission.READ_DIAGNOSTIC_CALIBRATION_DATA` = `normal` (`permissions_full.txt`);
 > `dangerous` is not auto-granted, which only reinforces "SEALED" — but it is a different gate from the
 > `.calovride`/`calserviced` surface this doc sealed, so it does not change the verdict.
+
+> **[C] live-Y181.3.2 2026-11-12:** the bench radio, probed read-only over adb, is `uid=2000(shell)` / `u:r:shell:s0`, `getenforce`=Enforcing,
+> `ro.boot.selinux=permissive` (the cmdline also carries a later `enforcing=1`/`androidboot.selinux=enforcing` pair; last-pair-wins is an inference, not read), patch level 2025-06-05, `user`/`release-keys`; all 3596 runtime `avc` records (194 kernel + 1055 main + 2347 events, overlapping streams) are `permissive=0`. (Corrected 2026-11-12: this note previously said "8270 `avc` lines", which no source supports; see `gminfo37_update_cache_FORENSIC_LLM.txt` FACT lines for the 3596 count.)
+> The "Enforcing" premise of this verdict holds today. The shell can read `/vendor/etc/selinux/vendor_sepolicy.cil` (checked 2026-11-12), but the CIL rules cited below were not re-diffed today.
 
 > **[C] Y181.3.2-ref 2026-10-06 — the §(a)/(b) CIL rule-set re-derived VERBATIM from a LIVE Y181.3.2 root
 > reference, not just the jun2026 pull.** Read directly from the on-device `/vendor/etc/selinux/vendor_sepolicy.cil`

@@ -184,8 +184,11 @@ Apollo Lake-I line (customer = automotive only). The gminfo37 SoC is the top SKU
 - **Memory:** SoC max is 8 GB LPDDR4-2400 / 4 ch — consistent with the fitted 8 GB. Verified split
   [FW 85098662; 3-Opus 2026-10-10]: GHS **grants the guest 7830 MiB** DRAM (byte-confirmed from the
   boottable, not an over-count) + 34 MiB RO IPU window; GHS reserves **~362 MiB** below 4 GiB; the
-  guest kernel `MemTotal` is **5530 MiB (5.40 GiB)**. The 7830→5530 gap is a VMM-configured guest
-  **E820 limit** whose exact cause is **[UNVERIFIED]** (needs a root `/proc/iomem`/dmesg). The old
+  guest kernel `MemTotal` is **5530 MiB (5.40 GiB)**. **Updated 2026-11-12:** Y181B recovery
+  exports supply the previously missing E820 map: **5743.55859375 MiB usable**. The reason this
+  differs from the static grant remains unresolved; the old 5780 MiB/RAM4-cap explanation is
+  unconfirmed. See [the measured map](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
+  The old
   "604 MB reserved" / "6 GB to guest" figures are unsourced; "5.66 GB" is a unit slip.
 - **UART/console:** the Host-OS-Debug(UART2) / Generic(UART0,3) / GNSS(UART1) assignment is the
   datasheet basis for the `ttyS2` console + the two guest UART grants.

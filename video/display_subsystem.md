@@ -168,7 +168,7 @@ Layer Stack (129 visible layers typical):
    - Blend: NONE
    - Opaque: true
 
-2. zeno.carlink/MainActivity
+2. zeno.carlink/MainActivity  *(from the February 2026 CPC200 rig; the app on the radio as of 2026-11-12 is gm_ccpa, `zeno.gmccpa.av.CarPlayActivity` in package `android.car.usb.handler`; this layer dump was not re-captured)*
    - Type: CLIENT/DEVICE
    - Size: 2400x960
    - Blend: NONE

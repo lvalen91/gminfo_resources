@@ -8,6 +8,32 @@ emulator uses a GM-format **placeholder** VIN for `INFO_VIN`. Vehicle model deri
 **2024 Chevrolet Silverado 2500HD LTZ**, ICE **6.6L gas V8 (L8T)**, 4WD (F48), Fleetside (E63),
 GVWR 10,850 lb (JGH), Flint MI plant (CMD).
 
+## Y181B exported calibration baseline (2026-11-12)
+
+The [recovery export](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12)
+contains `update_cache/bootup_log/vendor/CalSets.db`: **2574** `AllCalSets`
+rows, 982 with nonzero `OverRiden`. This count describes the retained exported
+database, not a query of the running calibration HAL. The second ZIP has the
+byte-identical database. **Verified 2026-11-12 (`sqlite3` on the exported file):** 2574 rows / 982 nonzero `OverRiden` re-counted exactly; `PRAGMA user_version` = **70008**; tables `AllCalSets`, `SubSets`, `EnumSets`, `ModuleData` (every `ModuleData` row carries `PartNumber_D` = 70008, i.e. the same number is the DB/cal-set revision, with per-module `applied_overrides/<part>.<DLS>.<n>.cmod` paths); the VIP/`ghs.log` reports `Calibrations: Info: Current CalTable Version: 3.5` and `Saved CalTable Version: 3.5` (equal, no pending table migration). Live props `persist.sys.cal.brand=GM_Brand_Chevrolet`, `persist.sys.cal.model=Silverado` read via `adb shell getprop`; `persist.vendor.gm.brand/.model` are absent on the real radio. `OverRiden` is retained as a numeric field, not
+interpreted here as a Boolean or a human-edit count.
+
+| CalName | CalValue | OverRiden |
+|---|---:|---:|
+| `SCREEN_RESOLUTION` | **4 (`SIZE_2400_BY_960`)** | 8 |
+| `GMBrand` | **3** | 4 |
+| `GMModel` | **4** | 4 |
+| `APPLICATION_HOMESCREEN_APPLECARPLAY_ENABLED` | 1 | 5 |
+| `Apple_CarPlay_enableWireless` | 1 | 5 |
+| `Enable_Application_Apple_Carplay` | 1 | 0 |
+| `GIS864_USBProgrammingEnabled` | 1 | 0 |
+
+These are a Y181B vehicle-specific baseline for emulator comparison. Earlier
+2573-row vendor/default databases and `SCREEN_RESOLUTION=2` snapshots remain
+historical sources, not the current exported radio baseline. A calibration
+enable does not prove feature operation or acceptance of a custom signed
+calibration package. The homescreen-removal experiment changes per-user
+package availability independently of these calibration values.
+
 ## RPO → feature → GM calibration / prop implication
 Radio/UI-relevant options (full RPO list retained by owner). "cal" = the calibration or prop it grounds;
 exact enum values still to be read from `CalSets.db`/GMHomeScreen where noted.
@@ -31,6 +57,9 @@ exact enum values still to be read from `CalSets.db`/GMHomeScreen where noted.
 | UDV | Enhanced full multicolor cluster | IVN=NONE (cluster driven by radio family) — cluster HMI over FSA |
 
 ## Actionable emulator corrections (from this config)
+> **Status note 2026-11-12:** items 1-2 and 4 below were subsequently applied (`GMTrim=16` for LTZ, `TraileringAppType=2` +
+> `APPLICATION_HOMESCREEN_TRAILERING_ENABLED=1`, identity props set) — see `emulator.md` "RPO-matched calibrations [DONE]". The "placeholder 15" is the pre-fix value.
+
 1. **Enable Trailering** (`APPLICATION_HOMESCREEN_TRAILERING_ENABLED=1`, `TraileringAppType`) → the missing
    4th home card, since this truck is trailer-equipped (Z82/UET/JL1).
 2. **Set `GMTrim` to the LTZ value** (GF9), not the placeholder 15.

@@ -12,7 +12,7 @@ The **GM Info 3.7** (`gminfo37`) is the 2024 Chevrolet/GMC infotainment ECU buil
 |-----------|---------------|
 | CPU | Intel Atom x7-A3960, 4-core / 4-thread, base 0.8 / HFM 1.6 / **2.0 GHz burst** [Intel 336256 via `platform/gminfo3.7_tech_specs.md:27`; live `cpuinfo.txt` 4 cores, 2056 MHz] [CORRECTED 2026-10-10: was "2.4 GHz boost"], 14nm |
 | ABI | `x86_64`, dalvik variant `silvermont` |
-| RAM | 8 GB LPDDR4 physical (4× Micron MT53E512M32D2DS-053); GHS grants the guest 7830 MiB; guest `MemTotal` = 5530 MiB (5.66 GB kernel-visible) [C `platform/hardware.md:24`, FW 85098662]; the earlier "~6 GB / ~604 MB reserved" figures are superseded [CORRECTED 2026-10-10] |
+| RAM | 8 GiB LPDDR4 physical; static GHS guest grant 7830 MiB; historical Android `MemTotal` near 5530 MiB (5.40 GiB / 5.80 GB decimal). Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; [map and unresolved grant difference](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory). |
 | Storage | 64 GB Samsung KLMCG4JEUD eMMC |
 | GPU | Intel HD 505 (Gen9, 18 EUs); Mesa 21.1.5 GLES 3.2 |
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, ~13.4", `lcd_density=200` |
@@ -411,10 +411,14 @@ TID 3286: [USB] Claimed interface 0: IN=81 OUT=1   ← second claim       (line 
 **Both Y177 and Y181 run SELinux enforcing at runtime.** Y177's boot cmdline (from `86331652` boot image) still carries the permissive token, but it is overridden at runtime:
 ```
 enforcing=0 androidboot.selinux=permissive    ← Y177 boot cmdline (overridden — runtime is Enforcing)
-# Y181 does not carry the token
+# Y181: see 2026-11-12 correction below -- the live Y181 cmdline DOES carry the permissive pair too
 ```
 
-Y177 carries the `androidboot.selinux=permissive` cmdline token; Y181 does not. The token is **not honored at runtime**: Y175/Y177/Y181 ship a byte-identical `init` compiled `ALLOW_PERMISSIVE_SELINUX=0`, which forces enforcing on this `user` build regardless of the cmdline (same mechanism spelled out for Y181 below). So all three builds run SELinux **enforcing** at runtime.
+> **2026-11-12 correction (live Y181B radio, /cache kmsg dump, 30 cmdline files):** the earlier claim that "Y181 does not carry the token" is **wrong**. The Y181 cmdline carries BOTH `enforcing=0`+`androidboot.selinux=permissive` (early tokens) AND a later `enforcing=1`+`androidboot.selinux=enforcing` pair, in all 30 captured cmdlines; `ro.boot.selinux`=permissive; runtime `getenforce`=Enforcing and all 3596 captured avc records show `permissive=0`. Runtime ENFORCING is established; *why* (last-pair-wins vs. init-compiled `ALLOW_PERMISSIVE_SELINUX=0`) is inference, not observed. Whether Y177's cmdline also carries the later enforcing pair is not verified here.
+>
+> [2026-11-12 source-label fix: the "30 cmdline files" are `gmcrashlogs/stats*/cmdline` (30 of 30 carry both the permissive and the enforcing pair; reproduced), not the recovery `last_kmsg*` files. The recovery `last_kmsg` kernel `Command line:` record is truncated at ~1007 characters (ends mid-token at `androidboot.hardware=full`) and shows only the early permissive pair (`enforcing=0 androidboot.selinux=permissive`; no `enforcing=1` in any of the 31 recovery files), so it cannot show the later enforcing pair.]
+
+Y177 carries the `androidboot.selinux=permissive` cmdline token (as does Y181, see correction above). The token is **not honored at runtime**: Y175/Y177/Y181 ship a byte-identical `init` compiled `ALLOW_PERMISSIVE_SELINUX=0`, which forces enforcing on this `user` build regardless of the cmdline (same mechanism spelled out for Y181 below). So all three builds run SELinux **enforcing** at runtime.
 
 > `[C] live-Y175 2026-10-05: CONFIRMED directly on Y175 — the cmdline-vs-runtime discrepancy is
 > live-reproduced [LIVE_Y175_FACTS §1, §8]. `ro.boot.selinux=permissive` IS present in props
@@ -445,7 +449,7 @@ Sideloaded apps (`untrusted_app`) are in `base_typeattr_196` which grants:
 
 **USB port role is CAN-controlled.** A dedicated `usb_roleswitch` SELinux domain (communicates over CAN socket) writes to `sysfs_usb_role_writeable` — the USB port can switch between host (CarPlay/AA adapter) and device (ADB) mode programmatically based on vehicle CAN state.
 
-**`ro.boot.selinux=permissive` vs. `getenforce` discrepancy:** On Y181, `all_properties.txt` reports `[ro.boot.selinux]: [permissive]` (the bootloader cmdline value) while `selinux_status.txt` reports `Enforcing` at runtime. This is **standard Android behavior for `user` builds**, not a GM-specific mechanism: a production `user` build (`ro.build.type=user`, `ro.debuggable=0` — both true here) ignores the `androidboot.selinux=permissive` cmdline and boots Enforcing regardless. No explicit `setenforce` override exists in any init.rc on the partition (`grep -i setenforce` across the vendor/system init files returns nothing). Treat Y181 as Enforcing at runtime.
+**`ro.boot.selinux=permissive` vs. `getenforce` discrepancy:** On Y181, `all_properties.txt` reports `[ro.boot.selinux]: [permissive]` (the bootloader cmdline value) while `selinux_status.txt` reports `Enforcing` at runtime. This is *likely* standard Android behavior for `user` builds (inference; the 2026-11-12 Y181 cmdline also carries a later `enforcing=1`/`androidboot.selinux=enforcing` pair, so the mechanism is not isolated), not a GM-specific mechanism: a production `user` build (`ro.build.type=user`, `ro.debuggable=0` — both true here) ignores the `androidboot.selinux=permissive` cmdline and boots Enforcing regardless. No explicit `setenforce` override exists in any init.rc on the partition (`grep -i setenforce` across the vendor/system init files returns nothing). Treat Y181 as Enforcing at runtime.
 
 ---
 

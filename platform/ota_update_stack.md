@@ -14,7 +14,116 @@ for the signing/SELinux gate context see [`platform/security.md`](security.md).
 
 ---
 
+## Y181B recovery export evidence (2026-11-12)
+
+Source: both [recovery USB archives](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12).
+Their entire `update/` trees are byte-identical. Exported `UpdateDB` has
+15 `UpdateResults` rows, no `Packages` rows and `ReflashCounter=11`.
+The stored `ProgrammingStatus` names manifest `86405527`, version
+`SIHM22B-00499.03`, Status=1, Percentage=99 and ErrorCode=0. These are
+persisted records, not a fresh installation result or an active-package query.
+The history contains multiple versions/campaigns and must not be attributed
+entirely to the deliberate homescreen-removal experiment. Retained manifests
+and signature metadata do not constitute a complete restorable firmware image.
+
+**Decoded 2026-11-12 (direct read of the exported `UpdateDB`; epochs converted to UTC):** the 15
+`UpdateResults` rows have `InstallDate` from 2025-05-10 (manifests `85759595`, `SIHM22B-00383.01`)
+through 2026-09-28; manifest `86405527` (`SIHM22B-00499.03`) appears twice — id 24 with InstallDate 2026-08-25
+15:09 UTC and id 29 with InstallDate 2026-09-29 01:34 UTC (= 2026-09-28 17:34 local, UTC-8) — and two OTA-campaign rows (`GM Update N25-250552`, `Important Update GM 661.10`) are dated
+2026-09-28 (14:52 and 16:22 UTC). `ProgrammingStatus` (2026-09-28 17:25:28 local) and the
+`ReflashCounter` 10 -> 11 write at the same second are in the gmlogger system log
+(`UpdateService-PersistStore`); the same log shows the active Android slot going 1 -> 0 across the
+recovery install at 17:27-17:33. `LastCheckUpdateTime` = 2026-11-07 23:09 UTC. `slot_switched` = `N`
+in both exports, i.e. no slot switch pending at export. Module inventory: 18 modules
+(`moduleinfo`, see [`firmware_versions.md`](firmware_versions.md#y181b-runtimeexport-identity-2026-11-12)).
+Corrected 2026-11-12: an earlier version of this note said only the OTA rows and the ProgrammingStatus were dated
+2026-09-28 and the USB manifest row 2026-08-25; the raw `UpdateDB` also holds the second USB `86405527` row (id 29)
+dated 2026-09-28 local, so "USB `00499.03` + 2 OTAs on 2026-09-28" is supported (the 08-25 row is an earlier USB install).
+
+Recovery wipe reasons retained in the numbered `recovery/last_log` series (directly read, counter
+order 47 -> 55): 47 and 48 `--wipe_data --reason=bcm_replacement` (from `/update_cache/recovery/command`);
+49 `--wipe_data --reason=com.gm.domain.server.delayed,2026-11-07T12:45:35Z` (delayed GM server wipe;
+args from the boot message; recovery's own wall-clock reads Sat Nov 7 2026 21:45, which is not reconciled
+with the reason's 12:45Z stamp, and is the only entry with a plausible RTC); 50
+`--wipe_data --reason=MasterClearConfirm,2026-11-10T15:54:27Z` (factory MasterClear, boot-message args;
+the log line `unrecognized option` for the comma-suffixed reason is printed, outcome of the wipe itself
+not traced here); 51-53 no arguments; 54 and 55
+`--show_return_to_dealer` (see the GHS recovery analysis). Recovery's own clock reads 2010/2011
+outside entry 49, so only the reason strings carry the dates.
+
+The first archive preserves a concrete multi-reboot update sequence in
+`update_cache/recovery/last_log.10`, `.9` and `.8`:
+
+1. `.10`, lines 97–102: production certificate selected, `Security Check Passed.`,
+   and build/manifest version comparison. `version check disabled` at line 113
+   is a separate software comparison; it does not establish disabled signing
+   or disabled GHS/AVB antirollback enforcement.
+2. `.10`, lines 114–167: Android boot/vbmeta/acpio/bootloader writes and the
+   VIP bootloader update request. `PAL_SWU_ERROR_VIP_BOOT_REQUIRED` is followed
+   by `script is pending for VIP reset` and an IOC/SoC boot-target request.
+   Within this successful retained sequence it is a reset checkpoint, not
+   evidence by itself of a terminal flashing failure.
+3. `.9`, lines 383–396: SoC boot update succeeds, Android next slot becomes 0,
+   `slot_switched` is written `Y`, and reboot is requested to take effect.
+4. `.8`, lines 403–442: SXM serial-read errors are followed by module-28
+   success, `Update complete`, and successful calibration-service installation.
+   Diagnose completion from the surrounding state/result, not an isolated
+   error-labelled line.
+
+The second archive's recovery rotations displace these older `.8`–`.10`
+files, while retaining the cumulative log. Keep both archive fingerprints
+when citing the numbered histories. The native updater is distinct from the
+normal-AAOS service: the latter's current `ServiceLog_0.log` records OTA idle
+state and production certificate configuration, not a new OS flash in this test.
+
+`recovery/last_redbend_log` independently records a dealer-package dummy
+`vbmeta_a` operation: `UpdateDummy`, opening the partition **for reading**,
+and completion with Error 0. `Security: none` describes this Redbend agent
+configuration; it does not negate the surrounding GM package verifier or AVB.
+This supports the [dealer wipe package analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#421-dealer-data-wipe-package-and-formatter-verified-2026-11-12),
+not a claim that this dummy stage installed a replacement vbmeta image.
+
 ## UpdateService Binder Interface
+
+**Y175 live build, 2026-10-30:** Read-only Binder calls from UID 1000
+`system_app` returned empty `getAllPackages()` and null `getActivePackage()`;
+this establishes the service's reported state at the time, not the absence of
+all files in update storage. The installed `DelayedWKSApp.apk` was read and
+decompiled for this build. Its `USBNotifier` considers `.calovride` files only
+when `ro.build.type` is not `user`; the live radio reports `user`. It sends
+container type 2 only on that development-build branch. Its `UpdatePackage`
+also confirms that type 2 returns true from `verify()` without the normal
+manifest checks, but the observed production USB path does not select it.
+This is build-specific static analysis, not an installation test. A different
+locally decompiled APK has a different hash and a notifier that passes only
+type 0; its provenance must be established before attributing it to Y181.
+The same UID 1000 shell's `test -w` succeeded for `/update_cache/update` and
+failed for `/update_cache/calibrations` (a symlink to the calibration overrides
+directory). This establishes an access check, not a successful file write or a
+way around package verification. Whether update-cache contents can influence
+staging without an already authorized package remains untested.
+
+**Y175 cache trace, 2026-10-30:** The UID 1000 `system_app` shell created and
+removed an empty temporary file in `/update_cache/update`, confirming real
+write access; the update database also passed `test -w` but was not modified.
+The installed app's `PersistStore.loadPackages()` reconstructs package records
+from its SQLite database, and `UpdateSource.init()` loads those records into
+memory. The normal `InstallRunner.install()` calls `populateInstallers(...,
+false)`, which adds a verifier for manifest packages; the package verifier
+checks the signature, manifest, license when required, and module parts.
+The USB notifier searches for manifests upon a volume-mount event; these
+findings do not establish that dropping an arbitrary file in the update cache
+causes discovery or permits an unsigned payload to be installed. Other state
+machine and native-engine paths have not been ruled out. Full APK decompilation
+reported 13 errors, so conclusions are limited to the inspected classes.
+
+**Y175 verifier probe, 2026-10-30:** A standalone harness invoked the installed
+update app's `Signature.verify(false)` against an existing Y175 signature file;
+the original signing certificate passed, while a replacement self-signed test
+certificate failed with `Err_PublicSigningCert`. This tests certificate trust,
+not installation or full package acceptance. The manifest verifier rejected even
+the original control because its native `IECUUpdate` lookup was denied to the
+`system_app` domain; the modified manifest result is therefore inconclusive.
 
 Service `com.gm.server.update.UpdateService`, impl `UpdateServiceImplGB.java`,
 extends `IUpdateService.Stub`. **No permission check on most read methods** —
@@ -47,7 +156,7 @@ fully probeable from uid=2000 via `service call`.
 | 25 | — | PartNumbers `85056831.AA`, `85738845.AB` |
 | 26 | — | `0.AA` (calibration) |
 | 27 | — | bool true |
-| 30 | `getReflashAttempts()` | **9** |
+| 30 | `getReflashAttempts()` | **9** (June 2026 read; the 2026-11-12 `/cache` export has `ReflashCounter=11`, 10 -> 11 on 2026-09-28) |
 
 `install()` (Tx11) deserializes a `PackageDetails` Parcelable with no permission
 gate, then NPEs in the internal install manager — i.e. the execution path is
@@ -112,8 +221,10 @@ reached but no caller-permission check guards it.
 >   from `USBUpdateSource$1.onUSBMounted` (`USBUpdateSource.java:58`) — triggered by physical USB-media
 >   mount detection, not reachable via `IUpdateService.install()` or any other IPC method traced. **This is
 >   the single most promising remaining thread for a future update-path escalation** — it requires RE of
->   `USBNotifier.java` (what actually decides `container_type==2` and the file list on USB mount; not yet
->   reviewed) to determine whether any non-removable-media path could be spoofed as a mounted USB volume.
+>   `USBNotifier.java` to determine whether any non-removable-media path could
+>   be spoofed as a mounted USB volume. The 2026-10-30 Y175 analysis above
+>   establishes a non-`user` build gate for that build; the Y181-specific
+>   notifier and alternate entry points still require independent verification.
 > - Downgrade/rollback: not directly evaluated via this trace (PNVersionVerifier compares against the
 >   manifest's own declared expected versions, protected by the same signature chain) — state as
 >   inferred-absence, not proven-absence, alongside the hardware-enforced GHS rollback counter below.
@@ -163,10 +274,11 @@ not reachable via `service call`. Methods:
 
 ### Update History (Tx 3, live) — 10 entries, notable
 
-- USB install from `/mnt/media_rw/4FE0-161D/857595955.mnf` → `SIHM22B-00383.01`
+- USB install from `/mnt/media_rw/4FE0-161D/85759595.mnf` → `SIHM22B-00383.01` (corrected 2026-11-12 from `857595955.mnf`; both `enumeration/Y181/apr2026/raw/gm_update_service.txt:33` and the `/cache` `UpdateDB` read `85759595.mnf`)
 - OTA cache installs of SIHM22B-00499.02, .03, SIHM22B-00526
 - OTA `GM Update N25-250552` (campaignId `pV7JR1D0EfCc7u7uCvix7Qcmp`) → Result=5
-  (declined/failed)
+  (**meaning undefined** — corrected 2026-11-12: the only `UpdateResults.Result` value any log names is `0` = `RESULT_SUCCESS`;
+  the `/cache` export also has `Result` 1, 2 and 5 rows with no defining string, so "declined/failed" is a guess)
 - Latest: SIHM22B-00499.03 from `/update_cache/update/` → Result=0 (SUCCESS)
 
 USB programming config: `mUSBProgrammingEnabled=true`,
@@ -183,7 +295,7 @@ mIdleState → mDownloadAvailableState → mUpdateAvailableState → mSecureUnlo
 ```
 Current device state: **IdleState**. **SecureUnlock** = a UDS SecurityAccess
 seed-key challenge before ECU programming — see ProtoKey in
-[`platform/security.md`](security.md#protokey-authentication) and the seed/key
+[MEC/ADB evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) and the seed/key
 tiers in [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md).
 
 ---
@@ -325,26 +437,35 @@ on this bench (SYN timeout, no RST).
 
 ## USB Install Path & Flag Files
 
-Two flag files read by `gm_update_engine` from the USB package root:
+**Evidence clarified 2026-11-12:** normal-AAOS `gm_update_engine` searches for
+and copies these files from the USB package root:
 
-| Flag file | Function |
-|-----------|----------|
-| `gm_usb_ignore_battery` | bypass the battery-level check before install |
-| `gm_usb_auto_install` | install automatically without user confirmation |
+| Flag file | Prior interpretation | Current verification limit |
+|---|---|---|
+| `gm_usb_ignore_battery` | Suppress battery-level check | Discovery/copy and an empty file in supplied wipe packages are established; the full downstream battery-check bypass was not traced here. |
+| `gm_usb_auto_install` | Install without confirmation | Discovery/copy is established; the complete no-prompt decision path was not traced here. |
 
-`data_wipe/` ships an empty `gm_usb_ignore_battery`. To trigger: insert a FAT32
-drive with a valid `.mnf` manifest at root; `vold` auto-mounts to
-`/mnt/media_rw/<UUID>/`; `UpdaterAppService` fires
-`gm.update.action.CHECK_UPDATE_RESULT` immediately; with `gm_usb_auto_install`
-present, install proceeds without a prompt. Confirmed: USB drive
-`/mnt/media_rw/4FE0-161D/` with `857595955.mnf` (SIHM22B-00383.01) seen by
-UpdateService. (Manifest filenames may carry a trailing DLS/format digit, e.g.
-`863316635.mnf` for part `86331663.AA`.)
+A mounted USB package and `gm.update.action.CHECK_UPDATE_RESULT` have been
+observed by the normal updater. That observation alone does not establish
+automatic installation or that an unsigned package is accepted.
+Manifest filenames may carry a trailing format digit, e.g.
+`863316635.mnf` for part `86331663.AA`. [Qualified 2026-11-12: unsupported by the raw data — every manifest name in the 2026-11-12 `/cache` export, `UpdateDB` and recovery logs is the plain 8-digit form (`86331663.mnf`, `86405527.mnf`, `85759595.mnf`); no digit-suffixed name was found.]
 
-> All USB/OTA install paths still require a package signed by the GPD Production
-> CA (private key not in any extracted artifact). `AllowDevSignedVIP` would relax
-> this for VIP, but is unsettable on production (see above). This is consistent
-> with the repo's standing Research Status: the signing barrier is the root gate.
+These normal-AAOS flags are separate from recovery's two encoded markers,
+its internal argument file, and fastbootd entry.
+[Recovery scanner, log capture and options](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#4-trigger-files-and-reboot-mechanisms).
+
+The existing signature-chain analysis remains applicable: package/module
+acceptance is a separate gate. Neither a USB flag nor the dealer package's
+`DummyPackage` field establishes a signature bypass.
+
+### Dealer Data Wipe package (static verification 2026-11-12)
+
+The package script, fingerprints, Red Bend/vbmeta limits, formatter disassembly
+and package-acceptance boundary are maintained in
+[the consolidated source §4.2.1](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#421-dealer-data-wipe-package-and-formatter-verified-2026-11-12).
+This document owns the normal-AAOS update stack and Binder interface.
+
 
 ---
 

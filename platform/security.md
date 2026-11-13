@@ -22,6 +22,21 @@
 
 ## Android Security by Firmware Version
 
+**Y181B runtime evidence, 2026-11-12:** the
+[recovery USB capture](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12)
+reports `ro.boot.verifiedbootstate=green`, `ro.boot.flash.locked=1`,
+`ro.secure=1` and `ro.debuggable=0` in `recovery/props.log`. Although the
+boot argument/property says `permissive`, `recovery/last_kmsg` lines 679–680
+record failed attempts to change the read-only `ro.boot.selinux` property,
+and later denials explicitly say `permissive=0`. Android's retained main/system
+logs likewise contain enforced denials. The boot property is not a reliable
+measurement of effective enforcement. These are captured observations, not
+a fresh `getenforce` command or proof of all boot-chain internals.
+
+The same capture records `GM Secure ADB disabled on user build, MEC=227`.
+That certificate-gate result is separate from SELinux enforcement, UID-0
+entitlement and AVB unlock; see [MEC readings and root gates](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#target-readings-root-gate-and-registration-limits-2026-11-12).
+
 | Feature | Y175 (June 2024) | Y177 (March 2025) | Y181 (July 2025) |
 |---------|-------------------|---------------------|-------------------|
 | SELinux | Enforcing | ~~**PERMISSIVE**~~ **Enforcing** (CORRECTED 2026-08-26 — stock Y177 forces enforcing, byte-identical init) | Enforcing (462 denials in logcat — CBC, RVC, SXM, but no USB/CarPlay denials) |
@@ -58,9 +73,10 @@ The boot chain is a 5-layer trust hierarchy from hardware root to runtime filesy
 >   **`USE_TPM` was NOT compiled** — zero TPM2 NV-index constants or TPM2 calls in the
 >   1 MB module — so the Layer-2 lock bit is **NOT fTPM/TPM2-backed and NOT RPMB**
 >   (`ABL.rpmb=` is only an androidboot cmdline token, not the lock store).
->   `device_is_unlocked()` is INTACT/unpatched: true iff `OEMLock` exists, is readable,
->   and has bit 0 (`0x01`) set — the unit is LOCKED only because that byte is
->   absent/clear. A secondary provisioning-UNLOCKED path (`OEMLock` NOT_FOUND +
+>   The ordinary successful `OEMLock` read uses bit 0 (`0x01`), but this is not
+>   the complete state predicate: gated missing-state/provisioning fallbacks also
+>   exist (clarified 2026-11-12; see `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3.2).
+>   The live EFI contents are not established by this static trace. A secondary provisioning-UNLOCKED path (`OEMLock` NOT_FOUND +
 >   non-virtual boot + life-cycle != ENDUSER) is gated by a manufacturing/SKU
 >   life-cycle fuse and stays LOCKED on a production ENDUSER unit.
 >   UNKNOWN-FROM-FILES: whether the UEFI varstore physically holding `OEMLock` is
@@ -91,7 +107,7 @@ The boot chain is a 5-layer trust hierarchy from hardware root to runtime filesy
 
 > **[C] live-Y175 2026-10-05: UNVERIFIABLE-FROM-LIVE.** VIP firmware version, the `0xb67d0`-class validator, called subroutines, RAM flags and byte-diffs are all off-SoC / teardown artifacts not observable from a locked Y175 user shell. Only corroboration available here: the `gm_protokey` native process is live (PID 889, root, SELinux domain `gm_protokey`), consistent with the ADB/seed-auth framing below. **Additional VIP-side corroboration [C diagnostics/Y175_session.log]:** the VIP boot log independently shows the live ProtoKey/SBAT handshake from the RH850 side — `J6_prv_ProtoKey:Protokey transmitted to SoC` (repeating), `SbaTicketValidation validation failed: 0x0`, and `Receives invalid seed [1/2] from BCM` — i.e. the ProtoKey transmit + SBAT ticket-validation + seed-from-BCM path is observable in the VIP log even though the SoC-side validator internals are not readable from a locked user shell.
 
-VIP security function ADDRESS: `0x000b67d0` (NOT a firmware version). VIP firmware version: **2B.174.4.1** (Build 24Mar22-0256).
+VIP security function ADDRESS: `0x000b67d0` (NOT a firmware version). VIP firmware version in the July 2024 UART capture `enumeration/VIP_log_2B.174.4.1_10JUL24.txt`: **2B.174.4.1** (Build 24Mar22-0256) — an older VIP_APP than the Y175 radio's own `2B.175.1.5` (build 24Apr23-2202, `enumeration/Y175/Y175_VIP.log:6-7`), not the current one. **Corrected 2026-11-12:** the live Y181 bench radio's VIP_APP (module 1, part 86331656) is `2B.B5.01.01` (build 25Jun19-2209); Y177's is part 86283151 (build 25Feb28-0330) — see [`firmware_versions.md`](firmware_versions.md).
 
 | Version | VIP_APP File ID | Security Function | Details |
 |---------|-----------------|-------------------|---------|
@@ -113,38 +129,26 @@ Between Y177 and Y181, 549,518 bytes differ in VIP firmware — 28.4% of the tot
 
 ## ProtoKey / ADB Authentication
 
+> **[C] bench-unit note 2026-11-12:** the live-unit VIP logs (`viplog.log` + `viplog.log.rot`, 2026-11-11/12 capture)
+> carry thousands of `[PROTOKEY] Receives invalid seed [n] from BCM` lines: **7113** by raw `grep` (2244 + 4869), **7114**
+> by the header-stripped re-derivation (2245 + 4869; one `[2]` record has a mangled marker). The count covers BOTH
+> indices (`[1]` and `[2]` each ~3556-3558); it is not a `[1]`-only count. Why `[2]` exceeds `[1]` by one per file is
+> undetermined. Consistent with a bench unit with no real body-control module answering the seed request, so a seed/key
+> handshake result observed on this bench unit says nothing about in-vehicle behaviour. Inferred from the log text; the BCM
+> absence itself is not independently read. (An earlier version of this note called the file `vip_all.txt`, counted 7113
+> as `[1]`-only, and cited an unreconciled "~2282" figure; corrected 2026-11-12 against the raw logs.)
+
 > **CORRECTED 2026-08-26.** This exchange gates **ADB / seed authentication**, not SELinux
 > enforcement. SELinux is enforcing on all builds regardless (OS-side init). The former
 > "→ SELinux ENFORCING/PERMISSIVE" outcomes are wrong and have been replaced with the
 > real ADB-unlock outcome, confirmed from device logs (`GM_ADB: gm_adb_auth_init`) and the
 > VIP DID `0xF1A0` trace.
 
-The EEPROM SBI flag drives a VIP→SoC security-state response that determines whether ADB is
-permitted without a cloud/PAL certificate:
-
-### Secured Operation (EEPROM 0x0440 data byte = 0x00 / stock marker `C3 00 C3`)
-
-1. `gm_protokey` runs at boot (`init.protokey.rc`, `post-fs-data`) and validates the stored
-   security state (`/data/vendor/gm/security/.validation`), setting `vendor.gm.security.state`
-2. VIP reports the secured SBI value; SoC-side `gm_adb_auth_init` leaves `is_secure_mode=0`
-3. ADB requires the normal GM Secure-ADB cloud/PAL certificate path
-
-### Bypassed Operation (EEPROM 0x0441 data byte = 0xFF / bypass marker `5A FF 5A`)
-
-1. VIP reads the SBI DATA byte, sees `0xFF` (marker-agnostic — the check reads only the data byte)
-2. VIP transmits MEC=0xFF in its DID `0xF1A0` response to the SoC
-3. SoC-side `gm_adb_auth_init` sets `is_secure_mode=1` → ADB allowed with **no cloud cert**
-
-> **Live-vehicle corroboration (2026, MDI2 DoIP `dps_readx80` read of radio `0x80`).** `$22 F1A0`
-> returned **`0xFF`** on the vehicle — the first on-vehicle confirmation of the MEC=0xFF path above
-> (prior evidence was EEPROM/teardown only). Nuance on `$27`: that read (SPS "security validation
-> facility failed") got an **all-`0xFF` seed**, while valid SPS sessions used an **8-byte seed /
-> 6-byte key** and succeeded (ECUs 0x80/0x81/0xBE, `67 02` grants). So the all-FF `$27` seed is the
-> **SPS-credential-absent path**, not necessarily a hardware SBI flip — worth separating in
-> `$27`/SBI analysis. (Redacted diagnostic-session reports: `/Volumes/.../2024_Silverado_ICE/emu/y181_ref/diag/`.)
-
-The same degenerate `0xFF` value also appears on the VIP's plain diagnostic UDS stack, so the
-effect is broader than ADB/ICUSB alone. It does **not** change SELinux mode.
+The certificate range checks, secured/bypass behavior, Boolean inversion and
+historical diagnostic readings are maintained in
+[the consolidated MEC/ADB source](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+The EEPROM programming workflow remains in [the EEPROM guide](../eeprom/README.md).
+The Ethernet UDS mechanism below is a separate protocol and retains its own owner.
 
 ## Ethernet UDS `$27` SecurityAccess — VIP-side forwarding, off-SoC (2026-09)
 
@@ -203,34 +207,12 @@ its `[D] CORRECTION`).
 
 ## MEC (Manufacturer Enable Counter)
 
-> **Naming note (standardized 2026-10-15):** this acronym was written three different ways across
-> this tree — "Manufacturer Enable Counter" (here and in the GDS2/AllData factory procedure, the
-> decompiled SoC class `ManufacturerEnableCounter`/`DiagnosticDataID.MANUFACTURER_ENABLE_COUNTER` in
-> `info3.jar`, and the HIDL method `IDiagnosticsObd::getManufacturingEnableCounter()` — see
-> `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.10-0.14), "Module Event Counter" (this
-> section's prior heading, unsourced), and "Reprogramming event count" (`hardware/teardown.md`,
-> also unsourced). **Manufacturer Enable Counter** is standardized on throughout as the reading
-> with the strongest evidence trail; see `research/EEPROM_MAPPING_FABLE_REPORT.md` Finding E for
-> the full comparison. The other two are unverified alternate readings, not confirmed definitions.
->
-> The behavior table below (boot-failure counter disabling hypervisor/CSM recovery) is itself
-> grounded in literal VIP_APP firmware strings (`"[PLC] MEC is %d. Ignoring Hypervisor Startup
-> Timeout"` — see `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` §10.3/§11.6), so the counter's
-> *existence and hypervisor-timeout effect* are firmware-confirmed. What is **not** independently
-> confirmed is whether this is the *same* counter/semantics as the "manufacturing-mode
-> ∈[1,255]→ADB-bypass" MEC described above in §ProtoKey/ADB Authentication — the two sections may
-> describe one counter with two effects, or two distinct counters sharing an acronym. Treat that
-> as an open reconciliation question.
-
-The MEC counter tracks consecutive SoC boot failures and progressively disables recovery mechanisms:
-
-| MEC Value | Behavior |
-|-----------|----------|
-| MEC = 0 | Normal operation. VIP monitors GHS hypervisor startup, enforces timeouts. |
-| MEC != 0 (e.g. 207) | Ignores hypervisor startup timeout. Allows extended boot times. |
-| MEC >= 3 | After 3 consecutive SoC failures: hypervisor timer **DISABLED**, CSM reset **DISABLED**. System enters degraded monitoring state. |
-
-> **[C] live-Y175 2026-10-05: UNVERIFIABLE-FROM-LIVE** — MEC counter state/behavior is VIP-side, not observable from the user shell.
+The authentication chain, range checks, signed-byte conversion, historical
+readings, Boolean inversion, root/registration limits and distinction from
+failed-boot counters are maintained in
+[the consolidated MEC source](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+EEPROM layout and VIP code remain owned by
+[the EEPROM audit](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md).
 
 ---
 
@@ -259,7 +241,7 @@ The MEC counter tracks consecutive SoC boot failures and progressively disables 
 | `0x0440` | Primary SBI Flag | Data byte at `0x0441`: `0x00`=secured, `0xFF`=bypass |
 | `0x05C0`-`0x05D1` | VIN (Vehicle ID Number) | 17-byte VIN storage |
 | `0x0A80` | Backup SBI Flag | Stock = uninitialized (`FF FF FF`); ADB-bypass = `5A FF 5A FF`; post-Y181 reflash = `F0 00 F0` (initialized+locked). Data byte `0xFF` = bypass; marker (`5A`/`69`/…) is variant/CalGroup-specific |
-| `0x0B40` | Debug Mode Flag | Data byte at `0x0B41`: `0x00`=off, `0x01`=debug enabled |
+| `0x0B40` | Candidate security/debug-related record | A `0x0B41` change was not required for the documented minimal ADB recipe; no root/developer effect established |
 | `0x16E0` | CRC Location 1 | NOT enforced at boot |
 | `0x19E0` | CRC Location 2 | NOT enforced at boot |
 | `0x1A80` | CRC Location 3 | NOT enforced at boot |
@@ -338,6 +320,14 @@ The combination of unenforced CRC and world-writable I2C buses means that EEPROM
 
 `CONFIG_SECURITY_SELINUX_DEVELOP=y` — the kernel **supports** permissive mode at compile time, but the stock userspace does not use it: Y175/Y177/Y181 ship a byte-identical `init` that forces enforcing (`ALLOW_PERMISSIVE_SELINUX=0`), so all three run **enforcing** at runtime. SELinux mode is set OS-side (ramdisk/init) and is **not** controlled by the VIP security function or `gm_protokey` (CORRECTED 2026-08-26; the old "Y177 stub → permissive" framing was a fixed-address misread — the VIP validator is full in all builds and gates ADB/seed auth, not SELinux).
 
+> **[C] live-Y181.3.2 2026-11-12: re-CONFIRMED on a second build.** Read-only adb on the bench unit: `ro.boot.selinux=permissive`,
+> `getenforce`=Enforcing, `/sys/fs/selinux/enforce`=1; all 3596 `avc` records counted in the `/cache` boot-log dump (kernel 194 + main 1055 + events 2347;
+overlapping streams, not de-duplicated) are `permissive=0` and none is `granted`. (Corrected 2026-11-12: this note previously said "8270 `avc` lines", which no source supports.)
+The kernel cmdline carries BOTH an early `enforcing=0`/`androidboot.selinux=permissive` pair AND a later `enforcing=1`/`androidboot.selinux=enforcing` pair
+(all 30 retained cmdlines); "the later pair wins" is an inference about kernel parsing, the enforcing runtime is what is directly read.
+> Patch level 2025-06-05, Android 12, kernel 4.19.305 (built 2025-07-22), `user`/`release-keys`. Shell is `uid=2000(shell)`,
+> `u:r:shell:s0`. The permissive cmdline token / `ro.boot.selinux` prop does not reflect the runtime mode (inferred: read-only prop already set before init; see forensic doc U8); do not read it as a permissive runtime.
+>
 > **[C] live-Y175 2026-10-05: CONFIRMED (strong).** The live radio carries `ro.boot.selinux=permissive` in props (kernel cmdline) yet runs **Enforcing** at runtime (`getenforce`=Enforcing; all 179 `avc` lines `permissive=0`). This is direct on-device proof that userspace/init overrides the cmdline permissive request — the exact mechanism this section asserts. (`CONFIG_SECURITY_SELINUX_DEVELOP=y` itself is UNVERIFIABLE-FROM-LIVE, no config capture.)
 
 ---
@@ -797,3 +787,5 @@ The 462 SELinux denials observed in Y181 logcat are concentrated in three subsys
 - **SXM** (SiriusXM satellite radio) — service communication
 
 Notably, **no USB or CarPlay-related denials** were observed, indicating that the USB host stack and CINEMO/NME CarPlay framework operate within their assigned SELinux domains without policy violations.
+
+> **[C] live-Y181.3.2 2026-11-12:** the live bench radio's retained logs hold far more denials than the 462 above (events stream 2347 `avc: denied` over 29 boots, 116 distinct tuples; streams overlap, no de-duplicated total), all `permissive=0`; no `avc` line names `android.car.usb.handler` (gm_ccpa) as scontext/tcontext/app (forensic doc, rg count 0). The "no USB/CarPlay denials" observation therefore still holds for the retained window.
