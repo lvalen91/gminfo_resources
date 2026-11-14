@@ -41,6 +41,14 @@ when sharing.
   tester address, not seen here). [C]
 - **Segmented buses** behind `0x45`: HS-CAN + LS-CAN + AUTOSAR "SER DATA 5" (seen on the
   connector harness, see [`../hardware/connectors.md`](../hardware/connectors.md)). [C]
+  **[2026-11-13] Naming equivalence [C]:** this "SER DATA 5" label and connectors.md's
+  "AUTOSAR CAN 5" are the **same physical circuit pair** (4984/4985, radio X6 p9/10) — two
+  GM naming conventions for one wire pair, not two buses. That pair also carries the amp's
+  control/discovery link (CAN 5 is the control-plane half of T3's two separate links to the
+  radio; the audio data-plane half is Ethernet Bus 6 — see
+  [`../hardware/connectors.md`](../hardware/connectors.md) §Audio Architecture — Bose for the
+  two-links summary) and is reused for a distinct bench-only role by the OPU Wiring Tester +
+  Emulator (same connectors.md section).
 
 **ECU census (diagnostic addresses).** The `A11_CSM_x80` DPS scan enumerated **24**; a later live
 MDI2 DoIP read (`dps_readx80`, F1B0 broadcast, 2nd pass) found **27** — adding **`0x6B` `0x84`
@@ -219,13 +227,23 @@ readable by anything on the switch fabric. [X]
   [`fsa_protocol.md`](fsa_protocol.md#p-programmingmaster-9011-is-dead-code)). [C]
 - **SOME/IP-SD** present (UDP 30490 / 239.192.0.1). [C]
 - **`:49156`** — confirmed root `diagnosticsd`, a **custom 8-byte GM-header UDS bridge, NOT DoIP**
-  (SRC/TGT addr + PAYLOAD_LEN; ECU `0x0084`, tester `0x0FA0`), bridging `172.16.4.100 ↔ 172.16.4.107`
-  on vlan4 to the RTOS diagnostic partition
+  (SRC/TGT addr + PAYLOAD_LEN; ECU `0x0084`, validated tester `0x00F4`).
+  Direct forwarding to the RTOS diagnostic partition is not established
   ([`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md)). The
   `MaxPayload 49156` the external DoIP tester prints at connect is a **coincidental numeral**, not this
-  socket. Unauthenticated `$27/$10/$22` from the shell side return NRC `0x10` generalReject. [C]
+  socket. **Corrected 2026-11-14:** the old NRC `0x10` probes used an invalid
+  tester ID. Tester F4 plus extended session now yields the 31-FF seed and
+  `67 02` after a 12-zero-byte response; this is not root or programming-write proof. [C]
 - Firewall INPUT DROP / OUTPUT ACCEPT; FSA servers single-client; NAM brokers **EAP-AKA** cellular
   attach + VLAN grants.
+  **[2026-11-13, [C]:]** that INPUT DROP is the bare chain *default policy* (no per-port DROP
+  rule for anything unlisted), and every ACCEPT rule matches only `(source IP, dest port)`
+  with no awareness of which daemon owns the port — confirmed exploitable live (ADB relocated
+  onto an allow-listed-but-unbound port of a different GM service, from that service's
+  allow-listed source IP). Canonical writeup (do not restate):
+  `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §9.2 (same tree as the §9.1/§14
+  pointers above). **[2026-11-13, [C]]** The unauthenticated raw-shell extension and its
+  local-launch prerequisite are recorded only in the same source note §9.3.
 
 ---
 
@@ -263,6 +281,30 @@ readable by anything on the switch fabric. [X]
    AP bridge (members `wlan1`/`wlan2`), **not** a diagnostic plane. See
    `Y175_LIVE_RADIO_T1_SECURITY_ASSESSMENT_2026-11-02.md` and
    `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md`.
+   **[2026-11-13, second tap session, same hardware:]** confirmed the T1 polarity swap is
+   needed on *every* re-cabling of this converter, not just the first (treat as unreliable
+   "adaptive polarity," not a one-time wiring mistake); decoded the VLAN 2 flood as 3
+   IEEE-1722 AAF audio streams + 1 TSCF/ACF control stream; live-captured 146 gPTP frames to
+   `01:80:c2:00:00:0e` confirming the gPTP-master claim at the packet level (was
+   firmware-inferred only — see [`networking.md`](networking.md#ethernet-avb)); and found the
+   radio periodically (~4 s) SYNing *toward* the posed gateway identity on 9005/9012 — see
+   [`fsa_protocol.md`](fsa_protocol.md) and the same source-notes file §8.3.
+   **[2026-11-13, new tap:]** a second T1 adapter on **X11 pins 1/2** (previously "not
+   occupied" per [`../hardware/connectors.md`](../hardware/connectors.md) X11 row) proved
+   live, with the identical VLAN trunk and 9016/49156 allow-list as Bus 2 but the opposite
+   PHY master/slave role — identity open/[?] (spare internal switch port, an as-wired Bus
+   5/14 deviation, or a cavity-counting error are all still live). Also reconfirmed, second
+   independent path: `adb tcpip 5555` succeeds over USB and binds `[::]:5555`, but inbound
+   TCP/5555 stays firewalled (DROP) on both Bus 2 and pins 1/2. Canonical writeup (do not
+   restate): `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §9.1 addendum, §14.
+   **[2026-11-13, escalation, [C]:]** `INPUT` is a bare default-DROP policy with zero 5555
+   exception, and every ACCEPT rule matches only on `(source IP, dest port)` with no
+   process-awareness — so ADB (and any other TCP service) can be relocated onto a currently-
+   unbound, allow-listed `(IP, port)` pair belonging to a different legitimate GM service and
+   the firewall passes it unconditionally; live end-to-end exploit via port 9040 posed as
+   `.104` confirmed. Canonical writeup (do not restate): same source-notes file §9.2;
+   **[2026-11-13, [C]]** see adjacent §9.3 for the more severe unauthenticated raw-shell
+   variant and its local-launch prerequisite.
 2. CAN address→function decode for the other 22 ECUs.
 3. Whether `.102` (router) and `.107/.112` (CGM/telematics) are one GM TCP/CGM function split
    across faces, or distinct modules.

@@ -47,8 +47,8 @@ Managed automotive-Ethernet switch (board-variant IC — Broadcom BCM8953x/BCM89
 > selected by `persist.vendor.harman.hardwareid`: **Broadcom BCM8953x/BCM89551** on
 > ED/DV1/DV2/DV4/DV6/PV1/MY22 boards (the teardown unit), **Marvell 88Q5050** on
 > MY23+/MY24 boards (`ETH_SWITCH` fw part `85759612.AA` = `MVL88Q5050_globalB_…`).
-> Same 100BASE-T1 spec and port layout — a minor-IC substitution across gminfo3.7
-> motherboard revisions, expected over the production run. See
+> Both variants serve the vehicle's 100BASE-T1 links; this does not imply a 100 Mbps
+> ceiling for the switch silicon or prove identical firmware port numbering (see below). See
 > `video/hardware_rendering.md` for the full hardwareid→switch-driver map.
 
 | Port | Connected Node |
@@ -58,6 +58,68 @@ Managed automotive-Ethernet switch (board-variant IC — Broadcom BCM8953x/BCM89
 | 2 | CGM |
 | 3 | TCP |
 | 5 | Host (A11/IHU) |
+
+### Shipped switch speeds — [C], 2026-11-13
+
+Corrected from the actual `firmware/update_packages/Y175/extracted/85759612` package
+(relative to `aaos/gm_aaos/2024_Silverado_ICE`), not inferred from the bus link rate.
+This 1,497,632-byte ETH_SWITCH module contains the embedded name
+`MVL88Q5050_globalB_234702AB_02_09_1003.bin`, matching the module identity already recorded in
+[`firmware_versions.md`](firmware_versions.md) and [`ota_programming_roles.md`](ota_programming_roles.md).
+Decoded `portCfg.intfCfg` (key starts at byte offset 182627, decimal):
+
+| Config `intf` | `mode` (enabled) | `br` | `speed` (literal string) |
+|---------------|------------------|------|--------------------------|
+| 0, 1 | true | slave | `100` |
+| 2 | true | master | `100` |
+| 3, 4 | true | slave | `100` |
+| 5 | true | auto | `1000` |
+| 6, 8 | false | auto | `auto` |
+| 100, 101 | false | slave | `100` |
+
+**[C] The switch is multi-speed-capable, not hardware-limited to 100 Mbps.** GM's shipped
+configuration fixes the vehicle-facing automotive-Ethernet entries (0–4, 100, 101) at
+`"speed":"100"`, not `"auto"`; 100/101 are disabled. Exactly one entry, enabled `intf 5`,
+is fixed at `"speed":"1000"`. Thus the vehicle's 100BASE-T1 links run at 100M by explicit
+firmware configuration on silicon that also supports gigabit operation. The same package
+contains the runtime CLI help `avb port speed set <port> <auto|100|1000>` at byte offset
+164019: 1000 is an explicit driver/CLI option, not just a datasheet capability. This generic
+command syntax does not independently establish that every physical T1 PHY accepts 1000,
+or that changing a setting alone would make a vehicle endpoint operate at gigabit speed.
+
+**[?] Strong inference:** `intf 5` is the internal SoC-facing uplink to the Intel I210 GbE
+MAC: its sole 1000 setting fits the I210's documented 1 Gbps link and the existing table's
+“Port 5 = Host” label. The file does not name `intf 5` as the host uplink; that identity is
+not independently proven, especially while the numbering reconciliation below remains open.
+
+### Configured VLANs and port-numbering reconciliation — [?] OPEN, 2026-11-13
+
+**[C] Configuration evidence:** the same package's `dot1qCfg.vlanCfg` (key at byte offset
+182024) contains these decimal bitmasks. Bit positions below belong to the config's own
+numbering domain, not a proven mapping to the human-readable Port table above.
+
+| VLAN | `tag` | `untag` | Tagged config bit positions |
+|------|-------|---------|-----------------------------|
+| 1 | 0 | 511 | none; native/default VLAN, all nine bits 0–8 untagged |
+| 2 | 43 | 0 | 0, 1, 3, 5 |
+| 4 | 47 | 0 | 0, 1, 2, 3, 5 |
+| 5 | 47 | 0 | 0, 1, 2, 3, 5 |
+| 6 | 13 | 0 | 0, 2, 3 |
+| 9 | 10 | 0 | 1, 3 |
+
+- **[?] VLAN 9 configured but never observed live:** full, unfiltered VLAN-ID sweeps on both
+  the Bus-2/pins-3-4 tap and X11-pins-1/2 tap found only `{untagged, 2, 4, 5}`. Canonical
+  live evidence: `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §14 in the
+  `analysis/Y175_2026-11-02` tree. Open alternatives: VLAN 9 is tagged on ports not yet
+  physically tapped; it carries a conditional/rare service; or it is defined but unused on
+  this build. No alternative is selected.
+- **[?] Numbering domains NOT reconciled:** the table above labels Port 2 as CGM, associated
+  in the existing docs with Bus 2, where the VLAN 2 AVB flood is confirmed. Yet config VLAN
+  2's mask 43 excludes bit 2 and includes only {0,1,3,5}. The config `intf`/bit indices may
+  use a different domain (e.g. internal MDIO/register indices versus physical-connector
+  labels), or one of the existing port-to-bus mappings may be wrong. **Do not transfer port
+  numbers between this config and the table until tested.** A future bench session needs
+  per-port live captures to reconcile the schemes; no physical-port assignment is resolved here.
 
 ### VLAN 5 — Vehicle LAN (192.168.1.x/24)
 
@@ -73,11 +135,20 @@ Managed automotive-Ethernet switch (board-variant IC — Broadcom BCM8953x/BCM89
 
 ### VLAN 4 — VCS / EOCM Network (172.16.4.x/24)
 
+**2026-11-14 scope:** both physical T1 taps reached the Android guest, but
+none of the historically documented GHS candidates answered ARP. This does
+not establish that GHS is stopped or absent. The direct Android diagnostic
+listener did complete level-1 SecurityAccess; see the
+[validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
+A separate authenticated hard-reset request returned `7F 11 25` after about
+30 seconds of pending replies; no Android reboot was observed. See the
+[ECUReset result](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-ecureset-validation-2026-11-14).
+
 | Address | Node | Notes |
 |---------|------|-------|
 | 172.16.4.100 | VCU_AGVM / Android (vlan4 face) | this device |
-| 172.16.4.14 | **ACP (Application Control Processor)** | permanent ARP, no ping — hypervisor/control partition |
-| 172.16.4.107 | RTOS partition | active, TTL=255; symmetric 49156↔49156 to diagnosticsd. Per [`vehicle_network.md`](vehicle_network.md) 2026-10-06 correction: a **SoC-internal GHS INTEGRITY partition on the Intel A3960, NOT the Renesas RH850** (locally-administered MAC + TTL=255) |
+| 172.16.4.14 | **ACP (Application Control Processor)** | Historically configured as a permanent neighbor. Corrected 2026-11-14: no external T1 ARP reply in the current bench test; see the diagnostic reference below. |
+| 172.16.4.107 | Historical RTOS/GHS diagnostic candidate | Corrected 2026-11-14: the asserted symmetric diagnosticsd socket is disputed, not established. No external T1 ARP response or completed connection in the latest bench test. Historical identity is not proof of current reachability. |
 | 172.16.4.112 | CGM_OTA (vlan4 face) | active, TTL=64 (Bosch JuP1, Linux) |
 | 172.16.4.1 | **TCP (vlan4 face)** | **live 2026-07-01** — see note below |
 | 172.16.4.12 | EOCM_HCP_SECONDARY / EOCM_HCP_2 | code-referenced |
@@ -125,7 +196,7 @@ Managed automotive-Ethernet switch (board-variant IC — Broadcom BCM8953x/BCM89
 |-------------|------|----------|---------|
 | 0.0.0.0 / 127.0.0.1 | 6363 | TCP | **AVB audio daemon** (uid=1041 audioserver) — init-owned listen socket, text IPC bus for AVB audio routing; arbitrary data → `"ERROR"`. Low value. (Was "Unknown".) |
 | 0.0.0.0 | 7000 | TCP | **AirPlay/AirTunes 320.17.8** (Cinemo `libNmeCarPlay` r14), br0/192.168.5.1, uid=1001000. `GET /` → `404; Server: AirTunes/320.17.8`. CarPlay audio bridge — see [`audio/carplay_audio_pipeline.md`](../audio/carplay_audio_pipeline.md). (Was mislabeled "ADB"; ADB is port 5555.) |
-| 0.0.0.0 | 49156 | TCP | **diagnosticsd UDS-over-TCP bridge** (root, PID 599). Bridges GM Ethernet Diagnostics to RTOS `172.16.4.107:49156` (SoC-internal GHS INTEGRITY partition on the A3960, not the RH850 — see `vehicle_network.md` 2026-10-06 correction). See [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). (Was "Unknown".) |
+| 0.0.0.0 | 49156 | TCP | **diagnosticsd UDS-over-TCP bridge** (root, PID 599). Direct T1 level-1 SecurityAccess is live-verified with tester F4 and extended session (2026-11-14); direct forwarding to a GHS/RTOS endpoint is unproven. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). (Was "Unknown".) |
 | 192.168.1.100 | 9002 | TCP | **FSA RemoteModuleHMI** (serviceId 1007), IPv6-mapped IPv4 — guest's own FSA server (see [`fsa_protocol.md`](fsa_protocol.md)) |
 | 192.168.1.100 | 9010 | TCP | **FSA DeviceInformation** (serviceId 1001), IPv6-mapped IPv4 |
 | 192.168.1.100 | 9016 | TCP | **FSA NetworkAccessManager** (serviceId 1026), IPv6-mapped IPv4 |
@@ -145,6 +216,42 @@ Managed automotive-Ethernet switch (board-variant IC — Broadcom BCM8953x/BCM89
 > **53** dnsmasq (uid 1052) on `127.0.0.1` and `192.168.5.1` CONFIRMED. Note: the extra loopback/
 > wildcard listeners present live (9112, 7011, 36103, 41365, 9001-9004) are the carlink PoC app
 > `zeno.gmccpa` (uid 1010120), not platform services.*
+
+---
+
+### CarPlay mDNS fingerprint (2026-11-13)
+
+**[C]** Live vlan5 mDNS at radio boot, in the same clean power-on capture described in
+[Ethernet boot timing](../runtime/boot_timing.md#y175-ethernet-capture-boot-timing-2026-11-13),
+advertised `CarPlay._airplay._tcp.local.` with SRV target `Android.local.:7000`.
+A separate `_carplay-ctrl._tcp.local` PTR query pattern was also observed; the query
+alone did not establish a second service advertisement. This added advertisement/TXT
+detail to the port-7000 identification already recorded above and in
+[VERIFICATION.md](../VERIFICATION.md), rather than a new port identification.
+
+| TXT key | Observed content (sensitive identifiers redacted) |
+|---|---|
+| `deviceid` | `<AIRPLAY_DEVICE_MAC>` |
+| `features` | `0x4040280,0x61` |
+| `flags` | `0x4` |
+| `model` | `myChevrolet` |
+| `pi` | `<AIRPLAY_PERSISTENT_UUID>` |
+| `srcvers` | `320.17.8` |
+
+**[C]** `model=myChevrolet` was consistent with the already-documented
+`net.hostname=myChevrolet` property above. `<AIRPLAY_DEVICE_MAC>` denotes the captured
+TXT `deviceid`; `<AIRPLAY_PERSISTENT_UUID>` denotes the captured `pi` UUID.
+The `pi` value was a persistent, stable per-device identifier, unchanged between observed
+mDNS announcements; this observation did not establish stability across resets or
+reprovisioning. Both identifiers received the project's existing sensitive-identifier
+handling and were redacted here to avoid echoing them into externally pushed material.
+
+**[?] Unexplained deviceid/wlan0 discrepancy:** the advertised deviceid closely resembled
+the documented `wlan0` MAC, but its final octet was `a0`, versus `9e` in the
+[existing wlan0 capture](../enumeration/Y175/raw/network_interfaces.txt)
+(also recorded as `persist.sys.wifi.mac_addr` in the companion properties capture).
+They were **not identical**. The interface relationship remained unverified; this was
+neither established as the same interface nor dismissed as a typo.
 
 ---
 
@@ -332,10 +439,21 @@ The Broadcom BCM WiFi module supports three concurrent interfaces:
 
 The IHU serves as the gPTP grandmaster on the AVB network, providing time synchronization for audio stream delivery to the CSM amplifier module.
 
+> **[2026-11-13] Live-packet confirmation, not just firmware inference.** The claim above was
+> previously grounded in firmware structure (`igb_avb.ko`, `daemon_cl -GM` grandmaster — see
+> `vehicle_network.md` §"Automotive Ethernet"), not a direct capture. A live Bus 2 T1 tap
+> capture this session saw **146 frames** from the radio's own MAC to the IEEE 802.1 PTP
+> multicast address `01:80:c2:00:00:0e` — a direct packet-level confirmation that the radio is
+> transmitting gPTP on the wire. Same session also decoded the VLAN 2 AVB flood (see
+> `vehicle_network.md` open item #1) as **3 IEEE-1722 AAF audio streams + 1 TSCF/ACF control
+> stream**, not a generic "4 audio channels." See
+> `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §5 in the `Y175_2026-11-02`
+> analysis tree.
+
 ### Physical Automotive-Ethernet bus map (GM service data)
 
 The AVB/Ethernet links are point-to-point automotive-Ethernet pairs (single twisted pair, 100/1000
-Mbit, **no terminating resistors**) off the A11 Radio's on-board switch (BCM89551 on the MY22/DV teardown unit; Marvell 88Q5050 on the live Y181 bench radio — board variant, same spec; 2026-11-12). Two nodes host
+Mbit in the service description; shipped speeds: [switch configuration above](#shipped-switch-speeds--c-2026-11-13), **no terminating resistors**) off the A11 Radio's on-board switch (BCM89551 on the MY22/DV teardown unit; Marvell 88Q5050 on the live Y181 bench radio — board variant, same spec; 2026-11-12). Two nodes host
 switches — the **A11 Radio** and the **K56 Serial Data Gateway Module**; every other node is a leaf
 `[Module ↔ Switch ↔ Module]`. GM service data names each bus and circuit: ALLDATA *Radio-Audio System
 → Data Link Communications* + connector end-view `A11 Radio X11`, corroborated by the **GM Silverado
@@ -369,6 +487,9 @@ Perf Data Recorder ↔ P22F passenger-seat display.
 
 - The amp is a leaf on **Bus 6**. Amp control/discovery is separate: **AUTOSAR CAN 5** (4985/4984),
   radio **X6 p9/10** ↔ amp T3 X3 p11/12 (see [`../hardware/connectors.md`](../hardware/connectors.md) X6 row).
+  T3's two separate links (Bus 6 audio data-plane vs. CAN 5 control-plane) are summarized as a
+  single paragraph in [`../hardware/connectors.md`](../hardware/connectors.md) §Audio
+  Architecture — Bose (2026-11-13); don't restate it here.
 - **Connector caution:** the radio's Ethernet lives on **X11** (12-way CTS-050). It is a *different*
   physical connector from **X6** (29-way, speaker outs + CAN 5) — do not conflate them; earlier notes
   that labeled the Ethernet connector "X6" were in error.
@@ -391,3 +512,10 @@ CAN 1/2 = Engineering-only, security-gated.) — BBM §*X84 Data Link Connector*
   §Audio Architecture and §Authoritative IOK Connector Table. Radio-side Ethernet connector **X11**
   mating plug (P/N 13529935) datasheet — Delphi/Aptiv drawing **33283033**:
   [`../hardware/datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf`](../hardware/datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf).
+
+> **[2026-11-13] X11 p1/2, recorded "not occupied" above (`connectors.md` X11 row), carried
+> live traffic when independently tapped — open, [?], not yet reconciled with the "not
+> occupied" claim.** Same VLAN trunk and service allow-list as Bus 2, opposite PHY
+> master/slave role, no matching GM circuit number for pins 1/2. Canonical writeup (do not
+> restate here): `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §14 in the
+> `Y175_2026-11-02` analysis tree.

@@ -59,6 +59,16 @@ Decode scope:14paths/12unique; six principal August captures TCP sequence/direct
 - **?:** no target AESK recovered/validated; Frida hook proposed, not successful recovery. Suffix ECUID groups do not prove shared secrets: per-unit/module/domain, derived, backend-provisioned remain hypotheses without recovered-key comparison or cross-module tests. [S18] [S19] [S13]
 - **S legacy:** dllsecurity four-step table-driven VM over16-bit seed contradicts no-op-export claim; dispatch/applicability to target31/12 still unproven. [S20] [S21] [S22]
 
+## Direct T1 level-1 SecurityAccess (2026-11-14)
+
+Live Y175, using Y181B static address-check analysis: logical tester F4, target
+0x0084, custom TCP framing, extended session `10 03`, then `27 01` yielded
+31 all-FF bytes; `27 02` plus 12 zero bytes yielded `67 02`. Default session
+was restored. See [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). Earlier NRC `0x10` tests used invalid tester 0x0FA0.
+This matches the degenerate MDI2 exchange at the UDS level, but does not prove
+the exact OBD/gateway/A11 forwarding chain, arbitrary keys, calibration-write
+authorization, signature bypass, or root. No programming write was attempted.
+
 ## EEPROM, ADB, ProtoKey, tickets
 
 | Evidence | Fact and limit | Sources |

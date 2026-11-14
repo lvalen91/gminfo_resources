@@ -71,12 +71,23 @@ occupied cavities.)
 | **X2** | 33340311 | by cable | 1-Way F Coax **(BU)** | GPS/GNSS antenna |
 | **X3** | 33340318 | by cable | 1-Way F Coax **(CU)** | SiriusXM / SDARS (+HD) antenna |
 | **X5** | 35364134 | 13534974 | 29-Way F 0.5 NANO / 1.2 MCON stAK50h **(BK)** | **As-wired on this vehicle — harness populates only p1/3/9/10/11/12** (radio receptacle has all 29 cavities): Battery+ (p1, 2340 RD/YE), Signal Gnd (p3, 1051 BK/WH), cell-mic + VR-mic (p9/10, 655/5149 BU·GY/YE, 654/5152 BK/BN·BK/GY; `Opt GF2-GF5 / IOK+UE1`), Microphone ± (p11/12, 7043 VT/YE / 7044 BU/BK). **p8 (LR Spkr[-], 116 GN/BK) appears in the ALLDATA superset end-view but is NOT wired here** — confirmed by harness inspection, consistent with UQA (radio drives no speakers) † |
-| **X6** | 35364137 | 13534971 | 29-Way F 0.5 NANO / 1.2 MCON stAK50h **(GY)** | **As-wired on this vehicle — harness populates only p9/10/13** (receptacle has all 29 cavities): **AUTOSAR CAN 5 ± (p9/10, 4985 BU/WH / 4984 BU/YE)** — VIP/SDV1-GB 29-bit, amp-control serial data, radio end of the CAN 5 link to the Bose amp (T3 X3); **Backup Lamp Control (p13, 24 GN/WH)**. Speaker-level outs (p1-6/8: LR+ 199, LF1+ 201, RF−1 117, RR− 115, LF−1 118, RF1+ 200, RR+ 46) are in the ALLDATA superset end-view but **NOT wired on this UQA truck** (radio drives no speakers) †. Per ALLDATA X6 end-view + `05_ALLDATA_WIRING_REFERENCE.md §8` [C] |
+| **X6** | 35364137 | 13534971 | 29-Way F 0.5 NANO / 1.2 MCON stAK50h **(GY)** | **As-wired on this vehicle — harness populates only p9/10/13** (receptacle has all 29 cavities): **AUTOSAR CAN 5 ± (p9/10, 4985 BU/WH / 4984 BU/YE)** — VIP/SDV1-GB 29-bit, amp-control serial data, radio end of the CAN 5 link to the Bose amp (T3 X3); **Backup Lamp Control (p13, 24 GN/WH)**. *Same pair the DPS gateway scan calls "SER DATA 5" — see [`../platform/vehicle_network.md`](../platform/vehicle_network.md) Plane 1 "Segmented buses" for the naming-equivalence note; this pair's bench-only second role (OPU Wiring Tester power-on/comms) is below.* Speaker-level outs (p1-6/8: LR+ 199, LF1+ 201, RF−1 117, RR− 115, LF−1 118, RF1+ 200, RR+ 46) are in the ALLDATA superset end-view but **NOT wired on this UQA truck** (radio drives no speakers) †. Per ALLDATA X6 end-view + `05_ALLDATA_WIRING_REFERENCE.md §8` [C] |
 | **X7** | 13511515 | by cable | **12-Way M 2.0 HSAL-2 (GY)** | Infotainment display — FPD-Link III ("LVDS") |
 | **X8** | 13545174 | by cable | **12-Way M 2.0 HSAL-2 (BK)** | USB serial data → console USB receptacle(s) |
 | **X9** | 33340320 | by cable | 1-Way F Coax **(OG)** | Video Processing Module coax video (cameras) |
 | **X10** | 33340317 | by cable | 1-Way F Coax **(BG)** | Wi-Fi antenna |
-| **X11** | 35068239 | 13529935 | 12-Way F 050 CTS **(BK)** | **As-wired on this vehicle — fully populated (all 6 occupied pins wired, unlike sparse X5/X6):** Ethernet Bus 2 ± (p3/4, 4758 YE / 4757 BU → K56 gateway), **Ethernet Bus 6 ± (p8/9, 7215 YE / 7214 GN → Bose amp)**, Ethernet Bus 4 ± (p11/12, 7211 BN / 7210 GY → K73 comm). p1-2/5-7/10 not occupied. **Harness-side mate 13529935 = Delphi/Aptiv drawing 33283033** ("TAXI ASM CONN 12 F CTS 050", 12-way female CTS-050, male-plug shell / female sockets, CPA) — datasheet: [`datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf`](datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf) |
+| **X11** | 35068239 | 13529935 | 12-Way F 050 CTS **(BK)** | **As-wired on this vehicle — fully populated (all 6 occupied pins wired, unlike sparse X5/X6):** Ethernet Bus 2 ± (p3/4, 4758 YE / 4757 BU → K56 gateway), **Ethernet Bus 6 ± (p8/9, 7215 YE / 7214 GN → Bose amp)**, Ethernet Bus 4 ± (p11/12, 7211 BN / 7210 GY → K73 comm). p1-2/5-7/10 not occupied *per harness inspection — but see 2026-11-13 note below for p1-2*. **GM documents the A11 as a 5-bus radio (Buses 2/4/5/6/14 — [`platform/networking.md`](../platform/networking.md) §Physical Automotive-Ethernet bus map); this vehicle's RPO list has no rear-seat video or HUD, so Buses 5/14 read as "not optioned," not "A11 doesn't support them."** **Harness-side mate 13529935 = Delphi/Aptiv drawing 33283033** ("TAXI ASM CONN 12 F CTS 050", 12-way female CTS-050, male-plug shell / female sockets, CPA) — datasheet: [`datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf`](datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf) |
+
+> **[2026-11-13] p1-2 "not occupied" is now unsettled, [?] — bench finding, not yet reconciled
+> with the harness-inspection claim above.** A second T1-converter tap landed live on X11 p1/2
+> on this same radio: full bidirectional traffic with the identical VLAN trunk and identical
+> 9016/49156 service allow-list as Bus 2 (p3/4), but requiring the opposite PHY master/slave
+> role, and not attributable to any GM circuit number for a documented bus. Identity is open —
+> spare internal switch test port, an as-wired Bus 5/14 deviation, or a connector-cavity
+> counting error are all still live. Full writeup, canonical: `source_notes/
+> BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §14 in the `Y175_2026-11-02` analysis tree
+> (`GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/`). Do not restate the finding here —
+> this note is a pointer, not a duplicate.
 
 † **X5/X6 speaker-level cavities are the non-amplified (U95-UQF) usage shown in the connector
 superset.** This UQA truck routes audio digitally (see §Audio) — the radio's speaker pins are not
@@ -89,6 +100,13 @@ the active path. Confirmed by the `Speakers (UQA)` vs `Speakers (U95-UQF)` schem
 > no X6 p13 backup lamp, no X5 mics, and X11 Ethernet not populated. With a 12 V PSU the radio +
 > display boot and are operational within limits (no audio — AVB→amp absent on bench; USB WIP).
 > Bench-build detail lives in GM_research `carplay/gm_pi/docs/07_BENCH_TEST_GUIDE.md`.
+>
+> **CAN 5 (X6 p9/10) plays two distinct roles on this pair, not one.** In-vehicle it's the
+> amp-control/serial-data link to T3 (table above; also called "SER DATA 5" by the DPS gateway
+> scan — see [`../platform/vehicle_network.md`](../platform/vehicle_network.md) Plane 1). On
+> this bench tooling it's repurposed as the power-on/communication CAN the tester's emulator
+> board injects to bring the radio up outside the vehicle — a second, bench-only function for
+> the same physical wires, not a second circuit.
 
 ### Connector-type note: X7 (display) and X8 (USB) are the *same* connector, keyed
 These are the radio's **only two** 12-way HSAL-2 high-speed data ports. Both are **12-Way Male
@@ -200,6 +218,8 @@ SAF7751 tuner/DSP → A3960 SoC → Intel I210 GbE → Eth switch (BCM89551 or 8
    → (Automotive-Ethernet AVB pair, in the Stac64 harness) → Bose amp @ 192.168.1.103 (TDF8532) → speakers
 ```
 
+**[2026-11-13]** Shipped Marvell port-speed settings and the unresolved numbering mapping: [`networking.md` §Shipped switch speeds](../platform/networking.md#shipped-switch-speeds--c-2026-11-13).
+
 - Amp presence is calibrated: **`External Amp = Present`, `AMPCAL=3`** (`research/session_logs/security_assessment_20DEC25.txt`).
 - VIP boot order includes **`AMP_MGR_SWC`** (Audio Amplifier Manager).
 - Implication for the harness: on this truck the speaker ± pairs live on the **Bose amp's**
@@ -223,6 +243,19 @@ views give the exact wires — no longer inferred from silicon:
 So the AVB audio pair the repo previously described generically **is Ethernet Bus 6 (7215/7214),
 radio X11 ↔ amp T3 X3.** Amp power: T3 X1/X4 pin **Battery+ (3740 RD/YE)**, **Signal Gnd (1051
 BK/WH)**.
+
+> **[2026-11-13] T3 has two separate links to the radio, for two separate purposes — [C].**
+> The table above shows both: **Ethernet Bus 6** (7215/7214, X11 p8/9) is the AVB **audio
+> data-plane** — the actual digital speaker feed. **AUTOSAR CAN 5** (4985/4984, X6 p9/10, the
+> same pair also called "SER DATA 5" by the DPS gateway scan — see
+> [`../platform/vehicle_network.md`](../platform/vehicle_network.md) Plane 1 "Segmented
+> buses") is a separate, lower-bandwidth **control-plane** link — amp control/serial data, not
+> audio itself. They are two different physical connectors (X11 vs. X6) and two different
+> circuit families; losing one does not take down the other. This distinction already existed
+> piecemeal (this table, [`../platform/networking.md`](../platform/networking.md) §Physical
+> Automotive-Ethernet bus map, [`../audio/automotive_audio.md`](../audio/automotive_audio.md)
+> §Physical Amplifier & Speaker Output) but had not been stated together until now; those are
+> pointers back here, not restatements.
 
 **Amp-side pinout (T3, drives ALL speakers — [C], circuit numbers from ALLDATA T3 end-views):**
 

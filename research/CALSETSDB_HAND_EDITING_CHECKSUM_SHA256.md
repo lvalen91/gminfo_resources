@@ -122,7 +122,10 @@ elsewhere or prove that a modified signed container will be accepted.
 ```
 [ SRC addr : 2 bytes BE ][ TGT addr : 2 bytes BE ][ LEN : 4 bytes BE ][ UDS payload ... ]
 ```
-- Target address is **not validated**; source address gates a trust tier (`0x00FA` factory tester, `0x00F1`, `0xF0`; untrusted → `generalReject 0x10`).
+- **Corrected 2026-11-14:** use canonical target `0x0084` and tester F4.
+  The binary checks logical addresses; old FA/F1/F0 trust-tier claims were
+  unverified. Extended session plus the documented 31-FF/12-zero exchange
+  returned `67 02`; see [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). This does not establish container-write acceptance.
 - `readHeader` / `Error when receiving header, expected: %d, actual: %d` frame the PDU.
 
 ### 3b. Calibration message parse header (`createCalibrationRequest`, `fcn.0002fde0`)

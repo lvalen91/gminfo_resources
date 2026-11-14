@@ -253,20 +253,14 @@ artifacts.
 
 ## Ranked Recommendations (Top 7)
 
-### 1. Track A — Vector #10: Source-Address Spoofing on Port 49156
-*   **Source Finding:** `diagnosticsd` parses attacker-controlled framing w
-with **target address unvalidated** (`[C]`, Artifact 1 §3c); Logical addres
-addresses `0x00FA`/`0x00F1` may grant pre-authorized trust tier (`[I]`, Art
-Artifact 2 #10).
-*   **Action:** Send crafted UDS frames to `127.0.0.1:49156` (or T1 tap) us
-using the Python test frame provided in Artifact 2, varying `SRC` to `0x00F
-`0x00FA` vs `0x0001`. Observe if NRC changes from `0x10` (generalReject).
-*   **Requirements:** Existing bench access (ADB/Network), Python script (p
-(provided in Artifact 2). No RE required.
-*   **Proof/Unlock:** Confirms if `$27` SecurityAccess gate can be bypassed
-bypassed via trust-tier spoofing, enabling calibration writes without seed/
-seed/key derivation.
-*   **Effort/Cost:** "Pure software, 30-minute test" (Artifact 2 #10).
+### 1. Track A — corrected logical tester/session sequence
+
+**Superseded recommendation, 2026-11-14:** the proposed FA/F1 source-address
+trust tiers were not demonstrated, and the associated sample had the wrong
+header size. Direct T1 tester F4, extended session, 31 all-FF seed bytes and
+a 12-zero-byte response now produced `67 02`; default session was restored.
+See the [owning diagnostic reference](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
+This is not proof of arbitrary keys, calibration writes or a root shell.
 
 ### 2. Track A — Vector #1: Dealer Screen Trigger & SELinux State Probe
 *   **Source Finding:** Dealer screen trigger may alter UID/SELinux state (
@@ -354,26 +348,10 @@ contingent on `vendor_cald` foothold.
 
 ---
 
-## Final Recommendation: Very Next Action
+## Corrected recommendation (2026-11-14)
 
-**Execute Track A — Vector #10 (Source-Address Spoofing).**
-
-**Reasoning:**
-1.  **Highest Confidence/Actionability Ratio:** It relies on a `[C]` infras
-infrastructure fact (unvalidated target address) from the converged analysi
-analysis, yet requires **zero RE work** and **no hardware changes**.
-2.  **Immediate Feedback:** Unlike Vector #9 or Tracks B/C, this can be tes
-tested immediately with the provided Python script against the live `49156`
-`49156` listener.
-3.  **Risk Mitigation:** If it fails, you confirm the `$27` gate is robust 
-against spoofing without risking hardware state (unlike EEPROM flips) or sp
-spending hours on RE before testing.
-4.  **Strategic Alignment:** It directly tests the "single hard gate" (`$27
-(`$27`) identified in Artifact 1 §3b using the "sharpest escalation-on-the-
-escalation-on-the-radio lead" context from Artifact 1 §3c, adhering to Rule
-Rule 4's preference for the converged Track A signal over the blocked B/C t
-tooling.
-
-**Command:** Run the Python test frame from Artifact 2 #10 against `127.0.0
-`127.0.0.1:49156` (or T1 tap) and log the NRC response.
-
+The original source-address experiment is no longer an untried next action.
+Its invalid tester and malformed frame were corrected by the validated
+F4/extended-session procedure above. Keep SecurityAccess acceptance separate
+from programming, signature verification, Android root and GHS reachability;
+those capabilities were not established by the level-1 grant.

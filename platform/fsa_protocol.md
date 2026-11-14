@@ -204,6 +204,17 @@ accepts only its vlan4 source IP (172.16.4.112).
 > `OnStarFunctions` (9005) and `RemoteReflash` (9012) are the two TCP-hosted
 > services most directly tied to cellular/OTA function — worth revisiting once
 > a way around the single-client lock is found.
+>
+> **[2026-11-13, live Bus 2 T1 tap] Radio also behaves as a client toward these same two
+> ports — [C].** Posing as the gateway `.102` identity on vlan5, the radio was observed
+> **initiating outbound TCP SYNs to us** on **9005** and **9012** roughly every **~4 s**,
+> getting RST (nothing listened host-side). This is the reverse direction from the
+> accept-then-close hosted behavior above — the radio itself polling/retrying toward the
+> gateway's `OnStarFunctions`/`RemoteReflash` ports. [?] Cadence not characterized beyond a
+> single capture window (retry-backoff vs. steady poll not distinguished); whether standing
+> up a listener elicits a Subscribe/Heartbeat FSA handshake is untested. See
+> `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §8.3 in the
+> `Y175_2026-11-02` analysis tree.
 
 ### NetworkAccessManager (NAM — serviceId 1026, CSM port 9016)
 

@@ -165,25 +165,24 @@ its `[D] CORRECTION`).
   (`UDSSecurityLevelCheckRequestHandler.cpp`, ISO-14229 attempt counter present).
   `checkSecurityLevelTable` is only the per-tier allowed-service table, not the
   seed/key gate.
-- **`VIP` tier is forwarded off-SoC.** `diagnosticsd` holds no `VIP`-tier key
-  material: `ProxyOfExtComp::handleUDSRequest` relays `MESSAGE_SECURITY_ACCESS_VIP`
-  over a `SockAdaptor` TCP socket to the external VIP MCU, where the real
-  compare — and the SBI EEPROM read — happen. **SBI EEPROM byte = `0xFF` =
-  "Bypass Active"** relaxes the **VIP's own** key-compare, the same SBI flag
-  documented under ProtoKey/ADB above, but enforced on a different component
-  (the VIP's UDS stack, not `gm_adb_auth_init`). RE proves no SoC binary reads
-  the SBI EEPROM directly — the SoC only ever *relays* the SBI/MEC-derived byte
-  via `$22 F1A0` (`diagnosticsd` calls
-  `vendor.gm.diagnostics.obd@1.0::IDiagnosticsObd::getManufacturingEnableCounter()`
-  and returns it verbatim, unchecked).
-- **Under normal (SBI-inactive) posture** an untrusted Ethernet peer's `$27`
-  requestSeed still fails closed (`7F 27 10` generalReject) before any seed is
-  issued — confirmed live, unprivileged shell probe (see the diagnosticsd doc).
-- **This supersedes any earlier "possible fail-open (unconfirmed)" framing**
-  for the SBI/`$27` relationship (see `research/AE_RESEARCH_HANDOFF.md`): the
-  fail-open is **real**, gated on the SBI EEPROM byte, and enforced on the VIP
-  MCU — not the SoC. It cannot be re-derived statically because the VIP MCU
-  firmware's compare routine is not in this bench's artifact set.
+- **Corrected 2026-11-14 — live Ethernet grant:** a firewall-allowed direct T1
+  client using tester `0x00F4` entered extended session (`10 03`), received
+  `67 01` plus 31 all-FF bytes, submitted `27 02` plus 12 zero bytes, and
+  received `67 02`. Default session was explicitly restored.
+- **Later 2026-11-14 read sweep:** the same degenerate seed/response form
+  also produced `67 0A` and `67 0C` grants for levels 09 and 0B. Protected
+  F0A7 became readable; service 23 passed its level-1 security denial but
+  still ended in NRC 25. File/directory service 38 returned NRC 11. See the
+  [bounded read-sweep results](../diagnostics/ethernet_uds_diagnosticsd.md#bounded-read-only-sweep-and-uart-reset-follow-up-2026-11-14).
+- **The earlier `7F 27 10` result did not establish SBI-inactive posture.**
+  It used invalid tester `0x0FA0`. The Y181B address-check handler accepts F4/F5;
+  a valid tester in default session instead returned `7F 27 7F`. See the
+  [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
+- **Backend and privilege limits:** matching CAN/Ethernet seed/response formats
+  do not locate the key comparison or prove the gateway routing chain.
+  `ProxyOfExtComp` and symmetric RTOS-forwarding claims are disputed in the
+  owning diagnostic document. This grant does not establish arbitrary keys,
+  calibration/signature bypass, partition writes, Android root, or a GHS shell.
 - **Emulator note:** this bypass cannot be reproduced on the hybrid Android
   emulator (`platform/emulator.md`) — `IDiagnosticsObd` is unregistered,
   `diagnosticsd` is absent, and GM Secure-ADB is replaced by Google's stock
@@ -192,7 +191,9 @@ its `[D] CORRECTION`).
   component/VIP endpoint answering `$27`) — a substantial un-stub, not a quick
   one.
 
-> **[C] live-Y175 2026-10-05:** The EEPROM-SBI→VIP MEC=0xFF→`is_secure_mode`→DID `0xF1A0` chain and the `$27`/`$22 F1A0` traces are **UNVERIFIABLE-FROM-LIVE** (EEPROM/VIP/DoIP, not reachable from a locked user shell). Posture note: this unit is in **secured** operation, not the bypass path — `ro.secure=1`, `ro.adb.secure=1`, `ro.debuggable=0`, and our adb shell is the normal authorized uid 2000 (`u:r:shell:s0`), i.e. adb via the standard path, not an `is_secure_mode=1` no-cert unlock. `diagnosticsd` is live as native `gm_diagnosticsd` (PID 590).
+> **[C] live-Y175 2026-10-05:** The EEPROM-SBI→VIP MEC=0xFF→`is_secure_mode`→DID `0xF1A0` chain and the `$27`/`$22 F1A0` traces are **UNVERIFIABLE-FROM-LIVE** (EEPROM/VIP/DoIP, not reachable from a locked user shell). Posture note: this unit is in **secured** operation, not the bypass path — `ro.secure=1`, `ro.adb.secure=1`, `ro.debuggable=0`, and our adb shell is the normal uid 2000 (`u:r:shell:s0`), i.e. adb via the standard path, not an `is_secure_mode=1` no-cert unlock. `diagnosticsd` is live as native `gm_diagnosticsd` (PID 590).
+
+> **[2026-11-13] ADB key-authorization scope:** see [Bus 2 source note §9.4](file:///Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md#94-2026-11-13-adb-per-key-authorization-not-enforced--c) for the same-radio authorization finding; the root/SELinux conclusions here remain separately scoped.
 
 ### gm_protokey Service
 
@@ -740,7 +741,8 @@ These GPIOs control MCU reset and boot mode pins. World-writable access means an
 > [`diagnostics/dps/`](../diagnostics/dps/)) and over **Ethernet/TCP** via the
 > root `diagnosticsd` daemon on port 49156 (GM Ethernet diag address `0x0084`,
 > 8-byte header). The Ethernet path's wire format, tester-ID/SecurityAccess
-> trust tiers, and a confirmed (unprivileged) generalReject probe are documented
+> trust tiers, the historical invalid-tester rejection, and the corrected
+> level-1 Ethernet grant are documented
 > in [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md).
 > Related shell-side surface (Binder UpdateService, kernel KASLR, GM Secure ADB
 > `adbd` auth) is in

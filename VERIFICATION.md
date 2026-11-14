@@ -421,9 +421,11 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   `192.168.1.100:9016` (NetworkAccessManager, allow-list `{.102,.112}`), `:9002`
 >   (RemoteModuleHMI, allow-list `{.106,.109,.112}`), and `172.16.4.100:49156` (diagnosticsd,
 >   allow-list `{.107,.112}`) are reachable. No undocumented allow-listed identity and no
->   undocumented listening port exist anywhere in either /24. `diagnosticsd` remains
->   UDS-application-layer locked (`generalReject` NRC `0x10`, source-IP-independent) regardless
->   of allow-list admission. CGM `.112` is the only identity reachable on both planes.
+>   undocumented listening port were found in that historical test. **Corrected
+>   2026-11-14:** its blanket application-lock conclusion used an invalid tester
+>   ID. The [validated T1 sequence](diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14)
+>   now obtains `67 02` with tester F4, extended session and the documented
+>   12-zero-byte response. This does not prove firmware-write or root access.
 > - **Scope:** bench only (gateway peer absent, so discovery chatter/flooding is amplified
 >   relative to an in-vehicle capture); the allow-list/port findings are bounded to the tested
 >   source addresses and capture window, not proof the allow-list cannot be bypassed from an

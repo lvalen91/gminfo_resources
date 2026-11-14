@@ -89,6 +89,45 @@ kernel-relative values.
   with `0x4`). Every complete boot reaches a successful load after 2-3 failed prepares, so the retry is
   normal for this build, not a fault.
 
+## Y175 Ethernet-capture boot timing (2026-11-13)
+
+**[C] Additional measurement, separate from the display/screen-based samples below.**
+A clean, isolated power-on capture began with `tcpdump` already running and the radio
+confirmed fully off. The Android guest kernel's boot-start wall-clock epoch was computed
+from an ADB-shell `/proc/uptime` reading at a known wall-clock moment
+(`boot_epoch = now - uptime`). The capture's absolute `frame.time_epoch` timestamps
+(decoded with `tshark`), rather than capture-relative times, supplied the frame epochs.
+
+| Observed event | Time from computed Android guest kernel start |
+|---|---|
+| Android guest kernel boot start (computed reference) | T+0 |
+| First radio-sourced Ethernet frame, any traffic | T+2.25 s |
+| First VLAN 2 / AVB frame | T+3.08 s |
+
+These are compatible with the existing [kernel-to-screen figures](#android-boot-timing-5-boot-sample):
+network initialization well before the screen appeared was consistent with that later
+display milestone. This additional Ethernet measurement did not correct or replace the
+screen-based results or validate the estimated pre-kernel phases.
+
+**[?] OPEN QUESTION — Android guest versus GHS attribution.** `/proc/uptime` described
+the **Android guest's own kernel uptime**, not necessarily physical SoC power-on or
+GHS INTEGRITY hypervisor uptime. Android was understood to run as a GHS-hosted partition
+([partition evidence](../platform/vehicle_network.md),
+[boot-chain analysis](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md)). It remained unresolved
+whether GHS/another partition initialized the Ethernet switch and started traffic before
+the Android guest kernel, or the guest's early kernel/driver initialization triggered it.
+The latter interpretation could be consistent with a near-power-on reference, but the
+measurement did not establish that equivalence. Earlier GHS traffic could lie at a smaller
+delay from physical power-on, or at a negative offset from the guest-kernel reference;
+the first captured frames above remained at positive offsets.
+
+**[C] Partial attribution check:** every distinct Ethernet source MAC in the clean capture
+was enumerated. Only the already-known Android-guest MAC and the Mac's two tap-adapter
+MACs (capture-side noise) appeared; no distinct, unidentified third radio-side MAC appeared.
+**[?] This was inconclusive:** GHS/another partition could share the Android guest's MAC
+through the single physical switch resource, so MAC-level attribution could not identify
+which partition triggered the traffic.
+
 ## Pre-Kernel Boot Phases (estimated)
 
 | Phase | Description | Time Range |

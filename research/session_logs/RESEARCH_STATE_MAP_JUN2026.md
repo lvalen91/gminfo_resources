@@ -52,7 +52,7 @@ Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slo
 - **Y181→Y181 reinstall:** Succeeds.
 - **DPS 4.56 diagnostic sessions:** UDS $27 SecurityAccess, $22 ReadDataByIdentifier (many DIDs), $31 RoutineControl on ECU 0x80.
 - **FSA RemoteModuleHMI:** rmIdentification fn706 + clientFocus fn712 from shell — both returned success ("registered as HMI module").
-- **UDS probe on port 49156 (diagnosticsd):** TCP handshake completes; all SIDs return NRC 0x10 generalReject.
+- **UDS port 49156, corrected 2026-11-14:** historical invalid-tester NRC `0x10` results are superseded by tester F4 + extended-session level-1 SecurityAccess (`67 02` after a 31-FF seed and 12-zero response). See [owning diagnostic reference](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). No UID-0 or firmware-write inference.
 - **pm disable --user 0 of critical packages:** Triggered return-to-dealer screen (recovered via datawipe USB).
 - **KASLR estimation via simpleperf:** Slide ~0x0D000000.
 - **vmlinux-to-elf:** 117,828 symbols recovered from 4.19.305 kernel.

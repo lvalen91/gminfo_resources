@@ -144,13 +144,17 @@ ranked list. There is no known stock path to permissive SELinux at all: Y175/Y17
 - **(b)** Delete `/data/vendor/gm/security/.validation` → TOFU re-provisioning with researcher PAL key.
 - **(c)** Write to `/data/gmprotokey/trigger/` → re-key oracle (path is shell-writable).
 - **Effect:** these are `gm_protokey` (ADB/seed-auth state) bypasses, not the diagnosticsd UDS `$27`
-  gate. **CORRECTED 2026-09:** `diagnosticsd`'s `$27` for `ETHERNET`/`NOTIFICATION` tiers is checked
-  in-process by its own `libuds`; the `VIP` tier is forwarded off-SoC to the VIP MCU via
-  `ProxyOfExtComp`/`SockAdaptor`, gated by the SBI EEPROM byte there, not by `gm_protokey`. See
+  gate. **Corrected 2026-11-14:** `libuds` address/session checks are present,
+  but the exact key-compare backend and the historical `ProxyOfExtComp`
+  attribution are not established by the accepted live exchange. See
   [`../../diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md).
 
 ### NEW-5 — diagnosticsd Source-Address Spoofing + readHeader malloc-before-check
-- **(a)** 8-byte framing: `[SRC:2 BE][TGT:2 BE][LEN:4 BE][UDS payload]`. Send SRC=0x00FA (factory tester address); compare NRC vs SRC=0x0001. Changed NRC = trust-tier routing confirmed.
+- **(a) Corrected 2026-11-14:** the FA/0001 trust-tier experiment is
+  superseded. Tester F4, target 0x0084, extended session and the documented
+  31-FF/12-zero exchange returned `67 02` over direct T1. This is application
+  SecurityAccess, not root or a programming-write grant. See the
+  [owning diagnostic sequence](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
 - **(b)** `readHeader()` may `malloc(PAYLOAD_LEN)` before bounds-checking — heap corruption in uid=0, ALL caps, no-seccomp, no-NoNewPrivs daemon. Confirm in Ghidra before exploiting.
 
 ### NEW-6 — Reported RSA-1024 Private-Key Candidate in ghs_integrity.elf (Offset 12924442, UNVALIDATED)
@@ -198,9 +202,9 @@ ls -laZ /data/vendor/gm/security/.validation
 ls -laZ /data/gmprotokey/trigger/
 logcat | grep -iE "protokey|TOFU|provision|PAL"
 
-# 4. diagnosticsd source-address spoof (30 min, pure software)
-# Send [SRC=0x00FA][TGT=0x0001][LEN=1][10] to 127.0.0.1:49156
-# Compare NRC vs SRC=0x0001
+# 4. diagnosticsd: corrected tester/session procedure, verified 2026-11-14
+# Use tester F4, target 0x0084, the 8-byte >HHI header and exact UDS length.
+# See the owning diagnostic sequence; old FA/0001 probes are superseded.
 
 # 5. Reproduce return-to-dealer screen, immediately capture state
 # adb shell pm disable --user 0 <critical-package>

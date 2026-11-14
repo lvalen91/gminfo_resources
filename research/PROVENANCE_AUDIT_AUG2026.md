@@ -38,7 +38,7 @@ artifact) / CONTRADICTED (an artifact refutes it).
 |11| Bootloader locked | T1:57, QUICK_REF:243 | VERIFIED | `all_properties.txt`: `ro.boot.flash.locked=1` | |
 |12| AVB locked + green | T1:57, QUICK_REF:242-244 | VERIFIED | `ro.boot.vbmeta.device_state=locked`, `ro.boot.verifiedbootstate=green`, avb_version 1.2 | |
 |13| oem_unlock disabled | T1:57 | VERIFIED | `sys.oem_unlock_allowed=0` | |
-|14| ro.debuggable=0 / ro.adb.secure=1 (adb not root-able) | T1:57 | VERIFIED | `debug_props.txt` + `all_properties.txt` both show 0 / 1; adbd running but secured | |
+|14| ro.debuggable=0 / ro.adb.secure=1 (adb not root-able) | T1:57 | VERIFIED | `debug_props.txt` + `all_properties.txt` both show 0 / 1; adbd running without root | |
 |15| SELinux Enforcing (Y181) | QUICK_REF:61 | VERIFIED | `selinux_status.txt` = `Enforcing` | |
 |16| **IOMMU/VT-d is OFF (`intel_iommu=off`)** `[C]` | T1:71-73 | **UNSUPPORTED as of 2026-08-17; PARTIALLY RESOLVED 2026-11-12** | `cmdline.txt` = permission-denied (never captured) at the time of this audit; only IOMMU artifact then available was `kernel_config.txt: INTEL_IOMMU=y` (compiled IN). **2026-11-12 note:** a separate static artifact, `.../Y181B/mountables/BOOT_MOUNT_CHAIN.md:62`, lists `intel_iommu=off` in the extracted boot image's own kernel cmdline — this is cited and correctly scoped in `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` (§"IOMMU/VT-d") as confirming the **guest kernel's own** cmdline token, while explicitly leaving the GHS hypervisor's platform-level VT-d state (the thing the wire→host DMA vector actually needs) still unestablished. So the guest-cmdline half of claim #16 is now VERIFIED (static firmware artifact, not a live `/proc/cmdline` capture); the platform/hypervisor-VT-d half remains UNSUPPORTED exactly as this audit found. | `[C]` marker was unjustified for the platform/hypervisor claim and still is; the guest-only cmdline sub-claim is no longer unsupported |
 |17| No virtio-net in guest | T1:65 | VERIFIED | `kernel_modules.txt`: only `trusty_virtio`, no `virtio_net` | |
@@ -46,6 +46,8 @@ artifact) / CONTRADICTED (an artifact refutes it).
 |19| Y181→Y177 downgrade blocked by GHS rollback counter (misc/vda9, "tested FAILED") | QUICK_REF:64-65,278; T1:106 | INFERRED / UNSUPPORTED as measured **→ NOW OWNER-VERIFIED, see Resolutions** | rb_ua.conf + A/B fstab + TSS/AVB manifest support a rollback mechanism; empirical result now corroborated by owner bench re-test (2026-08-17) | mechanism plausible; behavior now field-confirmed |
 |20| DSU/GSI present but dead (sepolicy-blocked) | QUICK_REF:185-193 | Split: present VERIFIED / dead INFERRED | `service_list.txt`: `dynamic_system` service present; sepolicy-block claim not confirmable (cil not in provided set) | |
 |21| No adb→root path | security corpus | VERIFIED (as configured) | ro.debuggable=0 + ro.adb.secure=1 (preconditions) | |
+
+> **[2026-11-13] ADB key-authorization scope:** see [Bus 2 source note §9.4](file:///Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md#94-2026-11-13-adb-per-key-authorization-not-enforced--c) for the same-radio authorization finding; the root/SELinux conclusions here remain separately scoped.
 
 ## CLUSTER 3 — Network topology + listeners
 
@@ -74,7 +76,7 @@ artifact) / CONTRADICTED (an artifact refutes it).
 |37| `*.calovride` OVERRIDE_BACKDOOR with "!!!DISABLE BEFORE RELEASE!!!" at main | T1:98-102 | VERIFIED (verbatim) | `bin__calserviced`: `main: !!!WARNING!!! !!!OVERRIDE_BACKDOOR (*.calovride) HAS BEEN ENABLED!!!  !!!DISABLE BEFORE RELEASE!!!` and `.calovride` | whether *compiled active* still open, correctly `[O]` |
 |38| Backdoor needs vendor_cald ctx, overrides dir mode 770 | T1:102 | VERIFIED | `calserviced.rc`: `mkdir /mnt/vendor/calibration/overrides 770 vendor_cald system`; service `user vendor_cald` | |
 |39| SCREEN_RESOLUTION: CalType 4, value 2=1280×768, enum 0:800×480/1:1280×720/2:1280×768/3:1920×1080/4:2400×960, file GIS738_RVCVIDEOROBUSTNESSREQUIREMENT v7 | T1:96-97,§5 | VERIFIED (exact) | `CalSets.db`: AllCalSets row CalType 4 CalValue 2; EnumSets 5 rows match exactly; CalDefFileName + v7 match | strongest single verification in the corpus |
-|40| Source-address trust tiers 0x00FA/0x00F1/0xF0 + generalReject 0x10 framing | T1:54-55 | INFERRED (exact values) | mechanism VERIFIED (getSourceAddress, "tester id check", DIAG_SESSION_CONTROL 0x10); exact tier hex not found as strings | |
+|40| Logical tester validation and session sequencing | T1:54-55; corrected 2026-11-14 | VERIFIED for corrected F4 live sequence; old FA/F1/F0 tier values withdrawn | Y181B address handler checks F4/F5; live Y175 direct T1 F4 + extended session yields 31-FF seed and accepts 12 zero bytes with `67 02`. See [owning reference](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). | Not arbitrary-key, root or programming-write proof. |
 |41| diagnosticsd uid=0 (all caps, no seccomp) | T1:109 | uid=0 VERIFIED / caps+seccomp INFERRED | `vendor.gm.diagnostics.rc`: `user root`; no seccomp directive present (absence ≠ proof) | |
 
 ## CLUSTER 5 — Module ID / signing table

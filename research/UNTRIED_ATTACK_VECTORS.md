@@ -278,32 +278,16 @@ adb shell while true; do getprop | grep protokey; sleep 1; done
 
 ---
 
-### 10. diagnosticsd 8-byte Header Source-Address Spoofing
+### 10. diagnosticsd logical tester and session sequence
 
-**Status:** NOT TRIED
-**Priority rationale:** May grant pre-authorized tester trust tier without needing the seed-to-key algorithm.
-
-**Finding:** `diagnosticsd` uses a custom 8-byte framing header:
-```
-[SRC: 2 bytes, BE] [TGT: 2 bytes, BE] [LEN: 4 bytes, BE] [UDS payload]
-```
-Target address is NOT validated by `diagnosticsd`. Logical addresses `0x00FA` (factory tester), `0x00F1`, and `0xF0` may grant a pre-authorized trust tier that bypasses the `SecurityAccess ($27)` gate.
-
-**Action:**
-```python
-# Python test frame — send to port 49156
-import socket, struct
-src = 0x00FA   # factory tester address
-tgt = 0x0001   # head unit
-payload = bytes([0x10, 0x03])  # DiagnosticSessionControl, extendedDiagnosticSession
-header = struct.pack('>HHIH', src, tgt, len(payload), 0) + payload
-s = socket.socket()
-s.connect(('127.0.0.1', 49156))
-s.send(header)
-print(s.recv(256).hex())
-```
-
-**Observe:** Does the NRC change from `0x10` (generalReject) when SRC is `0x00FA` vs. `0x0001`? A different NRC indicates the source address is being used for trust tier routing.
+**Corrected 2026-11-14 — live-verified, not an untried trust-tier hypothesis.**
+The old FA/F1/F0 source values and unvalidated-target claim were not the
+accepted sequence. Use tester F4, target 0x0084 and the eight-byte `>HHI`
+header; the old `>HHIH` example incorrectly inserted two extra bytes.
+Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
+`27 02` plus 12 zero bytes returned `67 02`. Default session was restored.
+See the [owning diagnostic sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
+calibration-write, Android-root or GHS-shell result follows from this grant.
 
 ---
 
@@ -406,7 +390,12 @@ adb shell dd if=/dev/block/vda4 bs=4096 count=256 2>/dev/null | xxd | head -100
 ### 17. IDiagnosticsInternalService via vndbinder
 
 **Status:** NOT TRIED
-**Finding:** `IDiagnosticsInternalService` is exposed over vndbinder and may bypass the TCP generalReject gate that blocks port 49156 from untrusted callers. The vndbinder interface may skip the DoIP framing and source-address trust tier checks present in the TCP path.
+**Corrected 2026-11-14:** the internal HIDL service is a separate surface;
+  it is not needed to avoid the old invalid-tester TCP rejection. The direct
+  F4/extended-session flow now obtains `67 02`. Live shell `lshal debug`
+  could not connect to the internal service (missing service or permission);
+  its methods and trust model remain unverified. The TCP format is custom GM
+  framing, not DoIP.
 
 **Prerequisite:** Access to a vendor SELinux domain — not achievable directly from the uid=2000 shell domain without a prior privilege escalation step. This vector becomes accessible if vectors #6, #7, or #9 yield a higher-privilege execution context.
 

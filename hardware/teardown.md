@@ -101,7 +101,7 @@ Three-processor design on a single PCB:
 | Ethernet Switch | Broadcom BCM89551B1BFBG (TN2224 P21, 395-34 P3 W) | BGA | Automotive BroadR-Reach Ethernet. **Board-variant IC**: this (MY22/DV) unit is Broadcom; MY23+ boards use Marvell 88Q5050 (`persist.vendor.harman.hardwareid` selects the driver) — same spec. **Updated 2026-11-12:** the *live Y181 bench radio* (`W231E-Y181.3.2-SIHM22B-499.3`) is the **Marvell** variant, not this Broadcom teardown unit: `ethmvlctrlmgr: vpdGetFwVersion: Marvell firmware version: 02_09_1003, config version: 234702AB` and `UpdateService-ModuleVersionUtil: getModuleVersion module=52, version=MVL88Q5050_globalB_234702AB_02_09_1003` (gmlogger `main.log`, 2026-11-12 13:05; part 85759612 per `platform/firmware_versions.md`). Two physical units, two switch ICs, one spec [read]. The `hardwareid` selector itself is *not* readable live: `getprop persist.vendor.harman.hardwareid` returns empty from the shell uid and `main.log` shows an avc denial reading that prop for `gm_update_engine`, so "hardwareid selects the driver" remains inferred [inferred] |
 | Ethernet FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — BCM89551 firmware (confirmed via partial dump; IC damaged during extraction) |
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — confirmed IFWI/TXE boot flash per Intel Apollo Lake platform requirements. NOT dumped. |
-| Ethernet MAC | Intel WGI210CL (I210) rev A3 (2214ASP) | QFN-48 | GbE for AVB audio, 25MHz xtal |
+| Ethernet MAC | Intel WGI210CL (I210) rev A3 (2214ASP) | QFN-48 | GbE for AVB audio, 25MHz xtal; [shipped Marvell port-speed settings / numbering caveat](../platform/networking.md#shipped-switch-speeds--c-2026-11-13), 2026-11-13 |
 | WiFi/BT | Shielded module (PN 4D+0847, EC-02 7A85H.G05) | Module | ~21.3 x 12.9 x 7.9mm |
 | USB-UART | Microchip MCP2200 | QFN | Debug console -> /dev/ttyACM1 (world-rw), 12MHz xtal |
 | CAN Transceiver | NXP C26004 | TSSOP | HS-CAN interface |
@@ -658,6 +658,16 @@ The historical capture files preserve the VIP output but do not independently
 record the probe location; the physical pin attribution is owner-reported.
 The existing hardware inventory records 115200 baud, 8N1. Matching RX is an
 available pin function only; reception/command handling has not been verified.
+
+**2026-11-14 live console correlation:** with the owner reporting the adapter
+on pin 52 and an existing external `screen` logger, direct T1 DID reads F1A0
+and F0F3 were followed by matching J6_CDD item-ID events in the RH850 output.
+Startup/power-state and IPC notifications were also visible. The physical
+probe location remains owner-reported; RX, command parsing and other TX pins
+were not tested. See the [diagnostic correlation](../diagnostics/ethernet_uds_diagnosticsd.md#rh850-uart-correlation-with-direct-t1-did-reads-2026-11-14).
+Raw identifier/ProtoKey values are excluded from that finding; no serial
+adapter configuration or UART transmit operation was performed.
+
 
 | Physical pin | Port / alternate function | Role |
 |---|---|---|

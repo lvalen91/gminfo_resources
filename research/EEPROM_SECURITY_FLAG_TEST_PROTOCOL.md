@@ -305,22 +305,35 @@ flowing every ~2 s or the session/unlock drops.
 NRC: 7F 22 31 requestOutOfRange · 7F 22 33 securityAccessDenied
 ```
 
-### Test 2 — `$27` L01 key-accept ("any/stub key?")
+### Test 2 — level-1 response format (corrected 2026-11-14)
+
+The verified degenerate exchange has a **31-byte seed and a 12-byte submitted
+response**. The prior equal-length/all-FF-key recipe was incorrect. On direct
+T1 use logical tester F4, target 0x0084, and the exact custom framing in the
+[owning diagnostic reference](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
+
 ```
-10 03
-27 01      → 67 01 FF FF … FF   seed (all-FF expected; COUNT bytes = seed length, ~31 in sample)
-27 02 <key>                     sendKey L01; key LENGTH = seed length; try (a) all-FF then (b) all-00
-           → 67 02              KEY ACCEPTED ⇒ stub/any-key unlock proven ✅
-           → 7F 27 35           invalidKey ⇒ real key required
-NRC: 7F 27 36 exceededAttempts · 7F 27 37 timeDelayNotExpired · 7F 27 24 sequenceError
+10 03                 -> 50 03 ...       extended session
+27 01                 -> 67 01 + FF x31  seed
+27 02 + 00 x12        -> 67 02           exact tested response accepted
+10 01                 -> 50 01 ...       restore default session
 ```
+
+The earlier invalid-tester NRC `0x10` did not establish SBI-inactive state.
+One accepted zero response does not prove arbitrary-key acceptance, all-FF
+key acceptance, any other security level, programming writes or root access.
+Do not send a fabricated key for a real/non-degenerate seed.
 
 ### Test 3 — higher levels all-FF? (SecurityLevel value = `$27` requestSeed subfunction; sendKey = +1)
 ```
 27 01 Service(1)            27 03 AssemblyPlant(3)      27 05 OTA(5)
 27 09 Engineering(9)        27 0B RemoteDiagnostics(11) 27 0D SupplierSecAccess(13)
 27 11 ExtendedReflash(17)   27 13 ExtendedAssembly(19)  27 15 ExtendedOTA(21)   27 5F EndOfLife(95)
-Each → 67 <sf> <seed>. all-FF seed ⇒ level trivialized (run Test-2 sendKey on it).
+Each supported level may return 67 <sf> <seed>. An all-FF seed alone does not
+prove a grant or establish its key format. A later 2026-11-14 T1 read sweep
+validated 09/0A and 0B/0C using the 31-FF/12-zero format; other higher levels
+remain untested. See the [read-sweep results](../diagnostics/ethernet_uds_diagnosticsd.md#bounded-read-only-sweep-and-uart-reset-follow-up-2026-11-14).
+Do not extrapolate to every level or arbitrary key content.
 NRC 7F 27 12 subFunctionNotSupported = level absent.
 ```
 

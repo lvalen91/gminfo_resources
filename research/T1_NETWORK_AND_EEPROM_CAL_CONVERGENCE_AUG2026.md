@@ -92,8 +92,10 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
   without re-checking on this build.]**
 - `[C]` It is **GM-custom UDS-over-TCP on 49156**, *not* standard DoIP — no `13400`, no
   vehicle-announcement / routing-activation. Framing: `[SRC:2 BE][TGT:2 BE][LEN:4 BE][UDS payload]`,
-  target address unvalidated, app-layer source-address trust tiers (`0x00FA` factory tester, `0x00F1`,
-  `0xF0`) with `generalReject (0x10)` for untrusted sources.
+  canonical target `0x0084`. **Corrected 2026-11-14:** old tester IDs
+  `0x00FA`/`0x00F1`/`0xF0` were not verified trust tiers. Tester F4 plus
+  extended session completed the documented 31-FF/12-zero/`67 02` exchange;
+  see [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
 - `[C]` ADB-over-TCP is a capability (`on property:vendor.adb.tcp.enable=1 → restart adbd`) but **off**
   (`ro.debuggable=0`, `ro.adb.secure=1`, `sys.oem_unlock_allowed=0`, AVB locked/green).
 

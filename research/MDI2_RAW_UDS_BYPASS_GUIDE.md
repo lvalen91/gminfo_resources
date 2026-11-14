@@ -593,6 +593,9 @@ the ADB routine was sent to the Android `diagnosticsd` custom UDS-over-TCP endpo
 domain byte and complete request, and the underlying exchange has not been located. This is a
 reported rejection on the Android diagnostics path, not a test of ECU 0x80 via MDI2 DoIP/CAN;
 it does not establish routine support, the correct domain, or the reason for rejection.
+**Correction 2026-11-14:** the old blanket T1 rejections used an invalid
+logical tester. F4 plus extended session now completes level-1 SecurityAccess
+(31-FF seed, 12-zero response, `67 02`); see [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). The ADB routine itself was not rerun, so its behavior remains unproven.
 
 **What this does and does not prove:**
 - It identifies a **candidate external UDS `RoutineControl` request** for a privileged action.

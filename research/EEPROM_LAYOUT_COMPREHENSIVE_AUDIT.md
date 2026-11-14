@@ -806,7 +806,7 @@ Per the CALDEF and firmware analysis:
 | Cal `$27` is gated by VIP/EEPROM | `[C]` | CALDEF_VIP_CALIBRATION_ANALYSIS.txt §4: "RID 021E converted to Security Access Request per IPC ver 2.6"; cal-programming validated via VIP | Established |
 | ADB SBI flip opens cal `$27` | `[O]` | Untested. T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md §4 lists undocumented candidates (0x04A0, 0x04C0, 0x0A40, 0x0BE0) to probe | Open question |
 | Cal `$27` uses same SBI byte (0x0440/0x0A80) as ADB | `[I]` | Logical (shared VIP layer), but not disasm-confirmed for the cal path | Inferred |
-| Independent `$27` test via Ethernet shows different behavior from CAN | `[O]` | S27_SOC_VALIDATION_BENCH_TEST.md control test (MDI2/CAN returns all-0xFF; Ethernet `49156` from untrusted shell gets `7F 27 10` generalReject) | Testable; inconclusive from untrusted client |
+| Ethernet level-1 `$27` matches the documented degenerate CAN exchange | `[C]` corrected 2026-11-14 | Direct T1 tester F4 + extended session: 31 all-FF seed bytes; 12-zero-byte response accepted with `67 02`. See [owning sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). | Earlier NRC `0x10` used an invalid tester ID; no arbitrary-key, root or firmware-write proof. |
 
 ### 4.5 Practical Implication
 

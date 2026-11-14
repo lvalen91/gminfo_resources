@@ -239,9 +239,11 @@ so treat as confirmation of mechanism/identity, not a line-for-line re-verificat
 build):
  - 49156 is identified: diagnosticsd (GM-custom UDS-over-TCP), bound 0.0.0.0 on vlan4 (172.16.4.100),
    externally reachable only from source IPs {172.16.4.107, 172.16.4.112} (source-IP allowlist at the
-   netfilter layer); the UDS app layer additionally rejects every request without a registered
-   tester/SecurityAccess (generalReject, NRC 0x10). Not "Unknown" -- it is GM's custom diagnostic
-   bridge, and reachability is gated, not open-to-anyone.
+   netfilter layer). Corrected 2026-11-14: the old universal generalReject claim
+   used an invalid logical tester ID. Direct T1 tester F4, extended session,
+   31-FF seed and 12-zero response now yielded 67 02; see the owning
+   diagnostics/ethernet_uds_diagnosticsd.md corrected sequence. This is
+   SecurityAccess acceptance, not UID-0 or firmware-write proof.
  - "Internal network (192.168.1.1)" is superseded: the radio's real vlan5 address is 192.168.1.100,
    not .1 -- no .1 host was found on the Y175 bench. Of the six ports listed, a full external 1-65535
    scan from the wire found only 9002 (RemoteModuleHMI) and 9016 (NetworkAccessManager) actually open,

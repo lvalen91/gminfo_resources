@@ -196,32 +196,16 @@ Corroborating: `research/CALDEF_VIP_CALIBRATION_ANALYSIS.txt`, `research/UPDATE_
 
 ---
 
-### 10. diagnosticsd 8-byte Header Source-Address Spoofing
+### 10. diagnosticsd logical tester and session sequence
 
-**Status:** NOT TRIED
-**Priority rationale:** May grant pre-authorized tester trust tier without needing the seed-to-key algorithm.
-
-**Finding:** `diagnosticsd` uses a custom 8-byte framing header:
-```
-[SRC: 2 bytes, BE] [TGT: 2 bytes, BE] [LEN: 4 bytes, BE] [UDS payload]
-```
-Target address is NOT validated by `diagnosticsd`. Logical addresses `0x00FA` (factory tester), `0x00F1`, and `0xF0` may grant a pre-authorized trust tier that bypasses the `SecurityAccess ($27)` gate.
-
-**Action:**
-```python
-# Python test frame — send to port 49156
-import socket, struct
-src = 0x00FA   # factory tester address
-tgt = 0x0001   # head unit
-payload = bytes([0x10, 0x03])  # DiagnosticSessionControl, extendedDiagnosticSession
-header = struct.pack('>HHIH', src, tgt, len(payload), 0) + payload
-s = socket.socket()
-s.connect(('127.0.0.1', 49156))
-s.send(header)
-print(s.recv(256).hex())
-```
-
-**Observe:** Does the NRC change from `0x10` (generalReject) when SRC is `0x00FA` vs. `0x0001`? A different NRC indicates the source address is being used for trust tier routing.
+**Corrected 2026-11-14 — live-verified, not an untried trust-tier hypothesis.**
+The old FA/F1/F0 source values and unvalidated-target claim were not the
+accepted sequence. Use tester F4, target 0x0084 and the eight-byte `>HHI`
+header; the old `>HHIH` example incorrectly inserted two extra bytes.
+Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
+`27 02` plus 12 zero bytes returned `67 02`. Default session was restored.
+See the [owning diagnostic sequence](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
+calibration-write, Android-root or GHS-shell result follows from this grant.
 
 ---
 

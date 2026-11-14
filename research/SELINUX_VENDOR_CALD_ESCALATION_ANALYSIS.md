@@ -30,6 +30,8 @@ Environment: **SELinux Enforcing** (`selinux_status.txt`); bootloader **locked**
 (`ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`), verified boot **green**, `ro.boot.avb_version=1.2` (AVB spec 1.1 per `avb_version.h` MAJOR 1/MINOR 1 — the `1.2` is the avbtool/property version, not the spec),
 `ro.secure=1`, `ro.adb.secure=1`.
 
+> **[2026-11-13] ADB key-authorization scope:** see [Bus 2 source note §9.4](file:///Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md#94-2026-11-13-adb-per-key-authorization-not-enforced--c) for the same-radio authorization finding; the root/SELinux conclusions here remain separately scoped.
+
 Source of truth: `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (compiled CIL,
 neverallows retained). Cross-checked against `apr2026` and base `Y181` CILs — identical results.
 
