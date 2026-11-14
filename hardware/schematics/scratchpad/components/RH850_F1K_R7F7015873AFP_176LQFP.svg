@@ -1,0 +1,672 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 1170" width="1700" height="1170" font-family="Helvetica, Arial, sans-serif">
+<title>RH850/F1K R7F7015873AFP - 176-pin LQFP pin diagram (top view)</title>
+<desc>Top view of the Renesas RH850/F1K R7F7015873AFP VIP MCU, 176-pin LQFP. Pin assignment from RH850/F1K Hardware Manual Rev. 1.10 (R01UH0562EJ0110) Figure 2.3 (p. 81) and Table 2.3 (pp. 89-93). Ground pins in red, UART-capable (RLIN3n TX/RX) pins in blue.</desc>
+<rect width="1700" height="1170" fill="#fff"/>
+<rect x="12" y="12" width="1676" height="1146" fill="none" stroke="#000" stroke-width="1.5"/>
+<text x="40" y="52" font-size="24" font-weight="700" fill="#000">RH850/F1K R7F7015873AFP — 176-pin LQFP · UART, JTAG and GND pins</text>
+<text x="40" y="76" font-size="12.5" fill="#000">Top view  ·  VIP MCU of the A11 Radio  ·  marking 15873 (TM52176 = trace code)  ·  pin assignment from RH850/F1K HW manual Rev. 1.10, Fig. 2.3 (p. 81) and Table 2.3 (pp. 89–93)</text>
+<line x1="40" y1="90" x2="1660" y2="90" stroke="#000" stroke-width="1"/>
+<rect x="320" y="250" width="660" height="660" fill="#f4f4f4" stroke="#000" stroke-width="2"/>
+<circle cx="368" cy="298" r="10" fill="none" stroke="#000" stroke-width="1.5"/>
+<text x="650.0" y="546.0" font-size="30" font-weight="700" text-anchor="middle">RH850/F1K</text>
+<text x="650.0" y="580.0" font-size="22" text-anchor="middle">R7F7015873AFP</text>
+<text x="650.0" y="608.0" font-size="14" text-anchor="middle" fill="#333">176-pin LFQFP · 24 × 24 mm · 0.5 mm pitch</text>
+<text x="650.0" y="628.0" font-size="14" text-anchor="middle" fill="#333">G3KH core · 2 MB code flash · 192 KB RAM · 120 MHz</text>
+<text x="650.0" y="660.0" font-size="13" text-anchor="middle" fill="#333">Pin 1 = dot, top-left; pins count counter-clockwise</text>
+<text x="650.0" y="678.0" font-size="13" text-anchor="middle" fill="#333">1–44 left ↓ · 45–88 bottom → · 89–132 right ↑ · 133–176 top ←</text>
+<line x1="300" y1="279.0" x2="320" y2="279.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="282.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P10_3</text>
+<text x="326" y="282.0" font-size="8" fill="#555" font-weight="400">1</text>
+<line x1="300" y1="293.0" x2="320" y2="293.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="296.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P10_4</text>
+<text x="326" y="296.0" font-size="8" fill="#555" font-weight="400">2</text>
+<line x1="300" y1="307.0" x2="320" y2="307.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="310.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P10_5</text>
+<text x="326" y="310.0" font-size="8" fill="#555" font-weight="400">3</text>
+<line x1="300" y1="321.0" x2="320" y2="321.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="324.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">EVCC</text>
+<text x="326" y="324.0" font-size="8" fill="#555" font-weight="400">4</text>
+<line x1="300" y1="335.0" x2="320" y2="335.0" stroke="#0a8a2a" stroke-width="5"/>
+<text x="294" y="338.4" font-size="10.5" font-weight="700" fill="#0a8a2a" text-anchor="end">EVSS (GND)</text>
+<text x="326" y="338.0" font-size="8" fill="#0a8a2a" font-weight="700">5</text>
+<line x1="300" y1="349.0" x2="320" y2="349.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="352.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P10_15</text>
+<text x="326" y="352.0" font-size="8" fill="#555" font-weight="400">6</text>
+<line x1="300" y1="363.0" x2="320" y2="363.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="366.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P11_0</text>
+<text x="326" y="366.0" font-size="8" fill="#555" font-weight="400">7</text>
+<line x1="300" y1="377.0" x2="320" y2="377.0" stroke="#0050c8" stroke-width="5"/>
+<text x="294" y="380.4" font-size="10.5" font-weight="700" fill="#0050c8" text-anchor="end">P11_8 · RLIN35TX</text>
+<text x="326" y="380.0" font-size="8" fill="#0050c8" font-weight="700">8</text>
+<line x1="300" y1="391.0" x2="320" y2="391.0" stroke="#d00000" stroke-width="5"/>
+<text x="294" y="394.4" font-size="10.5" font-weight="700" fill="#d00000" text-anchor="end">P11_9 · RLIN35RX</text>
+<text x="326" y="394.0" font-size="8" fill="#d00000" font-weight="700">9</text>
+<line x1="300" y1="405.0" x2="320" y2="405.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="408.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P11_10</text>
+<text x="326" y="408.0" font-size="8" fill="#555" font-weight="400">10</text>
+<line x1="300" y1="419.0" x2="320" y2="419.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="422.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P11_11</text>
+<text x="326" y="422.0" font-size="8" fill="#555" font-weight="400">11</text>
+<line x1="300" y1="433.0" x2="320" y2="433.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="436.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P11_12</text>
+<text x="326" y="436.0" font-size="8" fill="#555" font-weight="400">12</text>
+<line x1="300" y1="447.0" x2="320" y2="447.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="450.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P11_13</text>
+<text x="326" y="450.0" font-size="8" fill="#555" font-weight="400">13</text>
+<line x1="300" y1="461.0" x2="320" y2="461.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="464.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P11_14</text>
+<text x="326" y="464.0" font-size="8" fill="#555" font-weight="400">14</text>
+<line x1="300" y1="475.0" x2="320" y2="475.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="478.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P12_3</text>
+<text x="326" y="478.0" font-size="8" fill="#555" font-weight="400">15</text>
+<line x1="300" y1="489.0" x2="320" y2="489.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="492.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P12_4</text>
+<text x="326" y="492.0" font-size="8" fill="#555" font-weight="400">16</text>
+<line x1="300" y1="503.0" x2="320" y2="503.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="506.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P12_5</text>
+<text x="326" y="506.0" font-size="8" fill="#555" font-weight="400">17</text>
+<line x1="300" y1="517.0" x2="320" y2="517.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="520.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P0_0</text>
+<text x="326" y="520.0" font-size="8" fill="#555" font-weight="400">18</text>
+<line x1="300" y1="531.0" x2="320" y2="531.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="534.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P0_1</text>
+<text x="326" y="534.0" font-size="8" fill="#555" font-weight="400">19</text>
+<line x1="300" y1="545.0" x2="320" y2="545.0" stroke="#0050c8" stroke-width="5"/>
+<text x="294" y="548.4" font-size="10.5" font-weight="700" fill="#0050c8" text-anchor="end">P0_2 · RLIN30TX</text>
+<text x="326" y="548.0" font-size="8" fill="#0050c8" font-weight="700">20</text>
+<line x1="300" y1="559.0" x2="320" y2="559.0" stroke="#d00000" stroke-width="5"/>
+<text x="294" y="562.4" font-size="10.5" font-weight="700" fill="#d00000" text-anchor="end">P0_3 · RLIN30RX</text>
+<text x="326" y="562.0" font-size="8" fill="#d00000" font-weight="700">21</text>
+<line x1="300" y1="573.0" x2="320" y2="573.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="576.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">EVCC</text>
+<text x="326" y="576.0" font-size="8" fill="#555" font-weight="400">22</text>
+<line x1="300" y1="587.0" x2="320" y2="587.0" stroke="#d00000" stroke-width="5"/>
+<text x="294" y="590.4" font-size="10.5" font-weight="700" fill="#d00000" text-anchor="end">P0_4 · RLIN31RX</text>
+<text x="326" y="590.0" font-size="8" fill="#d00000" font-weight="700">23</text>
+<line x1="300" y1="601.0" x2="320" y2="601.0" stroke="#0050c8" stroke-width="5"/>
+<text x="294" y="604.4" font-size="10.5" font-weight="700" fill="#0050c8" text-anchor="end">P0_5 · RLIN31TX</text>
+<text x="326" y="604.0" font-size="8" fill="#0050c8" font-weight="700">24</text>
+<line x1="300" y1="615.0" x2="320" y2="615.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="618.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P0_6</text>
+<text x="326" y="618.0" font-size="8" fill="#555" font-weight="400">25</text>
+<line x1="300" y1="629.0" x2="320" y2="629.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="632.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P0_11</text>
+<text x="326" y="632.0" font-size="8" fill="#555" font-weight="400">26</text>
+<line x1="300" y1="643.0" x2="320" y2="643.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="646.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P0_12</text>
+<text x="326" y="646.0" font-size="8" fill="#555" font-weight="400">27</text>
+<line x1="300" y1="657.0" x2="320" y2="657.0" stroke="#d00000" stroke-width="5"/>
+<text x="294" y="660.4" font-size="10.5" font-weight="700" fill="#d00000" text-anchor="end">P0_13 · RLIN32RX</text>
+<text x="326" y="660.0" font-size="8" fill="#d00000" font-weight="700">28</text>
+<line x1="300" y1="671.0" x2="320" y2="671.0" stroke="#0050c8" stroke-width="5"/>
+<text x="294" y="674.4" font-size="10.5" font-weight="700" fill="#0050c8" text-anchor="end">P0_14 · RLIN32TX</text>
+<text x="326" y="674.0" font-size="8" fill="#0050c8" font-weight="700">29</text>
+<line x1="300" y1="685.0" x2="320" y2="685.0" stroke="#d00000" stroke-width="5"/>
+<text x="294" y="688.4" font-size="10.5" font-weight="700" fill="#d00000" text-anchor="end">P1_0 · RLIN33RX</text>
+<text x="326" y="688.0" font-size="8" fill="#d00000" font-weight="700">30</text>
+<line x1="300" y1="699.0" x2="320" y2="699.0" stroke="#0050c8" stroke-width="5"/>
+<text x="294" y="702.4" font-size="10.5" font-weight="700" fill="#0050c8" text-anchor="end">P1_1 · RLIN33TX</text>
+<text x="326" y="702.0" font-size="8" fill="#0050c8" font-weight="700">31</text>
+<line x1="300" y1="713.0" x2="320" y2="713.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="716.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P1_2</text>
+<text x="326" y="716.0" font-size="8" fill="#555" font-weight="400">32</text>
+<line x1="300" y1="727.0" x2="320" y2="727.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="730.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P1_3</text>
+<text x="326" y="730.0" font-size="8" fill="#555" font-weight="400">33</text>
+<line x1="300" y1="741.0" x2="320" y2="741.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="744.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P1_12</text>
+<text x="326" y="744.0" font-size="8" fill="#555" font-weight="400">34</text>
+<line x1="300" y1="755.0" x2="320" y2="755.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="758.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P1_13</text>
+<text x="326" y="758.0" font-size="8" fill="#555" font-weight="400">35</text>
+<line x1="300" y1="769.0" x2="320" y2="769.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="772.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P2_6</text>
+<text x="326" y="772.0" font-size="8" fill="#555" font-weight="400">36</text>
+<line x1="300" y1="783.0" x2="320" y2="783.0" stroke="#0a8a2a" stroke-width="5"/>
+<text x="294" y="786.4" font-size="10.5" font-weight="700" fill="#0a8a2a" text-anchor="end">EVSS (GND)</text>
+<text x="326" y="786.0" font-size="8" fill="#0a8a2a" font-weight="700">37</text>
+<line x1="300" y1="797.0" x2="320" y2="797.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="800.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P8_2</text>
+<text x="326" y="800.0" font-size="8" fill="#555" font-weight="400">38</text>
+<line x1="300" y1="811.0" x2="320" y2="811.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="814.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P8_10</text>
+<text x="326" y="814.0" font-size="8" fill="#555" font-weight="400">39</text>
+<line x1="300" y1="825.0" x2="320" y2="825.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="828.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P8_11</text>
+<text x="326" y="828.0" font-size="8" fill="#555" font-weight="400">40</text>
+<line x1="300" y1="839.0" x2="320" y2="839.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="842.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">P8_12</text>
+<text x="326" y="842.0" font-size="8" fill="#555" font-weight="400">41</text>
+<line x1="300" y1="853.0" x2="320" y2="853.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="856.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">JP0_5</text>
+<text x="326" y="856.0" font-size="8" fill="#555" font-weight="400">42</text>
+<line x1="300" y1="867.0" x2="320" y2="867.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="870.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">JP0_4</text>
+<text x="326" y="870.0" font-size="8" fill="#555" font-weight="400">43</text>
+<line x1="300" y1="881.0" x2="320" y2="881.0" stroke="#222" stroke-width="3"/>
+<text x="294" y="884.4" font-size="9.5" font-weight="400" fill="#222" text-anchor="end">JP0_3</text>
+<text x="326" y="884.0" font-size="8" fill="#555" font-weight="400">44</text>
+<line x1="349.0" y1="910" x2="349.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(345.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">JP0_2</text>
+<text transform="translate(352.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">45</text>
+<line x1="363.0" y1="910" x2="363.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(359.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">JP0_1</text>
+<text transform="translate(366.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">46</text>
+<line x1="377.0" y1="910" x2="377.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(373.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">JP0_0</text>
+<text transform="translate(380.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">47</text>
+<line x1="391.0" y1="910" x2="391.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(387.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P2_1</text>
+<text transform="translate(394.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">48</text>
+<line x1="405.0" y1="910" x2="405.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(401.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P2_0</text>
+<text transform="translate(408.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">49</text>
+<line x1="419.0" y1="910" x2="419.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(415.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P1_11</text>
+<text transform="translate(422.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">50</text>
+<line x1="433.0" y1="910" x2="433.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(429.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P1_10</text>
+<text transform="translate(436.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">51</text>
+<line x1="447.0" y1="910" x2="447.0" y2="930" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(443.6,936) rotate(90)" font-size="10.5" font-weight="700" fill="#0050c8">P1_9 · RLIN34TX</text>
+<text transform="translate(450.0,904) rotate(-90)" font-size="8" fill="#0050c8" font-weight="700">52</text>
+<line x1="461.0" y1="910" x2="461.0" y2="930" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(457.6,936) rotate(90)" font-size="10.5" font-weight="700" fill="#d00000">P1_8 · RLIN34RX</text>
+<text transform="translate(464.0,904) rotate(-90)" font-size="8" fill="#d00000" font-weight="700">53</text>
+<line x1="475.0" y1="910" x2="475.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(471.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">RESET</text>
+<text transform="translate(478.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">54</text>
+<line x1="489.0" y1="910" x2="489.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(485.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">EVCC</text>
+<text transform="translate(492.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">55</text>
+<line x1="503.0" y1="910" x2="503.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(499.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">XT1</text>
+<text transform="translate(506.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">56</text>
+<line x1="517.0" y1="910" x2="517.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(513.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">IP0_0</text>
+<text transform="translate(520.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">57</text>
+<line x1="531.0" y1="910" x2="531.0" y2="930" stroke="#0a8a2a" stroke-width="5"/>
+<text transform="translate(527.6,936) rotate(90)" font-size="10.5" font-weight="700" fill="#0a8a2a">AWOVSS (GND)</text>
+<text transform="translate(534.0,904) rotate(-90)" font-size="8" fill="#0a8a2a" font-weight="700">58</text>
+<line x1="545.0" y1="910" x2="545.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(541.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">AWOVCL</text>
+<text transform="translate(548.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">59</text>
+<line x1="559.0" y1="910" x2="559.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(555.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">REGVCC</text>
+<text transform="translate(562.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">60</text>
+<line x1="573.0" y1="910" x2="573.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(569.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">X2</text>
+<text transform="translate(576.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">61</text>
+<line x1="587.0" y1="910" x2="587.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(583.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">X1</text>
+<text transform="translate(590.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">62</text>
+<line x1="601.0" y1="910" x2="601.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(597.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">FLMD0</text>
+<text transform="translate(604.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">63</text>
+<line x1="615.0" y1="910" x2="615.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(611.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P2_3</text>
+<text transform="translate(618.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">64</text>
+<line x1="629.0" y1="910" x2="629.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(625.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P2_2</text>
+<text transform="translate(632.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">65</text>
+<line x1="643.0" y1="910" x2="643.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(639.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">JP0_6</text>
+<text transform="translate(646.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">66</text>
+<line x1="657.0" y1="910" x2="657.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(653.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P0_10</text>
+<text transform="translate(660.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">67</text>
+<line x1="671.0" y1="910" x2="671.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(667.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P0_9</text>
+<text transform="translate(674.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">68</text>
+<line x1="685.0" y1="910" x2="685.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(681.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P0_8</text>
+<text transform="translate(688.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">69</text>
+<line x1="699.0" y1="910" x2="699.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(695.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P0_7</text>
+<text transform="translate(702.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">70</text>
+<line x1="713.0" y1="910" x2="713.0" y2="930" stroke="#0a8a2a" stroke-width="5"/>
+<text transform="translate(709.6,936) rotate(90)" font-size="10.5" font-weight="700" fill="#0a8a2a">EVSS (GND)</text>
+<text transform="translate(716.0,904) rotate(-90)" font-size="8" fill="#0a8a2a" font-weight="700">71</text>
+<line x1="727.0" y1="910" x2="727.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(723.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P1_7</text>
+<text transform="translate(730.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">72</text>
+<line x1="741.0" y1="910" x2="741.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(737.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P1_6</text>
+<text transform="translate(744.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">73</text>
+<line x1="755.0" y1="910" x2="755.0" y2="930" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(751.6,936) rotate(90)" font-size="10.5" font-weight="700" fill="#0050c8">P1_5 · RLIN35TX</text>
+<text transform="translate(758.0,904) rotate(-90)" font-size="8" fill="#0050c8" font-weight="700">74</text>
+<line x1="769.0" y1="910" x2="769.0" y2="930" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(765.6,936) rotate(90)" font-size="10.5" font-weight="700" fill="#d00000">P1_4 · RLIN35RX</text>
+<text transform="translate(772.0,904) rotate(-90)" font-size="8" fill="#d00000" font-weight="700">75</text>
+<line x1="783.0" y1="910" x2="783.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(779.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P2_4</text>
+<text transform="translate(786.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">76</text>
+<line x1="797.0" y1="910" x2="797.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(793.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P2_5</text>
+<text transform="translate(800.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">77</text>
+<line x1="811.0" y1="910" x2="811.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(807.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P1_14</text>
+<text transform="translate(814.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">78</text>
+<line x1="825.0" y1="910" x2="825.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(821.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P1_15</text>
+<text transform="translate(828.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">79</text>
+<line x1="839.0" y1="910" x2="839.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(835.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_0</text>
+<text transform="translate(842.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">80</text>
+<line x1="853.0" y1="910" x2="853.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(849.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_1</text>
+<text transform="translate(856.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">81</text>
+<line x1="867.0" y1="910" x2="867.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(863.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_3</text>
+<text transform="translate(870.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">82</text>
+<line x1="881.0" y1="910" x2="881.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(877.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_4</text>
+<text transform="translate(884.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">83</text>
+<line x1="895.0" y1="910" x2="895.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(891.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_5</text>
+<text transform="translate(898.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">84</text>
+<line x1="909.0" y1="910" x2="909.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(905.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_6</text>
+<text transform="translate(912.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">85</text>
+<line x1="923.0" y1="910" x2="923.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(919.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_7</text>
+<text transform="translate(926.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">86</text>
+<line x1="937.0" y1="910" x2="937.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(933.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_8</text>
+<text transform="translate(940.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">87</text>
+<line x1="951.0" y1="910" x2="951.0" y2="930" stroke="#222" stroke-width="3"/>
+<text transform="translate(947.6,936) rotate(90)" font-size="9.5" font-weight="400" fill="#222">P8_9</text>
+<text transform="translate(954.0,904) rotate(-90)" font-size="8" fill="#555" font-weight="400">88</text>
+<line x1="980" y1="881.0" x2="1000" y2="881.0" stroke="#0a8a2a" stroke-width="5"/>
+<text x="1006" y="884.4" font-size="10.5" font-weight="700" fill="#0a8a2a">A0VSS (GND)</text>
+<text x="974" y="884.0" font-size="8" fill="#0a8a2a" font-weight="700" text-anchor="end">89</text>
+<line x1="980" y1="867.0" x2="1000" y2="867.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="870.4" font-size="9.5" font-weight="400" fill="#222">A0VREF</text>
+<text x="974" y="870.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">90</text>
+<line x1="980" y1="853.0" x2="1000" y2="853.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="856.4" font-size="9.5" font-weight="400" fill="#222">AP0_15</text>
+<text x="974" y="856.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">91</text>
+<line x1="980" y1="839.0" x2="1000" y2="839.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="842.4" font-size="9.5" font-weight="400" fill="#222">AP0_14</text>
+<text x="974" y="842.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">92</text>
+<line x1="980" y1="825.0" x2="1000" y2="825.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="828.4" font-size="9.5" font-weight="400" fill="#222">AP0_13</text>
+<text x="974" y="828.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">93</text>
+<line x1="980" y1="811.0" x2="1000" y2="811.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="814.4" font-size="9.5" font-weight="400" fill="#222">AP0_12</text>
+<text x="974" y="814.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">94</text>
+<line x1="980" y1="797.0" x2="1000" y2="797.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="800.4" font-size="9.5" font-weight="400" fill="#222">AP0_11</text>
+<text x="974" y="800.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">95</text>
+<line x1="980" y1="783.0" x2="1000" y2="783.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="786.4" font-size="9.5" font-weight="400" fill="#222">AP0_10</text>
+<text x="974" y="786.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">96</text>
+<line x1="980" y1="769.0" x2="1000" y2="769.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="772.4" font-size="9.5" font-weight="400" fill="#222">AP0_9</text>
+<text x="974" y="772.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">97</text>
+<line x1="980" y1="755.0" x2="1000" y2="755.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="758.4" font-size="9.5" font-weight="400" fill="#222">AP0_8</text>
+<text x="974" y="758.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">98</text>
+<line x1="980" y1="741.0" x2="1000" y2="741.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="744.4" font-size="9.5" font-weight="400" fill="#222">AP0_7</text>
+<text x="974" y="744.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">99</text>
+<line x1="980" y1="727.0" x2="1000" y2="727.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="730.4" font-size="9.5" font-weight="400" fill="#222">AP0_6</text>
+<text x="974" y="730.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">100</text>
+<line x1="980" y1="713.0" x2="1000" y2="713.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="716.4" font-size="9.5" font-weight="400" fill="#222">AP0_5</text>
+<text x="974" y="716.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">101</text>
+<line x1="980" y1="699.0" x2="1000" y2="699.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="702.4" font-size="9.5" font-weight="400" fill="#222">AP0_4</text>
+<text x="974" y="702.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">102</text>
+<line x1="980" y1="685.0" x2="1000" y2="685.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="688.4" font-size="9.5" font-weight="400" fill="#222">AP0_3</text>
+<text x="974" y="688.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">103</text>
+<line x1="980" y1="671.0" x2="1000" y2="671.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="674.4" font-size="9.5" font-weight="400" fill="#222">AP0_2</text>
+<text x="974" y="674.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">104</text>
+<line x1="980" y1="657.0" x2="1000" y2="657.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="660.4" font-size="9.5" font-weight="400" fill="#222">AP0_1</text>
+<text x="974" y="660.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">105</text>
+<line x1="980" y1="643.0" x2="1000" y2="643.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="646.4" font-size="9.5" font-weight="400" fill="#222">AP0_0</text>
+<text x="974" y="646.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">106</text>
+<line x1="980" y1="629.0" x2="1000" y2="629.0" stroke="#0a8a2a" stroke-width="5"/>
+<text x="1006" y="632.4" font-size="10.5" font-weight="700" fill="#0a8a2a">EVSS (GND)</text>
+<text x="974" y="632.0" font-size="8" fill="#0a8a2a" font-weight="700" text-anchor="end">107</text>
+<line x1="980" y1="615.0" x2="1000" y2="615.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="618.4" font-size="9.5" font-weight="400" fill="#222">P9_0</text>
+<text x="974" y="618.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">108</text>
+<line x1="980" y1="601.0" x2="1000" y2="601.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="604.4" font-size="9.5" font-weight="400" fill="#222">P9_1</text>
+<text x="974" y="604.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">109</text>
+<line x1="980" y1="587.0" x2="1000" y2="587.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="590.4" font-size="9.5" font-weight="400" fill="#222">P9_2</text>
+<text x="974" y="590.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">110</text>
+<line x1="980" y1="573.0" x2="1000" y2="573.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="576.4" font-size="9.5" font-weight="400" fill="#222">P9_3</text>
+<text x="974" y="576.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">111</text>
+<line x1="980" y1="559.0" x2="1000" y2="559.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="562.4" font-size="9.5" font-weight="400" fill="#222">P9_4</text>
+<text x="974" y="562.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">112</text>
+<line x1="980" y1="545.0" x2="1000" y2="545.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="548.4" font-size="9.5" font-weight="400" fill="#222">P9_5</text>
+<text x="974" y="548.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">113</text>
+<line x1="980" y1="531.0" x2="1000" y2="531.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="534.4" font-size="9.5" font-weight="400" fill="#222">P9_6</text>
+<text x="974" y="534.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">114</text>
+<line x1="980" y1="517.0" x2="1000" y2="517.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="520.4" font-size="9.5" font-weight="400" fill="#222">P20_3</text>
+<text x="974" y="520.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">115</text>
+<line x1="980" y1="503.0" x2="1000" y2="503.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="506.4" font-size="9.5" font-weight="400" fill="#222">P20_2</text>
+<text x="974" y="506.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">116</text>
+<line x1="980" y1="489.0" x2="1000" y2="489.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="492.4" font-size="9.5" font-weight="400" fill="#222">P20_1</text>
+<text x="974" y="492.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">117</text>
+<line x1="980" y1="475.0" x2="1000" y2="475.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="478.4" font-size="9.5" font-weight="400" fill="#222">P20_0</text>
+<text x="974" y="478.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">118</text>
+<line x1="980" y1="461.0" x2="1000" y2="461.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="464.4" font-size="9.5" font-weight="400" fill="#222">P20_5</text>
+<text x="974" y="464.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">119</text>
+<line x1="980" y1="447.0" x2="1000" y2="447.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="450.4" font-size="9.5" font-weight="400" fill="#222">P20_4</text>
+<text x="974" y="450.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">120</text>
+<line x1="980" y1="433.0" x2="1000" y2="433.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="436.4" font-size="9.5" font-weight="400" fill="#222">EVCC</text>
+<text x="974" y="436.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">121</text>
+<line x1="980" y1="419.0" x2="1000" y2="419.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="422.4" font-size="9.5" font-weight="400" fill="#222">AP1_11</text>
+<text x="974" y="422.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">122</text>
+<line x1="980" y1="405.0" x2="1000" y2="405.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="408.4" font-size="9.5" font-weight="400" fill="#222">AP1_10</text>
+<text x="974" y="408.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">123</text>
+<line x1="980" y1="391.0" x2="1000" y2="391.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="394.4" font-size="9.5" font-weight="400" fill="#222">AP1_9</text>
+<text x="974" y="394.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">124</text>
+<line x1="980" y1="377.0" x2="1000" y2="377.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="380.4" font-size="9.5" font-weight="400" fill="#222">AP1_8</text>
+<text x="974" y="380.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">125</text>
+<line x1="980" y1="363.0" x2="1000" y2="363.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="366.4" font-size="9.5" font-weight="400" fill="#222">AP1_7</text>
+<text x="974" y="366.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">126</text>
+<line x1="980" y1="349.0" x2="1000" y2="349.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="352.4" font-size="9.5" font-weight="400" fill="#222">AP1_6</text>
+<text x="974" y="352.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">127</text>
+<line x1="980" y1="335.0" x2="1000" y2="335.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="338.4" font-size="9.5" font-weight="400" fill="#222">AP1_5</text>
+<text x="974" y="338.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">128</text>
+<line x1="980" y1="321.0" x2="1000" y2="321.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="324.4" font-size="9.5" font-weight="400" fill="#222">AP1_4</text>
+<text x="974" y="324.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">129</text>
+<line x1="980" y1="307.0" x2="1000" y2="307.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="310.4" font-size="9.5" font-weight="400" fill="#222">AP1_3</text>
+<text x="974" y="310.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">130</text>
+<line x1="980" y1="293.0" x2="1000" y2="293.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="296.4" font-size="9.5" font-weight="400" fill="#222">AP1_2</text>
+<text x="974" y="296.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">131</text>
+<line x1="980" y1="279.0" x2="1000" y2="279.0" stroke="#222" stroke-width="3"/>
+<text x="1006" y="282.4" font-size="9.5" font-weight="400" fill="#222">AP1_1</text>
+<text x="974" y="282.0" font-size="8" fill="#555" font-weight="400" text-anchor="end">132</text>
+<line x1="951.0" y1="230" x2="951.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(954.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">AP1_0</text>
+<text transform="translate(948.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">133</text>
+<line x1="937.0" y1="230" x2="937.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(940.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">AP1_15</text>
+<text transform="translate(934.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">134</text>
+<line x1="923.0" y1="230" x2="923.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(926.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">AP1_14</text>
+<text transform="translate(920.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">135</text>
+<line x1="909.0" y1="230" x2="909.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(912.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">AP1_13</text>
+<text transform="translate(906.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">136</text>
+<line x1="895.0" y1="230" x2="895.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(898.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">AP1_12</text>
+<text transform="translate(892.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">137</text>
+<line x1="881.0" y1="230" x2="881.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(884.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">A1VREF</text>
+<text transform="translate(878.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">138</text>
+<line x1="867.0" y1="230" x2="867.0" y2="250" stroke="#0a8a2a" stroke-width="5"/>
+<text transform="translate(870.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0a8a2a">A1VSS (GND)</text>
+<text transform="translate(864.0,256) rotate(90)" font-size="8" fill="#0a8a2a" font-weight="700">139</text>
+<line x1="853.0" y1="230" x2="853.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(856.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">EVCC</text>
+<text transform="translate(850.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">140</text>
+<line x1="839.0" y1="230" x2="839.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(842.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">ISOVCL</text>
+<text transform="translate(836.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">141</text>
+<line x1="825.0" y1="230" x2="825.0" y2="250" stroke="#0a8a2a" stroke-width="5"/>
+<text transform="translate(828.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0a8a2a">ISOVSS (GND)</text>
+<text transform="translate(822.0,256) rotate(90)" font-size="8" fill="#0a8a2a" font-weight="700">142</text>
+<line x1="811.0" y1="230" x2="811.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(814.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_0</text>
+<text transform="translate(808.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">143</text>
+<line x1="797.0" y1="230" x2="797.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(800.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_1</text>
+<text transform="translate(794.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">144</text>
+<line x1="783.0" y1="230" x2="783.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(786.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_2</text>
+<text transform="translate(780.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">145</text>
+<line x1="769.0" y1="230" x2="769.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(772.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_3</text>
+<text transform="translate(766.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">146</text>
+<line x1="755.0" y1="230" x2="755.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(758.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_4</text>
+<text transform="translate(752.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">147</text>
+<line x1="741.0" y1="230" x2="741.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(744.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_5</text>
+<text transform="translate(738.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">148</text>
+<line x1="727.0" y1="230" x2="727.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(730.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_6</text>
+<text transform="translate(724.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">149</text>
+<line x1="713.0" y1="230" x2="713.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(716.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P18_7</text>
+<text transform="translate(710.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">150</text>
+<line x1="699.0" y1="230" x2="699.0" y2="250" stroke="#0a8a2a" stroke-width="5"/>
+<text transform="translate(702.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0a8a2a">EVSS (GND)</text>
+<text transform="translate(696.0,256) rotate(90)" font-size="8" fill="#0a8a2a" font-weight="700">151</text>
+<line x1="685.0" y1="230" x2="685.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(688.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P10_6</text>
+<text transform="translate(682.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">152</text>
+<line x1="671.0" y1="230" x2="671.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(674.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P10_7</text>
+<text transform="translate(668.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">153</text>
+<line x1="657.0" y1="230" x2="657.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(660.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P10_8</text>
+<text transform="translate(654.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">154</text>
+<line x1="643.0" y1="230" x2="643.0" y2="250" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(646.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#d00000">P10_9 · RLIN30RX</text>
+<text transform="translate(640.0,256) rotate(90)" font-size="8" fill="#d00000" font-weight="700">155</text>
+<line x1="629.0" y1="230" x2="629.0" y2="250" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(632.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0050c8">P10_10 · RLIN30TX</text>
+<text transform="translate(626.0,256) rotate(90)" font-size="8" fill="#0050c8" font-weight="700">156</text>
+<line x1="615.0" y1="230" x2="615.0" y2="250" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(618.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#d00000">P10_11 · RLIN31RX</text>
+<text transform="translate(612.0,256) rotate(90)" font-size="8" fill="#d00000" font-weight="700">157</text>
+<line x1="601.0" y1="230" x2="601.0" y2="250" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(604.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0050c8">P10_12 · RLIN31TX</text>
+<text transform="translate(598.0,256) rotate(90)" font-size="8" fill="#0050c8" font-weight="700">158</text>
+<line x1="587.0" y1="230" x2="587.0" y2="250" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(590.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#d00000">P10_13 · RLIN32RX</text>
+<text transform="translate(584.0,256) rotate(90)" font-size="8" fill="#d00000" font-weight="700">159</text>
+<line x1="573.0" y1="230" x2="573.0" y2="250" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(576.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0050c8">P10_14 · RLIN32TX</text>
+<text transform="translate(570.0,256) rotate(90)" font-size="8" fill="#0050c8" font-weight="700">160</text>
+<line x1="559.0" y1="230" x2="559.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(562.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P11_1</text>
+<text transform="translate(556.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">161</text>
+<line x1="545.0" y1="230" x2="545.0" y2="250" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(548.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#d00000">P11_2 · RLIN32RX</text>
+<text transform="translate(542.0,256) rotate(90)" font-size="8" fill="#d00000" font-weight="700">162</text>
+<line x1="531.0" y1="230" x2="531.0" y2="250" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(534.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0050c8">P11_3 · RLIN32TX</text>
+<text transform="translate(528.0,256) rotate(90)" font-size="8" fill="#0050c8" font-weight="700">163</text>
+<line x1="517.0" y1="230" x2="517.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(520.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P11_4</text>
+<text transform="translate(514.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">164</text>
+<line x1="503.0" y1="230" x2="503.0" y2="250" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(506.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0050c8">P11_5 · RLIN33TX</text>
+<text transform="translate(500.0,256) rotate(90)" font-size="8" fill="#0050c8" font-weight="700">165</text>
+<line x1="489.0" y1="230" x2="489.0" y2="250" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(492.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#d00000">P11_6 · RLIN33RX</text>
+<text transform="translate(486.0,256) rotate(90)" font-size="8" fill="#d00000" font-weight="700">166</text>
+<line x1="475.0" y1="230" x2="475.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(478.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P11_7</text>
+<text transform="translate(472.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">167</text>
+<line x1="461.0" y1="230" x2="461.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(464.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P11_15</text>
+<text transform="translate(458.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">168</text>
+<line x1="447.0" y1="230" x2="447.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(450.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P12_0</text>
+<text transform="translate(444.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">169</text>
+<line x1="433.0" y1="230" x2="433.0" y2="250" stroke="#d00000" stroke-width="5"/>
+<text transform="translate(436.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#d00000">P12_1 · RLIN34RX</text>
+<text transform="translate(430.0,256) rotate(90)" font-size="8" fill="#d00000" font-weight="700">170</text>
+<line x1="419.0" y1="230" x2="419.0" y2="250" stroke="#0050c8" stroke-width="5"/>
+<text transform="translate(422.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0050c8">P12_2 · RLIN34TX</text>
+<text transform="translate(416.0,256) rotate(90)" font-size="8" fill="#0050c8" font-weight="700">171</text>
+<line x1="405.0" y1="230" x2="405.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(408.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">EVCC</text>
+<text transform="translate(402.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">172</text>
+<line x1="391.0" y1="230" x2="391.0" y2="250" stroke="#0a8a2a" stroke-width="5"/>
+<text transform="translate(394.4,224) rotate(-90)" font-size="10.5" font-weight="700" fill="#0a8a2a">EVSS (GND)</text>
+<text transform="translate(388.0,256) rotate(90)" font-size="8" fill="#0a8a2a" font-weight="700">173</text>
+<line x1="377.0" y1="230" x2="377.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(380.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P10_0</text>
+<text transform="translate(374.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">174</text>
+<line x1="363.0" y1="230" x2="363.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(366.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P10_1</text>
+<text transform="translate(360.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">175</text>
+<line x1="349.0" y1="230" x2="349.0" y2="250" stroke="#222" stroke-width="3"/>
+<text transform="translate(352.4,224) rotate(-90)" font-size="9.5" font-weight="400" fill="#222">P10_2</text>
+<text transform="translate(346.0,256) rotate(90)" font-size="8" fill="#555" font-weight="400">176</text>
+<polyline points="447.0,888 447.0,818 530.0,818" fill="none" stroke="#0050c8" stroke-width="1.5"/>
+<text x="380" y="792" font-size="13" font-weight="700" fill="#0050c8">Pin 52 · P1_9 / RLIN34TX — VIP console TX (owner-reported; 115200 8N1)</text>
+<text x="380" y="810" font-size="12" fill="#d00000">Pin 53 · P1_8 / RLIN34RX — matching RX function; enabled state unverified</text>
+<text x="1180" y="118" font-size="15" font-weight="700" text-anchor="start" fill="#000">Legend</text>
+<line x1="1180" y1="147" x2="1202" y2="147" stroke="#0a8a2a" stroke-width="5"/>
+<text x="1210" y="150" font-size="10.5" font-weight="700" text-anchor="start" fill="#0a8a2a">GND — EVSS (5, 37, 71, 107, 151, 173), AWOVSS (58), A0VSS (89), A1VSS (139), ISOVSS (142)</text>
+<line x1="1180" y1="165" x2="1202" y2="165" stroke="#0050c8" stroke-width="5"/>
+<text x="1210" y="168" font-size="10.5" font-weight="700" text-anchor="start" fill="#0050c8">UART TX — pin has an RLIN3n TX function</text>
+<line x1="1180" y1="183" x2="1202" y2="183" stroke="#d00000" stroke-width="5"/>
+<text x="1210" y="186" font-size="10.5" font-weight="700" text-anchor="start" fill="#d00000">UART RX — pin has an RLIN3n RX function</text>
+<line x1="1180" y1="201" x2="1202" y2="201" stroke="#222" stroke-width="3"/>
+<text x="1210" y="204" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">Other pins — first (port / power) function only</text>
+<text x="1180" y="222" font-size="10" font-weight="400" text-anchor="start" fill="#222">Colour = the pin can carry that function, not that this board uses it. Supply pins (EVCC, AWOVCL, REGVCC,</text>
+<text x="1180" y="235" font-size="10" font-weight="400" text-anchor="start" fill="#222">ISOVCL, A0VREF, A1VREF) are not highlighted. RLIN2n are LIN-only and not marked.</text>
+<text x="1180" y="258" font-size="13" font-weight="700" text-anchor="start" fill="#000">UART — RLIN3n (6 channels, 176-pin)</text>
+<text x="1180" y="271" font-size="10" font-weight="400" text-anchor="start" fill="#444">Pin (port) · Table 2.3 pp. 89–93 · RLIN3 = Section 19, p. 830</text>
+<rect x="1180" y="281" width="470" height="22" fill="#000" stroke="#000" stroke-width="1"/>
+<text x="1188" y="296" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Ch</text>
+<text x="1254" y="296" font-size="11" font-weight="700" text-anchor="start" fill="#fff">TX</text>
+<text x="1456" y="296" font-size="11" font-weight="700" text-anchor="start" fill="#fff">RX</text>
+<rect x="1180" y="303" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="317.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">RLIN30</text>
+<text x="1254" y="317.5" font-size="10" font-weight="400" text-anchor="start" fill="#0050c8">20 P0_2 · 156 P10_10</text>
+<text x="1456" y="317.5" font-size="10" font-weight="400" text-anchor="start" fill="#d00000">21 P0_3 · 155 P10_9</text>
+<rect x="1180" y="324" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="338.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">RLIN31</text>
+<text x="1254" y="338.5" font-size="10" font-weight="400" text-anchor="start" fill="#0050c8">24 P0_5 · 158 P10_12</text>
+<text x="1456" y="338.5" font-size="10" font-weight="400" text-anchor="start" fill="#d00000">23 P0_4 · 157 P10_11</text>
+<rect x="1180" y="345" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="359.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">RLIN32</text>
+<text x="1254" y="359.5" font-size="10" font-weight="400" text-anchor="start" fill="#0050c8">29 P0_14 · 160 P10_14 · 163 P11_3</text>
+<text x="1456" y="359.5" font-size="10" font-weight="400" text-anchor="start" fill="#d00000">28 P0_13 · 159 P10_13 · 162 P11_2</text>
+<rect x="1180" y="366" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="380.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">RLIN33</text>
+<text x="1254" y="380.5" font-size="10" font-weight="400" text-anchor="start" fill="#0050c8">31 P1_1 · 165 P11_5</text>
+<text x="1456" y="380.5" font-size="10" font-weight="400" text-anchor="start" fill="#d00000">30 P1_0 · 166 P11_6</text>
+<rect x="1180" y="387" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="401.5" font-size="10" font-weight="700" text-anchor="start" fill="#222">RLIN34</text>
+<text x="1254" y="401.5" font-size="10" font-weight="700" text-anchor="start" fill="#0050c8">52 P1_9 · 171 P12_2</text>
+<text x="1456" y="401.5" font-size="10" font-weight="700" text-anchor="start" fill="#d00000">53 P1_8 · 170 P12_1</text>
+<rect x="1180" y="408" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="422.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">RLIN35</text>
+<text x="1254" y="422.5" font-size="10" font-weight="400" text-anchor="start" fill="#0050c8">8 P11_8 · 74 P1_5</text>
+<text x="1456" y="422.5" font-size="10" font-weight="400" text-anchor="start" fill="#d00000">9 P11_9 · 75 P1_4</text>
+<text x="1180" y="451" font-size="13" font-weight="700" text-anchor="start" fill="#000">JTAG / on-chip debug (JP0 port)</text>
+<text x="1180" y="464" font-size="10" font-weight="400" text-anchor="start" fill="#444">Table 36.1 p. 2742 · Table 39.1 p. 2777 · pin assignment p. 90</text>
+<rect x="1180" y="474" width="470" height="22" fill="#000" stroke="#000" stroke-width="1"/>
+<text x="1188" y="489" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Pin</text>
+<text x="1232" y="489" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Port</text>
+<text x="1290" y="489" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Function</text>
+<text x="1460" y="489" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Role</text>
+<rect x="1180" y="496" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="510.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">47</text>
+<text x="1232" y="510.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_0</text>
+<text x="1290" y="510.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">DCUTDI / LPDI / LPDIO</text>
+<text x="1460" y="510.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JTAG TDI · LPD 1-wire data</text>
+<rect x="1180" y="517" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="531.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">46</text>
+<text x="1232" y="531.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_1</text>
+<text x="1290" y="531.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">DCUTDO / LPDO</text>
+<text x="1460" y="531.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JTAG TDO</text>
+<rect x="1180" y="538" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="552.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">45</text>
+<text x="1232" y="552.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_2</text>
+<text x="1290" y="552.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">DCUTCK / LPDCLK</text>
+<text x="1460" y="552.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JTAG TCK · LPD clock</text>
+<rect x="1180" y="559" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="573.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">44</text>
+<text x="1232" y="573.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_3</text>
+<text x="1290" y="573.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">DCUTMS</text>
+<text x="1460" y="573.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JTAG TMS</text>
+<rect x="1180" y="580" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="594.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">43</text>
+<text x="1232" y="594.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_4</text>
+<text x="1290" y="594.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">DCUTRST</text>
+<text x="1460" y="594.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JTAG TRST</text>
+<rect x="1180" y="601" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="615.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">42</text>
+<text x="1232" y="615.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_5</text>
+<text x="1290" y="615.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">DCURDY / LPDCLKOUT</text>
+<text x="1460" y="615.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">Debug ready · LPD clock out</text>
+<rect x="1180" y="622" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="636.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">66</text>
+<text x="1232" y="636.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_6</text>
+<text x="1290" y="636.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">EVTO</text>
+<text x="1460" y="636.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">Nexus event output</text>
+<text x="1180" y="665" font-size="13" font-weight="700" text-anchor="start" fill="#000">Flash programming and reset</text>
+<text x="1180" y="678" font-size="10" font-weight="400" text-anchor="start" fill="#444">Section 37 · pin assignment pp. 90–92</text>
+<rect x="1180" y="688" width="470" height="22" fill="#000" stroke="#000" stroke-width="1"/>
+<text x="1188" y="703" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Pin</text>
+<text x="1238" y="703" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Function</text>
+<text x="1358" y="703" font-size="11" font-weight="700" text-anchor="start" fill="#fff">Note</text>
+<rect x="1180" y="710" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="724.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">63</text>
+<text x="1238" y="724.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">FLMD0</text>
+<text x="1358" y="724.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">Pulses: 0 = 2-wire UART, 7 = 1-wire, 3 = CSI (p. 2758)</text>
+<rect x="1180" y="731" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="745.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">154</text>
+<text x="1238" y="745.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">FLMD1</text>
+<text x="1358" y="745.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">On P10_8 · mode-entry sequence (Fig. 37.6, p. 2758)</text>
+<rect x="1180" y="752" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="766.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">54</text>
+<text x="1238" y="766.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">RESET</text>
+<text x="1358" y="766.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">Input (p. 90)</text>
+<rect x="1180" y="773" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="787.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">85</text>
+<text x="1238" y="787.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">RESETOUT</text>
+<text x="1358" y="787.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">On P8_6 · output (p. 91)</text>
+<rect x="1180" y="794" width="470" height="21" fill="none" stroke="#000" stroke-width="0.8"/>
+<text x="1188" y="808.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">45-47</text>
+<text x="1238" y="808.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">FPDR/FPDT/FPCK</text>
+<text x="1358" y="808.5" font-size="10" font-weight="400" text-anchor="start" fill="#222">JP0_0/1/2 serial programming (§37.6, p. 2757)</text>
+<text x="1180" y="837" font-size="15" font-weight="700" text-anchor="start" fill="#000">Notes</text>
+<text x="1180" y="855" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">The flash-programming UART (FPDR/FPDT) is not RLIN3: it sits on the JP0 debug pins.</text>
+<text x="1180" y="869" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">JP0_0–JP0_2 carry JTAG, LPD and flash programming at once.</text>
+<text x="1180" y="883" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">Debug interfaces: Nexus, LPD 1-wire, LPD 4-wire (§36.1.1, p. 2740). Trace only on parts</text>
+<text x="1180" y="897" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">with an EVTO pin (p. 2741); the manual does not say if this part qualifies.</text>
+<text x="1180" y="911" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">A 128-bit ID code can lock debugger flash access (§36.1.1 item 13, p. 2741); OTP and ID</text>
+<text x="1180" y="925" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">authentication also exist (Table 37.4, p. 2754).</text>
+<text x="1180" y="939" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">Pin 52 (RLIN34TX) is the owner-reported VIP console TX, not a debug pin. The manual does</text>
+<text x="1180" y="953" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">not say what is attached to it.</text>
+<text x="1180" y="967" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">Each RLIN3n channel can appear on 2–3 pins; the manual lists capability, not which pin</text>
+<text x="1180" y="981" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">this board wires.</text>
+<line x1="40" y1="1086" x2="1660" y2="1086" stroke="#000" stroke-width="1"/>
+<text x="40" y="1106" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">Source: Renesas RH850/F1K Hardware Manual Rev. 1.10 (R01UH0562EJ0110, 2016-11-30) — Fig. 2.3 (p. 81) and Table 2.3 (pp. 89–93) for the pin diagram; page numbers are the printed "Page N of 2863".</text>
+<text x="40" y="1124" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">Package, marking and part number: hardware/teardown.md § RH850/F1K Package &amp; UART Pinout (corrected 2026-11-12). Packaging/order suffixes beyond R7F7015873AFP are not established from the board marking.</text>
+<text x="40" y="1142" font-size="10.5" font-weight="400" text-anchor="start" fill="#222">Pin 52 as VIP console TX (115200 8N1) is owner-reported; pin 53 RX enabled state is unverified.</text>
+</svg>

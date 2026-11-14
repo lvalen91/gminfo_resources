@@ -113,3 +113,12 @@ ReadDir and ReadFile probes gave NRC 11. A UART-instrumented reset repeat again
 gave NRC 25 without an observed Android reboot or selected reset event on UART.
 These are per-service outcomes, not a universal authorization or memory-access
 grant. The original level-1 recipe above remains the validated basic sequence.
+
+
+**Concurrent-observer correction (2026-11-14):** later USB-logcat plus UART
+observations show wire SIDs 11 and 23 being converted to native
+DIAG_UNKNOWN_SERVICE, followed by local request-ID-0 unsupported-response
+construction and a 30-second NRC-25 timer result. The static native converter
+map omits both SIDs. The earlier NRC 25 does not by itself prove an unavailable
+VIP/GHS backend or that those components received the intended request. See the
+[concurrent UART/logcat analysis](../diagnostics/ethernet_uds_diagnosticsd.md#concurrent-uart-and-usb-logcat-correlation-2026-11-14).

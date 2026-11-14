@@ -143,6 +143,10 @@ listener did complete level-1 SecurityAccess; see the
 A separate authenticated hard-reset request returned `7F 11 25` after about
 30 seconds of pending replies; no Android reboot was observed. See the
 [ECUReset result](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-ecureset-validation-2026-11-14).
+The later [USB-logcat/UART correlation](../diagnostics/ethernet_uds_diagnosticsd.md#concurrent-uart-and-usb-logcat-correlation-2026-11-14)
+shows an AAOS converter gap: wire 11 and 23 become DIAG_UNKNOWN_SERVICE.
+Their NRC-25 replies therefore do not establish a physical subnet/GHS timeout
+or transparent MDI2 equivalence.
 
 | Address | Node | Notes |
 |---------|------|-------|

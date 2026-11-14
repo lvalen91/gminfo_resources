@@ -190,8 +190,9 @@ UART-instrumented repeat is recorded in the bounded read-sweep section below.
 **MDI2 comparison:** successful session/SecurityAccess traffic proves that
 some UDS services work through the custom T1 transport. This reset result
 neither proves that `0x11` is unsupported nor demonstrates a working reset or
-a drop-in MDI2 replacement. The downstream component, forwarding route and
-reason for its missing response remain unresolved. No programming transfer,
+a drop-in MDI2 replacement. At this stage the cause was unresolved; the later
+concurrent UART/logcat test below identifies an unmapped AAOS converter service
+for both reset and memory read. The NRC alone did not prove downstream receipt. No programming transfer,
 partition write, firmware replacement or UID-0 shell was attempted by this reset
 test.
 
@@ -509,13 +510,119 @@ but no matching SID/item-number, reset/reboot or selected power-state event.
 Other UART output existed; neither an inactive logger nor a demonstrated
 RH850 reset follows from this result. Absence of a selected console event
 also does not prove the request never reached the VIP, because log coverage
-is not established as complete. The final T1 response remains a downstream
-no-response result with unresolved routing/backend cause.
+is not established as complete. The final T1 response is NRC 25; the later concurrent-logcat correction below
+locates an unknown-service conversion inside AAOS, so the earlier inference
+of a received-but-unanswered downstream request is not established.
 
 The radio remained operational after the read sweep and memory probes;
 Android uptime was still increasing and diagnosticsd was running. Temporary
 host diagnostic VLAN configuration was removed, leaving the established T1
 ADB configuration in place. No calibration write or firmware transfer was sent.
+
+## Concurrent UART and USB-logcat correlation (2026-11-14)
+
+A subsequent instrumented test observed both sources concurrently: USB ADB
+streamed all-buffer AAOS logcat into memory, and the owner's existing UART
+capture was read by append offset. No serial adapter was opened or changed,
+no extra capture/log file was created, and raw payload/identifier/key material
+was excluded from retained findings. The USB clock check matched the Mac.
+Each phase included an approximately 11-second UART flush allowance; Android
+boot identity and uptime were observed through USB independently of T1.
+
+### Positive control versus memory/reset failures
+
+| Request / state | AAOS diagnostic events | UART / final result |
+|---|---|---|
+| `22 F1 81`, default session | Local software-identification read succeeds | Positive response; no matching item event required by its local handler |
+| `22 F1 A0`, default session | Native `DIAG_DID_READ`, PAL/IPC activity, IPCWrapper reports bytes read and GB response-format conversion | Matching internal SID 09 / item F1A0 event; positive `62 F1 A0` response |
+| `23` one-byte read, extended session and level 09 grant | EthernetConverter converts wire SID 23 to native **`0/DIAG_UNKNOWN_SERVICE`**; a local negative response is constructed with request ID 0 and response code 17 decimal (NRC 11) | No selected UART diagnostic event; six pending replies, then `7F 23 25` at 29.991 s |
+| `11 01`, extended session and level 01 grant | EthernetConverter converts wire SID 11 to the same native **`0/DIAG_UNKNOWN_SERVICE`**; the same request-ID-0 / NRC-11 response construction occurs | No selected UART diagnostic/reset event; six pending replies, then `7F 11 25` at 29.991 s |
+
+The relevant live messages are from diagnosticsd/native_diagnostics, including
+EthernetConverter, PALDiagnosticAdaptor, IPCWrapper, UDSMessagesCreator and
+ResourceManager. Messages from unrelated Android components can match broad
+words such as callback/reset; their presence in an all-buffer window is not
+proof of association with the request. No separate controlling-app failure
+was established by these traces.
+
+**Correction to the earlier NRC-25 interpretation:** the wire value still
+means noResponseFromSubnetComponent, but the directly observed failure begins
+inside the AAOS native conversion path. It is not evidence by itself that a
+VIP/GHS component received the intended reset/memory request and failed to
+reply. A permissive session/security row does not create a missing native
+service mapping. The successful F1A0 control confirms that at least one PAL/IPC
+path and the UART observation can work during the same test.
+
+For both failures, conversion to the unknown native service and local
+request-ID-0 unsupported-response construction occurred within about 25–30 ms
+of phase start, before the later pending/timer sequence. The logs establish
+that mismatch. **Inference, not a fully traced queue/drop branch:** loss of
+the original SID in the native/UDS round trip may prevent that local response
+from satisfying the outstanding wire request, leaving the timer to produce
+NRC 25. Do not promote this into a proven response-correlation defect without
+tracing the relevant ResourceManager path.
+
+A follow-up memory probe recorded **every received T1 frame**, including
+nonmatching replies, instead of silently filtering them in the client. It
+received exactly six `7F 23 78` frames (about 0.110, 5.091, 10.071, 15.051,
+20.031 and 25.011 seconds), then `7F 23 25` at 29.991 seconds. No unmatched
+request-ID-0 negative response appeared on the wire. The unsupported ID-0
+response remained visible internally in logcat; its absence was not an artifact
+of the earlier client match filter. UART had no matching SID/item event in
+this follow-up, and default-session restoration again succeeded. The exact
+internal response queue/correlation branch is still untraced.
+
+PAL send-error `-16` messages also occurred during authorization/state handling
+before the memory/reset request conversion. The key responses still succeeded.
+Their exact return-code meaning and causal role are not established; do not
+label `-16` as a memory-read, reset, or missing-controller root cause merely
+because it occurred in the same phase. Likewise, a null PAL-monitor poll
+warning occurred in the successful control window.
+
+### Exact native converter map recovered statically
+
+`EthernetMessageAccess` initialization at `0x384c0` loads a 13-pair native/wire
+bimap from `0x14cf8` (104 bytes). Its recovered entries are:
+
+| Native service enum | UDS wire SID | Standard wire service |
+|---:|---|---|
+| 1 | 22 | ReadDataByIdentifier |
+| 2 | 2E | WriteDataByIdentifier |
+| 4 | 2F | InputOutputControlByIdentifier |
+| 6 | 31 | RoutineControl |
+| 7 | 10 | DiagnosticSessionControl |
+| 8 | 28 | CommunicationControl |
+| 9 | 27 | SecurityAccess |
+| 10 | 34 | RequestDownload |
+| 11 | 36 | TransferData |
+| 12 | 37 | RequestTransferExit |
+| 13 | 19 | ReadDTCInformation |
+| 17 | 14 | ClearDiagnosticInformation |
+| 18 | 85 | ControlDTCSetting |
+
+`toEnum(DiagUDSRequestID)` at `0x382b0` searches the descriptor set and falls
+back to the unknown descriptor when no wire-ID entry is found. Neither 11 nor
+23 is present; 24, 35, 38 and 83 are absent from this native map as well.
+TesterPresent 3E is a demonstrated separately handled service, so absence from
+the native map must not be generalized into proof that every absent SID lacks
+any local endpoint behavior. Conversely, a mapped SID does not prove a working
+backend, authorization or successful execution; the write/control rows above
+were not executed by this correlation test.
+
+This also resolves a legacy-label ambiguity: native request-data-transfer
+service 10 maps to wire **34**, not to wire RequestUpload 35. Do not use older
+service-description strings as the custom endpoint's wire-ID catalog. The
+matching extracted Y175/Y181B code supports the static comparison; the live
+11/23 conversion traces corroborate the relevant missing entries.
+
+Both instrumented failure phases restored default session successfully.
+Android boot identity remained unchanged, uptime increased, and diagnosticsd
+retained its PID. The temporary host diagnostic VLAN was removed; existing
+T1 ADB and the owner's external UART logger were left in place. The native
+mapping result makes this endpoint a selective diagnostic bridge, not a proven
+transparent replacement for the MDI2/CAN path. A further reset/memory attempt
+needs an implemented route/mapping, rather than another identical unlock and
+wire-SID retry.
 
 ## Legacy/internal service labels (binary strings)
 

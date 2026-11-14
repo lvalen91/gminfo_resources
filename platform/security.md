@@ -174,6 +174,11 @@ its `[D] CORRECTION`).
   F0A7 became readable; service 23 passed its level-1 security denial but
   still ended in NRC 25. File/directory service 38 returned NRC 11. See the
   [bounded read-sweep results](../diagnostics/ethernet_uds_diagnosticsd.md#bounded-read-only-sweep-and-uart-reset-follow-up-2026-11-14).
+- **Concurrent-observer correction, 2026-11-14:** USB logcat identifies
+  wire 11/23 converting to native DIAG_UNKNOWN_SERVICE before their NRC-25
+  timer results; both are absent from the recovered 13-entry native map.
+  Successful SecurityAccess does not supply a missing service conversion.
+  See the [concurrent analysis](../diagnostics/ethernet_uds_diagnosticsd.md#concurrent-uart-and-usb-logcat-correlation-2026-11-14).
 - **The earlier `7F 27 10` result did not establish SBI-inactive posture.**
   It used invalid tester `0x0FA0`. The Y181B address-check handler accepts F4/F5;
   a valid tester in default session instead returned `7F 27 7F`. See the
