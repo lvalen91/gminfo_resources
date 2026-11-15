@@ -39,6 +39,55 @@
 
 ---
 
+## Bench Internet and automatic time feasibility — 2026-11-15
+
+**Scope:** live Y175 Android 12, build increment 213; static checks against
+the matching read-only OS tree. These findings establish local connectivity,
+not a working Internet gateway or Play Store download.
+
+- **[C] Bidirectional T1 IP traffic:** radio-originated VLAN-5 ICMP reached
+  the bench host and received replies in approximately **0.47–0.54 ms**.
+  Wire observation confirmed tagged requests and replies. This proves the
+  local path; it does not prove Android application Internet connectivity.
+- **[C] Android Ethernet state:** `EthernetTracker` matches `eth\d` and tracks
+  `eth0`, whose capabilities include `INTERNET`, `NOT_RESTRICTED` and `TRUSTED`.
+  Its `networkAgent` was null; link properties contained only IPv6 link-local
+  addressing, no DNS, and no IPv4 gateway. ConnectivityService reported
+  `Active default network: none`. A dummy-interface default in a separate
+  routing table is not an application Internet connection.
+- **[C] Configuration versus provisioning:** the Ethernet API returned
+  `UNASSIGNED` for both IP assignment and proxy mode. IpClient nevertheless
+  reported IPv4-enabled provisioning with no static configuration and logged
+  completion of its pre-DHCP action. These observations do **not** establish
+  why DHCP transmission is absent or prove that `UNASSIGNED` is the cause.
+- **[C] Limited DHCP test:** a temporary DHCP server on the untagged bench
+  link received no DHCP packets during a 35-second observation; no lease was
+  issued. This does not establish DHCP rejection, behavior after a client
+  restart, or DHCP reachability through every switch port/VLAN.
+- **[C] Configuration permission barrier:** an attempt to select explicit
+  DHCP through `IEthernetManager.setConfiguration()` returned:
+  `Requires one of the following permissions: android.permission.NETWORK_STACK, android.permission.MAINLINE_NETWORK_STACK`.
+  Shell's granted `NETWORK_SETTINGS` and `CONNECTIVITY_INTERNAL` permissions
+  were insufficient for this method. Configuration remained unchanged.
+
+**Automatic time:** live `time_detector` had automatic detection enabled,
+priorities `[telephony,network,gnss]`, and empty suggestion histories for all
+sources, including external. The network-time service had no cached NTP
+sample. The static framework resource `config_ntpServer` is `time.android.com`;
+the live global `ntp_server` setting was unset. The radio clock was roughly
+871 days behind the Mac; setting it from the Mac restored agreement to the
+one-second measurement resolution. This was a manual bench correction,
+**not** evidence of automatic synchronization. The active GM vehicle-time
+delivery path remains unresolved; AVB gPTP transmission does not establish
+calendar-time synchronization.
+
+**Next discriminator:** explain the non-transmitting DHCP client and identify
+the supported path that provisions an Android Internet network. Then verify
+DNS, default-network validation, application HTTPS/Play Store access, and
+automatic time independently. Full telematics emulation is not yet shown to
+be necessary. Temporary host addressing and DHCP/capture processes were
+removed; USB ADB was verified with TCP ADB disabled after probing.
+
 ## Ethernet VLAN Detail
 
 Managed automotive-Ethernet switch (board-variant IC — Broadcom BCM8953x/BCM89551 or Marvell 88Q5050, see the note below; the live Y181 bench radio reports Marvell 88Q5050, 2026-11-12). Switch port assignments:
