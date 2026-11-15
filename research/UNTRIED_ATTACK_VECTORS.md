@@ -1,6 +1,7 @@
 # Untried Attack Vectors — GM Info 3.7 (gminfo37) Y181→Y177 Downgrade
 
-**Date:** 2026-06-29
+**Initial research:** 2026-06-29
+**Control/import research updated:** 2026-11-15
 **Project:** gminfo37 — downgrade GM Info 3.7 head unit from Y181 to Y177
 **Current access:** uid=2000 ADB shell, physical board access, Renesas RH850 VIP MCU
 
@@ -41,6 +42,75 @@ SBI verification it is **not** the ADB gate either; see item-3 note in `PROJECT_
 Vectors are ranked by: (1) likelihood of breaking the current blocker, (2) estimated effort, (3) available access level.
 
 ---
+
+## Current UDS and T1 priorities (2026-11-15)
+
+**Useful controls remain partially tested.** The exhaustive prior experiment covered
+65,536 SID22 DID numbers in one security/session profile, not every write,
+I/O-control or routine payload. It produced 135 positive DIDs; 136 is the
+later union after a state-changing audio routine exposed another read.
+The 5,120-request ADB experiment enumerated variants of one reported RID0332
+layout. It was not an all-services control sweep. The
+[coverage audit](../diagnostics/diagnosticsd_routines_and_recovery.md#diagnostic-control-coverage-audit-2026-11-15)
+owns the exact tested/discovered distinction. The subsequent authorized live
+pass exercised 24 of 25 IOCID IDs with bounded operations. Subsequent actual
+FM/AM switching and frequency round-trips worked. USB discovery/parser tests
+established an eight-character native basename requirement, without
+demonstrated single-brand override application. Calibration clearing remains
+forbidden; no package installation or reboot was performed.
+
+| Priority | Concrete lead | Work needed before a live claim |
+|---|---|---|
+| 1 | Working display/audio/input IOCIDs | Extend the now-verified bounded controls to useful selector/state coverage; do not infer untested speaker routing or VIP reset from Android input. |
+| 2 | Partially tested source/AF/surround/DAB controls | FM/AM switching and tuning now verified with rollback. USB/media requests lacked a verified playback transition; AF stayeddisabled even with FM active; surround/DAB NRC22. Tone wire mapping remains inconclusive because same-run known-signal controls were also silent. |
+| 3 | ABFT routine0475 | Install-plan JSON schema now recovered. Missing-field-only starts returned NRC31 at level05/NRC33 at level09; results NRC22. Review module writers, signatures and A/B selection before any complete plan; Stop invokes cancelUpdate(true), not a read-only query. |
+| 4 | Native IECUUpdate.copyFile | Current shell lookup is denied by SELinux find on gm_update_engine_hwservice. Recover an authorized client/proxy path; the copier was not invoked. |
+| 5 | Type2 package registration/restoration | Determine a supported caller path to the existing privileged installer on production builds. |
+| 6 | FSA RemoteModuleHMI and coordination schemas | NAM requests now reach Wi-Fi/cellular trackers and return DOWN; peer emulation on9005/9012/9018 remains blocked by host T1 reachability, not protocol exhaustion. |
+
+The [current IOCID inventory](../diagnostics/diagnosticsd_protocol.md#implemented-iocid-inventory-and-candidate-controls-2026-11-15)
+contains 25 IDs, including key events, tones, equalizers, audio-source and
+frequency controls. 41D8 is an input-control candidate rather than a root
+shell; 41DB additionally selects SWC mute and other keys, with a fixed 300 ms
+tap rather than a hold. 43FC injects the named GM tune-encoder key245.
+FACEPLATE reaches a vendor panel interface whose downstream path remains open;
+the traced SWC VHAL path emits Android-facing events with no VIP/CAN transmit.
+The [live control table](../diagnostics/diagnosticsd_protocol.md#live-bench-controls-2026-11-15)
+records actual display changes, restored audio readbacks and SWC volume
+events; zero/nonzero encoder requests prove event routing but have not
+demonstrated a controlled frequency step.
+Return/reset/freeze semantics vary by handler,
+and routine-results is not universally read-only: 0249 can clear data.
+
+**The update mechanism does contain a protected file-placement step.**
+Current Y175 DevCaloverrideInstaller copies registered calibration files and
+reboots to recovery. Its USB discovery branch is gated to non-user builds;
+normal install IPC is not a demonstrated arbitrary XML importer. MediaStore
+did permit a byte-exact 308-byte XML write at the connected FAT32 USB root;
+native selection requires an eight-character basename. A short-name manifest
+marker reached staging and the parser; the valid XML now uses
+`a11brand.calovride`. No calibration-discovery/install event or application
+was demonstrated, including with a temporary auto-install marker. See the
+[updater reference](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15).
+An original [2023 command gist](https://gist.github.com/NativeDevlopment/fb3683c94858ef2aee580aa1ac93e1a0)
+uses calibration overrides but assumes root/remount and identifies no working
+production A11 build. It supports terminology, not the missing privilege path.
+
+**No independently reproduced GM A11 UID0 shell emerged from the bounded
+community search.** A Harman GWM OEM root-property report is cross-platform:
+the inspected GM adbd binaries lack its hooks, and current GM root-service
+code checks Android debug capability before GM secure mode. The
+[root/access assessment](security/SHELL_ACCESS_ESCALATION_Jun2026.md#community-root-reports-and-target-applicability-2026-11-15)
+owns original forum links, the retrieval caveat and binary fingerprints.
+The [Global B ADB article](https://surrealdev.com/the-abcs-of-global-b/) and
+[GWM boot-target implementation](https://github.com/DymOK93/GWM-CAN-Tools/blob/master/uds.py#L351)
+are useful leads, not demonstrated alternate root access on this unit.
+The project's own repository is not independent corroboration.
+
+The older downgrade-oriented rankings below retain their historical context.
+Their presence is not a recommendation to brute-force writes, clear overrides,
+induce repeated boot failures or try generic root recipes. Current priority
+is tracing a known implementation and its real caller/state boundary.
 
 ## Critical Priority (Direct Impact on Downgrade Goal)
 
@@ -118,23 +188,27 @@ Note the typo "metatdata" — this is verbatim from the binary. The word "Warnin
 
 ---
 
-### 4. ELK Trigger via J6_CDD — Exact SID/DID Unknown
+### 4. ELK Trigger via J6_CDD — Compiled Selector 8180; CAN Validation Pending
 
-**Status:** NOT TRIED (exact trigger format unknown)
-**Priority rationale:** ELK mode bypasses misc/BCB entirely via HECI→CSE→ABL path, which is independent of the GHS rollback counter.
+**Updated 2026-11-15:** the former "exact selector unknown / not tried" state
+is superseded. Y175 VIP_APP has a descriptor/callback for selector `0x8180`
+and a compiled branch that logs the ELK request and sends byte `E0` through
+IPC API selector `0x0C`. The complete CAN request and outer authorization
+checks remain unverified. Runtime/file offsets must use the corrected module
+payload mapping; see the [owning ELK analysis](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
-**Findings:**
-- VIP J6_CDD diagnostic channel contains the string "Diag Elk Reboot Req"
-- GHS binary contains symbol `BootELKSendAblUserCommand` at **0x0087452a**
-- ELK boot path goes through HECI→CSE→ABL, not through the standard GHS boot path that checks the misc/AB0 rollback counter
+The GWM `FDF0` writes and candidate GM `2F 81 80 03` were **attempted through
+Android diagnosticsd**, with level-1 SecurityAccess. All returned NRC 31;
+Android logged missing DID/IOCID handler classes and did not reboot. This is
+not a CAN-side rejection. See the [exact live test results](../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15).
 
-**Unknown:** The exact UDS SID/DID combination that triggers the ELK reboot request on J6_CDD. Without this, the channel cannot be exercised.
-
-**How to find the trigger:**
-- Option A (preferred): RH850 JTAG (vector #3) — set a breakpoint on the J6_CDD message dispatcher and observe which DID invokes the "Diag Elk Reboot Req" handler
-- Option B: Brute-force diagnostic DIDs on J6_CDD channel using a UDS scanner; log NRC vs. positive response to identify live DIDs
-
-**Why valuable:** ELK mode may allow loading a modified boot image without the rollback counter check that currently blocks the Y181→Y177 downgrade, since the ELK path was designed for factory and end-of-life reflash scenarios.
+**Next:** validate the selector through the direct CAN adapter when delivered,
+trace the descriptor/session/security/mode gates, and observe the control
+response and actual boot environment. No broad DID-write sweep is required.
+A successful request must not be presumed to bypass signatures, rollback,
+bootloader lock state or ELK provisioning gates. The previous modified-image
+loading claim was speculative; compiled ELK reachability alone does not
+establish it.
 
 ---
 
@@ -286,7 +360,7 @@ accepted sequence. Use tester F4, target 0x0084 and the eight-byte `>HHI`
 header; the old `>HHIH` example incorrectly inserted two extra bytes.
 Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
 `27 02` plus 12 zero bytes returned `67 02`. Default session was restored.
-See the [owning diagnostic sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
+See the [owning diagnostic sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
 calibration-write, Android-root or GHS-shell result follows from this grant.
 
 ---

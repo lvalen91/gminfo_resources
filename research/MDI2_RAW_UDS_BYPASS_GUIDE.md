@@ -457,6 +457,15 @@ All are on PyPI, stable, and used in the existing research corpus for bench test
 
 ## 7. GM ADB Escape Hatch via `$31` RoutineControl (2026-09-10)
 
+**Latest follow-up, 2026-11-15:** a direct T1 enable-only retry after reboot,
+with no working ADB transport, returned `7F 31 31`; no ADB connection appeared.
+The cleanroom APK's RID dispatcher and absent `RID0332Handler` provide a
+static explanation for the Android route. Exact live results, unchanged MEC
+guards and the distinction from the local RDMS ADB Binder service are
+maintained in the [owning diagnostic record](../diagnostics/diagnosticsd_routines_and_recovery.md#post-reboot-direct-t1-adb-enable-trial-2026-11-15).
+This does not turn the prior CAN failures into proof of a missing VIP routine.
+
+
 **Source:** Snipesy / Surreal Development, "The ABCs of Global B", 2026-06-16, **CC0 1.0**
 (`https://surrealdev.com/the-abcs-of-global-b/`; canonical bibliography:
 [`../platform/qualcomm_cadillac_platform.md`](../platform/qualcomm_cadillac_platform.md) → Sources).
@@ -541,7 +550,7 @@ of each ADB candidate to the RH850. Programming session remained blocked
 by its authenticated state gate, and security profile `5F` had no grant.
 This rejects the reported layout across the tested domains, values and
 contexts on this build; it does not exclude another payload or controller.
-See [full trial](../diagnostics/ethernet_uds_diagnosticsd.md#full-adb-over-uds-candidate-trial-after-calibration-clear).
+See [full trial](../diagnostics/diagnosticsd_routines_and_recovery.md#full-adb-over-uds-candidate-trial-after-calibration-clear).
 
 **Target and local ADB path:** The source does not publish a target ECU address, CAN IDs, a
 successful exchange, or a domain value. The complete domain sweep targeted the A11 radio's
@@ -617,7 +626,7 @@ reported rejection on the Android diagnostics path, not a test of ECU 0x80 via M
 it does not establish routine support, the correct domain, or the reason for rejection.
 **Correction 2026-11-14:** the old blanket T1 rejections used an invalid
 logical tester. F4 plus extended session now completes level-1 SecurityAccess
-(31-FF seed, 12-zero response, `67 02`); see [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). The complete candidate was subsequently tested as described below.
+(31-FF seed, 12-zero response, `67 02`); see [validated T1 sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). The complete candidate was subsequently tested as described below.
 
 **What this does and does not prove:**
 - It identifies a **candidate external UDS `RoutineControl` request** for a privileged action.

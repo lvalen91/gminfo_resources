@@ -664,7 +664,7 @@ on pin 52 and an existing external `screen` logger, direct T1 DID reads F1A0
 and F0F3 were followed by matching J6_CDD item-ID events in the RH850 output.
 Startup/power-state and IPC notifications were also visible. The physical
 probe location remains owner-reported; RX, command parsing and other TX pins
-were not tested. See the [diagnostic correlation](../diagnostics/ethernet_uds_diagnosticsd.md#rh850-uart-correlation-with-direct-t1-did-reads-2026-11-14).
+were not tested. See the [diagnostic correlation](../diagnostics/diagnosticsd_dids_and_dtc.md#rh850-uart-correlation-with-direct-t1-did-reads-2026-11-14).
 Raw identifier/ProtoKey values are excluded from that finding; no serial
 adapter configuration or UART transmit operation was performed.
 
@@ -681,8 +681,138 @@ adapter configuration or UART transmit operation was performed.
 | 23 | P0_4 / RLIN31RX | Channel 1 RX alternative |
 | 158 | P10_12 / RLIN31TX | Channel 1 TX alternative |
 | 157 | P10_11 / RLIN31RX | Channel 1 RX alternative |
+| 29 | P0_14 / RLIN32TX | Channel 2 TX alternative; candidate for a separate stream |
+| 160 | P10_14 / RLIN32TX | Channel 2 TX alternative |
+| 163 | P11_3 / RLIN32TX | Channel 2 TX alternative |
+| 31 | P1_1 / RLIN33TX | Channel 3 TX; listed without other peripheral alternatives; priority probe candidate |
+| 165 | P11_5 / RLIN33TX | Channel 3 TX alternative |
+| 170 | P12_1 / RLIN34RX / INTP14 | Alternate RX location for channel 4; firmware selection unverified |
+| 171 | P12_2 / RLIN34TX | Alternate location for known console channel 4, not a new channel |
+| 8 | P11_8 / RLIN35TX | Channel 5 TX alternative; owner reports CP2102 RX tapped here |
+| 74 | P1_5 / RLIN35TX | Channel 5 TX alternative; compare if pin 8 remains silent |
 | 64 | P2_3 / RLIN28TX | RLIN2 channel 8 TX; not the console identification |
 | 65 | P2_2 / RLIN28RX | RLIN2 channel 8 RX; not the console identification |
+
+**2026-11-14 dual-adapter receive-only check:** USB device descriptors
+identified FT232R (0403:6001, owner-reported pin 52) and CP2102
+(10c4:ea60, owner-reported pin 8 / P11_8). Neither serial device was held
+open by another process. A bounded 95-second observation configured both
+for 8N1 with flow control disabled. FT232R remained at 115200 throughout;
+CP2102 was sampled at 115200, 9600, 19200, 38400, 57600, 230400, 460800,
+921600, 4800, 2400, 1200 and 1000000 baud. Baseline 115200 observation was
+25 seconds and final 115200 observation 15 seconds; each other CP2102
+rate was sampled for five seconds. Only isolated nonprintable bytes were
+received (FT232R total 1, CP2102 total 12), with no valid log lines on
+either device. No active-radio or boot interval was established during
+this observation, so neither CP2102 logging enablement, a difference in
+streams, nor the correct baud rate was determined. Even the known
+pin-52 log was absent. Capture stopped, original serial settings were
+restored, and both ports were closed. No serial data was transmitted and
+no raw capture file was created. A powered-on/boot sample is still needed;
+silence alone does not distinguish firmware mux selection, disabled logging,
+wrong baud, an electrical/probe issue, or an inactive radio.
+
+**Powered follow-up, 2026-11-14:** after the owner announced radio
+power-on, a fresh dual-adapter observation at 115200/8N1 received clean
+pin-52 output, including `[SS_LOG] st=NoCalibration` and periodic
+`IOC_Main_Temp` messages. Multiple complete windows were 100% printable
+and matched the established timestamp/severity/tag format. This confirms
+115200/8N1 as a working setting for current channel-4 console output.
+The owner had begun power-on before this reader was opened, so the earliest
+boot interval was not guaranteed captured. CP2102 on P11_8 received zero
+bytes throughout more than 70 seconds of this powered follow-up. This
+establishes no observed stream on pin 8, not proof that RLIN35 logging is
+disabled or that its alternate pin 74 is inactive. The bounded reader was
+stopped to repeat the CP2102 baud sweep while the radio was confirmed active.
+No raw capture file was created.
+
+**Powered baud-sweep result:** the subsequent 65-second receive-only
+sweep repeated all 12 CP2102 settings above while FT232R stayed at the
+confirmed 115200/8N1 setting. CP2102 received **zero bytes at every rate**;
+FT232R received 221 bytes during the same sweep. No CP2102 baud setting or
+second log stream was identified. This is bounded live silence on the
+owner-reported P11_8 tap, not proof of disabled channel-5 firmware logging.
+The earliest boot interval was not covered at every rate. Both ports were
+closed and their saved settings restored afterward; no background reader
+or raw capture file was left behind.
+
+**Pin-31 clean-start follow-up, 2026-11-14:** with CP2102 moved to
+owner-reported pin 31 / P1_1 / RLIN33TX, both receive-only readers were
+armed at 115200/8N1 before the announced power-on. The bounded 300-second
+capture received 108,012 bytes / 1,885 lines on FT232R pin 52 (99.9%
+printable, including NoCalibration), and only 32 bytes on CP2102 pin 31
+(28 NULs, no recognizable log). The owner reported coating over the MCU
+pins, so pin-31 electrical contact remains unverified. A silent/undecodable
+tap is not evidence of disabled logging. Both readers automatically closed;
+no raw capture file was written. This boot observation tested pin 31 at
+115200 only; the earlier multirate sweeps were on P11_8, not pin 31.
+
+**Channel-4 RX alternatives and enable gates (manual verified 2026-11-14):**
+physical pin 53 / P1_8 and physical pin 170 / P12_1 both provide
+RLIN34RX (Table 2.3, pp. 90 and 93; port-function tables pp. 144 and 158).
+They are alternate routes to the same channel-4 receiver, not two receivers.
+The manual requires a given function to be activated on only one pin
+(pp. 102 and 122); current GM pin-mux selection is unknown.
+
+The UART operation-enable register RLN34LUOER (the n=4 instance of
+RLN3nLUOER) has separate UROE bit 1 for reception and UTOE bit 0 for
+transmission (p. 907). UROE=0 disables reception; UROE=1 enables it.
+The register resets to 00 and is cleared/held at 00 in LIN reset mode.
+Reception setup also requires the appropriate pin/input route, baud/data
+format and exit from reset (p. 949). Thus working TX on pin 52 does not
+prove RX is enabled on pin 53 or 170. These are hardware configuration
+gates, not evidence of a password, UDS authorization or GM command shell.
+The hardware manual does not establish a firmware receive handler or
+command parser; live mux/UROE values and RX command handling remain
+unverified. No serial transmission or register write was performed to
+answer this question.
+
+**Pin-170 RX burst test, 2026-11-14:** after the owner removed the
+second adapter and reported wiring the channel-4 RX alternative at
+physical pin 170, the remaining FT232R was opened at 115200/8N1.
+Adapter TX was intended to drive MCU RX170, while the existing RX tap
+observed MCU TX52; wiring/contact and MCU RX routing were not independently
+measured. Transmission began before the owner confirmed power-on and was
+bounded to 90 seconds. The only transmitted pattern was CR/LF/Ctrl-C
+(`0D 0A 03`), with no command words: 781 bursts / 2,343 bytes total.
+These counts measure bytes accepted by the host serial driver, not bytes
+proven received by the MCU. The receiver collected 31,096 bytes of clean
+ASCII RH850 logs, including power-on, HMI-ready and NoCalibration markers.
+No recognizable login, password or U-Boot-style prompt was detected, and
+no interactive shell or boot interruption was demonstrated.
+
+Transmission stopped automatically after 90 seconds; the port was closed
+and its saved settings restored. No raw capture file was created. No UDS
+or explicit MEC command was sent; MEC was not re-read during this UART-only
+test. Failure to obtain a prompt does not distinguish inactive pin170 mux,
+disabled UROE, absent command handling, electrical contact, or an untested
+boot-console protocol. Pin 53 remains the corresponding alternate RX
+candidate; its enabled state is still unverified.
+
+**Later calibration recovery, 2026-11-14:** the cleared A11 was restored with
+the pinned stock LTZ package through the main MDI2 client. The owner's later
+`inVehicle_Cal_Success` UART capture includes older NoCalibration data followed
+by two successful boot sections (counters 118 and 119): both report calibration
+state `2` and HMI ready, with no NoCalibration entry in those later sections.
+The owner confirmed normal display and radio operation. This recovery does
+not establish a UART shell, MCU RX reception or ADB restoration. See the
+[MDI2 recovery record](../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).
+
+**Additional TX candidates checked against the manual:** Table 2.3,
+pp. 89–93, and the port alternate-function tables on pp. 142, 144, 153,
+155 and 158 identify the six RLIN3 channels 0–5. Table 19.9, p. 833,
+explicitly maps their TX/RX signal names. For two additional independent
+channel probes, prioritize pin 31 (channel 3) and pin 29 (channel 2).
+This is a pin-coverage choice, not firmware evidence that either logs.
+With pin 8 silent during the powered follow-up, pin 74 is also a priority
+comparison for alternate routing of channel 5; it does not add a seventh
+UART channel.
+Pins 8 and 74 both select channel 5; pins 52 and 171 both select channel 4.
+The alternates are not necessarily simultaneously routed, and another
+peripheral function can be selected on a listed UART-capable pin.
+Connect each adapter RX to its candidate TX with common signal ground;
+leave adapter TX unconnected for passive observation. These labels describe
+MCU logic signals, not an RS-232-level interface.
 
 Pin functions depend on the firmware's mux configuration. Do not use the old
 144-pin numbering, P5_10..P5_13 labels, or RLIN30/RLIN31 console guess on this
@@ -737,6 +867,10 @@ SoC` (t=732ms), `New Power Level 2 received from SoC` (t=1285ms), and
 state-of-health. The same module reads the boot counter from NVM at startup:
 `Rte_Pim_PLC_BootCounter_PIM is : 4067` (Nvm_ErrorStatus = 0). Source:
 `diagnostics/Y175_session.log` lines 80-82, 171, 204.
+
+The [mute-hold reset sequence](../runtime/boot_timing.md#mute-hold-reset-and-adb-reboot-boundaries-2026-11-15)
+shows this handshake completing before the VIP uptime resets; it also distinguishes
+the observed hardware-button reset from the statically traced Android reboot entry.
 
 ### u-blox GNSS on the VIP UART
 
@@ -1234,7 +1368,7 @@ misc partition layout (conceptual):
 **Boot path:** HECI → Intel CSE → ABL (boot target `OBBPELK`) — can boot even if eMMC is corrupted.
 
 **Three trigger paths:**
-1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI command to ABL → `OBBPELK`. Exact UDS service/DID unknown.
+1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI command to ABL → `OBBPELK`. Updated 2026-11-15: compiled control selector `0x8180` and an E0 request helper are traced; exact CAN format/gates and live entry remain unverified. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 2. **GHS lifecycle state machine** — Last resort after shutdown fails. State progression: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand`. Triggers after repeated boot failure escalation.
 3. **OTA IPC** — `ConnToOTA_BootELK` / `ConnToLifecycle_BootELK` IPC within GHS task architecture.
 
@@ -1405,7 +1539,7 @@ Physically dump Samsung KLMCG4JEUD 64GB eMMC (BGA-153). Find misc partition. AB0
 
 VIP firmware has explicit ELK reboot support via J6_CDD. Boots via HECI → CSE → ABL (target OBBPELK), bypassing normal misc/BCB boot chain entirely. ELK is the Intel Kernelflinger fastboot (AVB active, "USB storage unsupported"), **not** a minimal Linux with direct block-device access — so it does not provide an unrestricted misc-write primitive; any write path is gated by fastboot's AVB/device-state checks.
 
-Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. Requires knowing exact UDS service/DID for ELK reboot request.
+Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. Updated 2026-11-15: selector `0x8180` is traced statically; the Android T1 candidate was rejected by a missing IOCID handler. CAN validation remains pending; see [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
 **Option 3: Return-to-Dealer Screen → Check ADB/USB Exposure**
 

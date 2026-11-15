@@ -1,6 +1,7 @@
 # T1/Ethernet Inward Attack Surface + EEPROM↔Calibration Convergence
 
-**Date:** 2026-08-17
+**Initial research:** 2026-08-17
+**Calibration conclusions corrected:** 2026-11-15
 **Unit:** gminfo37 / 2024 Silverado ICE / build W231E-Y181.3.2 / Android 12L (API 32)
 **Method:** three parallel firmware/enumeration analyses (read-only) reconciled against the
 existing `research/`, `eeprom/`, and `enumeration/Y181/apr2026/` corpus; plus integration of the
@@ -17,7 +18,9 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
 > hypervisor-wire section; they are corrected inline below and flagged `⚠CORRECTED`. Net effect: the
 > "crafted-frame/DMA → hypervisor" wire→host vector is **weaker than first stated** (its IOMMU-off
 > premise is unverified) — but none of the calibration/EEPROM/`$27` conclusions (§3b, §4) are
-> affected; those were independently ground-truth-verified. Ledger: `scratchpad/provenance_audit.md`.
+> affected by that August audit. **The calibration claims were subsequently
+> superseded by the 2026-11-15 correction in §3b**; the August assurance is not
+> evidence of unsigned custom-package acceptance. Ledger: `scratchpad/provenance_audit.md`.
 
 ---
 
@@ -95,7 +98,7 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
   canonical target `0x0084`. **Corrected 2026-11-14:** old tester IDs
   `0x00FA`/`0x00F1`/`0xF0` were not verified trust tiers. Tester F4 plus
   extended session completed the documented 31-FF/12-zero/`67 02` exchange;
-  see [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
+  see [validated T1 sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 - `[C]` ADB-over-TCP is a capability (`on property:vendor.adb.tcp.enable=1 → restart adbd`) but **off**
   (`ro.debuggable=0`, `ro.adb.secure=1`, `sys.oem_unlock_allowed=0`, AVB locked/green).
 
@@ -129,28 +132,36 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
 - **Reaching the hypervisor otherwise requires:** an Android-kernel LPE → drive `/dev/ghs/*` IPC
   (guest→host crossing, *not* network), or a hardware attack (RH850 JTAG/SPI, Intel DCI / CVE-2021-0146).
 
-### (b) Custom calibration ON the radio from a T1 tap — **path EXISTS; single gate is UDS `$27`**
-- `[C]` A genuine self-write path to this module's own `CalSets.db` exists and is wire-reachable on
-  `eth0:49156`: `diagnosticsd` UDS calibration-programming (`$27` → `$34/$36/$37` transfer;
-  `CalibrationProgrammer.cpp`, `UDSTransferDataRequestHandler`) → writes to
-  `/mnt/vendor/calibration/overrides/` → `calserviced` inotify picks it up → `processZippedModFile` /
-  `apply_overrides` → `/mnt/vendor/calibration/database/CalSets.db`.
-- `[C]` **The calibration blob is NOT signature-protected** — integrity only: a 16-bit checksum
-  (`CAL_CHECKSUM_FAILURE`) + a SHA-256 (`CAL_MESSAGE_DIGEST_FAILURE`, `generateSHA256`). Both are
-  recomputable by anyone editing the blob. No RSA/X.509/SecOC anywhere in the cal path.
-- `[C]` **The single hard gate is UDS SecurityAccess `$27`** (`SecurityRequestToResponsePipeline.cpp`,
-  `checkSecurityLevelTable`, seed/key). Per `CALDEF_VIP_CALIBRATION_ANALYSIS.txt` the programming-level
-  access is validated **via the VIP** (`RID 021E converted to Security Access Request per IPC ver 2.6`),
-  anchored in the **VIP PROTOKEY + EEPROM** — the algorithm is **not present in the SoC firmware** to
-  derive. Reads (default-session DIDs, `$22/$1A`) are effectively open; the write is one auth barrier away.
-- `[C]` **`SCREEN_RESOLUTION` is present and structurally writable** in `CalSets.db`: `CalType 4` enum,
-  **current value 2 = 1280×768**, options `0:800×480 · 1:1280×720 · 2:1280×768 · 3:1920×1080 ·
-  4:2400×960` (`CalDefFileName GIS738_RVCVIDEOROBUSTNESSREQUIREMENT` v7).
-- `[C]`/`[O]` **Local-only bypass:** `calserviced` contains an `OVERRIDE_BACKDOOR` that applies
-  `*.calovride` files **skipping the UDS/`$27` path entirely**, with a `!!!DISABLE BEFORE RELEASE!!!`
-  warning at `main`. It needs `vendor_cald`-context filesystem write (dir mode 770) — **not** reachable
-  from the net or an adb shell. Whether it is compiled out of this release is undetermined from strings —
-  **checkable from `scratchpad/diagx/bin__calserviced` (the `main()` override path).** `[O]`
+### (b) Calibration overrides from a T1 tap — package path exists; custom writes unproven
+
+**Corrected 2026-11-15:** the former "unsigned blob / single SecurityAccess
+gate" conclusion was false. Native diagnostics code contains a calibration
+package-receive path, and calserviced applies override modules to CalSets.db.
+That static chain does not establish arbitrary modified-package acceptance
+through the external T1 listener.
+
+- All 14 examined stock CSM containers have independently verified RSA-2048 /
+  SHA-256 signatures and production-CA signer-record signatures. Lower-layer
+  checksum and SHA-256 fields do not replace those signatures. The exact
+  active runtime verifier/rejection point remains unresolved; see the
+  [central signing reference](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+- SecurityAccess success alone did not permit direct-T1 programming-session
+  entry; the authenticated vehicle/programming-state gate remained unsatisfied.
+  Stock LTZ programming succeeded through MDI2, while modified LTZ attempts
+  returned NRC72 without isolating its cause. No custom write is established.
+- `31 01 02 49` on the tested Android route can clear all override modules;
+  the live clear succeeded and later produced NoCalibration after reboot.
+  This is destructive removal, not an arbitrary value setter.
+- `SCREEN_RESOLUTION` is an enum with a 2400×960 option. The older DB's value
+  2 was historical; a later exported baseline records 4. Current live DB
+  contents are not readable from ordinary shell. See the
+  [owning baseline](../platform/vehicle_config.md#y181b-exported-calibration-baseline-2026-11-12).
+- `calserviced` contains a `.calovride` development warning/loader surface.
+  It is local and filesystem/SELinux-gated; `vendor_cald` is its Unix identity,
+  not a SELinux type. No direct-T1 unsigned override deployment follows from
+  those strings. The newly traced per-value PAL execute method returns a
+  fixed-status response rather than updating a value. Details stay in the
+  [override reachability reference](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3d-uds-override-reachability-and-per-value-write-stub-2026-11-15).
 
 ### (c) Escalation / reflash ON the radio from a T1 tap — **reflash sealed; one sharp RCE lead**
 - `[C]` Self-reflash of Android partitions goes through `gm_update_engine` (direct eMMC writes), gated by
@@ -158,7 +169,7 @@ expose the hypervisor, allow custom calibration ON the radio, or enable escalati
   (confirmed Y181→Y177). `diagnosticsd`'s `RequestDownload/TransferData` serve calibration+module data,
   **not** Android partition images. The `swupdate` HAL reflashes *peripheral ECUs via the VIP*, not the radio.
 - `[C]`facts / `[I]`exploit — **the escalation convergence:** `diagnosticsd` runs **uid=0, all caps, no
-  seccomp**, and parses **attacker-controlled framing on `49156` with the target address unvalidated**. A
+  seccomp**, and parses **attacker-controlled framing on `49156` with implemented tester/target checks (corrected 2026-11-15)**. A
   memory-safety bug in that parser = **root on the radio from the wire**, which would then reach the
   `*.calovride` vendor_cald backdoor and flip `SCREEN_RESOLUTION` **without ever needing `$27`**. This is
   the single highest-value target the three analyses surfaced. Unproven — needs a bug in the UDS/framing
@@ -238,39 +249,35 @@ expecting window-bounds changes.
 
 ## 6. Corrections to prior corpus
 
-- **"192.168.1.1 = GHS hypervisor bridge" is wrong.** The `9002/9005/9010/9012/9016/9018` endpoints on
-  `::ffff:192.168.1.1` are the **paravirtual GHS↔Android IPC transport**, **not** a networked hypervisor
-  service reachable from the T1 wire. Earlier notes (Dec-2025 compendium; apr2026 "GHS Hypervisor Bridge
-  @ 192.168.1.1") that imply host services live at `.1` *on the wire* are superseded: the guest is `.100`,
-  the 90xx ports are the VM↔host bridge, and no `.1` interface/route reaches off-box.
-  **⚠CORRECTED — do not overstate reachability:** `.1` is **not** "unreachable even locally" — `open_ports.txt`
-  shows the Android guest holding **ESTABLISHED** client connections to `.1:9005/9010/9012/9018`, so the
-  guest reaches the bridge in the **client** direction. The correct claim is narrower: `.1` is a
-  *paravirtual guest↔host IPC address*, reachable by the guest as a client but **not exposed on the
-  physical T1 wire** and not a route to hypervisor code.
-- **`diagnosticsd` = the `49156` UDS server (attribution caveat).** Two analyses conflicted: a SELinux
-  read of `vendor_sepolicy.cil` shows the `gm_diagnosticsd` domain with **no `tcp_socket`/`node_bind`
-  perms**, while the binary strings (`TCPServer.cpp`, `listen`/`bind`), the rc **"stop diagnosticsd for
-  cts-on-gsi tcp port testcases"** hook, and the live `0.0.0.0:49156` all say `diagnosticsd` **is** the
-  UDS-over-TCP server. The binary/rc/netstat evidence is stronger; the likely resolution is that
-  `diagnosticsd` (`user root`, `class hal core`) binds under a different effective domain than the label
-  the policy grep keyed on, or the CIL grep missed a rule. **Settleable in one live command:** `ss -tlnp`
-  (map `49156` → pid → `/proc/pid/exe`) + `ps -Z` for the running domain. `[O]`
+- **FSA address identity, corrected 2026-11-15:** earlier text both rejected
+  and then reasserted the historical `.1 = paravirtual GHS bridge` hypothesis.
+  An established socket is not proof of peer ownership or VM topology. The
+  [current network reference](../platform/networking.md#ethernet-vlan-detail)
+  owns the historical TCP-module observations and the later external T1 scope;
+  no direct externally reachable GHS shell/diagnostic endpoint is established.
+- **diagnosticsd attribution, corrected 2026-11-15:** root ownership,
+  `gm_diagnosticsd` process domain and wildcard port-49156 listener were
+  confirmed in the later Y175 snapshot. The earlier suggestion that it binds
+  under an unknown alternate domain is withdrawn. See the
+  [diagnostic index](../diagnostics/ethernet_uds_diagnosticsd.md).
 
 ---
 
 ## 7. Open / testable items (prioritized)
 
-1. `[O]` **Is the `*.calovride` OVERRIDE_BACKDOOR compiled into this release?** Analyze
-   `scratchpad/diagx/bin__calserviced` `main()` path. If live, it's the `$27`-free cal-write route
-   (contingent on a `vendor_cald` foothold).
+1. **Compiled loader confirmed 2026-11-15; live use remains open:** Y175
+   calserviced main reaches standalone XML application and per-row SQL updates.
+   This is persistent calibration with DAC/SELinux, ownership and startup-rebuild
+   constraints, not an established unsigned network setter. Details and the
+   remaining test boundaries are in the [owning loader analysis](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-runtime-controls-and-visual-test-limits-2026-11-15).
 2. `[O]` **Which I²C bus reaches the M24C64?** If `/dev/i2c-0`/`i2c-1` (world-writable) map to it, in-band
    software EEPROM R/W is possible from the SBI-enabled ADB shell — no programmer needed.
 3. `[O]` **Does an EEPROM flag govern the calibration/diag `$27` gate** the way `0x0440` governs ADB? Probe
    candidates `0x04A0`, `0x04C0`, `0x0A40`, `0x0BE0` (RETRACTED 2026-08-26 — no code evidence; do not test these. Real SBI = `0x0441`+`0x0A80`). Formerly the crux for a
    software-only `SCREEN_RESOLUTION` write.
-4. `[O]` **Confirm the `49156` owner/domain** live (`ss -tlnp` + `ps -Z`) — resolves the §6 attribution.
-5. `[O]` **`diagnosticsd` parser as an RCE target** (root, no seccomp, unvalidated target address) — the
+4. **49156 attribution settled by later Y175 evidence:** root diagnosticsd,
+   gm_diagnosticsd domain; see the corrected §6 and diagnostic index.
+5. `[O]` **`diagnosticsd` parser as an RCE target** (root, no seccomp; tester/target checks implemented) — the
    sharpest escalation-on-the-radio lead if pursued.
 6. `[O]` **`$27` seed/level structure** — capture a seed on `49156` in a programming session to
    characterize the challenge (even without the algorithm, the level map is useful).

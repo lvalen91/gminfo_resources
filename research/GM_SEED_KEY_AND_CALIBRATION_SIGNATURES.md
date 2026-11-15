@@ -64,7 +64,7 @@ Decode scope:14paths/12unique; six principal August captures TCP sequence/direct
 Live Y175, using Y181B static address-check analysis: logical tester F4, target
 0x0084, custom TCP framing, extended session `10 03`, then `27 01` yielded
 31 all-FF bytes; `27 02` plus 12 zero bytes yielded `67 02`. Default session
-was restored. See [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). Earlier NRC `0x10` tests used invalid tester 0x0FA0.
+was restored. See [validated T1 sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). Earlier NRC `0x10` tests used invalid tester 0x0FA0.
 This matches the degenerate MDI2 exchange at the UDS level, but does not prove
 the exact OBD/gateway/A11 forwarding chain, arbitrary keys, calibration-write
 authorization, signature bypass, or root. No programming write was attempted.

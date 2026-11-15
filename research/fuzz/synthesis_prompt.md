@@ -204,7 +204,7 @@ accepted sequence. Use tester F4, target 0x0084 and the eight-byte `>HHI`
 header; the old `>HHIH` example incorrectly inserted two extra bytes.
 Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
 `27 02` plus 12 zero bytes returned `67 02`. Default session was restored.
-See the [owning diagnostic sequence](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
+See the [owning diagnostic sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
 calibration-write, Android-root or GHS-shell result follows from this grant.
 
 ---

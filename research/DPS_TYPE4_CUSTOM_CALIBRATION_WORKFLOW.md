@@ -81,6 +81,12 @@ The named Signature-Bypass Ticket is also not a demonstrated usable bypass; its 
 authorization and active target-verifier effect require proof. See the
 [central reference](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
+**2026-11-15 follow-up:** a compiled Y175 standalone XML application branch
+has now been traced through `calserviced_main` and its per-row SQL parser.
+It is a different entry point to persistent calibration, not a temporary
+runtime override or a verified UDS setter. File permissions, rebuild paths,
+ownership and rollback remain gates. See the [consolidated loader analysis](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-runtime-controls-and-visual-test-limits-2026-11-15).
+
 ## 6. Trim comparison and prototype status
 
 The cached LTZ/High Country payload comparison found slot 04 `85045371`/`85045386` with

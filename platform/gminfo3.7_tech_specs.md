@@ -289,6 +289,7 @@ android_automotive:
   occupant_zones: driver_only
   ux_restrictions: driving_state_monitoring
   power_policy: system_power_policy_all_on
-  audio_zones: 8_virtual_buses
+  audio_zones: unverified  # Logical buses do not establish zone count.
+  audio_output_buses: 12  # Live media.audio_policy, 2026-11-15: buses 0–8 and 11–13.
   projection_support: [AndroidAuto, CarPlay]
 ```

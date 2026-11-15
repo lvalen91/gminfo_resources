@@ -13,6 +13,10 @@ Bosch/Windows activation is needed; macOS generic RNDIS is sufficient.
 - Gated stock-LTZ calibration write. Live-validated on the bench (multiple High Country -> LTZ
   writes); still gated and requires explicit authorization every time. Stock GM-signed packages
   only. See [docs/CALIBRATION_WRITE.md](docs/CALIBRATION_WRITE.md).
+  Cleared-A11 recovery was also validated on 2026-11-14 using a one-time
+  in-memory source-profile exception and restoration of an erased VIN;
+  [recovery details](docs/CALIBRATION_WRITE.md#cleared-a11-recovery-2026-11-14).
+  The normal CLI still rejects the cleared source profile.
 - Out of scope: arbitrary or modified packages (rejected with `7F 36 72`, cause not isolated),
   real-seed AES-CMAC SecurityAccess (math proven offline, never run on hardware; the writes used
   the SBI-flipped module's all-FF seed path), custom-package signing (no key recovered).

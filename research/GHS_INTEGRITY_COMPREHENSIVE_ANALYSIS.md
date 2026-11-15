@@ -413,6 +413,65 @@ whole of guest RAM; the guest sees a GVT-g vGPU (`ro.hardware.gralloc/hwcomposer
 them); the guest is told `androidboot.trustyimpl=-ghs`. (`TEEAtt` is a VMM1 connection to TEE_Router, not a separate
 server; the "TEE_Attestation" box in §6 is a connection, not an address space.)
 
+#### Ethernet initialization and guest ownership code trace 2026-11-14
+
+The available Y175, Y177, Y181 and Y181B copies of SOC_HOSTOS `85098662`
+are byte-identical: **14,929,956 bytes**, SHA-256
+`317ae85ccf759476755411e66593dde9f879a43732cd342b4e101e4026535ed3`.
+Removing the existing `0x27c` wrapper yields the analyzed `hostos.elf`
+byte-for-byte: SHA-256
+`d900af484f466b35f4d9153ddf8adf19482f91d728b707f10fe89d326d4870df`.
+The saved Ghidra project has **9,424 functions**, language
+`x86:LE:64:default`, normalized image base `0x00200000`. This is the GHS
+ELF32 container carrying x86-64 code, not a valid reason to analyze it as
+32-bit x86. Kernel absolute references use the higher-half base
+`0xffff800000000000`; normalized addresses below omit that base.
+
+| Normalized address / function | Located logic |
+|---|---|
+| `0x002251b6`, `PciInit` | Sets up MSI resources, creates the legacy PCI domain and calls `PciDomain_InitializeDevices`. |
+| `0x002332d1` / `0x00233209` | `pci_initialize_devices` scans PCI and allocates MSI resources; `device_init` dispatches registered driver callbacks, including the initialization callback at driver-record offset `+0x20`. |
+| `0x0023c6c0`, `gm_eth_driver_match` | Checks packed PCI vendor/device IDs `157c8086`, `15338086`, `10d38086`, `105e8086`, `15318086`, then calls `Passthru_PciDeviceMatch`. The set includes `8086:1533`, consistent with the documented Intel I210. |
+| `0x0023e53e`, `Passthru_PciDeviceMatch` | Matches the device's PCI path against configured passthrough paths and returns the selected binding. This is host resource matching, not an AVTP packet producer. |
+| `0x0023c6f8`, `gm_eth_driver_init` | Copies a six-word IO-device descriptor naming `GmEth`, stores device properties and calls `IOAccessor_InitFromList`. A counter limits this registration path to two instances. It does not directly call the PHY/link/RX/TX setup sequence below. |
+| `0x02203958`, `__ghsentry_pci_device_driver_gm_eth` | PCI-driver registration record contains the match pointer at `+0x08` and `gm_eth_driver_init` at `+0x20`, matching the generic initialization dispatch above. Their higher-half encodings were checked in the image. |
+| `0x0022ec30`, native i8254x initialization routine | Disables interrupts, requests device reset, and on reset success configures link/PHY, receive ring and transmitter, then enables interrupts and sets control bits. This routine's analysis label was temporary; it is not a recovered source-level name. |
+| `0x0022e7a4`, `i82544_device_reset` | Performs a bounded reset-bit polling sequence, returning failure if the bits do not clear. |
+| `0x0022e95f`, `i82544_link_configure` | Updates NIC control and, for the selected device capability, acquires the PHY software flag, accesses PHY registers and releases the flag. |
+| `0x0022ea40` / `0x0022eb78` | `i82544_receiver_configure` / `i82544_transmitter_configure`, with separate RX/TX ring-reset helpers. |
+| `0x0022cd26` / `0x0022c9c5` | `KETH_InitializationComplete` and its helper prepare Ethernet buffer/descriptor queues and driver callbacks. This is general host Ethernet infrastructure, not proof of a particular live NIC binding. |
+
+**What this establishes:** GHS contains concrete PCI Ethernet provisioning,
+generic Intel NIC link/reset/ring logic and a named GM Ethernet passthrough
+driver. The existing boottable analysis grants `GmEth` to Android **Guest1**,
+with VMM1 brokering the resource and interrupts. Presence of the native
+i8254x driver does not prove that this driver, rather than the GM passthrough
+path, owns the physical I210 on the observed boot. No live driver-binding
+or function-execution trace was obtained here.
+
+**What remains unlocated:** an explicit GHS Audio Video Bridging / AVTP
+transmitter initialization path tied to the first observed VLAN-2 frames,
+and the onboard automotive switch's precise power/reset/configuration
+sequence. The native chime/audio code and audio-DSP/SSP/TDM resources are
+real, but do not alone establish a GHS-to-Bose Ethernet packet call chain.
+`GmEth` being available to the Android guest means an early AAOS kernel
+network path also remains possible, before DHCP, CarPlay or HMI readiness.
+The kernel-side `igb_avb` observation is maintained in
+[hardware](../platform/hardware.md).
+
+Do not treat a generic GHS `AVB`/verification reference as audio-network
+evidence: **Android Verified Boot** is a separate use of that acronym, traced
+through VMM1. The [synchronized power-on measurement](../runtime/boot_timing.md#synchronized-rh850-uart-and-ethernet-power-on-measurement-2026-11-14)
+establishes early traffic timing but not the initializing software owner.
+
+For the other investigation target, the explicit BCM-replacement wipe
+decision was located in Android `gm_protokey`, reached through security PAL
+IPC, rather than in a directly recovered GHS handler. See the
+[validated code path](../platform/security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
+This was static analysis only: no device commands, firmware changes or
+runtime breakpoints were used. Temporary Ghidra inspection changes were
+rolled back; no speculative function name was saved.
+
 ### 7A.5 Guest platform (what Linux sees)
 
 - Emulated **i440FX** host bridge (8086:1237), **legacy CF8/CFC** PCI config access.

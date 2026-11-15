@@ -208,10 +208,58 @@ read (0xAE is not at any meaningful EEPROM offset — distinct from the boot-fai
 MEC counter in security.md). `/data/gm_adb/{password,policy}` (GM-signed
 credential + VIN/CSMID-locked policy) are Permission Denied from uid=2000.
 
-`restart_root_service` ("restarting adbd as root") is reachable only if GM
-Secure ADB auth succeeds **and** the policy permits root restart; with SBI=0xFF,
-the shell stays uid=2000. Root needs either `ro.debuggable=1` (root to set) or a
-GM-signed root-permitting policy.
+**Corrected 2026-11-15:** the inspected normal Y175 `restart_root_service`
+first handles an already-root daemon, then calls `__android_log_is_debuggable()`.
+A false result returns the production-build refusal **before** checking
+`gm_adb_is_secure_mode()`. Only the debug-capable branch reaches the GM
+secure-mode/authentication condition and `service.adb.root=1`. The former
+claim that a GM root-permitting policy independently substitutes for debug
+capability is withdrawn for this entry point. SBI-dependent ADB access,
+UDS SecurityAccess and adbd UID are separate gates.
+
+| Y175 binary | SHA-256 | Root-service ELF RVA |
+|---|---|---:|
+| Normal APEX adbd | `6bfa2ba86ab2fe2a0ca0e2eb588139bc6402f687822b72b9c6d2efecda0de713` | `0xC2270` |
+| Boot-ramdisk recovery adbd | `32fc5f29f8d7aeed4c81eaedc95d870127f32c85bed8645f6c69f39ce421602d` | `0xBBFA0` |
+
+The normal cleanroom APEX aliases are byte-identical. Recovery also checks
+`__android_log_is_debuggable()` before a root restart, but lacks the normal
+handler's GM secure-mode branch. These are package-binary observations,
+not a new live root attempt or proof about every GM authentication command.
+Both contain the standard production refusal; normal contains
+`gm_adb_auth_init`, while the inspected recovery binary does not.
+
+### Community root reports and target applicability (2026-11-15)
+
+A bounded GitHub, GitLab, Reddit, XDA and forum search found no independently
+reproduced Intel GM A11/Y175–Y181 UID0-shell method. This is a search result,
+not proof of universal absence. Original Harman GWM forum posts describe
+`service.adb.root.hkey` followed by an OEM root restart; both inspected Y175
+adbd binaries lack that property, the OEM root messages and generic hkey
+fingerprints. The original pages returned 403 to direct retrieval, so the
+report is based on indexed excerpts rather than a fully fetched recipe:
+[original GWM thread](https://4pda.to/forum/index.php?showtopic=1047354&st=2340),
+[earlier discussion](https://4pda.to/forum/index.php?showtopic=1047354&st=2120),
+[later reports](https://4pda.to/forum/index.php?showtopic=1047354&st=3080).
+No device serial was used to derive a key, and no such property was set.
+
+[GWM-Harman-VCE](https://github.com/DymOK93/GWM-Harman-VCE) requires existing
+rooted ADB to edit its vehicle configuration; it is not an initial-root
+method or a GM CalOverride writer. The
+[GWM boot-target source](https://github.com/DymOK93/GWM-CAN-Tools/blob/master/uds.py#L351)
+is a cross-platform diagnostic lead, not proof of GM shell privilege.
+The reported ADB routine in [The ABCs of Global B](https://surrealdev.com/the-abcs-of-global-b/)
+does not supply a reproduced A11 build/transport/response combination;
+the target's negative trials remain the stronger evidence for that layout.
+An [older GM logo discussion](https://www.reddit.com/r/CarHacking/comments/1g7phbs/change_20_gm_infotainment_logosbadges/)
+reports HMI2.5 experience, not HMI3+/Info3.7 rooting.
+
+Kernel LPE is a separate research track. The existing
+[CVE inventory](CVE_ATTACK_SURFACE_ANALYSIS.md) distinguishes Y175 and Y181
+kernel baselines and candidate prerequisites. No new kernel exploit was
+validated by this search; public PoC availability or version similarity is
+not a reproduction from this radio's shell. A root diagnostic server running
+selected handlers likewise does not confer an arbitrary command shell.
 
 ---
 
@@ -222,7 +270,7 @@ GM-signed root-permitting policy.
 | HIGH | Kernel exploit (4.19.305, KASLR ~0x0D000000) | In progress | Symbols known; need exact slide + exploit. SELinux Enforcing contains documented CVEs by policy. `perf_event_open`/`ptrace`/no-seccomp available |
 | HIGH | diagnosticsd UDS SecurityAccess (0x27) | New path | No OS-level peer gate (binary-confirmed). **CORRECTED 2026-09:** `ETHERNET`/`NOTIFICATION` tiers are checked in-process (`libuds`), not by `gm_protokey`; `VIP` tier is forwarded off-SoC to the VIP MCU (`ProxyOfExtComp`/`SockAdaptor`), gated by the SBI EEPROM byte. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) and [`platform/security.md`](../../platform/security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09) |
 | HIGH | diagnosticsd oversized-payload alloc | Potential | Confirm `malloc(PAYLOAD_LEN)`-before-check via Ghidra |
-| MEDIUM | diagnosticsd source-IP admission / logical tester | Corrected 2026-11-14: firewall admission and UDS tester/session checks are separate. Old all-rejected probes used invalid tester `0x0FA0`; direct T1 F4 + extended session + 31-FF seed + 12-zero response yielded `67 02`. | See [validated T1 sequence](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14); no root shell, partition write or calibration write established. |
+| MEDIUM | diagnosticsd source-IP admission / logical tester | Corrected 2026-11-14: firewall admission and UDS tester/session checks are separate. Old all-rejected probes used invalid tester `0x0FA0`; direct T1 F4 + extended session + 31-FF seed + 12-zero response yielded `67 02`. | See [validated T1 sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14); no root shell, partition write or calibration write established. |
 | MEDIUM | `IDiagnosticsInternalService` HIDL | Untested | Needs vendor SELinux domain (vndbinder) |
 | MEDIUM | GM Secure ADB fake `gmauthmanagerservice` socket | Theoretical | Feed MEC 1–255; still needs GM-signed policy to complete auth |
 | MEDIUM | `gm_protokey` extraction | Blocked | Permission Denied from uid=2000 |

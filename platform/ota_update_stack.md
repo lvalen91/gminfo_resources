@@ -216,22 +216,156 @@ reached but no caller-permission check guards it.
 >   `Verifier` for it (only Delay + `DevCaloverrideInstaller`, `InstallRunner.java:593-596`).
 >   `DevCaloverrideInstaller.copy()` copies whatever files are listed in `getDevCaloverrides()` straight
 >   into `/update_cache/calibrations` with **zero signature/hash check**, then reboots to recovery. But
->   the only factory that builds such a package (`UpdatePackage.parseCaloverride`,
->   `UpdatePackage.java:310-329`, itself validating nothing beyond `File.exists()`) is only ever called
->   from `USBUpdateSource$1.onUSBMounted` (`USBUpdateSource.java:58`) — triggered by physical USB-media
+>   the identified factory for such a package (`UpdatePackage.parseCaloverride`,
+>   `UpdatePackage.java:310-329`, itself validating nothing beyond `File.exists()`) was identified
+>   at `USBUpdateSource$1.onUSBMounted` (`USBUpdateSource.java:58`) — triggered by physical USB-media
 >   mount detection, not reachable via `IUpdateService.install()` or any other IPC method traced. **This is
->   the single most promising remaining thread for a future update-path escalation** — it requires RE of
->   `USBNotifier.java` to determine whether any non-removable-media path could
->   be spoofed as a mounted USB volume. The 2026-10-30 Y175 analysis above
->   establishes a non-`user` build gate for that build; the Y181-specific
->   notifier and alternate entry points still require independent verification.
+>   a remaining update-path research thread** — it requires tracing
+>   current package-registration and native mounted-media handling. The fresh
+>   2026-11-15 Y175 trace below confirms the non-user discovery gate and a
+>   protected mount broadcast; spoofing a volume is not an established method.
+>   Other builds and alternate entry points still require independent verification.
 > - Downgrade/rollback: not directly evaluated via this trace (PNVersionVerifier compares against the
 >   manifest's own declared expected versions, protected by the same signature chain) — state as
 >   inferred-absence, not proven-absence, alongside the hardware-enforced GHS rollback counter below.
-> - **Net verdict: the update/install IPC surface is CLOSED for arbitrary-code-as-system /
->   attacker-content-injection.** The unguarded `install()` Binder call is a real bug (unauthorized-trigger,
+> - **Inspected normal-install verdict:** no arbitrary-content substitution or
+>   code-as-system path was demonstrated through that IPC call. The unguarded `install()` Binder call is a real bug (unauthorized-trigger,
 >   consent-bypass, DoS) but not a payload-substitution vector. Full ranked writeup:
 >   [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
+
+### Current Y175 development calibration import route (2026-11-15)
+
+**A privileged file mover exists, but a working production-shell invocation
+has not been established.** Fresh class analysis used the current cleanroom
+DelayedWKSApp, previously byte-matched to the radio, SHA-256
+`5916ad9f7d40d2683e4dac49b7cc5086104dd27042c7fc32716fc3094288e241`.
+The older cached APK hashes `8a4fd60d…78cfb9`; its source must not be silently
+attributed to this build. Current classes independently confirm the non-user
+discovery gate described in the earlier Y175 audit.
+
+| Stage | Current implementation | Gate / evidence limit |
+|---|---|---|
+| Mount notification | USBNotifier dynamically registers VOLUME_STATE_CHANGED and calls `IECUUpdate.onUsbMounted(origPath,path)`. | Native call precedes the Java gate, but copies USB metadata/override files to update staging, not the calibration watch directory. |
+| Calibration discovery | `mDevelopmentBuild = !"user".equals(ro.build.type)`; when no normal manifest is found, `.calovride` discovery is attempted only on that development branch. | The radio reports user; normal production discovery does not select type2. |
+| Package registration | USBUpdateSource calls `Package.parseCaloverride(files,2)`, inserts an accepted package into its internal campaign map and sends message206 if vehicle-off policy permits. | A registered package is required; arbitrary caller PackageDetails are not proven to create one. |
+| Type2 handling | parseCaloverride collects existing files; type2 verification returns true; installation gets Delay + DevCaloverrideInstaller. | The shown routine does not authenticate XML; this is not proof of an externally reachable bypass. |
+| Protected placement | DevCaloverrideInstaller requires `/update_cache/calibrations` and copies listed files there through UpdateFiles.copyFileToDir. | Legitimate updater path, not shell filesystem permission. |
+| Activation | After successful copying it calls `reboot2recovery(false,10)`. | Recovery-mediated persistent calibration import, not an immediate runtime theme switch. |
+
+The build-type gate is in discovery, not the shown installer body. Another
+way to register a type2 package is therefore a precise research question;
+its existence is not established by the installer's lack of an additional
+build check. The APK manifest uses shared UID `android.uid.system`; that
+does not grant the calling shell its identity or imply all UID1000 contexts
+can write calibration data. The earlier system_app access checks remain valid.
+
+The current UpdateServiceImplGB install wrapper forwards PackageDetails to
+its selected source without a visible Java caller check. The existing audit
+traced normal install IPC back to an internally tracked Package rather than
+caller-supplied file contents. That is evidence for the inspected path, not
+an exhaustive proof about every current state-machine/native entry. SELinux
+service-discovery permissions are another gate. No separately declared
+exported calibration-import component was identified in the current manifest.
+VOLUME_STATE_CHANGED is a protected framework broadcast, so shell-spoofing
+that action is not an established import method and would not remove the
+non-user discovery check.
+
+**Native mount handling stages files; it does not activate calibration overrides.**
+In current Y175 `gm_update_engine`, `ECUUpdate.onUsbMounted` (`0x55670`)
+dispatches through DaemonState vtable+`0x70` to `copyCoreFile` (`0x778D0`).
+It copies `.mnf`, `.smd`, `.lic`, `gm_usb_auto_install`,
+`gm_usb_ignore_battery` and `.calovride` from USB
+`/mnt/media_rw/<FS_UUID>` into UPDATESTAGING
+(`/update_cache/update/<FS_UUID>`). That destination is distinct from
+`/update_cache/calibrations`; staging an override does not bypass Java's
+production discovery gate or establish application of its contents.
+
+A separate HIDL `ECUUpdate.copyFile` (`0x561C0`) dispatches through vtable+`0x80`
+to `DaemonState.copyFile` (`0x75870`), a raw `rb`/`wb` file copier. This is a
+concrete privileged primitive, but earlier service lookup was denied even
+from UID1000 system_app. The later UID2000 shell lookup was also denied by
+SELinux, as recorded below; an alternative authorized client/proxy remains
+unproven. Native SHA-256:
+`0f47923bf545394b9f1cf1d229061158af2c20c4038aa33e8c77e76ef6181f73`.
+
+**Live USB follow-up, 2026-11-15:** the connected FAT32 public volume was
+mounted for AAOS user10. Shell direct paths under `/mnt/media_rw` and
+`/mnt/user/10` returned `Permission denied`; ExternalStorageProvider required
+an ACTION_OPEN_DOCUMENT grant. This did **not** mean ADB could not write USB.
+The shell's MediaStore permissions allowed `content insert/write/read`
+against `content://media/<USB_VOLUME>/file` with `--user10` (command syntax:
+`--user 10`). A root-level 37-byte text probe read back byte-exactly and was
+deleted. Insert itself printed no URI; a display-name query recovered its
+row ID for subsequent write/read/delete.
+
+The previously prepared single-GMBrand GMC XML was then written at the USB
+root as `a11_gmbrand_gmc_single.calovride`, 308 bytes, with byte-exact readback;
+SHA-256 `5485498bcc4fdf849b3c81b57b58d66a657e84c5930cfe2bb6851e30da58befd`.
+No indexed existing `.mnf` or `.calovride` file was found before insertion;
+that query is not an inventory of unindexed files. A real `sm unmount` /
+`sm mount` cycle succeeded. Logcat showed volume state2,
+`UpdateService-USBNotifier: onUsbMounted: 0` and manifest search. No
+calibration-discovery/type 2 install event was observed. Exact protected-cache
+file placement was not independently read back, so callback success is not
+proof that this particular XML was copied or applied. Production build type
+remained `user`; no calibration application or reboot was demonstrated.
+That initial descriptive USB filename was subsequently superseded by the
+eight-character-basename experiment below. The earlier `/data/local/tmp`
+copy remains inactive.
+
+**Native filename selection and live parser proof, 2026-11-15:**
+searchCopyFile (`0x760a0`, binary-relative) does not accept arbitrary
+descriptive names for extension-based metadata. For patterns beginning with
+`.` it compares the suffix and requires the extension's position to equal8;
+assembly at `0x76acd` performs `cmp rax,8`. This requires an eight-character
+basename. The native binary SHA above was rechecked. Ghidra's default import
+base was `0x100000`, so its addresses for this trace are offset accordingly.
+No numeric-only requirement was established: the live marker
+`a11probe.mnf` has an alphanumeric basename and was accepted.
+
+| Live USB input | Observed result |
+|---|---|
+| Long descriptive `.mnf` marker | Byte-exact USB readback and mount callback0, but no manifest discovery. |
+| `a11probe.mnf`, deliberately non-installable text marker | Native staging proved by Java finding `/update_cache/update/<USB_UUID>/a11probe.mnf`; USBUpdateSource received container_type0; manifest parser threw EOFException and returnednull. No package registered. |
+| Same308-byte XML renamed `a11brand.calovride` | Byte-exact USB readback. It now meets the native filename selector, but no type2 discovery/install event or application was demonstrated on this `user` build. Exact protected XML staging remains unverified. |
+| `gm_usb_auto_install` alongside the valid-basename XML, no manifest | Callback0; Binder package list stayed empty and active package stayednull. Marker presence did not bypass production calibration discovery in this test. |
+
+Both manifest markers and the auto-install marker were removed after their
+tests. A clean remount stopped rediscovering the manifest; only
+`a11brand.calovride` remains on USB, replacing the earlier descriptive-name
+XML. The short manifest contained no module descriptor or payload. No
+calibration clear, package installation or reboot was performed. The
+USBUpdateSource pending-results gate exists statically, but did not block the
+short-manifest parser experiment.
+
+**Current shell access boundary:** read-only Binder transactions1/2 on
+`com.gm.server.update.UpdateService` succeeded as UID2000, returning an empty
+package list/null active package. A standalone Java HIDL lookup for
+IECUUpdate/default failed with `java.util.NoSuchElementException: null`;
+live AVC confirmed `{ find }` denied from `u:r:shell:s0` to
+`gm_update_engine_hwservice`, permissive0. Thus the separate raw copier and
+file-status methods were not invoked. Direct shell `ls`/`sha256sum` of the
+protected staged XML and directory metadata returned Permission denied.
+Temporary native logging properties were restored after observation.
+
+The remaining static targets are HIDL dispatch/caller checks and SELinux
+allowed clients, references creating/restoring type2 packages, and safe
+ABFT0475 module/slot/signature behavior. The [ABFT follow-up](../diagnostics/diagnosticsd_routines_and_recovery.md#abft-handler-and-validation-only-follow-up-2026-11-15)
+recovered its install-plan JSON schema; incomplete validation-only starts
+returned NRC31 at level05/NRC33 at level09, without proving parser entry.
+No complete plan or transfer was submitted. The earlier static pass performed no live mutation; the subsequent
+USB discovery experiment above supersedes that historical scope statement.
+No direct HIDL copier invocation or reboot was performed. USB testing is
+authorized beyond discovery; calibration clearing remains forbidden.
+
+An original [2023 calibration-command gist](https://gist.github.com/NativeDevlopment/fb3683c94858ef2aee580aa1ac93e1a0)
+uses `.calovride` and an older cache path, but starts from root/remount and
+identifies neither an A11 build nor successful output. It does not solve the
+production UID2000 placement problem. GM's [USB programming guidance, page10](https://gm-techlink.com/wp-content/uploads/2021/05/GM_TechLink_08_Mid-April_2021.pdf)
+distinguishes service USB programming from calibration-only programming;
+it does not document unsigned single-value import. The
+[calibration-application patent](https://patents.google.com/patent/US9495812B2/en)
+is architectural evidence, not proof of an exposed A11 interface.
 
 ### Update Preferences Bundle (Tx 23)
 

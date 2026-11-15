@@ -216,7 +216,7 @@ accepts only its vlan4 source IP (172.16.4.112).
 > `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §8.3 in the
 > `Y175_2026-11-02` analysis tree.
 
-### NetworkAccessManager (NAM — serviceId 1026, CSM port 9016)
+### NetworkAccessManager (NAM — serviceId 1026, instance 1, CSM port 9016)
 
 | FunctionID | Method | Type |
 |-----------|--------|------|
@@ -244,7 +244,55 @@ off-board connectivity.
   successful:true}`; no events in 10 s. **Varint:** 2604 = `0xAC 0x14` (not
   `0xCC 0x14`).
 - `getControlledECUList` (fn2607, GET): empty — Android NAM controls no ECUs.
-- `networkRequest` (fn2601, CELLULAR/WIFI, APID="CSM"): no Response (off-network).
+- `networkRequest` (fn2601, CELLULAR/WIFI, APID="CSM"): no Response. The prior
+  payload has not been checked against the corrected required fields below;
+  missing fields are another explanation, so off-network state alone is not established.
+
+**Live follow-up, 2026-11-15:** NAM9016, RemoteModuleHMI9002 and
+DeviceInformation9010 accepted instance1 heartbeat subscriptions and streamed
+heartbeats. NAM2602 with the corrected APID-string request returned one
+`None`/NAM_NONE entry;2607 returned an empty controlled-ECU list. HMI705
+returned an empty app-list status. These were on-radio socket exchanges over
+USB ADB, not proof of host-to-radio T1 reachability.
+
+Correctly formed NAM2601 Wi-Fi and cellular acquire/release pairs used a
+temporary probe APID and an explicitly synthetic network name. All four
+received function2601/op595 responses. NAM logs confirmed required fields
+present and dispatch to WifiTrackerService/TcpTrackerService; all returned
+network status0/DOWN. No off-board link or NAT forwarding was demonstrated.
+Wi-Fi was enabled before and after the test. The Wi-Fi release log says
+"Disabled WiFi" unconditionally; it is not an actual state measurement.
+
+**Transport correction:** use bidirectional `adb shell -T` when piping FSA
+request bytes into on-radio `nc`; `adb exec-out` did not deliver request
+stdin in this test harness. Those initial no-reply trials are invalid service
+negatives. Localhost ADB forwards also closed without replies because the
+FSA listeners bind the radio VLAN address. Direct host T1 attempts returned
+`[Errno 65] No route to host`; external peer emulation for9012/9005/9018
+remains unperformed, not exhausted. Temporary clients used bounded timeouts;
+no existing FSA service was stopped or replaced.
+
+**Static control consequences (current Y175; live request dispatch above):**
+WifiTrackerService gates enabling Wi-Fi through
+`GMWlanServiceManager.canWifiEnabled()`, checks the requested SSID before
+proxy setup, and can release an app or disable Wi-Fi when the last app leaves
+in state 3. Proxy enable calls `setIpForwardingEnabled(true)`,
+`startInterfaceForwarding(networkInterfaceName,WIFI_INTERFACE)` and
+`enableNat`; disable reverses NAT/interface forwarding without an explicit
+global-forwarding reset in the inspected code. TcpTrackerService resolves the
+source IP and changes controlled-ECU allowed state; a firewall effect has not
+been proven. These are network-policy controls, not a shell/debug API.
+
+### Remote update and OnStar coordination (current Y175, 2026-11-15)
+
+| Service | Recovered role | Applicability limit |
+|---|---|---|
+| RemoteReflash, port 9012, service 1025 | TCP-partition peer; fn1903 notifyRRUpdateStatus, fn1904 requestOMADMSession event | Not a radio listener or generic file flasher. |
+| OnStarFunctions, port 9005, service 1010 | TCP-partition peer for status, TTY and location | No root/shell API demonstrated. |
+| RemoteReflashUI, port 9018, service 1027 | Update coordination functions 2501–2513, including DM-tree read | Coordination and data access do not establish arbitrary updater/file execution. |
+
+These roles come from the current matched APK noted in the schema section,
+not the cached older APK. No live FSA calls accompanied this static follow-up.
 
 ### RemoteModuleHMI (serviceId 1007, CSM port 9002) — Cluster HMI bridge
 
@@ -327,12 +375,31 @@ Not connected on bench (needs active cellular modem).
 
 From the FSA-annotated message classes in `DelayedWKSApp.apk`.
 
-**`NetworkRequest_request_response`:** 1 networkType (enum 1=WIFI,2=CELLULAR);
-2 aPID (string, e.g. "CSM"); 3 priority (enum/uint); 4 requestHandle (uint32).
+**Current Y175 schema correction, 2026-11-15:** fresh DelayedWKSApp SHA-256
+`5916ad9f7d40d2683e4dac49b7cc5086104dd27042c7fc32716fc3094288e241`
+confirms these tags in both Protos and the active legacy Nano serializer;
+this is not attribution from the older cached `8a4fd60d…78cfb9` APK.
 
-**`ProvideNetworkList_request_response` / `_response`:** request 1 networkType
-(filter); response 1 networkList (repeated) { 1 networkName{1 display string};
-2 networkType enum 0=NAM_NONE,1=WIFI,2=CELLULAR }.
+**`NetworkRequest_request_response`:**
+
+| Field | Value/type |
+|---|---|
+| 1 | networkName, nested translated/display-name message |
+| 2 | networkType, integer |
+| 3 | aPIDString, string |
+| 4 | networkAccess, boolean |
+| 5 | sourceIPAddress, string |
+| 6 | networkCost, integer |
+| 7 | sourcePort, uint32 |
+
+Active NAMFsaMessenger requires the presence of fields 2/3/4/5 before calling
+the network tracker. The earlier four-field networkType/APID/priority/handle
+layout was incorrect.
+
+**`ProvideNetworkList_request_response` / `_response`:** request field 1 is
+APIDString, **not a network-type filter**. Response field 1 networkList
+(repeated) contains field 1 networkName and field 2 networkType enum
+0=NAM_NONE,1=WIFI,2=CELLULAR.
 
 **`NetworkStatus_event`:** 1 networkType; 2 status (connected/disconnected);
 3 networkName{display}.

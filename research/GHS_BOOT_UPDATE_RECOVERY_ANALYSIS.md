@@ -1,7 +1,7 @@
 # GHS INTEGRITY Boot, Update, and Recovery Analysis
 
 **Initial analysis:** 2026-01-05
-**Consolidated findings updated:** 2026-11-12
+**Consolidated findings updated:** 2026-11-15
 **Binary Analyzed:** SOC_HOSTOS (85098662)
 **OS Version:** INTEGRITY IoT 2020.18.19
 **Platform:** Intel Apollo Lake (Broxton) / GM-i35
@@ -150,6 +150,15 @@ and the [vehicle calibration baseline](../platform/vehicle_config.md#y181b-expor
 | `.6`, `.5`, `.4` | 51, 52, 53 | none recorded | no |
 | `.3`, `.2` | 54 | `--show_return_to_dealer`; `.2` also dumps | `.2` yes |
 | `.1`, current | 55 | `--show_return_to_dealer`; current dumps | current yes |
+
+**Code attribution added 2026-11-14:** the selected Android `gm_protokey`
+binary explicitly writes the `bcm_replacement` recovery command after a
+ProtoKey validation failure, then requests recovery reboot through
+PowerModing. Its first-time path establishes a validation record; later
+mismatches or an unusable existing-record read can reach the replacement
+branch. This statically identifies an initiator for the historical wipe
+reason without proving which caller initiated each newer bench/vehicle
+reset. See the [owning function-level trace](../platform/security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
 
 Only counter 49 has a plausible RTC; all others read 2010/2011, so the dates above come from the reason
 strings. Recovery logs `Not get boot-see-dealer mode, start normal update process.` for 54/55 and then
@@ -813,6 +822,89 @@ into Kernelflinger have not been observed in this pass. Consequently a
 successful ELK transition, its exact post-transition execution environment,
 and any GHS memory residency remain unproven. Retained memory must not be
 confused with GHS continuing to execute.
+
+### VIP ELK control selector and GWM comparison (2026-11-15)
+
+**Result:** Y175 VIP_APP has a compiled ELK branch for control selector
+**`0x8180`**. The contributor's GWM `FDF0` write and the candidate GM I/O-control
+request were rejected on the tested Android Ethernet route. No live ELK
+transition, bootloader unlock or CAN-side acceptance was demonstrated.
+
+External lead: [repository issue #1](https://github.com/lvalen91/gminfo_resources/issues/1)
+and [GWM-CAN-Tools `setBootTarget`](https://github.com/DymOK93/GWM-CAN-Tools/blob/master/uds.py#L351).
+The GWM implementation enters extended session, unlocks level 1 and writes
+DID `FDF0` with `04 00` / `04 01` / `04 03` for normal/recovery/ELK.
+The helper also requires its local `Mode.Developer` setting for ELK; that
+client-side check does not establish the radio's mode/security requirements. This is
+cross-platform evidence, not proof that GM implements that DID or that its
+ELK target supplies the GWM Linux/shell environment.
+
+**Static provenance and address correction:** Y175 USB module `85759599`
+SHA-256 is `d729fa4b59095b03b05ee26e09e3eb31dda36678055f77be11f24416dd1ad239`.
+Its header contains load address `0x28000` at file offset `0x242`, length
+`0x1D7E00` at `0x246`, and the payload SHA-256 at `0x24A`:
+`c6b214a75b2139e344e796da46fb6a6ca23f2ca91a8a6b2ee9cf33fda389be55`.
+That digest exactly matches the bytes from **file offset `0x586` to EOF**;
+`0x586 + 0x1D7E00` equals the complete module length.
+
+The saved RH850 project had loaded the entire signed container at zero.
+Its addresses are therefore **file offsets**, not payload runtime addresses.
+A separate RH850:LE:32 analysis loaded the payload at `0x28000`:
+`runtime = file_offset - 0x586 + 0x28000`. This mapping recovers the three
+ELK string pointers and avoids interpreting a scalar as a spurious string
+label. A prior logger no-return annotation also hid the following ELK call;
+the fresh analysis did not inherit that annotation. Existing unrelated VIP
+address claims are not globally revalidated by this targeted correction.
+
+| Function role (provisional name) | Container file offset | Payload runtime address |
+|---|---:|---:|
+| Selector-8180 callback wrapper | `0x57BC8` | `0x7F642` |
+| Generic control pending-state adapter | `0x4E08A` | `0x75B04` |
+| J6 control forwarding / ELK branch | `0x757D4` | `0x9D24E` |
+| Send ELK control request | `0x75794` | `0x9D20E` |
+| Update/report ELK result | `0x7575C` | `0x9D1D6` |
+
+The descriptor at runtime `0x2E7C0` (file `0x6D46`) contains selector `8180`,
+a neighboring 16-bit value `3`, a word `1` and callback `0x7F642`.
+Those metadata values are recorded raw; their complete length/permission
+semantics have not been traced. The wrapper hardcodes `8180` and passes the
+request buffer after its first two bytes to the pending-state adapter.
+The forwarding routine compares its 16-bit selector with `8180` using
+`xori 0x8180,...` (file `0x7582C`, runtime `0x9D2A6`), logs
+`[J6_CDD] Control Chan: Diag Elk Reboot Req`, then calls `0x9D20E`.
+
+The request helper checks IPC API selector **`0x0C`**, then sends a one-byte
+buffer **`E0`** through that API. If unavailable or the send fails, it calls
+the ELK-result updater with value `3`. The API selector is not independently
+mapped here to a numbered physical HDLC channel. A receive-side branch
+recognizes opcode `E8`, logs the following result byte and forwards values
+below `2` to the result updater. These are compiled request/response paths,
+not an observed live GHS/ABL transition or proof that an `E0` frame can be
+injected successfully from an unprivileged Android process.
+
+**Matched Android source:** the mounted Y175 cleanroom
+`os/system/priv-app/DelayedWKSApp/DelayedWKSApp.apk` and live APK both hash to
+`5916ad9f7d40d2683e4dac49b7cc5086104dd27042c7fc32716fc3094288e241`.
+The static `MY22CsmDIDRequestResponsePipeline` uses reflection to find a DID
+handler in common and MY22 namespaces, and returns `REQUEST_OUT_OF_RANGE`
+if absent. Live `FDF0` requests logged `DIDFDF0Handler: ClassNotFoundException`.
+The tested `2F 81 80 03` request was recognized as `DIAG_CPID_CONTROL`, then
+logged `IOCID8180Handler: ClassNotFoundException` in both namespaces.
+This explains the Android-route failures without treating them as a VIP
+firmware rejection. The native `diagnosticsd` binary itself could not be
+byte-matched: live hashing returned `Permission denied`.
+
+The [diagnostic test record](../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15)
+owns exact live requests/results. Remaining questions:
+
+- The complete CAN-side request, security/session/mode gates and descriptor semantics.
+- Whether the installed VIP matches this update payload byte-for-byte.
+- Successful delivery of the compiled request through the radio's control path.
+- Actual GHS response, completed ABL transition and resulting ELK environment.
+
+CAN validation is pending the owner's USB CAN adapter; the MDI2 is not
+connected, and its prior CAN communication was unreliable. No repeat
+adapter discovery is required until hardware availability changes.
 
 ### 2.3.4 Recovery privilege and debug-ramdisk gates (verified 2026-11-12)
 

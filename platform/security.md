@@ -173,16 +173,22 @@ its `[D] CORRECTION`).
   also produced `67 0A` and `67 0C` grants for levels 09 and 0B. Protected
   F0A7 became readable; service 23 passed its level-1 security denial but
   still ended in NRC 25. File/directory service 38 returned NRC 11. See the
-  [bounded read-sweep results](../diagnostics/ethernet_uds_diagnosticsd.md#bounded-read-only-sweep-and-uart-reset-follow-up-2026-11-14).
+  [bounded read-sweep results](../diagnostics/diagnosticsd_dids_and_dtc.md#bounded-read-only-sweep-and-uart-reset-follow-up-2026-11-14).
 - **Concurrent-observer correction, 2026-11-14:** USB logcat identifies
   wire 11/23 converting to native DIAG_UNKNOWN_SERVICE before their NRC-25
   timer results; both are absent from the recovered 13-entry native map.
   Successful SecurityAccess does not supply a missing service conversion.
-  See the [concurrent analysis](../diagnostics/ethernet_uds_diagnosticsd.md#concurrent-uart-and-usb-logcat-correlation-2026-11-14).
+  See the [concurrent analysis](../diagnostics/diagnosticsd_protocol.md#concurrent-uart-and-usb-logcat-correlation-2026-11-14).
+- **Extended enumeration, 2026-11-14:** all 65536 DID numbers were tested in
+  extended session / level 09: 135 positive reads. A 159-candidate cross-state
+  matrix gave 134 positives in default session and at levels 01/03/05/11/13/15;
+  levels 09/0B/0D gave 135, differing only at F0A7. All nine listed levels
+  produced grants with the documented synthetic format; 5F seed request
+  ended in NRC 25. See the [full inventory](../diagnostics/diagnosticsd_dids_and_dtc.md#exhaustive-did-number-sweep-and-extended-enumeration-2026-11-14).
 - **The earlier `7F 27 10` result did not establish SBI-inactive posture.**
   It used invalid tester `0x0FA0`. The Y181B address-check handler accepts F4/F5;
   a valid tester in default session instead returned `7F 27 7F`. See the
-  [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
+  [validated T1 sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 - **Backend and privilege limits:** matching CAN/Ethernet seed/response formats
   do not locate the key comparison or prove the gateway routing chain.
   `ProxyOfExtComp` and symmetric RTOS-forwarding claims are disputed in the
@@ -205,11 +211,98 @@ its `[D] CORRECTION`).
 - **Binary:** `/vendor/bin/gm_protokey` (+ `gm_protokey_recovery`)
 - **Init:** `init.protokey.rc`, class `main`, user `root`, oneshot
 - **SELinux domain:** `gm_protokey` [C] live-Y175 2026-10-05: CONFIRMED — process `gm_protokey` PID 889, user root, context domain `gm_protokey` (ps.txt). Binary path and `init.protokey.rc` not in capture set (UNVERIFIABLE-FROM-LIVE).
-- **Function:** validates the persisted GM security state and sets `vendor.gm.security.state`;
-  it is part of the ADB/seed-auth path, **not** a SELinux enforcement selector. (Note:
-  `androidboot.bootreason=warm` makes `gm_protokey` skip validation — a documented bypass path.)
+- **Function:** validates received ProtoKey material against persisted validation state,
+  updates `vendor.gm.security.state`, and can request a BCM-replacement user-data wipe.
+  It does not select SELinux enforcement. The warm-boot branch is handled separately;
+  this service's wipe path must not be conflated with the separate MEC-driven ADB gate.
+  See the function-level trace below (updated 2026-11-14).
+
+#### BCM replacement factory wipe code trace 2026-11-14
+
+**Static confirmation:** Android's native `gm_protokey` contains an explicit
+BCM-replacement user-data wipe path. The decision located here is in the
+Android daemon, not a directly located RH850 or GHS wipe handler. It validates
+received ProtoKey material against a stored validation record; it does not
+compare a textual BCM serial number or VIN in the traced routine.
+
+The analyzed x86-64 ELF has Ghidra image base `0x00100000`; the addresses below
+are analysis addresses, not ASLR-adjusted live addresses. Its SHA-256 is
+`627b8e22a1e318d5e4a3bc00c602f67e9a8ec857d007d66c1ee78c8c32dee88b`.
+The matching Y175 `libpal_security.so` is also x86-64, analyzed at base
+`0x00100000`, SHA-256
+`a30e4064715e26c81871f46df05c057ddc074f381ca789d52352a4804eaa91f7`.
+These are firmware-artifact hashes, not captured device keys.
+
+| Component / analysis address | Verified behavior |
+|---|---|
+| PAL `pal_sec_open_ipc_channel`, `0x0010d250` | Opens `CommIPC` channel **9**, identified by the code as the security channel. |
+| PAL `pal_sec_parse_message`, `0x0010e850` | Requires a 17-byte message: status byte followed by a **16-byte ProtoKey**. Calls the status checker, then invokes the registered callback with those 16 bytes only if accepted. |
+| PAL `pal_sec_check_protokey_status`, `0x0010f4b0` | Accepts ready status `1`; other enumerated statuses return an error. An invalid/missing BCM seed message in UART is not by itself a delivered-key validation failure. |
+| Daemon callback `FUN_00103a50` | Receives key pointer/length from the PAL and dispatches it to the daemon's validator. Rejects null/empty callback input. |
+| Validator `FUN_001048f0` | Builds a 64-byte validation input from the received key buffer and compiled-in material; `FUN_001044a0` computes SHA-256. On a first-time boot it initializes the `.validation` record. On later boots it reads/decodes the existing record and compares it with the newly derived value. Compiled-in and received key material are omitted here. |
+| Validator return **2** | Returned for a derived-value mismatch or an unusable existing validation-record read. This is a security-context validation result, not independent proof that a physical BCM was replaced. |
+| `FUN_00103c90`, jump-table entry 2 → `0x00103e99` | Logs `Protokey failed. (BCM_REPLACED)` and sets `vendor.gm.security.state=bcm_replaced` through `FUN_001045c0`. |
+| Replacement branch, `0x00103ed5–0x00103ee6` | Calls `FUN_00104530` with `/update_cache/recovery/command` and the fixed wipe arguments below. The helper opens with `w`, writes, flushes and fsyncs the command file. |
+| Replacement branch, `0x00103f3e–0x00103f52` | Waits five seconds, then calls `FUN_00103f80` with recovery selected. |
+| Recovery request `FUN_00103f80` | Sets `sys.shutdown.requested=1recovery` and requests a reboot through `vendor::gm::powermode::V1_0::IPowerModing`, with control arguments `0, 0` and reason `BR` on this branch. |
+
+The fixed recovery-command content is:
+
+```text
+--wipe_data
+ --reason=bcm_replacement
+```
+
+The switch was not recovered by the original decompiler: it showed an
+indirect call at `0x00103d01` and omitted the replacement block. Reading the
+relative jump table at `0x00101dec` and disassembling its return-code-2 target
+established the actual branch. The stored-code read, SHA-256 helper, record
+comparison, command writer and recovery requester were checked separately.
+Temporary disassembly changes were rolled back; no firmware was patched.
+
+This explains a repeatable *possible* bench/vehicle cycle: a delivered ProtoKey
+validates in environment A; environment B supplies different accepted key
+material and validation fails; recovery wipes user data; first-time setup
+establishes the environment-B record; returning to A can fail again. The
+subsequent UART comparison found the two reported 8-byte seed halves stable
+across vehicle boots 118/119 and stable across bench boots 121/123, with both
+halves differing across environments. The exact security IPC payload and
+the Android validator's live comparison were not captured. A bad
+validation-record read can also reach the same replacement branch. The
+mechanism is statically confirmed and the environment-dependent input now
+has UART evidence, while attribution of each observed wipe still requires
+the corresponding Android log/recovery record. Changing VIN alone is not
+the condition tested by this routine. See the
+[timestamped UART correlation](../diagnostics/diagnosticsd_routines_and_recovery.md#uart-correlation-with-the-bcm-replacement-code-path-2026-11-14).
+
+The bench UART's `Shutdown request = 0 0 B R` followed by `Controlled reset`
+matches the recovery request's control tuple. That supports the proposed
+path but is not a unique caller fingerprint; other requesters can use the
+same reboot reason. In boot 121 it follows accepted ProtoKey status `1` by
+6.030 seconds, consistent with the branch's five-second wait plus unmeasured
+processing/delivery time. The historical recovery logs independently contain
+`--reason=bcm_replacement`; see the
+[recovery ledger](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) and
+[move-triggered reset observations](../diagnostics/diagnosticsd_routines_and_recovery.md#diagnostic-transfer-and-move-triggered-factory-resets-2026-11-14).
+
+The RH850 image `85759599` (SHA-256
+`d729fa4b59095b03b05ee26e09e3eb31dda36678055f77be11f24416dd1ad239`,
+Ghidra `RH850:LE:32:default`, base `0`) contains the observed invalid-BCM-seed
+and ProtoKey-to-SoC status strings. No direct factory-wipe handler was
+established in that image. The selected GHS image likewise yielded no direct
+BCM-replacement wipe handler. Its VIP transport role must not be mistaken
+for the now-located Android decision point.
 
 ---
+
+**Later controlled-action result, 2026-11-14:** direct T1 routine starts
+completed audio control (03D8), audio-favorites reset (0248/00), LCM-record clear
+(0254), and the explicitly requested all-overrides clear (0249). The calibration
+daemon confirmed ALL OVERRIDES CLEARED, and all 14 current calibration-module
+identities changed to 70008/00. MEC stayed FF/255; no MEC write/reset command
+was issued. This demonstrates a specific privileged clear operation, while
+arbitrary partition writes, edited-calibration acceptance and Android UID-0
+shell access remain unproven. See the [final clear](../diagnostics/diagnosticsd_routines_and_recovery.md#final-calibration-clear-completed-mec-preserved).
 
 ## MEC (Manufacturer Enable Counter)
 
@@ -421,7 +514,7 @@ The GHS INTEGRITY hypervisor exposes the following device interfaces under `/dev
 | `gm_diagnosticsd` | UDS diagnostic service | Handles $10/$22/$27/$2E/$31/$34/$36/$37 commands |
 | `gm_update_engine` | OTA firmware updates | GM fork of AOSP A/B update_engine. (Note: the `dontaudit gm_update_engine gsi_metadata_file` rule in `vendor_sepolicy.cil` is **not** a GSI blocker — see GSI/DSU Status below.) |
 | `gm_vehicle_hal` | Vehicle HAL implementation | Bridge between Android and VIP/CAN |
-| `gm_protokey` | Security-state validation (ADB/seed auth) | Validates the persisted GM security state; part of the ADB/seed-auth path, NOT a SELinux enforcement selector (corrected 2026-08-26) |
+| `gm_protokey` | Security-state validation and BCM-replacement recovery | Validates received ProtoKey context against stored validation; can request a `bcm_replacement` user-data wipe. Also participates in security-state handling; not a SELinux enforcement selector. See the code trace above (updated 2026-11-14). |
 
 > **[C] live-Y175 2026-10-05: all five service domains CONFIRMED live as running processes (ps.txt):** `gm_vnd_IPCServer` (procname IPCServer, PID 386, **root**) — consistent with the "runs as ROOT / VIP IPC" claim; `gm_diagnosticsd` (590, root); `gm_update_engine` (574, root); `gm_vehicle_hal` (`android.hardware.automotive.vehicle@2.0-service-gm`, PID 792, user **vehicle_network** — NOT root); `gm_protokey` (889, root). The `/dev/ttyS1` HDLC/20-channel and HDLC-v16 details are not probed here; `/dev/ttyS1` perms CONFIRMED `crw------- root:root u:object_r:ipc_serial_device:s0` (mode 0600, i.e. root-only — see IPC/Serial table note).
 
@@ -796,3 +889,19 @@ The 462 SELinux denials observed in Y181 logcat are concentrated in three subsys
 Notably, **no USB or CarPlay-related denials** were observed, indicating that the USB host stack and CINEMO/NME CarPlay framework operate within their assigned SELinux domains without policy violations.
 
 > **[C] live-Y181.3.2 2026-11-12:** the live bench radio's retained logs hold far more denials than the 462 above (events stream 2347 `avc: denied` over 29 boots, 116 distinct tuples; streams overlap, no de-duplicated total), all `permissive=0`; no `avc` line names `android.car.usb.handler` (gm_ccpa) as scontext/tcontext/app (forensic doc, rg count 0). The "no USB/CarPlay denials" observation therefore still holds for the retained window.
+
+**Post-power-cycle correction, 2026-11-14:** the owner subsequently rebooted
+by removing/restoring power. RH850 entered `NoCalibration (0xe)` after the
+startup fault timeout; the display reported bad/incomplete calibration.
+T1 diagnostic reads still worked, MEC stayed FF, and all 14 cleared module
+identities remained base 70008/00. USB ADB did not reappear. See the
+[owning post-boot finding](../diagnostics/diagnosticsd_routines_and_recovery.md#owner-power-cycle-after-clear-nocalibration-fault-2026-11-14).
+
+**Recovery completed, 2026-11-14:** the main MDI2 client restored the pinned
+stock LTZ package to this cleared A11. The exact 70008/00 profile required a
+one-time in-memory source exception; the erased VIN was restored from the
+owner's supplied value before programming. All 14 slots and VIN matched
+post-reset readback; F0F1/F0F2 were `0000`. Later UART boots reached HMI ready
+with calibration state `2`, and the owner confirmed normal radio operation.
+ADB and final MEC were not rechecked. See the
+[completed MDI2 recovery](../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).

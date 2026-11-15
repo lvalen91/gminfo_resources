@@ -154,7 +154,7 @@ ranked list. There is no known stock path to permissive SELinux at all: Y175/Y17
   superseded. Tester F4, target 0x0084, extended session and the documented
   31-FF/12-zero exchange returned `67 02` over direct T1. This is application
   SecurityAccess, not root or a programming-write grant. See the
-  [owning diagnostic sequence](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14).
+  [owning diagnostic sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 - **(b)** `readHeader()` may `malloc(PAYLOAD_LEN)` before bounds-checking — heap corruption in uid=0, ALL caps, no-seccomp, no-NoNewPrivs daemon. Confirm in Ghidra before exploiting.
 
 ### NEW-6 — Reported RSA-1024 Private-Key Candidate in ghs_integrity.elf (Offset 12924442, UNVALIDATED)

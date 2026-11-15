@@ -39,7 +39,7 @@ Y175 baseline enumeration (W213E-Y175.5.2-SIHM22B-383.1, kernel 4.19.283, bootlo
 Y181 second session. Boot slot found flipped to _b — unexplained, possibly a rolled-back OTA attempt. GHS attack surface analysis added. AVB digest captured: `537b0f4b5248b66ae9a6fb4f20ef7ff968d5720a925aaecf2545770dd9fbc45c`. /dev/ttyGS0 (USB gadget serial) appeared this session. Vehicle engine was running during capture.
 
 ### Jun 21 2026
-Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slot back to _a. Corrected repository errors: SW video decoders are present (not absent as previously noted), guest IP is 192.168.1.100 (not .1), port 9010 is a listener (not just outbound), port 7000 active during CarPlay session. No new offensive progress.
+Verification and reconciliation pass. Live ADB (serial <ADB_SERIAL>), boot slot back to _a. Corrected repository errors: SW video decoders are present (not absent as previously noted), guest IP is 192.168.1.100 (not .1), port 9010 is a listener (not just outbound), port 7000 active during CarPlay session. No new offensive progress.
 
 ---
 
@@ -52,7 +52,7 @@ Verification and reconciliation pass. Live ADB (serial CJUD4R4f1b5fd0), boot slo
 - **Y181→Y181 reinstall:** Succeeds.
 - **DPS 4.56 diagnostic sessions:** UDS $27 SecurityAccess, $22 ReadDataByIdentifier (many DIDs), $31 RoutineControl on ECU 0x80.
 - **FSA RemoteModuleHMI:** rmIdentification fn706 + clientFocus fn712 from shell — both returned success ("registered as HMI module").
-- **UDS port 49156, corrected 2026-11-14:** historical invalid-tester NRC `0x10` results are superseded by tester F4 + extended-session level-1 SecurityAccess (`67 02` after a 31-FF seed and 12-zero response). See [owning diagnostic reference](../../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). No UID-0 or firmware-write inference.
+- **UDS port 49156, corrected 2026-11-14:** historical invalid-tester NRC `0x10` results are superseded by tester F4 + extended-session level-1 SecurityAccess (`67 02` after a 31-FF seed and 12-zero response). See [owning diagnostic reference](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). No UID-0 or firmware-write inference.
 - **pm disable --user 0 of critical packages:** Triggered return-to-dealer screen (recovered via datawipe USB).
 - **KASLR estimation via simpleperf:** Slide ~0x0D000000.
 - **vmlinux-to-elf:** 117,828 symbols recovered from 4.19.305 kernel.

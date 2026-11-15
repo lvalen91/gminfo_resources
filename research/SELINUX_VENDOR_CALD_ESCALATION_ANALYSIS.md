@@ -6,11 +6,17 @@ and its `overrides` directory. This is a metadata-access test, not a write or
 Binder authorization test; it does not establish whether that identity can use
 another calibration interface.
 
-**Verdict: SEALED.** Neither `untrusted_app` (sideloaded app) nor `shell` (adb) can write
+**Direct app/shell path: DENIED.** Neither `untrusted_app` (sideloaded app) nor `shell` (adb) can write
 `/mnt/vendor/calibration/overrides/` or reach `calserviced`'s IPC. The `*.calovride`
 OVERRIDE_BACKDOOR is real and (per provenance audit #37/#38) present in the binary, but it is only
 triggerable by a domain that *already* holds calibration-write — it is not a `$27`-free path from
 an app or an adb shell.
+
+**2026-11-15 static follow-up:** the Y175 main/parser path now confirms a
+compiled `.calovride` → per-row SQL application path, beyond warning-string
+presence. It remains a persistent calibration mechanism and does not remove
+the DAC/SELinux gates below. The [owning loader analysis](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-runtime-controls-and-visual-test-limits-2026-11-15)
+records the version/rebuild branches, ownership effects and visual-test limits.
 
 ## Terminology correction (load-bearing)
 The task conflates two distinct identities:
@@ -169,15 +175,20 @@ would fail CTS/`checkpolicy`. hwbinder-to-app is a hard AOSP neverallow.
   `current_user.txt`) are `shell,input,log,adb,sdcard_rw,sdcard_r,ext_data_rw,ext_obb_rw,net_bt*,
   inet,net_bw_stats,readproc,uhid,readtracefs` — **no `system`, no `vendor_cald`.** A sideloaded
   app's uid is likewise outside both. DAC denies regardless of MAC.
-- **Exploit a whitelisted writer / `calserviced` itself:** the only genuine routes to a
-  cald-context (or `calibration_data_file`) write are memory-corruption/RCE into `calserviced` or
-  one of `{camerad, gm_diagnosticsd, gm_update_engine, gmloggervendorserviced, bootanim,
-  plmanager, gm_vnd_vehicleaudiocontrol, system_app}`. That is an exploit-primitive requirement,
-  not a reachability-by-design path — and if you already have `calibration_data_file:file create`
-  you no longer need the backdoor.
-- **Via `system_server`/`system_app`:** these can write the dir, so a confused-deputy Binder API
-  that writes into the overrides dir on an app's behalf would matter — but no such
-  `calserviced`-published framework service exists (see (a)), and no app→cald edge is in policy.
+- **Privileged writers exist; their caller boundary is the question.** The
+  earlier statement that memory corruption was the only genuine route was
+  too broad. The updater contains a legitimate DevCaloverrideInstaller that
+  copies into the protected destination. Current Y175 USB discovery selects
+  that package type only on non-user builds; invoking the normal install IPC
+  has not been shown to register arbitrary shell-supplied files. The
+  [updater owner](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
+  records current-APK provenance, discovery/installer separation and open
+  native boundaries. This does not relax shell DAC/MAC permissions.
+- **Via system services:** a supported privileged importer and an exploitable
+  confused deputy are different claims. The calibration service itself has
+  no newly demonstrated ordinary-app write API; the updater's independent
+  package-registration and caller gates must be traced before claiming it
+  can place a file on an unprivileged caller's behalf.
 
 ---
 
@@ -193,15 +204,15 @@ would fail CTS/`checkpolicy`. hwbinder-to-app is a hard AOSP neverallow.
 | Edit `calserviced.rc` / add init svc | No (verity + locked) | No |
 | Property-triggered init action | No (props are cald-only) | No |
 
-**Conclusion — SEALED.** The `*.calovride` OVERRIDE_BACKDOOR is a **local-privilege convenience for
-a domain that already owns calibration-write**, not an app- or adb-reachable `$27` bypass. To use
-it you must first *become* one of the whitelisted vendor domains (RCE) or already hold the
-`calibration_data_file:file create` primitive — in which case the backdoor grants nothing new.
-Given Enforcing SELinux + locked bootloader + dm-verity/AVB, there is no init-modification or
-property side-channel from `shell`/`untrusted_app`. The realistic residual risk is (1) a bug in
-`calserviced`'s HIDL surface reached from a *compromised whitelisted vendor peer*, or (2) the
-backdoor being combined with an independent `system_app`/`system_server` cal-write confused-deputy
-— both out of scope for an unprivileged sideloaded app.
+**Conclusion, corrected 2026-11-15:** the direct `.calovride` filesystem path
+remains unavailable to the inspected ordinary shell/app identities. A local
+loader does not itself confer write permission. A legitimate privileged
+updater copier also exists, so an RCE prerequisite is not a complete model
+of every authorized import path. No supported production-shell route to
+register and invoke that copier was established. Current updater/ABFT/native
+entry-point research remains separate from direct HIDL access or a proven
+arbitrary file-write primitive. No calibration deployment was performed in
+this research follow-up.
 
 ### Evidence files
 - `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (policy; apr2026 + base Y181 concur)

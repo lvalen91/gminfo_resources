@@ -20,6 +20,13 @@ all 14 F0F0 slots present, VIN intact). Validation is still scoped:
 - Every write needs explicit authorization for that radio, package, and VIN. Access and
   `identify` do not authorize a write.
 
+**Recovery validated 2026-11-14:** the owner's A11, previously cleared by UDS
+0249 and booting into `NoCalibration`, was restored with the same pinned stock
+LTZ package. All 14 slots and the supplied VIN matched post-reset reads; the
+owner confirmed normal radio/display operation. This used a narrowly scoped
+in-memory cleared-profile exception and VIN restoration, described below;
+the ordinary CLI source gate remains unchanged.
+
 ## Gates (all must pass, fail-closed)
 
 1. All 14 containers (slots 02-0F) match the pinned SHA-256 hashes in
@@ -65,6 +72,40 @@ Matches the decoded stock SPS transcript:
 Stock SPS does **no** pre-reset. `--pre-reset` adds an extra `10 03`/SecurityAccess/`11 01` before
 the write and is an **opt-in recovery fallback** for retrying a failed SPS-method write; do not
 include it in routine instructions.
+
+## Cleared A11 recovery 2026-11-14
+
+The complete [A11 recovery record](../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14)
+owns the failure history, workarounds and UART boot evidence. The important
+differences from the normal CLI flow are:
+
+- UDS 0249 had left all 14 F182 calibration slots at base part **70008 / DLS
+  00**. Each record was its slot byte followed by `00 01 11 78 30 30`.
+  The standard LTZ/High Country source gate correctly rejected this profile.
+  With explicit recovery authorization, a process-local classifier accepted
+  only that exact complete cleared profile alongside the existing profiles.
+  No client source or CLI option was changed; arbitrary mismatches were not
+  accepted. The 14 pinned target hashes remained mandatory.
+- F190 was **17 bytes of FF**, not a printable VIN. The first programming
+  attempt stopped at `read identifiers`, with `transferred=0`; F198/F199 had
+  valid lengths. After read-only diagnosis and an owner-supplied VIN, the
+  recovery checked the erased/current VIN, source, BCM OFF and voltage,
+  entered extended session, used the existing SecurityAccess helper, wrote
+  `2E F190 <EXPECTED_VIN>` and verified F190 before planning again. A different
+  existing VIN would have stopped this recovery.
+- The fresh plan passed at **12.359 V**. The main
+  `write_ltz_calibration(..., confirmed=True, pre_reset=False)` then ran the
+  existing SPS transfer/finalization sequence with the narrow source
+  classifier and all other checks intact. No pre-reset or blind retry was
+  used. This recovery is not provided by `scripts/calibrate_ltz.sh` or by an
+  additional `--confirm` flag.
+
+Post-reset slots **02–0F** and the supplied VIN matched; F0F1 and F0F2 were
+`0000`. The transaction's `RESET_ACCEPTED_NOT_VERIFIED` label preceded the
+live writer's successful post-reset readback. Later RH850 boots reported
+calibration state `2`, reached HMI ready / Accessory, and contained no
+`NoCalibration` in those boot sections; the owner confirmed the radio was
+operational. ADB and final MEC were not rechecked.
 
 ## Failure handling
 

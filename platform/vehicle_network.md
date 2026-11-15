@@ -177,7 +177,7 @@ wired on the bench).
 > module. The `.107` "RTOS partition" is **SoC-internal** (a GHS-hosted INTEGRITY partition on the
 > same Intel A3960), corroborated by its response **TTL=255** vs the external `.112`'s **TTL=64**
 > (Linux) — see [`networking.md`](networking.md) vlan4 table and the "vlan4 internal-vs-external"
-> finding in [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md#vlan4--internal-ghs-fabric-diagnosticsd-forwarding-target-bench-reachability-of-the-vipuds-path-2026-10-06).
+> finding in [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/diagnosticsd_network_topology.md#vlan4--internal-ghs-fabric-diagnosticsd-forwarding-target-bench-reachability-of-the-vipuds-path-2026-10-06).
 
 ### vlan4 · `172.16.4.0/24` (internal vehicle network)
 `.100` IVI (radio's vlan4 face) · `.1` router (shares MAC with `.102`) · `.14` **ACP** ·
@@ -185,10 +185,24 @@ wired on the bench).
 `192.168.118.x` / `172.16.5.x` are code-referenced, not live.
 
 ### vlan502 · CAN-over-Ethernet mirror (Cadillac capture) [X]
-Per the surrealdev SecOC research (see Plane 1a): on Lyriq/CT5 the **entire CAN network is mirrored
-onto VLAN 502 as UDP multicast** — the easiest whole-vehicle monitor is a single pcap on that VLAN.
-Observed source `172.16.50.207` → `239.192.0.9:59200`. Some switches block the VLAN, much is open.
-**Not yet observed on this A11/gminfo37 Silverado — a bench pcap should look for a 502 mirror.**
+The original [Cadillac SecOC research](https://surrealdev.com/rooting-the-cadillac-part-2-secoc/)
+reports CAN mirroring on VLAN 502 using UDP multicast port 59200 on the examined
+Lyriq/CT5 network. This is cross-platform evidence, not proof that the A11
+bench tap exposes the same mirror; switch forwarding and vehicle state matter.
+
+**Passive bench checks, 2026-11-15: no mirror observed.** An unfiltered 30.019s
+T1 capture contained 89,385 frames: VLAN 2=89,176, VLAN 5=84, VLAN 4=9 and
+untagged=116. It contained zero VLAN 502 frames, zero UDP source/destination
+port 59200 packets and zero packets to the article's mirror multicast group.
+AVTP (89,176) and PTP (114) provided positive capture controls; kernel drops
+were zero (90,223 received by filter versus 89,385 captured at termination).
+The earlier `radio-en12-20261114.pcapng` also had zero matches for
+`vlan.id == 502 || udp.port == 59200` across 615,366 frames/391.770719s.
+These negatives apply only to the sampled bench tap, interval and emulator
+CAN state, which was not independently established. They do not disprove a
+vehicle-side mirror. No NIC reconfiguration, CAN injection, active probes or
+ADB was used for these passive checks.
+
 Frame encapsulation (little-endian element_id):
 ```
 element header (7B):  type=0x02(CAN/CAN-FD) | body_len(2B BE) | element_id(4B LE = CAN ID)
@@ -285,8 +299,8 @@ readable by anything on the switch fabric. [X]
    needed on *every* re-cabling of this converter, not just the first (treat as unreliable
    "adaptive polarity," not a one-time wiring mistake); decoded the VLAN 2 flood as 3
    IEEE-1722 AAF audio streams + 1 TSCF/ACF control stream; live-captured 146 gPTP frames to
-   `01:80:c2:00:00:0e` confirming the gPTP-master claim at the packet level (was
-   firmware-inferred only — see [`networking.md`](networking.md#ethernet-avb)); and found the
+   `01:80:c2:00:00:0e` confirming gPTP transmission; configured grandmaster role remains firmware evidence
+   (corrected 2026-11-15; packet presence alone does not establish elected role — see [`networking.md`](networking.md#ethernet-avb)); and found the
    radio periodically (~4 s) SYNing *toward* the posed gateway identity on 9005/9012 — see
    [`fsa_protocol.md`](fsa_protocol.md) and the same source-notes file §8.3.
    **[2026-11-13, new tap:]** a second T1 adapter on **X11 pins 1/2** (previously "not
@@ -588,7 +602,10 @@ VideoCore/DSI) is a different silicon family at both ends.
   COVESA AVB StreamHandler** — the very component this firmware runs. The Pi 4/5 on-board NIC is
   **not** TSN/AVB-capable, so this needs an add-on TSN NIC; the RPi CM4/CM5 + a carrier with an
   I210/I226 over PCIe is the realistic route. Hard parts are matching Bose T3's exact AVTP stream
-  format/SRP reservations and the gPTP timing, which are undocumented — bench capture required.
+  format, admission/control and the gPTP timing. **Updated 2026-11-15:** the active
+  AAF PCM packing, VLAN/priority and public usage map are now measured in the
+  [VLAN 2 reference](networking.md#vlan-2-audio-transport-reference); Bose admission,
+  presentation timing and control remain unresolved. SRP requirements are unverified.
 - **The local-I2S TDF8532 path is not a realistic Pi target [inferred].** It presumes a directly
   wired NXP amp with proprietary I2C control; a Pi's I2S/TDM to a foreign amp is fragile and
   this truck's amp is external over AVB anyway.

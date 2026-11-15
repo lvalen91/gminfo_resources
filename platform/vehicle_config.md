@@ -17,6 +17,47 @@ database, not a query of the running calibration HAL. The second ZIP has the
 byte-identical database. **Verified 2026-11-12 (`sqlite3` on the exported file):** 2574 rows / 982 nonzero `OverRiden` re-counted exactly; `PRAGMA user_version` = **70008**; tables `AllCalSets`, `SubSets`, `EnumSets`, `ModuleData` (every `ModuleData` row carries `PartNumber_D` = 70008, i.e. the same number is the DB/cal-set revision, with per-module `applied_overrides/<part>.<DLS>.<n>.cmod` paths); the VIP/`ghs.log` reports `Calibrations: Info: Current CalTable Version: 3.5` and `Saved CalTable Version: 3.5` (equal, no pending table migration). Live props `persist.sys.cal.brand=GM_Brand_Chevrolet`, `persist.sys.cal.model=Silverado` read via `adb shell getprop`; `persist.vendor.gm.brand/.model` are absent on the real radio. `OverRiden` is retained as a numeric field, not
 interpreted here as a Boolean or a human-edit count.
 
+**Owner-supplied update-cache archive checked 2026-11-14:** its in-memory
+`CalSets.db` query again returns 2574 rows / 982 nonzero `OverRiden` values,
+with DB user version 70008. Every nonzero `OverRiden` value matches a
+`ModuleData.ModID` in this snapshot; it is not a Boolean or a count of manual
+edits. `ModuleData` records 14 applied `.cmod` paths. The ZIP contains none of
+those `.cmod` files and no calibration-directory subtree. These records can
+include production configuration packages; the archive is not a complete
+backup from which to reverse a calibration-override erase. Its DB member's
+archive timestamp is in 2010 and does not establish the current radio state.
+
+**Live-state limit, 2026-11-14:** UID-2000 USB ADB on the running Y175
+radio returned `Permission denied` for metadata checks of
+`/mnt/vendor/calibration/overrides`, `/update_cache/calibrations` and
+`/update_cache/bootup_log/vendor/CalSets.db`. The exported Y181B row count above
+therefore does not establish the running Y175 override count, loaded module
+state or absence of overrides. No calibration override was erased by those metadata checks; the later explicit clear is recorded below. See the [routine inventory](../diagnostics/diagnosticsd_protocol.md#java-handler-inventory-verified-against-the-live-apk-2026-11-14)
+for the distinct erase/reset paths.
+
+**Read-only live identity comparison, 2026-11-14:** diagnostic DID F182
+returned records for all 14 ModuleData IDs in the archive. Thirteen current
+part-number/DLS pairs match the recorded override identities; module 11 differs.
+The native F182 handler queries these identities from GMCalibrationManager.
+This corroborates selected module metadata on the running radio, while the
+live database contents, loaded-row ownership and override package files remain
+unread. The archive therefore cannot be assumed to reproduce every current
+module. This comparison preceded the later explicit clear. See the
+[comparison details](../diagnostics/diagnosticsd_dids_and_dtc.md#read-only-calibration-identity-comparison-with-the-supplied-archive).
+
+**Post-clear state, 2026-11-14:** the later explicitly requested T1
+31 01 02 49 returned 71 01 02 49 and the live daemon logged ALL OVERRIDES
+CLEARED. All 14 F182 calibration-module identities (tags 02–0F) changed to
+part number 70008 / DLS 00; total F182 record count remained 28. MEC stayed
+FF/255 and Android did not reboot. The archived 982 nonzero rows are therefore
+historical export evidence, not a current post-clear row count. No live
+post-clear SQLite count was obtainable. A persistent J5 indicator was created;
+the owner's subsequent power-cycle entered RH850 `NoCalibration (0xe)` after
+a startup fault timeout and showed bad/incomplete calibration on the display.
+T1 still returned MEC FF and all 14 base module identities; USB ADB did not
+reappear. The base-only state is therefore insufficient for normal startup. See the
+[completed clear](../diagnostics/diagnosticsd_routines_and_recovery.md#final-calibration-clear-completed-mec-preserved).
+
 | CalName | CalValue | OverRiden |
 |---|---:|---:|
 | `SCREEN_RESOLUTION` | **4 (`SIZE_2400_BY_960`)** | 8 |
@@ -71,3 +112,21 @@ exact enum values still to be read from `CalSets.db`/GMHomeScreen where noted.
 These convert roughly half of the previously "not-dump-provable" `CalSets.db` overrides into
 config-confirmed values for this specific truck. Exact enum numbers for GMTrim/TraileringAppType/propulsion
 should be read from `CalSets.db` (`AllCalSets`) or GMHomeScreen before applying.
+
+**Direct-T1 restoration attempt, 2026-11-14:** all 14 stock LTZ containers
+matched the pinned successful-transfer hashes. Level-01 access succeeded,
+but `10 02` returned `7F 10 22` and the first stock RequestDownload returned
+`7F 34 7F`. No calibration bytes were transferred. MEC remained FF. See the
+[attempt and access checks](../diagnostics/diagnosticsd_routines_and_recovery.md#direct-t1-stock-ltz-restoration-attempt-and-shell-checks-2026-11-14).
+
+**MDI2 recovery completed, 2026-11-14:** the same previously cleared A11 was
+subsequently restored with the pinned stock LTZ package using the main MDI2
+client. Recovery accepted only the exact 14-slot base 70008/00 profile through
+a one-time in-memory classifier and restored the erased VIN from the owner's
+supplied value before programming. All slots 02–0F and VIN matched post-reset
+readback; F0F1/F0F2 were `0000`. Later UART boots reported calibration state
+`2` and reached HMI ready / Accessory; the owner confirmed normal display and
+radio operation. This supersedes the unresolved post-clear state above; it
+does not establish the old archive's suitability or a post-recovery SQLite
+row count. ADB and final MEC were not rechecked. See the
+[completed recovery](../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).

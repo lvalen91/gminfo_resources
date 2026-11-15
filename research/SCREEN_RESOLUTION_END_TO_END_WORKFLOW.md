@@ -69,7 +69,10 @@ established by these results.
 
 A direct database edit or a local `*.calovride` application is a separate path, requiring
 appropriate filesystem permissions and SELinux access. uid-2000 ADB alone does not establish
-those privileges. `OVERRIDE_BACKDOOR` strings do not prove production-build availability.
+those privileges. **Updated 2026-11-15:** targeted Y175 main/parser analysis
+confirms the compiled plaintext XML loader. That does not prove live shell
+access, safe per-item rollback or successful deployment; see the
+[owning loader trace](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-runtime-controls-and-visual-test-limits-2026-11-15).
 A custom XML file is not a signed CSM container, and the Signature-Bypass Ticket is not a
 validated way to make either path accept a modified payload.
 

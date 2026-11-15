@@ -37,7 +37,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 > internals remain UNVERIFIABLE-FROM-LIVE. This does not alter any Y181/Y177 fact.
 
 > **[D] live-Y175 2026-10-30 update:** a passive, read-only adb session against the same running
-> **Y175** bench radio (`CJUD4R243a5edf`, `W213E-Y175.5.2-SIHM22B-383.1`, uid 2000 shell, no root,
+> **Y175** bench radio (`<ADB_SERIAL>`, `W213E-Y175.5.2-SIHM22B-383.1`, uid 2000 shell, no root,
 > no reboot) narrowed several open items and surfaced one operational fact not previously
 > recorded:
 > - **Decluttered unit:** `pm list packages -u` shows **98 system packages uninstalled for user
@@ -66,7 +66,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   `u:r:gm_diagnosticsd:s0`, root, pid 596; a plain TCP connect from uid 2000 shell
 >   (`nc -w2 127.0.0.1 49156`, no payload) **succeeds** (`exit=0`) — the socket itself is not
 >   SELinux/firewall-gated from an untrusted shell. This answers part (b) of
->   `ethernet_uds_diagnosticsd.md:330-333` ("reachable from uid=2000 shell") at the TCP layer;
+>   `diagnosticsd_protocol.md:189-192` ("reachable from uid=2000 shell") at the TCP layer;
 >   whatever permission gate exists on the $22 DID read is at the UDS/application layer, not the
 >   socket layer — that part stays open.
 > - **FSA UDP port `:3000` vs `:30490`** (`platform/fsa_protocol.md:422`): neither port appears
@@ -423,7 +423,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   allow-list `{.107,.112}`) are reachable. No undocumented allow-listed identity and no
 >   undocumented listening port were found in that historical test. **Corrected
 >   2026-11-14:** its blanket application-lock conclusion used an invalid tester
->   ID. The [validated T1 sequence](diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14)
+>   ID. The [validated T1 sequence](diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14)
 >   now obtains `67 02` with tester F4, extended session and the documented
 >   12-zero-byte response. This does not prove firmware-write or root access.
 > - **Scope:** bench only (gateway peer absent, so discovery chatter/flooding is amplified
