@@ -13,7 +13,7 @@ from mdi2.ecu_catalog import EcuCatalog
 from mdi2.module_reader import ModuleReader, WAKE_NM_CAN_ID
 from mdi2.security_cmac import GMSecurityAccess, SecurityCmacUnavailable
 from mdi2.uds_generic import (GenericUdsClient, UDSNegativeResponse, UDSTimeout,
-                              parse_sw_inventory)
+                              UDSError, parse_sw_inventory)
 
 PLACEHOLDER_VIN = b"PLACEHOLDERVIN017"  # 17 chars, obviously fake
 
@@ -45,6 +45,82 @@ class FakeTransport:
 
 
 class UdsGenericTests(unittest.TestCase):
+    def test_rejects_wrong_or_truncated_did_echo(self):
+        for response in (b"\x62\xf1\x98OTHER", b"\x62\xf1", b""):
+            with self.subTest(response=response):
+                client = GenericUdsClient(FakeTransport({"22f190": response}), 0x80)
+                with self.assertRaises(UDSError):
+                    client.read_did(0xF190)
+
+    def test_rejects_wrong_did_after_pending(self):
+        transport = FakeTransport({"22f190": [b"\x7f\x22\x78", b"\x62\xf1\x98OTHER"]})
+        with self.assertRaises(UDSError):
+            GenericUdsClient(transport, 0x80).read_did(0xF190)
+
+    def test_rejects_malformed_or_unrelated_negative_response(self):
+        for response in (b"\x7f", b"\x7f\x22", b"\x7f\x22\x31\x00", b"\x7f\x27\x78"):
+            with self.subTest(response=response):
+                client = GenericUdsClient(FakeTransport({"22f190": response}), 0x80)
+                with self.assertRaises(UDSError) as error:
+                    client.read_did(0xF190)
+                self.assertNotIsInstance(error.exception, UDSNegativeResponse)
+
+    def test_rejects_wrong_session_echo_without_changing_state(self):
+        client = GenericUdsClient(FakeTransport({"1003": b"\x50\x02"}), 0x80)
+        with self.assertRaises(UDSError):
+            client.enter_extended()
+        self.assertEqual(client.current_session, 1)
+
+    def test_rejects_wrong_transfer_block_echo(self):
+        client = GenericUdsClient(FakeTransport({"360141": b"\x76\x02"}), 0x80)
+        with self.assertRaises(UDSError):
+            client.transfer_data(1, b"A")
+
+    def test_degenerate_security_requires_key_ack(self):
+        request = "2702" + "00" * 12
+        for response in (None, b"\x7f\x27\x35", b"\x67\x01", b"\x67\x02\x00"):
+            with self.subTest(response=response):
+                transport = FakeTransport({"2701": b"\x67\x01" + b"\xff" * 31,
+                                           request: response})
+                client = GenericUdsClient(transport, 0x80)
+                client.security_unlocked = True  # A failed new attempt clears old state.
+                with self.assertRaises(UDSError):
+                    client.security_access(GMSecurityAccess())
+                self.assertFalse(client.security_unlocked)
+                self.assertEqual(transport.sent[-1], bytes.fromhex(request))
+
+    def test_empty_or_wrong_level_seed_never_unlocks(self):
+        for response in (b"\x67\x01", b"\x67\x03" + bytes(16)):
+            with self.subTest(response=response):
+                client = GenericUdsClient(FakeTransport({"2701": response}), 0x80)
+                with self.assertRaises(UDSError):
+                    client.security_access(GMSecurityAccess())
+                self.assertFalse(client.security_unlocked)
+
+    def test_failed_direct_key_exchange_clears_previous_unlock_state(self):
+        client = GenericUdsClient(FakeTransport({"270200": b"\x67\x01"}), 0x80)
+        client.security_unlocked = True
+        with self.assertRaises(UDSError):
+            client.send_key(b"\x00")
+        self.assertFalse(client.security_unlocked)
+
+    def test_unverified_all_ff_shapes_do_not_send_key(self):
+        for ecu, length, level in ((0x40, 31, 1), (0x80, 32, 1), (0x80, 31, 3)):
+            with self.subTest(ecu=ecu, length=length, level=level):
+                request = bytes([0x27, level])
+                transport = FakeTransport({request.hex(): bytes([0x67, level]) + b"\xff" * length})
+                client = GenericUdsClient(transport, ecu)
+                with self.assertRaises(UDSError):
+                    client.security_access(GMSecurityAccess(), level=level)
+                self.assertEqual(transport.sent, [request])
+                self.assertFalse(client.security_unlocked)
+
+    def test_zero_seed_is_already_unlocked(self):
+        transport = FakeTransport({"2701": b"\x67\x01" + bytes(16)})
+        client = GenericUdsClient(transport, 0x80)
+        self.assertTrue(client.security_access(GMSecurityAccess()))
+        self.assertEqual(transport.sent, [b"\x27\x01"])
+
     def test_read_did_positive(self):
         t = FakeTransport({"22f190": b"\x62\xf1\x90" + PLACEHOLDER_VIN})
         c = GenericUdsClient(t, 0x80)
@@ -178,13 +254,15 @@ class ModuleReaderTests(unittest.TestCase):
         # a DID with no scripted response times out -> unsupported, no raise
         self.assertFalse(read.did(0xF180).supported)
 
-    def test_security_trivial_seed_unlocks_without_key(self):
+    def test_security_degenerate_seed_completes_key_exchange(self):
         script = self._script()
         script["2701"] = b"\x67\x01" + b"\xff" * 31  # degenerate all-FF seed
+        script["2702" + "00" * 12] = b"\x67\x02"
         t = FakeTransport(script)
         reader = ModuleReader(t, security=GMSecurityAccess(), keepalive=False)
         read = reader.read_ecu(0x80, do_security=True)
         self.assertTrue(read.security_unlocked)
+        self.assertIn(b"\x27\x02" + bytes(12), t.sent)
 
     def test_security_cmac_key_response_sent(self):
         try:

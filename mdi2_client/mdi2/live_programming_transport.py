@@ -245,14 +245,18 @@ class LiveDpduSession:
         try:
             self.command.sendall(_frame(_MID_HELLO, struct.pack("<III", 1, 0, 0x1388)))
             mid, payload = self._recv_frame(self.command, deadline)
-            if mid != _MID_HELLO + 1 or len(payload) < 16:
+            if mid != _MID_HELLO + 1 or len(payload) < 16 or payload[:4] != bytes(4):
                 raise ValueError("unexpected session hello reply")
             channel = struct.unpack_from("<I", payload, 12)[0]
             if not 0 < channel <= 0xFF:
                 raise ValueError("implausible channel id")
             # Bind the event socket to the same logical channel.
             self.events.sendall(_frame(_MID_HELLO, struct.pack("<III", 1, channel, 0x1388)))
-            self._recv_frame(self.events, deadline)
+            mid, payload = self._recv_frame(self.events, deadline)
+            if mid != _MID_HELLO + 1 or len(payload) < 16 or payload[:4] != bytes(4):
+                raise ValueError("unexpected event hello reply")
+            if struct.unpack_from("<I", payload, 12)[0] != channel:
+                raise ValueError("event hello bound a different channel")
         except (OSError, TimeoutError, ValueError, struct.error) as exc:
             self.fail(f"session hello failed ({type(exc).__name__})")
         self.channel = channel

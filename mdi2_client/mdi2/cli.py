@@ -55,7 +55,7 @@ def rearm(serial: int = typer.Argument(None), host: str = typer.Option(None, "--
     from .live_calibration import rearm_dpdu_tunnel
     serial, host = _target(serial, host)
     typer.echo("10123 armed" if rearm_dpdu_tunnel(serial, host)
-               else "re-arm FAILED (session service wedged — USB power-cycle the MDI2)")
+               else "re-arm FAILED (no session id — likely session-table exhaustion; stop connect loops and let sessions drain, then retry; USB power-cycle only as last resort)")
 
 
 @app.command()

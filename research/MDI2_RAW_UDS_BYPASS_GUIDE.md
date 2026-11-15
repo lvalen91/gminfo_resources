@@ -527,6 +527,22 @@ This comparison is consistent with different routine handling, but request-resul
 start-routine support may differ. Neither result proves whether RID 0x0332 can be started or
 identifies the missing domain; this follow-up did not repeat SecurityAccess.
 
+**Full direct-T1 start-routine trial, 2026-11-14:** Following the calibration
+clear, the complete `31 01 03 32 DD 42 10 EE` candidate was tested for every
+`DD=00–FF`, with both `EE=01` and `EE=00`, in default session and after granted
+security profiles `01`, `03`, `05`, `09`, `0B`, `0D`, `11`, `13`, and `15`.
+All **5,120 requests returned `7F 31 31`**; no pending responses, positive
+responses or transport errors occurred. The trial took 418.89 seconds.
+All 5,121 MEC guard reads returned `62 F1 A0 FF`. Android `adb_enabled`
+remained `1`, USB ADB remained available, and default session was restored.
+USB logcat and the existing UART logger were monitored concurrently; the
+UART count includes the interleaved MEC reads and does not prove delivery
+of each ADB candidate to the RH850. Programming session remained blocked
+by its authenticated state gate, and security profile `5F` had no grant.
+This rejects the reported layout across the tested domains, values and
+contexts on this build; it does not exclude another payload or controller.
+See [full trial](../diagnostics/ethernet_uds_diagnosticsd.md#full-adb-over-uds-candidate-trial-after-calibration-clear).
+
 **Target and local ADB path:** The source does not publish a target ECU address, CAN IDs, a
 successful exchange, or a domain value. The complete domain sweep targeted the A11 radio's
 ECU 0x80 over CAN; it does not test another controller or transport. Separately, decompiled
@@ -585,7 +601,13 @@ Service Mode was turned off; the cause and relation to SBI or authentication are
 `F081` remained six zero bytes; `F0F1` and `F0F2` remained two zero bytes each. BCM `F085`
 read `00` after Service Mode was turned off. Earlier observed values were `01` with accessory
 mode reported, `04` with the engine running, and `02` with Service Mode reported. These are
-observations on this vehicle, not a complete or independently validated enumeration.
+bench-radio observations (BCM power-mode DID `F085` read over the MDI2's D-PDU/CAN tunnel to
+the bench setup), not a complete or independently validated enumeration.
+**Bench-environment correction (2026-11-14):** this and the other BCM `F085`/power-mode
+readings in this section describe the owner's bench radio/BCM setup, reached directly by the
+MDI2's D-PDU CAN tunnel at ECU `0x80` — not a vehicle OBD2-port connection. "Accessory mode"
+and "engine running" above are the BCM's own reported power-mode byte on that bench harness,
+not evidence this testing was performed inside a running vehicle.
 
 **Prior Y175 test, found 2026-11-07:** The 2026-11-02 Bus 2 direct-T1 bench report says
 the ADB routine was sent to the Android `diagnosticsd` custom UDS-over-TCP endpoint and returned
@@ -595,7 +617,7 @@ reported rejection on the Android diagnostics path, not a test of ECU 0x80 via M
 it does not establish routine support, the correct domain, or the reason for rejection.
 **Correction 2026-11-14:** the old blanket T1 rejections used an invalid
 logical tester. F4 plus extended session now completes level-1 SecurityAccess
-(31-FF seed, 12-zero response, `67 02`); see [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). The ADB routine itself was not rerun, so its behavior remains unproven.
+(31-FF seed, 12-zero response, `67 02`); see [validated T1 sequence](../diagnostics/ethernet_uds_diagnosticsd.md#live-t1-securityaccess-correction-2026-11-14). The complete candidate was subsequently tested as described below.
 
 **What this does and does not prove:**
 - It identifies a **candidate external UDS `RoutineControl` request** for a privileged action.

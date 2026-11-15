@@ -14,17 +14,25 @@ def pull_logs(session, name="mdi2py", dialer_ip="192.168.171.30"):
     date = time.strftime("%d%m%y%H%M%S") + "1234567"
     ch.send(messages.session_open(name, dialer_ip, session.host, date))
     session_id = None
-    for _c, body in ch.recv_frames(4.0):
-        if body[:1] == b"{":
-            try: session_id = json.loads(body).get("data", {}).get("session")
-            except Exception: pass
-    ch.send(messages.poll(4))
-    ch.send(messages.GET_LOGS_CMD)
-    files = []
-    for _c, body in ch.recv_frames(8.0):
-        if len(body) > 500:
-            files += parse_log_container(body)
-    if session_id is not None:
-        try: ch.send(messages.session_close(session_id))   # release the session
-        except Exception: pass
-    return files
+    try:
+        for _c, body in ch.recv_frames(4.0):
+            if body[:1] == b"{":
+                try:
+                    candidate = json.loads(body).get("data", {}).get("session")
+                    if type(candidate) is int:
+                        session_id = candidate
+                except (ValueError, AttributeError):
+                    pass
+        ch.send(messages.poll(4))
+        ch.send(messages.GET_LOGS_CMD)
+        files = []
+        for _c, body in ch.recv_frames(8.0):
+            if len(body) > 500:
+                files += parse_log_container(body)
+        return files
+    finally:
+        if session_id is not None:
+            try:
+                ch.send(messages.session_close(session_id))
+            except Exception:
+                pass  # Preserve the original receive/parse failure.

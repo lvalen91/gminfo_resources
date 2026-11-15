@@ -1,9 +1,10 @@
 # MDI2 D-PDU API Protocol — Full Reconstruction from Real DPS Captures
 
-**Date:** 2026-08-24
+**Date:** 2026-08-24 (corrected in place 2026-11-14 — see the dated notes in §11-§12; operator summary in
+`mdi2_client/docs/PROTOCOL.md`)
 **Context:** Bench work to build a native macOS/Python client for the Bosch GM MDI2 that talks
 UDS to the vehicle with **zero GM Windows software** (DPS/SPS/MDI Manager). No hardware was
-available for this pass (MDI2 + vehicle not on the bench) — this is a from-capture protocol
+available for this pass (MDI2 + vehicle not on the bench; the later live bench is MDI2 over direct USB RNDIS to radio ECU 0x80, never on a vehicle OBD2 port — 2026-11-14) — this is a from-capture protocol
 reconstruction so implementation work can continue offline. Source: ~170MB of Wireshark
 captures taken earlier the same day (`DPS+SPS.pcapng`, `SPS_radioCal_and_OS_UpdateCHeck.pcapng`,
 plus three of our own failed native-client attempts), reduced to reassembled PDU-API messages
@@ -562,7 +563,10 @@ power mode at the instant of reset was not captured. These observations do not e
 accessory-off is required. The separate SPS `Power Mode Control Off` Type 4 application establishes
 that such a workflow exists, not that SPS used it in the captured radio-reset sequence.
 Before the power cycle the 9052 handshake and `session_open` had timed out; their cause was not
-independently established.
+independently established. *(Corrected 2026-11-14: the common cause is session-table exhaustion from
+sessions opened without `session_close`; 9052 never answers the client's control frame and `session_open` returns no session
+id. Releasing sessions / letting the table drain recovers it; the power cycle was a last resort that, by
+restarting the device, also cleared the table.)*
 
 Real capture `DPS+SPS.pcapng` (frames 7447-7791) shows port **10123 refuses connections until a
 specific 7-step sequence completes on other ports first**. Reconstructed byte-for-byte from the
@@ -603,7 +607,9 @@ byte-perfect replay of the full reconstructed sequence, **port 10123 remained re
   and *malformed* replay attempts (wrong counter offset, incomplete port coverage) against the
   same live unit before this full-sequence test ran; embedded custom protocols like this are
   often not re-entrant/idempotent per boot. A physical power-cycle of the MDI2 (USB replug) before
-  the next attempt is the highest-value untried step.
+  the next attempt was proposed as the highest-value untried step. *(2026-11-14: the likelier
+  explanation is session-table exhaustion from un-closed sessions, not firmware state corruption;
+  try releasing sessions/idling before a power-cycle.)*
 - Source IP mismatch: real capture client was `192.168.171.30`; our replay used `.10`. Unlikely to
   gate a device-side listener but not eliminated.
 - Original capture's client TCP source ports were sequential (`54519`-`54534`); our sockets use
@@ -634,7 +640,8 @@ functionally wrong, since the device honored it and returned the expected struct
 response both times. This rules out "wrong nonce" as the reason 10123 stayed refused in the live
 test, and strengthens the leading hypothesis in §11 that **live-device internal state was left
 desynced by this session's earlier partial/malformed manual attempts**, recoverable only by a
-power cycle (untested at time of writing — requires physical MDI2 USB replug).
+power cycle (untested at time of writing — requires physical MDI2 USB replug). *(2026-11-14: "only
+by a power cycle" was too strong; the state is most likely session-table exhaustion, see §11 note.)*
 
 ### 11.2 Native in-package live client — findings 2026-11-07 (`mdi2_client/mdi2/`)
 
@@ -648,12 +655,15 @@ bench's MDI2 (serial-derived Blowfish key, radio ECU 0x80, tester byte F1):
   (`30080000…APP_NAME…PDU…COMMAND…START` + **session id as trailing LE u32**). This reopens TCP/10123
   reliably (`live_calibration.rearm_dpdu_tunnel`). The §11-era "PDU START" is on **9050**, not 9011.
 - **The 10123 tunnel is non-idempotent and fragile — confirmed first-hand.** One malformed D-PDU
-  frame closed 10123; it did **not** self-rearm. Repeated connection attempts then **wedged the
-  device's session service** (9052/9050/9011/9009 stopped answering their control handshake),
-  which did not recover after 75 s idle and required a **USB power-cycle** (README's documented fix).
+  frame closed 10123; it did **not** self-rearm. Repeated connection attempts then **exhausted the
+  device's session table** (9052/9050/9011/9009 stopped answering their control handshake; 9052 is
+  normally silent until the client sends its control frame, so "no reply" here means no session slot),
+  which did not drain after 75 s idle, so a **USB power-cycle** was used (last resort, not first fix;
+  corrected 2026-11-14 — was described as a "wedged" session service needing a power-cycle).
   After the power-cycle + `rearm_dpdu_tunnel`, full function returned. Note: after a USB replug macOS
   re-assigns `en17` a /32, so `sudo ifconfig en17 inet 192.168.171.30 netmask 255.255.255.0` is
-  required before the device is reachable.
+  required before the device is reachable (the /32→/24 reset recurs after every replug; discovery keys
+  off the subnet, not the interface name — 2026-11-14).
 - **Resource-0x2A bring-up + a radio read round-trips live.** A full bring-up (CreateCLL 0x2A,
   GetComParam×4, 174-byte SetUniqueRespIdTable for 0x80, SetComParam set, Connect, persistent-RX
   StartComPrimitive, STARTCOMM, UPDATEPARAM) followed by `22 F190` returned the real VIN
@@ -769,3 +779,7 @@ or (b) a control-plane step outside the frame windows examined so far. Next acti
 target `192.168.171.70` (the vehicle's own DoIP gateway, found directly reachable over TCP/13400
 without needing 10123 at all — see `AUG24_SESSION_FULL_PCAP_TIMELINE.md` finding #1) instead of
 continuing to chase the 10123 unlock when a vehicle is present.
+*(Bench-environment correction 2026-11-14: the live-validated setup is the MDI2 on a direct USB RNDIS
+link reaching radio ECU 0x80 through the D-PDU CAN tunnel on 10123 — not connected to a vehicle OBD2
+port, and no vehicle DoIP gateway is reachable on the bench. Vehicle/OBD2 wording elsewhere in this
+doc describes the source captures, not the current bench.)*

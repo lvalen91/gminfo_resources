@@ -4,6 +4,9 @@ Existing subcommands (scan/key/connect/rearm/identify/recover/write) are not
 touched here. `security` is a pure dry-run computation; `read-all` is exercised
 only on its offline error paths (no CAN hardware)."""
 import unittest
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from typer.testing import CliRunner
 
@@ -72,6 +75,31 @@ class ReadAllCliTests(unittest.TestCase):
         result = runner.invoke(app, ["read-all", "--interface", "can0"])
         self.assertEqual(result.exit_code, 1)
         self.assertIn("connect failed", result.output.lower())
+
+
+class WriteCliTests(unittest.TestCase):
+    def test_documented_order_runs_plan_without_writing(self):
+        plan = SimpleNamespace(source_calibration="LTZ", battery_mv=12500)
+        with patch("mdi2.cli._target", return_value=(1234, "adapter.invalid")) as target, \
+             patch("mdi2.live_calibration.plan_ltz_write", return_value=plan) as planner, \
+             patch("mdi2.live_calibration.write_ltz_calibration") as writer:
+            result = runner.invoke(app, ["write", "/synthetic/package", "A" * 17, "1234"])
+        self.assertEqual(result.exit_code, 0, result.output)
+        target.assert_called_once_with(1234, None)
+        planner.assert_called_once_with(Path("/synthetic/package"), 1234, b"A" * 17, "adapter.invalid")
+        writer.assert_not_called()
+
+    def test_confirm_routes_same_arguments_to_writer(self):
+        outcome = SimpleNamespace(transaction=SimpleNamespace(status="VERIFIED"),
+                                  readback=SimpleNamespace(matching_slots=tuple(range(2, 16))))
+        with patch("mdi2.cli._target", return_value=(1234, "adapter.invalid")), \
+             patch("mdi2.live_calibration.plan_ltz_write") as planner, \
+             patch("mdi2.live_calibration.write_ltz_calibration", return_value=outcome) as writer:
+            result = runner.invoke(app, ["write", "/synthetic/package", "A" * 17, "1234", "--confirm"])
+        self.assertEqual(result.exit_code, 0, result.output)
+        planner.assert_not_called()
+        writer.assert_called_once_with(Path("/synthetic/package"), 1234, b"A" * 17,
+                                       "adapter.invalid", confirmed=True, pre_reset=False)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ def _strip_single_frame_padding(frame: bytes) -> bytes:
     A real UDS response SID is always >= 0x40 (positive = request+0x40, negative
     = 0x7F), never 0x01..0x07, so the exact-fit path -- and a device-reassembled
     multi-frame response, whose first byte is likewise a response SID -- is left
-    untouched. This mirrors ``scratch_decode/radio_cal_decode.clean_uds``.
+    untouched. This mirrors ``scripts/scratch/radio_cal_decode.clean_uds``.
     """
     if (frame and 1 <= frame[0] <= 7 and 1 + frame[0] <= len(frame)
             and all(b == 0x55 for b in frame[1 + frame[0]:])):

@@ -11,7 +11,10 @@ USB with no Windows, repeatably. The final, correct facts:
   is on **9052**.
 - **Wire frame (big-endian):** `[u32 0][u32 len][u32 counter][Blowfish-ECB body]`, each channel
   preceded by an 8-byte control frame `00 53 50 00 00 <code> 00 00` (code `0x30`, `0x21` for 9011).
-  The counter must have **bit31 set**.
+  The counter must have **bit31 set**. **Handshake direction (confirmed live 2026-11-14):** on
+  ports 9001/9050/9051 the device sends its own 8-byte control frame FIRST on connect (code `0x31`),
+  and on 9011 (code `0x20`); port **9052 is silent on connect** and replies
+  (`0053500000310000`) only AFTER the client sends its control frame (`0x30`).
 - **App layer = JSON** (`common_service::generic_client<PORT>`): `session_open`, `poll`, a binary
   get-logs trigger; body framing inside the BF payload = `content + zero-pad + u32be(len)`. The
   decrypted log body is a SID-tagged container (`0x8a9` meta / `0x8a8` data → e.g. `messages`=Varlog).
@@ -22,7 +25,16 @@ USB with no Windows, repeatably. The final, correct facts:
   (id `0x1c`, +0xC4) = `42197fad58f363fe…`; `device_serial` = uint32 from the `225.1.1.1:8194`
   beacon (LE u32 at byte offset 9) or the logs. Formula in `FUN_10268960` (RVA `0x268960`).
 - **Session:** the device holds ONE session; release it with `{"data":<session_id>,"has_data":true,
-  "id":2,"target":"session"}` (else it dangles; a few dangles exhaust the slots → USB power-cycle).
+  "id":2,"target":"session"}` (else it dangles; a few dangles exhaust the session table, after which
+  9052 stops answering and `session_open` returns no session id — **session-table exhaustion, not a
+  hardware wedge**; recovery = stop connect loops, close/release sessions, let the table drain; USB
+  power-cycle is the last resort. *Corrected 2026-11-14; was "→ USB power-cycle".*).
+- **Confirmed live 2026-11-14 (clean end-to-end):** discovery → key → 9052 handshake →
+  `session_open` returns a session id → `pull_logs` returns the `messages` stream. The beacon
+  offset-9 serial yields the correct key. Bench: MDI2 on a direct USB RNDIS link, reaching radio
+  ECU 0x80 over the D-PDU CAN tunnel; **not** connected to a vehicle OBD2 port. The RNDIS link
+  enumerates as `en17` with a `/32` mask that must be set to `/24` after every replug; discovery
+  keys off the subnet, not the interface name. Operator summary: `mdi2_client/docs/PROTOCOL.md`.
 - **No Bosch activation needed** — a cold USB+network capture proved macOS generic RNDIS is
   sufficient; the 900x services just need a fresh (unexhausted) device.
 
@@ -416,7 +428,7 @@ The 9052 log stream is now decrypted end-to-end and byte-validated. Two facts cl
    it exactly — no custom variant needed.
 2. **The 56-byte key is per-session and was extracted live.** A Frida hook on
    `bvtx_vci_rt.dll` `BF_set_key` (RVA `0x1dce80`, live `base+0x1dce80`) reading its 56-byte key
-   argument yielded (this session) `fde7ccb213c2b103c29a617520a9785bbf76df196dcc893412a009bbd199c34bdad67312d5909463130f6169d588af7bbd26641b01f8fd0c`.
+   argument yielded (this session) `fde7ccb213c2b103…01f8fd0c` (full value withheld; it is the per-device Blowfish key, deterministically `BASE_KEY_MDI_2 + serial`).
    It is stable for the Manager-process lifetime but changes across sessions (an *earlier* capture
    would not decrypt with a *later* session's key — which is why the static keyring keys of §4.9,
    and any cross-session key, all failed).
@@ -763,8 +775,9 @@ Bosch USB driver's enumeration/control sequence. Client code: `GM_research/mdi2_
 ### 4.22 LIVE macOS client WORKS (2026-08-26) — device dormancy was connection-pool exhaustion
 
 The earlier "dormant device" (§4.21) was **not** a missing Bosch activation — it was the device's
-**connection-pool exhausted** by repeated test connects. After a USB power-cycle the device
-responds immediately from macOS. Two more findings closed the live path:
+**connection-pool exhausted** by repeated test connects (session-table exhaustion; draining or
+releasing the sessions also recovers it — power-cycle is the last resort, see 2026-11-14 note in
+§0). After a USB power-cycle the device responds immediately from macOS. Two more findings closed the live path:
 
 1. **Per-channel control handshake:** each 900x channel must first exchange the 8-byte control
    frame `00 53 50 00 00 <code> 00 00` (client `0x30`, device `0x31`; port 9011 uses `0x21`/`0x20`)
@@ -783,12 +796,14 @@ client auto-derives the key.
 handshake → session_open (accepted) — with all layers (Blowfish, framing, app-body length suffix,
 JSON, container) byte-exact against both captures and the live device. Operational caveat: the
 device holds **one session** and a pool of a few connections; leftover sessions/leaked connections
-from rapid testing make it respond inconsistently until a USB power-cycle. A production client
+from rapid testing make it respond inconsistently until the session table drains (or, as a last
+resort, a USB power-cycle). A production client
 should open only the channels it needs (9052 for logs) and close cleanly.
 
 **Interface note (macOS):** MDI DHCP-serves host `192.168.171.30`, but macOS assigns a `/32` and a
 full-tunnel VPN can steal the route — set `en17` to `/24`: `sudo ifconfig en17 inet 192.168.171.30
-netmask 255.255.255.0` (redo after each re-plug).
+netmask 255.255.255.0` (redo after each re-plug). Discovery keys off the subnet, not the
+interface name (`en17` is just what it enumerated as; 2026-11-14).
 
 ### 4.23 CORRECTION to §4.22 — device DOES need Bosch activation (arming), not just a clean pool
 
@@ -835,7 +850,8 @@ intermittent "dormancy" on the Mac was **connection-pool/session exhaustion from
 test connects** (the device holds one session + a few connections) plus device boot timing — NOT a
 missing arming step. **This confirms §4.22 and supersedes §4.23/§4.21's "activation gap".**
 
-**Practical rule for the macOS client:** power-cycle the MDI for a clean state, connect once, open
+**Practical rule for the macOS client:** start from a clean session table (power-cycle only if
+sessions will not drain — corrected 2026-11-14), connect once, open
 only the channels needed (9052 for logs), and **close cleanly**; don't hammer it. Under those
 conditions the full loop (discover → derive key → control handshake → session_open → get-logs →
 decrypt) works from macOS, USB-only, no Windows.
@@ -859,8 +875,8 @@ full pull succeeds.
 
 **Session semantics:** the device holds **one session**, and the first session_open on a fresh
 session must be the first app message. It is released on a **clean disconnect** (the Manager sends
-a session-close; the client currently just closes TCP, so a session dangles until timeout/
-power-cycle — sending the close is the one remaining polish item for back-to-back pulls).
+a session-close; as of this section the client just closed TCP, so a session dangled until the table drained —
+fixed in §4.26, where the client sends `session_close`; note corrected 2026-11-14).
 
 **Status: the macOS MDI2 client is done and live-validated** — discovery, key derivation
 (base+serial), Blowfish-ECB, framing, control handshake, JSON session, get-logs, and container

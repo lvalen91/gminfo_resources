@@ -132,9 +132,13 @@ class GenericUdsClient:
             while True:
                 if resp is None:
                     raise UDSTimeout(f"No response to 0x{sid:02X} from 0x{self.ecu_addr:02X}")
+                if not resp:
+                    raise UDSError("Empty UDS response")
                 self._log(f"  <- {resp.hex()}")
                 if resp[0] == NEG_RESPONSE:
-                    nrc = resp[2] if len(resp) > 2 else 0x00
+                    if len(resp) != 3 or resp[1] != sid:
+                        raise UDSError("Malformed or mismatched UDS negative response")
+                    nrc = resp[2]
                     if nrc == 0x78:
                         pending += 1
                         if pending > self.max_pending:
@@ -149,6 +153,14 @@ class GenericUdsClient:
                 if expect_sid is not None and resp[0] != (expect_sid + 0x40):
                     raise UDSError(f"Unexpected response SID 0x{resp[0]:02X} "
                                    f"(wanted 0x{(expect_sid + 0x40):02X})")
+                echo_length = {
+                    SID_SESSION: 1, SID_SECURITY: 1, SID_TESTER_PRESENT: 1,
+                    SID_TRANSFER: 1, SID_READ_DID: 2, SID_WRITE_DID: 2,
+                    SID_ROUTINE: 3,
+                }.get(sid, 0)
+                if echo_length and (len(resp) < 1 + echo_length or
+                        resp[1:1 + echo_length] != payload[1:1 + echo_length]):
+                    raise UDSError("Mismatched UDS positive response echo")
                 return resp
 
     # 0x10 session
@@ -168,11 +180,16 @@ class GenericUdsClient:
     def request_seed(self, level: int = 0x01) -> bytes:
         resp = self._request(bytes([SID_SECURITY, level]), expect_sid=SID_SECURITY,
                              timeout=self.p2_star)
+        if len(resp) <= 2:
+            raise UDSError("SecurityAccess returned an empty seed")
         return resp[2:]
 
     def send_key(self, key_response: bytes, level: int = 0x02) -> bool:
-        self._request(bytes([SID_SECURITY, level]) + key_response,
-                      expect_sid=SID_SECURITY, timeout=self.p2_star)
+        self.security_unlocked = False
+        resp = self._request(bytes([SID_SECURITY, level]) + key_response,
+                             expect_sid=SID_SECURITY, timeout=self.p2_star)
+        if len(resp) != 2:
+            raise UDSError("Unexpected SecurityAccess key acknowledgement length")
         self.security_unlocked = True
         return True
 
@@ -180,13 +197,20 @@ class GenericUdsClient:
         """Full seed/key flow using a ``security_cmac.GMSecurityAccess`` instance."""
         key_level = level + 1
         attempt = 0
+        self.security_unlocked = False
         while True:
             attempt += 1
             seed = self.request_seed(level)
-            if all(b == 0x00 for b in seed) or all(b == 0xFF for b in seed):
-                self._log("  [i] Trivial seed (already open / SBI bypass)")
+            if all(b == 0x00 for b in seed):
+                self._log("  [i] Zero seed (already unlocked)")
                 self.security_unlocked = True
                 return True
+            if all(b == 0xFF for b in seed):
+                # Only this exact radio/level/seed has a verified degenerate
+                # key exchange. An all-FF seed alone is not an unlock ACK.
+                if self.ecu_addr != 0x80 or level != 0x01 or len(seed) != 31:
+                    raise UDSError("Unsupported all-FF SecurityAccess seed")
+                return self.send_key(bytes(12), key_level)
             try:
                 resp = security.compute_response(seed)
             except KeyError:

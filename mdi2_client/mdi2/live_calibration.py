@@ -90,10 +90,10 @@ def rearm_dpdu_tunnel(serial: int | None = None, host: str | None = None, *,
 
     ``serial``/``host`` auto-resolve from the device announce beacon when
     omitted (see ``_resolve_target``). Returns True if 10123 accepts connections
-    afterward. This recovers the tunnel only when the device's session service
-    is still alive; a crashed/wedged session service (symptom: 9052 stops
-    answering its control handshake) needs a USB power-cycle. Reconstructed from
-    the capture and verified field-by-field.
+    afterward. If 9052 returns no session id, the common cause is session-table
+    exhaustion (sessions opened without session_close, not released); drain/release
+    sessions and retry, with a USB power-cycle only as a last resort. Reconstructed
+    from the capture and verified field-by-field.
     """
     serial, host = _resolve_target(serial, host)
     if not force_start and _port_open(host, DPDU_PORT):
@@ -118,7 +118,8 @@ def rearm_dpdu_tunnel(serial: int | None = None, host: str | None = None, *,
                     session_id = parsed["data"].get("session", session_id)
         if type(session_id) is not int or not 0 <= session_id <= 0xFFFFFFFF:
             raise LiveDpduError("management session_open returned no session id "
-                                "(session service likely wedged; USB power-cycle required)")
+                                "(likely session-table exhaustion; sessions not released — "
+                                "drain/release sessions and retry, USB power-cycle as last resort)")
         bank.connect(ports=[9011])
         ch50 = bank.channels[9050]
         for _ in range(3):

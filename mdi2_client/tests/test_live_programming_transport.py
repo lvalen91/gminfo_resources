@@ -257,6 +257,42 @@ class StartComPrimitiveMarkerTest(unittest.TestCase):
         self.assertEqual(frames[-1][8 + 16:8 + 22], b"\x10\xdb\xfe\xf1\x3e\x80")
 
 
+class HelloTests(unittest.TestCase):
+    def test_accepts_fragmented_command_and_event_hello(self):
+        # Byte-exact command/event replies from SPS streams 317/318; only
+        # protocol fields (status, version, reserved, channel), no identifiers.
+        captured = bytes.fromhex("180000008508000000000000010000000000000025000000")
+        session = LiveDpduSession(PlaybackSocket(captured, fragment=1),
+                                  PlaybackSocket(captured, fragment=1))
+        self.assertEqual(session.hello(), 0x25)
+        self.assertFalse(session.poisoned)
+
+    def test_rejects_failed_or_mismatched_event_binding(self):
+        payload = struct.pack("<IIII", 0, 0, 0, 0x25)
+        for mid, event_payload in ((0xDEAD, payload), (0x885, b""), (0x885, bytes(4)),
+                                   (0x885, struct.pack("<I", 1)),
+                                   (0x885, struct.pack("<IIII", 0, 0, 0, 0x26))):
+            with self.subTest(mid=mid, event_payload=event_payload):
+                command = PlaybackSocket(frame(0x885, payload))
+                events = PlaybackSocket(frame(mid, event_payload))
+                session = LiveDpduSession(command, events)
+                with self.assertRaises(LiveDpduError):
+                    session.hello()
+                self.assertIsNone(session.channel)
+                self.assertTrue(session.poisoned)
+                self.assertTrue(command.closed)
+                self.assertTrue(events.closed)
+
+    def test_rejected_command_hello_never_binds_events(self):
+        command = PlaybackSocket(frame(0x885, struct.pack("<IIII", 1, 0, 0, 0x25)))
+        events = PlaybackSocket()
+        session = LiveDpduSession(command, events)
+        with self.assertRaises(LiveDpduError):
+            session.hello()
+        self.assertTrue(command.closed)
+        self.assertTrue(events.closed)
+
+
 class WriteGateTest(unittest.TestCase):
     def test_write_requires_confirmation(self):
         with self.assertRaises(ValueError):
