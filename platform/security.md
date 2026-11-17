@@ -92,14 +92,31 @@ The boot chain is a 5-layer trust hierarchy from hardware root to runtime filesy
 >   capability, but not provable as categorical enforcement**: whether a hash mismatch
 >   is REJECTED (verified profile) vs only measured depends on the Intel TXE FPF/OTP
 >   fuse state, which is outside this package (`fitc.cfg` shows build-time intent only).
->   Settle via MSR `0x13A` (`MSR_BOOTGUARD_SACM_INFO`, needs ring-0) or a full ISSI SPI
->   IFWI dump including Flash Descriptor + FPF region. Corollary: Boot Guard digests
+>   **Corrected 2026-11-17:** Apollo Lake TXE must not be decoded as desktop ME.
+>   Live MSR `0x13A` read returned `Input/output error`, not a zero value.
+>   In the standard SACM layout, measured/verified flags are bits 5/6;
+>   bits 2:1 describe TPM type and bit 3 TPM success. No such bits were
+>   obtained from the failed radio read. Platform FWSTS6 bit 30
+>   is set, and the hardware-source `/fpf/intel/SocCfgLock` query returned 1:
+>   platform fuse configuration is committed/locked. FWSTS3 reports IBB
+>   verification done/pass. The exact rejection profile and individual key/policy
+>   fuse contents are not established by these results; physical FPF fuses are
+>   not a region recovered merely by dumping SPI. See the
+>   [live status evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#live-apollo-lake-fusestatus-check--2026-11-17).
+>   Corollary: Boot Guard digests
 >   cover CODE (IBBL/IBB/OBB) only, NOT the UEFI NVRAM varstore — flipping the `OEMLock`
 >   variable would not break any Boot Guard hash.
 >
-> Keep this distinct from the ProtoKey/EEPROM-SBI material below (§ProtoKey / ADB
-> Authentication): that section governs **ADB/seed authentication only**, a separate
-> mechanism from the `OEMLock` *boot*-lock state described here.
+> **Upstream Probe update (2026-11-17):** kernel.org-based 4.19.283 and 7.3.5
+> images have now executed through ELK RAM boot. Stable02 uses
+> `CONFIG_MODVERSIONS=n`, `CONFIG_MODULE_SIG=n`, `CONFIG_DEVMEM=y`, and
+> `iomem=relaxed`; `/dev/mem` presence is verified. These Linux runtime choices
+> neither rewrite fuses nor establish disabled IBB/GHS authentication or unsigned
+> normal-storage boot. See the [current build evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+>
+> Keep this distinct from the MEC/ADB certificate and BCM ProtoKey material
+> below (§ProtoKey / ADB Authentication). Those separately scoped mechanisms
+> are not the `OEMLock` *boot*-lock state described here.
 
 ---
 
@@ -121,7 +138,7 @@ The 906-byte security function at `0x000b67d0` performs multi-stage validation:
 - **Called subroutines:** `0x000b6652`, `0x000aee28`. (`0x000ecd84` is **not** part of a "validation chain" — it is a generic RTOS mutex primitive with 285 call sites; corrected per research/AUG24_25.)
 - **RAM `0x3e06`:** a generic "security module initialized" readiness flag — **not** a processed EEPROM SBI value and unrelated to the SBI's actual value (corrected; it does not "control security bypass behavior")
 - **Callers:** `0x000b6b06` (primary entry), `0x000b6e82` (secondary/fallback entry)
-- **ADB/seed-auth gate (NOT SELinux):** this validator gates ADB/seed authentication only. The actual ADB unlock is SoC-side (`gm_adb_auth_init` / `is_secure_mode`) driven by the EEPROM SBI → VIP MEC=0xFF response on DID `0xF1A0` — it does **not** set SELinux mode (SELinux is OS-side ramdisk/init, enforcing on all builds). See [ProtoKey / ADB Authentication](#protokey--adb-authentication) (CORRECTED 2026-08-26)
+- **MEC/ADB certificate gate (not SELinux):** this referenced validator belongs to the ADB/certificate path. The SoC-side `gm_adb_auth_init` / `is_secure_mode` behavior is driven by EEPROM SBI → VIP MEC response on DID `F1A0`; it does not set SELinux mode. This is distinct from the BCM seed caches and SoC ProtoKey access-validation path described below. See [ProtoKey / ADB Authentication](#protokey--adb-authentication) (scope clarified 2026-11-16).
 
 Between Y177 and Y181, 549,518 bytes differ in VIP firmware — 28.4% of the total firmware image. **This is NOT a security re-enablement/hardening:** a three-way byte diff (2026-08-25) shows the full ~906-byte validator present in ALL builds (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0); the "Y177 stub" was a fixed-address misread. The 28.4% delta reflects unrelated VIP changes, not a fixed security function.
 
@@ -138,11 +155,15 @@ Between Y177 and Y181, 549,518 bytes differ in VIP firmware — 28.4% of the tot
 > absence itself is not independently read. (An earlier version of this note called the file `vip_all.txt`, counted 7113
 > as `[1]`-only, and cited an unreconciled "~2282" figure; corrected 2026-11-12 against the raw logs.)
 
-> **CORRECTED 2026-08-26.** This exchange gates **ADB / seed authentication**, not SELinux
-> enforcement. SELinux is enforcing on all builds regardless (OS-side init). The former
-> "→ SELinux ENFORCING/PERMISSIVE" outcomes are wrong and have been replaced with the
-> real ADB-unlock outcome, confirmed from device logs (`GM_ADB: gm_adb_auth_init`) and the
-> VIP DID `0xF1A0` trace.
+> **Scope corrected 2026-11-16:** distinguish the BCM-to-radio ProtoKey material
+> from the MEC/ADB certificate gate and UDS `$27` SecurityAccess. CAN `457` and
+> `458` were observed to supply the RH850's two eight-byte seed caches; their
+> reception correlated with the personal-information access gate clearing.
+> Calling that entire path "ADB authentication only" was too broad. The
+> separate MEC/ADB findings remain supported by `GM_ADB: gm_adb_auth_init` and
+> DID `F1A0`. None of these observations changes SELinux enforcement; the former
+> "→ SELinux ENFORCING/PERMISSIVE" outcomes remain retracted. See the
+> [CAN signal dictionary](can_network.md#verified-a11-translations).
 
 The certificate range checks, secured/bypass behavior, Boolean inversion and
 historical diagnostic readings are maintained in
@@ -691,11 +712,38 @@ The earlier claim that "both Y177 CVEs are exploitable due to SELinux permissive
 On the **direct OTG bench line** (no GM receptacle hub — HSAL-2 → breakout with a **Mac-side** CC→GND `Rd` strap →
 Mac; X8 is 4-wire so CC never reaches the radio, whose role switch is software: `intel_xhci_usb_sw-role-switch` → XDCI `OTGD`/`SPPS` ACPI — the radio's VBUS sourcing and role are a register decision, not a sensed pin, which is why 4 wires suffice [FW `dsdt_a.dsl:1290-1500`]; ADB itself is entered by the Developer-Options USB-debugging toggle, owner-confirmed 2026-10-10: ADB off + Mac VBUS present = nothing enumerates, toggle on = ADB; VBUS-sense auto-role ruled out), `adb reboot fastboot` brings up **fastbootd** (userspace fastboot, `is-userspace:yes`),
 enumerating as USB **`8087:4ee0`** (Intel VID + Android fastboot PID) and **persisting in mode**.
-Captured live via a macOS `ioreg` watcher (device present ~1m50s). This is the **only** pre-OS USB
-interface the unit exposes: `adb reboot bootloader` (ABL), `recovery`, `edl`, `dnx` all stay
+Captured live via a macOS `ioreg` watcher (device present ~1m50s). This was the **only** alternative-boot USB
+interface observed in those tests: `adb reboot bootloader` (ABL), `recovery`, `edl`, `dnx` all stayed
 **USB-dark** until the OS returns (matches the older hub-path tests; the hub never surfaced fastbootd
 either — the direct OTG line is what exposes it).
 
+**Correction,2026-11-17:** A distinct VIP-mediated CAN F000/8180 request,
+with a temporary and restored application-security RAM gate, subsequently
+entered Intel ELK. USB identified titan_gm_my22 at8087:09EF and the bootloader
+returned `kernelflinger-07.02-userdebug`. This is separate from the8087:4EE0
+Android fastbootd observations below. Initial repeated queries and an
+owner-requested unlock invocation timed out. A subsequent USB-device reset and
+raw libusb client established ELK's reported `unlocked:yes`, `secure:no` and
+positive unlock eligibility. Whether this state predated the unlock attempt
+remains unverified. An ELK→AAOS→ELK round
+trip retained ELK's unlocked=yes report, while AAOS reported verifiedbootstate
+green, flash.locked1, vbmeta.device_state locked and oem_unlock_allowed0.
+Cold-power persistence and changes to actual verification enforcement remain unverified;
+partition read/write operations have not been validated by these state queries.
+Subsequent RAM-only Linux boot tests confirmed custom kernel/initramfs
+execution, USB serial/NCM, public-key SSH and raw native eMMC reads. Boot0
+and boot1 copies matched independent source hashes; a full user-area image
+initially stopped at 23.44% over USB. A fresh Wi-Fi read subsequently
+completed all 63996690432 bytes and matched independent source/file SHA256
+`e630b3cbb0b76f8f721e83956555cb84270046998ef4859e85c21ec55216cd86`.
+The obsolete interrupted partial was then deleted. RPMB counter read succeeded,
+but the first RPMB data read timed out and no RPMB dump is verified. These are Linux readback results, not proof of ELK flash-write
+permission. The custom RAM boot also receives a green verified-boot
+command-line value, so that value alone does not authenticate the RAM image.
+See the
+[ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+
+The following older results apply to **Android fastbootd, not Intel ELK**.
 Read-only `fastboot getvar all` succeeded (information disclosure); **writes are barred**:
 - Lock/secure: **`unlocked:no`, `secure:yes`** — no flash/unlock (consistent with
   `flash.locked=1` / `oem_unlock_allowed=0`). `oem device-info` and `partition-type:*` → **"Fastboot

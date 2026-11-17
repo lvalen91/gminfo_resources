@@ -7,6 +7,61 @@
 
 ---
 
+## Native Linux GPU acceleration — verified 2026-11-17
+
+**Build scope update (2026-11-17):** the later `7.3.5-probe-stable02` image has
+verified i915 framebuffer/console output with automatic panel initialization,
+but the Mesa/Vulkan/VA acceleration workloads below were not repeated on 7.3.5.
+Do not transfer Probe06 acceleration or codec results to stable02 solely because
+its panel works. See [stable02 evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+
+This section describes native probe06 Linux, independent of the historical AAOS
+capabilities below. Kernel i915 is bound to PCI8086:5a84 and exposes card0 plus
+renderD128. A working fbcon/display was not treated as proof of GPU rendering.
+
+Mesa23.2.1 (`23.2.1-1ubuntu3.1~22.04.4` packages), Intel iHD22.3.1,
+libva2.14.0 and Vulkan loader1.3.204 were staged natively on the build machine.
+They live under `/opt/graphics` with their own glibc loader/library path, leaving
+the existing musl runtime intact. Dynamic driver roots and dependencies are
+included explicitly: Mesa EGL/GBM/iris, Intel Vulkan, and iHD media driver.
+Only the Intel Vulkan ICD is selected. Public-key SSH transferred the runtime
+into the radio's RAM filesystem; no persistent radio storage was modified.
+
+| Check | Live result | What it proves |
+|---|---|---|
+| EGL/OpenGL ES shader render | EGL1.5; vendor Intel; renderer `Mesa Intel(R) HD Graphics 505 (APL 3)`; OpenGL ES3.2 Mesa23.2.1 | Actual GPU rendering through renderD128 |
+| Pixel readback | 256 triangle draws to a256×256 offscreen FBO; pixel(64,192) = RGBA64,192,64,255, exactly expected | Shader execution/readback, not just driver enumeration |
+| i915 engine observation | Render sequence advanced from2 tohexD; reset count remained0 | Consistent with submitted GPU work; no reset observed |
+| Vulkan | Intel open-source Mesa driver; device8086:5a84; device API1.3.255 | Hardware-device initialization; no Vulkan workload or presentation test yet |
+| VA-API | iHD initialized successfully; API1.14; MPEG2/H264/JPEG/VP8/HEVC/VP9 decode profiles and selected H264/JPEG encode entrypoints | Driver/profile availability; no actual video decode/encode test yet |
+
+The test uses GBM plus a surfaceless EGL context, compiles vertex/fragment
+shaders, rejects llvmpipe/softpipe/swrast renderer strings, checks framebuffer
+completeness, and verifies the readback. It does not acquire display scanout or
+change the active console mode. The implementation is retained with the native
+build sources as `probe-tools/gpu-render-test.c`.
+
+Available commands in the live RAM environment and the prepared probe07 image:
+
+```sh
+gpu-render-test
+vulkaninfo --summary
+vainfo --display drm --device /dev/dri/renderD128
+```
+
+Wrappers invoke `/opt/graphics/run` with isolated driver and loader paths.
+An initial Vulkan test failed because libvulkan.so.1 is dynamically loaded and
+was missed by the first dependency pass; adding it fixed enumeration. VA-API
+profile reporting must not be presented as an accelerated video-stream test.
+
+Probe07 packages the verified runtime, console/panel fixes and diagnostic tools.
+Kernel release `4.19.283-elk-linux-probe-r07`; boot image97,849,344 bytes,
+SHA256 `197098cd51b0f76d87d5f6ca1f797a7a965b440aa365cbe14fd344c6340b8666`.
+The final image passed QEMU boot/console/PTY/shell/block/NCM/SSH checks. Hardware
+GPU tests ran on probe06 with the runtime installed live; probe07 itself has not
+yet been booted on the radio. Source references: [Mesa EGL](https://docs.mesa3d.org/egl.html)
+and [Intel media-driver supported platforms](https://github.com/intel/media-driver).
+
 ## Hardware Overview
 
 ### CPU Specifications

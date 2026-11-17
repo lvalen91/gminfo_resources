@@ -12,6 +12,8 @@ subjects to their owners instead of maintaining another copy of their facts.
 
 | Subject | Owning document |
 |---|---|
+| Current Linux 7.3.5 stable02 source, merged changes, image hashes, QEMU/physical boot and open hardware gaps | [Stable02 verified record](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17) |
+| Automatic IBB/SMIP candidate selection and SPI ELK fallback limits | [Automatic-selection trace](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#automatic-selection-and-elk-startup--2026-11-17) |
 | Y181B USB exports, archive hashes, capture comparison and chronology limits | [Consolidated source §0.2–§0.3](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12) |
 | Measured Y181B recovery E820 map and grant/visibility limits | [GHS inventory §7A.3](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
 | Exported Y181B vehicle calibration baseline | [Vehicle configuration](../platform/vehicle_config.md#y181b-exported-calibration-baseline-2026-11-12) |
@@ -32,6 +34,7 @@ subjects to their owners instead of maintaining another copy of their facts.
 | Downgrade observations and historical tests | [Downgrade analysis](GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt) |
 | Update-process observations | [Update-process analysis](UPDATE_PROCESS_ANALYSIS.txt) |
 | Vehicle network and diagnostic transport | [Vehicle network](../platform/vehicle_network.md), [Ethernet UDS](../diagnostics/ethernet_uds_diagnosticsd.md) |
+| CAN message dictionary, harness isolation and public in-vehicle/DBC comparisons | [CAN network reference](../platform/can_network.md) |
 | Guest/host RPC research hypotheses | [RPC research](RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md) |
 | External Intel/Celadon resources | [External resources](../platform/intel_apl_external_resources.md), [Celadon research](GORDON_PEAK_CELADON_INTELLIGENCE.md) |
 | Unverified research leads | [Untried vectors](UNTRIED_ATTACK_VECTORS.md) |

@@ -9,6 +9,10 @@
 
 ## Network Interfaces
 
+For the repeatable host-side configuration and acceptance checks, use the
+[bench hardware setup baseline](../hardware/bench_setup.md). It owns the bench
+VLAN/ADB setup; this document owns the radio's network architecture.
+
 | Interface | Purpose | Address |
 |-----------|---------|---------|
 | eth0 | Intel I210 physical (gPTP master, 1Gbps; "I211" was an unverified near-twin reading — see `hardware/teardown.md`) | 192.168.1.100/24 (Y181, same as vlan5); Y175 has no IPv4 on eth0 |
@@ -89,6 +93,97 @@ DNS, default-network validation, application HTTPS/Play Store access, and
 automatic time independently. Full telematics emulation is not yet shown to
 be necessary. Temporary host addressing and DHCP/capture processes were
 removed; USB ADB was verified with TCP ADB disabled after probing.
+
+## Native ELK RAM Linux T1 test — 2026-11-17
+
+The probe03 kernel enumerated PCI `8086:157c` without a driver. Its matching
+Intel 4.19 source identifies this as I210 flashless SerDes and includes the
+ID in the standard `igb` table. `CONFIG_IGB` was disabled in the probe image.
+A loadable `igb.ko` built against the running kernel output and symbol versions
+loaded without reboot and created `eth0`. The kernel reported unsigned-module
+taint; this was not a load rejection. No persistent radio storage was written.
+
+After raising `eth0`, carrier was present at 1000 Mb/s on the internal uplink.
+Creating `vlan5` (802.1Q ID 5) and assigning `<RADIO_T1_IP>/24` allowed ping to
+`<HOST_T1_IP>`: three replies, zero loss, 0.887–1.265 ms. These placeholders
+represent runtime-only addresses in the existing isolated bench subnet.
+The Mac already had VLAN 5 on its T1 adapter, so no host addressing change
+was required. Its physical adapter negotiated 100baseTX full-duplex.
+
+A separate public-key-only Dropbear listener bound to the T1 address accepted
+SSH. A 64 MiB raw eMMC read over this connection completed at 3.98 MiB/s
+including connection overhead. SHA256 was
+`d535d439f96a44419320f3dd85b185a3b386c69b29d46b662a4304ab510af578`,
+matching the earlier independently checked USB sample. This establishes T1
+readback functionality and sample integrity, not long-duration reliability.
+The measured path is slower than USB NCM (approximately 27–31 MiB/s); the
+internal gigabit carrier does not make the external 100 Mb/s path gigabit.
+The existing USB shell/SSH remained available. Driver, IP and listener setup
+are volatile and must be repeated or incorporated into a future RAM image.
+
+**Probe04 T1 SSH follow-up (2026-11-17):** loaded the already-packaged
+`igb.ko`, raised `eth0`, created VLAN 5, and assigned a volatile address on the
+existing Mac T1 subnet. Carrier was present. Two pings succeeded with zero loss
+and 0.905–1.214 ms latency. The Mac then authenticated with its existing SSH key
+to the RAM image's Dropbear listener; `id` confirmed uid/gid 0 and `uname -r`
+returned `4.19.283-elk-linux-probe+`. No image rebuild, reboot, or persistent
+radio-storage write was needed. This setup must be repeated after a RAM-image
+reboot. Runtime addresses are intentionally omitted.
+
+**Upstream Probe T1 SSH follow-up (2026-11-17):** kernel.org-based
+`4.19.283-upstream-probe01` booted on the physical radio with igb built in.
+Created VLAN 5 on `eth0`, assigned the volatile bench address, installed the
+Mac's public authentication key in RAM, generated a RAM-only Dropbear host key,
+and started a password-disabled listener bound to the T1 address. An SSH login
+bound to the Mac's T1 source address succeeded and returned UID 0 and the new
+kernel release. The SSH host key changes on a fresh RAM boot. No host network
+configuration or persistent radio storage was changed. Build provenance and
+image hashes are in [the boot analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
+
+**Linux 7.3.5 stable02 T1 follow-up (2026-11-17):** the rebuilt image booted
+physically; USB shell and T1 SSH both reported `7.3.5-probe-stable02`, with SSH
+UID 0. igb is built in. VLAN 5, an address on the existing T1 subnet, the public
+authentication key, generated Dropbear host key and password-disabled listener
+were configured in RAM. Bind the host SSH client to its T1 source address;
+the RAM-generated SSH host key changes across fresh boots. Runtime endpoints
+and keys are deliberately omitted here. The host configuration was unchanged.
+
+The upstream signed regulatory database is now embedded and also packaged in
+the initramfs, with signature enforcement retained. Missing/invalid regulatory
+database messages no longer occur. BCM4359 still completes firmware startup
+around 62.9 seconds and then exposes `wlan0`; that separate startup delay remains.
+No stable02 Wi-Fi association or throughput measurement is claimed. See the
+[stable02 build/boot record](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+
+## Native ELK RAM Linux Wi-Fi test — 2026-11-17
+
+PCI `14e4:43ef` is BCM4359. The probe kernel had no bound Wi-Fi driver.
+Matching `brcmutil` and PCIe/MSGBUF `brcmfmac` modules were built against the
+running kernel output and loaded without reboot. The stock Y175 Wi-Fi HAL
+explicitly selects `nvram_pcie_4359_cwm_76.cal`; its firmware and CLM blob,
+plus that board calibration, were staged in the RAM filesystem under the
+filenames requested by brcmfmac. The initial attempt without the NVRAM file
+reported `FW failed to initialize`; reloading with the matching file created
+`wlan0` and initialized the stock BCM4359 firmware.
+
+Alpine v3.22 x86_64 `iw` and `wpa_supplicant` with their runtime libraries
+provided scan and association control. The user-authorized home WLAN was
+visible at 5200 MHz with approximately -48 dBm RSSI; its 2.4 GHz signal was
+approximately -71 dBm. WPA2 association on 5200 MHz and DHCP succeeded.
+Credentials and endpoint addressing were used only in volatile runtime state
+and are intentionally omitted here. Public-key-only SSH over this interface
+reached the Mac on its wired LAN connection.
+
+A 64 MiB eMMC read transferred at 27.86 MiB/s including SSH setup, with SHA256
+`d535d439f96a44419320f3dd85b185a3b386c69b29d46b662a4304ab510af578`,
+matching the independently verified earlier sample. Post-transfer RSSI was
+-47 dBm and the station reported zero transmit failures. This is comparable
+to measured USB throughput and faster than the T1 sample; it does not yet
+prove full-image transfer reliability. A subsequent 512 MiB read sustained
+31.16 MiB/s and matched an independent source reread SHA256:
+`fe5a0b7347b8e5ac9634123e79dc9a3726a1be2633cbaa2e773b47f77be61ff2`.
+No direct peer-to-peer Wi-Fi link was
+needed or tested. The eMMC remained read-only and unmounted.
 
 ## Ethernet VLAN Detail
 
@@ -381,7 +476,7 @@ The VIP MCU communicates with the Intel SoC via a dedicated UART link using HDLC
 
 > `[C] live-Y175 2026-10-05: CONFIRMED with one label note [dev_listing.txt]. `ttyACM1` is indeed
 > `crw-rw-rw-` (world-writable), owner root — but its SELinux label is **`sxm_device`** (SiriusXM),
-> not a generic debug node; "MCP2200 debug" is the hardware identity, `sxm_device` is how policy
+> not a generic debug node; MCP2200 is the hardware identity (the old "debug" function label was incorrect), and `sxm_device` is how policy
 > labels it. `ttyS0` bluetooth (`bluetooth_serial_device`), `ttyS1` root (`ipc_serial_device` = VIP
 > IPC), `ttyS2` root (`serial_device`) all CONFIRMED. `ttyS3` is root `display_panel_device` live
 > (not blank). No `ttyACM0` present.*

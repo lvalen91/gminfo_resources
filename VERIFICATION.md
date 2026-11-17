@@ -6,6 +6,27 @@ packages** (partition manifests + decompiled ELK/GHS/VMM/VIP artifacts), the **E
 dumps**, the **DPS session logs**, the **SELinux policy CIL**, decompiled **GMSystemUI**, and
 the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y181 Jun-2026 live**).
 
+> **Current upstream Probe update, 2026-11-17:** Linux 7.3.5 stable02 passed
+> QEMU payload/console/shell/storage/SSH checks, then booted physically through
+> ELK RAM download. USB and T1 SSH identify `7.3.5-probe-stable02`. The packaged
+> panel helper starts automatically, holds reset high, returns serializer status
+> CD, and the owner confirmed visible output. Native eMMC sample hashes match
+> the backup. Regulatory-database signature enforcement remains enabled and
+> the prior missing/invalid-database messages are absent. Wi-Fi initialization
+> still takes about 63 seconds; touch binding and audio/camera remain incomplete.
+> No flash write was performed. Image hashes, source provenance, inherited
+> builder changes, runtime corrections and limits are in the
+> [stable02 record](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17). Older build-specific results below remain historical.
+
+> **Earlier native Probe/ELK update, 2026-11-17:** compact Probe08 booted on hardware;
+> native MEI/CSE selector-2 plus reset entered ELK, and ELK RAM-booted Probe.
+> VIP HDLC Tx/Rx and CAN power-state processing were separately exercised.
+> The large graphics-bundled image failed with `FAILFailed to stop transport`;
+> compact packaging resolved the observed boot failure. Cold-power CAN entry
+> succeeded only after stock software was already running. Independent
+> blank-eMMC emergency entry and a full restore remain unverified. See the
+> [owning technical record and current process state](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#cold-power-recovery-test-and-current-development-state--2026-11-17).
+
 > **Y181B recovery-export update, 2026-11-12:** both external ZIPs are identified
 > in [capture provenance and comparison](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12).
 > They establish an exercised encoded log-capture marker, missing homescreen
@@ -130,7 +151,16 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   same GPU/driver string as the Y181 capture (different build hash suffix, same version).
 > - **`video/display_subsystem.md` panel identity** — **RE-CONFIRMED on Y175**:
 >   `dumpsys display` reports `DD134IA-01B`, `manufacturerPnpId=CMN`, 2400×960, density 200 —
->   matches the corrected Chimei-Innolux finding live.
+>   matches the corrected Chimei-Innolux finding live. **Caveat added 2026-11-17:** Android's
+>   display identity is populated from EDID, and the stock kernel is booted with
+>   `drm.edid_firmware=HDMI-A-1:edid/harman0960p.bin` (a firmware-supplied EDID file, not a
+>   live DDC/I2C read of the panel — see `video/display_subsystem.md`'s "Video, resolution
+>   and early configuration" section). The kernel image also contains the literal string
+>   `DD134IA-01B` inside a compressed stream (not decompressed/confirmed as the EDID blob
+>   itself in this pass). So this "RE-CONFIRMED" result most likely reflects the firmware
+>   EDID file's contents, not an independent read of the physical panel's own EDID ROM.
+>   Treat the panel model/manufacturer as sourced from firmware, not from hardware, until a
+>   live DDC read against the actual panel is captured.
 > - **`runtime/memory_pressure.md` MemTotal** — re-confirmed unchanged: `/proc/meminfo` MemTotal =
 >   5,663,436 kB (5530 MiB), matching the existing RAM-gap entry above.
 > - **`runtime/known_issues.md` `ForegroundServiceStartNotAllowedException` boot race** — **NOT

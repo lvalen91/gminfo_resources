@@ -24,7 +24,7 @@
 | RAM | 8 GiB LPDDR4 physical (4× 2 GiB Micron MT53E512M32D2DS-053, teardown-verified); static GHS guest grant 7830 MiB (+34 MiB RO IPU window), ~362 MiB outside that grant; historical Android `MemTotal` near 5530 MiB (5.40 GiB / 5.80 GB). **Updated 2026-11-12:** Y181B recovery E820 usable **5743.55859375 MiB**; early Linux denominator 5877304K. Grant-to-visible cause and normal-AAOS map parity unresolved; [measured map](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory). Historical `SwapTotal=0`, `Committed_AS` ~76 GB virtual. |
 | Storage | 64GB Samsung KLMCG4JEUD eMMC |
 | SPI Flash | IS25LP016D SPI NOR, 16Mbit/2MB, SOIC8, Quad SPI 3.3V, week 43/2022. Purpose: **Ethernet-switch firmware (BCM89551 on the MY22/DV teardown unit; the live Y181 bench radio carries a Marvell 88Q5050 — whether its switch firmware sits in the same NOR is not established, 2026-11-12)** (corrected per `hardware/teardown.md`, confirmed via partial dump — NOT "logs/backup"). NOTE: a separate **8MB IS25WP064A** (BGA) is the Apollo Lake IFWI/TXE boot flash (Flash Descriptor, TXE 3.0, UEFI, Boot Guard v2) — see teardown. |
-| Display | Chimei Innolux DD134IA-01B, 2400x960 @ 60Hz, ~13.4" [C live: Y181 `dumpsys_display.txt:26,49-52`, CMN/41268, 60.001434 fps, single mode]. SoC-side output is **eDP** (`00:02.0` `card0-eDP-1` + `intel_backlight`, `vendor_sepolicy.cil:21-22`) [C live]; the panel link continues through the FPD-Link III serializer chain (`platform/vehicle_network.md:545`) |
+| Display | Chimei Innolux DD134IA-01B, 2400x960 @ 60Hz, ~13.4" [C live: Y181 `dumpsys_display.txt:26,49-52`, CMN/41268, 60.001434 fps, single mode]. The SELinux policy contains eDP/intel_backlight paths, but these are not active-connector proof. **Corrected 2026-11-17:** the DS90UB949 chain takes HDMI input; native Y175 probe04 uses forced HDMI-A-1. See [display ownership and initialization](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17). |
 | Display DPI | Physical: xDpi=192.911 yDpi=193.523; system lcd_density=200 (xhdpi) |
 | Touchscreen | Atmel maXTouch, I2C bus 7 @ 0x4B (PCI `00:17.3` i2c_designware.7, `7-004b`) [C live: `vendor_sepolicy.cil:23`; IRQ thread `[irq/145-atmel_m]` Y181 `raw/processes.txt:123`; `CONFIG_TOUCHSCREEN_ATMEL_MXT=m` `kernel_config.txt:2397`]; the **16-point** figure comes only from the Y177 snapshot `platform/gminfo3.7_tech_specs.md:115` [UNVERIFIED on Y181: full-project searched 2026-10-10; no `getevent -p`/ABS_MT_SLOT artifact in any capture] |
 | OpenGL ES | 3.2 (Mesa 21.1.5) |
@@ -40,6 +40,88 @@
 | EEPROM | ST M24C64, 8KB, I2C |
 
 ---
+
+## Native RAM Linux hardware coverage — 2026-11-17
+
+**Current build scope:** `7.3.5-probe-stable02` has since booted on the radio.
+Automatic 2400×960 panel output, USB ACM shell, igb/VLAN-5 root SSH, MEI presence,
+and native eMMC read access are verified. eMMC is on PCI `00:1c.0`; its name
+changed between `mmcblk2` and `mmcblk1` across the two 7.3.5 boots. Identify the
+physical device before using a block-device path. First-1-MiB hash matched the
+saved backup; no block filesystem was mounted or flash written.
+
+The current panel helper uses `/sys/bus/i2c/devices`, selects the physical
+controller, and retains a GPIO-v2 request for line 33 of the verified 78-line
+`INT3452:00` bank. Global GPIO467 is an older-kernel mapping, not a portable
+number. Wi-Fi firmware loads and `wlan0` appears around 62.9 seconds; the
+regulatory-database error is fixed with an upstream signed database. maXTouch
+responds to proper 16-bit-addressed reads, but has no input-device/IRQ binding.
+Audio/IPU/decoder integration remains incomplete, with no soundcards or video
+nodes on this build. The auxiliary MMC card-detect/initialization errors are
+separate from working eMMC. T1 counters were clean and sampled temperatures
+were about 30–31°C; these are bounded observations, not stress-test results.
+See [current evidence and limits](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+
+**Historical Probe05 inventory:** read-only inspection while probe06 was built,
+covered PCI/platform bindings, I2C clients, USB host/gadget devices, DRM, input,
+ALSA, block devices, UARTs, SPI, GPIO, thermal, RTC, network and kernel failures.
+Enumeration is distinguished from functional testing below. No blind I2C scan,
+GPIO toggle, device rebinding, storage write, or camera/audio stream was performed
+in this inventory pass. The running display and T1 shell were preserved.
+
+| Subsystem | Observed result | Limit / next requirement |
+|---|---|---|
+| CPU/RAM | Atom A3960, four cores; MemTotal 5,963,784 KiB, about 5,766,976 KiB available; no swap; intel_pstate performance, 800–2400 MHz limits | Frequency limits are driver-reported, not a sustained-load measurement |
+| GPU/display | i915 8086:5a84; CRTC50 → framebuffer106; HDMI-A-1/connector90, 2400×960@60, 153.98 MHz; physical console previously confirmed | Forced connector status alone is not detection evidence; serializer link and owner observation establish output |
+| Display link/touch | Serializer register5A = CD; maXTouch 16-bit-address reads begin `a4 3e 10 aa 21 40`; reset GPIO467 high | Only Power Button/event0 is registered as Linux input; maXTouch evdev/IRQ binding remains incomplete |
+| eMMC | 124,993,536 user sectors; 26 partitions; boot0/boot1 each65,280 sectors and read-only; no block-device mounts | First4096-byte read SHA256 matched the verified saved dump; not a second whole-device verification. RPMB was not retried |
+| T1 Ethernet | Intel I210 8086:157c bound to igb; eth0 and VLAN5 carrier up; root SSH working | End-to-end SSH verified; no new throughput/stress test |
+| Wi-Fi | BCM4359 14e4:43ef enumerated, currently unbound in this boot | Matching modules/firmware included; earlier probe03 transfer success is separate evidence |
+| USB | xHCI host, DWC3 ACM/NCM gadget; downstream MCP2200 04d8:00df with CDC-ACM and HID bindings, ttyACM0; gadget ttyGS0 available | USB root shell works; owner confirms no external USB peripherals, so the MCP2200 is internal to the radio assembly; historical AAOS mapping and SXM app usage associate that UART with SXM (see clarification below) |
+| Camera capture | Intel IPU4 8086:5a88 probe attempted; missing `ipu4_cpd_b0.bin`, fallback waited from0.266s to62.512s and failed with -110; no /dev/video* or /dev/media* | This is IPU firmware-loading failure, not proof of an absent camera. ACPI ADV7481A/B entries are unbound declarations, not proof those chips are physically populated |
+| Audio | HDA/SST-class 8086:5a98 enumerated without a bound PCI driver; ALSA reports no soundcards | Codec/DSP/board routing and matching driver/firmware remain unresolved; no audio output test |
+| I2C | Eight DesignWare adapters plus three i915 GMBUS adapters and I801 SMBus; active display controller is PCI00:17.3 / nativei2c-10 | Other physical slave population not determined by enumeration |
+| SPI/UART | Three SPI masters, no enumerated SPI slaves; four16550A UARTs, zero recorded TX/RX in this pass | No arbitrary port opened or transmitted to; VIP/other endpoint assignment not proven |
+| GPIO/PWM | Four INT3452 banks (43/47/77/78 lines), pwmchip0; GPIO467 requested/high | Controller availability does not establish every board signal's role |
+| Thermal/RTC | acpitz and coretemp, both33°C at sample; rtc_cmos present | Sensor values are one observation; no clock-setting or thermal stress |
+| Other PCI devices | AHCI 8086:5ae3, three 8086:5a9a/5a9c/5a9e communications functions, and8086:5aa2 unbound | Do not call every unbound device a fault: some need firmware, board services, or are unused on this variant |
+
+**Probe06 follow-up:** embedded stock IPU firmware removed the preceding
+firmware-request timeout. PID1 began at0.437303s and25 video nodes, nine V4L
+subdevices and one media device appeared. No camera stream was captured;
+subdevice warnings remain. This supersedes the probe05 missing-video-node
+observation, not the unverified camera wiring/capture status. The stock regulatory
+database was rejected by the kernel. See the [probe06 record](../video/display_subsystem.md#probe06-corrected-build-and-firmware-staging--2026-11-17).
+
+First4096-byte eMMC sample SHA256:
+`f9285861c75b06d2d3838ef0638f4ab90eb3e85cadec25c3f68e67e7aedfe0ac`.
+**USB topology clarification (owner-confirmed, 2026-11-17):** the only known
+externally connected radio USB port is wired to the host computer for ADB/USB
+shell access. No user-attached USB peripheral accounts for MCP2200 04d8:00df.
+Its xHCI-side CDC-ACM/HID enumeration is therefore an internal radio device;
+the DWC3 device/gadget connection to the host is a separate USB role/path.
+The historical device record maps MCP2200 VID1240/PID223 (04d8:00df)
+to AAOS ttyACM1; the mounted Y175 SXeDL APK explicitly contains `/dev/ttyACM1`,
+and live-AAOS evidence labels that node `sxm_device`. Together these associate
+the internal bridge with the SXM serial path, rather than a generic debug
+console. Native Linux enumerates it as ttyACM0. No SXM protocol traffic was
+sent or captured to validate operation in native Linux.
+
+Bluetooth, GNSS, AM/FM, SXM, external amplifiers, camera feeds and VIP-side
+peripherals were not established as operational by this native Linux pass.
+Their existence in the product does not imply a directly enumerated Linux device.
+
+The external camera deserializer documented on the teardown board is TI
+DS90UB954 (FPD-Link III → CSI-2), distinct from the SoC's Intel IPU4 capture
+engine. See [camera connector evidence](../hardware/connectors.md) and
+[TI documentation](https://www.ti.com/product/DS90UB954-Q1). Exact population
+and wiring on the running bench board remain separate from teardown evidence.
+
+MFi diagnostic access is statically traced to AAOS `/dev/i2c-2`, address0x10.
+The candidate native bus5 mapping did not acknowledge a targeted register
+selector. See the [MFi trace](../video/carplay_video_pipeline.md#mfi-authentication-i2c-path--2026-11-17).
+Native GPU shader rendering, Vulkan device initialization and VA-API profile
+availability are now separately verified in [hardware rendering](../video/hardware_rendering.md#native-linux-gpu-acceleration--verified-2026-11-17).
 
 ## CPU Details
 

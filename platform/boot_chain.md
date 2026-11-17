@@ -96,9 +96,41 @@ bare-metal environments. ELK's reciprocal lifecycle/OTA IPC and HECI request
 are now traced, as is lifecycle's ACPI driver binding: its callback disables
 interrupts, flushes caches, synchronizes four CPUs, writes the power-control
 port and halts. This is a platform power-state transition, not just a guest
-selection. ME/CSE acceptance, the next boot and GHS residency during actual
-ELK execution remain unproven.
+selection. Follow-up on2026-11-17 confirmed the next boot exposes Intel ELK:
+USB Fastboot returned kernelflinger-07.02-userdebug after the CAN F000/8180
+request. A subsequent native Probe06 test reproduced the stock HECI selector-2
+command through MEI, received CSE success `20870000`, and used Linux
+`reboot -f` to return directly to ELK without an AAOS boot. GHS residency
+during ELK execution remains unproven. ELK reports unlocked=yes across an AAOS round
+trip, while AAOS reports locked/green; this does not establish disabled normal
+GHS verification or a globally unlocked SoC. Upstream Kernelflinger's secure=no
+variable is fixed, not a hardware secure-boot measurement. See the owning ELK
+analysis for the live observations and source-qualified interpretation.
+Later on2026-11-17, custom Linux kernel/initramfs execution through ELK RAM
+download/boot was confirmed by its distinct USB identity, serial shell and
+NCM/SSH access. It exposes native HS400 eMMC as mmcblk1, with user/boot
+regions readable without mounting them. Subsequent panel initialization and explicit display-mode work enabled
+the native framebuffer and Linux console; see `video/display_subsystem.md`. These findings do not
+establish persistent flash-write permission or disable normal GHS AVB checks.
 [Instruction-level evidence and limits](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#233-recovery-execution-boundary-and-mode-selection-verified-2026-11-12).
+
+### Upstream Probe and automatic-selection evidence — 2026-11-17
+
+Both kernel.org-based 4.19.283 and Linux `7.3.5-probe-stable02` have executed
+through ELK RAM download/boot on this radio. Stable02's packaged helper initializes
+the panel automatically; owner-visible output, USB shell and T1 root SSH were
+verified. This does not prove arbitrary unsigned normal-storage boot or disabled
+hardware/IBB verification. The observed eMMC block number varies across boots.
+
+Static IBB/SMIP tracing identifies the ordinary candidate order as eMMC partition
+1 (`ghs_isys_a`), partition 2 (`ghs_isys_b`), SPI ELK, partition 5 at offset
+`0x7D0000`, then CLI. A returned load/authentication error permits the next
+candidate. This is evidence for an automatic SPI-ELK fallback, not a live test
+with erased/failed GHS partitions. ELK startup still has storage initialization
+dependencies and enters fastboot; autonomous storage boot of Probe and recovery
+from completely erased eMMC remain unverified. See the
+[selection trace](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#automatic-selection-and-elk-startup--2026-11-17)
+and [stable02 evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
 
 ## Boot Timing
 
@@ -343,6 +375,16 @@ is static A/B, no super").
 > radio a `super` partition with logical system/vendor/product is therefore in active use; "static A/B, no `super`, no
 > dm-linear" above holds at most for the emulator/reference-image path (it was inferred from the ACPI SSDT, which the
 > 2026-09-27 note below already says is unconfirmed as the real mechanism). The partition map's `super` row stands.
+
+> **Measured on Y175 hardware 2026-11-17 (read-only, Probe08 RAM boot, `dd` of GPT + first 128 KiB of `super`):**
+> the GPT has no `system_*`/`vendor_*`/`product_*` entries; `super` (p13, LBA 741376, 18000 MiB) carries valid LP
+> metadata v10.0 (geometry `gDla`, 3 slots, 64 KiB each) with groups `group_sys_a`/`group_sys_b` (8996 MiB each) and
+> read-only logical `system_X` 3,148,877,824 B, `vendor_X` 465,694,720 B, `product_X` 2,547,740,672 B per slot —
+> byte-identical to the Y175 package images. The stock boot cmdline carries no `androidboot.android_dt_dir`, and
+> kf4abl appends none, so `fs_mgr` never reads the SSDT fstab. **On Y175 hardware, dynamic partitions in `super` are
+> the effective mount path; the SSDT static-A/B reading is refuted, not merely unconfirmed.** The `8.6GB` super
+> size in the tables above is unverified; Y175 measures 18000 MiB. Evidence:
+> `/tmp/aaos_y175/evidence/{gpt_live.txt,super_lpdump.txt}` (no unique GUIDs or serials recorded).
 
 **[C] Corrected (2026-09-27) — the SSDT is NOT the fstab mechanism actually consumed at boot, and does NOT
 transfer to QEMU.** An earlier version of this note asserted the SSDT was "the AUTHORITATIVE first-stage

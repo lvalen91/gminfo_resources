@@ -8,6 +8,16 @@
 
 ---
 
+## Native Linux 7.3.5 timing scope — 2026-11-17
+
+Stable02 reaches USB shell and initializes the physical panel automatically;
+no end-to-end cold-power-to-visible timing was measured for this image. BCM4359
+firmware initialization occurs at about 62.9 seconds after kernel start, despite
+the regulatory database now loading without missing/invalid-database errors.
+Do not attribute that remaining Wi-Fi delay to the fixed regulatory-database
+issue, or mix it with historical Probe05 IPU timeout or AAOS startup timings.
+See [the stable02 evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+
 ## Y181B induced incomplete startup (2026-11-12)
 
 The [recovery-export experiment](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12)
@@ -324,6 +334,20 @@ extracted payload SHA-256
 The isolated RH850 little-endian image uses base `0x28000`; payload begins
 at file offset `0x586`, so runtime address = file offset + `0x27A7A`.
 These are static findings, with no live timer/input manipulation.
+
+**Live CAN validation, 2026-11-16:** the descriptor table is indexed by the
+Com signal ID, not by searching its typed-storage-index word. Signal C72 maps
+to CAN `526`, DLC 8, b5 bit 7. Holding that bit with approximately 100 ms
+repetition, other payload bits zero and original 145/529 active, produced
+`Mute buttons pressed` at VIP 89.527 s and `SWC Reset Button Press detected`
+at 99.525 s: **9.998 s**. The coordinated shutdown request followed immediately,
+with SoC shutdown completion at 100.385 s and a subsequent VIP counter reset,
+software-reset indication and new startup. The trial ceiling was 20 s; the
+input was released as soon as reset was detected. No extra guard-message
+mutation, calibration clear or diagnostic ECUReset was used. This supersedes
+the earlier static-only boundary for this specific input and current bench
+state; the configured initializer/tick derivation remains unrecovered.
+See the [CAN campaign](../platform/can_network.md#expanded-validation-campaign--2026-11-16).
 
 The exact GHS shutdown/restart boundary was not observed. Distinct VIP and
 SoC reset domains and `plmanager` coordination prevent assuming that every

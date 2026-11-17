@@ -827,7 +827,8 @@ confused with GHS continuing to execute.
 
 **Result:** Y175 VIP_APP has a compiled ELK branch for control selector
 **`0x8180`**. The contributor's GWM `FDF0` write and the candidate GM I/O-control
-request were rejected on the tested Android Ethernet route. No live ELK
+request were rejected on the tested Android Ethernet route. A later direct-CAN
+test also rejected both bounded control candidates (see below). No live ELK
 transition, bootloader unlock or CAN-side acceptance was demonstrated.
 
 External lead: [repository issue #1](https://github.com/lvalen91/gminfo_resources/issues/1)
@@ -866,8 +867,8 @@ address claims are not globally revalidated by this targeted correction.
 
 The descriptor at runtime `0x2E7C0` (file `0x6D46`) contains selector `8180`,
 a neighboring 16-bit value `3`, a word `1` and callback `0x7F642`.
-Those metadata values are recorded raw; their complete length/permission
-semantics have not been traced. The wrapper hardcodes `8180` and passes the
+The later F000 dispatcher trace below identifies `3` as the command-buffer
+length and `1` as the minimum application-security value. The wrapper hardcodes `8180` and passes the
 request buffer after its first two bytes to the pending-state adapter.
 The forwarding routine compares its 16-bit selector with `8180` using
 `xori 0x8180,...` (file `0x7582C`, runtime `0x9D2A6`), logs
@@ -881,6 +882,1350 @@ recognizes opcode `E8`, logs the following result byte and forwards values
 below `2` to the result updater. These are compiled request/response paths,
 not an observed live GHS/ABL transition or proof that an `E0` frame can be
 injected successfully from an unprivileged Android process.
+
+**Direct-CAN follow-up,2026-11-17:** With the restored stock LTZ calibration set
+and captured harness replay, extended session1003 and level1 SecurityAccess
+succeeded. `2F 81 80 03` returned `7F 2F 31`. A separate authenticated attempt
+using the legacy/native control-label candidate `AE 81 80 03` returned
+`7F AE 11`. The latter confirms that this tested CAN route did not support AE;
+the native AE/2F mapping is not proof of wire acceptance. No positive control
+response or ELK boot was established. ADB was unavailable before these tests,
+so it supplied no boot-identity comparison; no new UART observation was claimed.
+No direct IPC injection, RAM write, firmware patch, calibration write or wipe
+was performed in these ELK attempts. Default session was restored afterward.
+
+The supplied forwarding trace and fresh callback inspection corroborate
+57BC8→4E08A→5C0C0→757D4, with the selector8180 branch reaching75794 after
+logging. Offsets here remain signed-container file offsets. The trace supports
+an internal sender, not arbitrary execution of that function from CAN. The
+remaining gap is the externally reachable dispatch/permission path to that
+callback, and then proof that the receiver accepts E0 and boots ELK.
+
+**RAM-trigger feasibility trace,2026-11-17:** The owner authorized investigation
+of a VIP RAM-write route. Read-only CAN613/614 inspection found both availability
+bytes used by76272 for API12 (FEBD300C andFEBD3024) equal1. Transaction-state
+FEBD090C was0 (idle). Thus an unavailable-channel flag was not the observed
+blocker, and forcing either availability byte was not needed.
+
+7575C assembles an ELK **result** notification; it is not the E0 request sender.
+75794 creates E0 in a stack-local byte and calls570FE. That helper resolves its
+channel configuration through FEBD0CF0 and calls837FC. The inspected837FC path
+checks channel state and length, allocates a message buffer, enters a protected
+section, obtains a descriptor, copies payload, queues the descriptor, releases
+the protection and notifies the transport. No polled RAM boot-request flag was
+identified. FEBD090C–FEBD092A and FEBE1A30/34/36 are transaction/response
+bookkeeping, not demonstrated command mailboxes. They must not be presented as
+a proven ELK trigger merely because they are writable.
+
+No RAM write was performed in this feasibility test: there was no verified
+request field to set. Reproducing a transport enqueue would require establishing
+allocator ownership, descriptor/list consistency, synchronization and task
+notification; changing a state/result byte alone does not execute75794. These
+findings do not prove that every possible RAM-assisted invocation is impossible.
+ELK entry remains unverified, and the stock LTZ calibration was not changed.
+
+**CAN dispatcher trace resolved,2026-11-17:** Static analysis of the pinned
+VIP image locates the I/O-control parser at fileD1498 (runtimeF8F12). It reads
+the requested identifier, then calls fileCC95E with operation mask4. CC95E
+searches the count-prefixed identifier table at runtime44758 (file1CCDE),
+whose221 entries begin at4475A. **8180 is absent.** D1498 converts the failed
+lookup to NRC31 before parsing the requested control type or executing a callback.
+This explains the observed `2F818003 → 7F2F31` without invoking ELK or inferring
+a missing SecurityAccess grant. CC95E also contains operation/session filtering,
+but an absent identifier fails earlier; changing power/security state cannot add
+an identifier to this immutable table.
+
+Table reconstruction identifies39 entries with I/O-control operation bit4 in
+the10-byte metadata records (runtime4495C, flags at44964). Operation descriptors
+at45200 (six-byte stride) specify the control mask/action base. Action boundaries
+at458D4 resolve callbacks in the12-byte table at45C18. All39 permit the four
+standard control types (mask0F); none of their short-term-control callback entries
+points to ELK callback57BC8. The entries are41D8–41DB,41DE,41E2,41E7–41ED,
+42AD,43FC,440A–440C,4411–4416,4418,4424,4426,4428,447B,447D,447F,4481,
+4483,4487,4781,4785,4839,5812 and5814. These ranges describe only the listed
+members, not every intervening numeric identifier.
+
+A representative normal I/O callback6A2DC (41D8) uses4E1A8, which sets
+transaction kind5 and calls5C104. ELK callback57BC8 instead hardcodes internal
+selector8180, uses4E08A (transaction kind4), then5C0C0→757D4→75794. The
+application descriptor containing8180 at runtime2E7C0 is therefore not evidence
+of registration in the CAN DCM identifier table. The earlier wording that
+2F818003 was a verified entry point is withdrawn: it was a candidate, now
+explained as rejected at lookup. A native AE label is likewise not a supported
+CAN entry, as the live7FAE11 response already showed.
+
+This trace establishes why the tested CAN route cannot call the compiled ELK
+sender. It does not establish that every proprietary/internal entry point is
+unreachable. No new CAN request, RAM write or firmware patch was required for
+this dispatcher analysis. A RAM state/result change cannot create the missing
+flash-configured registration or substitute for controlled sender invocation.
+
+**F000 dispatch and RAM-assisted ELK request,2026-11-17:** The missing external
+route is routine control, not direct I/O control. The routine-ID table at
+runtime4451C includes F000 at index12. Its record at44614 selects action16,
+access record17 and StartRoutine. The action callback at4795C is7ED6A
+(file572F0), which calls file571E8. That dispatcher searches131 sixteen-byte
+command descriptors beginning at runtime2E700. Its8180 record requires a
+three-byte command buffer and application-security value at least1, then
+indirectly calls7F642 (file57BC8). The resulting candidate is
+`31 01 F0 00 81 80 03`.
+
+Access record17 at runtime44958 contains session mask0004 and security
+mask0050. Profile0D was observed immediately before the request to produce
+DCM session4 and security mask0040, satisfying that gate. The independent
+application-security word at FEBD0CF8 remained0; file5726A–57278 compares
+this word with the descriptor requirement and rejects insufficient values
+with NRC33. A successful SecurityAccess exchange does not establish that
+this second application gate has been updated.
+
+| Bounded test | Result |
+|---|---|
+| T1, extended/profile01, F000/8180 candidate | `7F3131` |
+| Direct CAN, extended, profiles01/09/0B/0D separately | `7F3133` |
+| Direct CAN/profile0D, FEBD0CF8 temporarily changed from0 to1 and read back | `7101F000818003` |
+| Restore the saved four-byte application-security word immediately afterward | Original zero value verified |
+
+The RAM-assisted request produced UART `Control Chan: Diag Elk Reboot Req`
+and `Elk Reboot Response 0`, followed by `Controlled reset`,
+`evResetRequestVIP` and a new VIP boot. The display turned off and ADB
+disconnected. Privileged T1 reconnect timed out. VIP remained accessible
+through CAN613/614; post-reset inspection again found application-security0,
+idle transaction state, API12 local availability0 and peer availability1.
+No calibration transfer or flash programming was used for this request.
+
+This establishes a working CAN invocation of the compiled ELK request and an
+accepted response followed by reset. **Final SoC ELK/Kernelflinger execution
+was subsequently confirmed:** after an initial enumeration delay, USB exposed
+`titan_gm_my22`, VID8087/PID09EF, and fastboot detected one device.
+Read-only `getvar version-bootloader` returned
+`kernelflinger-07.02-userdebug` successfully. Subsequent separate queries for
+`product`, `is-userspace` and `version` each exceeded a10-second timeout;
+they supplied no values. The positive bootloader identity establishes ELK,
+but reliable repeated command access and current flash/unlock permissions
+remain unverified. No flash, erase, unlock or storage-selection command was sent.
+Partition readback is also unverified. The existing ELK string inventory names
+partition-size/type variables and OEM get-hashes/get-provisioning-logs, but no
+fetch/upload/readback command was identified in that inventory. Strings alone
+do not establish command registration or absence of another read path. A live
+`getvar max-fetch-size` query exceeded an8-second timeout while one fastboot
+device remained enumerated; this is not an explicit unsupported-command reply.
+No partition contents were read or saved. The separate Android fastbootd fetch
+refusal documented above must not be applied to this ELK target.
+
+### Native Probe-to-VIP transport and ELK prerequisites — 2026-11-17
+
+Native Probe06 established bidirectional UART communication with VIP without
+running AAOS/GHS. This is separate from the Mac's receive-only VIP diagnostic
+UART observer. The handshake alone does not select ELK; the subsequent direct
+MEI selection and restart test below established a Probe-to-ELK transition.
+
+- The original GHS boot table binds `VipUART` to `SerialDev1` (record at
+  section offset `0x4180`; name pointer at `0x41A8`). Native `/dev/ttyS1`
+  maps to PCI `00:18.1`. A bounded live exchange confirmed this candidate:
+  a 1 Mbps HDLC U-reset received a CRC-valid U-ack, control byte `0x63`,
+  with negotiated sequence modulus 5.
+- Stock Y175 `IPCServer` SHA-256 is
+  `0bbadfcaa219f4f5516f61e8a45c4793671cdb8f92cce61f312e50d191f0e9ae`.
+  Its transport uses CRC-16 polynomial `0x1021`, initial `0xFFFF`,
+  big-endian FCS, `0x7E` delimiters and `0x7D` escaping (XOR `0x20`)
+  for `0x7E`, `0x7D`, `0x11`, `0x13`. `ipc4.cfg` specifies protocol
+  `0x10`, `/dev/ttyS1`, and 1,000,000 baud.
+- The native transport test sent channel-0 XON entries for channels 0–20.
+  VIP acknowledged that information frame, returned a protocol-`0x10`
+  flow-control message with 21 entries, and sent channel-3 messages.
+  Over the bounded run: 9 valid frames, 0 bad-CRC frames, 1 channel-0
+  information frame and 6 channel-3 information frames. Payload contents
+  were not retained. No application-level ELK success response was sent.
+- While that receiver was running, CAN `31 01 F0 00 81 80 03` reached
+  VIP's diagnostic ELK path, but ended with
+  `TimeoutError: CAN radio response timeout`. The temporary application
+  security word was restored and readback verified. No one-byte `E0`
+  application request was observed by this receiver. Physical HDLC
+  channel mapping and any preceding lifecycle handshake remain unresolved;
+  API selector 12 must not yet be equated with physical channel 12.
+- Native `mei`/`mei-me` modules, built for Probe06 on the native x86 build
+  machine, bound PCI `00:0F.0` (`8086:5A9A`) and exposed `/dev/mei0`.
+  Device state was `ENABLED`; the stock command client UUID
+  `8e6a6715-9abc-4043-88ef-9e39c6f63e0f` was enumerated. This establishes
+  transport availability, not acceptance of an ELK-selection command.
+
+Probe08 was built with built-in MEI/ME drivers and
+`/usr/sbin/vip-link` plus `/usr/sbin/vip-uart-probe`. `vip-link <seconds>`
+performs a bounded UART handshake, flow-control exchange and HDLC receive
+acknowledgments; it intentionally does not issue an ELK success response or
+reboot. It is an on-demand test tool, not a complete replacement for GHS
+lifecycle processing. Its CRC/reset-frame/corruption self-check passed on
+the native build machine and inside the packaged image under QEMU. QEMU also
+passed framebuffer/console, PTY, shell, read-only block fixture, USB NCM
+configuration and SSH-server checks. The final compact image includes `elk-select` and `elk-reboot`, is 26,750,976
+bytes, SHA-256 `773ae54ca352c7236ada4f543f475084b576053020c8128a185c48cd9898fc56`.
+It passed the QEMU checks and booted on the radio, reporting
+`4.19.283-elk-linux-probe-r08`, working USB shell/T1 SSH and enabled MEI.
+
+The earlier 98,949,120-byte image (SHA-256
+`454cdbfc0b93ce65ff1599b6d293997506fc5a534509516435d1636decef948f`)
+was accepted for RAM download but `boot` returned
+`FAILFailed to stop transport`. This occurred after both direct native
+MEI/reboot entry and stock/CAN ELK entry; retrying boot and resetting USB
+transport did not resolve it. The 25,653,248-byte Probe06 control image
+booted successfully from the same ELK state. Removing the large optional
+Mesa/Vulkan/VA userspace bundle from the Probe08 initramfs then allowed
+Probe08 to boot. The exact size/layout constraint is unresolved: the
+advertised 128 MiB download limit is not proof that every image below it
+can boot. Graphics kernel/panel support remains included; the optional
+userspace graphics runtime can be loaded into RAM separately.
+No direct eMMC block writes or erases were issued by these tools; the internal
+storage backend of the CSE boot-selection state is not established.
+
+**Direct native Linux → ELK entry verified, 2026-11-17:** The stock OTA
+activity handler at runtime `0x20193E` loads selector `2` before calling
+`0x20D04F`. Assembly establishes a zero-filled 133-byte HECI command with
+initial bytes `20 07 00 00 01 12 0E 08 00 D0 04 E1 02 00 00`.
+Offsets 15–18 contain little-endian `0x458DAE79`: reflected CRC32C over the
+10 bytes at offsets 5–14, polynomial `0x82F63B78`, initial `0xFFFFFFFF`,
+**no final complement**. Remaining bytes are zero. The CRC routines are
+`0x20C3BC`, `0x20C3E8`, `0x20C494`; `0x20CEA5` submits the frame and
+checks transport success, a four-byte reply and zero status. The UUID in
+OTA task data at runtime `0x60017C` matches the native MEI client above.
+These runtime addresses correspond to text-image offsets, not whole-package
+offsets; the extracted OTA text was disassembled at base `0x200000`.
+
+The native helper connected through `/dev/mei0` (client protocol 1, maximum
+message length 3072), sent the command once, and received **`20 87 00 00`**.
+Only after validating that exact reply, `sync; reboot -f` was issued from
+Probe06. USB `8087:09EF` appeared within the 25-second observation window;
+its fastboot interface answered `getvar:version-bootloader` with
+**`OKAYkernelflinger-07.02-userdebug`**. No AAOS boot or GHS-mediated CAN
+request was needed for this transition. This proves a working native Linux
+selection-and-restart route; it does not establish where every ELK boot
+component resides or whether ELK survives an erased eMMC.
+
+The packaged `elk-reboot` helper runs `elk-select --select`, then syncs and
+restarts only if selection succeeds. `elk-select --selftest` validates the
+CRC without accessing MEI. No automatic startup reboot is configured. The
+separate CAN→VIP→native application callback remains unfinished: this test
+uses a command invoked inside Probe, not a completed CAN-only trigger. The
+radio initially remained in ELK. A subsequent native selection/reboot followed
+by RAM download/boot of compact Probe08 succeeded, completing a native
+Probe → ELK → Probe round trip. No image was flashed or erased.
+
+### Cold-power recovery test and current development state — 2026-11-17
+
+**Recovery requirement:** enter ELK from cold power without relying on working
+GHS, AAOS or native Probe, including after loss of eMMC software. ELK can
+RAM-boot Probe, which exposes native eMMC block devices and a recovery shell.
+That recovery environment is demonstrated; an independent emergency-entry
+trigger and its complete storage dependencies are **not established**.
+Successful reads/dumps and a writable-capable Linux block interface do not
+constitute a verified full eMMC restore. No destructive restore test was run.
+
+**Cold-start test, no ELK target deliberately selected:** Probe08 was normally
+rebooted without `elk-select`, returning to the stock boot path. CAN replay
+was stopped; the tester reported zero transmitted data-frame echoes. The
+bench supply was turned off for more than 10.5 seconds. Radio CAN reception
+ceased and neither Probe nor ELK USB was present. After restoring supply
+with replay still disabled, VIP reported SoC power levels 3/4 and
+`evSoC_StartupComplete` at approximately 5.5 seconds. No ELK or Probe USB
+appeared in the initial 15-second observation. Thus this cold power-up
+started stock SoC software even without the captured vehicle-message replay.
+The CAN adapter could still acknowledge received frames; this was a
+zero-tester-data-frame condition, not an electrically disconnected bus.
+
+The first diagnostics-only ELK attempt failed with
+`TimeoutError: CAN radio response timeout`. Enabling replay also initially
+failed while adapter errors accumulated. After resetting the adapter and
+restoring the captured harness replay, diagnostic session/security access
+worked. CAN `31 01 F0 00 81 80 03` returned `71 01 F0 00 81 80 03`;
+the temporary application-security word was restored and verified. VIP
+reported HMI-ready at 21.006 seconds, the ELK request at 21.638 seconds,
+result 0 at 21.639 seconds, and controlled reset at 21.774 seconds of that
+VIP boot. USB then exposed `8087:09EF`, and fastboot returned
+`OKAYkernelflinger-07.02-userdebug`.
+
+**Interpretation:** cold power followed by CAN-mediated ELK entry works with
+the stock boot path available. It does not demonstrate entry before GHS/AAOS,
+and the initial timeout cannot be attributed solely to a missing radio
+prerequisite because adapter recovery changed the outcome. No eMMC erase or
+simulated boot corruption was used.
+
+**Remaining boot-recovery work:** locate ELK and its prerequisite firmware in
+the actual storage map; trace bootloader/CSE cold-entry conditions and VIP
+reset/boot-selection signals; establish a trigger independent of installed
+SoC software. Intel's upstream
+[`kf4abl.c`](https://github.com/projectceladon/hardware-intel-kernelflinger/blob/master/kf4abl.c)
+contains a `__FORCE_FASTBOOT` path described as SPI-resident RAM boot without
+using eMMC for the image. It also performs storage/slot initialization, so
+that comment alone does not establish blank-media independence. This is an
+upstream lead, not a verified GM cold-entry method. The stock SoC bootloader
+update blob contains a CPD partition named `OBBP` with an entry named `ELK`,
+plus `DNXP` and Kernelflinger markers. The adjacent names explain the string
+`OBBPELK`; they do not establish a literal boot-target identifier. At file
+`0x30101C`, the one-entry CPD directory specifies entry offset `0x40` and
+length `0x114104`, placing the ELK payload at `0x30105C`. This locates a
+packaged component, not by itself its executing storage copy or a usable DnX trigger.
+
+**Live readback update — 2026-11-17:** a read-only kernel module subsequently
+read the entire CPU firmware window `0xFF800000–0xFFFFFFFF`. The 8 MiB
+readback and an independent on-radio reread have matching SHA-256
+`9eaeaf92fa6e747d6887af0e4fc00d3faf5ab9e798d4801b2df8e0d7a8c12221`.
+The ELK container at file offset `0x501040` and embedded ELF at `0x50126C`
+match the staged package byte for byte; IBBL and IBB also match. This
+establishes a live mapped ELK copy, without reading it through eMMC. It does
+not establish a complete physical SPI backup or blank-eMMC boot behavior.
+See [the readback map](../hardware/teardown.md#live-firmware-window-readback--2026-11-17).
+The module was unloaded; no flash write or erase was performed.
+No hardware strap or blank-eMMC recovery path has been validated on this
+unit. Static tracing subsequently identified an automatic SPI-ELK fallback
+after the two GHS image candidates; see the automatic-selection trace below.
+That fallback has not been exercised with deliberately failed GHS images.
+
+**Equipment/process state at the earlier Probe08 verification:**
+The subsequent upstream-kernel Probe test below supersedes the running-image
+and SSH state in this historical snapshot.
+
+| Component | State |
+|---|---|
+| Radio SoC | Compact Probe08 running; USB root shell responsive; no AAOS/GHS userspace |
+| Bench supply | On |
+| CAN harness controller | Full replay stopped; original captured `0x529` only, every 320.270 ms, after confirmed ELK entry and Probe08 RAM boot |
+| VIP diagnostic UART observer | Running, receive-only; separate from the native SoC↔VIP bidirectional UART |
+| Native VIP link observer | Bounded test ended; not a continuously running service |
+| Build workstation | Native x86 Mac Pro remains the build machine; no active image build or QEMU test at verification |
+| Latest boot image | Compact Probe08, 26,750,976 bytes; hash and hardware verification above |
+| Source/build artifacts | Retained in `<BUILD_WORKSPACE>`: `display-init.c`, `display-panel.c`, `display-package.py`, `display-build-inside.sh`, `display-qemu-check.py`, `probe-tools/vip-link.c`, `probe-tools/vip-uart-probe.c`, `probe-tools/elk-select.c` |
+| Packaged commands | `vip-link`, `vip-uart-probe`, `elk-select`, `elk-reboot`; VIP observer is on-demand, not a full lifecycle daemon |
+| Graphics userspace | Kept outside compact image; available for loading after boot; i915/panel support remains included |
+| Independent Claude research | Ended without findings: `API Error: Opus 4.8's safeguards flagged this message.` No agent remains working on that task |
+
+`<BUILD_WORKSPACE>` denotes the existing native build directory, not a host
+address. This is a point-in-time technical status; verify live endpoints
+before issuing commands. No credentials, infrastructure addresses or client
+session identifiers are required in this record.
+
+### Cold-entry selector trace — 2026-11-17
+
+The known CAN routine is not a demonstrated hardware boot-select operation.
+At `0x75794`, VIP checks API channel 12 via `0x76272`, then submits one-byte
+`E0` through `0x570FE`. The availability check ANDs local and peer state arrays
+(`0xFEBD3000` and `0xFEBD3018`); for channel 12 these are `0xFEBD300C` and
+`0xFEBD3024`. The sender resolves a transport handle from the channel table.
+Thus making a diagnostic gate pass does not replace the missing SoC recipient
+or perform the CSE selector operation. This establishes the dependency of the
+known path, not the absence of every possible alternative CAN path.
+
+**Boot Reason Record correction:** `SoCReqType` at `0xFEBF0BC1` is not a
+verified cold-boot target latch. `0x5CEBA` derives the reset reason from reset
+flags and clears this byte. SoC shutdown-request handling around `0x74476`
+writes values 3/4/5 and the over-temperature branch writes 6; the accompanying
+strings identify shutdown, controlled reset and BOLO handling. `0x7363C`
+also records a request type for a special-use BOLO/reset request. `0x741A4`
+packages the record into the last-boot-reason IPC report. No traced consumer
+selects Intel ELK from this field. The old inference that nonzero values imply
+recovery/fastboot selection is withdrawn; a boot-selection consumer would need
+separate evidence before any RAM modification is useful for this objective.
+
+**Packaged ELK IOC-reset lead:** the extracted Y175 ELK ELF is 1,122,304
+bytes, SHA-256 `3acbf174207a2c621d24ba5a1278c3b214b11c88e580228599057b4ad3a8951c`,
+x86 32-bit little-endian, load/entry base `0x12800000`. Its `ioc_uart` driver
+record is at `0x1290F1CC`. Initializer `0x128D0F20` installs reset callback
+`0x128D1320`; the callback distinguishes `bootloader`/`fastboot`/`recovery`
+from ordinary resets and emits different SLCAN-formatted strings through UART,
+then chains the previous reset callback. Helper `0x128D1620` locates PCI
+`8086:5ABE` and programs the UART. Separately, `0x128D1210` emits the logged
+IOC-bootloader request before IOC firmware-transfer handling. These are
+SoC-originated IOC commands, not evidence of an external CAN listener that
+boots the SoC into ELK. The companion MCU's interpretation, applicability to
+this VIP, and any cold-power persistence/boot-select effect remain unverified.
+No experimental IOC reset/reflash message was transmitted. This is a specific
+lead for receiver-side tracing, not a validated recovery recipe.
+
+The remaining relevant question is an early firmware or physical boot-selection
+path reachable from VIP CAN before a SoC IPC service exists. Neither the BRR
+record nor the demonstrated IPC request answers that question. No cold-power
+CAN-only recovery path independent of installed SoC software is verified.
+
+### Native Probe without CAN replay — 2026-11-17
+
+Compact Probe08 remained USB-present for the first five minutes of passive
+observation after application CAN replay was disabled. A USB shell read showed
+monotonically advancing uptime; no native VIP lifecycle/HDLC helper was running,
+and native UART transmit/receive counters remained zero. The CAN controller's
+transmit-echo counter stayed unchanged while radio-originated reception continued.
+The adapter remained ACK-enabled: this tests no tester application replay, not
+an electrically absent CAN bus. The external diagnostic UART observer reported
+no new shutdown/power-mode events during that interval. No reset, diagnostic CAN
+request, or VIP IPC stimulus was introduced during the observation.
+
+This is a bounded observation in the state inherited from ELK entry. It does
+not establish indefinite operation or isolate AAOS as the cause of prior
+shutdowns. Historical Y175 startup logs report VIP power-mode-failure timeout
+60 s, local-infotainment timeouts 600 s, sleep-fault timeout 900 s and master
+Off-mode timeout 35 min; these are historical configuration evidence, not a
+fresh read of this boot's active calibration. Their activation conditions
+remain relevant; elapsed time alone does not prove each timer was armed.
+
+Stock-system tests already show VIP participating in shutdown policy: after
+replay stopped, PowerModeOff/LocalInfotainment occurred; a subsequent driver-door
+CAN event led to Requesting Shutdown, animation failsafe, Sleep, and finally
+SoC power level 0. See the [door/shutdown evidence](../platform/can_network.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
+Those observations do not assign every step solely to VIP or AAOS. Native Probe
+surviving without the stock lifecycle handshake suggests a different active
+policy/state after ELK entry; that mechanism is not yet traced.
+
+### VIP parameter/control scope — 2026-11-17
+
+Probe can transmit and receive binary VIP IPC. Verified outgoing operations
+are currently HDLC reset/acknowledgment and channel flow control. This does
+not grant a general parameter-write API, a VIP shell, or unrestricted CAN
+transmission. The stock protocol has lifecycle, vehicle-signal, diagnostics
+and calibration-related paths, but each message needs its own format,
+permissions, response and persistence analysis before implementation.
+
+Native Probe starts after VIP's earliest initialization. The external
+receive-only diagnostic UART can observe that early interval; a complete
+bidirectional wire capture from power-on would require an independent tap
+or a sufficiently early receiver. Probe can then observe/reproduce later
+startup negotiation and verified SoC replies. Changes must distinguish RAM
+state from persistent calibration/EEPROM effects. The repeated channel-3
+`E1` packets remain undecoded; no startup-policy or calibration setter was
+implemented in this pass. The direct ELK selector uses SoC MEI/CSE, not a
+VIP parameter write.
+
+**Owner-requested unlock attempt,2026-11-17:** With one fastboot device still
+enumerated, `getvar unlocked` and `flashing get_unlock_ability` each exceeded
+a10-second timeout. A subsequent host invocation of `fastboot flashing unlock`
+exceeded a20-second timeout without a protocol response. Delivery of the unlock
+command to its device-side handler, eligibility, resulting lock state and any
+data-erasure effect were not established. Do not classify this as either a
+successful unlock or an explicit bootloader refusal. This attempt supersedes
+the preceding no-unlock-command-sent checkpoint.
+
+**Intel host-tool comparison,2026-11-17:** Intel Platform Flash Tool Lite5.8.9.0
+for macOS was obtained from the official
+[Project Celadon tools repository](https://github.com/projectceladon/tools)
+and extracted without installation. Its x86_64 Fastboot reports
+`3db08f2c6889-android`. Its help includes custom USB VID selection (`-i`),
+`flashing get_unlock_bootloader_nonce`, `flashing unlock_bootloader <request>`,
+`flashing lock_bootloader` and `reboot emergency`, which are absent from the
+installed newer host binary's help. These establish host-interface differences,
+not support for those operations by this GM ELK build or Intel-exclusive origins
+for those commands.
+
+After confirming no other Fastboot process was running, the Intel binary with
+`-i 0x8087` enumerated one device. Separate read-only queries for
+`version-bootloader`, `unlocked`, `secure` and `flashing get_unlock_ability`
+each exceeded an8-second timeout. The alternate host binary therefore did not
+resolve the observed command-response problem or establish additional device
+capabilities. No erase, flash or unlock command was sent by the Intel binary.
+
+**Online source investigation,2026-11-17:** No exact published GM
+titan_gm_my22 failure match was established. These upstream findings are
+diagnostic leads, not a byte-match to the installed Harman firmware:
+
+- Intel's [Fastboot state machine](https://github.com/intel/kernelflinger/blob/master/libfastboot/fastboot.c)
+  schedules the next command read from the transmit-completion callback.
+  Unknown variables/commands and disallowed security states normally produce
+  explicit FAIL responses. A response-completion or receive-rearming fault is
+  therefore a candidate for the one-response-then-silence pattern, not a proven
+  explanation. The default Android command table restricts erase to UNLOCKED;
+  GM's compiled table still requires verification.
+- AOSP's [macOS USB implementation at4997e024e](https://android.googlesource.com/platform/system/core/+/4997e024e/fastboot/usb_osx.cpp)
+  clears both bulk endpoint stalls on opening, citing observed bad endpoint
+  state on Mac. That revision leaves USB reset unsupported because of device
+  ownership conflicts, and can use a blocking read when no timeout is set.
+  Installed binaries were not matched to this revision. Host reopening and
+  endpoint state are candidates requiring transport traces, not established causes.
+- Google's [Platform Tools release notes](https://developer.android.com/tools/releases/platform-tools)
+  document historical Mac Fastboot hang fixes and an increase to30-second
+  command timeouts. The bounded8–20-second host terminations used here cannot
+  prove that a slow erase or unlock failed. Identity reads timing out as well
+  suggest testing general transport health first.
+- Intel's [transport implementation](https://github.com/intel/kernelflinger/blob/master/libfastboot/fastboot_transport.c)
+  includes Fastboot TCP port5554 with FB01 handshake. This is an alternative
+  transport lead only; GM build enablement, address and reachability are unknown.
+
+Discriminating next tests: after a fresh ELK entry, repeat a read-only identity
+query on one retained USB connection, compare with separate process opens, and
+compare a different host USB stack. Trace whether the command write completes
+and whether any response bytes arrive. A physical USB reconnect may distinguish
+endpoint/reopen state from a hung device loop; it does not itself prove command
+support. Do not use another erase as a transport test. No new device command
+or reset was issued during this online investigation.
+
+**USB transport isolation and live state,2026-11-17:** A direct libusb client
+claimed interface0 (FF/42/03), using bulk OUT02 and IN81, packet size512,
+without setting configuration or clearing endpoint stalls. In the stalled
+state its25-byte version command write completed immediately, but the read
+returned `[Errno 60] Operation timed out` after5 seconds.
+
+A mute-hold restart eventually returned the normal CAN diagnostic path. An
+initial USB-reset attempt encountered no ELK device and stopped at its presence
+assertion before resetting anything. After repeating the verified CAN ELK entry
+(temporary application-security word restored), the waiting raw client obtained
+three version replies on one retained connection in7–8ms each. Two additional
+separate raw-client process opens also succeeded. A standard Mac Fastboot identity
+query then timed out after8 seconds; a subsequent raw read timed out as well.
+A libusb USB-device reset completed, after which three retained-connection
+queries again succeeded in about7ms each. No radio power cycle or flash operation
+was required for this recovery.
+
+This bounds the fault to behavior associated with the standard client's USB
+access in this test sequence, rather than an inherent one-command ELK limit or
+interface reopening alone. Endpoint-clear/data-toggle handling remains a
+hypothesis; no USB trace yet identifies the precise failing operation.
+
+The working raw client then returned these live values:
+
+| Read-only query | Result |
+|---|---|
+| unlocked | yes |
+| secure | no |
+| is-userspace | no |
+| product | titan_gm_my22 |
+| partition-type:userdata | ext4 |
+| partition-size:userdata | 0x00000009C1800000 |
+| flashing get_unlock_ability | INFO The device can be unlocked.; OKAY |
+
+Some replies contained NUL-terminated values followed by stale text from the
+prior response; interpret the value before the first NUL, not the full padded
+buffer. These observations establish ELK's current reported unlocked state,
+not its origin: no successful pre-attempt lock-state read exists, so the earlier
+timed-out unlock cannot be credited with changing it. Userdata erase completion,
+state persistence and effects on normal Android/GHS verified boot remain
+unverified. No erase, flash or unlock was sent in this transport-isolation test.
+
+### Early-firmware eMMC authentication gate — 2026-11-17
+
+Analysis of the complete 8 MiB mapped readback identified an authentication
+barrier **before ELK's downloaded-image policy**. This is not a certification
+that every byte or security-engine module has been reverse engineered.
+The live readback's IBB container is identical to its staged counterpart.
+Its first compressed stage starts at container offset `0xEC`: a four-byte
+output-size field (`0x1D440`), raw LZ4 data at `0xF0` through `0x15930`,
+and a four-byte trailer whose semantics remain unverified. Both a bounded
+LZ4 decoder and liblz4 produced 119,872 bytes, SHA-256
+`06e4c0a30bc8c4ccd838149360f816dd3b02490da6600f693bdb7df23ea93345`.
+Analysis at base `0xE0000` resolves absolute string pointers and code calls.
+Addresses below refer to that decoded stage, not dump offsets or VIP RAM.
+
+| Function | Observed behavior |
+|---|---|
+| `0xEBDEF` | `mmcbootX` path; retrieves an eMMC boot image, then calls `0xED792` |
+| `0xEBE6B` / `0xEBF22` | File/raw-offset image-loading paths, including `mmc`, then call `0xED792` |
+| `0xED792` | If policy byte `0xC0200` bit 0 is set, calls `0xF3F04(image, digest, 0x27)`; failure branches to `Error: authentication failed` |
+| `0xF3F04` | Requires image-header byte 5 bit 1 (mask `0x02`); absent flag returns false. Resolves a permitted key hash, compares a 32-byte key digest, and invokes a 256-byte-signature verifier |
+| `0xF3E06` | Selects a 32-byte key hash using a purpose bitmap and requested purpose (`0x27` for the image path) |
+| `0xF6D40` | Signature-verifier wrapper with 2,048-bit key-size and 32-byte digest parameters |
+| `0xEB30F` | IFWI-update path has version rollback rejection and policy-gated authentication with purpose `0x25`; this is separate from ordinary eMMC image boot |
+| `0xEF196` | Policy-gated PDR authentication with purpose `0x28`; failure reaches a halt path |
+
+The same policy bit is emitted as `ABL.secureboot` by `0xECC04`.
+It is **not** the ELK OEMLock-derived `getvar secure` predicate. A subsequent
+read-only check of the running Probe command line returned `ABL.status=0x9`
+and `ABL.secureboot=1`. The traced IBB code emits these from its policy word:
+bit 0 selects authentication; the low two bits are included in ABL.status.
+This supports enabled image authentication for the observed boot, but is
+inherited software reporting, not a direct fuse measurement. References in
+the decoded stage read the policy rather than directly initializing it.
+No runtime policy bytes or flash contents were modified.
+
+**ELK storage handoff resolved further:** `0xEC001` initializes SPI access,
+looks up the named component (default `ELK`, fallback `OBBX`), copies it with
+SPI reader `0xE53BB`, logs `copy %s from SPI`, and calls `0xED792`.
+This is actual SPI component-loading code, corroborating the mapped OBBP/ELK
+readback, rather than merely identifying an eMMC update-staging copy.
+
+**Consequence:** an unsigned eMMC image can be rejected before ELK, even while
+ELK reports `secure=no` and permits RAM-booted Probe. If policy bit 0 is clear,
+this particular authentication call is skipped; that alone does not remove
+image-format, boot-selection, later-stage, or hardware-rooted checks.
+The expanded audit below unpacks the CSE modules and all three IBB payloads.
+Complete CSE control-flow analysis, hardware fuses, and the ROM-side policy
+origin remain outside a completed end-to-end audit. Do not infer that
+arbitrary unsigned eMMC replacements will boot, and do not erase the original
+boot path based on ELK RAM-boot success.
+
+#### Automatic selection and ELK startup — 2026-11-17
+
+**Static finding:** the shipped SMIP configuration includes SPI ELK as an
+ordinary automatic boot candidate. ELK selection is therefore not exclusively
+an AAOS-requested action. This corrects the previous unresolved-selection
+assessment; it does not establish successful recovery after erasing eMMC.
+
+IBB main `0xE03E4` reaches the automatic selector `0xEC325`. Its ordinary
+configuration tag is `0x4B`; `0xEF2BE` walks matching records and invokes
+`0xEC0EA`. The configuration locator `0xEF255` follows the FIT SMIP entry and
+selects section type 2. In the extracted, authenticated SMIP component this
+section begins at `0x1AEA`, length `0x1374`. Its boot records have no condition
+words and contain the following order (offsets relative to that section):
+
+| Record offset | Source / partition | Image offset | Meaning against the saved GPT |
+|---|---|---|---|
+| `0x1C` | eMMC / 1 | `0` | `ghs_isys_a` |
+| `0x28` | eMMC / 2 | `0` | `ghs_isys_b` |
+| `0x34` | SPI / default component | `0` | `ELK`, with `OBBX` lookup fallback |
+| `0x40` | eMMC / 5 | `0x7D0000` | Offset within `bootloader_a` |
+| `0x4C` | CLI | — | Firmware command interface |
+
+The callback skips candidates preceding the requested boot index. When a
+loader returns, including a returned authentication error, the callback returns
+zero, allowing the walker to try the next candidate. A successful handoff need
+not return. The ordinary raw-image path still requires a valid IPK header/CRC
+and, with the observed authentication policy enabled, an authorized signature.
+A raw Android Probe `boot.img` is not a direct replacement for these candidates.
+SMIP tag `0x5A` has zero feature flags; do not substitute assumptions about the
+optional A/B-metadata selector for these explicit partition records.
+
+**ELK startup boundary:** the inspected ELK main path calls boot-device discovery
+`0x128AB2B0`, slot initialization `0x128B3970`, RPMB initialization, and misc/slot
+handling `0x128B4470`. Failed boot-device discovery returns an error before
+fastboot. The slot code checks for `boot` slots and can reinitialize corrupt A/B
+metadata; merely reaching ELK is not proof that an erased storage layout is
+safe. RPMB initialization failure is logged and the main path continues.
+
+After those steps, target 4 enters crash-mode ADB. The other traced targets
+enter fastboot at `0x12801400`. The downloaded-image branch checks the unlocked
+predicate before calling the Android/bzImage loader `0x1289FB70`. No automatic
+storage-kernel load was found in this startup path. Thus automatic entry into
+SPI ELK and autonomous boot of a custom kernel from eMMC are separate outcomes:
+the former has static code/configuration evidence; the latter remains unproven.
+Neither failed-GHS cold boot nor blank-GPT operation was tested, and no flash
+contents were changed for this trace.
+
+**Root filesystem boundary:** a trusted bootloader may permit a custom kernel,
+or a trusted kernel may permit a modified root filesystem, depending on later
+verification. This radio's observed ELK RAM-boot behavior establishes neither
+permission for unsigned normal GHS images nor acceptance of a modified stock
+AAOS root filesystem. GHS guest-image checks, AVB/dm-verity enforcement, and
+mount policy must be assessed separately before claiming that route works.
+
+#### Expanded readback audit and coverage — 2026-11-17
+
+**Coverage:** a bounds-checked traversal of both BPDT roots and their secondary
+headers accounts for every non-`FF` byte in the 8 MiB file. There are no
+unclassified non-`FF` bytes outside declared regions or BPDT headers. This is
+file-layout coverage, not proof of complete physical SPI coverage or complete
+semantic analysis. The 8 KiB DEBUG_TOKENS allocation is all zero; IFP_OVERRIDE
+(16 bytes) and UEP (264 bytes) contain data whose full policy semantics have
+not been assigned.
+
+[ME Analyzer](https://github.com/platomav/MEAnalyzer), commit
+`d27ccdba0aadbad490f47b5b631c369b682a7ef5`, successfully unpacked the CSE
+material. Its checks reported eight valid RSA partition signatures (SMIP,
+RBEP, PMCP, FTPR, IBBP, ISHC, NFTP, IUNP), two valid RSA key-manifest
+signatures (`rot.key`, `oem.key`), and 90 valid module/metadata hashes; none of
+these checks reported INVALID. No firmware was uploaded to that project.
+The original invocation failed with
+`AttributeError: 'NoneType' object has no attribute 'set_title'`; rerunning
+with terminal-color initialization disabled completed the analysis.
+
+**Boot-policy binding:** IBBP's authenticated `BPM.met` (extension `0x13`)
+contains SHA-256 digests matching the complete extracted IBBL, IBB and ELK
+containers. The OBB digest is
+`ed6b88e24606a4c75151c4c6f72482b113f43f3356be4bd45f17a026b58f9b9a`,
+which matches ELK. This is evidence binding ELK into the signed boot policy,
+not merely the existence of an unrelated signature. `IBB Flags=0` must not
+be interpreted as authentication disabled without tracing that field's consumer.
+
+**eMMC signature cross-check:** both saved `ghs_isys_a` and `ghs_isys_b`
+containers have signed-image flag `0x02` set (header byte 5 is `0x03`). An
+independent integer-RSA verification checked the entire PKCS#1 v1.5 encoded
+block, SHA-256 DigestInfo and image digest; both pass RSA-2048/SHA-256.
+The signature starts at partition-file offset `0xE3CC00`. The key hash
+(SHA-256 of reversed stored modulus followed by stored little-endian exponent)
+is `e99d2f484fd63e6846e1d2a8a624d1685d4c7fc8453e2851d8c36658579beab7`,
+matching the OEM key-manifest **OS Kernel** usage. That usage is decimal 39
+(`0x27`), the exact purpose supplied by the IBB loader to the key selector.
+This connects the eMMC image, permitted signing key, verifier and policy gate.
+Signature validity does not by itself prove enforcement; the separate live
+`ABL.secureboot=1` observation supports that part of the chain.
+
+**Remaining IBB payloads:** four-byte alignment between compressed blocks
+resolves the previously unparsed payloads. Their block starts are `0x15938`
+and `0x19EB0` within IBB, with compressed allocations `0x4576` and `0x1C191`.
+Their decompressed lengths exactly match their declared sizes:
+
+| Payload | Decoded bytes | SHA-256 | Inspection |
+|---|---:|---|---|
+| 1 | 119,872 | `06e4c0a30bc8c4ccd838149360f816dd3b02490da6600f693bdb7df23ea93345` | IBB image-loading/authentication code |
+| 2 | 37,312 | `2d525aaa4f8f46516eaf13bdb62ccba20fdf0bc563eb89e4cdc2db31dc9419ea` | Data including ACPI material; not exhaustively interpreted |
+| 3 | 197,440 | `c7a6dbb46bbbe06401aaa90a1e0347f242abfb3cda64960a3a08e8e5ca6d8aa0` | DRAM initialization/training code; no claim of exhaustive control-flow analysis |
+
+**IBBL handoff:** analysis of IBBL at SRAM base `0xFEFFC000` resolves its
+absolute references. At `0xFEFFD283` it selects a copy descriptor containing
+destination `0xC0000`, count `0x430` dwords, source `0xFEFFD500`; helper
+`0xFEFFD1ED` performs `REP MOVSD`. Consequently policy location `0xC0200`
+comes from SRAM `0xFEFFD700`. Startup then jumps to `0xE0080`.
+The initialization path includes calls outside the extracted IBBL range
+(`0xFEF829EA`, `0xFEF84640`); their implementations and the policy source
+cannot be recovered merely by treating this 8 MiB dump as flat executable
+memory. The software-visible policy is established above; its hardware-rooted
+provenance remains unresolved.
+
+**CSE bring-up:** metadata supplies x86 code base `0x26000` for `bup`,
+`policy` and `fpf`. These are separate modules/address spaces, not one image
+loaded at the same address. BUP's `0x52E4B` reports a secure-boot bad-image-path
+error; callers include `0x2C74F` and `0x3323C`. The latter inspects platform
+register-helper results and an FTPR manifest extension before invoking its
+next stage. The register-helper meanings and ROM dependencies are not yet
+fully resolved. The configuration record `/home/policy/IBB_sig` is empty in
+the extracted Intel defaults; code at `0x37432` acts only on nonempty reads.
+That empty default is not evidence that image authentication is disabled.
+
+**Audit conclusion:** the evidence supports authenticated stock eMMC boot
+and a distinct unlocked ELK RAM-boot path. It does not support a blanket
+"secure=no platform" interpretation or assurance that an arbitrary unsigned
+eMMC replacement will boot. The static inventory/integrity audit covers the
+whole saved window; a complete ROM/fuse/CSE enforcement audit remains open.
+
+#### Live Apollo Lake fuse/status check — 2026-11-17
+
+Read-only measurements from the running Probe provide hardware-status evidence
+beyond the static image and inherited kernel command line:
+
+| Register/query | Raw result | Interpretation using Apollo Lake definitions |
+|---|---|---|
+| HECI PCI FWSTS1, offset `0x40` | `0x80000245` | Manufacturing-mode bit 4 clear; firmware-init-complete bit 9 set |
+| FWSTS2, `0x48` | `0x80100000` | Raw retained; not decoded as a desktop ME register |
+| FWSTS3, `0x60` | `0x30370608` | IBB verification result bit 9 = 1; verification done bit 10 = 1 |
+| FWSTS4, `0x64` | `0x00080000` | Coreboot's TXE verified-boot-valid/test bits 14/15 both clear; do not substitute this for an established rejection profile |
+| FWSTS5, `0x68` | `0x00000000` | Reported error-status field zero |
+| FWSTS6, `0x6C` | `0x40000000` | FPF committed bit 30 = 1 |
+| MCA READ_FILE, hardware `/fpf/intel/SocCfgLock` | `0A 82 00 00 01 00 00 00 01` | Successful one-byte hardware-fuse result **1**; independently confirms committed/locked SoC fuse configuration |
+| MSR `0x13A` | `pread MSR 0x13A: Input/output error` | No usable MSR value; neither zero nor a disabled profile |
+
+Sources: coreboot's [Apollo Lake CSE implementation](https://github.com/coreboot/coreboot/blob/main/src/soc/intel/apollolake/cse.c),
+[platform register fields](https://github.com/coreboot/coreboot/blob/main/src/soc/intel/apollolake/include/soc/cse.h),
+and [common register offsets](https://github.com/coreboot/coreboot/blob/main/src/soc/intel/common/block/include/intelblocks/cse.h).
+The fuse query used MKHI group `0x0A`, command `0x02`, offset 0, size 1,
+flags `0x08` (hardware source), through the existing MKHI MEI client. It did
+not invoke any fuse-programming, flash, boot-selection or reset operation.
+
+The standard `msr.c` from the exact 4.19.283 Probe08 tree built as `msr.ko`
+with the matching Android clang r416183b1 toolchain and existing module-symbol
+versions; it loaded without disabling `CONFIG_MODVERSIONS`. A static reader
+opened `/dev/cpu/0/msr` read-only and used an eight-byte `pread` at `0x13A`.
+The first reader build failed with
+`cc1: fatal error: /work/msr-audit/read-msr.c: Permission denied` because the
+container invocation omitted the established label setting; rebuilding with
+the existing `--security-opt label=disable` setup succeeded.
+
+**What is now definitive:** platform fuse configuration is committed/locked,
+and TXE reports IBB verification completed successfully. **What is not:** the
+complete contents of individual security fuses, an exact desktop-style Boot
+Guard profile number, or a negative boot test of a modified IFWI. Committed
+fuses are not themselves proof that SPI writes are blocked. Authentication
+of modified contents and permission to program the chip are distinct controls.
+The earlier suggestion that MSR `0x13A` alone would unambiguously settle this
+Apollo Lake/TXE platform, or that a SPI dump contains the physical FPF fuses,
+is withdrawn.
+
+**eMMC staging placement verified from the backup GPT:** partition 1
+`ghs_isys_a` starts at `0x00100000` (64 MiB); partition 2 `ghs_isys_b` at
+`0x04100000` (64 MiB); partition 3 `ghs_storage` at `0x08100000` (16 MiB);
+partition 4 `ghs_abl_update` at `0x09100000` (8 MiB). IBBL/IBB/ELK copies in
+partition 4 are update-staging components, not separate GPT entries or
+pre-partition boot blocks. The observed early loader copies ELK from SPI.
+
+The earlier Probe08 used `CONFIG_MODVERSIONS=y`, `CONFIG_MODULE_SIG=y`, and
+`CONFIG_MODULE_SIG_FORCE` disabled; its working MSR module demonstrated that
+matching modules can be added without relaxing version checks. Subsequent
+upstream Probe builds, including the current 7.3.5 stable02, actually use
+`CONFIG_MODVERSIONS=n` and `CONFIG_MODULE_SIG=n`. This is a build-time choice,
+not a runtime toggle or change to IFWI authentication. Do not reuse old kernel
+modules merely because symbol-version checking is disabled.
+
+For the standard SACM layout, measured/verified boot are bits 5/6 of MSR
+`0x13A`, not bits 2/3 (TPM type occupies bits 2:1; bit 3 is TPM success).
+[Coreboot's decoder](https://github.com/coreboot/coreboot/blob/main/src/security/intel/cbnt/logging.c)
+provides that layout. It does not produce a usable value for this radio's failed
+MSR read or establish applicability of a desktop profile decoder to Apollo Lake.
+
+### Meaning of ELK secure=no — mapped-firmware trace, 2026-11-17
+
+The mapped firmware's ELK ELF matches the staged ELF byte for byte (SHA-256
+`3acbf174207a2c621d24ba5a1278c3b214b11c88e580228599057b4ad3a8951c`).
+The following addresses are x86 ELF virtual addresses, not VIP offsets.
+
+- `0x12805B90` publishes `secure` using predicate `0x128A79F0` and
+  `unlocked` using `0x128A79C0`.
+- Both predicates call device-state getter `0x128A7550`: `secure` is true
+  for state **0**, and `unlocked` is true for state **1**. Consequently these
+  responses describe ELK lock state, not a direct measurement of Intel ROM,
+  TXE authentication, fuses, or early-firmware signature enforcement.
+- The getter caches its result at `0x12902A44`, reads through `0x128B5900`,
+  and contains an `OEMLock` failure message with a locked fallback. A separate
+  missing-value path can select state 1 after additional predicates; its full
+  provisioning semantics have not been established. Do not claim the previous
+  timed-out unlock command caused the observed state.
+- The fastboot command record at `0x12902030` points to downloaded-image boot
+  handler `0x128044C0`. That handler copies the download into a buffer and
+  schedules boot. In main `0x12800690`, the returned image proceeds to loader
+  `0x1289FB70` only when `0x128A79C0` reports unlocked. This path also calls
+  EFI CalculateCrc32; CRC32 is not cryptographic signature authentication.
+  The loader checks Android image format and prepares execution; its complete
+  transitive call graph has not yet been audited for every security check.
+- Separate function `0x128B4E20` writes a `SecureBoot` firmware variable from
+  parsed ABL boot arguments. This is distinct from the lock-state predicate
+  behind fastboot `secure`.
+
+The live dump contains `$MN2` manifest headers at `0x28C070` (IBBP),
+`0x220130` (FTPR), and `0x30B688` (NFTP), plus `BPM.met` in IBBP. These
+establish authentication-related structures, **not** whether this unit's
+ROM/CSE enforcement policy requires them. Probe's demonstrated RAM boot and
+ELK's unlocked predicate support permissive downloaded-image execution; they
+do not establish permissive replacement of IBBL, IBB, TXE, or ELK itself.
+No flash changes, lock changes, or corrupted-firmware boot tests were used.
+
+Automated triage reported `error:decompress` for a putative LZ4 region and
+extracted zero files there. Its zero security findings therefore are not
+negative evidence; the conclusions above use the manually validated ELF and
+CPD/manifest offsets instead.
+
+**ELK → AAOS → ELK round trip,2026-11-17:** Raw USB `reboot` returned OKAY.
+UART recorded renewed boot-reason/calibration exchanges and evHMIReady; the
+owner observed the AAOS home screen. CAN F181 retained the expected software
+identification and F0F1/F0F2 both returned0000. After manually toggling USB
+debugging, ADB reconnected with a new Android boot identity; the radio clock was
+resynchronized from the Mac before interpreting boot state.
+
+| AAOS property/setting after ELK reboot | Value |
+|---|---|
+| sys.boot_completed | 1 |
+| ro.boot.verifiedbootstate | green |
+| ro.boot.flash.locked | 1 |
+| ro.boot.vbmeta.device_state | locked |
+| sys.oem_unlock_allowed | 0 |
+| ro.boot.slot_suffix | _a |
+| ro.crypto.state | encrypted |
+| device_provisioned / current-user user_setup_complete | 1 / 1 |
+
+The same CAN F000/8180 entry then returned7101F000818003, with UART ELK
+response0 and controlled reset. The temporary application-security word was
+again restored and verified. Three raw USB version queries succeeded in about7ms;
+subsequent reads again reported unlocked=yes, secure=no, is-userspace=no and
+positive unlock eligibility. Thus ELK's reported state survives this AAOS round
+trip, while normal AAOS reports locked/green. A cold-power-cycle persistence
+test and attribution of that state to any prior unlock attempt remain open.
+
+The owner's earlier silent userdata-erase command remains unverified: there
+is no captured erase completion, no pre/post data-content comparison, and the
+home screen plus provisioned/setup-complete flags do not establish a wipe.
+No additional erase or unlock was issued during the round trip. Final mode was
+ELK with working raw USB access and CAN harness/UART observation active.
+
+USB detection caveat: a VID/PID-only watcher initially failed to claim interface0
+with `[Errno 13] Access denied (insufficient permissions)` before ELK transition.
+Requiring interface class/subclass/protocol FF/42/03 before claiming resolved
+that test's detection issue. Product ID alone must not be used as mode proof.
+
+**Security-state interpretation,2026-11-17:** ELK's unlocked=yes and normal
+AAOS's locked/green properties are observations of different boot paths, not
+proof of one global SoC unlock state. Android receives verified-boot state from
+its loader through command-line/bootconfig inputs; the normal GHS guest-launch
+analysis includes AVB verification and construction of those inputs. The later
+custom RAM boot also received `androidboot.verifiedbootstate=green`; therefore
+that command-line string alone does not establish authentication of a downloaded
+RAM image. This does not demonstrate that normal GHS verification is disabled.
+Upstream [Kernelflinger fastboot_init](https://github.com/intel/kernelflinger/blob/master/libfastboot/fastboot.c)
+publishes secure=no as a fixed string, so that variable must not be treated as
+an Intel hardware-fuse or platform secure-boot measurement. This source behavior
+still requires matching to the GM binary before attributing its exact origin.
+The later probe02/probe03 tests below confirmed custom Linux execution through
+ELK's boot/download path. The complete platform verification boundary and GHS
+residency during ELK itself remain unproven. is-userspace=no distinguishes
+ELK from Android fastbootd; it does not prove absence of a hypervisor.
+
+**Custom RAM-boot probe,2026-11-17:** Built an unsigned Android boot image
+from the mounted Y175 stock kernel and second-stage payload, replacing only
+ramdisk prop.default and system/etc/init/hw/init.rc. The probe init configuration
+has only ueventd/adbd services, no vendor imports, no recovery updater and no
+block-device mount actions. Its marker is ELK_RAM_PROBE_01 (USB product and
+sys.elk_ram_probe), with temporary debug properties and permissive SELinux
+command-line requests confined to the downloaded image. Whether the stock
+user-build binaries honor those requests is not established.
+
+The stock module85759602 has boot-header version2 and dtb_size0. The probe
+preserved that x86/ACPI layout, using a locally adjusted AOSP builder that allows
+the stock zero-DTB case. Output size39100416, SHA256
+`7ee5e8b18b16f9fd9e367abb535381d6c38174a77ab268058f1b44ae8b300fa7`.
+The repacked433-entry CPIO changed only the two named entries.
+
+Live raw USB returned unlocked=yes and max-download-size0x08000000.
+`download:0254a000` returned `DATA0254A000`. The host initially rejected the
+uppercase hexadecimal spelling before sending image bytes; numeric comparison
+was corrected and the already-accepted transfer was completed without another
+download header. All39100416 bytes transferred in approximately1.2 seconds,
+followed by OKAY. The subsequent `boot` command also returned OKAY.
+
+ELK USB then disappeared. During a90-second observation window, no probe USB
+identity or ADB device appeared; the display remained black and VIP UART supplied
+no custom-kernel execution evidence. CAN traffic continued. This proves RAM
+download and boot-command acceptance, **not successful unsigned code execution,
+hypervisor absence or disabled platform verification**. A loader rejection after
+acknowledgment, image incompatibility, or a running but unobservable kernel are
+not distinguished. In particular, the stock kernel may depend on its normal
+GHS-provided boot environment. No flash, erase or partition-selection command
+was issued. A mute-hold restart was requested after the observation window.
+UART recorded Shutdown Timeout before the eventual new boot, HMIReady and
+SystemState Run. The owner observed the AAOS home screen; CAN F181 matched
+the expected software identification and F0F1/F0F2 were0000. Stock AAOS recovery
+is therefore confirmed; that first probe's execution remains unverified.
+The CAN harness and receive-only UART observer remained active, apart from
+short controller replacement gaps before the accepted test. Earlier statements
+that no RAM write was performed describe the preceding feasibility tests only.
+
+**Direct-Linux compatibility inventory, 2026-11-17:** Live Y175 ADB reported
+Linux 4.19.283 on x86_64. The graphics device exposed to Android is PCI
+8086:5a84, bound to i915. HDMI-A-1 is connected at 2400x960; fb0 is
+inteldrmfb with 32-bit pixels and a 9600-byte stride. The DWC3 device
+controller is at PCI 00:15.1, with xHCI at 00:15.0 and an Intel USB-role
+switch. These are guest-visible observations, not proof of the physical
+device ownership or state available after an ELK handoff.
+
+The running configuration enables ACPI, i915, USB configfs/ACM and Intel
+USB-role switching, but DWC3/xHCI are modules and framebuffer console is
+disabled. It also enables GHS paravirtual support. Firmware recovery init
+explicitly loads `ti949_serdes.ko` and starts `recovery_panel`; the latter
+references I2C bus 7. GHS independently has a DisplayI2C task. Thus an
+active Android framebuffer does not establish that a generic Linux kernel
+can initialize the serializer and panel without prior vendor setup.
+
+The stock bzImage reports xloadflags 0x3 and handover_offset 0. Those fields
+do **not** by themselves explain the failed observation: the inspected
+[Apollo Kernelflinger source](https://github.com/projectceladon/kernelflinger/blob/celadon/s/mr0/apollo/libkernelflinger/android.c)
+exits boot services and jumps to the protected-mode kernel entry. That
+source path is a reference and still requires matching to the GM binary.
+After stock recovery, ADB reported boot_completed=1 and its clock matched
+the host. Retained kernel evidence was unavailable: `/sys/fs/pstore`
+returned `Permission denied`, and `/proc/last_kmsg` did not exist.
+
+A second, RAM-only Linux probe was built with built-in ACPI, i915,
+framebuffer console, Intel I2C/pin control, DWC3/xHCI and USB ACM. Its
+minimal static PID1 paints color bars and configures a USB serial gadget;
+it has no storage mounts or updater. The source is an existing Intel-derived
+4.19.283 tree with prior emulator patches, not an exact GM kernel source
+release. The emulator-only GM_SIGNATURE stub was disabled. Source HEAD:
+`0649a57484345a97884f010e93a159f4c1a1aec0` (local Intel-derived history).
+The kernel has EFI/mixed-mode support, xloadflags 0xf, and no GHS-specific
+driver configuration. The native workstation build encountered removed
+OpenSSL ENGINE symbols; the established builder completed the kernel.
+
+QEMU TCG reached the static PID1 and a 1024x768, 32-bit framebuffer. A
+captured image contained red, green and blue sample pixels (255,0,0),
+(0,255,0), (0,0,255). USB ACM configfs setup also completed. KVM on the
+test workstation exited before kernel output with both the probe and an
+older control kernel; that host-specific result was not treated as a
+radio/kernel compatibility verdict. QEMU exposed no physical DWC3 device.
+
+Final probe02 artifacts:
+
+| Artifact | Bytes | SHA256 |
+|---|---:|---|
+| bzImage | 12477248 | `d63314a50da64d60335d0b4e32a5360c624c686da3aaef8c9487f5178d9a3212` |
+| initramfs.cpio.gz | 386942 | `a1fb4477a85c39bcc38f20b41113e3a0034b76a6baf7ec484dacdf58b89a6875` |
+| Android-format RAM boot image | 12875776 | `d6c78cded24f150f8a92bf05dccff5b2ce91fd0bb2a5cd282172e18f767c16b6` |
+
+**Live unsigned Linux execution confirmed, 2026-11-17:** The established
+CAN ELK route returned 7101F000818003 and restored the temporary VIP RAM
+word. The Fastboot interface appeared. Raw USB returned
+`download:00c47800` -> `DATA00C47800` -> `OKAY`, followed by `boot` -> `OKAY`.
+About 65 seconds after the USB observer started, a new 1d6b:0104 device
+appeared with product `ELK_LINUX_PROBE_02` and CDC ACM interfaces. Its USB
+serial output identified kernel `4.19.283-elk-linux-probe+`, x86_64,
+`USB=dwc3.0.auto bound=1`, and increasing PID1 uptime. This proves execution
+of the custom kernel/initramfs and functioning USB device mode, beyond
+merely accepting a Fastboot command. It does not establish arbitrary
+partition-write capability or the state of every platform trust boundary.
+
+The physical display remained black. Linux reported `framebuffer=none
+draws=0`; display initialization, rather than absence of kernel execution,
+is the remaining visual-output failure. The kernel enumerated ACPI MCFG,
+APIC, TPM2, NHLT, DSDT, PSDS, DMAR, FACP, HPET and FACS. VIP UART recorded
+Hypervisor Startup Timeout (ignored for MEC249) and later SoC Startup
+Timeout while the custom Linux USB interface continued operating. These
+observations are consistent with bypassing the normal GHS/AAOS startup,
+but are not by themselves proof of the absence of every hypervisor layer.
+No partition was flashed or mounted by the probe. Native MMC/SDHCI drivers
+are compiled in; eMMC discovery/readback was not yet demonstrated by this
+initial probe. Its nonblocking USB log write truncated long kernel output,
+so missing display/storage lines in that output are not negative evidence.
+
+**Probe03: shell, NCM and raw eMMC access, 2026-11-17:** The same kernel was
+repacked with BusyBox 1.37.0, Dropbear 2025.88 and their required runtime
+libraries. The USB gadget exposes CDC-ACM plus CDC-NCM. An owner-authorized
+public key, with its identifying comment removed, is included for SSH;
+private client keys are not included. Password login is disabled and server
+host keys are generated only in the RAM filesystem. QEMU validated shell
+entry/exit, SHA256 on known input, block size against a read-only fixture,
+NCM configfs setup, SSH-server startup and framebuffer drawing.
+
+Probe03 boot image: 14336000 bytes, SHA256
+`563b9543cb1fa211c7a4c8eaf6f35f84a22661543d923e01b466a53fbfcc3925`.
+Its initramfs is 1846555 bytes, SHA256
+`b1a38b6f17cf98975c92ba74f9dffb6e452de7d6cd95c3b689876cb9c7fadbbc`.
+An initial re-entry attempt acknowledged the CAN request but returned to
+AAOS without a confirmed ELK USB interface. After UART HMIReady/Run, the
+same route entered ELK. Download `00dac000` and boot returned OKAY; the
+new Linux shell and NCM interfaces subsequently appeared. A prior Linux
+`reboot` command had also successfully returned to stock AAOS.
+
+The live shell reports native SDHCI at PCI 00:1c.0 (8086:5acc), HS400 MMC,
+and the following raw devices:
+
+| Region | Linux interface | Exact bytes | Observed state |
+|---|---|---:|---|
+| User area | `/dev/mmcblk1` | 63996690432 | 26 partitions; set read-only before imaging |
+| Boot0 | `/dev/mmcblk1boot0` | 33423360 | Read-only; full copy/source hash verified |
+| Boot1 | `/dev/mmcblk1boot1` | 33423360 | Read-only; full copy/source hash verified |
+| RPMB | `/dev/mmcblk1rpmb` | Kernel reports 4 MiB | Character device; separate authenticated protocol, not part of the above images |
+
+Only rootfs/devtmpfs/proc/sysfs/tmpfs/configfs are mounted. A raw first-1024-byte
+read succeeded. SSH public-key authentication over NCM then succeeded after
+explicitly binding the host connection to its USB source address. The link
+reports USB high-speed. A 64 MiB streamed sample transferred at 31.19 MiB/s
+and matched an independently reread source SHA256. This validates read access
+and the transport, not flash writes.
+
+The initial USB user-area read stopped after 14997700077 bytes (23.44%).
+A fresh Wi-Fi read subsequently completed all 63996690432 bytes, offsets 0
+through 63996690431, without skipping partitions, gaps or unused space. Its
+stream hash, local file reread hash and independent source-device SHA256 all
+matched `e630b3cbb0b76f8f721e83956555cb84270046998ef4859e85c21ec55216cd86`.
+The final image is `emmc_user_wifi.bin`; transfer duration was 2150.6 seconds.
+Fresh boot0/boot1 Wi-Fi copies also passed verification. After this success,
+the old 14997700077-byte `emmc_user.bin.partial` was deleted as requested. The imaging
+tool checks expected capacity and read-only state, rejects short/overlong
+streams, rereads the stored file for SHA256, independently hashes the source,
+and only then promotes a `.partial` image to its final name. Boot0 and boot1
+already passed those checks and both hash to
+`f9c8b35f7002924d7b5cf21abbf0031d34404a5670717749403ec4b31bf17d16`.
+User-area verification was performed independently of the boot-region results.
+RPMB is not included in ordinary raw block images.
+
+The host SSH client reported `Operation timed out` and `Broken pipe`; the
+radio server reported `Error reading: Connection reset by peer`. Linux uptime
+continued and a subsequent SSH connection succeeded. No USB disconnect, MMC
+error, or kernel failure appeared in the available kernel log; both ends
+reported zero interface errors/drops, and the host sleep log showed no sleep
+during the transfer. These observations narrow the failure to the connection
+but do not establish its trigger. Packet capture is needed on a repeat test.
+
+After all ordinary regions passed verification, native mmc-utils read EXT_CSD
+and confirmed a 4194304-byte RPMB region; `rpmb read-counter` returned zero.
+The first data request (`rpmb read-block`, address 0, count 256) exceeded the
+30-second client timeout. Subsequent SSH connection attempts, serial-shell
+completion, and USB GET_STATUS control requests also timed out. This is
+consistent with a radio/kernel stall following the request, but the precise
+cause is unproven. No RPMB data was successfully acquired, and no key-programming
+or data-write operation was issued. CAN control remained responsive. Recovery
+was initiated only after the full eMMC images had passed hash verification.
+The prepared readback plan compares two independent RPMB reads and a stored-file
+hash; it cannot establish MAC authenticity without the RPMB authentication key.
+
+A subsequent native T1 test loaded a matching standard `igb` module for PCI
+`8086:157c`, established VLAN-5 IP/SSH connectivity, and read a hash-matching
+64 MiB eMMC sample at 3.98 MiB/s. See [networking](../platform/networking.md#native-elk-ram-linux-t1-test--2026-11-17).
+This proves an alternate readback path, not improved long-duration reliability.
+
+The complete graphics log shows i915 bound successfully but both native
+HDMI connectors are disconnected and the driver reports `Cannot find any
+crtc or sizes`. Its DMC firmware request also failed before userspace and
+timed out around 62 seconds, explaining a substantial boot delay. Presence
+of the firmware file in the initramfs did not prove it was available at the
+driver's request time. Display repair remains separate from the confirmed
+USB, shell and native storage access. No display-driver reset is attempted
+during the active eMMC transfer.
+
+Intel source/image availability and the limits of crashmode partition
+readback are tracked in [the Celadon reference](GORDON_PEAK_CELADON_INTELLIGENCE.md).
+
+**Native x86 build reproduction (2026-11-17):** A native x86_64 workstation
+with 24 physical cores / 48 threads and 235 GiB RAM rebuilt the kernel from
+source, recreated the external initramfs from the same prebuilt payload
+binaries, and packaged the Android boot image locally. All three outputs
+passed byte-for-byte comparison against probe03, including final boot image
+SHA256 `563b9543cb1fa211c7a4c8eaf6f35f84a22661543d923e01b466a53fbfcc3925`.
+PID1, BusyBox, Dropbear and their libraries were retained as identical archive
+inputs; this does not claim a source rebuild of those user-space dependencies.
+
+The host OpenSSL 4.0.3 lacked ENGINE symbols required by the old kernel host
+tools. A native Ubuntu 22.04 Podman userspace with OpenSSL 3 and the matching
+AOSP Clang 12 toolchain resolved that build-environment incompatibility;
+compilation ran on physical x86 CPUs, not under CPU emulation. The source
+configuration extracted from the reference image disables `GM_SIGNATURE`;
+an earlier saved configuration still enabled it. Reproducibility also required
+matching build version 3, timestamp `Tue Nov 17 03:44:33 AKST 2026`, kernel
+release suffix `+`, build paths, and the public build certificate. No signing
+private key was copied. The final 35-byte decompressed-kernel difference was
+20 build-ID bytes plus 15 bytes of fallback-initramfs timestamp text. Regenerating
+the three-entry built-in archive with epoch `0x6AC743B8` removed that difference.
+External archive reproduction required explicit gzip level 6 and preserving
+mode 0700 for the four library symlinks that had that metadata on the original
+packaging host. The final images were compared directly with `cmp`.
+
+Local QEMU validation of the native output passed PID1 startup, framebuffer
+rendering, BusyBox shell entry/exit, SHA256 operation, read-only block capacity,
+USB ACM/NCM configuration, and SSH-server startup. This QEMU test does not prove
+physical radio display initialization. The native build workspace and launcher
+were saved on the build workstation's internal storage; the running radio and
+its concurrent eMMC transfer were not rebooted or replaced.
+
+**Upstream-kernel Probe build and physical RAM boot (2026-11-17):**
+A separate build now uses the unmodified kernel.org Linux 4.19.283 source
+archive, rather than the existing GM/Android kernel tree. Archive SHA-256
+`047316d20c6c97ad41c40477c7e1ab0bea434243e17bfc72155801b123cc51f4`
+matched the published kernel.org checksum. Matching the previous kernel version
+isolates source-tree differences from a simultaneous version upgrade.
+
+Build scripts and isolated outputs reside under `$BUILD_ROOT/upstream/` on the
+native build workstation: `build.sh`, `build-inside.sh`, `package.py`,
+`qemu-check.py`, and `artifacts/`. The existing Probe08 build remains separate.
+The build used the existing Android Clang 12 toolchain, freshly compiled
+BusyBox 1.37.0, and our panel/VIP/ELK-selection helpers. Other open-source
+userspace binaries were retained from the earlier runtime. This is not a claim
+of a wholly source-rebuilt userspace or a blob-free image: peripheral firmware
+and panel EDID remain included. No stock Android second-stage payload is
+included in this image.
+
+Configuration adaptations include `CONFIG_MODVERSIONS=n`, built-in MSR, igb,
+MEI and touch support, i915 plus panel EDID/DMC firmware, USB ACM/NCM gadget,
+and the existing framebuffer-console command line. No kernel-source patch
+was needed for the functionality verified below. BusyBox initially rejected
+its previously built shared source directory; cleaning an isolated copy fixed
+that build failure without changing the old build tree.
+
+| Artifact | Bytes | SHA-256 |
+|---|---:|---|
+| bzImage | 12,092,224 | `995e9b5be4d15b2042277980cbf7a68b4830ae5cdcaf5bc87708292ee8e311bb` |
+| initramfs.cpio.gz | 12,167,829 | `eb3c60c6e189e211ad8f814e8e0501e118b803a83e4624e851ce4ba2d45e8637` |
+| boot.img | 24,264,704 | `23537a570fc7ef9a6179986c182558a3367406521bf8db0a896840efa8bcded5` |
+
+QEMU passed PID1, shell, framebuffer-console text readback, PTY, SHA-256,
+read-only block capacity, USB gadget configuration, SSH-server startup, and
+VIP/ELK helper self-tests. Physical testing then selected ELK from running
+Probe08 through the existing MEI helper; CSE returned `20870000`. ELK USB
+enumerated, accepted the complete image download, and returned `OKAY` to boot.
+Actual execution was independently established through USB shell and then T1
+SSH: both reported `4.19.283-upstream-probe01`.
+
+Physical results: i915 created `inteldrmfb` at 2400×960, HDMI-A-1 reported
+`enabled`, the DWC3 USB console worked, `/dev/mei0` and `/dev/cpu/0/msr` existed,
+and igb bound to the T1 interface. Framebuffer/connector state does not alone
+prove visible panel output; no new visual confirmation was obtained in this
+check. T1 VLAN 5 SSH was configured in RAM and a key-authenticated login returned
+UID 0. Account/network configuration and SSH keys were not inherited into the
+new archive; the public access key and SSH host key were installed/generated
+in RAM after boot. Use the bench's current endpoints and key path rather than
+persisting them in documentation.
+
+The eMMC enumerated as **`mmcblk1`**, unlike the earlier image; never assume its
+old device number. Its capacity was 124,993,536 sectors. A read-only first-1-MiB
+sample matched the saved eMMC dump SHA-256
+`a7bb8942da7132004c16be976d1eba32cca385f05f7a4dc628a41d38429b7d35`.
+No eMMC partition was mounted and no eMMC/SPI write was issued. This establishes
+an upstream-kernel RAM boot with storage access, not autonomous eMMC boot,
+full hardware parity, or disabled firmware signature enforcement.
+
+**Linux 7.3.5 stable build and radio test (2026-11-17):**
+The next image uses kernel.org Linux 7.3.5, archive SHA-256
+`8f293f83d54f0b7b9be56863ebc5e4ea79d73e530b4ae55c572be97ef39f0990`,
+checked against the published checksum. Built with native GCC 16.2.1 for
+`-march=x86-64 -mtune=generic`; the old Clang 12 does not meet this source's
+Clang 17 minimum. Outputs are isolated under `$BUILD_ROOT/stable735/`.
+All 34 required built-in configuration checks passed, including i915/fbdev,
+GPIO character-device support, DesignWare I2C, LPSS UART, MEI, eMMC, igb/VLAN,
+DWC3 ACM/NCM, maXTouch, and brcmfmac PCIe. Kernel compression was changed to gzip
+after the host reported `lz4: command not found`.
+
+| Artifact | Bytes | SHA-256 |
+|---|---:|---|
+| bzImage | 18,031,616 | `fa86e358a31a0a817f0877c2ba9076e3f490c708b7367fe40d0c713187a7743a` |
+| initramfs.cpio.gz | 12,168,095 | `7b91e98635a5b21e55f88fb722d3b901584c112d40faa7e6213d10e983536f1f` |
+| boot.img | 30,203,904 | `34a92caf9eea8cc488531d47ecbca9f0b5fddf3eefbca663d5ae96ab14c220d6` |
+
+QEMU booted this kernel and passed shell, PTY, framebuffer console text readback,
+read-only block size/hash, SSH-server, gadget-configuration, and helper self-test
+checks. The overall test nevertheless exited 1 because its final condition
+required 1024×768 while this version selected 1280×800. A QEMU screenshot showed
+Linux penguins and kernel text. QEMU also exposed missing `regulatory.db`.
+Neither issue was fixed in the packaged image before builder work stopped.
+
+A subsequently authorized physical test used the exact saved image above,
+without modifying the shared builder. Running upstream Probe selected ELK via
+MEI; CSE acknowledged `20870000`, and ELK accepted download and boot with `OKAY`.
+USB shell and T1 SSH independently reported `7.3.5-probe-stable01`; root SSH
+was restored with volatile VLAN/key/listener setup. This proves actual execution,
+not merely fastboot acceptance. No eMMC/SPI write was issued.
+
+The original packaged panel helper did not initialize the panel. Two runtime
+compatibility corrections were required: use `/sys/bus/i2c/devices/i2c-N`
+instead of the absent `/sys/class/i2c-adapter` class; accept the verified
+pinctrl identity of reset pin 33 when the GPIO-v2 line-name field is empty.
+Bank label `INT3452:00`, 78-line count, and reset-pin identity remain guarded.
+The corrected helper was built outside the shared workspace, transferred into
+RAM, returned status `CD`, and stays resident to retain GPIO-v2 line ownership.
+The owner then confirmed **Display ON**. These corrections are NOT in the
+r01 boot image. They were subsequently integrated into stable02 below;
+automatic panel startup was subsequently verified on stable02 below.
+See the display document for the runtime correction details.
+
+Bounded hardware checks on this boot:
+
+| Subsystem | Observation / limit |
+|---|---|
+| Display/GPU | 2400×960 `i915drmfb`, HDMI-A-1 enabled, DMC 1.7 loaded, visible output confirmed after runtime helper correction; GPU error state reports none collected |
+| USB | ACM shell operational; gadget state `configured`; internal `04d8:00df` interfaces bound to cdc_acm/usbhid |
+| T1 | igb bound, carrier present, root SSH working; RX/TX errors and drops all zero at inspection |
+| eMMC | `mmcblk2` on PCI `00:1c.0`, 124,993,536 sectors; first-1-MiB SHA-256 matches backup (`a7bb8942da7132004c16be976d1eba32cca385f05f7a4dc628a41d38429b7d35`); no eMMC mounts |
+| Other MMC hosts | `00:1b.0` card-detect IRQ request returned `-EPERM`; `mmc1` on `00:1e.0` failed non-removable-card initialization. These are not the working eMMC host; attached-device expectations remain unresolved |
+| Wi-Fi | brcmfmac loaded BCM4359 firmware and created `wlan0`/`phy0`; missing `regulatory.db` caused an approximately 60-second request timeout; association/throughput not tested |
+| Touch | No maXTouch input device registered; targeted 16-bit-addressed read at bus 10/address 0x4b returned the known valid 16-byte information block with zero errors. Controller reachable; Linux binding/IRQ setup remains unresolved |
+| MEI/VIP | `/dev/mei0` exists; no new live VIP protocol exchange or 7.3.5-to-ELK re-entry test was performed |
+| Audio/camera | No soundcards or video/media nodes; advertised PCI audio/IPU devices and ACPI decoder entries remain unbound. This is an integration gap, not proof of failed hardware |
+| Health | About 30–31°C, ample available RAM, no deferred devices listed. Taint 64 is explained by i915 enable_guc/enable_fbc/enable_psr options; sampled logs contained no Oops/panic trace |
+
+The eDP link-information warning refers to the disabled eDP path; the verified
+panel uses HDMI-A-1. This bounded inspection is not a complete stress test or
+an assurance that all peripherals operate correctly. The shared build workspace
+was left untouched during the physical test and runtime correction.
+
+#### Linux 7.3.5 stable02 — verified 2026-11-17
+
+After authorization to resume
+builder changes, existing edits enabling `CONFIG_DEVMEM=y` and appending
+`iomem=relaxed` were preserved. The live-proven panel corrections were integrated
+into `stable735/panel.c`; its compiled helper is byte-identical to the temporary
+helper that restored physical display output (helper SHA-256
+`2eb7f924ffb7f88fd92fe20660b4f94cd055c59eab36d8545e8ae6f9e8432790`).
+The kernel/runtime revision is now `7.3.5-probe-stable02`. The original r01
+artifacts remain under `stable735/artifacts/r01/`.
+
+The inherited regulatory database failed the new kernel's verification with
+`cfg80211: loaded regulatory.db is malformed or signature is missing/invalid`.
+Its standalone CMS integrity check succeeded, which did not establish trust by
+the kernel's built-in keys. Replaced it only in the stable735 build inputs with
+[upstream wireless-regdb 2026.09.03](https://www.kernel.org/pub/software/network/wireless-regdb/wireless-regdb-2026.09.03.tar.xz),
+archive SHA-256 `b22e0901227b820cd1c280abe681a15b773a5103a5e10dc442e94ebb34cbf58d`,
+verified against the published checksum. Both `regulatory.db` and its `.p7s`
+are embedded for early firmware loading and included in the initramfs.
+`CFG80211_REQUIRE_SIGNED_REGDB=y` and `CFG80211_USE_KERNEL_REGDB_KEYS=y` remain
+set; verification was not disabled. Shared display-firmware inputs were preserved.
+
+| Final stable02 artifact | Bytes | SHA-256 |
+|---|---:|---|
+| bzImage | 18,035,712 | `2670353aa3bd07b9a9c70cb8135002c9c5a698c007668b0acc1fb5934e8f3ca1` |
+| initramfs.cpio.gz | 12,172,221 | `9e8b8c4a39a6afa7371ecf782b8efa0ed289b1c37dac673b36d05dc4dd8dbdbb` |
+| boot.img | 30,212,096 | `f9977c166122b86d0839cb253779dba2eb26166938624513d34b966fc886d885` |
+
+The final QEMU test exited 0. It verifies that kernel/ramdisk bytes exactly
+match the packaged boot-image payloads, uses that image's actual command line
+(including `iomem=relaxed`), checks `/dev/mem` presence and regulatory files,
+and rejects observed regulatory verification/load failures. Display verification
+now compares actual framebuffer dimensions with the QMP screenshot rather than
+requiring the old 1024×768 mode. The measured 1280×800 screenshot visibly showed
+Linux logos and kernel messages, including the framebuffer-console test marker.
+Shell, PTY, SHA-256, read-only block capacity, USB gadget configuration,
+SSH-server startup, and VIP/ELK helper self-tests also passed. GPIO protocol
+review confirms that the chip FD and returned line-request FD are independent;
+closing the chip FD does not release the held line request.
+
+**Stable02 physical boot verified (2026-11-17):** the exact final image above
+was subsequently RAM-booted on the radio. Stable01 successfully selected ELK
+through MEI (CSE response `20870000`); ELK accepted the full 30,212,096-byte
+download and boot. USB shell and restored T1 root SSH independently reported
+`7.3.5-probe-stable02`.
+
+The packaged panel helper started automatically, remained resident, and held
+GPIO-v2 line 33 high as `probe-panel-reset`. No temporary helper or manual link
+initialization was needed. The i915 framebuffer is 2400×960, HDMI-A-1 is enabled,
+and a read-only serializer status read returned `0xCD`. The owner confirmed the display is active on this stable02 boot.
+
+`/dev/mem` and `/dev/mei0` exist. The missing/invalid regulatory-database messages
+did not recur. eMMC enumerated as `mmcblk1` on PCI `00:1c.0` this time, with
+124,993,536 sectors; its read-only first-1-MiB hash again matched the saved dump.
+No eMMC partition was mounted and no eMMC/SPI write was performed. Enumeration
+order changed from stable01: locate storage by physical device, not a remembered
+`mmcblkN` number. T1 SSH remains active with volatile setup. Wi-Fi also created `wlan0`; BCM4359
+firmware initialization completed around 62.9 seconds. Thus a separate Wi-Fi
+firmware-startup delay remains despite the corrected regulatory database.
+
+Touch device/IRQ binding, auxiliary MMC errors, audio/camera integration, and
+Wi-Fi association remain open. No speculative fix for those was included.
+This build enables physical-memory diagnostics; checks establish node presence,
+not arbitrary hardware memory access or signature-policy changes.
+
+**CAN-only ELK re-entry after backup (2026-11-17):** After recovery to AAOS
+Run state, profile 0x0D security access succeeded. With the application-security
+RAM word still zero, `31 01 F0 00 81 80 03` returned `7F 31 33`. Repeating
+with the previously traced temporary application-security value 1 returned
+`71 01 F0 00 81 80 03`; the original zero value was immediately restored and
+read back. Intel USB `8087:09ef`, interface `FF/42/03`, then enumerated,
+confirming actual ELK entry. Security access, the temporary RAM write, and the
+routine request all used CAN. USB provided independent observation; T1 and ADB
+were not used for this entry. No new image was booted as part of this check.
+
+**Display probe04 preparation and hardware result (2026-11-17):**
+Native analysis of stock `recovery_panel` shows `get_globalB()` opening
+`/dev/i2c-7`; `panelB_init()` issues I2C_RDWR messages to 7-bit address 0x12.
+For the 960p path the sequence is bytes `01 01`, a 300 ms delay, then
+`20 ff ff` for brightness. The alternate 768p path includes firmware-version
+handling and must not be conflated with 960p. A static helper exposes only the
+traced 960p sequence, requires an explicitly supplied I2C device, and is not
+run automatically. Bare-metal bus-number correspondence remains unverified:
+current native i2c-7 is DesignWare instance 4 at PCI 00:17.0, which does not by
+itself prove equivalence to recovery's bus 7. No panel writes were made while
+the eMMC transfer or its verification was active.
+
+The stock kernel embeds a checksum-valid 128-byte 2400x960 EDID at extracted
+ELF file offset 0x16ac790. Its detailed timing specifies a 153.98 MHz pixel
+clock. Extracted EDID SHA256:
+`63befb894e4bad2246e80d7b257a30dac434112ab337ffcedea90b7b0e0d2f40`.
+Probe04 embeds this EDID and `i915/bxt_dmc_ver1_07.bin` in the kernel firmware
+store so early i915 probing does not depend on userspace firmware availability.
+The command line selects `drm.edid_firmware=HDMI-A-1:edid/harman0960p.bin`
+and `video=HDMI-A-1:e`. Forcing a connector and supplying stock timing was tested, but is not evidence of physical link initialization.
+
+The image retains automatic framebuffer color bars, RAM-only storage policy,
+USB ACM/NCM shell access and public-key SSH, and includes matching igb/brcmfmac
+modules, stock Wi-Fi firmware, iw/wpa_supplicant, and a statically built
+mmc-utils readback tool. Wireless credentials are not embedded. PID1 was
+compiled natively for this iteration. Final boot image size is 20731904 bytes,
+SHA256 `61ca7eaa26846262a9306bfe1783a0d4824517421ec51c2367afbd58a04f2133`.
+Local QEMU checks passed for probe04. The captured 1024x768 framebuffer
+contained exact red, green and blue center-band samples `[255,0,0]`,
+`[0,255,0]`, `[0,0,255]`; shell, SHA256, read-only block capacity, NCM
+configuration and SSH-server startup also passed. Probe04 subsequently booted on the radio, with DMC loaded and a 2400x960
+inteldrmfb containing verified RGB samples; the physical display remained blank.
+No backlight class device exposed a brightness reading. The stock panel helper
+was later attempted through the existing USB root shell on native i2c-10
+(PCI 00:17.3, matching the cleanroom display-controller path). Its first reset
+transaction returned `panel I2C transfer: Remote I/O error`, exit 1, before
+the brightness write. See the [display ownership trace](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17).
+
+**Probe05 console follow-up (2026-11-17):** CAN ELK entry from the stock boot
+environment was acknowledged and USB 8087:09ef interface FF/42/03 confirmed.
+The new RAM image booted with USB shell access. Its initial panel helper aborted
+on a too-small realpath destination; the PATH_MAX correction was rebuilt,
+transferred over T1 SSH, and successfully initialized the link (status CD).
+The owner confirmed visible display output. The corrected image includes Linux
+boot logos/fbcon, removal of PID1's periodic RGB repaint, 403 BusyBox applets,
+custom I2C/KMS tools, and matching maXTouch/network modules. See the
+[owning console and tooling result](../video/display_subsystem.md#probe05-console-and-diagnostic-tooling--2026-11-17)
+for the final hash, validation and remaining cold-boot limit.
+
+**Probe06 boot verified (2026-11-17):** stock boot reached HMI-ready;
+direct CAN ELK entry was acknowledged, temporary VIP state restored, and ELK
+USB confirmed. RAM boot reached `4.19.283-elk-linux-probe-r06`, USB shell and
+T1 root SSH. Embedded IPU firmware eliminated the previous ~62s request wait:
+PID1 started at0.437303s and video/media nodes appeared, without proving capture.
+Panel initialization initially preceded stable link readiness; a live retry
+returnedCD. A corrected bounded-wait helper/image has been built and the helper
+installed in RAM; fresh-boot validation of that correction remains pending.
+The [owning build record](../video/display_subsystem.md#probe06-corrected-build-and-firmware-staging--2026-11-17)
+distinguishes booted and subsequently corrected image hashes and records the
+regulatory-database rejection. The broad hardware inventory remains a probe05
+snapshot; probe06 camera-node availability supersedes its earlier missing-node state.
 
 **Matched Android source:** the mounted Y175 cleanroom
 `os/system/priv-app/DelayedWKSApp/DelayedWKSApp.apk` and live APK both hash to
@@ -897,9 +2242,9 @@ byte-matched: live hashing returned `Permission denied`.
 The [diagnostic test record](../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15)
 owns exact live requests/results. Remaining questions:
 
-- The complete CAN-side request, security/session/mode gates and descriptor semantics.
+- Any additional receiver-side boot conditions after the accepted F000/8180 request.
 - Whether the installed VIP matches this update payload byte-for-byte.
-- Successful delivery of the compiled request through the radio's control path.
+- Reliable repeated ELK command access and its current device-state restrictions.
 - Actual GHS response, completed ABL transition and resulting ELK environment.
 
 CAN validation is pending the owner's USB CAN adapter; the MDI2 is not

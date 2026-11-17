@@ -8,6 +8,18 @@
 
 ---
 
+## Native Linux 7.3.5 stable02 — 2026-11-17
+
+This is a separate native Probe runtime; the Android issues below are
+historical AAOS findings. Stable02 fixes automatic panel initialization and the
+missing/rejected regulatory database. Its remaining observed gaps are maXTouch
+input/IRQ binding, auxiliary MMC card-detect/initialization errors, missing
+soundcard/video integration, and roughly 63-second Wi-Fi firmware startup.
+The working eMMC is a separate host and readback matches the saved backup.
+No claim of a touchscreen hardware failure follows from absent Linux input
+registration: targeted controller reads succeeded. Current evidence is maintained
+in [the stable02 record](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+
 ## SELinux Denials (7,811 total across 3.7GB corpus, 25 files)
 
 Per-file range: 111-662. The previously reported "462" was from a single file (logcat_20260219).
@@ -137,9 +149,13 @@ On the bench, the WiFi SoftAP (br0 `192.168.5.1`) is not reliably brought up by 
 after an `adb reboot` — it can stay stuck off, and **a full power cycle is required** to restore the
 WLAN/SoftAP (an `adb reboot` alone does not fix it). Consequence for research: any SoftAP/CarPlay-AP
 network probe must be done after a power cycle with the AP confirmed up (ideally during a live CarPlay
-session). Pairs with the other post-reboot bench quirks: ADB auto-disables at boot (manual re-enable
-via Dev-options/USB re-plug) and the clock resets (`adb_enabled` + time wiped at boot — the
-workstation-sync hook re-corrects time on next adb use). Wired/loopback/binder testing over ADB is
+session). Other post-reboot bench observations include ADB becoming unavailable
+until a Developer Options toggle/USB reconnect, and the clock resetting. Correction
+2026-11-17: this does not establish that adb_enabled itself is cleared at boot;
+pre-toggle readback was unavailable. After toggling, adb_enabled=1 and
+persist.sys.usb.config=adb were observed. The [ADB persistence inspection](../research/USB_ADB_SESSION_FINDINGS_2026-10-10.md#bench-adb-persistence-inspection--2026-11-17)
+records the unresolved setting-versus-USB-startup distinction. The workstation-sync
+hook corrects time on next ADB use. Wired/loopback/binder testing over ADB is
 unaffected by the SoftAP state.
 
 ## Y177 Notes

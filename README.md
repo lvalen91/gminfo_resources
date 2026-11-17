@@ -51,6 +51,13 @@ gminfo_resources/
 
 ## Quick Reference
 
+The [bench hardware setup baseline](hardware/bench_setup.md) owns the current
+OPU harness, T1/VLAN and dual-ADB access, RH850 RX-only UART, CAN listen-only
+configuration, and macOS privilege requirements.
+
+The [CAN message reference](platform/can_network.md) catalogs all 72 captured IDs
+and separates bench observations from public in-vehicle signal definitions.
+
 ### Platform Identity
 
 | Field | Value |
@@ -129,8 +136,28 @@ historical MEC readings and unresolved registration behavior are maintained in
 
 ## Research Status
 
-**Current target:** Y181→Y177 downgrade.  
-**Blocker:** GHS/AVB anti-rollback — the AB0 rollback counter in `misc` (vda9), written at hypervisor level only. *(The earlier motivation — "Y177 = permissive SELinux + stubbed VIP" — is refuted: stock Y177 boots Enforcing with the full ~906B VIP validator.)*
+**Current target (2026-11-17):** native Linux hardware support and a cold-power
+ELK recovery path independent of working GHS/AAOS/Probe or eMMC software.
+
+- Upstream Linux `7.3.5-probe-stable02` is running on hardware: automatic panel
+  initialization, owner-confirmed display output, USB shell, T1 root SSH,
+  native eMMC readback and `/dev/mem` presence verified. Earlier Probe builds
+  separately established bidirectional VIP HDLC and GPU acceleration.
+- Native Probe → CSE ELK selection → reset → ELK → RAM-boot Probe works.
+- Cold power → captured CAN harness → stock boot → CAN ELK request works.
+  A cold entry that skips stock software remains unverified.
+- Radio is verified in stable02 with T1 SSH. The minimal CAN configuration
+  remains original `529` keepalive at 320.270 ms; full harness replay is stopped.
+- The image includes the radio-proven GPIO-v2/panel-path fixes, upstream signed
+  regulatory database, and the preserved DEVMEM / `iomem=relaxed` changes.
+  Touch binding, auxiliary MMC errors, audio/camera support and Wi-Fi startup
+  delay remain open; no eMMC/SPI write was needed for these RAM boots.
+- Exact image hash, tests, failures, retained tools and open work are maintained
+  in the [current stable02 record](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+
+**Historical target:** Y181→Y177 downgrade; GHS/AVB rollback remained a separate
+constraint. The earlier permissive-SELinux/stubbed-VIP motivation was refuted.
+The following older research options are background, not the current task list.
 
 **Ranked options (post-binary analysis):**
 
@@ -140,7 +167,8 @@ historical MEC readings and unresolved registration behavior are maintained in
 4. ELK trigger via VIP J6_CDD diagnostic channel (ConnToOTA_BootELK / ConnToLifecycle_BootELK
    IPC → HECI → ABL) — **(2026-09-10)**
    ELK is Intel Kernelflinger **fastboot** (kernelflinger-07.02), not a Linux shell; "USB
-   storage is unsupported," so this is a fastboot-flash/unlock vector, not a shell-access one
+   storage is unsupported." **Updated 2026-11-17:** RAM `download`/`boot` of
+   native Linux with a shell is now demonstrated; ELK itself remains fastboot
 5. 3× boot failure escalation → GHS lifecycle last resort → ELK (same fastboot caveat as #4)
 6. `/dev/ghs/ota-isys` HostOS streaming (highest risk — GHS likely signature-checked)
 
