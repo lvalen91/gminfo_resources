@@ -1,29 +1,52 @@
 ================================================================================
 GM AAOS REPLACEMENT RESEARCH FRAMEWORK
 ================================================================================
-Document Version: 1.0
-Created: December 28, 2025
-Purpose: Framework for replacing GM AAOS with custom/stock AOSP implementation
-Target: GM Infotainment 3 (gminfo3.7) CSM Module
+Document Version: 2.0 (consolidated)
+Created: December 28, 2025. Consolidated: 2026-11-18.
+Purpose: Roadmap and attack-surface-prioritization doc for replacing GM AAOS
+with a custom/stock AOSP implementation on the GM Infotainment 3 (gminfo3.7)
+CSM module.
 ================================================================================
 
-RELATED (rights/remote/AOSP trio -- kept separate, complementary): this is the
+SCOPE
+-----
+What lives here: the replacement-goal statement (§1), the vehicle-integration
+checklist that any replacement must satisfy (§6), and this corpus's attack-
+surface prioritization + phased research roadmap (§7-§8) — the latter is this
+doc's own unique contribution; no `platform/` doc owns "custom-AOSP replacement
+roadmap" as a topic.
+
+What does NOT live here (pointer only, do not restate):
+- Partition map/sizes/signing column -> `platform/partitions_storage.md`.
+- GHS INTEGRITY hypervisor architecture, VM/IPC internals, attack-surface
+  catalog -> GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md (GIC).
+- EEPROM security-flag/SBI-bypass mechanism, address tables ->
+  EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md (ELA) / `platform/eeprom_i2c_security.md`.
+- VIP firmware architecture/control-scope detail -> VIP_CONTROL_ANALYSIS.txt /
+  `platform/vip_ipc_ghs.md`.
+- Boot chain, signing hierarchy detail, ELK/fastboot/OEMLock mechanics ->
+  `platform/boot_chain.md`, `platform/elk_recovery.md`.
+- Y181->Y177 downgrade mechanism -> GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (GDP).
+
+RELATED (rights/remote/AOSP trio -- kept separate, complementary; per all
+three docs' own cross-reference note, they are NOT merged): this is the
 replacement/attack roadmap. For the remote-access/telematics surface see
-GM_REMOTE_ACCESS_ANALYSIS.txt (its section 5.4 calibration security-reset RE-LOCKS the
-EEPROM 0x0440 bypass set in section 5.2 here); for the rights/legal framing see
-GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt. NOTE: the Y177-downgrade vector in
-sections 4.4/7.2 is corrected in-place -- it is BLOCKED by the GHS rollback counter.
+GM_REMOTE_ACCESS_ANALYSIS.txt (its §5.4 calibration security-reset RE-LOCKS
+the EEPROM bypass referenced in §5 below); for the rights/legal framing see
+GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt.
 
 TABLE OF CONTENTS
 -----------------
 1. RESEARCH GOALS AND OBJECTIVES
-2. SYSTEM ARCHITECTURE ANALYSIS
-3. GHS INTEGRITY HYPERVISOR
-4. BOOT CHAIN AND SIGNING REQUIREMENTS
-5. VIP FIRMWARE MANIPULATION VECTORS
+2. SYSTEM ARCHITECTURE (pointers)
+3. GHS INTEGRITY HYPERVISOR (pointers)
+4. BOOT CHAIN AND SIGNING (pointers + ELK/GSI-DSU status summary)
+5. VIP FIRMWARE MANIPULATION VECTORS (summary + pointers)
 6. VEHICLE INTEGRATION REQUIREMENTS
 7. ATTACK SURFACE PRIORITIZATION
 8. RESEARCH ROADMAP
+APPENDIX A: KEY COMMANDS FOR RESEARCH
+APPENDIX C: CRITICAL FILE LOCATIONS
 
 ================================================================================
 1. RESEARCH GOALS AND OBJECTIVES
@@ -36,9 +59,9 @@ enabling full developer control over the infotainment system.
 
 1.2 ALTERNATIVE GOAL
 --------------------
-If GHS INTEGRITY hypervisor must remain for vehicle functions (turn signal
-chimes, door sounds, camera access via CAN bus), enable GHS to boot a generic
-or locally-compiled AOSP build as its Android guest VM.
+If the GHS INTEGRITY hypervisor must remain for vehicle functions (turn
+signal chimes, door sounds, camera access via CAN bus), enable GHS to boot a
+generic or locally-compiled AOSP build as its Android guest VM.
 
 1.3 SUCCESS CRITERIA
 --------------------
@@ -49,497 +72,262 @@ or locally-compiled AOSP build as its Android guest VM.
 - No dependence on GM signing infrastructure
 
 1.4 ACCEPTABLE TRADE-OFFS
--------------------------
+--------------------------
 - GHS hypervisor remains if required for vehicle safety functions
 - VIP firmware unchanged if it doesn't block custom Android
 - Some GM services may need reimplementation
 
+1.5 CURRENT STATUS OF THE STATED GOAL (added on consolidation)
+----------------------------------------------------------------
+The §1.3 success criterion "no dependence on GM signing infrastructure" is, as
+of the latest dated findings folded into §4 below, blocked end-to-end by
+software means: both ELK fastboot-unlock gates are closed (§4) and no software
+path to flip either is known. The remaining paths are hardware-level (VIP
+JTAG/glitch, chip-off) — see §7. This doc never stated that scope-level
+conclusion outright in the original text; it is stated here explicitly so the
+roadmap in §7-§8 is read against the real current blocker, not the original
+Dec-2025 optimism.
+
 ================================================================================
-2. SYSTEM ARCHITECTURE ANALYSIS
+2. SYSTEM ARCHITECTURE
 ================================================================================
+Virtualization architecture (Intel Atom x7-A3960 / VIP RH850 / M24C64 EEPROM
+hardware layer, GHS INTEGRITY bare-metal hypervisor, Android 12 AAOS guest),
+the vda1-vda26 partition table, and the kernel virtualization CONFIG_* list
+are owned by `platform/vip_ipc_ghs.md` (architecture/IPC) and
+`platform/partitions_storage.md` (partition map, device/purpose columns) —
+see those docs for the full diagram and CONFIG_GHS_*/CONFIG_VIRTIO* list.
+This doc does not restate the partition map itself, but keeps the
+per-partition `Signed?` column below (from the original 2025-12-28 live-system
+dump) since `platform/partitions_storage.md` does not carry a signing column:
 
-2.1 VIRTUALIZATION ARCHITECTURE (CONFIRMED)
--------------------------------------------
-
-+-------------------------------------------------------------------+
-|                     HARDWARE LAYER                                 |
-| +----------------+  +-------------------+  +--------------------+  |
-| | Intel Atom     |  | VIP MCU (RH850)   |  | M24C64 EEPROM     |  |
-| | x7-A3960       |  | Vehicle Interface |  | Security Flags    |  |
-| +-------+--------+  +---------+---------+  +---------+----------+  |
-|         |                     |                      |             |
-+---------+---------------------+----------------------+-------------+
-          |                     |                      |
-          v                     | I2C                  |
-+-------------------------------------------------------------------+
-|              GHS INTEGRITY HYPERVISOR (Bare Metal)                |
-| +-------------------+  +-------------------+  +------------------+ |
-| | ghs_isys_a/b      |  | ghs_storage       |  | ghs_log          | |
-| | (Hypervisor OS)   |  | (Persistent)      |  | (Logging)        | |
-| +-------------------+  +-------------------+  +------------------+ |
-|                                                                    |
-| Provides: - Power management       - virtio block devices          |
-|           - VM isolation           - virtio console                |
-|           - IPC with VIP           - PCM audio passthrough         |
-+----+----------------------------+----------------------------------+
-     |                            |
-     | virtio                     | IPC/HDLC
-     v                            v
-+-------------------------------------------------------------------+
-|                     ANDROID GUEST VM                              |
-| +------------------+  +------------------+  +------------------+   |
-| | Linux 4.19.305   |  | Android 12       |  | GM Services      |   |
-| | (Virtualized)    |  | (AAOS)           |  | (Vehicle HAL)    |   |
-| +------------------+  +------------------+  +------------------+   |
-|                                                                    |
-| Block Devices: /dev/block/vdaX (virtio)                           |
-| AVB: System, Vendor, Product protected                            |
-| SELinux: Enforcing (Y181)                                         |
-+-------------------------------------------------------------------+
-
-2.2 PARTITION LAYOUT (From Live System)
----------------------------------------
-| Partition      | Device  | Purpose                    | Signed? |
-|----------------|---------|----------------------------|---------|
-| ghs_isys_a/b   | vda1/2  | GHS INTEGRITY OS           | YES     |
-| ghs_storage    | vda3    | GHS persistent storage     | NO?     |
-| ghs_abl_update | vda4    | GHS ABL update             | YES     |
-| bootloader_a/b | vda5/6  | Intel ABL                  | YES     |
-| boot_a/b       | vda7/8  | Android boot image         | YES     |
-| misc           | vda9    | Boot control               | NO      |
-| vbmeta_a/b     | vda10/11| AVB verification metadata  | YES     |
-| metadata       | vda12   | Android metadata           | NO      |
-| super          | vda13   | Dynamic partitions         | YES     |
-| acpi_a/b       | vda14/15| ACPI tables                | YES?    |
-| acpio_a/b      | vda16/17| ACPI overlay               | YES?    |
-| cert_a/b       | vda18/19| Certificates               | N/A     |
-| persistent     | vda20   | Factory reset protection   | NO      |
-| teedata        | vda21   | TEE data                   | NO      |
-| config         | vda22   | OEM config                 | NO      |
-| calibration    | vda23   | Vehicle calibration        | NO      |
-| ghs_log        | vda24   | GHS logging                | NO      |
-| update_cache   | vda25   | OTA update staging         | NO      |
-| data           | vda26   | User data (encrypted)      | NO      |
-
-2.3 KERNEL VIRTUALIZATION CONFIG (Confirmed)
---------------------------------------------
-CONFIG_HYPERVISOR_GUEST=y
-CONFIG_GHS_GUEST_COMMS=y
-CONFIG_GHS_PARAVIRTUAL_SUPPORT=y
-CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y
-CONFIG_ANDROID_GM_GHS_MMC=y
-CONFIG_SND_GHS_PCM=y              <-- Chime audio via GHS
-CONFIG_VIRTIO=y
-CONFIG_VIRTIO_BLK=y
-CONFIG_VIRTIO_CONSOLE=y
-CONFIG_VIRTIO_PCI=y
-CONFIG_TRUSTY_VIRTIO=m
+| Partition | Device | Signed? |
+|---|---|---|
+| `ghs_isys_a/b` | vda1/2 | YES |
+| `ghs_storage` | vda3 | NO? |
+| `ghs_abl_update` | vda4 | YES |
+| `bootloader_a/b` | vda5/6 | YES |
+| `boot_a/b` | vda7/8 | YES |
+| `misc` | vda9 | NO |
+| `vbmeta_a/b` | vda10/11 | YES |
+| `metadata` | vda12 | NO |
+| `super` | vda13 | YES |
+| `acpi_a/b` | vda14/15 | YES? |
+| `acpio_a/b` | vda16/17 | YES? |
+| `cert_a/b` | vda18/19 | N/A |
+| `persistent` | vda20 | NO |
+| `teedata` | vda21 | NO |
+| `config` | vda22 | NO |
+| `calibration` | vda23 | NO |
+| `ghs_log` | vda24 | NO |
+| `update_cache` | vda25 | NO |
+| `data` | vda26 | NO |
 
 ================================================================================
 3. GHS INTEGRITY HYPERVISOR
 ================================================================================
-
-3.1 GHS INTEGRITY OVERVIEW
---------------------------
-Green Hills Software INTEGRITY is a real-time operating system (RTOS) with
-separation kernel/hypervisor capabilities. In GM's implementation:
-
-- Runs on bare metal Intel x86
-- Provides hardware partitioning between VMs
-- Manages power states and hardware resources
-- Passes through specific hardware to guest VMs
-- Provides virtio interfaces for storage, console, etc.
-
-3.2 GHS PARTITIONS ANALYSIS
----------------------------
-ghs_isys_a/b (vda1/2):
-  - Primary GHS INTEGRITY system image
-  - A/B redundancy for updates
-  - Contains hypervisor kernel and configuration
-  - CRITICAL: This is where VM definitions live
-
-ghs_storage (vda3):
-  - Persistent storage for GHS
-  - May contain VM configurations
-  - May contain security policies
-
-ghs_abl_update (vda4):
-  - ABL (Automotive Bootloader) update staging
-  - Used during secure update process
-
-ghs_log (vda24):
-  - GHS runtime logging
-  - May contain useful debug information
-
-3.3 GHS-ANDROID COMMUNICATION
------------------------------
-GHS communicates with Android via:
-1. virtio block devices (vdaX) - Storage
-2. virtio console - Serial communication
-3. GHS PCM - Audio passthrough for chimes
-4. IPC channels - State management
-
-From VIP logs:
-  IPC Version: 4.1.0
-  API Version: 0404
-  HDLC Window Size: 5
-  Channels: 12, 14, 17, 18
-
-3.4 GHS SECURITY MODEL
-----------------------
-GHS INTEGRITY uses:
-- Separation kernel architecture
-- Signed boot chain
-- Memory protection between VMs
-- Hardware-backed security
-
-HYPOTHESIS: GHS likely validates Android VM image signature before boot.
-If we can:
-  a) Find GHS signing keys, OR
-  b) Disable GHS signature verification, OR
-  c) Exploit GHS to load unsigned VMs
-Then custom AOSP becomes possible.
+GHS INTEGRITY overview, partition roles (ghs_isys/_storage/_abl_update/_log),
+GHS-Android IPC (version 4.1.0, API 0404, HDLC window 5, channels 12/14/17/18),
+and the GHS security model are owned by GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md
+(GIC) — see its PCI driver table, task list, and §11 attack-surface catalog.
+The original HYPOTHESIS here ("GHS likely validates Android VM image signature
+before boot; find/disable/exploit that to boot custom AOSP") is GIC's §11
+question to answer, not restated here.
 
 ================================================================================
 4. BOOT CHAIN AND SIGNING REQUIREMENTS
 ================================================================================
 
-4.1 COMPLETE BOOT SEQUENCE
---------------------------
-1. VIP MCU powers on, reads EEPROM configuration
-2. VIP enables Intel SoC power rails
-3. Intel x86 executes from SPI flash (ABL stage 1)
-4. ABL loads GHS INTEGRITY from ghs_isys partition
-5. GHS initializes hardware, creates VM partitions
-6. GHS loads Android boot image into VM
-7. Android kernel initializes (as virtio guest)
-8. Android boot image contains init.rc
-9. init spawns services including gmprotokey
-10. gmprotokey communicates with VIP for ADB auth
+4.1 Boot sequence, signing hierarchy (VIP -> Intel ABL -> GHS INTEGRITY ->
+Android/AVB), and AVB GSI pubkeys (q-gsi/r-gsi/s-gsi) are owned by
+`platform/boot_chain.md`. This doc does not restate the 10-step sequence or
+the 4-level signing table; see that doc for the full detail.
 
-4.2 SIGNING HIERARCHY
----------------------
-Level 1: VIP Bootloader/App
-  - Signed by GM
-  - Flashed via DPS with VIP_APPLICATION/VIP_BOOTLOADER signature
+4.2 ELK / OEM-UNLOCK STATUS (summary; full mechanism in platform/elk_recovery.md)
+-----------------------------------------------------------------------------------
+ELK (Intel ABL / "SOC_ABL", module 85738845) is Intel Kernelflinger fastboot
+with AVB verification active; `fastboot flashing unlock` is gated by
+device-state, same as stock Android. There is no external-USB-rootfs path
+through it. The realistic custom-OS chain is: reach ELK -> flip
+`oem_unlock_allowed` (currently 0) -> `fastboot flashing unlock` (currently
+BLOCKED on step 2) -> flash unsigned images. Both gates are OPEN/unresolved;
+no software path from this OS is known to flip either. [C] 2026-10-08
+binary trace confirms the lock state is read from the UEFI NV variable
+`OEMLock` (GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1`) via
+`read_device_state_efi()`, is not Boot-Guard-hashed (BPM.met covers IBBL/IBB/
+OBB code only, not the NVRAM varstore), and is not TPM2/RPMB-backed per static
+trace of SOC_ABL — whether the varstore is SPI-NOR (offline-settable) or
+RPMB-backed (replay-protected) is the decisive open physical question. Full
+binary-RE detail (offsets, BPM.met findings F1/F2/F4, TXE FPF/OTP caveats) and
+the live-tested ELK-trigger mechanism are owned by `platform/elk_recovery.md`
+and GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md (GBUR) §2.3.2/§2.3.7 respectively —
+see those docs, not this summary, for anything beyond the "both gates closed,
+no software path" conclusion this roadmap depends on.
 
-Level 2: Intel ABL
-  - Signed by Intel/GM
-  - INTEL_ABL signature type
+4.3 GSI/DSU STATUS
+-------------------
+Developer Options exposes a DSU Loader / GSI section, but it is non-functional.
+History: original Dec-2025 text guessed five possible causes (SELinux
+enforcement, update_engine permissions, network block, GHS/DSU incompatibility,
+insufficient /data space) — all superseded. The confirmed root cause
+(2026-09-03, live OS dump): `com.android.dynsystem`, the DSU front-end app, is
+absent from the live 89-package set; the Developer-Options DSU Loader and the
+`am start-activity -n com.android.dynsystem/...` intent path fail with
+activity-not-found, not a policy denial. `gsid`/`gsi_tool` are retained with
+full stock SELinux policy (block is not at the policy layer); the direct
+`gsi_tool` path is closed by the user build (`ro.debuggable=0`, shell uid
+2000, `MANAGE_DYNAMIC_SYSTEM` signature|privileged permission); and booting
+any staged GSI is separately gated by locked verified boot
+(`flash.locked=1`, `device_state=locked`, `verifiedbootstate=green`,
+`sys.oem_unlock_allowed=0`), with fstab trusting only Google GSI keys (q/r/s).
+Canonical/full provenance: `platform/boot_chain.md` §GSI/DSU Status; this is a
+summary copy, not the owner.
 
-Level 3: GHS INTEGRITY
-  - Signed by GHS/GM
-  - HOST_OS_IMAGE signature type
-
-Level 4: Android Partitions (AVB)
-  - Signed with Android Verified Boot
-  - Keys in vbmeta partition
-  - GSI keys present: q-gsi, r-gsi, s-gsi
-
-4.3 AVB KEYS DISCOVERY
-----------------------
-From fstab, AVB accepts these public keys:
-  /avb/q-gsi.avbpubkey  (Android Q GSI)
-  /avb/r-gsi.avbpubkey  (Android R GSI)
-  /avb/s-gsi.avbpubkey  (Android S GSI)
-
-4.3b ELK / OEM-UNLOCK ASSESSMENT (2026-09-10, ASSESSMENT NOT SOLVED)
----------------------------------------------------------------------
-ELK (Level 2, "Intel ABL" above) is Intel **Kernelflinger fastboot** -- a real fastboot
-implementation, not a shell -- with AVB verification ACTIVE and `fastboot flashing unlock`
-gated by device-state, same as stock Android fastboot unlock. There is no external-USB-rootfs
-path through it.
-
-Realistic custom-OS chain, as currently understood:
-  1. Reach ELK (fastboot mode)
-  2. Set `oem_unlock_allowed` -- currently 0 (device locked, verifiedbootstate=green,
-     dm-verity RO); this is the blocking gate
-  3. `fastboot flashing unlock` -- gated on device-state, currently BLOCKED by step 2
-  4. Flash unsigned images once unlocked
-
-BOTH gates (oem_unlock_allowed=0, device_state=locked) are currently OPEN/unresolved --
-no known software path found yet to flip either from this OS. Fallbacks if the software
-path stays closed: VIP glitch/JTAG (see 5.3/5.4, 7.3) or chip-off of a non-secure-boot
-storage segment. This supersedes any earlier assumption that the EEPROM/ADB bypass alone
-provides a path to CSM boot ownership -- see 5.2 LIMITATION note and 7.1 below.
-
-[C] 2026-10-08 (avbtool/binary, SOC_ABL module 85738845 -- CONFIRMED-FROM-BINARY, F1):
-The "device_state=locked" gate above is not an abstract fastboot flag -- it is backed
-by a concrete, decoded mechanism. SOC_ABL is kernelflinger ("ELK"), a 32-bit x86 ELF at
-container offset 0x301288. Device lock state is read from the UEFI NV variable
-`OEMLock` (GUID 1ac80a82-4f0c-456b-9a99-debeb431fcc1) via read_device_state_efi().
-The ordinary successful OEMLock read uses bit 0 (0x01). Correction 2026-11-12:
-this is not a complete predicate; gated missing-state/provisioning fallbacks
-also exist. See GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md section 2.3.2.
-The observed locked state is consistent with the ordinary zero-state path;
-the actual live EFI variable contents were not established by this static trace. USE_TPM was NOT compiled into this module (zero TPM2 NV-index constants
-or TPM2 calls found) -- so this is explicitly NOT an fTPM/TPM2-backed lock, and NOT
-RPMB-backed (`ABL.rpmb=` is only an androidboot cmdline token, not the lock store).
-A secondary provisioning-UNLOCKED path (OEMLock NOT_FOUND + non-virtual boot +
-life-cycle != ENDUSER) is gated by a manufacturing/SKU life-cycle fuse and stays LOCKED
-on a production ENDUSER unit.
-
-F2 (UNKNOWN-FROM-FILES): OEMLock is NOT covered by any Boot Guard hash -- the IPK's
-Boot Policy (BPM.met) digests cover IBBL/IBB/OBB *code* only, not the UEFI NVRAM
-varstore. So flipping the OEMLock variable, if reachable, would not break any Boot
-Guard hash. Whether Boot Guard's code-integrity check is itself REJECTED or only
-measured on mismatch depends on the Intel TXE FPF/OTP fuse state, not present in this
-package -- settle via MSR 0x13A or a full ISSI SPI IFWI dump (Flash Descriptor + FPF
-region).
-
-F4 open question (UNKNOWN-FROM-FILES): whether the UEFI varstore physically holding
-OEMLock is SPI-NOR-backed (offline-settable, e.g. via the ISSI boot flash) or
-RPMB-backed (replay-protected) is undetermined from the ABL binary alone -- a layer
-below kernelflinger. This is the decisive next physical step and keeps this section's
-"ASSESSMENT NOT SOLVED" framing: it narrows the open question but does not solve it.
-
-4.4 GSI/DSU STATUS (December 2025 Testing)
-------------------------------------------
-Developer Options contains a "DSU Loader" / GSI section, BUT it is non-functional.
-
-INFRASTRUCTURE PRESENT:
-  - dynamic_system binder service (#95)
-  - gsid.rc init configuration
-  - ro.treble.enabled = true
-  - ro.vndk.version = 32 (Android 12)
-  - ro.product.first_api_level = 29 (Android 10)
-
-NOT A SEPOLICY BLOCKER:
-  (dontaudit gm_update_engine gsi_metadata_file_32_0 (dir (search)))
-
-  This SELinux rule SUPPRESSES THE AUDIT LOG for gm_update_engine accessing GSI
-  metadata (a `dontaudit` rule hides the denial from logs; it does NOT itself grant
-  or deny access). It also targets the OTA A/B engine, not the DSU path.
-
-CONFIRMED ROOT CAUSE (2026-09-03, live OS dump):
-  The DSU Loader is non-functional because the DSU FRONT-END APP IS REMOVED.
-  `com.android.dynsystem` is ABSENT from the live 89-package set (Y181 Apr-2026
-  packages.txt). The DSU Loader in Developer Options and the intent path
-  `am start-activity -n com.android.dynsystem/…VerificationActivity …START_INSTALL`
-  fail with activity-not-found — not a policy denial.
-  - `gsid` daemon + `gsi_tool` are RETAINED with full stock SELinux policy (~50 allow
-    rules; can write gsi_metadata_file/gsi_data_file/ota_image_data_file, drive dm/loop
-    devices, sys_admin). The block is NOT at the policy layer.
-  - Direct `gsi_tool` path closed by user build (ro.build.type=user, ro.debuggable=0,
-    shell uid 2000) and the MANAGE_DYNAMIC_SYSTEM signature|privileged permission.
-  - Booting any staged GSI is gated by locked verified boot (flash.locked=1,
-    device_state=locked, verifiedbootstate=green, sys.oem_unlock_allowed=0); fstab
-    trusts only Google GSI keys (q/r/s), so only a Google-signed GSI could pass AVB.
-  See platform/boot_chain.md §GSI/DSU Status for full provenance.
-
-SUPERSEDED FAILURE-CAUSE GUESSES (kept for history; root cause is above):
-  1. SELinux enforcement blocking GSI operations
-  2. GM update_engine lacks GSI metadata permissions
-  3. Network download blocked by GM servers
-  4. GHS hypervisor may not support DSU partition layout
-  5. Insufficient /data space for DSU image
-
-DIAGNOSTIC SCRIPT:
-  Run: scripts/diagnose_gsi.sh
-  This captures logcat/dmesg while attempting GSI download.
-
-ALTERNATIVE GSI APPROACHES:
-  1. Manual GSI flash via fastboot (if accessible)
-  2. Y177 downgrade first -- CORRECTED 2026-08-25: stock Y177 is enforcing, no permissive help (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
-  3. Modify SEPolicy to allow GSI operations
-  4. Direct partition flash via recovery/DPS
-
-4.4 VBMETA STRUCTURE
---------------------
-vbmeta partition contains:
-- Rollback index (anti-downgrade)
-- Hash descriptors for protected partitions
-- Public keys for verification
-
-If vbmeta could be modified to:
-  a) Add custom signing key, OR
-  b) Set verification mode to "disabled"
-Then AVB bypass becomes possible.
-NOTE: even a successful AVB bypass would NOT enable a Y177 downgrade — the GHS
-hypervisor enforces its OWN rollback counter (stored in misc / vda9, NOT in vbmeta)
-and rejects an older image at boot independently of AVB. Both vbmeta.rollback_index
-values are 0; the enforcing counter is the GHS one.
+4.4 VBMETA / ROLLBACK
+-----------------------
+vbmeta holds the anti-downgrade rollback index, hash descriptors, and
+verification public keys. A hypothetical AVB bypass (custom signing key or
+disabled verification mode) would not, by itself, enable a Y181->Y177
+downgrade: the GHS hypervisor enforces its own independent rollback counter
+in `misc`/vda9 (not vbmeta) and rejects an older image at boot regardless of
+AVB state. Both vbmeta.rollback_index values are 0; the GHS counter is the
+actual enforcing gate. Full downgrade-mechanism detail, including the GHS
+rollback-counter implementation and the live downgrade test, is owned by
+GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (GDP); do not restate it here (see §7.2
+History below for how this affects the roadmap).
 
 ================================================================================
 5. VIP FIRMWARE MANIPULATION VECTORS
 ================================================================================
+VIP (RH850) security responsibilities (ADB authentication via PROTOKEY/ICUSB,
+EEPROM security-flag verification, power-state management, CAN comms with
+BCM, IPC with SoC/GHS), the EEPROM SBI/MEC bypass mechanism, and the VIP
+exploitation-vector list (UART console, DPS flash, JTAG, UDS CalDef override)
+are owned by `platform/vip_ipc_ghs.md` (VIP role) and
+EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md / `platform/eeprom_i2c_security.md`
+(EEPROM mechanism, canonical per ELA §0.10-0.14). This doc's only retained
+fact: the EEPROM/ADB bypass's ceiling is relevant to the roadmap because it
+caps what §7's "GSI boot test" / vector-1 path can reach even if successful —
+the bypass tops out at Android-guest `uid 2000` (no known EEPROM path to
+root), so CSM boot ownership for a custom-AOSP replacement still needs either
+the T1/DoIP-to-VIP path or the ELK/fastboot unlock chain in §4.2, not USB adb.
+See ELA/`platform/eeprom_i2c_security.md` for the address-level mechanism and
+the 2026-09-26 correction (ADB gating is SoC-side MEC/`is_secure_mode`, not
+seed-consuming) — not restated here.
 
-5.1 VIP SECURITY RESPONSIBILITIES
----------------------------------
-The VIP MCU (RH850) controls:
-- ADB authentication (PROTOKEY/ICUSB)
-- EEPROM security flag verification
-- Power state management
-- CAN bus communication with BCM
-- IPC communication with SoC/GHS
-
-5.2 EEPROM BYPASS (PROVEN WORKING)
-----------------------------------
-Address 0x0440: C3 00 C3 -> 5A FF 5A (ADB Enable)
-Address 0x0A80: FF FF FF -> 5A FF 5A (Backup)
-
-When set to 5A FF 5A:
-- VIP returns all-0xFF seed (bypass mode)
-- ADB authentication passes without GM client
-- PROTOKEY exchange is skipped
-
-CORRECTED 2026-09-26 (primary evidence: ecu80_READ CAN capture + Y175 adb-auth binary +
-GMAuthManagerService + VIP logs): the middle bullet conflates two SEPARATE paths. The all-0xFF seed
-is a $27/CAN-only effect (PROTOKEY/BCM skip). ADB is NOT gated by that seed — nothing consumes it to
-open adb; the guest gate is SoC-side: VIP reads SBI -> transmits MEC via DID 0xF1A0 -> SoC
-gm_adb_auth_init sets is_secure_mode (mec in [1,255] => cert bypassed). Clearing SBI does enable ADB,
-but via the MEC/is_secure_mode path, not "ADB auth passes because of the seed". Canonical:
-EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.10-0.14.
-
-LIMITATION: Does not affect GHS/AVB security. Also (2026-09-10): this path tops out at
-`uid 2000` -- no known EEPROM path to root has been found. USB adb reaches Android-guest
-userspace only; the guest cannot escape the GHS container from there. CSM *boot* ownership
-therefore needs the T1/DoIP-to-VIP path (5.3/5.4) or the ELK/fastboot unlock chain (4.3b),
-not USB adb.
-
-5.3 VIP FIRMWARE EXPLOITATION VECTORS
--------------------------------------
-1. UART Console (/dev/ttyACM1)
-   - World-readable device
-   - May provide VIP debug access
-   - 74LVC08A gate may be blocking TX
-
-2. VIP Flash via DPS
-   - Requires VIP_APPLICATION signature
-   - No known key bypass
-
-3. VIP JTAG
-   - Physical access to debug port
-   - Could dump/modify firmware
-   - Would enable full RE of PROTOKEY
-
-4. UDS Calibration Override
-   - DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE in CalDef
-   - If accessible, might disable security checks
-
-5.4 POTENTIAL VIP MODIFICATIONS FOR AOSP
-----------------------------------------
-If VIP firmware could be modified:
-- Disable GHS signature verification IPC
-- Always return "authenticated" for PROTOKEY
-- Allow unsigned boot chain
-- Pass through boot control without validation
+Potential VIP firmware modifications that would enable a custom-AOSP boot
+(disable GHS signature-verification IPC, always report "authenticated" for
+PROTOKEY, allow an unsigned boot chain, pass through boot control without
+validation) remain unexplored hypotheses pending VIP JTAG access (§7.3).
 
 ================================================================================
 6. VEHICLE INTEGRATION REQUIREMENTS
 ================================================================================
 
 6.1 FUNCTIONS THAT MUST BE PRESERVED
-------------------------------------
-| Function              | Source        | Dependency           |
-|-----------------------|---------------|----------------------|
-| Turn signal chime     | GHS PCM       | GHS hypervisor       |
-| Door open chime       | GHS PCM       | GHS hypervisor       |
-| Seatbelt chime        | GHS PCM       | VIP + GHS            |
-| Reverse camera        | Video input   | LVDS + calibration   |
-| 360 surround view     | Multi-camera  | LVDS + calibration   |
-| Climate control       | CAN bus       | Vehicle HAL          |
-| Steering wheel buttons| CAN bus       | Vehicle HAL          |
-| Vehicle speed         | CAN bus       | Vehicle HAL          |
-| Gear indicator        | CAN bus       | Vehicle HAL          |
+--------------------------------------
+| Function               | Source        | Dependency           |
+|-------------------------|---------------|----------------------|
+| Turn signal chime      | GHS PCM       | GHS hypervisor       |
+| Door open chime        | GHS PCM       | GHS hypervisor       |
+| Seatbelt chime         | GHS PCM       | VIP + GHS            |
+| Reverse camera         | Video input   | LVDS + calibration   |
+| 360 surround view      | Multi-camera  | LVDS + calibration   |
+| Climate control        | CAN bus       | Vehicle HAL          |
+| Steering wheel buttons | CAN bus       | Vehicle HAL          |
+| Vehicle speed          | CAN bus       | Vehicle HAL          |
+| Gear indicator         | CAN bus       | Vehicle HAL          |
 
 6.2 GM-SPECIFIC ANDROID COMPONENTS
-----------------------------------
-From service enumeration:
-- gm_vehicle_hal: Vehicle HAL implementation
-- gm-location-hal-1_0: Location services
-- gmprotokey: ADB authentication
-- gmlogger: Debug logging
-- gm_update_engine: OTA updates
+-------------------------------------
+From service enumeration: `gm_vehicle_hal` (Vehicle HAL), `gm-location-hal-1_0`
+(location services), `gmprotokey` (ADB authentication), `gmlogger` (debug
+logging), `gm_update_engine` (OTA updates). Component-level detail on
+`gmprotokey`'s IPC chain and auth gate is owned by
+GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md / `platform/security.md` — see those
+for the ProtoKey mechanism, not restated here.
 
-For custom AOSP, we would need:
-1. Vehicle HAL reimplementation (or use generic VHAL)
+For a custom AOSP replacement, the following would need reimplementation:
+1. Vehicle HAL (reimplementation, or use the generic VHAL)
 2. Camera HAL for LVDS inputs
 3. Audio HAL for GHS PCM passthrough
 4. CAN bus message parsing
 
 6.3 CALIBRATION DATA REQUIREMENTS
----------------------------------
-Stored in /mnt/vendor/calibration/:
-- Camera parameters
-- Display calibration
-- Audio tuning
-- Vehicle-specific settings
-
-May need to preserve or recreate for custom AOSP.
+------------------------------------
+Stored in `/mnt/vendor/calibration/`: camera parameters, display calibration,
+audio tuning, vehicle-specific settings. May need to be preserved or
+recreated for a custom AOSP build. Live RPO/props/CalSets.db facts are owned
+by `platform/vehicle_config.md`; not restated here.
 
 ================================================================================
 7. ATTACK SURFACE PRIORITIZATION
 ================================================================================
+This section and §8 are this doc's unique contribution to the corpus — no
+`platform/` doc owns attack-surface prioritization or a phased research
+roadmap for the AOSP-replacement goal specifically.
 
 7.1 HIGH PRIORITY VECTORS
--------------------------
+----------------------------
 1. GSI BOOT TEST (HIGHEST)
-   - AVB keys include GSI keys
-   - Test if stock Android GSI boots
-   - If successful, provides immediate custom AOSP path
-   - NOTE (2026-09-10): the realistic general chain is the ELK/fastboot oem_unlock path
-     in 4.3b (ELK -> oem_unlock_allowed -> fastboot flashing unlock -> flash unsigned);
-     both gates are currently open/unresolved -- assessment, not a solved path.
+   AVB trusts GSI keys (q/r/s-gsi); test whether a stock Android GSI boots.
+   If successful, provides an immediate custom-AOSP path. The realistic
+   general chain, however, is the ELK/fastboot `oem_unlock` path in §4.2
+   (ELK -> `oem_unlock_allowed` -> `fastboot flashing unlock` -> flash
+   unsigned); both gates are currently open/unresolved — this is an
+   assessment, not a solved path.
 
-2. Y177 DOWNGRADE (HIGH)
-   - Version check confirmed disabled
-   - CORRECTED 2026-08-25: would NOT -- stock Y177 boots enforcing (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
-   - Enables more exploration
-   *** CORRECTION (verified since): this vector is DEAD. The "version check disabled"
-       flag only affects the inactive-slot WRITE phase. Y181->Y177 downgrade is BLOCKED
-       at boot by the GHS hypervisor's independent rollback counter (in misc / vda9),
-       confirmed FAILED on test. See GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt and
-       UPDATE_PROCESS_ANALYSIS.txt. Demote from the active roadmap. ***
-
-3. GHS PARTITION ANALYSIS (HIGH)
-   - Dump ghs_isys_a/b partitions
-   - Analyze VM configuration
-   - Find signature verification code
+2. GHS PARTITION ANALYSIS (HIGH)
+   Dump `ghs_isys_a`/`_b`, analyze VM configuration, find signature
+   verification code (feeds GIC's §11 attack-surface question, not restated
+   here).
 
 7.2 MEDIUM PRIORITY VECTORS
----------------------------
-4. VBMETA MODIFICATION
-   - Attempt to disable AVB verification
-   - Would allow unsigned Android images
+-------------------------------
+3. VBMETA MODIFICATION — attempt to disable AVB verification; would allow
+   unsigned Android images (does not, by itself, unblock a Y177 downgrade —
+   see §4.4).
+4. VIP UART EXPLOITATION — access the debug console; may reveal a security
+   bypass.
+5. GHS_LOG ANALYSIS — may contain boot debug info revealing the VM-loading
+   process.
 
-5. VIP UART EXPLOITATION
-   - Access debug console
-   - May reveal security bypass
-
-6. GHS_LOG ANALYSIS
-   - May contain boot debug info
-   - Could reveal VM loading process
+Y177 DOWNGRADE — RETIRED VECTOR
+History: originally ranked HIGH priority on the theory that "version check
+confirmed disabled" at write time would let an inactive-slot Y177 image boot,
+unlocking further exploration. Corrected 2026-08-25 and reconfirmed on live
+test: stock Y177 boots SELinux-enforcing, so even a successful downgrade
+would not grant permissive access (security/KERNEL_CVE_ANALYSIS.txt Appendix
+E.8). Separately, the "version check disabled" flag affects only the
+inactive-slot WRITE phase — the GHS hypervisor's independent rollback counter
+(in `misc`/vda9, not vbmeta) blocks the downgrade at boot regardless, and this
+was confirmed FAILED on test. This vector is DEAD; demoted out of the active
+roadmap. Full downgrade-mechanism detail: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt
+(GDP); live boot-chain evidence: GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md (GBUR).
 
 7.3 RESEARCH VECTORS (LONG TERM)
---------------------------------
-7. VIP JTAG DEBUG
-   - Full firmware extraction
-   - Complete security model RE
-
-8. GHS INTEGRITY RE
-   - Understand VM signing
-   - Find verification bypass
-
-9. Custom GHS VM Image
-   - Create unsigned VM definition
-   - Boot custom AOSP under GHS
+------------------------------------
+6. VIP JTAG DEBUG — full firmware extraction, complete security-model RE.
+7. GHS INTEGRITY RE — understand VM signing, find a verification bypass.
+8. CUSTOM GHS VM IMAGE — create an unsigned VM definition, boot custom AOSP
+   under GHS.
 
 ================================================================================
 8. RESEARCH ROADMAP
 ================================================================================
 
 8.1 PHASE 1: VALIDATION (Immediate)
------------------------------------
-[ ] Test Y177 downgrade via DPS
-[ ] Dump ghs_isys_a partition via ADB (may fail)
-[ ] Dump ghs_log partition via ADB
+---------------------------------------
+[ ] Dump `ghs_isys_a` partition via ADB (may fail)
+[ ] Dump `ghs_log` partition via ADB
 [ ] Test GSI image boot (if AVB can be bypassed)
-[ ] Analyze /avb/*.avbpubkey files
-[ ] Check for fastboot/bootloader access methods
+[ ] Analyze `/avb/*.avbpubkey` files
+[ ] Check for fastboot/bootloader access methods (ELK path, §4.2)
+Note: "Test Y177 downgrade via DPS" is removed from this phase — see §7.2,
+the vector is confirmed dead.
 
 8.2 PHASE 2: ANALYSIS (Short Term)
-----------------------------------
+----------------------------------------
 [ ] Full GHS partition analysis
 [ ] VIP UART console exploration
 [ ] AVB/vbmeta structure analysis
@@ -547,14 +335,14 @@ May need to preserve or recreate for custom AOSP.
 [ ] CalDef security override testing
 
 8.3 PHASE 3: EXPLOITATION (Medium Term)
----------------------------------------
+---------------------------------------------
 [ ] AVB bypass development
 [ ] Custom boot image creation
 [ ] GHS VM configuration modification
 [ ] VIP firmware analysis (if JTAG available)
 
 8.4 PHASE 4: INTEGRATION (Long Term)
-------------------------------------
+--------------------------------------------
 [ ] Custom AOSP build with GHS support
 [ ] Vehicle HAL reimplementation
 [ ] Camera HAL development
@@ -583,37 +371,7 @@ ls -la /dev/block/by-name/
 # Check for GSI compatibility
 getprop ro.product.first_api_level
 
-================================================================================
-APPENDIX B: ADDITIONAL EEPROM FLAGS (From Previous Analysis)
-================================================================================
-
-From EEPROM_Analysis_Report.md, additional flags that may aid research:
-
-POTENTIAL DEVELOPER/DEBUG FLAGS:
-| Address | Current | Frame | Suspected Purpose |
-|---------|---------|-------|-------------------|
-| 0x0B40  | 0x00    | 0x69  | Developer/Debug mode |
-| 0x0020  | 0x00    | 0x69  | Unknown feature toggle |
-| 0x0B80  | 0x00    | 0xF0  | Unknown feature |
-| 0x0BC0  | 0x00    | 0x69  | Unknown feature |
-| 0x1500  | 0x00    | 0x69  | Unknown feature |
-
-UI FLAGS BLOCK (0x0E80-0x0EAF):
-- 0xE82: Touch input enabled
-- 0xE83: Haptic feedback
-- 0xE84: UI sound effects
-- 0xE85: Transition animations
-- 0xE86: Auto-brightness
-- 0xE87-0xE88: Reserved (potential hidden features)
-
-BOOT/RESET FLAGS:
-- 0x001: Boot state (0x00=virgin, 0x01=normal, 0xFF=corrupted)
-- 0x021: Initialization flag
-
-TESTING PRIORITY FOR AOSP RESEARCH:
-1. 0x0B40 → 0xFF (may enable developer mode)
-2. 0xE87 → 0x01 (may enable hidden feature)
-3. 0xE88 → 0x01 (may enable hidden feature)
+Fastboot/avbtool/ELK-specific commands and sequencing: `platform/elk_recovery.md`.
 
 ================================================================================
 APPENDIX C: CRITICAL FILE LOCATIONS
@@ -634,6 +392,24 @@ Vehicle Integration:
   /vendor/lib64/hw/android.hardware.automotive.vehicle*
   /vendor/etc/vhal/
   /mnt/vendor/calibration/
+
+Full partition map (sizes, signing column, all vda1-26) and EEPROM address
+tables (dev/debug flags 0x0B40/0x0020/0x0B80/0x0BC0/0x1500, UI flags
+0xE82-0xE88, boot/reset flags 0x001/0x021): `platform/partitions_storage.md`
+and `platform/eeprom_i2c_security.md` respectively — moved there on
+consolidation (duplicated the Appendix B table from research/
+EEPROM_Analysis_Report.md verbatim; not restated here).
+
+================================================================================
+OPEN CONFLICTS
+================================================================================
+None specific to this doc. This doc's attack-surface/roadmap content does not
+carry an unresolved cross-doc contradiction of its own; the underlying
+technical disputes it touches (EEPROM marker-byte identity, MEC semantics,
+Y181/Y177 downgrade rejection point) are owned and tracked in
+EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md, GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md,
+and GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt's own "Open conflicts" sections
+respectively — see those docs, not this one.
 
 ================================================================================
 END OF DOCUMENT

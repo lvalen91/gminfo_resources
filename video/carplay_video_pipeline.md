@@ -532,3 +532,24 @@ All specifications from analysis of:
 - `/Users/zeno/Downloads/misc/GM_research/gm_aaos/analysis/adb_Y181/`
 - Binary analysis: `strings`, `readelf`, `nm` on libNme*.so
 - ADB dumps: processes, services, logcat
+
+## MFi authentication I2C path — 2026-11-17
+
+The Y175 cleanroom `vendor/lib64/vendor.harman.hardware.ame@1.0-hal.so`
+contains `DiagnosticsHal::readAppleAuthChipId()` at ELF VA0x24d0
+(Ghidra import address0x1024d0). SHA256:
+`36c769fd7c2c856e63dc08bcc31ac563bc7f9eac1ed6ff4557321709904a941b`.
+The function explicitly opens `/dev/i2c-2`, selects 7-bit slave0x10 with
+`ioctl(fd,0x703,0x10)`, writes register selector0x00, then reads three bytes
+with retries. This directly establishes **AAOS bus2 / slave0x10** as the
+Apple authentication diagnostic path; generic Cinemo library support for other
+I2C/SMSC backends does not identify the active board path on its own.
+
+Native probe06 exposes DesignWare instance2 at PCI00:16.2 as `/dev/i2c-5`.
+That is the candidate translation from guest bus numbering, not a confirmed
+working MFi path. A bounded targeted transaction selecting0x00 at slave0x10
+on native bus5 returned `i2ctransfer: I2C_RDWR: Remote I/O error`; the subsequent
+read was not issued. No blind scan, authentication challenge, certificate read,
+provisioning command or reset was sent. Physical mapping, power/reset/pinmux,
+and native accessibility remain unresolved. Do not label native i2c-2 as MFi:
+it is the i915 GMBUS misc adapter in this image.

@@ -1,25 +1,63 @@
-# GHS INTEGRITY Hypervisor - Comprehensive Analysis
+# GHS INTEGRITY Hypervisor — Comprehensive Analysis
 
-**Date:** 2026-01-05
-**Binary:** SOC_HOSTOS (85098662)
-**Size:** 14,929,320 bytes (extracted ELF)
-**Format:** ELF (header claims 32-bit LSB / Intel 80386) but **the code is x86-64** (CORRECTED 2026-08-26: `movabs`/REX-prefixed instructions, `crt_x64.86`/`libkernel.86_x64`; the EM_386 header is misleading — disassemble as `x86:LE:64`), statically linked; kernel symbols retained, application/task symbol coverage incomplete
+**Binary:** SOC_HOSTOS (85098662), INTEGRITY IoT 2020.18.19, Core 23739 / Modules 11500,
+GM Version MY22-026, target Intel Apollo Lake (gm-i35). Build path
+`/home/mal/gm_release/MY22-026/final/iot/rtos/`.
+**Format:** ELF header claims 32-bit LSB/Intel 80386, but the code is x86-64 (`movabs`/REX-prefixed
+instructions, `crt_x64.86`/`libkernel.86_x64`; disassemble as `x86:LE:64`, not 32-bit — corrected
+2026-08-26). Statically linked; kernel symbols retained, task/application symbol coverage incomplete.
+**Image identity:** all available Y175/Y177/Y181/Y181B copies of `85098662` are byte-identical —
+14,929,956 B wrapper, SHA-256 `317ae85ccf759476755411e66593dde9f879a43732cd342b4e101e4026535ed3`.
+Stripping the 0x27c wrapper yields the analyzed `hostos.elf` byte-for-byte (SHA-256
+`d900af484f466b35f4d9153ddf8adf19482f91d728b707f10fe89d326d4870df`, 14,929,320 B — the two sizes
+reconcile exactly: `14,929,956 − 636 (0x27c) = 14,929,320`, not a conflict). Saved Ghidra project:
+9,424 functions, language `x86:LE:64:default`, image base `0x00200000`, higher-half base
+`0xffff800000000000` (kernel absolute references use this base; addresses below omit it unless noted).
 
-> Companion doc: `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` covers boot/update/recovery
-> mechanics in depth (BCB/misc byte layout, USB/protokey/capsule trigger files,
-> See-Dealer/ELK/Diagnostic boot modes, Lifecycle SoH handshake) — complementary to this
-> RE inventory. The former `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` is consolidated here in §15.
->
-> Companion doc: `GHS_FILE_MAP_85098662.md` is the edge-to-edge byte map of the same image
-> (sections, `.boottable`, `.secinfo`). The VM/partition configuration derived from `.boottable`
-> is in §7A below; findings tagged `[FW 85098662; 3-Opus verified 2026-10-10]` were re-derived
-> independently by three Opus agents from the firmware bytes. Anything marked `[UNVERIFIED]` was not.
+## Scope
+
+This is the GHS INTEGRITY hypervisor's own architecture and RE inventory: PCI driver table, task
+list, IPC `ConnTo*` map, VMM/VT-d/guest-memory function lists, the `.boottable`-derived guest/VM
+configuration (§7A), `/dev/ghs/*` + SELinux labels, the attack-surface catalog (§11), and the
+consolidated privacy-capability assessment (§12, formerly split across old §13-15).
+
+**Not here** — boot phases, special boot modes, recovery/fastbootd/ELK privilege boundaries, the
+SBI→MEC→ADB-cert bypass chain, A/B+BCB+trigger-file mechanics, and live binary-provenance/security
+evidence: see `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` (GBUR). Byte-level section/offset map of this
+same image: see `GHS_FILE_MAP_85098662.md` (GFM). EEPROM memory map and SBI-bypass mechanism:
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (ELA). SecurityAccess/seed-key/calibration-signature detail:
+`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK). Y181→Y177 downgrade/rollback mechanism:
+`GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` (GDP). AVB/vbmeta parser fuzzing and the confirmed
+`avb_*` guard-function RE (in `elk_inner.elf`, not `.vmm1`): `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`
+(VPF) — this doc's §6/§11 keep only the static AVB *function-name* inventory, not that guard RE.
+
+**Retired into this doc:** `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` was a 9-line pure redirect stub
+pointing at this doc's former §15 ("privacy-capability-assessment-consolidated"). Confirmed: that
+target existed and is now folded, with former §13/§14 (which duplicated §15, see History), into
+§12 below. The stub is retired; nothing else needed migrating from it.
+
+## Evidence tags
+
+Reuses the platform legend: `[C]` confirmed live, `[V]` verified, `[FW]`/`[S]` static firmware,
+`[inferred]`, `[U]` unverified, `[X]` external. This doc's own `[FW 85098662; 3-Opus verified
+2026-10-10]` tag (independently re-derived from firmware bytes by three Opus agents) is the
+`[FW]`/`[V]` tier; `[UNVERIFIED]` is this doc's `[U]`. Only §7A carries per-claim tags in the
+source material; §1, §3-§6, §8-§11 are untagged static string/symbol inventory (radare2/Ghidra) —
+treat as `[FW]`-tier but behaviour-*unverified* unless a tag says otherwise. §12 (privacy
+capability) is explicitly capability inference, not measured behaviour — see its own caveats.
+
+## Related
+
+`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`, `GHS_FILE_MAP_85098662.md`,
+`GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt`, `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`,
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, `USB_ADB_SESSION_FINDINGS_2026-10-10.md`,
+`HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` (dual-owns the VIP-IPC/ELK-trigger catalog entry),
+`../platform/boot_chain.md`, `../platform/security.md`, `../platform/ethernet_networking.md`,
+`../video/display_subsystem.md`, `../runtime/boot_timing.md`.
 
 ---
 
 ## 1. System Overview
-
-### Version Information
 
 | Property | Value |
 |----------|-------|
@@ -30,8 +68,6 @@
 | **Build Path** | /home/mal/gm_release/MY22-026/final/iot/rtos/ |
 | **Vendor** | Green Hills Software |
 | **Target Platform** | Intel Apollo Lake (gm-i35) |
-
-### Architecture Summary
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -75,12 +111,42 @@
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
+Boot sequence and boot-command construction are owned by
+[GBUR §1](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#1-ghs-boot-process); not duplicated here.
+
+### Guest-side hypervisor evidence and GHS partitions
+
+*(Folded from retired `UPDATE_PROCESS_ANALYSIS.txt` §3.1-3.2, original analysis 2025-12-28, source
+`analysis/adb_Y181/gm_enum_20251220_081558/raw/`.)*
+
+Android-guest-side confirmation that it runs under GHS, independent of the hypervisor-side RE above:
+
+- `cpuinfo`: `hypervisor` flag present on all 4 CPU cores.
+- Kernel config: `CONFIG_GHS_GUEST_COMMS=y`, `CONFIG_GHS_PARAVIRTUAL_SUPPORT=y`,
+  `CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y`, `CONFIG_ANDROID_GM_GHS_MMC=y`, `CONFIG_SND_GHS_PCM=y`,
+  `CONFIG_HYPERVISOR_GUEST=y`.
+- Property `[ro.boot.trustyimpl]: [-ghs]` — Trusty implemented via GHS (see §6 Trusty TEE below).
+- VIP log (`VIP_log_2B.174.4.1_10JUL24.txt`): `[PLC] plc_timer_value for Hypervisor Startup Timeout
+  = 300`.
+
+GHS image partitions (source: `partitions.txt`):
+
+| Partition | Device | Purpose |
+|----------------|--------|----------------------------|
+| `ghs_isys_a` | vda1 | GHS INTEGRITY image (A) |
+| `ghs_isys_b` | vda2 | GHS INTEGRITY image (B) |
+| `ghs_storage` | vda3 | GHS persistent storage |
+| `ghs_abl_update` | vda4 | GHS ABL update staging |
+| `ghs_log` | vda24 | GHS logging |
+
+`ghs_storage` (vda3) is also where the Y175 `remote_display` task writes `EARLY_CALS`: it reads the
+active screen-resolution calibration, compares it against the live EDID, and updates `EARLY_CALS`
+in `ghs_storage` when they differ *(folded from retired `SCREEN_RESOLUTION_END_TO_END_WORKFLOW.md`'s
+2026-11-17 display-path-trace footnote)*. GHS brightness ownership and the actual LTZ/HC curves are
+owned by [`../video/display_subsystem.md`](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17),
+not restated here.
+
 ---
-
-## 2. Boot Process
-
-Boot sequence and boot-command construction are maintained in
-[the consolidated boot/recovery source](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#1-ghs-boot-process).
 
 ## 3. PCI Device Drivers
 
@@ -108,11 +174,11 @@ Boot sequence and boot-command construction are maintained in
 | `uart` | UART | Serial passthrough |
 | `i2c` | I2C | I2C passthrough |
 
+21 named drivers; Appendix A's function-count block states 22 — see Open Conflicts.
+
 ---
 
 ## 4. GHS Tasks (Processes)
-
-### Core Tasks
 
 | Task | Purpose |
 |------|---------|
@@ -135,8 +201,6 @@ Boot sequence and boot-command construction are maintained in
 
 ## 5. Inter-Process Connections
 
-### Connection Map
-
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                    GHS IPC CONNECTIONS                            │
@@ -157,15 +221,15 @@ Boot sequence and boot-command construction are maintained in
 │                                                                   │
 │  Camera Subsystem                                                  │
 │  ├── ConnToCamera                                                  │
-│  ├── ConnToCamera_Camera                                          │
-│  ├── ConnToCamera_Capture                                         │
-│  ├── ConnToCamera_Display                                         │
+│  ├── ConnToCamera_Camera                                           │
+│  ├── ConnToCamera_Capture                                          │
+│  ├── ConnToCamera_Display                                          │
 │  ├── ConnToCamera_I2C                                             │
 │  └── ConnToCamera_RvcStatus                                       │
 │                                                                   │
 │  Audio Subsystem                                                   │
 │  ├── ConnToChimes                                                  │
-│  ├── ConnToChimes_Chime                                           │
+│  ├── ConnToChimes_Chime                                            │
 │  └── ConnToDirana                                                 │
 │                                                                   │
 │  VIP MCU                                                           │
@@ -190,19 +254,20 @@ Boot sequence and boot-command construction are maintained in
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+The VIP IPC channel (`ConnToVIP`) coordinates EEPROM-bypass and ProtoKey transmission; mechanism
+owned by ELA and GSK respectively, not restated here (see §11 item 7).
+
 ---
 
 ## 6. Security Mechanisms
 
-### Verification scope and unresolved security candidates (2026-11-12)
-
-Binary fingerprints, extraction boundaries, debugger evidence and historical CVE
-applicability are maintained in the [consolidated research](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#01-y181b-binary-provenance-and-security-evidence-2026-11-12).
+Binary fingerprints, extraction boundaries, debugger evidence, historical CVE applicability, and
+this image's live/verified security-evidence state are maintained in
+[GBUR's 2026-11-12 provenance note](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#01-y181b-binary-provenance-and-security-evidence-2026-11-12);
+what follows is this doc's own static function/string inventory only — an inventory of compiled
+checks, not proof any of them are live-enforced on a given boot.
 
 ### Android Verified Boot (AVB)
-
-Compiled VMM verification paths include the following checks; this inventory
-does not alone establish their live enforcement state:
 
 ```
 VMM Validation Functions:
@@ -225,9 +290,11 @@ Error Messages:
 • "VMM: Failed to verify slot %s"
 ```
 
-### Trusty TEE
+This is a name/string inventory only. The confirmed guard-function RE (`avb_descriptor_validate_and_byteswap`,
+`avb_safe_add_to`, `avb_vbmeta_image_verify`, matched to upstream libavb and located in `elk_inner.elf`,
+**not** `.vmm1`) is owned by VPF — not restated here.
 
-GHS hosts a Trusty TEE implementation:
+### Trusty TEE
 
 ```
 TEE Components:
@@ -246,16 +313,25 @@ IPC Channels:
 └── ConnToTEE_* connections
 ```
 
+`TEE_Attestation` above is the IPC label used in the string inventory; §7A.4 narrows this —
+`TEEAtt` is a VMM1-side connection to `TEE_Router`, not its own address space (see §7A.4).
+
 ### Secure Boot
 
 ```
 Boot Security:
-├── ABL.secureboot=1   [NOTE 2026-11-12 CAVEAT: 'ABL.secureboot=1' appears only as a token in retained kernel-log cmdlines (live `getprop ro.boot.ABL.secureboot` is empty; hit count ~188 per archive, earlier '386' not reproduced); it is a cmdline indicator, not a verified secure-boot state. See platform/boot_chain.md.]
+├── ABL.secureboot=1
 ├── CRC error in FLASH, failing
 ├── SHA-1 hash error in FLASH, failing
 ├── CRC error in RAM, failing
 └── SHA-1 hash error in RAM, failing
 ```
+
+**History (2026-11-12):** `ABL.secureboot=1` is a cmdline token retained in kernel-log archives
+(hit count ~188; an earlier reading of `386` did not reproduce) — it is a cmdline indicator, not a
+verified secure-boot *state*: the live property `getprop ro.boot.ABL.secureboot` reads empty. Treat
+every occurrence of "secure boot" below (including §12's) as this unverified cmdline token, not a
+confirmed enforcement state; see `../platform/boot_chain.md`.
 
 ---
 
@@ -285,9 +361,10 @@ VT-d (IOMMU):
 ```
 
 **VT-d tables are built at runtime** `[FW 85098662; 3-Opus verified 2026-10-10]`: `Vtd_EnableVtdForDevice`
-(va 0x23110b) indexes the root table by bus and the context table by dev*8+fn, allocating a 4 KiB context
-table on demand from `vtdFreePages`. There is **no `.vtdpagetable` section** in the image; that string is
-an error message only. The guest itself runs `intel_iommu=off` and sees no DMAR. See §7A.4.
+(va `0x23110b`) indexes the root table by bus and the context table by `dev*8+fn`, allocating a 4 KiB
+context table on demand from `vtdFreePages`. There is **no `.vtdpagetable` section** in the image;
+that string is an error message only. The guest itself runs `intel_iommu=off` and sees no DMAR. See
+§7A.4.
 
 ### Guest Memory Management
 
@@ -319,8 +396,9 @@ VM Control:
 
 All items `[FW 85098662; 3-Opus verified 2026-10-10]` unless marked `[UNVERIFIED]`. Source: the
 `.boottable` section (section 177, 27 AddressSpace records, 23 Task records, per-AS object and
-memory-map tables). Full derivation: `/tmp/ghs_hv/GHS_HYPERVISOR_CONFIG_RE.md` (working notes);
-section layout in `GHS_FILE_MAP_85098662.md`.
+memory-map tables). Section layout: `GHS_FILE_MAP_85098662.md`. (Full byte-level derivation notes
+were kept at a `/tmp` scratch path during this analysis and are not part of this repo — not a
+resolvable link; the tables below are the durable record of that derivation.)
 
 ### 7A.1 Topology: exactly one VM
 
@@ -342,7 +420,7 @@ section layout in `GHS_FILE_MAP_85098662.md`.
 | Guest `/proc/cpuinfo` | 4 processors, "IoT CPU 1.0", family 6 model 92, 1881.6 MHz (agrees) |
 | Scheduler | **pure priority; no time partitioning / ARINC-653** |
 
-The scheduler claim rests on `__PartitionSchedulerInitPtr` (va 0x84a2a8) = 0 and every
+The scheduler claim rests on `__PartitionSchedulerInitPtr` (va `0x84a2a8`) = 0 and every
 `BSP_Partition*` / `__PartitionScheduler*` symbol being an undefined external. Android therefore
 runs in whatever CPU time the servers leave and has no time budget. The vCPU count is data-driven
 (`ASP_VMX_SetVcpuQueueAddr`, `ASP_ResetVCpu` with a 0x3000-byte per-vCPU block); the static source of "4"
@@ -355,13 +433,13 @@ is the boottable task list plus the DSDT `_PR` CPU0-3.
 | Physical DRAM | 8 GiB LPDDR4 |
 | **Granted to Guest1 by GHS** | **7830 MiB** (0x1_E960_0000) in five RAM regions, plus a **34 MiB read-only IPU frame window** (`Kernel_IpuFbPMR` at GPA 0x3_fde0_0000) |
 | Reserved by GHS | **~362 MiB** (8192 - 7830), the kernel, servers, GVT-g/Lines/VMM buffers and DMA PMRs below 4 GiB |
-| Guest-visible `MemTotal` | **5530 MiB** (5663432 kB, identical on Y175 and Y181) |
+| Guest-visible `MemTotal` | **5530 MiB** (5663432 kB, identical on Y175 and Y181) — this is the AAOS-reported *runtime* figure, not the static grant; see the measured E820 map below for why it differs. |
 
 The 7830 MiB figure is byte-confirmed from the MR table and is **not an MMIO over-count**: the GPA hole
 0x8000_0000-0xFFFF_FFFF (PCI window) is not part of any granted region. The ELF program headers under-report
 (RAM0/RAM1 only; RAM2-4 are plain physical ranges), so the boottable MR table is authoritative.
 
-**Corrected 2026-11-12 — measured Y181B recovery map:** the
+**History (2026-11-12) — measured Y181B recovery map:** the
 [recovery USB export](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12)
 supplies the previously unavailable kernel E820 evidence. In the first archive,
 `update_cache/recovery/last_kmsg`, lines 3–10, advertises these usable ranges:
@@ -399,8 +477,15 @@ UART0, UART3, SPI0, SPI1, SPI2, Gen9 (GVT-g mediated), DVFS_RESOURCE, PerfMon_Re
 IODevices (brokering interrupts for GmEth/GmWifi).
 
 **Kept by GHS, mediated through VMM1:** eMMC/SDHC (EMMC server multiplexes), HDA audio (Audio server),
-IPU camera (Camera server), I2C3 (Dirana), I2C6 (Camera), I2C7 (DisplayI2C), all GPIO (VMM1 owns GPIO_0..30,
-106, 203), RTC, P2SB, SerialDev0. DMA-visible memory for the passthrough set is confined to the guest GPA map.
+IPU camera (Camera server), I2C3 (Dirana), I2C6 (Camera), I2C7 (DisplayI2C), RTC, P2SB, SerialDev0,
+and the VMM1-mediated GPIO passthrough set (GPIO_0..30, 106, 203). DMA-visible memory for the
+passthrough set is confined to the guest GPA map.
+
+**History (2026-11-17):** the GPIO list above is the *VMM1-mediated passthrough set*, not literally
+every GPIO pin GHS exposes — `video/display_subsystem.md`'s `display_i2c` server disassembly holds
+its own `IOD_GPIO_33` (panel serializer reset/PDB) and `IOD_GPIO_15` (panel serializer interrupt)
+objects directly, not through VMM1. Treat the display path as the known exception to "VMM1 owns all
+GPIO," not as evidence the rest of the list is wrong.
 
 **VT-d / IOMMU:** root/context tables are built at runtime (no `.vtdpagetable` section, see §7). Six unnamed
 ASes are pure DMA domains: HDA, IPU, Lines, EMMC/SDHC, GPU_Dom_Gen9, GVTG_Dom. The guest runs
@@ -413,19 +498,7 @@ whole of guest RAM; the guest sees a GVT-g vGPU (`ro.hardware.gralloc/hwcomposer
 them); the guest is told `androidboot.trustyimpl=-ghs`. (`TEEAtt` is a VMM1 connection to TEE_Router, not a separate
 server; the "TEE_Attestation" box in §6 is a connection, not an address space.)
 
-#### Ethernet initialization and guest ownership code trace 2026-11-14
-
-The available Y175, Y177, Y181 and Y181B copies of SOC_HOSTOS `85098662`
-are byte-identical: **14,929,956 bytes**, SHA-256
-`317ae85ccf759476755411e66593dde9f879a43732cd342b4e101e4026535ed3`.
-Removing the existing `0x27c` wrapper yields the analyzed `hostos.elf`
-byte-for-byte: SHA-256
-`d900af484f466b35f4d9153ddf8adf19482f91d728b707f10fe89d326d4870df`.
-The saved Ghidra project has **9,424 functions**, language
-`x86:LE:64:default`, normalized image base `0x00200000`. This is the GHS
-ELF32 container carrying x86-64 code, not a valid reason to analyze it as
-32-bit x86. Kernel absolute references use the higher-half base
-`0xffff800000000000`; normalized addresses below omit that base.
+#### Ethernet initialization and guest ownership code trace (2026-11-14)
 
 | Normalized address / function | Located logic |
 |---|---|
@@ -441,36 +514,38 @@ ELF32 container carrying x86-64 code, not a valid reason to analyze it as
 | `0x0022ea40` / `0x0022eb78` | `i82544_receiver_configure` / `i82544_transmitter_configure`, with separate RX/TX ring-reset helpers. |
 | `0x0022cd26` / `0x0022c9c5` | `KETH_InitializationComplete` and its helper prepare Ethernet buffer/descriptor queues and driver callbacks. This is general host Ethernet infrastructure, not proof of a particular live NIC binding. |
 
-**What this establishes:** GHS contains concrete PCI Ethernet provisioning,
-generic Intel NIC link/reset/ring logic and a named GM Ethernet passthrough
-driver. The existing boottable analysis grants `GmEth` to Android **Guest1**,
-with VMM1 brokering the resource and interrupts. Presence of the native
-i8254x driver does not prove that this driver, rather than the GM passthrough
-path, owns the physical I210 on the observed boot. No live driver-binding
-or function-execution trace was obtained here.
+**What this establishes:** GHS contains concrete PCI Ethernet provisioning, generic Intel NIC
+link/reset/ring logic and a named GM Ethernet passthrough driver. The existing boottable analysis
+grants `GmEth` to Android **Guest1**, with VMM1 brokering the resource and interrupts. Presence of
+the native i8254x driver does not prove that this driver, rather than the GM passthrough path, owns
+the physical I210 on the observed boot. No live driver-binding or function-execution trace was
+obtained here.
 
-**What remains unlocated:** an explicit GHS Audio Video Bridging / AVTP
-transmitter initialization path tied to the first observed VLAN-2 frames,
-and the onboard automotive switch's precise power/reset/configuration
-sequence. The native chime/audio code and audio-DSP/SSP/TDM resources are
-real, but do not alone establish a GHS-to-Bose Ethernet packet call chain.
-`GmEth` being available to the Android guest means an early AAOS kernel
-network path also remains possible, before DHCP, CarPlay or HMI readiness.
-The kernel-side `igb_avb` observation is maintained in
-[hardware](../platform/hardware.md).
+**What remains unlocated:** an explicit GHS Audio Video Bridging / AVTP transmitter initialization
+path tied to the first observed VLAN-2 frames, and the onboard automotive switch's precise
+power/reset/configuration sequence. The native chime/audio code and audio-DSP/SSP/TDM resources are
+real, but do not alone establish a GHS-to-Bose Ethernet packet call chain. `GmEth` being available
+to the Android guest means an early AAOS kernel network path also remains possible, before DHCP,
+CarPlay or HMI readiness. The kernel-side `igb_avb` observation is maintained in
+[`../platform/ethernet_networking.md`](../platform/ethernet_networking.md) (fixed from a stale
+`../platform/hardware.md` link — that file was retired; see ledger).
 
-Do not treat a generic GHS `AVB`/verification reference as audio-network
-evidence: **Android Verified Boot** is a separate use of that acronym, traced
-through VMM1. The [synchronized power-on measurement](../runtime/boot_timing.md#synchronized-rh850-uart-and-ethernet-power-on-measurement-2026-11-14)
+Do not treat a generic GHS `AVB`/verification reference as audio-network evidence: **Android
+Verified Boot** is a separate use of that acronym, traced through VMM1. The
+[synchronized power-on measurement](../runtime/boot_timing.md#synchronized-rh850-uart-and-ethernet-power-on-measurement-2026-11-14)
 establishes early traffic timing but not the initializing software owner.
 
-For the other investigation target, the explicit BCM-replacement wipe
-decision was located in Android `gm_protokey`, reached through security PAL
-IPC, rather than in a directly recovered GHS handler. See the
+For the other investigation target, the explicit BCM-replacement wipe decision was located in
+Android `gm_protokey`, reached through security PAL IPC, rather than in a directly recovered GHS
+handler. See the
 [validated code path](../platform/security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
-This was static analysis only: no device commands, firmware changes or
-runtime breakpoints were used. Temporary Ghidra inspection changes were
-rolled back; no speculative function name was saved.
+This was static analysis only: no device commands, firmware changes or runtime breakpoints were
+used. Temporary Ghidra inspection changes were rolled back; no speculative function name was
+saved.
+
+**This section's relevance to §12:** it is the only targeted live-binding trace attempted against
+the "GHS can independently capture/transmit" capability claim below, and it found no AVTP producer
+and no live driver-binding evidence. See Open Conflicts §3.
 
 ### 7A.5 Guest platform (what Linux sees)
 
@@ -561,6 +636,10 @@ Functions:
   't' - Print/log TFM governor information
 ```
 
+The deeper USB/ADB exposure logic (XDCI/xHCI role switch, gadget/configfs, DABridge paths, the
+6-condition ADB chain) that these device files sit behind is owned by
+`USB_ADB_SESSION_FINDINGS_2026-10-10.md` — not restated here.
+
 ---
 
 ## 10. Source Files Identified
@@ -639,6 +718,8 @@ Details:
   - Recovery mode triggering
 ```
 
+A/B + BCB mechanics in depth: GBUR, not restated here.
+
 ### 3. VMM Guest Memory Access
 
 ```
@@ -694,6 +775,12 @@ Details:
   - ProtoKey transmission
 ```
 
+EEPROM-bypass mechanism: ELA. ProtoKey transmission/IPC-chain finding (`gm_protokey`→`libpal_security.so`,
+zero crypto validation of the 16-byte key): GSK. The live-tested ELK-trigger (RID 0xFF01/`FUN_000641c2`)
+that this item is sometimes conflated with is owned by GBUR — see also `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md`'s
+catalog entry (dual-owned by design: GBUR holds the live-tested version, that doc keeps the catalog
+entry).
+
 ### 8. INDRT Debug Interface
 
 ```
@@ -707,64 +794,36 @@ Details:
 
 ---
 
-## 12. Update/Recovery Handling
+## 12. Privacy Capability Assessment (consolidated)
 
-Recovery, userspace fastbootd, ELK orchestration, USB markers and recovery
-arguments are maintained in
-[the consolidated source](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#23-special-boot-modes).
+*Absorbs former §13 (Privacy Capability Summary), §14 (Recommendations) and §15 (Privacy
+Capability Assessment) — those three duplicated each other (the former §15 banner said as much);
+this section is the single current version. `GHS_PRIVACY_CAPABILITY_ANALYSIS.md`'s redirect stub
+pointed here and is retired.*
 
-## 13. Privacy Capability Summary
+**Read this section as capability inference layered on top of the static RE above, not as a
+behavioural finding.** Every capability below is backed by a named function/driver that genuinely
+exists in the binary; whether GHS *exercises* any of them independently of Android, on any given
+vehicle, is not established by this document. §7A.4's 2026-11-14 Ethernet-ownership trace is the
+one place this corpus attempted a targeted live-binding check against one of these claims (camera→network),
+and it found no corroborating evidence — see Open Conflicts §3 below.
 
-### Data Access Capabilities
+### 12.1 Capability summary
 
-| Data Type | GHS Access | Method |
-|-----------|------------|--------|
-| Camera feeds | YES | Direct IPU4 driver |
-| Screen content | YES | GPU/Display connections |
-| Audio/Mic | YES | Audio passthrough |
-| Android memory | YES | ReadGuestMemory |
-| Network traffic | YES | kethernet stack |
-| Storage | YES | SDHC passthrough |
-| USB devices | YES | xHCI passthrough |
+| Data/Interface | GHS Access | Method | Evidence tier |
+|-----------|------------|--------|---|
+| Camera feeds | Capability present | Direct IPU4 driver (§8) | `[FW]` driver exists; independent-capture use `[inferred]` |
+| Screen content | Capability present | GPU/Display connections (§5, §7A.4) | `[FW]` connections exist; capture-without-Android use `[inferred]` |
+| Audio/Mic | Capability present | Audio passthrough (§8) | `[FW]` driver exists; independent-capture use `[inferred]` |
+| Android memory | Capability present | `ReadGuestMemory`/`WriteGuestMemory` (§7) | `[FW]` functions exist; any use against a running guest `[inferred]` |
+| Network traffic | Capability present | kethernet stack (§8) | `[FW]` stack exists; independent transmission `[inferred]`, see §7A.4's "what remains unlocated" |
+| Storage | Capability present | SDHC passthrough (§7A.4: GHS keeps eMMC/SDHC, mediates to guest) | `[FW]` |
+| USB devices | Capability present | xHCI passthrough (§3, §7A.4) | `[FW]` |
+| Ethernet | Capability present | `gm_eth_passthru` (§7A.4: granted to Guest1, VMM1 brokers) | `[FW]`; no live AVTP/independent-TX binding found (§7A.4) |
+| WiFi | Capability present | `gm_wifi_passthru` (§7A.4: granted to Guest1) | `[FW]` |
+| Intel HECI | ME interface present | `heci` driver (§3) | `[FW]` driver exists; "covert channel" use `[inferred]`, uncorroborated — see Open Conflicts §4 |
 
-### Network Transmission
-
-| Interface | GHS Direct Access |
-|-----------|-------------------|
-| Ethernet | YES (gm_eth_passthru) |
-| WiFi | YES (gm_wifi_passthru) |
-| Intel HECI | YES (ME interface) |
-
----
-
-## 14. Recommendations
-
-### For Security Researchers
-
-1. **Focus on IPC channels** - Most accessible attack surface
-2. **A/B metadata manipulation** - CRC-only validation may be weak
-3. **Keymaster IPC fuzzing** - High-value target
-4. **VIP communication channel** - EEPROM bypass coordination
-5. **/dev/ghs/snapshot-dbg** - Accepts commands, needs investigation
-
-### For Privacy Concerned Users
-
-1. Assume GHS has access to all sensors and data
-2. GHS operates below Android visibility
-3. Network traffic can be sent without Android awareness
-4. Physical inspection of serial UART may reveal more
-5. Camera covers recommended for non-safety cameras
-
----
-
-## 15. Privacy Capability Assessment (consolidated)
-
-> Canonical privacy assessment; `GHS_PRIVACY_CAPABILITY_ANALYSIS.md` is a pointer. §13 above carried the
-> capability tables; this section adds the privacy-specific evidence strings, the
-> cross-boundary data-flow diagram, the privacy-risk severity ratings, and the
-> interpretive caveats that §13 did not contain.
-
-### 15.1 Evidence strings
+### 12.2 Evidence strings
 
 Camera capture functions:
 ```
@@ -807,11 +866,17 @@ Sending cached IPC message on CH%02u
 HECI / CSE: `Intel HECI`, `GHS: Error: Failed to send connect message to HECI client`, `GHS: Error: Failed to send disconnect message to HECI client`, `cseseed_iodevice.c`, `CseSeed_Init`, `CseSeed (Intel CSE)`.
 Security: `Secure Boot: Enabled`, `AttestationSeedList`, `keymaster_ipc.cpp`, `trusty/app/keymaster`.
 
-**Security-purpose implication:** The security features are designed to protect GM's code from inspection/modification, not to protect user privacy.
+**Security-purpose implication:** the security features above are designed to protect GM's code
+from inspection/modification, not to protect user privacy — they gate *what Android can do to GHS*,
+not what GHS can do to Android.
 
-**Memory-access implication:** GHS can read ANY data from Android's memory - including photos, messages, authentication tokens, and encryption keys. It can also modify Android's memory without Android's knowledge.
+**Memory-access implication:** the `ReadGuestMemory`/`WriteGuestMemory` functions mean GHS *can*
+read or write any guest memory it chooses, including photos, messages, authentication tokens and
+encryption keys, from a position Android cannot inspect or prevent. This is a capability statement
+about the function's existence and privilege level (`[FW]`), not evidence it has been used this way
+(`[inferred]` if asserted as active behaviour).
 
-### 15.2 Cross-boundary data-flow
+### 12.3 Cross-boundary data-flow (illustrative)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -824,7 +889,7 @@ Security: `Secure Boot: Enabled`, `AttestationSeedList`, `keymaster_ipc.cpp`, `t
 │              │                                                       │
 │              ├──► Normal: Display to user via Android app            │
 │              │                                                       │
-│              └──► Covert: GHS can capture frames independently       │
+│              └──► Hypothetical: GHS capture path, not traced live    │
 │                      │                                               │
 │                      ▼                                               │
 │  ┌──────────────────────────────────────────────────────────────┐   │
@@ -852,51 +917,65 @@ Security: `Secure Boot: Enabled`, `AttestationSeedList`, `keymaster_ipc.cpp`, `t
 │  │                              REMOTE SERVER                    │   │
 │  └──────────────────────────────────────────────────────────────┘   │
 │                                                                      │
-│  ANDROID (GUEST VM) - NO VISIBILITY INTO GHS OPERATIONS             │
+│  ANDROID (GUEST VM) - NO VISIBILITY INTO GHS OPERATIONS              │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### 15.3 Privacy risk severity ratings
+This diagram composes real function names along a hypothetical path (originally labeled "Covert");
+the "GHS capture path" and "REMOTE SERVER" legs are not independently traced — see §7A.4 and Open
+Conflicts §3-4.
 
-| Capability | Evidence | Privacy Risk |
+### 12.4 Capability vs. corroboration
+
+| Capability | Evidence | Corroboration status |
 |------------|----------|--------------|
-| **Camera Capture** | Intel IPU4 driver, StartCapture, Heartbeat | CRITICAL |
-| **Independent Networking** | kethernet TCP/IP stack, KETH_WritePacket | CRITICAL |
-| **Guest Memory Access** | ReadGuestMemory, WriteGuestMemory | CRITICAL |
-| **Audio Access** | gm_audio_passthru, Audio DSP | HIGH |
-| **Screen Access** | ConnToVMM_Display, GPU connections | HIGH |
-| **Covert Communication** | Intel HECI, IPC channels | HIGH |
-| **WiFi Control** | gm_wifi_passthru, direct driver | HIGH |
-| **Snapshot Capability** | snapshot-dbg, SnapshotDev | MEDIUM |
+| **Camera Capture** | Intel IPU4 driver, `StartCapture`, Heartbeat | `[FW]` driver exists; no independent-of-Android capture trace attempted |
+| **Independent Networking** | kethernet TCP/IP stack, `KETH_WritePacket` | `[FW]` stack exists; §7A.4 found no AVTP producer / live binding for independent TX — **uncorroborated**, Open Conflicts §3 |
+| **Guest Memory Access** | `ReadGuestMemory`, `WriteGuestMemory` | `[FW]` functions exist and are architecturally unavoidable for a Type-1 hypervisor; use against live secrets untested |
+| **Audio Access** | `gm_audio_passthru`, Audio DSP | `[FW]` driver exists |
+| **Screen Access** | `ConnToVMM_Display`, GPU connections | `[FW]` connections exist |
+| **Covert Communication (HECI/IPC)** | Intel HECI, IPC channels | **Uncorroborated inference** — no independent trace of HECI as a covert channel exists anywhere in this corpus, Open Conflicts §4 |
+| **WiFi Control** | `gm_wifi_passthru`, direct driver | `[FW]` driver exists; granted to Guest1 per §7A.4, so "direct" GHS control competes with the guest's own ownership |
+| **Snapshot Capability** | `snapshot-dbg`, `SnapshotDev` | `[FW]` device exists, accepts commands (§9, §11.1) |
 
-### 15.4 Conclusion
+The original severity labels (CRITICAL/HIGH/MEDIUM) are dropped here in favor of the corroboration
+column above: they were assigned without an evidence-scoring rubric and several (independent
+networking, HECI covert channel) are contradicted or unsupported by the only targeted trace this
+corpus ran (§7A.4). Risk *ranking* for research/testing priority stays in §11, which is explicitly
+a static-surface catalog, not a privacy-risk rating.
 
-What GM Can Do (Technically):
-1. **Capture camera feeds** without Android's knowledge using direct IPU4 access
-2. **Transmit data remotely** via the independent TCP/IP stack (kethernet)
-3. **Read all Android memory** including messages, photos, and credentials
-4. **Record audio** via direct audio hardware access
-5. **Capture screen contents** via display/GPU connections
-6. **Communicate covertly** with remote servers via Intel HECI or dedicated network stack
+### 12.5 Conclusion, caveats, and recommendations
 
-What Prevents Detection:
-1. GHS operates BELOW Android - Android cannot inspect GHS operations
-2. GHS has its own network stack - traffic is invisible to Android
-3. Secure boot prevents modification or inspection of GHS code
-4. Intel Management Engine provides another covert channel
+**Technically possible, given the binary's contents:**
+1. Capture camera feeds via direct IPU4 access, independent of the Android app layer.
+2. Transmit data via the independent TCP/IP stack (kethernet) — not corroborated by a live trace; see above.
+3. Read (and, per the same functions, write) all Android guest memory, including messages, photos, and credentials.
+4. Record audio via direct audio hardware access.
+5. Capture screen contents via display/GPU connections.
+6. Use Intel HECI or the dedicated network stack as a channel Android cannot inspect — the HECI half of this is inference, not a traced channel.
 
-**Important Caveats:**
-1. **Technical capability ≠ Active surveillance** - Having the capability doesn't prove GM is using it
-2. **No evidence of exfiltration** - The analysis shows capability, not active data collection
-3. **Legal constraints** - GM would face significant legal liability for unauthorized surveillance
-4. **Legitimate uses** - Many capabilities are needed for features like backup camera, safety systems
+**What limits detectability, if any of the above were exercised:**
+1. GHS operates below Android; Android cannot inspect GHS operations by construction (this is how a Type-1 hypervisor works, not a GM-specific choice).
+2. GHS has its own network stack, so traffic on it would be invisible to Android-side tools.
+3. The `ABL.secureboot=1` cmdline token suggests a secure-boot intent, but its live enforcement state is unverified (§6 History, 2026-11-12) — this neither proves nor disproves that GHS code is unmodifiable.
+4. Intel ME (HECI) is physically present and is a generic additional channel in principle; no GHS-specific use of it as a channel is traced here.
 
-Recommendations for Users Concerned About Privacy:
-1. Assume the vehicle can access all sensors and data
-2. The infotainment system should be treated as untrusted for sensitive activities
-3. GM's privacy policy should be reviewed for data collection disclosures
-4. Consider physical camera covers for non-safety-critical cameras
+**Caveats (unchanged from the original assessment, still load-bearing):**
+1. Technical capability ≠ active surveillance — having the capability doesn't establish GM is using it.
+2. No evidence of exfiltration was found; this analysis is capability inventory, not a monitored-traffic or log-based exfiltration study.
+3. GM would carry legal exposure for unauthorized surveillance via these paths.
+4. Many of these capabilities (backup camera, safety systems, OTA, calibration, infotainment audio) are the documented, legitimate reason the driver/connection exists in the first place — see §3-§10 for what each one is actually wired to in the normal architecture.
+
+**For researchers:** the IPC channels (§11.5), A/B metadata (§11.2, CRC-only), Keymaster IPC
+(§11.6), and `/dev/ghs/snapshot-dbg` (§11.1) remain the most accessible, least-traced attack
+surfaces in this inventory; the VIP channel (§11.7) is already deferred to ELA/GSK.
+
+**For privacy-concerned users:** treat the infotainment system as untrusted for sensitive
+activity, treat GM's own privacy-policy disclosures as the actual scope statement for what is
+collected (this document only establishes what the hardware/hypervisor *could* do), physical
+inspection of the serial UART may reveal more, and a physical camera cover remains the only
+control that doesn't depend on any of the above being true or false.
 
 ---
 
@@ -909,6 +988,10 @@ PCI Device Drivers: 22
 GHS Tasks: 14+
 IPC Connections: 70+
 ```
+
+Two counts in this appendix are not reconciled elsewhere in this doc: the Ghidra project (§ Image
+identity, header) reports 9,424 functions against this 8,209; and "22" PCI drivers here against 21
+named rows in §3. See Open Conflicts §1-2.
 
 ---
 
@@ -930,6 +1013,56 @@ IPC Connections: 70+
 
 ---
 
-**Document Version:** 1.0
-**Analysis Method:** Static binary analysis (radare2, Ghidra, strings)
-**Classification:** Security Research
+## Open conflicts
+
+1. **Function count:** radare2 reports 8,209 total functions (Appendix A); the Ghidra project used
+   for the §7A.4 address-level trace reports 9,424 (header, "Image identity"). Different tools,
+   different analysis passes; no dated correction reconciles the two. Keep both.
+2. **PCI driver count:** Appendix A's summary block states 22 PCI device drivers; §3's table lists
+   21 named rows. Not reconciled — could reflect an unlisted 22nd driver or a stale Appendix A
+   count carried from an earlier pass.
+3. **Independent camera-capture / independent-network-transmission capability (§12.1/§12.3-12.4)
+   vs. the 2026-11-14 Ethernet-ownership trace (§7A.4):** the capability claim ("GHS can capture
+   frames/transmit independently of Android") is an undated inference from function-name presence;
+   §7A.4's dated, targeted RE pass found concrete PCI Ethernet provisioning and a named `GmEth`
+   passthrough driver, but explicitly "no live driver-binding or function-execution trace," no
+   located AVTP transmitter, and states `GmEth` is granted to the Android guest (not exclusively
+   held by GHS). This narrows but does not refute the capability claim — absence of a trace is not
+   proof of absence of the behaviour, but the capability claim should not be read as corroborated
+   either. Keep both framings distinct; do not let §7A.4 be cited as either confirming or refuting
+   §12's inference.
+4. **Intel HECI as a "covert channel" (§12.1/§12.4):** asserted in the original privacy assessment
+   and carried forward here as an explicitly uncorroborated inference. No document in this corpus
+   independently traces GHS using HECI as a data channel (distinct from HECI/CSE boot-time
+   handshake functions, which are separately and concretely traced — see `cseseed_iodevice.c`,
+   `CseSeed_Init` in §12.2, and `CSE_HECI_ORCHESTRATION_ANALYSIS.md` for the actual HECI/MKHI
+   protocol RE, which does not address a covert-channel use). Flagged here so it isn't silently
+   restated as a finding elsewhere.
+
+---
+
+## History
+
+- **2026-11-?? (this consolidation):** merged former §13 (Privacy Capability Summary), §14
+  (Recommendations) and §15 (Privacy Capability Assessment) into one §12 — the former §15 banner
+  already said §13/§14 were legacy duplicates; this pass finishes that fold and adds a
+  corroboration column instead of the unscored CRITICAL/HIGH/MEDIUM ratings. Retired
+  `GHS_PRIVACY_CAPABILITY_ANALYSIS.md`'s redirect stub into this section (confirmed its target
+  anchor existed before folding). Dropped the former §2 and §12 (old) stub sections (pure pointers
+  to GBUR) in favor of one-line pointers in the Scope header and §1 — not restated as their own
+  numbered sections, since no other doc was found to cite them by anchor. Folded in the
+  `UPDATE_PROCESS_ANALYSIS.txt` §3.1-3.2 guest-side hypervisor evidence and GHS-partitions table
+  (retired doc; "GHS evidence/partitions" was this doc's assignment per the consolidation plan) and
+  the `SCREEN_RESOLUTION_END_TO_END_WORKFLOW.md` display-path/`EARLY_CALS` footnote (also retired).
+  Folded the 2026-11-17 GPIO-ownership correction and the 2026-11-12 `ABL.secureboot` caveat into
+  their claims in place rather than leaving them as trailing bracketed notes. Section numbers 3-11
+  and all of §7A's subsection anchors are preserved byte-identical to the pre-consolidation
+  headings, since other docs (`GM_INFO37_BOOT_CHAIN_ANALYSIS.md` at minimum) cite `§7A.3` and
+  similar anchors directly.
+- **2026-01-05 → 2026-11-17 (original doc):** see inline History notes under §6 and §7A for the
+  dated corrections carried over from the source document (ABL.secureboot caveat, GPIO ownership,
+  measured E820 map, Ethernet ownership trace).
+
+**Analysis method:** static binary analysis (radare2, Ghidra, strings) across dated passes
+2026-01-05 through 2026-11-17, plus the independent 3-Opus firmware re-derivation (2026-10-10)
+noted on §7A's tagged items.

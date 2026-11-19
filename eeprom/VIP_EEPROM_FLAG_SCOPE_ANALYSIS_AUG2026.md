@@ -402,10 +402,10 @@ different addressing/compilation that this scan handles less well.**
 
 | EEPROM offset | Real code reference found? | What it maps to | Confidence |
 |---|---|---|---|
-| `0x0440` (Primary SBI marker) | Yes — `FUN_ram_00091938`, CalGroup `0x3b`, cells `0x43a–0x447` | Packed into/out of a local buffer by a dedicated CalGroup handler; consumer function not reached (indirect call) | `[C]` block exists / `[O]` consumer |
-| `0x0441` (Primary SBI data byte) | Yes — same function/block as `0x0440` | Same as above | `[C]`/`[O]` |
+| `0x0440` (Primary SBI marker) | Yes — Y175 `FUN_00091AEC`, CalGroup `0x3b`, cells `0x43a–0x447` | Direct Dispatcher-A read/validate case at `0xBA316`; marker framing only | `[C]` |
+| `0x0441` (Primary SBI data byte) | Yes — same function/block as `0x0440` | Direct Dispatcher-A read/validate case; `0xFF` is empirically known to yield non-zero MEC and permit ADB without the GM client | `[C]` |
 | `0x04A0` | No genuine hit; one false positive (struct-relative offset in an unrelated UDS-like dispatcher) | Not established | `[C]` negative |
-| `0x04C0` | Yes — `FUN_ram_00091f82`, CalGroup `0x44`, cells `0x4b8–0x4c5`, structurally parallel to but administratively separate from the SBI block | Real, distinct flag/CalGroup; semantic meaning unknown, consumer not reached | `[C]` real / `[O]` meaning |
+| `0x04C0` | Yes — Y175 `FUN_00092136`, CalGroup `0x44`, cells `0x4b8–0x4c5`, structurally parallel to but administratively separate from the SBI block | Direct Dispatcher-A read/validate case at `0xBA05E`; semantic meaning unknown | `[C]` real / `[O]` meaning |
 | `0x0A40` | No hit in either binary; real neighboring blocks (`0xa26`, `0xa5e`) confirm the region isn't dead in general | Not established | `[C]` negative |
 | `0x0A80` (Backup SBI marker) | No hit in either binary; real neighboring block `0xabd–0xac1` (CalGroup `0x9b`) confirms the region isn't dead in general | Not established via this mechanism | `[C]` negative |
 | `0x0A81` (Backup SBI data byte) | No hit in either binary | Not established via this mechanism | `[C]` negative |
@@ -425,10 +425,10 @@ rule that out**, and the reasons are specific and worth stating plainly rather t
   no other CalGroup shares cells `0x43a–0x447`, and no other code in the binary references
   cell `0x440`/`0x441` `[C]`. That's real evidence *against* a shared-storage mechanism linking
   SBI to something else.
-- But the function that actually *reads back* the SBI buffer and makes a decision from it (the
-  PROTOKEY/seed logic) was **not reached** by this pass — its caller is invoked indirectly, not
-  through a statically-resolvable call, so I cannot show what that decision function does with
-  the value, nor whether it's also consulted by other privilege tiers.
+- The CalGroup read path is now resolved: raw Y175 RH850 disassembly shows direct Dispatcher-A
+  calls to the SBI and `0x04C0` accessors. That dispatcher only loads and validates the group
+  scratch buffers; it does not identify the semantic consumer of `0x04C0` or link it to a
+  diagnostic privilege tier.
 - Separately, strings-level evidence **does** show the PROTOKEY seed-cache is a **multi-slot,
   numbered mechanism** (`Seed %d`, `Bis_Seed_Cache_Lock ... for seed %d`), which is exactly the
   shape you'd expect if one seed-generation code path served multiple SecurityAccess levels —
@@ -440,15 +440,7 @@ rule that out**, and the reasons are specific and worth stating plainly rather t
   for the fourth (`0x04C0`) is real but administratively separate from the SBI's CalGroup, with
   its actual function unknown.
 
-**Practical recommendation for the operator:** the highest-value next step is resolving the
-indirect call that reaches `FUN_ram_00091938` (SBI, `ram:00091938`) and `FUN_ram_00091f82`
-(`0x04C0`, `ram:00091f82`) — almost certainly a jump table keyed by the same small CalGroup-ID
-(**partly done 2026-08-25:** `VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md` resolved the SBI side —
-`FUN_ram_00091938` is reached by a direct `jarl` from a 106-entry switch dispatcher, SBI ordinal
-`0x45`, and the resolved path is read-only; `0x04C0`'s consumer is still open)
-values (`0x3b`, `0x44`, `0x9b`, ...) already seen passed to `FUN_ram_000c8f10` at the top of all
-170 handler functions. Finding that dispatch table (likely a straightforward data-table scan
-once the jump-table base is located near the accessor's own tables at `0x4fbae`/`0xf0ae2`) would
-directly answer both (a) what reads the SBI buffer, and (b) whether `0x04C0`'s CalGroup `0x44`
-is a calibration/diagnostic security level, closing the operator's open question with actual
-code rather than inference.
+**Practical recommendation for the operator:** the dispatcher question is closed. The remaining
+high-value work is semantic dataflow from the `0x04C0` group scratch buffer, plus passive I2C
+observation across normal, diagnostic, and calibration modes. Do not infer a privilege function
+from its structural similarity to the SBI group.

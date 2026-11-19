@@ -254,15 +254,20 @@ Base boot renders the GM **base** look (red accent, no widget, GAS-default tiles
 (blue/gold + analog-clock widget) is reached by editing `CalSets.db`:
 - **Theme:** `GMBrand=3` (GM_Brand_Chevrolet) + `GMModel=4` (Silverado) → `CHEVY_THEME` (blue/gold);
   factory `GMBrand=2` (Cadillac) gave the red `GMC_THEME`.
-- **Clock/widget panel:** `SCREEN_RESOLUTION=4` (SIZE_2400_BY_960) — GMSystemUI only builds the `CardView`
-  clock panel at 2400×960; grid then narrows to 1133 dp.
+- **Clock/widget panel:** calibration `SCREEN_RESOLUTION=4` (SIZE_2400_BY_960) — GMSystemUI
+  builds CardView when its calibration reader returns4, independently of actual VM display
+  dimensions. The reader defaults to3; a2400×960 VM can therefore lack the panel when the
+  effective calibration is missing/different. The recorded grid narrows to1133dp. Correction
+  2026-11-17: on the physical radio, changing the global calibration4→2 caused tearing;
+  restoring stock4 fixed it. A panel-only inverse should be tested at the SystemUI creation/
+  visibility gate in the VM, not assumed safe through global display calibration.
 - **Tiles:** `APPLICATION_HOMESCREEN_{AUDIO,PHONE,CAMERA,CLIMATE,SETTINGS,WIFIHOTSPOT}_ENABLED` + ordering;
   Cameras needs `RVS_PRESENT_STATUS=2`, Wi-Fi Hotspot needs `APPLICATION_HOMESCREEN_ONSTAR_ENABLED=1`; GAS
   tiles are hidden by disabling their launcher components (not calibration-gated).
 
 For the CardView clock panel's gate condition and the separate (code-level, non-calibration)
 app-capability/immersive allow-list that governs whether an activity can hide it — including why
-native CarPlay can't — see [`gmsystemui_app_capability_gating.md`](gmsystemui_app_capability_gating.md).
+native CarPlay can't — see [`gmsystemui_app_gating.md`](gmsystemui_app_gating.md).
 
 ## Fidelity — emulator vs the actual radio
 Real GM software rendering faithfully on **substituted emulator hardware with no vehicle bus**; a
@@ -422,4 +427,4 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   would need a substantial synthetic external-component/VIP endpoint, not a quick stub.
 
 See also: [`security.md`](security.md) (SELinux enforcing on all builds), [`vehicle_network.md`](vehicle_network.md)
-(Info3.x/vlan5 addresses used for the FSA shim), [`hardware.md`](hardware.md) (the real 2400×960 panel).
+(Info3.x/vlan5 addresses used for the FSA shim), [`hardware_specs.md`](hardware_specs.md) (the real 2400×960 panel).

@@ -1,903 +1,459 @@
-# MDI2 Manager — Identification Service, WiFi pairing, and device log-pull protocol
+# MDI2 Manager — Identification Service, WiFi Pairing, and Device Log-Pull Protocol
 
-## 0. CURRENT STATE — authoritative summary (read this first; §1–§4.26 below are the investigation trail)
+**Scope:** the Windows "MDI2 Manager" / "GM MDI Identification Service" stack — `GM_MDI_Ident.exe`,
+the 14-port device-facing transport (900x bank), and the *Get Log Files* pull protocol — as distinct
+from DPS/SPS diagnostic sessions over the 10123 D-PDU tunnel (owned by
+`MDI2_DPDU_API_PROTOCOL_AUG2026.md`, abbreviated MDP below). **Does not cover:** the raw UDS bypass
+chain (`MDI2_RAW_UDS_BYPASS_GUIDE.md`, carried unchanged — cite by name only), the Aug-24 pcap
+provenance record (`AUG24_SESSION_FULL_PCAP_TIMELINE.md`), or seed/key/SecurityAccess crypto beyond
+this stack's own Blowfish layer (`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`).
 
-**Status (2026-08-26): SOLVED. A native macOS MDI2 client is complete and live-validated** — see
-`mdi2_client/` in this repo (pkg `mdi2`; deps pycryptodome + construct). It pulls device logs over
-USB with no Windows, repeatably. The final, correct facts:
+**Evidence tags:** `[C]` confirmed live on hardware, `[FW]`/`[S]` static disassembly, `[inferred]`
+reasoned but untested, `[U]` unverified/open. Dated per-claim notes override surrounding prose.
 
-- **Transport:** each Connect opens a 14-TCP bank to device ports 9001/9003/9006–9014/9050–9052
-  (this is the Manager's channel; **not** the 10123 D-PDU diagnostic path, **not** FTP). Log pull
-  is on **9052**.
-- **Wire frame (big-endian):** `[u32 0][u32 len][u32 counter][Blowfish-ECB body]`, each channel
-  preceded by an 8-byte control frame `00 53 50 00 00 <code> 00 00` (code `0x30`, `0x21` for 9011).
-  The counter must have **bit31 set**. **Handshake direction (confirmed live 2026-11-14):** on
-  ports 9001/9050/9051 the device sends its own 8-byte control frame FIRST on connect (code `0x31`),
-  and on 9011 (code `0x20`); port **9052 is silent on connect** and replies
-  (`0053500000310000`) only AFTER the client sends its control frame (`0x30`).
+**Related:** `MDI2_DPDU_API_PROTOCOL_AUG2026.md` (D-PDU/10123 path, §2 correction below applies
+there too), `AUG24_SESSION_FULL_PCAP_TIMELINE.md` (capture provenance), `mdi2_client/` (this repo —
+the native macOS implementation this doc documents), `gm_dps/docs/GM_MDI_IDENT_EVIDENCE_protocol.txt`
+and `mdi2_client/docs/PROTOCOL.md` (operator-facing duplicates of §0/§4 below).
+
+---
+
+## 0. Current state — authoritative summary
+
+**Status: SOLVED, live-validated end to end `[C]`.** A native macOS MDI2 client
+(`mdi2_client/`, pkg `mdi2`, deps pycryptodome + construct) pulls device logs over USB with no
+Windows, repeatably. Final facts, each reconstructed from the investigation trail in §1-§4 and the
+condensed appendix (§5) — read those sections only for the RE evidence behind a given line, not for
+a live-current claim:
+
+- **Transport:** each Connect opens a 14-TCP bank to device ports
+  `9001/9003/9006-9014/9050-9052` (the Manager's own channel — **not** the 10123 D-PDU diagnostic
+  path, **not** FTP/21). Log pull runs on **9052**. §4.1.
+- **Wire frame (big-endian):** `[u32 0][u32 len][u32 counter][Blowfish-ECB body]`; the counter is
+  cleartext and must have **bit31 set** (§4.10). Each channel is preceded by an 8-byte control frame
+  `00 53 50 00 00 <code> 00 00` (client sends `0x30`; device replies `0x31`; port 9011 uses
+  `0x21`/`0x20` instead). **Handshake direction (confirmed live 2026-11-14):** on 9001/9050/9051 and
+  9011 the *device* sends its control frame first on connect; **9052 is silent on connect** and
+  replies only after the client sends its own `0x30` frame first. §4.2.
+- **Cipher: standard Blowfish-ECB**, big-endian, 8-byte blocks, pycryptodome-compatible — confirmed
+  by construction (π-seeded P-array, standard S-box table, standard `BF_set_key`/`BF_encrypt`
+  entry points), not by inference. §4.7.
+- **Key (computable, no extraction needed):**
+  `key[i] = base_key[MODULE_TYPE_ID_MDI_2][i] + device_serial` (14 dwords, 32-bit add mod 2³²,
+  per-device, deterministic). `base_key` is a static constant in `bvtx_vci_rt.dll` table
+  `DAT_10309d60` (entry id `0x1c`, +0xC4); `device_serial` is the `uint32` read from the
+  `225.1.1.1:8194` discovery beacon (LE u32 at payload offset 9) or from the pulled logs. Formula in
+  `FUN_10268960` (RVA `0x268960`). §4.8.
 - **App layer = JSON** (`common_service::generic_client<PORT>`): `session_open`, `poll`, a binary
-  get-logs trigger; body framing inside the BF payload = `content + zero-pad + u32be(len)`. The
-  decrypted log body is a SID-tagged container (`0x8a9` meta / `0x8a8` data → e.g. `messages`=Varlog).
-- **Cipher:** standard **Blowfish-ECB** (big-endian, pycryptodome-compatible).
-- **Key (computable, no extraction):** `key[i] = base_key[MODULE_TYPE_ID_MDI_2][i] + device_serial`
-  (14 dwords, 32-bit add; dwords taken **little-endian** — `mdi2_client/mdi2/crypto.py:17-19`,
-  re-computed 2026-11-12 to match the §4.10 captured key). `base_key` = static const in `bvtx_vci_rt.dll` table `DAT_10309d60`
-  (id `0x1c`, +0xC4) = `42197fad58f363fe…`; `device_serial` = uint32 from the `225.1.1.1:8194`
-  beacon (LE u32 at byte offset 9) or the logs. Formula in `FUN_10268960` (RVA `0x268960`).
-- **Session:** the device holds ONE session; release it with `{"data":<session_id>,"has_data":true,
-  "id":2,"target":"session"}` (else it dangles; a few dangles exhaust the session table, after which
-  9052 stops answering and `session_open` returns no session id — **session-table exhaustion, not a
-  hardware wedge**; recovery = stop connect loops, close/release sessions, let the table drain; USB
-  power-cycle is the last resort. *Corrected 2026-11-14; was "→ USB power-cycle".*).
-- **Confirmed live 2026-11-14 (clean end-to-end):** discovery → key → 9052 handshake →
-  `session_open` returns a session id → `pull_logs` returns the `messages` stream. The beacon
-  offset-9 serial yields the correct key. Bench: MDI2 on a direct USB RNDIS link, reaching radio
-  ECU 0x80 over the D-PDU CAN tunnel; **not** connected to a vehicle OBD2 port. The RNDIS link
-  enumerates as `en17` with a `/32` mask that must be set to `/24` after every replug; discovery
-  keys off the subnet, not the interface name. Operator summary: `mdi2_client/docs/PROTOCOL.md`.
-- **No Bosch activation needed** — a cold USB+network capture proved macOS generic RNDIS is
-  sufficient; the 900x services just need a fresh (unexhausted) device.
+  get-logs trigger; body framing inside the Blowfish payload is `content + zero-pad + u32be(len)`
+  (padded to a multiple of 8; the trailing u32be is the content length — zero-padding without
+  this length suffix caused the device's `error 0x50000006` rejection, the diagnostic that led to
+  finding the correct framing).
+  The decrypted log body is a SID-tagged container (`0x8a9` meta / `0x8a8` data, e.g.
+  `name="messages"` → category Varlog). §4.9.
+- **Session:** the device holds exactly ONE session; release it with
+  `{"data":<session_id>,"has_data":true,"id":2,"target":"session"}` or it dangles. A few dangled
+  sessions exhaust the session table — after which 9052 stops answering and `session_open` returns
+  no id. This is **session-table exhaustion, not a hardware wedge**; recovery is to stop connect
+  loops and let the table drain (USB power-cycle is the last resort, not the first).
+  *(History: originally documented 2026-08-26 as "→ USB power-cycle"; corrected 2026-11-14 once the
+  drain behavior was observed.)* §4.10.
+- **No device-side activation/arming step exists.** A cold-boot USB+network capture on the real
+  Bosch Manager (§5, "cold-arming") proved macOS's generic RNDIS gadget is sufficient; the earlier
+  "dormant device" readings were connection-pool/session exhaustion from rapid test connects, not a
+  missing Bosch-specific control transfer.
+- **Confirmed live end-to-end, 2026-11-14:** discovery → key derivation → 9052 handshake →
+  `session_open` returns a session id → `pull_logs` returns the `messages` stream, byte-exact
+  against the Manager's own saved plaintext. Bench: MDI2 on a direct USB RNDIS link reaching radio
+  ECU 0x80 over the D-PDU CAN tunnel, **not** connected to a vehicle OBD2 port. The RNDIS link
+  enumerates as `en17` with a `/32` mask that must be reset to `/24` after every USB replug;
+  discovery keys off the subnet, not the interface name.
 
-**Superseded sections (do NOT trust these earlier claims — kept only as the investigation trail):**
-- **§3.1–3.3 (FTPS/`firmware:vtx` log pull):** not the *Get Log Files* path; that's a separate
-  AAOS-reprogramming route. Real pull = encrypted 9052 (§4.1, §4.20).
-- **§4.9 (which static keyring key is operative):** none — the key is `base + serial` (§4.18–4.19).
-- **§4.10 ("per-session" key):** wrong; the key is deterministic per unit (§4.11), = `base+serial`.
-- **§4.12–4.17 (derivation "at init / buried / needs a HW-watchpoint"):** all obsolete; solved
-  statically in §4.18–4.19.
-- **§4.18 ("addend = serial − 512"):** arithmetic slip; the addend **is** the serial (§4.19).
-- **§4.21 & §4.23 ("device needs Bosch activation / arming gap"):** wrong — resolved in §4.24 (no
-  activation; the "dormancy" was connection-pool/session exhaustion from rapid testing).
-
-
-**Date:** 2026-08-25. Scope: the Windows "MDI2 Manager" / "GM MDI Identification Service"
-stack, as distinct from DPS/SPS diagnostic sessions (already covered in
-`MDI2_DPDU_API_PROTOCOL_AUG2026.md`). Source material: full Ghidra disassembly
+**Date:** investigation ran 2026-08-25/26, corrected inline 2026-11-12 and 2026-11-14 (folded above,
+not left as separate strikethrough/banner pairs). Source material: full Ghidra disassembly
 (`gm_dps/disassembly/pseudocode_mdi2mgr/`), prior binary analysis at
 `gm_dps/docs/GM_MDI_IDENT_EVIDENCE_protocol.txt`, and live testing against real MDI2 hardware
-(192.168.171.2) on 2026-08-25.
+(bench-local `192.168.171.2`) on a Win11 Surface Pro host (`192.168.171.30`) running the real Bosch
+VCI Manager 9.1.2752.177. A separate, concurrent session installed the actual MDI2 Manager under
+Wine; that installation work is not duplicated here.
 
-**Note:** a separate, concurrent session is actively working on installing the real MDI2
-Manager under Wine. This doc is the static/protocol-analysis half of that effort — do not
-duplicate the Wine installation work itself here.
+---
 
 ## 1. `GM_MDI_Ident.exe` — the Identification Service
 
-Two instances of one binary run concurrently, each bound to a different Windows-loopback-only
-port (127.0.0.1 only — confirmed unreachable from the device side and from macOS by direct
-live probe):
-- `127.0.0.1:8098` — "GM MDI Software\GM MDI Identification Service" instance
-- `127.0.0.1:8125` — "Bosch\VTX-VCI\VCI Software (GM)\VCI Identification Service" instance
+Two instances of one binary run concurrently:
+- `8098` — "GM MDI Software\GM MDI Identification Service" instance
+- `8125` — "Bosch\VTX-VCI\VCI Software (GM)\VCI Identification Service" instance
 
-> **CORRECTION (2026-08-25, live capture):** both instances now bind **`0.0.0.0`**, not
-> `127.0.0.1` — verified with `Get-NetTCPConnection -State Listen` on the running Surface
-> (LocalAddress `0.0.0.0`, ports 8098/8125). They are reachable from the host's other subnets,
-> though the Manager still dials them via `127.0.0.1`. The "loopback-only" claim above is stale.
+**Bind address (corrected in place 2026-08-25, same live-capture session as the original claim —
+do not use the superseded reading below):** both instances bind **`0.0.0.0`**, confirmed via
+`Get-NetTCPConnection -State Listen` on the running Surface (`LocalAddress 0.0.0.0`, ports
+8098/8125) — they are reachable from the host's other subnets, though the Manager itself still
+dials them via `127.0.0.1`. *(History: first read as "127.0.0.1 only, confirmed unreachable from
+the device side and from macOS by direct live probe"; that reading does not hold — same-session
+`Get-NetTCPConnection` capture showed `0.0.0.0`. Superseded reading not carried forward.)*
 
-No TLS on either — plain custom binary protocol over raw `WS2_32` sockets (also a named pipe,
+No TLS — plain custom binary protocol over raw `WS2_32` sockets (also a named pipe,
 `\\.\pipe\VTX_Identification_Service`). Wire framing: length-prefixed segments
 (`[u32 LE total_len][u32 LE opcode/SID][payload]`), dispatched in
-`CClientConnectionMgr::OnDataReceived` via a long SID compare-chain. Confirmed SIDs:
+`CClientConnectionMgr::OnDataReceived` via a long SID compare-chain. Confirmed SIDs `[FW]`:
 
 | SID (hex/dec) | Name | Direction |
 |---|---|---|
 | 0x7f2 / 2034 | SID_IDENT_CONNECT_SEND | client→ident |
-| 0x8a9 / 2217 | (unnamed in evidence doc; response vtable = `CLogFiles_Recv`) | client→ident, log-pull trigger — see §3 |
+| 0x8a9 / 2217 | (unnamed in evidence doc; response vtable `CLogFiles_Recv`) | client→ident, log-pull trigger — see §2/§5 |
 | 0x8b9-0x8bc | WIFI_CONNECT/DISCONNECT/REQ | — |
 | 0x8bf / 0x8c0 | SID_WIFI_ENABLE_SEND / WifiEnable_Recv | — |
 | 0x8c1-0x8c4 | WIFI_ADAPTER_INFO / WIFI_ADAPTER_IF_INFO / WifiList | — |
-| 0x8d1 / 0x8d2 | SID_WIFI_CREDENTIALS_SEND / WifiCredentials_Recv | client→ident (see §2) |
+| 0x8d1 / 0x8d2 | SID_WIFI_CREDENTIALS_SEND / WifiCredentials_Recv | client→ident (§2) |
 | 0x902 / 2306 | SID_USB_GET_STATUS_SEND | — |
 
-Everything outside the IDENT/WIFI/USB block is **relayed to "the VCI/protocol_stack"** rather
-than handled locally — i.e. the ident service is a thin local multiplexer in front of the real
-device-facing protocol stack (`bvtx_vci_rt*.dll`).
+Everything outside the IDENT/WIFI/USB block is relayed to "the VCI/protocol_stack" rather than
+handled locally — the ident service is a thin local multiplexer in front of the real device-facing
+protocol stack (`bvtx_vci_rt*.dll`).
 
-## 2. CORRECTION (superseding an earlier finding in `MDI2_DPDU_API_PROTOCOL_AUG2026.md` §12):
-opcode 0x8d1/0x8d2 is WiFi AP pairing, not a port-10123 credential
+## 2. Correction propagated to MDP: 0x8d1/0x8d2 is VCI WiFi AP pairing, not a 10123 credential
 
-Traced end-to-end: `gm_mdi_ident.exe`'s `CClientConnectionMgr::OnDataReceived` 0x8d1 branch logs
-`"SID_WIFI_CREDENTIALS_SEND"`, deserializes a `CWifiCredentials_Send` object, and routes to
-`CIdentWifi::SetWifiCredentials` (log format `"%s ssid = %s serial_number = %s ... version =
-%s"`), which builds a Windows WLAN profile (`CreateProfile`, auth `"AES-CCMP"`). The sender,
-`bvtx_vci_rt_j.dll`'s `CDeviceMgr::SetConfigItems`, pulls the pair from config items literally
-named `"SSID"` / `"Passphrase"` (config IDs `0x12`/`0x13`, via `VtxRtGetConfigItems`/
-`SetConfigItems`, opcodes `0x7e3`/`0x7e4`), only format-validated
+This section **supersedes** an earlier finding in `MDI2_DPDU_API_PROTOCOL_AUG2026.md` §12 (that
+doc has been corrected to point here; this is the owning account — do not restate it there).
+
+Traced end-to-end `[FW]`: `GM_MDI_Ident.exe`'s `CClientConnectionMgr::OnDataReceived` 0x8d1 branch
+logs `"SID_WIFI_CREDENTIALS_SEND"`, deserializes a `CWifiCredentials_Send` object, and routes to
+`CIdentWifi::SetWifiCredentials` (log format `"%s ssid = %s serial_number = %s ... version = %s"`),
+which builds a Windows WLAN profile (`CreateProfile`, auth `"AES-CCMP"`). The sender,
+`bvtx_vci_rt_j.dll`'s `CDeviceMgr::SetConfigItems`, pulls the SSID/passphrase pair from config
+items literally named `"SSID"`/`"Passphrase"` (config IDs `0x12`/`0x13`, via
+`VtxRtGetConfigItems`/`SetConfigItems`, opcodes `0x7e3`/`0x7e4`), format-validated only
 (`ifm::ValidateWifiConfig`), never generated or looked up from any registry/DPAPI/backend store.
-**This is the VCI's own WiFi access-point passphrase, unrelated to TCP/10123 authorization** —
-the earlier doc's causal claim (that this credential explains the 10123 `ECONNREFUSED`) is
-wrong and has been corrected there. Also checked: the real capture that motivated that theory
-used the same Ethernet-gadget-style transport we replay from macOS (`capinfos` →
-`"Ethernet 2"` on Windows), not WiFi, so a WiFi-vs-USB transport mismatch isn't the explanation
-either. **Net effect: the actual port-10123 gate remains unexplained.**
 
-## 3. Device log-pull mechanism (the actual finding this doc is mainly for)
+**This is the VCI's own WiFi access-point passphrase, unrelated to TCP/10123 authorization.** The
+real capture that originally motivated the 10123-credential theory used the same Ethernet-gadget
+transport replayed from macOS (`capinfos` → `"Ethernet 2"` on Windows), not WiFi, ruling out a
+WiFi-vs-USB transport mismatch as the explanation too. **Net effect, still open `[U]`: the actual
+port-10123 gate remains unexplained** — this is tracked in MDP, not resolved here.
 
-Motivation: three real pulled log files exist on disk
-(`gm_dps/docs/live_captures_20260824_2/GM {Dmesg,Varlog,VCIHistory} 2026-08-24T11-54-5{1,6}-<MDI_SERIAL>.txt`),
-confirming the MDI2 Manager can retrieve device logs — but no corresponding network capture
-exists (the pull happened at 11:54, before any of the six known pcaps start at 12:03+; content
-search for distinctive log strings — `"Booting Linux"`, `"Bosch LP518"`, hostname
-`"<MDI_HOSTNAME>"` — is a confirmed zero-hit across all six captures).
+## 3. The FTPS log path — a real but separate route, not the *Get Log Files* button
 
-### 3.1 Transport: FTPS, not the SID/IPC protocol
+**This whole section documents a path that is superseded for the general Dmesg/Varlog/VCIHistory
+pull** (the live capture in §4 is the authoritative account of that button) **but remains valid for
+a different route** — the AAOS/Android head-unit reprogramming-log flow (`DevMgr::RunAndroidDevice
+Update`/`DevMgr::end_reprogramming`), which really does use it.
 
-> **CORRECTION (2026-08-25, live capture — see §4):** FTPS/21 is **not** the path the
-> Manager's *Get Log Files* button actually uses. A live capture of the real Bosch VCI Manager
-> 9.x pulling logs shows the pull runs over an **encrypted TCP channel on device port 9052**
-> (part of the 900x port bank, §4), not vsftpd/21. The `firmware:vtx` FTPS login is real and
-> still works, but it belongs to a **different** code path (the AAOS/Android reprogramming-log
-> route flagged in §3.3 caveat 3), not the general Dmesg/Varlog/VCIHistory pull. Treat §3.1–3.3
-> as accurate for *that* FTP path only; §4 is the authoritative account of the button.
+Motivation for the original theory: three real pulled log files existed on disk with no
+corresponding network capture (the pull happened before any of six known Aug-24 pcaps start, and a
+content search for distinctive strings was a confirmed zero-hit across all six).
 
-The device runs a **real FTP server** on port 21: `220 Global VCI FTP Server`, vsftpd 3.0.3
-(`STAT` confirms), `UNIX Type: L8`, FEAT lists `AUTH SSL`/`AUTH TLS`/`EPRT`/`EPSV`/`PASV`/`PBSZ`/
-`PROT`/`REST STREAM`/`SIZE`/`TVFS`/`MDTM`. **Credentials are hardcoded in `bvtx_vci_rt_j.dll`:
-`firmware` / `vtx`**, set via libcurl `CURLOPT_USERPWD` (opt `0x2715`). Confirmed live
-(2026-08-25) against the real unit: plain FTP login is refused
-(`530 Non-anonymous sessions must use encryption`); **explicit FTPS (`AUTH TLS`) login with
-`firmware:vtx` succeeds** — this is a genuine, reproducible, unlock-free win, independent of the
-port-10123 problem.
+**FTP facts (live-confirmed, independent of the port-10123 problem) `[C]`:** the device runs a real
+FTP server on port 21 (`220 Global VCI FTP Server`, vsftpd 3.0.3, `UNIX Type: L8`). Credentials are
+hardcoded in `bvtx_vci_rt_j.dll`: **`firmware`/`vtx`**, via libcurl `CURLOPT_USERPWD`. Plain FTP
+login is refused (`530 Non-anonymous sessions must use encryption`); explicit FTPS (`AUTH TLS`)
+login with `firmware:vtx` succeeds. Real client options (`FUN_100cdcb0`): `CURLOPT_USE_SSL=3`
+(`CURLUSESSL_ALL`), `CURLOPT_FTPSSLAUTH=1` (sends `AUTH SSL`, not `AUTH TLS` — untested whether the
+server cares), `SSL_VERIFYPEER=0`/`SSL_VERIFYHOST=0` (self-signed, unvalidated),
+`CURLOPT_INTERFACE` bound to the caller's own source IP, and 4 retries with a 500 ms backoff on
+connect failure.
 
-Exact curl options used by the real client (from `FUN_100cdcb0`, entry `0x100cdcb0` in
-`bvtx_vci_rt_j.dll`, the real `curl_read` function — confirmed by reading its full body):
-`CURLOPT_USE_SSL=3` (`CURLUSESSL_ALL`, both control and data channel),
-`CURLOPT_FTPSSLAUTH=1` (`CURLFTPAUTH_SSL` — i.e. sends `AUTH SSL`, not `AUTH TLS`; untested
-whether this distinction matters to the server), `SSL_VERIFYPEER=0`, `SSL_VERIFYHOST=0`
-(self-signed cert, no validation), `CURLOPT_INTERFACE` bound to the caller's own source IP,
-plus standard verbose/timeout/retry housekeeping (4 retries w/ 500ms backoff on connect
-failure).
+**The path is a magic streaming token, not a real filename.** The URL is built as
+`"ftp://firmware@" + host + "/" + path` with no directory prefix; `path` is never one of the four
+real log names — it's a magic token: `RETR any-file` pulls the next staged log in a queue (a curl
+code-78 `"any-file"` 404 is treated as benign end-of-stream), and `RETR end-file` finalizes the
+pull. The four real names (`messages`→Varlog, `messages.driver`→Dmesg, `vci-history.xml`→
+VCIHistory, `VTX_RT_Server.log`→Runtime) are matched by a separate classifier
+(`FUN_10079e40`) against a name the server supplies inline during the `any-file` stream, purely to
+pick the local output filename — never sent as RETR targets. This is why guessing literal filenames
+always failed with `550 Failed to open file`.
 
-### 3.2 The path is a magic token, not a real filename
-
-URL is built as `"ftp://firmware@" + host + "/" + path`, **no directory prefix ever added** —
-confirmed by reading `FUN_100cdcb0` in full. The `path` argument passed in by the only caller,
-`CDeviceMgr::get_file_from_device` (`FUN_100c63a0`), is **not** one of the four real log names —
-it's a magic streaming token:
-- **`RETR any-file`** — pulls the next staged log file in a queue (repeated in a loop; a
-  `CURLE_REMOTE_FILE_NOT_FOUND` (curl code 78 / `0x4e`) response containing `"any-file"` is
-  treated as benign end-of-stream, not an error — confirmed via the exact NRC-check logic at
-  line 186196 of that function).
-- **`RETR end-file`** — sent once after the loop to finalize/signal completion.
-
-The four real names (`"messages"` → category "Varlog", `"messages.driver"` → "Dmesg",
-`"vci-history.xml"` → "VCIHistory", `"VTX_RT_Server.log"` → "Categories"/"Runtime") are matched
-by a separate classifier (`FUN_10079e40`, called from `` `anonymous-namespace'::ArchiveLogFile ``)
-against a name **the server supplies inline during the any-file stream**, purely to decide the
-local output filename — they are never sent as RETR targets themselves. This is why guessing
-literal filenames (`RETR messages`, `RETR /var/log/messages`, etc.) correctly failed with
-`550 Failed to open file` in every live test.
-
-**Live-tested (2026-08-25) and still unresolved**: `RETR any-file` also returns
-`550 Failed to open file` cold, with no preceding trigger. `STAT /` on the real device shows
-the FTP root is a **genuinely empty staging directory** (`drwxrwxr-x`, only `.`/`..`, mtime
-`Aug 24 12:28` — i.e. last touched during a real session yesterday, untouched since), confirming
-files are staged transiently during an active pull, not persistently present.
-
-### 3.3 The staging trigger: SID 0x8a9 (`CLogFiles_Recv`) — found but not fully resolved
-
-`FUN_10083fb0` in `bvtx_vci_rt_j.dll` — the function that gates the whole get-logs flow (checks
-two state flags at `in_ECX+0x59c`/`+0x59d` before proceeding) — constructs and sends **SID
-`0x8a9`** (`FUN_10246240(0x8a9)`) with response type `CLogFiles_Recv::vftable` before any FTP
-activity. This is almost certainly what causes the device to populate the FTP staging directory.
-
-**Two open problems, not yet resolved:**
-1. SID `0x8a9`'s handler wasn't found in the disassembled scope — an apparent match at line
-   406212 of the same file turned out to be a false positive (a statically-linked OpenSSL
-   `s3_srvr.c` internal state constant, unrelated). The evidence doc's known ident-service SID
-   table doesn't cover `0x8a9` either.
-2. Whatever it does, `0x8a9` is sent to the **Windows-loopback ident service**
-   (127.0.0.1:8098/8125) — confirmed unreachable from macOS or from the device network. Even
-   with the exact trigger bytes, there's no live target to send them to without the real
-   `GM_MDI_Ident.exe` process running (natively or under Wine).
-3. Weaker caveat: the `any-file`/`end-file` FTP mechanism was found specifically under
-   `DevMgr::RunAndroidDeviceUpdate` / `DevMgr::end_reprogramming` in the call graph — it may be
-   the Android/AAOS head-unit programming-log path rather than the general
-   dmesg/varlog/vci-history pull that produced the files in `live_captures_20260824_2/`. Not
-   confirmed either way.
-
-### 3.4 Recommended next step
-
-Get the real `GM_MDI_Ident.exe`/Manager stack running under Wine (tracked in a separate,
-concurrent session) and capture a fresh network trace of an actual Manager-driven log pull.
-That would directly answer: (a) what SID `0x8a9`'s wire effect actually is, (b) whether it's
-relayed to the device over the already-documented low-port channel (`gm_dps` §11) or something
-else, and (c) whether `any-file`/`end-file` is really the general log-pull path or Android-update
--specific. Once the trigger is known, the FTPS side is already proven working
-(`firmware:vtx` auth confirmed live) — only the staging trigger is missing.
+**Staging trigger — found but never fully resolved `[U]`:** `FUN_10083fb0` gates the flow and sends
+SID `0x8a9` (`CLogFiles_Recv`) before any FTP activity — almost certainly what populates the FTP
+staging directory. `STAT /` against the FTP root showed the staging directory itself (`drwxrwxr-x`,
+only `.`/`..`, mtime "Aug 24 12:28"); `RETR any-file` also returns `550 Failed to open file` cold,
+with no preceding trigger. Two problems were never closed: (1) SID `0x8a9`'s handler was never located in
+the disassembled scope (an apparent match was a false-positive OpenSSL constant); (2) `0x8a9` is
+sent to the Windows-loopback ident service, unreachable from macOS/the device network, so even the
+exact trigger bytes have no live target without the real `GM_MDI_Ident.exe` running. Whether
+`any-file`/`end-file` is the general pull path or Android-update-specific was also never confirmed
+either way — this entire question became moot once §4 found the real *Get Log Files* path runs over
+9052, not FTP.
 
 ---
 
-## 4. LIVE CAPTURE 2026-08-25 (late) — the real Manager transport (authoritative; supersedes the FTPS assumption in §3.1 for the *Get Log Files* button)
+## 4. The real Manager transport — LIVE CAPTURE 2026-08-25, authoritative for *Get Log Files*
 
-First successful end-to-end network capture of the **real Bosch VCI Manager 9.1.2752.177**
+First successful end-to-end network capture of the real Bosch VCI Manager 9.1.2752.177
 (`GM_MDI_Manager.exe`, not Wine) driving a live MDI2. Bench: Win11 Surface Pro (host
-`192.168.171.30`) cabled USB to a Bosch VCI MDI2 (device `192.168.171.2`, MAC `70-C6-AC-00-05-38`;
-host-side NIC MAC `...39` — paired). Device internals (from the pulled plaintext): **Linux
-4.14.162-gvci, ARMv7, "Bosch LP518 Board", hostname `<MDI_HOSTNAME>`, serial `<MDI_SERIAL>`**.
-Capture driven remotely over SSH: `dumpcap -i <MDI2> -i <loopback>`, launched **detached via
-WMI `Win32_Process.Create`** (a plain `Start-Process`/SSH-child dumpcap is killed when the SSH
-session closes; the scheduled-task route failed on account-SID mapping). Artifacts (working tree,
-not this repo): `GM_research/mdi2_macos/captures/mdi_session_full_with_handshake.pcapng` (+
-`markers.log`, wall-clock phase markers; in-band markers = ICMP echo payload size 1337), and the
-matching **decrypted plaintext** logs under `captures/plaintext_logs/`.
+`192.168.171.30`) cabled USB to a Bosch VCI MDI2 (device `192.168.171.2`, MAC
+`70-C6-AC-00-05-38`). Device internals from the pulled plaintext: Linux 4.14.162-gvci, ARMv7,
+"Bosch LP518 Board". Capture driven remotely over SSH: `dumpcap` launched detached via WMI
+`Win32_Process.Create` (a plain SSH-child dumpcap dies with the SSH session; the scheduled-task
+route failed on account-SID mapping).
 
-### 4.1 Transport: a 14-socket bank on device ports 900x — NOT 10123, NOT FTP
+**Artifact paths (primary, non-dead-end evidence):**
+`GM_research/mdi2_macos/captures/mdi_session_full_with_handshake.pcapng` + `markers.log` (uses an
+in-band ICMP-echo-size-1337 marker technique to correlate capture timestamps), decrypted plaintext
+at `captures/plaintext_logs/`, the decrypt tool `mdi2_9052_decrypt.py`, and the cold-arming capture
+files `captures/cold_arming/{usb2.pcap,net.pcap}` (§5).
 
-On every UI **Connect**, `GM_MDI_Manager.exe` (the runtime DLL is in-process — it owns the
-sockets directly, confirmed via `Get-NetTCPConnection … OwningProcess`) opens a **fresh bank of
-14 parallel TCP connections** to the device:
+### 4.1 Transport: a 14-socket bank on device ports 900x
+
+On every UI Connect, `GM_MDI_Manager.exe` (the runtime DLL is in-process, confirmed via
+`Get-NetTCPConnection … OwningProcess`) opens a fresh bank of 14 parallel TCP connections:
 
     9001  9003  9006  9007  9008  9009  9010  9011  9012  9013  9014  9050  9051  9052
 
-A subsequent Connect opens a new bank; the previous bank goes to `TimeWait`. `10123` (the DPS
-D-PDU tunnel, `MDI2_DPDU_API_PROTOCOL_AUG2026.md`) and `13400` (DoIP) are **closed** during a
-Manager session — those are diagnostic-session ports, unrelated to the Manager. Ports **21 (FTP)
-and 80 (HTTP) are open** on the device but the Manager's log button does not use them (§4.3).
+A subsequent Connect opens a new bank; the previous bank goes to `TimeWait`. **`10123`** (the DPS
+D-PDU tunnel, MDP) and **`13400`** (DoIP) are **closed** during a Manager session — diagnostic-session
+ports, unrelated to the Manager. Ports 21 (FTP) and 80 (HTTP) stay open on the device, but the
+Manager's log button does not use them.
 
-### 4.2 Wire framing (big-endian) and per-message counter
+### 4.2 Wire framing and per-message counter
 
-All 900x channels share one framing — note **big-endian**, opposite the 10123 D-PDU path's LE:
+All 900x channels share one framing, **big-endian** (opposite the 10123 D-PDU path's LE):
 
-    [u32 BE  0x00000000]              # always zero
-    [u32 BE  payload_len]            # bytes following the 8-byte header
+    [u32 BE 0x00000000]              # always zero
+    [u32 BE payload_len]             # bytes following the 8-byte header
     [payload]
 
 `payload = [4-byte incrementing per-message counter][encrypted body]`. Counters step by 1 per
-message per channel — observed live: `f8b7c055 → f8b7c056 → f8b7c057`, `be53536c → 6d → 6e`,
-`d5a2f0c1 → c2`, and the log channel's `8aa81d35 → 36 → 37 → 38` (one step per *Get Log Files*
-click). Encrypted bodies show **repeating 16-byte ciphertext blocks** across messages and across
-repeated identical pulls → a **block cipher in ECB mode, 16-byte block** (AES-ECB shape; key/
-derivation not yet recovered). Each connection also carries an 8-byte **plaintext control frame**
-right after connect: `00 53 50 00 00 30 00 00` (variant `00 53 50 00 00 21 00 00` on port 9011 —
-the low byte, `0x30`/`0x21`, appears to encode a per-port service/type).
+message per channel (observed e.g. `f8b7c055 → 56 → 57`); the response echoes the request's
+counter. Each connection also carries an 8-byte plaintext control frame right after connect:
+`00 53 50 00 00 30 00 00` (variant `...21 00 00` on port 9011) — the low byte (`0x30`/`0x21`)
+encodes a per-port service/type; §0's handshake-direction note (device sends first on
+9001/9011/9050/9051, client sends first on 9052) applies to this frame.
+
+The encrypted body shows repeating 16-byte ciphertext blocks across repeated identical pulls — a
+block cipher in ECB mode, 16-byte block granularity (**ciphertext shape only**; §4.7 identifies the
+actual algorithm). *(History: an early pass over this same evidence guessed "AES-ECB, 16-byte
+block" from the 16-byte ciphertext repeat alone; §4.7's construction-level trace of
+`bvtx_vci_rt_j.dll` found the real primitive is Blowfish-ECB with an 8-byte block — the 16-byte
+repeat is just two concatenated Blowfish blocks, not an AES block. The AES guess never held and is
+not carried forward as a live claim.)*
 
 ### 4.3 *Get Log Files* button → port 9052, encrypted stream
 
-Click → 28-byte request on **9052**:
+Click → 28-byte request on 9052:
 
     00000000 00000014            # hdr, payload_len = 0x14 (20)
     8aa81d35                     # 4-byte counter (increments per click)
-    1c2faed2 8c01416a a6c46ff4 f64834b0   # 16-byte session token, CONSTANT within a session
+    1c2faed2 8c01416a a6c46ff4 f64834b0   # 16-byte session token, constant within a session
 
-Server replies with the log payload as a stream of 1460-byte (MSS) segments, **encrypted**
-(same ECB signature), ~81 KB per pull. The **16-byte token is constant across pulls in one
-session and changes across sessions** — a session/auth handle, and the leading candidate for the
-long-unexplained port-auth gate (§2/§3.3). The Manager writes the **decrypted** result to
-`C:\ProgramData\Bosch\VTX-VCI\VCI Software (GM)\Logs\Categories\` as
-`GM {Dmesg,Varlog,VCIHistory} <ISO-ts>-D<serial>.txt`. **We captured the 9052 ciphertext and the
-matching plaintext file for the same pull** → a known-plaintext pair to attack the cipher.
+Server replies with the log payload as a stream of 1460-byte (MSS) segments, Blowfish-ECB
+encrypted, ~81 KB per pull. The 16-byte token is constant across pulls in one session and changes
+across sessions — it functioned as the de facto session/auth handle during this investigation
+(before the JSON `session_open` layer in §4.9 was decoded). The Manager writes the decrypted result
+to `C:\ProgramData\Bosch\VTX-VCI\VCI Software (GM)\Logs\Categories\` as
+`GM {Dmesg,Varlog,VCIHistory} <ISO-ts>-D<serial>.txt` — this captured ciphertext↔plaintext pair is
+the known-plaintext oracle the rest of the derivation (§4.7-§4.8, §5) was validated against.
 
-### 4.4 UI-button → function map (answers "buttons should map to functions")
+### 4.4 UI-button → function map
 
 - **Get Log Files** button handler = `FUN_00437700` in `gm_mdi_manager.exe` (branches on the
-  worker's return: `0` → "Log Files retrieved", nonzero → "Failed to retrieve Log Files"; save
-  path from registry value `LogFileLocation`).
-- Worker = `FUN_0044f0a0` → calls `FUN_00460da0()` then a virtual call
-  `(**(*DAT_004c5554 + 8))(&arg)` through the in-process **runtime session object**
-  `DAT_004c5554`. The exe is a thin MFC shell; the 9052 socket, BE framing, counter, token, and
-  decryption all live in the runtime DLL (`bvtx_vci_rt*.dll` / `bvtx4j32.dll`). Recovering the
-  cipher/key means tracing from that vtable slot into the runtime's send/recv + crypto — that is
-  the single remaining blocker for a native macOS reimplementation.
+  worker's return: `0` → "Log Files retrieved", nonzero → "Failed"; save path from registry value
+  `LogFileLocation`).
+- Worker = `FUN_0044f0a0` → `FUN_00460da0()` then a virtual call through the in-process runtime
+  session object `DAT_004c5554`. The exe is a thin MFC shell; the 9052 socket, framing, counter,
+  token, and decryption all live in the runtime DLL (`bvtx_vci_rt*.dll`/`bvtx4j32.dll`).
 
 ### 4.5 UI Connect/Disconnect is loopback IPC only
 
-A deliberate **Disconnect → Connect** cycle produced **no** device-facing TCP for the *logical*
-toggle — only loopback IPC to the ident service `127.0.0.1:8125` (Manager → 106-byte request /
-16-byte ack; ident → **~16.6 KB** device-identification/config blob). The device 900x bank is
-managed separately (it re-banks on Connect, §4.1). This is why the operator's UI never showed a
-"disconnect": the device link (and the multicast beacon, §4.6) is independent of the UI's logical
-connect state.
+A deliberate Disconnect → Connect cycle produced **no** device-facing TCP for the logical toggle —
+only loopback IPC to the ident service `127.0.0.1:8125` (Manager→ident: 106-byte request/16-byte
+ack; ident→Manager: ~16.6 KB device-identification/config blob). The device's 900x bank is managed
+separately (it re-banks on Connect, §4.1) — this is why the UI never visibly "disconnects" the
+device link; the multicast beacon (§4.6) is independent of the UI's logical connect state.
 
-### 4.6 Device discovery beacon (free win for a macOS client)
+### 4.6 Device discovery beacon
 
-The MDI2 continuously multicasts `192.168.171.2:42178 → 225.1.1.1:8194`, 106-byte UDP datagram
-(~1/s). **Corrected 2026-11-12:** 106 is the UDP length field (8-byte header included), so the
-payload is 98 bytes (first u32 = `0x62`, then `0x86d`; serial = LE u32 at byte offset 9, which
-decodes to the unit serial in the Aug-2026 capture); a shorter 41-byte variant (UDP length 49) is
-also present in the same captures (measured with tshark on `mdi_session_full_with_handshake.pcapng`
-and `session2.pcapng`; the `mdi2_client/mdi2/const.py` comment "observed 41-byte beacon" refers to
-that variant). The §4.21 "41 bytes" figure is therefore the short variant, not a contradiction of the 98. A native macOS tool can **passively discover the device and confirm liveness by joining
-`225.1.1.1:8194`** — no handshake, no auth. The idle keepalive/"watchdog" the operator asked
-about is this UDP beacon, not TCP.
+The MDI2 continuously multicasts `192.168.171.2:42178 → 225.1.1.1:8194`, ~1/s. *(History: original
+reading called this a 106-byte payload; corrected 2026-11-12: 106 is the **UDP length field**
+including the 8-byte header, so the real payload is 98 bytes — first u32 `0x62`, then `0x86d`,
+serial as LE u32 at payload offset 9. A shorter 41-byte-payload/49-byte-UDP-length variant also
+appears in the same captures — not a contradiction of the 98-byte reading, just a second observed
+beacon size; `mdi2_client/mdi2/const.py`'s "observed 41-byte beacon" comment refers to that
+variant. That 41-byte variant's payload carries `module_type 0x1c = MDI_2` inline, not just the
+serial.)* A client can passively discover the device and confirm liveness by joining
+`225.1.1.1:8194` — no handshake, no auth required. This beacon is the idle keepalive/"watchdog"
+mechanism — there is no separate TCP-level watchdog.
 
-### 4.7 macOS reimplementation foundation — what is now known vs blocking
+### 4.7 Crypto of the 900x/9052 bodies — Blowfish-ECB, confirmed by construction
 
-Known & reproducible from macOS today: device discovery (§4.6), the 900x connect topology
-(§4.1), the BE framing + counter + 8-byte control frame (§4.2), the 9052 request layout (§4.3),
-and the exact plaintext the pull yields (ground-truth files). **Blocking:** the ECB block-cipher
-key/derivation for the 900x/9052 bodies, and the origin/lifecycle of the 16-byte session token.
-Next step is code-side, not capture-side: trace `DAT_004c5554`'s vtable into the runtime crypto,
-and/or exploit the captured known-plaintext↔ciphertext pair.
+Traced from the *Get Log Files* vcall into `bvtx_vci_rt_j.dll` (image base `0x10000000`; regional
+twins `bvtx_vci_rt.dll`/`_p` are byte-for-byte equivalent here). The transport class is `TrnPrt`
+(log strings `TrnPrt::Run … Encrypting/Decrypt`, `TrnPrt::SendRecv_ArchiveBuffer`).
 
-### 4.8 Crypto of the 900x/9052 bodies — Blowfish-ECB (runtime-DLL trace, 2026-08-25)
-
-Traced from the *Get Log Files* vcall into `bvtx_vci_rt_j.dll` (image base `0x10000000`;
-regional twins `bvtx_vci_rt.dll`/`_p` are byte-for-byte equivalent here). The transport class
-is **`TrnPrt`** (log strings `TrnPrt::Run … Encrypting/Decrypt`, `TrnPrt::SendRecv_ArchiveBuffer`).
-
-**Algorithm = Blowfish in ECB, confirmed by construction, not inference:**
-- Key schedule `FUN_101dce80` (= `BF_set_key`) seeds the P-array with the π-digit constants
-  `0x243f6a88 0x85a308d3 0x13198a2e …` and copies the 1024-dword S-box table from `DAT_102fa138`.
-  That S-box is the **standard Blowfish** table (`DAT_102fa138` little-endian = `0xd1310ba6
-  0x98dfb5ac 0x2ffd72db 0xd01adfb7 …`) — so any stock Blowfish (e.g. pycryptodome, big-endian
-  block convention) is byte-compatible.
-- Block routine `FUN_101dc790` (= `BF_encrypt`), buffer enc/dec `FUN_101dd350` / `FUN_101dcfe0`.
+- Key schedule `FUN_101dce80` (= `BF_set_key`) seeds the P-array with the standard π-digit
+  constants (`0x243f6a88 0x85a308d3 0x13198a2e …`) and copies the 1024-dword S-box table from
+  `DAT_102fa138` — the **standard Blowfish** S-box (confirmed byte-for-byte), so any stock Blowfish
+  implementation (pycryptodome, big-endian block convention) is byte-compatible.
+- Block routine `FUN_101dc790` (= `BF_encrypt`); buffer enc/dec `FUN_101dd350`/`FUN_101dcfe0`.
 - Encrypt `FUN_10268b90` pads the post-counter region to a multiple of 8; decrypt `FUN_10268a40`
-  rejects non-multiples with **`"Invalid message size, encrypted message must be multiple of 8"`**
-  → **8-byte block** (Blowfish/DES family; the S-box + π seed pin it to Blowfish, not DES).
-- Key length passed to `BF_set_key` is **`0x38` = 56 bytes** — Blowfish's maximum (448-bit) key.
-
-**On-wire layout of every 900x/9052 message (all 14 channels share it):**
-
-    [u32 BE 0x00000000][u32 BE payload_len][u32 counter (CLEARTEXT)][Blowfish-ECB(body)]
-
-The 4-byte counter is *not* encrypted (encrypt pads `payload_len-4` to a multiple of 8); it
-increments per message and the **response echoes the request's counter** (live: request on 9052
-`…00000014 | 8aa81d35 | <token>`; response `…0000e474 | 8aa81d35 | <58480-byte BF-ECB blob>`,
-matching the ~57 KB Varlog it decodes to). No per-message IV (pure ECB — confirmed by repeating
-16-byte ciphertext runs on the wire and repeating block runs after trial-decrypt).
-
-**Key source `FUN_10246d40`** — a mutex-guarded keyring indexed by module-type id (table at
-`DAT_10302ac8`, entries strided `0x104` bytes: `[u32 id]["MODULE_TYPE_ID_MDI"…][key @ +0xC4]`;
-`param_1==0` → default key at `DAT_10302a90`). The default/`MODULE_TYPE_ID_MDI` blob extracted
-statically is
-`43297fad38e373fe07a7137045da2a16 04689104c2fd3b2f37d06bb516cb7546 1f08260d1ac2465e58402364 1aba6176 02581616 4629b007` (56 B) — **but it does NOT decrypt the captured 9052
-stream** (tried both key- and block-word orders against the known Varlog plaintext; ECB structure
-appears, plaintext does not). So the operative key is the one `BF_set_key`'s `this`/context holds
-at encrypt time, set by the `TrnPrt` constructor (or a different keyring entry), **not** this
-static default.
-
-**Two routes to the operative key (either finishes the macOS client):**
-1. *Static:* trace the `TrnPrt` constructor / where `FUN_10268a40`/`b90`'s `this` gets its 56-byte
-   key member, and where the keyring entries at `DAT_10302ac8+0xC4` are populated at init.
-2. *Dynamic (fastest — we have a live session):* the Manager is running with an open session on
-   the Surface. Attach x64dbg/WinDbg to `GM_MDI_Manager.exe`, breakpoint `BF_set_key`
-   (`bvtx_vci_rt_j.dll+0x1dce80`) or dump the key-schedule buffer `DAT_102f9c20` after a
-   *Get Log Files*, and read the 56-byte key directly. Then verify against the captured
-   ciphertext↔`captures/plaintext_logs/` pair (harness in `mdi2_macos/`, pycryptodome
-   `Blowfish.MODE_ECB`).
-
-**Net for the macOS port:** algorithm, framing, counter, block size, and the exact validation
-oracle are all locked; only the 56-byte Blowfish key remains, and it is one debugger breakpoint
-away given the live rig.
-
-### 4.9 Live key extraction + reproduction status (2026-08-25, later)
-
-**All six keyring keys pulled from the running Manager** (pid, `bvtx_vci_rt.dll` — the *plain*
-variant is what loads, base `0x731F0000`; RVAs match the `_j` pseudocode) via read-only
-`ReadProcessMemory` (PowerShell P/Invoke over SSH; the 32-bit module list needs SysWOW64
-PowerShell). Keyring table at DLL RVA `0x302ac8`, entries strided `0x104`: `[u32 id][name][key
-@+0xC4, 56 B]`:
-
-| id | name | 56-byte Blowfish key (hex) |
-|----|------|-----|
-| 1 | MODULE_TYPE_ID_MDI | `43297fad38e373fe07a7137045da2a16 04689104c2fd3b2f37d06bb516cb7546 1f08260d1ac2465e58402364 1aba6176 02581616 4629b007` |
-| 2 | MODULE_TYPE_ID_M_VCI | `34921fad38e373ee37a7137035da2a16 04689104d2fd3b1f37d06bb316cb7546 1f08260d1ac2465e58402364 1aba6176 02581616 4629b007` |
-| 3 | MODULE_TYPE_ID_6520_Generic | (= id 1) |
-| 4 | MODULE_TYPE_ID_6515_Maserati | (= id 1) |
-| 5 | MODULE_TYPE_ID_6515_SD | (= id 1) |
-| 6 | MODULE_TYPE_ID_6515_TwinTec | (= id 1) |
-
-The MDI2 hardware here (Bosch LP518, "GM branded MDI2") is classed **`MODULE_TYPE_ID_M_VCI`
-(id 2)** by the 9.x stack — its key (`34921fad…`) is the only one that differs from the shared
-default. (id 1 `MDI` = the original MDI generation.)
-
-**Cipher wrapper is a named-dispatch layer, not raw Blowfish.** `FUN_101dd350`/`FUN_101dcfe0`
-start by *string-comparing* their mode arg against `DAT_102f9c20 = "ecb"` (confirmed both in the
-binary and by the live dump of that address returning `65 63 62 00` = "ecb"). The real block
-routine is `FUN_101dc790`: textbook Blowfish rounds (`xL ^= P[i]`, `xR ^= F(xL)`, F = `((S0[a]+
-S1[b])^S2[c])+S3[d]`), P at ctx+0, S-boxes at ctx+`0x12`/`0x112`/`0x212`/`0x312` (the S-box
-table `DAT_102fa138` is the standard Blowfish S-box). **But the four F-function byte selectors
-are read from a runtime table `ctx[0x412..0x415]`** — i.e. the byte order feeding the S-boxes is
-parameterized, a non-standard variant. Stock big-endian Blowfish (pycryptodome) does **not**
-reproduce the stream with either candidate key across key/block word-swap combinations, and the
-known-plaintext oracle (`captures/plaintext_logs/GM Varlog …txt`) stays unmatched — the gap is
-this F-byte-order table, not the key.
-
-**Finish (one of):** (a) reimplement Blowfish per `FUN_101dce80`+`FUN_101dc790` with the S-box
-table from `DAT_102fa138` and brute the small `ctx[0x412..0x415]` byte-order space against the
-oracle; or (b) live-dump the *keyed* context (P+S after `BF_set_key`, incl. `ctx[0x412..0x415]`)
-and run the raw Feistel — removes all endianness guessing. Key material, block routine, framing,
-and oracle are all in hand; only the byte-order permutation remains.
-
-**UPDATE (2026-08-26): static keys ruled out — key is session-derived.** A faithful from-scratch
-reimplementation of the DLL's exact Blowfish (standard S-box from `DAT_102fa138`, π P-array, F =
-`((S0+S1)^S2)+S3`, native little-endian block load, the `ctx[0x412..0x415]` permutation applied
-to **both** key-packing and F-selection) was brute-forced over **all 24 byte-order permutations ×
-both candidate keys** against the Varlog oracle. It reproduces the ECB block-repetition structure
-but never the plaintext. Conclusion: `MODULE_TYPE_ID_*` keyring values are **defaults/fallbacks,
-not** the operative 9052 key — the live key is established per session (the constant-per-session
-16-byte handshake token, or a key negotiated over the 900x connect exchange, is the prime
-suspect). Corrected finish: (a) trace the `TrnPrt` constructor to where its 56-byte key member is
-written at session setup (is it copied from the keyring, or derived from the token / handshake?);
-or (b) live-dump the *keyed* Blowfish context after a *Get Log Files* — this needs the per-object
-context address, i.e. a debugger (none installed on the bench; x64dbg/WinDbg SDK would close it in
-one breakpoint on `bvtx_vci_rt.dll` `BF_set_key`/`FUN_101dce80`, reading its key argument). The
-reimplementation harness + oracle are ready to confirm the instant the real key/derivation is in
-hand.
-
-### 4.10 SOLVED (2026-08-26) — standard Blowfish-ECB + live per-session key = 100% decrypt
-
-The 9052 log stream is now decrypted end-to-end and byte-validated. Two facts closed it:
-
-1. **It is *standard* Blowfish-ECB, big-endian — stock-library compatible.** The
-   `ctx[0x412..0x415]` byte-order table holds the standard `{3,2,1,0}`; the block words are
-   big-endian (`>II`), key packed big-endian. My earlier miss was purely the little-endian block
-   assumption *plus* the wrong key. `Crypto.Cipher.Blowfish` (pycryptodome) `MODE_ECB` reproduces
-   it exactly — no custom variant needed.
-2. **The 56-byte key is per-session and was extracted live.** A Frida hook on
-   `bvtx_vci_rt.dll` `BF_set_key` (RVA `0x1dce80`, live `base+0x1dce80`) reading its 56-byte key
-   argument yielded (this session) `fde7ccb213c2b103…01f8fd0c` (full value withheld; it is the per-device Blowfish key, deterministically `BASE_KEY_MDI_2 + serial`).
-   It is stable for the Manager-process lifetime but changes across sessions (an *earlier* capture
-   would not decrypt with a *later* session's key — which is why the static keyring keys of §4.9,
-   and any cross-session key, all failed).
-
-**Validation:** capturing a fresh 9052 pull *and* the live key from the **same** session, stock
-pycryptodome Blowfish-ECB decrypts the big frame to **100.00% byte-match (59497/59497)** against
-the Manager's own saved plaintext `GM Varlog …txt`.
-
-**Decoded frame + container:** on 9052, an 8-byte plaintext control frame `00 53 50 00 00 XX 00
-00` precedes the messages; each message is `[u32be 0][u32be len][u32 counter][Blowfish-ECB body]`
-(counter increments per message: `c583adc1…c5`). The decrypted big-frame body is an inner file
-container — little-endian `[size][id][namelen][name]` entries (e.g. name `"messages"` = the
-Varlog category) — followed by the raw log text.
-
-**Tooling (working):** `GM_research/mdi2_macos/mdi2_9052_decrypt.py` (pcap + key → plaintext) and
-`ps/frida_bf.py` (attaches to the live Manager, dumps the session key from `BF_set_key`).
-
-**Remaining for a *fully native* macOS client (no Windows/Frida in the loop):** recover how the
-56-byte session key is **derived/negotiated at Connect** (device-side vs client-side, and from
-what — the 16-byte session GUID, the 900x handshake exchange, or the device serial). Everything
-else — discovery (§4.6), the 14-socket transport (§4.1), framing/counter (§4.2), the cipher
-(§4.10), and the container format — is reimplementable today. Key *derivation* is the sole open
-item; live key extraction is a working stopgap in the meantime.
-
-### 4.11 CORRECTION (2026-08-26): the key is DETERMINISTIC/stable, not per-session
-
-§4.10 called the key "per-session" — that was wrong, an artifact of the still-buggy decryptor at
-the time it was tested. With the corrected stock-Blowfish decryptor, the key
-`fde7ccb213c2b103…01f8fd0c` decrypts **every** capture from this unit, across:
-- two different Manager processes (pid 7064 and a later pid 8704),
-- multiple Disconnect→Connect cycles,
-- the original 22:59 capture *and* the later one — 100% both.
-
-`BCryptGenRandom` never fires for it (hooked live), and the 56 key bytes appear **nowhere** as a
-literal in `bvtx_vci_rt*.dll` / `bvtx4j32.dll` / `device_res.dll` / the Manager exe. So the key
-is **computed deterministically at runtime from a stable input** (device serial `<MDI_SERIAL>` /
-the keyring key / a fixed constant via a KDF — derivation still being traced). It is **not** one
-of the static `MODULE_TYPE_ID_*` keyring keys.
-
-**Practical upshot for macOS:** the operative key is *fixed for a given unit*. Extract it once
-per device via the Frida `BF_set_key` hook and hard-use it — no per-session/ per-pull extraction
-needed. Whether it is global (same for all MDI2 units) or per-device (serial-derived) is the open
-question; the derivation trace (below/next) resolves it.
-
-### 4.12 Key derivation trace (2026-08-26) — deterministic, computed at init, not at Connect
-
-Live tracing (Frida on a fresh Manager, attached *before* Connect) of how the 56-byte
-`fde7ccb2…` key comes to exist:
-
-- **Ruled out at Connect:** the keyring function `FUN_10246d40` (`+0x246d40`) is **never called**,
-  `BCryptGenRandom` **never fires**, `BCryptHashData` **never fires**, and **no `memcpy`/`memmove`
-  of the key bytes** occurs. Hooked all of these across a full Disconnect→Connect + Get Log Files.
-- At the first `BF_set_key`, the key `fde7ccb2…` is **already present** in the `TrnPrt` object,
-  even though we attached before Connect. Backtrace (raw RVAs → functions) of the *use* path:
-  `FUN_10268b90`(enc)→`BF_set_key` ← `FUN_1026b270` ← `FUN_10269ab0` ← `FUN_1026afd0`(TrnPrt) ←
-  `FUN_100aeff0` ← `FUN_100af180` ← `FUN_100b1ec0` ← `FUN_1007b0b0` ← `FUN_1009bdb0` ←
-  `FUN_100591f0` ← `FUN_10040f80`. This is the log-pull path; it *reads* the key, doesn't derive it.
-- The live **keyring in memory still holds the on-disk defaults** (`43297fad…`/`34921fad…`,
-  confirmed by ReadProcessMemory), so `fde7ccb2…` is derived and stored **only in the TrnPrt
-  object**, by **direct stores** (not a CRT copy), and — since attaching post-launch already
-  finds it present — **most likely at process/DLL init**, before any Connect.
-
-**Conclusion:** the key is a **deterministic function of stable input, computed once at init via
-inline stores** — not negotiated with the device at Connect and not randomly generated. Whether
-the input is the device serial (`<MDI_SERIAL>`), a fixed constant, or a transform of the keyring
-default is still open.
-
-**Next step to pin it (either):** (a) `frida.spawn` the Manager suspended, install the
-keyring/RNG/hash/memcpy + a broad store-tracer, then resume — captures the **init-time**
-derivation the post-attach hook misses; or (b) hardware write-watchpoint on the key address
-(captured at the first `BF_set_key`) across a reconnect that reuses the object. 
-
-**Practical status unchanged:** the key is fixed per unit, so extract-once via the `BF_set_key`
-hook + reuse fully enables the macOS decryptor today (validated 100%). Native key *derivation* is
-the only remaining item, and it is an init-time deterministic computation, not a Connect-time
-exchange.
-
-### 4.13 Spawn capture result (2026-08-26) — derivation is Connect-time and inline (no lib calls)
-
-`frida.spawn` of the Manager with init-time hooks (keyring, `BCryptGenRandom`, `BCryptHashData`,
-key-content `memcpy`/`memmove`, `BF_set_key`) + a memory scan for the key, all armed on
-module-load before `resume`:
-
-- **12 s after spawn, with no device Connect, the key `fde7ccb2…` is NOT present in process
-  memory** (`Memory.scan` of all `rw-` ranges → 0 hits), and none of the hooks fired.
-
-This **refutes the "derived at init" hypothesis** (§4.12): the key is **not** computed at
-startup. Combined with §4.12 (attaching *before* Connect, then connecting, still caught no
-keyring/RNG/hash/memcpy yet the key was present at first `BF_set_key`), the derivation is:
-
-- **Connect-time** (only exists after a device Connect), and
-- **inline** — pure in-DLL arithmetic/stores, using **no** keyring lookup, no `BCrypt*`, no CRT
-  copy. Deterministic (same value every time) from stable input.
-
-**Definitive next technique (the only ones that can catch inline stores):** (a) hardware
-write-watchpoint on the key address — capture it at the first `BF_set_key`, set the watchpoint,
-then Disconnect→Connect so the derivation re-writes it; or (b) `Stalker` trace of the Connect
-path, filtering for the instruction that first writes `fde7ccb2`. Both require a GUI Connect on
-the live rig. Static alternative: locate the `TrnPrt` constructor (vtable holding
-`FUN_10268a40`/`FUN_10268b90`) and read its key-init.
-
-**Deliverable status:** unchanged and complete — deterministic per-unit key, extract-once via the
-`BF_set_key` hook, 100%-validated decrypt. Only the exact inline derivation formula (→ global vs
-serial-derived) remains open.
-
-### 4.14 Static derivation trace (2026-08-26) — architecture mapped; exact formula still buried
-
-Pursued the derivation via static RE (safe/offline) + confirmed dynamic facts. Mapped the
-transport/crypto class structure in `bvtx_vci_rt.dll`:
-
-- The cipher `this` is a **key-holder object** (56-byte key at **offset 0**; enc `FUN_10268b90`,
-  dec `FUN_10268a40` re-key from it each call). It is **distinct** from `CTransport`
-  (`TrnPrt`/`CTransport::vftable`, ctor `FUN_1025cd30`, offset 0 = vtable).
-- Connect wiring: `CClientTransport::InitializeClientStart` (`FUN_1025dc70`) allocates each
-  0xA0-byte `CTransportServer` (`FUN_1025cd30`); connect handlers `FUN_1005f5f0` / (line 175781)
-  drive the SID handshake (`0x7f5/0x849/0x874`) over a 0x2000 buffer (`FUN_10246990`).
-- The key-holder class methods cluster at `FUN_10268040`–`FUN_10269620` (mostly
-  serialize/enc/dec). `FUN_102682e0` is a deserializer, not SetKey.
-
-**Dynamic facts that constrain the derivation (from §4.11–4.13 + this session):**
-- Deterministic; **one master** key-holder persists across Disconnect (heap ~`0xd2dxxx`), copied
-  by inline stores into ~13 per-channel holders on Connect (freed on Disconnect).
-- Computed **once at first Connect** (absent before Connect; not re-derived on reconnect — a
-  `MemoryAccessMonitor` write-watch on the master pages caught **no** write during reconnect).
-- Uses **no** keyring lookup, `BCryptGenRandom`, `BCryptHashData`, or CRT `memcpy` — pure inline
-  arithmetic. No device-serial reference seen on the traced connect/crypto path so far.
-
-**Precise remaining lead:** the key-holder's `SetKey` (writes 56 bytes to holder+0) inside the
-`FUN_10268xxx` cluster, and its single caller on the first-Connect path — that caller holds the
-seed. Finding it pins global-vs-per-device. This is a bounded but non-trivial RE dig (several more
-functions), not answerable from the traces alone.
-
-**New capability delivered this session:** full **headless GUI automation** of the Manager over
-SSH — a `/it` scheduled task (runs in the interactive session) + `SetForegroundWindow`+mouse-click
-drives open/close/**Connect** (auto-id 1121)/**Disconnect** (1122); verified Connect →
-"Connected: SN <MDI_SERIAL_DIGITS>". Scripts in `mdi2_macos/ps/` (`uia_drive.ps1`, launchers). This makes
-future capture/experiments fully self-driving (no human clicks).
-
-**Bottom line unchanged:** the macOS foundation is complete and validated — only the exact inline
-key-derivation formula remains, now localized to the key-holder `SetKey` caller.
-
-### 4.15 Static trace — pseudocode wall (2026-08-26)
-
-Pushed the `SetKey`-caller trace to its pseudocode limit. Dead-end reasons (so this isn't
-re-run blindly):
-
-- The enc/dec (`FUN_10268a40`/`b90`) run as `__thiscall` with the **key-holder in ECX**, and that
-  ECX is produced through **C++ move-semantics helpers** — e.g. `FUN_102113c0` is just
-  `*this = *src; *src = 0` (a `std::move` of a pointer). Ghidra's decompiler **drops the ECX
-  provenance** across these, so the key-holder's constructor + key-write can't be followed in the
-  pseudocode.
-- The `0x10268xxx` address neighborhood is **XML/istream parsing** (peek `<`/`>`, "unexpected
-  EOF"), not the crypto class — adjacency is misleading.
-- Connect handlers (`FUN_1005f5f0`) do the SID handshake (`0x7f5/0x849/0x874`) over a 0x2000
-  buffer; no inline key computation visible there.
-
-**To actually pin the formula, the remaining options are heavier:**
-1. **Assembly-level RE** — re-decompile the enc/dec + their callers in a live Ghidra session
-   with manual `__thiscall`/ECX typing (or read the raw x86) to recover the key-holder ctor and
-   its `SetKey` source. The pseudocode dump alone is insufficient.
-2. **Stalker trace** of a single automated Connect, instrumented to catch the store that first
-   writes the key bytes (heavy; now feasible since Connect is fully scriptable).
-3. Non-disruptive **hardware debug-register watchpoint** — but the master address isn't known
-   until after the one-time write, and it isn't re-derived on reconnect, so it can't be pre-armed
-   without a fresh-process race.
-
-**Verdict:** exact derivation is **not** recoverable from the current pseudocode corpus; it needs
-assembly-level ECX tracing or Stalker. Practical deliverable (deterministic per-unit key,
-extract-once, validated decrypt, full automation) stands complete.
-
-**Memory-context check (non-disruptive):** dumped ±160 bytes around all 13 live key copies. The
-surrounding structure is the per-channel transport object — wide-char channel labels
-(`"USB [192.168.171.2]"`, `"log_7"`), vtable/ID pointers — with **no adjacent seed, key-schedule,
-or device serial**. The key is computed elsewhere; only the 56-byte result is copied in. So the
-seed is not recoverable by reading around the key either. Confirms: pinning the formula needs
-assembly-level ECX tracing (offline r2/Ghidra on `bvtx_vci_rt.dll`) or a Stalker trace of an
-automated Connect — both substantial. Stopping the derivation hunt here.
-
-### 4.16 Assembly-level trace (2026-08-26) — key located in object graph; compute still deeper
-
-Offline r2 disassembly of `bvtx_vci_rt.dll` (no rig). Two solid results:
-
-1. **Key is never on the wire → local client computation, not device-exchange.** The bytes
-   `fde7ccb2…` appear in **none** of the captures (incl. the full 900x handshake), and decrypting
-   the connect handshake with the static M_VCI key yields no session key. So the key is computed
-   locally from a stable input (same value across all four Manager PIDs observed).
-
-2. **Exact object-graph location of the key** (from `pdf` of the decrypt caller `FUN_100b2d30`):
-   the enc/dec key-holder `this` (ECX) is loaded as `*(*(handler + 0x8c) + 8)` — i.e.
-   `handler.+0x8c → cryptoCtx`, `cryptoCtx.+8 → keyholder`, `keyholder[0:0x38]` = the Blowfish
-   key. The key-holder is owned by the **message-handler/dispatch** object, not the transport.
-
-Ruled out as the key-setter (all zero-init their members): the connect handler `FUN_1005f5f0`,
-the CClientTransport ctor `FUN_1025cce0`, the CTransport ctor `FUN_1025cd30`, and
-`TrnClt::ConnectToServer` `FUN_1025cf40` (pure sockets). The `+0x8c` writes elsewhere are
-`std::string` SSO fields (`=0xf`), unrelated.
-
-**Precise remaining target:** who allocates the handler's `cryptoCtx` (sets `handler+0x8c`) and
-writes the 56-byte key into `cryptoCtx+8`'s key-holder — this lives in the handler-registration /
-connection-security setup path (the SID `0x7f5/0x849/0x874` handshake response area), a further
-subsystem. Fully pinning the inline formula is a multi-subsystem RE effort; it is now localized to
-the message-handler crypto-context init, with the exact field offsets known.
-
-**Net:** derivation confirmed **local + deterministic**, key precisely located in the object
-graph; the exact compute remains buried in the handler crypto-setup path. Practical deliverable
-(extract-once key, validated decrypt, full automation) complete and unchanged.
-
-### 4.17 Allocator-hook + HW watchpoint (2026-08-26) — keyholder is a 0x38 alloc; watchpoint crashes the live Manager
-
-Pursued the definitive dynamic technique. One solid finding, one hard blocker:
-
-- **Finding:** correlating the RT allocator `FUN_102320c3` (RVA `0x2320c3`) with `BF_set_key`
-  shows the key-holder is a **dedicated `0x38` (56-byte) allocation**, key at offset 0. (The
-  persistent masters predate any probe; freshly-allocated channel key-holders correlate cleanly:
-  `base==keyholder, size=0x38, off=0`.)
-- **Blocker:** Frida hardware watchpoints exist on this 32-bit target via the per-thread method
-  `thread.setHardwareWatchpoint(id, addr, 4, 'w')` (+ `Process.setExceptionHandler`), but the
-  harness (watchpoint the 4 rotating `0x38` allocs, catch the key-prefix write) **crashes the live
-  Manager** — same class of disruption as the guard-page `MemoryAccessMonitor` (§4.13). Root cause:
-  the `#DB` single-step storms + an exception handler that returns `true` for all exceptions
-  (swallowing the app's own). Reliable per-hit identification needs `DR6`, which Frida doesn't
-  cleanly expose here, so returning `false` for non-ours isn't feasible without more work.
-
-**Net:** dynamic low-level instrumentation (guard-page or HW-watchpoint) is **not viable on the
-live rig without crashing the Manager**. The derivation is now maximally localized statically —
-a `0x38` key-holder from `FUN_102320c3`, key at offset 0, filled on the connect path within the
-message-handler crypto context (`handler+0x8c → cryptoCtx+8 → keyholder`) — but the exact write
-instruction can't be captured by the available non-destabilizing means.
-
-**Safest remaining path to the instruction:** attach a real user-mode debugger (x64dbg/WinDbg)
-and, after one connect, set a **conditional HW data breakpoint** on a known channel key-holder,
-then Disconnect→Connect to catch the copy, and walk back to the master's compute; or take the DLL
-into a controlled Ghidra/emulation harness (not the production Manager) for the handler
-crypto-context init. Both are separate, deliberate efforts. Practical deliverable unchanged.
-
-### 4.18 DERIVATION SOLVED (2026-08-26) — key = static base + per-device addend
-
-Cracked via offline r2 (found the function) + one non-disruptive read-hook (confirmed live).
-**Supersedes §4.12–4.17's "not recoverable" conclusions.**
+  rejects non-multiples with `"Invalid message size, encrypted message must be multiple of 8"` →
+  8-byte block (Blowfish/DES family; the S-box + π seed pin it to Blowfish, not DES, and rule out
+  the earlier AES-ECB guess at §4.2).
+- Key length passed to `BF_set_key` is `0x38` = 56 bytes — Blowfish's maximum (448-bit) key.
+- The cipher wrapper is a named-dispatch layer (`FUN_101dd350`/`FUN_101dcfe0` string-compare their
+  mode arg against `DAT_102f9c20 = "ecb"`, confirmed live), but the real block routine is textbook
+  big-endian Blowfish — `Crypto.Cipher.Blowfish` (pycryptodome) `MODE_ECB` reproduces it exactly, no
+  custom byte-order variant needed. (An early reading suspected a non-standard F-function byte-order
+  table at `ctx[0x412..0x415]`; that table holds the standard `{3,2,1,0}` ordering — the apparent
+  non-standard-ness was an artifact of testing against the wrong key, not the wrong algorithm; see
+  §5.)
+
+### 4.8 Key derivation — SOLVED: static per-module base key + device-serial addend
+
+**Formula, byte-verified:**
+
+    session_key[i] = base_key[module_type][i] + device_serial     // i = 0..13, 32-bit add mod 2^32
 
 The 900x channels are `common_service::generic_client<PORT, boost::mpl::map<json_format::
-base_request…,base_response…>>` templates (JSON messages under the Blowfish layer; e.g. port
-9001 = `speaker` service). Each generic_client's 56-byte key-holder is initialized by
-**`FUN_10268960`** (RVA `0x268960`), whose x86 body is exactly:
+base_request…,base_response…>>` templates. Each generic_client's 56-byte key-holder is initialized
+by `FUN_10268960` (RVA `0x268960`), whose x86 body is exactly:
 
     memmove(keyholder, base_key_table[module_type] + 0xC4, 0x38)   // static 56-byte base key
-    for (i=0; i<14; i++) keyholder.dword[i] += addend              // add dword[ebp+0xc], per dword
+    for (i=0; i<14; i++) keyholder.dword[i] += addend              // per 32-bit word
 
-so **`session_key[i] = base_key[module_type][i] + addend`** (per 32-bit word, mod 2³²).
+**Live-confirmed values** (hook on `FUN_10268960`): `module_type = 0x1c` =
+`MODULE_TYPE_ID_MDI_2` (entry 27 of table `DAT_10309d60`, stride `0x104`, key at `+0xC4`; table is
+static, live == on-disk); `base_key[MDI_2]` =
+`42197fad58f363fe07cc137065da2a5604a89114b2fd3b2f57d1bbb516cb75461f08260d1ac2465e584013641aba6176025816164629b007`.
+The addend is **not** a literal in the binary (0 occurrences); it is computed at connect and is the
+device's serial number as a raw `uint32` — `blowfish_key[i] = base_key[module_type][i] +
+device_serial`, confirmed by recomputing and matching the live-extracted session key exactly for
+the test unit (full 56 bytes, 100% match). *(History: §5's derivation hunt first produced
+`addend = serial − 0x200` from an off-by-one reading of the test unit's serial digits; recomputing
+with the correct serial value showed the addend **is** the raw serial, no offset — the "−512"
+reading was an arithmetic slip, not a second valid formula, and is not carried forward.)*
 
-**Live-confirmed values (hook on `FUN_10268960`):**
-- `module_type = 0x1c` = **`MODULE_TYPE_ID_MDI_2`** (entry 27 of table `DAT_10309d60`, stride
-  `0x104`, key at `+0xC4`; table is static, live == on-disk).
-- `base_key[MDI_2]` = `42197fad58f363fe07cc137065da2a5604a89114b2fd3b2f57d1bbb516cb75461f08260d1ac2465e584013641aba6176025816164629b007`
-- `addend = 0x054dcebb`
-- `base_key + 0x054dcebb == fde7ccb2…` → **VERIFIED True** (full 56 bytes).
+**Result:** the Blowfish key is computable with no Windows and no live extraction — a native
+client reads the device serial (from the beacon, §4.6, or from ident/logs), takes the static
+per-module base key, and adds the serial to each 32-bit word.
 
-**Addend is per-device (not a literal — 0 occurrences in the binary; computed at connect).** It
-is strikingly close to the device serial: **serial `<MDI_SERIAL_DIGITS>` = `0x054DD0BB`; addend `0x054DCEBB`
-= serial − 512 (0x200)**. So the key is **per-device, derivable from the serial** (which a macOS
-client can read from the device ident/logs) — pending confirmation of the exact serial→addend
-transform (traced to `FUN_10268960 ← FUN_1006d3d0(generic_client ctor) ← FUN_1007b0b0`; the
-addend flows in as `param_5`).
-
-**macOS impact — key is now COMPUTABLE, no Windows/extraction needed:** embed the static
-`base_key[MDI_2]`, compute `addend` from the unit's serial, add per-dword → the exact Blowfish
-key. Confirming the serial→addend formula (one more trace, or a second unit) closes it fully;
-`addend = serial − 0x200` is the working hypothesis.
-
-### 4.19 FINAL — the addend IS the device serial (correction to §4.18's "−512")
-
-Verified programmatically: **`0x054dcebb` = `<MDI_SERIAL_DIGITS>` decimal = the device serial exactly**
-(§4.18's "serial − 512" was an arithmetic error — `0x054DD0BB ≠ <MDI_SERIAL_DIGITS>`; `0x054DCEBB = <MDI_SERIAL_DIGITS>`).
-
-**Complete, byte-verified derivation formula:**
-
-    blowfish_key[i] = base_key[module_type][i] + device_serial      // i = 0..13, 32-bit add mod 2^32
-
-- `module_type` = `0x1c` = `MODULE_TYPE_ID_MDI_2` → base key `42197fad58f363fe07cc137065da2a56
-  04a89114b2fd3b2f57d1bbb516cb75461f08260d1ac2465e584013641aba6176025816164629b007` (static, in
-  `bvtx_vci_rt.dll` table `DAT_10309d60`, entry id 0x1c, `+0xC4`).
-- `device_serial` = the unit's serial as a `uint32` (this unit `<MDI_SERIAL_DIGITS>`; `uiSerialNumber` /
-  `VtxRtSglReadSerialNumber` / `VTX_RT_CFG_SERIAL_NUMBER`).
-- Result for this unit: `fde7ccb213c2b103…01f8fd0c` — recomputed == captured, exact.
-
-**This fully closes the macOS story.** The Blowfish key is **computable with no Windows and no
-per-session extraction**: a native client reads the device serial (present in the `225.1.1.1:8194`
-announce / ident / the pulled logs as `<MDI_HOSTNAME>`), takes the static per-module base key,
-adds the serial to each 32-bit word → the exact key. Per-device, deterministic, reproducible.
-Nothing remains blocked on the crypto/key side for a standalone macOS MDI Manager.
-
-### 4.20 900x application protocol DECODED — JSON messages + SID-tagged log container (2026-08-26)
+### 4.9 Application layer — JSON session protocol + SID-tagged log container
 
 Decrypting the 9052 client→server requests with the derived key reveals the application layer
-(this is the `json_format::base_request/response` of the `generic_client<PORT,...>` templates):
+(`json_format::base_request/response` of `generic_client<PORT,...>`):
 
-**JSON session protocol** (one line per message, under the Blowfish frame):
 ```
 {"data":{"date":"<DDMMYYHHMMSS+frac>","dialer":"<host ip>","interface":2,"keep_alive":false,
          "listener":"<device ip>","master":true,"name":"<user>"},"has_data":true,"id":1,"target":"session"}
 {"has_data":false,"id":4,"target":"session"}        # poll
 {"has_data":false,"id":9,"target":"session"}        # poll
 ```
-Then a **binary get-logs trigger** on 9052: `a7 08 00 00 01 00 00 00 00 00 00 00 00 00 00 0c`
-(→ the device streams the log container as the response).
 
-**Decrypted log body = SID-tagged records** (SID = LE u32; confirms the prior doc's SID `0x8a9`):
+Then a binary get-logs trigger on 9052: `a7 08 00 00 01 00 00 00 00 00 00 00 00 00 00 0c` → the
+device streams the log container as the response.
+
+Decrypted log body = SID-tagged records (SID as LE u32; confirms §1/§3's SID `0x8a9`):
+
 ```
 0x8a9 meta : [sid][_r][id][kind][namelen][name]                     e.g. name="messages"
 0x8a8 data : [sid][_r][id][namelen][name][datalen][data]            datalen 0xe869=59497 = Varlog
 ```
-So a full pull = session_open → poll → get-logs → parse records; `name` selects the category
-(`messages`=Varlog, etc.). Field semantics of `kind`/`_r` and the complete SID set still need more
-samples, but the log path is fully reproduced.
 
-**Working Python client:** `GM_research/mdi2_macos/client/` (package `mdi2`) — discovery, key
-derivation (`base+serial`), Blowfish-ECB, `construct`-based framing + container, JSON messages,
-active `pull_logs`. Verified end-to-end offline: pcap → decrypt → extract `messages` (59497 B,
-byte-exact) with a stock venv (`pycryptodome` + `construct`). CLI: `python -m mdi2.cli {scan,key,connect}`.
+Full pull sequence: `session_open` → `poll` → get-logs → parse records; `name` selects the category
+(`messages`=Varlog, etc.). `kind`/`_r` field semantics and the complete SID set were never fully
+enumerated (only enough samples to drive the client) — the log path itself is fully reproduced
+regardless.
 
-### 4.21 Live macOS bring-up (2026-08-26) — client validated; device-activation gap found
+### 4.10 Session lifecycle and the robustness fixes that made repeated pulls work
 
-MDI2 moved to the Mac via USB (RNDIS gadget = **en17**, MAC 70:c6:ac:00:05:39). The MDI DHCP-serves
-the host **192.168.171.30** (same as Windows) but macOS assigned a **/32** — set `en17` to
-`192.168.171.30/24` (`sudo ifconfig en17 inet 192.168.171.30 netmask 255.255.255.0`) so the device
-subnet is on-link (a full-tunnel VPN on `utun6` had otherwise stolen the route).
+Four facts closed the client's reliability, folded together here (originally found and corrected
+across several passes — see §5 for the dead ends that preceded each):
 
-**Working live from macOS:** ping .2 (~1 ms); ports 21/80/9000/9002/9004/9005/9001/9052 open;
-**discovery beacon** received on `225.1.1.1:8194` — 41 bytes, decodes to `[len][0x86d][serial
-uint32][…][module_type 0x1c=MDI_2][…]`, so the client **auto-derives the key from the beacon**.
-All 14 channels TCP-connect; key derivation, Blowfish, framing, control-frame format, JSON
-messages, and container parsing are all validated against captures.
+1. **Counter must have bit31 set.** The `[u32be 0][u32be len][u32 counter][body]` counter is not a
+   plain 1..N sequence — values with bit31 clear make the device abort the response after
+   `{"data":`; values with bit31 set (`0xc583adc1`, `0x8aa81d35`, `0xcc666310`, all captured live)
+   are processed normally. Fix: `Channel.counter` starts at `random.getrandbits(31) |
+   0x80000000` and increments mod 2³².
+2. **Session-close required.** The device holds exactly one session; send
+   `{"data":<session_id>,"has_data":true,"id":2,"target":"session"}` after each pull or the
+   session dangles (repeated dangles exhaust the session table — recoverable by draining, not a
+   hardware fault; see §0).
+3. **Patient recv.** `recv_frames` must accumulate until idle-after-data; a frame-by-frame reader
+   misread replies and left sessions dangling.
+4. **Control frame must be the full 8 bytes** `00 53 50 00 00 <code> 00 00` — a 7-byte version
+   stole a byte from the next frame and misaligned `session_open`.
 
-**Blocker — 900x services are dormant on the Mac.** The device ACKs the control frame + session_open
-but sends **no data on any channel**; the identical bytes got a 1 ms reply on the Surface. So the
-device needs a **device-level activation** that the Bosch Windows stack performs (USB
-driver control step and/or an ident handshake) and the generic macOS RNDIS gadget does not. The
-900x app protocol is fully reproduced; only *arming* the device from a cold, non-Bosch host remains.
+With all four fixed, a client-constructed `session_open` is byte-identical to the real one, and the
+device returns full success: `{"data":{"port":9011,"session":<id>},"error":0,"has_data":true,
+"id":1}`, confirmed on the real MDI2 over macOS USB. A full pull then runs:
+`discover → derive key → control handshake → session_open → poll → get-logs → Blowfish-ECB decrypt
+→ SID container → "messages" (Varlog, byte-exact against the Manager's own saved plaintext)`. The
+first full live pull returned 56811 bytes of live Varlog, decoding to a plausible boot log
+("Aug 26 00:31:46 <MDI_HOSTNAME> syslog-ng... Booting Linux... 4.14.162-gvci"). Three consecutive
+back-to-back pulls with no power-cycle between them each returned the full Varlog live, confirming
+robustness.
 
-**Next:** capture a **cold first-connect** on the Surface (device power-cycled, then Bosch Manager's
-very first connect) incl. USB-control + ident traffic, to find the activation step; or inspect the
-Bosch USB driver's enumeration/control sequence. Client code: `GM_research/mdi2_macos/client/`.
+### 4.11 macOS interface setup
 
-### 4.22 LIVE macOS client WORKS (2026-08-26) — device dormancy was connection-pool exhaustion
+MDI DHCP-serves the host `192.168.171.30` over the USB RNDIS gadget (enumerates as `en17`, MAC
+`70:c6:ac:00:05:39`), but macOS assigns a `/32` mask — set it to `/24` after every USB replug:
 
-The earlier "dormant device" (§4.21) was **not** a missing Bosch activation — it was the device's
-**connection-pool exhausted** by repeated test connects (session-table exhaustion; draining or
-releasing the sessions also recovers it — power-cycle is the last resort, see 2026-11-14 note in
-§0). After a USB power-cycle the device responds immediately from macOS. Two more findings closed the live path:
+    sudo ifconfig en17 inet 192.168.171.30 netmask 255.255.255.0
 
-1. **Per-channel control handshake:** each 900x channel must first exchange the 8-byte control
-   frame `00 53 50 00 00 <code> 00 00` (client `0x30`, device `0x31`; port 9011 uses `0x21`/`0x20`)
-   before any app message.
-2. **App-body framing (inside the Blowfish body):** `content + zero-pad + u32be(len)`, padded to
-   a multiple of 8 (the trailing u32be is the content length; responses use it too). My earlier
-   zero-padding without the length suffix caused the device's `error 0x50000006` rejection.
+(a full-tunnel VPN on another interface can otherwise steal the route). Discovery keys off the
+subnet, not the interface name — `en17` is only what this gadget happened to enumerate as.
 
-With both fixed, a **client-constructed `session_open` is byte-identical to the real one** and the
-**live device returns full success**: `{"data":{"port":9011,"session":<id>},"error":0,"has_data":
-true,"id":1}` — confirmed on the real MDI2 over macOS USB. Discovery works too: the
-`225.1.1.1:8194` beacon carries the serial (`0x054dcebb`=<MDI_SERIAL_DIGITS>) and module type `0x1c`, so the
-client auto-derives the key.
+---
 
-**Net: the macOS client is validated end-to-end live** — discover → derive key → control
-handshake → session_open (accepted) — with all layers (Blowfish, framing, app-body length suffix,
-JSON, container) byte-exact against both captures and the live device. Operational caveat: the
-device holds **one session** and a pool of a few connections; leftover sessions/leaked connections
-from rapid testing make it respond inconsistently until the session table drains (or, as a last
-resort, a USB power-cycle). A production client
-should open only the channels it needs (9052 for logs) and close cleanly.
+## 5. Appendix: dead ends ruled out during the key-derivation hunt
 
-**Interface note (macOS):** MDI DHCP-serves host `192.168.171.30`, but macOS assigns a `/32` and a
-full-tunnel VPN can steal the route — set `en17` to `/24`: `sudo ifconfig en17 inet 192.168.171.30
-netmask 255.255.255.0` (redo after each re-plug). Discovery keys off the subnet, not the
-interface name (`en17` is just what it enumerated as; 2026-11-14).
+The live key-derivation trace (now solved, §4.8) took nine dated passes (2026-08-25/26) across
+static RE, live Frida hooks, and one cold-capture session before landing on the final formula. None
+of the intermediate conclusions below are current; they are kept only as a short record of what was
+tried and why each route failed, so the same dead ends are not re-run.
 
-### 4.23 CORRECTION to §4.22 — device DOES need Bosch activation (arming), not just a clean pool
+- **Static keyring lookup (ruled out).** Six `MODULE_TYPE_ID_*` keys were pulled live from the
+  keyring table (`DAT_10302ac8`, stride `0x104`, key at `+0xC4`) via read-only
+  `ReadProcessMemory`. None decrypted the captured 9052 stream against the known-plaintext oracle,
+  under any of the 24 byte-order permutations tested against a from-scratch Blowfish
+  reimplementation. Conclusion: these are defaults/fallbacks, not the operative key.
+- **"Per-session" key (ruled out).** A Frida hook on `BF_set_key` first yielded a key that appeared
+  to change across what were actually separate Manager process instances; re-testing against a
+  corrected decryptor showed the same key (`fde7ccb2…`, withheld) decrypts every capture from the
+  same unit across different Manager PIDs and reconnects — the key is deterministic per device, not
+  per session.
+- **"Derived at process init" (ruled out).** `frida.spawn` with hooks armed before `resume` showed
+  no keyring/RNG/hash/memcpy calls and no key present in memory until after a device Connect — the
+  derivation is Connect-time, not init-time, and uses no library-level crypto/RNG calls (pure inline
+  arithmetic).
+- **Assembly/object-graph tracing (dead end, but located the key precisely).** Static `pdf`
+  tracing found the key-holder is a dedicated `0x38`-byte allocation (`FUN_102320c3`) owned by the
+  message-handler object (`handler+0x8c → cryptoCtx`, `cryptoCtx+8 → keyholder[0:0x38]`), ruling out
+  the connect handler, the transport ctor, and `TrnClt::ConnectToServer` as the key-setter. The
+  exact write instruction inside the handler's crypto-context init was never pinned from pseudocode
+  alone (Ghidra drops ECX provenance across `std::move`-style helpers used here).
+- **Dynamic instrumentation of the write (dead end — method note, not a finding).** Frida
+  hardware watchpoints on the rotating key-holder allocations **crashed the live Manager** (the
+  `#DB` single-step storm plus an exception handler that swallows all exceptions made per-hit
+  identification infeasible without further work) — not viable on the production rig without
+  destabilizing it. Headless GUI automation of the Manager (SSH + `SetForegroundWindow` + scripted
+  Connect/Disconnect) was built as a side effect of this effort and remained useful for later,
+  non-destructive capture work.
+- **"Addend = serial − 512" (arithmetic slip, corrected same investigation).** The first successful
+  decode of the derivation formula (`FUN_10268960`: base key + per-dword addend) misread the test
+  unit's serial digits, producing an addend that looked like `serial − 0x200`. Recomputing with the
+  correct serial value showed the addend **is** the raw serial — see §4.8's final formula.
+- **"Device needs Bosch-specific activation/arming" (ruled out by a cold-capture test).** Moving the
+  MDI2 to macOS produced an apparently dormant device (control frames ACKed, no data on any
+  channel) that was first read as a missing USB-driver/ident "arming" step the generic macOS RNDIS
+  gadget doesn't perform. A full cold-boot USB (USBPcap) + network capture on the Surface showed
+  standard RNDIS enumeration (VID `0x0ca0`/PID `0x1301`: `GET_DESCRIPTOR` x3 + `SET_CONFIGURATION`,
+  `OID_GEN_CURRENT_PACKET_FILTER`, `SET 802_3_MULTICAST_LIST`; no `OID_GEN_RNDIS_CONFIG_PARAMETER`)
+  and initialization with **no vendor control transfers, no vendor OID, no
+  arming message** — the device gets zero host→device packets until the 900x TCP connect itself.
+  The dormancy was connection-pool/session exhaustion from rapid repeated test connects (§0, §4.10),
+  not a missing activation step; this is the current, correct account.
 
-Further power-cycles resolve the ambiguity: a truly cold device (never armed by a Bosch Manager
-this power cycle) accepts TCP on the 900x ports but **does not answer the control frame** — its
-900x services are **dormant/unarmed**. The one time the client fully succeeded (§4.22), the device
-was still **armed from its immediately-prior Surface Manager session** (residual state), not cold.
+---
 
-So both are true: (a) the macOS client protocol is complete and **proven** (byte-exact
-session_open → full `{"port","session","error":0}` success against the live device when armed);
-(b) but **arming the device requires the Bosch Windows stack's activation** (USB driver control
-step and/or ident handshake), which the generic macOS RNDIS gadget does not perform. Cold Mac-only
-bring-up is therefore not yet possible — the client works only against an already-armed device.
+## Open conflicts
 
-**The remaining blocker is the activation/arming handshake** (was §4.21, mis-attributed to
-exhaustion in §4.22). Next: capture a **cold arming** on the Surface — power-cycle the MDI, then
-the Bosch Manager's first connect, with a **USB-level capture** (usbmon/Wireshark USBPcap) plus the
-device-network trace — to find the control transfer or ident exchange that arms the 900x services,
-then replicate it on macOS (libusb/IOKit, or a network handshake). Everything above the arming
-step is done and validated.
-
-### 4.24 Cold-arming capture RESOLVES it — NO special activation; macOS RNDIS is sufficient
-
-Captured the full cold sequence on the Surface (USBPcap both buses + device-network dumpcap):
-device power-cycled off, plugged in, Windows mounts it, Bosch Manager first-connect → "Connected".
-Artifacts: `GM_research/mdi2_macos/captures/cold_arming/{usb2.pcap,net.pcap}`. Findings:
-
-- **USB enumeration is standard** (dev VID `0x0ca0` PID `0x1301`, RNDIS: class 02/subclass 02/proto
-  ff). The only control transfers are GET_DESCRIPTOR ×3 + SET_CONFIGURATION — **no vendor control
-  requests**.
-- **RNDIS init is standard**: `INITIALIZE`, then `SET OID_GEN_CURRENT_PACKET_FILTER` and
-  `SET 802_3_MULTICAST_LIST` — exactly what every RNDIS host (incl. the generic macOS driver) does.
-  **No vendor OID, no `OID_GEN_RNDIS_CONFIG_PARAMETER`, no arming message.**
-- **No pre-900x device-facing network step:** before the 900x connect (29.6 s) the only device
-  traffic is its own `225.1.1.1:8194` beacon; the 17 KB `127.0.0.1:8125` exchange is pure
-  Manager↔ident **loopback**. The device gets **zero** host→device packets until the 900x TCP
-  connect.
-- The successful cold 900x connect uses the **identical** bytes my macOS client sends (control
-  frame `00 53 50 00 00 30 00 00` → device `…31…` in ~1 ms, then the byte-exact session_open).
-
-**Conclusion: the device requires NO Bosch-specific activation.** macOS's generic RNDIS gadget is
-sufficient; the macOS client works cold (proven by the earlier full session_open success). The
-intermittent "dormancy" on the Mac was **connection-pool/session exhaustion from rapid repeated
-test connects** (the device holds one session + a few connections) plus device boot timing — NOT a
-missing arming step. **This confirms §4.22 and supersedes §4.23/§4.21's "activation gap".**
-
-**Practical rule for the macOS client:** start from a clean session table (power-cycle only if
-sessions will not drain — corrected 2026-11-14), connect once, open
-only the channels needed (9052 for logs), and **close cleanly**; don't hammer it. Under those
-conditions the full loop (discover → derive key → control handshake → session_open → get-logs →
-decrypt) works from macOS, USB-only, no Windows.
-
-### 4.25 FULL LIVE LOG PULL FROM macOS — SUCCESS (2026-08-26)
-
-The complete loop runs end-to-end against the real MDI2 over macOS USB, **no Windows**:
-
-    discover (beacon serial) -> derive key -> per-channel control handshake ->
-    session_open (device: {"port":9011,"session":<id>,"error":0}) -> poll -> get-logs ->
-    Blowfish-ECB decrypt -> SID container -> "messages" = 56811 bytes of live Varlog
-    ("Aug 26 00:31:46 <MDI_HOSTNAME> syslog-ng... Booting Linux... 4.14.162-gvci").
-
-**The last bug — the message counter must have its HIGH BIT set.** The `[u32be 0][u32be len]
-[u32 counter][body]` counter is not a plain 1..N sequence: values with bit31 clear (`1`,
-`0x10000001`) make the device **choke and abort** the response after `{"data":`; values with
-bit31 set (`0xc583adc1`, `0x8aa81d35`, `0xcc666310` — all captured) are processed normally. Fixed
-in the client: `Channel.counter` starts at `random.getrandbits(31) | 0x80000000` and increments
-mod 2^32. With that, a client-**constructed** session_open (byte-exact body) is accepted and the
-full pull succeeds.
-
-**Session semantics:** the device holds **one session**, and the first session_open on a fresh
-session must be the first app message. It is released on a **clean disconnect** (the Manager sends
-a session-close; as of this section the client just closed TCP, so a session dangled until the table drained —
-fixed in §4.26, where the client sends `session_close`; note corrected 2026-11-14).
-
-**Status: the macOS MDI2 client is done and live-validated** — discovery, key derivation
-(base+serial), Blowfish-ECB, framing, control handshake, JSON session, get-logs, and container
-decode, pulling real device logs from macOS with no Windows in the loop. Client:
-`mdi2_client/` (repo) / `GM_research/mdi2_macos/client/` (with venv).
-
-### 4.26 Client fully ROBUST — back-to-back pulls (2026-08-26)
-
-The `mdi2_client` package now does repeated pulls with no power-cycle between them: three
-consecutive `pull_logs` each returned the full Varlog (~56.9 KB) live. Four client-side fixes got
-it there (all in `mdi2_client/mdi2/`):
-1. **Counter high bit** — the frame counter must have bit31 set (`Channel.counter =
-   getrandbits(31)|0x80000000`); low/zero-high-bit values make the device abort the response.
-2. **Session-close** — send `{"data":<session_id>,"has_data":true,"id":2,"target":"session"}`
-   after the pull (the device holds ONE session; this releases it for the next pull).
-3. **Patient recv** — `recv_frames` accumulates until idle-after-data (the frame-by-frame reader
-   misread replies and left sessions dangling).
-4. **Control frame length** — the per-channel control frame must be the full **8 bytes**
-   `00 53 50 00 00 <code> 00 00`; a 7-byte version stole a byte from the next frame and
-   misaligned `session_open` (this was the last, decisive bug).
-
-**Final state: the macOS MDI2 client is complete and robust**, live-validated end-to-end, USB-only,
-no Windows: auto-discover (beacon serial) → derive key → 8-byte control handshake → session_open →
-get-logs → Blowfish-ECB decrypt → SID container → Varlog → session_close, repeatable back-to-back.
+- **Keyring table identity mismatch (unresolved in source, not closed by a later dated
+  correction).** Two different tables are used to classify this same MDI2 unit's module type: the
+  six-entry static keyring (`DAT_10302ac8`, §5) classes the hardware as `MODULE_TYPE_ID_M_VCI`
+  (id `2`), while the final, live-confirmed derivation formula (`FUN_10268960`, §4.8) reads
+  `module_type = 0x1c` (`MODULE_TYPE_ID_MDI_2`) out of a *different*, larger table
+  (`DAT_10309d60`). The source material never reconciles why the same physical unit maps to two
+  different ids in two different tables, or how the two tables relate to each other — it simply
+  moves on once the `DAT_10309d60`/`0x1c` path is confirmed to produce the byte-exact key. Kept open
+  here rather than silently assumed to be "two unrelated lookup tables that happen to both apply."

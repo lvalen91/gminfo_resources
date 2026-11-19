@@ -1,91 +1,101 @@
 ================================================================================
 CALDEF DATABASE AND VIP CALIBRATION SYSTEM ANALYSIS
 ================================================================================
-Document Version: 1.0
-Created: December 28, 2025
-Purpose: Map CalDef entries to system components and analyze VIP calibration
+Scope: the "two separate calibration systems" doc. Owns: CalDef (Android/Palto)
+record structure + the security-relevant CalDef table, the VIP (RH850) `cal_*`
+boot-log value table, and the VIP calibration-index table (0-14).
+
+Does NOT own: the EEPROM/ADB-gating mechanism or the I2C/SBI/MEC byte-level
+detail (pointer only, see §6.1 below -> EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
+or SecurityAccess seed/calibration-signature detail (pointer only -> see §6.1
+-> GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md). Those two docs hold the content;
+this doc holds only the CalDef/VIP-calibration-specific findings and points out.
+
+Evidence tags: `[C]` confirmed live, `[V]` verified, `[FW]`/`[S]` static
+firmware, `[inferred]`, `[U]` unverified, `[X]` external. Dated per-claim notes
+override surrounding prose. Unresolved cross-source contradictions are kept
+under "Open conflicts" at the end, not silently resolved.
+
+Related: DPS_AND_MODIFICATION_LANDSCAPE.txt (carried-unchanged companion DPS
+doc), EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md (ELA, canonical EEPROM/ADB-gating
+owner), GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md (GSK, canonical seed/
+signature owner), VIP_CONTROL_ANALYSIS.txt (VCA, VIP control-scope overview),
+DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md (DTW, live custom-write workflow),
+CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md (CHS, CalSets.db checksum/layout RE).
+
 ================================================================================
-
-2026-11-07 — direct audit of the two cached A11 calibration sets
-Each set contains 14 CSM CalOvride payloads (slots 02–0F): LTZ has 983
-OverrideValue entries and High Country 984. Every entry's CalID matched the
-local 2023 GIS-646 CalDefs. The local CalDefs may differ in version from the
-payload, and a name/description search cannot exclude undocumented indirect effects.
-
-Slot 05 (LTZ 87846416; High Country 85877786) explicitly includes:
-  DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE = false (both, version 1).
-    SFS2 calls this a development override for the MEC check that gates
-    automatic device registration. It describes bypassing that check, not
-    changing MEC, SBI or EEPROM. An ADB effect has not been demonstrated.
-  EXPIRATION_ENFORCEMENT = true (both). The CalDef addresses certificate
-    expiration enforcement; its relationship to ADB authorization is unproven.
-  SECURITY_EVENT_LOGGING_ENABLED = false (both). The CalDef calls this a
-    logging-feature switch; it is not evidence of an SBI or MEC setter.
-Slot 09 includes VIN_RELEARN_EN = true (both), a vehicle theft-lock/VIN
-learning control; the definition does not identify it as an SBI setter.
-
-No explicit SBI/EEPROM/MEC setter was identified in those CalOvride entries.
-This does not rule out an indirect reinitialization or reset triggered by SPS
-session, the calibration sequence or ECU firmware. The owner has observed
-SPS-related EEPROM bypass resets. Package reconstruction and modified-
-calibration acceptance remain unverified.
-
-2026-11-07 — independent Windows DPS utility finding
-The installed DPS archive UDS_SetMecToZero_Radio.zip is a generic programming
-utility, not one of those CalOvride entries. Its table describes writing radio
-MEC to zero if it is not already zero. Its script selects ECU 80, contains
-read F1A0, compare, and write F1A0 operations; its routine table contains one
-byte 00. Static examination of the pp.dll interpreter supports the candidate
-wire sequence read 22 F1 A0, conditional write 2E F1 A0 00. This is a static
-inference, not a captured or attempted write. Its session/security requirements,
-acceptance, EEPROM persistence, and relationship to ADB are unverified. The
-existence of a zeroing operation does not establish that a nonzero inverse is
-accepted. See research/MDI2_RAW_UDS_BYPASS_GUIDE.md for the Windows path.
-
---------------------------------------------------------------------------------
-RELATED: DPS_AND_MODIFICATION_LANDSCAPE.txt is the consolidated DPS doc (DPS + memory
-+ I2C + modification landscape + DPS security forensics). This file is the dedicated
-CalDef / VIP-calibration reference -- the two-calibration-systems thesis (CalDef=Android
-vs VIP-cal=RH850), the full cal_* value table, the VIP cal-index 0-14 map, the GIS763
-signing-cert strings, and the caldef filename/category lists live here. The two are
-complementary (kept separate by design). Note: where 0x0440/0x0A80 "5A FF 5A" is
-described here as "enabled", the DPS doc phrases it as "bypass" -- same effect (ADB
-enabled = the VIP security check is bypassed).
---------------------------------------------------------------------------------
-
 TABLE OF CONTENTS
------------------
-1. EXECUTIVE SUMMARY
-2. CRITICAL FINDING: TWO SEPARATE CALIBRATION SYSTEMS
-3. ANDROID-SIDE CALIBRATIONS (CalDef Database)
-4. VIP-SIDE CALIBRATIONS (Firmware)
-5. VIP CALIBRATION INDEX SYSTEM
-6. SECURITY-RELEVANT CALIBRATIONS
-7. EXPLOITATION ANALYSIS
-8. RESEARCH PRIORITIES
+================================================================================
+1. Executive summary
+2. Two separate calibration systems (architecture)
+3. Android-side calibrations (CalDef database)
+4. VIP-side calibrations (firmware)
+5. VIP calibration index system
+6. Security-relevant calibrations (pointer-only section)
+7. Exploitation analysis
+8. Research priorities
+Appendix: file references
+Open conflicts
 
 ================================================================================
 1. EXECUTIVE SUMMARY
 ================================================================================
+The GM AAOS system has two architecturally separate calibration systems:
 
-After comprehensive analysis of the GIS-646 CalDef Database and VIP log files,
-a critical architectural insight has been discovered:
+  1. CalDef database calibrations -> Android/SoC software (Palto).
+  2. VIP firmware calibrations -> VIP MCU (RH850).
 
-  THE GM AAOS SYSTEM HAS TWO COMPLETELY SEPARATE CALIBRATION SYSTEMS:
+`[U]` No CalOvride entry in either audited calibration set sets an EEPROM
+security-bypass byte, an SBI byte, or the MEC counter directly (2026-11-07
+direct payload audit, below). This does not rule out an indirect
+reinitialization triggered by an SPS session, a calibration sequence, or ECU
+firmware — the owner has independently observed SPS-related EEPROM-bypass
+resets, and package reconstruction / modified-calibration acceptance remain
+unverified.
 
-  1. CalDef Database Calibrations -> Android/SoC software (Palto)
-  2. VIP Firmware Calibrations -> VIP MCU (RH850)
+2026-11-07 — direct audit of the two cached A11 calibration sets `[V]`/`[U]`:
+Each set holds 14 CSM CalOvride payloads (slots 02-0F): LTZ has 983
+OverrideValue entries, High Country 984. Every entry's CalID matched the local
+2023 GIS-646 CalDefs (the local CalDefs may differ in version from the
+payload; a name/description search cannot exclude undocumented indirect
+effects).
 
-The known EEPROM security flags are read by VIP-side logic. No direct setter
-has been identified in the examined CalOvride payloads; an indirect effect of
-calibration workflows or firmware has not been ruled out (see audit above).
+Slot 05 (LTZ CalID 87846416; High Country 85877786) includes:
+- `DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE` = false (both, version 1). SFS2
+  calls this a development override for the MEC check that gates automatic
+  device registration — it describes bypassing *that* check, not changing
+  MEC/SBI/EEPROM. An ADB effect has not been demonstrated.
+- `EXPIRATION_ENFORCEMENT` = true (both). Addresses certificate-expiration
+  enforcement; its relationship to ADB authorization is unproven.
+- `SECURITY_EVENT_LOGGING_ENABLED` = false (both). A logging-feature switch,
+  not evidence of an SBI/MEC setter.
+
+Slot 09 includes `VIN_RELEARN_EN` = true (both) — a vehicle theft-lock/VIN
+learning control; its definition does not identify it as an SBI setter.
+
+2026-11-07 — independent Windows DPS utility finding `[S]`/`[U]`: the
+installed DPS archive `UDS_SetMecToZero_Radio.zip` is a generic programming
+utility, not one of the audited CalOvride entries. Its table describes
+writing radio MEC to zero if not already zero; its script selects ECU 80 and
+contains read-F1A0, compare, and write-F1A0 operations, with a one-byte-00
+routine table. Static examination of the `pp.dll` interpreter supports the
+candidate wire sequence `read 22 F1 A0`, conditional `write 2E F1 A0 00`. This
+is a static inference, not a captured or attempted write; session/security
+requirements, acceptance, EEPROM persistence, and relationship to ADB are all
+unverified. The existence of a zeroing operation does not establish that a
+nonzero inverse is accepted. See MDI2_RAW_UDS_BYPASS_GUIDE.md (carried
+unchanged) for the Windows UDS path.
+
+Note on wording: DPS_AND_MODIFICATION_LANDSCAPE.txt phrases the VIP-side
+EEPROM-bypass finding as "bypass" where earlier drafts of this doc said
+"enabled" — same effect (ADB enabled = the VIP-side check is bypassed), not a
+contradiction. Both docs now point to ELA (§6.1 below) as the canonical
+mechanism description; neither restates the byte-level detail.
 
 ================================================================================
-2. CRITICAL FINDING: TWO SEPARATE CALIBRATION SYSTEMS
+2. TWO SEPARATE CALIBRATION SYSTEMS (ARCHITECTURE)
 ================================================================================
 
-2.1 ARCHITECTURAL DIAGRAM
--------------------------
 ```
 +------------------------------------------------------------------+
 |                         ANDROID/SOC                               |
@@ -112,345 +122,375 @@ calibration workflows or firmware has not been ruled out (see audit above).
 |              |                                                     |
 |              v                                                     |
 |  +----------------------------+                                    |
-|  | EEPROM (M24C64)           |                                    |
-|  | - 0x0440: ADB flag        |                                    |
-|  | - 0x0A80: Backup flag     |                                    |
-|  | - Direct I2C access only  |                                    |
-|  +----------------------------+                                    |
+|  | EEPROM (M24C64)           |   (byte-level map, flag identity, |
+|  | - security/SBI bytes      |    and ADB-gating mechanism: see   |
+|  | - direct I2C access only  |    EEPROM_LAYOUT_COMPREHENSIVE_    |
+|  +----------------------------+    AUDIT.md -- not restated here) |
 +------------------------------------------------------------------+
 ```
 
-2.2 IMPLICATION
----------------
-CalDef calibrations like DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE affect
-Android software behavior (MEC check bypass for registration), but DO NOT
-affect VIP's EEPROM security flag validation.
-
-The PROTOKEY/ADB authentication is handled by VIP firmware reading EEPROM
-flags directly via I2C - this is completely independent of CalDef.
+Implication: CalDef calibrations like `DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE`
+affect Android software behavior (the MEC check bypass gating automatic device
+registration) but do not touch VIP's EEPROM security-flag validation. ADB
+authentication is handled by VIP firmware reading EEPROM flags via I2C and
+relaying state to the SoC — this is architecturally independent of CalDef; the
+exact mechanism is owned by ELA (§6.1 below), not restated here.
 
 ================================================================================
-3. ANDROID-SIDE CALIBRATIONS (CalDef Database)
+3. ANDROID-SIDE CALIBRATIONS (CALDEF DATABASE)
 ================================================================================
+Source: GIS-646 CalDef Database v7.0.8 (April 2023).
+Location: `/misc/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/`
 
-Source: GIS-646 CalDef Database v7.0.8 (April 2023)
-Location: /misc/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/
-
-3.0 CALDEF RECORD STRUCTURE (migrated from DPS_SECURITY_ANALYSIS.txt)
----------------------------------------------------------------------
+3.0 CALDEF RECORD STRUCTURE
+----------------------------
 Each calibration record has:
-  - CalID (unique identifier)
-  - Type (Boolean, Integer, String, Enumeration)
-  - Default value
-  - Reference (GIS specification)
-  - Usage (LOW, MID, HIGH, GLOBALA, GLOBALB, VCU, etc.)
-The "Usage" field indicates which vehicle/radio tiers use the calibration, NOT which
-Module ID contains it.
+- CalID (unique identifier)
+- Type (Boolean, Integer, String, Enumeration)
+- Default value
+- Reference (GIS specification)
+- Usage (LOW, MID, HIGH, GLOBALA, GLOBALB, VCU, etc.) — indicates which
+  vehicle/radio tier uses the calibration, NOT which Module ID contains it.
 
-CalDef limitations: CalDef files define WHAT calibrations exist; they do NOT tell us
-which Module ID contains each calibration, the binary format of calibration storage,
-how to create valid .cfx files, or whether calibrations are signed.
+CalDef limitations: CalDef files define WHAT calibrations exist; they do NOT
+state which Module ID contains each calibration, the binary format of
+calibration storage, how to construct valid `.cfx` files, or whether
+calibrations are signed.
 
 3.1 SECURITY-RELEVANT CALDEFS
------------------------------
+-------------------------------
+This table dedupes and supersedes the separate, overlapping CalDef table that
+previously stood in GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt §6.1 (now
+retired; this is the sole surviving copy per the corpus's "pick one owner"
+rule). All six files below were confirmed present in both source documents'
+tables (entries differing only in presentation have been merged):
 
-A) DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE (SFS2)
-   File:    SFS2_SecurityExtensionsFRD.caldef
-   Type:    Boolean
-   Default: FALSE
-   Effect:  Bypasses MEC check for device registration
-   Scope:   Android Palto software (NOT VIP)
+FILE: SFS2_SecurityExtensionsFRD.caldef
+  DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE
+    Type: Boolean | Default: FALSE
+    Effect: Bypasses MEC (Manufacturing Enable Counter) check for device
+    registration. IF TRUE: device registration proceeds regardless of MEC
+    state. IF FALSE: registration waits for MEC == 0. Intended for
+    development only, FALSE in production. Scope: Android Palto software
+    (NOT VIP). The CalDef documents device registration, not ADB
+    authentication or an EEPROM write — whether changing this setting
+    affects ADB has not been tested.
+  EXPIRATION_ENFORCEMENT
+    Type: Boolean | Default: TRUE
+    Effect: Controls certificate-expiration validation (Android TCS
+    library). IF FALSE: may accept expired certificates. IF TRUE: enforces
+    certificate expiration (normal mode only).
+  OCSP_CHECK_FREQUENCY
+    Type: Integer | Default: 900 seconds | Range: 300-86400 seconds
+    Purpose: OCSP certificate-status check interval.
 
-   IF TRUE:  Device registration proceeds regardless of MEC state
-   IF FALSE: Registration waits for MEC == 0
+FILE: SFS22_SecurityEventLoggingFRD.caldef
+  SECURITY_EVENT_LOGGING_ENABLED
+    Type: Boolean
+    Purpose: Enables security-event logging to a back-office server.
 
-   The CalDef documents device registration, not ADB authentication or an
-   EEPROM write. Whether changing this setting affects ADB has not been tested.
+FILE: GIS763_InfotainmentProg_GlobalB.caldef
+  GIS763_Gateway
+    Type: Integer | Default: 69 (0x45)
+    Purpose: Diagnostic address of CGM (Central Gateway Module).
+  GIS763_WAITING_FOR_SECURE_ACCESS
+    Type: Integer | Default: 1000 ms | Range: 300-3000 ms
+    Purpose: Timeout waiting for SecurityAccess unlock.
+  GIS763_WAITING_FOR_SEED
+    Type: Integer | Default: 1 second | Range: 1-10 seconds
+    Purpose: Timeout waiting for SecurityAccess seed response.
+  GIS763_WAITING_ON_SESSION_KEYS
+    Type: Integer | Default: 3 seconds
+    Purpose: Timeout for session-key response.
+  GIS763_PROGRAMMING_ENABLED
+    Type: Boolean | Default: TRUE
+    Purpose: Master programming enable/disable switch. Scope: Android update
+    subsystem.
+  GIS763_SigningCertificateIssuer
+    Type: String
+    Default: "CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC"
+    Effect: Expected certificate issuer for signature validation.
+  GIS763_SigningCertificateSubject
+    Type: String
+    Default: "CN=GM Code Signature Server, OU=GM NA INFOTAINMENT, O=GM"
+    Effect: Expected certificate subject for code signing.
 
-B) EXPIRATION_ENFORCEMENT (SFS2)
-   File:    SFS2_SecurityExtensionsFRD.caldef
-   Type:    Boolean
-   Default: TRUE
-   Effect:  Controls certificate expiration validation
-   Scope:   Android TCS library
-
-   IF FALSE: May accept expired certificates
-   IF TRUE:  Enforces certificate expiration (normal mode only)
-
-C) GIS763_PROGRAMMING_ENABLED (GIS763)
-   File:    GIS763_InfotainmentProg_GlobalB.caldef
-   Type:    Boolean
-   Default: TRUE
-   Effect:  Master programming enable switch
-   Scope:   Android update subsystem
-
-D) GIS763_SigningCertificateIssuer (GIS763)
-   Type:    String
-   Default: "CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC"
-   Effect:  Expected certificate issuer for signature validation
-
-E) GIS763_SigningCertificateSubject (GIS763)
-   Type:    String
-   Default: "CN=GM Code Signature Server, OU=GM NA INFOTAINMENT, O=GM"
-   Effect:  Expected certificate subject for code signing
+FILE: GIS363_InfotainmentProg_GlobalA.caldef
+  PROGRAMMING_ENABLED
+    Type: Boolean | Default: TRUE
+  WAITING_ON_GMLAN
+    Type: Integer | Default: 200 ms
+    Purpose: CAN network response timeout.
+  MAX_OPERATIONAL_PROG_FILE_SIZE
+    Type: Integer | Default: 4000 MB
+    Purpose: Maximum programming file size held in RAM.
+  SigningCertificateIssuer
+    Default: "CN=GPD, OU=GMNA GPD PRODUCTION, O=GENERAL MOTORS LLC"
 
 3.2 OTHER CALDEF FILES (100+ files)
------------------------------------
-Categories:
-- UI/HMI calibrations (GIS500-599)
-- Audio calibrations (GIS604, etc.)
-- Diagnostic calibrations (GIS621, GIS641, etc.)
-- Tuner calibrations (GIS653, GIS655)
-- Navigation calibrations (GIS628)
-- Security logging (SFS22)
+-------------------------------------
+Categories: UI/HMI calibrations (GIS500-599), audio calibrations (GIS604,
+etc.), diagnostic calibrations (GIS621, GIS641, etc.), tuner calibrations
+(GIS653, GIS655), navigation calibrations (GIS628), security logging
+(SFS22). None of these directly control VIP/EEPROM security behavior.
 
-None of these directly control VIP/EEPROM security behavior.
+Diagnostic DTC codes defined in GIS643_DiagnosticCalDef_GlobalA.caldef and
+GIS641_DiagnosticCalDef_GlobalB.caldef (e.g. B124F_44 "Security Access not
+Activated", B1964_00 "USB D(+) Serial Data General Failure", U1961_92
+"Security Peripheral Performance") restate UDS/DTC facts already owned by the
+diagnostics tree — not reproduced here; see `../diagnostics/`.
 
 ================================================================================
-4. VIP-SIDE CALIBRATIONS (Firmware)
+4. VIP-SIDE CALIBRATIONS (FIRMWARE)
 ================================================================================
+Source: VIP UART log (`VIP_log_2B.174.4.1_10JUL24.txt`).
+Firmware version as captured: 2B.174.4.1 (Build 24Mar22-0256). `[U]` Note:
+GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt's own corrections flagged this exact
+version/build string as a possibly mis-attributed Jul-2024 capture, not
+necessarily Y177's actual shipping VIP_APP — treat the firmware-version label
+as unverified, the calibration values themselves as directly read from a live
+boot log `[C]`.
 
-Source: VIP UART log (VIP_log_2B.174.4.1_10JUL24.txt)
-Firmware Version: 2B.174.4.1 (Build 24Mar22-0256)
-
-4.1 VIP CALIBRATION VALUES (from boot log)
-------------------------------------------
+4.1 VIP CALIBRATION VALUES (FROM BOOT LOG)
+--------------------------------------------
 | Calibration Name                              | Value |
-|-----------------------------------------------|-------|
-| cal_critical_state_of_charge_ignore           | 1     |
-| cal_vin_relearn_en                            | 1     |
-| cal_local_infotainment_cancel_mode            | 0     |
-| cal_background_sleep_timeout_sec              | 10    |
-| cal_sleep_fault_timeout_sec                   | 900   |
-| cal_veh_initiated_local_infotainment_timeout  | 600   |
-| cal_user_initiated_local_infotainment_timeout | 600   |
-| cal_startup_delay_wait_timeout_msec           | 200   |
-| cal_startup_fault_timeout_sec                 | 15    |
-| cal_local_valet_timeout_sec                   | 30    |
-| cal_master_offmode_active_timeout_min         | 35    |
-| cal_update_available_local_infotainment_sec   | 60    |
-| cal_cluster_animation_ignore                  | 0     |
-| cal_cluster_hmiready_ignore                   | 0     |
-| cal_rsi_animation_ignore                      | 1     |
-| cal_rsi_hmiready_ignore                       | 1     |
-| cal_disabled_state_offmode_timeout_sec        | 30    |
-| cal_remote_reflash_programming_complete_sec   | 30    |
-| cal_infotainment_activity_timeout_sec         | 30    |
-| cal_offmode_active_timeout_sec                | 30    |
-| cal_powermode_failure_timeout_sec             | 60    |
-| cal_shutdown_animation_failsafe_timeout       | 15    |
-| cal_suspend_to_ram_en                         | 1     |
-| cal_maximum_flush_fault_time                  | 36000 |
-| cal_flush_limit_time                          | 24    |
-| cal_str_min_temp_threshold                    | -10   |
-| cal_str_mode_soc_min_threshold_1              | 90    |
-| cal_str_mode_soc_min_threshold_2              | 75    |
-| cal_str_mode_soc_min_threshold_3              | 60    |
-| cal_max_suspend_time_1                        | 84    |
-| cal_max_suspend_time_2                        | 24    |
-| cal_max_suspend_time_3                        | 16    |
+|------------------------------------------------|-------|
+| cal_critical_state_of_charge_ignore            | 1     |
+| cal_vin_relearn_en                             | 1     |
+| cal_local_infotainment_cancel_mode             | 0     |
+| cal_background_sleep_timeout_sec               | 10    |
+| cal_sleep_fault_timeout_sec                    | 900   |
+| cal_veh_initiated_local_infotainment_timeout   | 600   |
+| cal_user_initiated_local_infotainment_timeout  | 600   |
+| cal_startup_delay_wait_timeout_msec            | 200   |
+| cal_startup_fault_timeout_sec                  | 15    |
+| cal_local_valet_timeout_sec                    | 30    |
+| cal_master_offmode_active_timeout_min          | 35    |
+| cal_update_available_local_infotainment_sec    | 60    |
+| cal_cluster_animation_ignore                   | 0     |
+| cal_cluster_hmiready_ignore                    | 0     |
+| cal_rsi_animation_ignore                       | 1     |
+| cal_rsi_hmiready_ignore                        | 1     |
+| cal_disabled_state_offmode_timeout_sec         | 30    |
+| cal_remote_reflash_programming_complete_sec    | 30    |
+| cal_infotainment_activity_timeout_sec          | 30    |
+| cal_offmode_active_timeout_sec                 | 30    |
+| cal_powermode_failure_timeout_sec              | 60    |
+| cal_shutdown_animation_failsafe_timeout        | 15    |
+| cal_suspend_to_ram_en                          | 1     |
+| cal_maximum_flush_fault_time                   | 36000 |
+| cal_flush_limit_time                           | 24    |
+| cal_str_min_temp_threshold                     | -10   |
+| cal_str_mode_soc_min_threshold_1               | 90    |
+| cal_str_mode_soc_min_threshold_2               | 75    |
+| cal_str_mode_soc_min_threshold_3               | 60    |
+| cal_max_suspend_time_1                         | 84    |
+| cal_max_suspend_time_2                         | 24    |
+| cal_max_suspend_time_3                         | 16    |
 
 4.2 VIP CALIBRATION STORAGE
----------------------------
-These calibrations are stored in VIP internal flash/NVM.
-They can ONLY be modified by:
-1. Flashing new VIP_APP firmware via DPS (signed)
-2. Potentially via VIP JTAG debugging (physical access)
+-----------------------------
+These calibrations are stored in VIP internal flash/NVM. They can only be
+modified by:
+1. Flashing new VIP_APP firmware via DPS (signed).
+2. Potentially via VIP JTAG debugging (physical access).
 
 DPS cannot modify these calibrations without replacing VIP firmware.
 
 ================================================================================
 5. VIP CALIBRATION INDEX SYSTEM
 ================================================================================
-
-The VIP serves calibration data to the SoC via IPC on every boot.
-This is SEPARATE from the CalDef database.
+The VIP serves calibration data to the SoC via IPC on every boot. This is
+separate from the CalDef database.
 
 5.1 CALIBRATION GROUPS TRANSMITTED TO SOC
------------------------------------------
-| Index | IPC Length | Data Length | Suspected Purpose        |
-|-------|------------|-------------|--------------------------|
-| 0     | 154        | 150         | System configuration     |
-| 1     | 128        | 124         | Audio/chime config       |
-| 2     | 17         | 13          | Microphone config        |
-| 3     | 21         | 17          | DTC mask                 |
-| 4     | 48         | 44          | Unknown                  |
-| 5     | 48         | 44          | Unknown                  |
-| 6     | 88         | 84          | Unknown                  |
-| 7     | 88         | 84          | Unknown                  |
-| 8     | 88         | 84          | Unknown                  |
-| 9     | 88         | 84          | Unknown                  |
-| 10    | 88         | 84          | Unknown                  |
-| 11    | 88         | 84          | Unknown                  |
-| 12    | 88         | 84          | Unknown                  |
-| 13    | 88         | 84          | Unknown                  |
-| 14    | 50         | 46          | Unknown                  |
+--------------------------------------------
+| Index | IPC Length | Data Length | Suspected Purpose    |
+|-------|------------|--------------|----------------------|
+| 0     | 154        | 150          | System configuration |
+| 1     | 128        | 124          | Audio/chime config   |
+| 2     | 17         | 13           | Microphone config    |
+| 3     | 21         | 17           | DTC mask              |
+| 4     | 48         | 44           | Unknown               |
+| 5     | 48         | 44           | Unknown               |
+| 6     | 88         | 84           | Unknown               |
+| 7     | 88         | 84           | Unknown               |
+| 8     | 88         | 84           | Unknown               |
+| 9     | 88         | 84           | Unknown               |
+| 10    | 88         | 84           | Unknown               |
+| 11    | 88         | 84           | Unknown               |
+| 12    | 88         | 84           | Unknown               |
+| 13    | 88         | 84           | Unknown               |
+| 14    | 50         | 46           | Unknown               |
+
+10 of 15 rows are still unresolved ("Unknown" purpose) — flagged as an open
+mapping item, not a finished table.
 
 5.2 VIP LOG EVIDENCE
---------------------
+-----------------------
+```
 [J6_CDD] Cal override request received from SOC
 [J6_CDD] Calibration_Request_CalGroup: GetCal Index = X message.
 [J6_CDD] Got Cal Response: Ipclength = Y, Index = X, Status = 1, length = Z.
 [J6_CDD] One Boot Calibration, Cal readindex - X
+```
 
 5.3 CRITICAL OBSERVATION
-------------------------
-The SoC requests calibration data from VIP via IPC.
-VIP reads this data from its internal storage and sends to SoC.
-
-This is a ONE-WAY flow: VIP -> SoC
-The SoC cannot write calibration data back to VIP via IPC.
+----------------------------
+The SoC requests calibration data from VIP via IPC; VIP reads from its
+internal storage and sends it to the SoC. This is a ONE-WAY flow (VIP ->
+SoC) — the SoC cannot write calibration data back to VIP via this channel.
 
 ================================================================================
 6. SECURITY-RELEVANT CALIBRATIONS
 ================================================================================
 
 6.1 WHAT CONTROLS ADB ACCESS?
------------------------------
-ADB access is controlled by:
+---------------------------------
+Out of charter — this is the EEPROM/SBI/MEC/ADB-gating mechanism, owned
+entirely by EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md (ELA) §0.10-0.14. Do not
+restate the byte-level mechanism here; this section previously carried a
+now-folded "original claim + CORRECTED 2026-09-26" errata pair (the original
+claim that EEPROM 0x0440/0x0A80 "5A FF 5A" directly gates ADB, and that the
+VIP PROTOKEY/$27 seed validator gates ADB, were both corrected as imprecise/
+wrong by the 2026-09-26 pass against primary evidence — 7-dump byte compare,
+RH850 disassembly, the adb-auth binary, and an ecu80_READ CAN capture). That
+correction is now folded into ELA's own text; this doc keeps only the pointer.
 
-1. EEPROM Flag 0x0440: Primary ADB enable (5A FF 5A = enabled)
-2. EEPROM Flag 0x0A80: Backup ADB enable (5A FF 5A = enabled)
-3. VIP PROTOKEY module: Validates BCM seeds for ADB auth
+Summary of the corrected picture (full detail and byte addresses in ELA, not
+here): ADB is gated SoC-side. VIP reads the SBI byte, transmits the resulting
+MEC value to the SoC via DID 0xF1A0, and SoC-side `gm_adb_auth_init` sets
+`is_secure_mode` (MEC in [1,255] => bypass). The VIP PROTOKEY/$27 seed
+validator does not gate ADB — see the MEC-semantics Open Conflict below for
+the one point ELA/GSK/GBUR have not yet closed.
 
-CORRECTED 2026-09-26 (primary evidence: 7-dump byte compare + RH850 disasm + adb-auth binary +
-ecu80_READ CAN capture): the above is imprecise. 0x0440/0x0A80 are the SBI / secure-mode bytes, not
-a direct "ADB enable"; the read value is the DATA byte at offset+1 (0x0441/0x0A81), and the framing
-marker is NOT static (C3/5A/F0/69 across units/states). ADB is gated SoC-side: VIP reads SBI ->
-transmits MEC via DID 0xF1A0 -> SoC gm_adb_auth_init sets is_secure_mode (mec in [1,255] => bypass).
-Item 3 above is wrong: the $27/seed validator (VIP 0xb67d0) does NOT gate ADB, and the all-FF $27
-seed is a separate CAN/UDS-only effect that nothing consumes to open adb. Canonical:
-EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §0.10-0.14.
+Seed/signature-format detail (UDS 27/67 exchange, seed length, CMAC
+algorithm, container signature verification) is likewise out of charter — see
+GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md (GSK).
 
-When EEPROM flags are set to bypass:
-- VIP returns 0xFF seed (all bytes) instead of real challenge
-- PROTOKEY validation is skipped
-- ADB access is granted without authentication
+6.2 WHAT CALDEF CALIBRATIONS AFFECT
+---------------------------------------
+| Calibration                               | Affects               | Does NOT affect |
+|--------------------------------------------|------------------------|------------------|
+| DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE  | Device registration   | ADB auth         |
+| EXPIRATION_ENFORCEMENT                     | Certificate validation| ADB auth         |
+| GIS763_PROGRAMMING_ENABLED                 | OTA/USB programming   | ADB auth         |
+| SECURITY_EVENT_LOGGING_ENABLED             | Security logging      | ADB auth         |
 
-6.2 WHAT CALDEF CALIBRATIONS AFFECT?
-------------------------------------
-| Calibration | Affects | Does NOT Affect |
-|-------------|---------|-----------------|
-| DEVICE_REGISTRATION_ENABLE_CHECK_OVERRIDE | Device registration | ADB auth |
-| EXPIRATION_ENFORCEMENT | Certificate validation | ADB auth |
-| GIS763_PROGRAMMING_ENABLED | OTA/USB programming | ADB auth |
-| SECURITY_EVENT_LOGGING_ENABLED | Security logging | ADB auth |
-
-NONE of the CalDef calibrations affect ADB authentication.
+None of the examined CalDef calibrations affect ADB authentication, per the
+CalOvride payload audit in §1 and the corrected EEPROM/ADB mechanism pointed
+to in §6.1.
 
 ================================================================================
 7. EXPLOITATION ANALYSIS
 ================================================================================
 
 7.1 CAN DPS CALIBRATION FILES ENABLE ADB?
------------------------------------------
-ANSWER: NO
-
-DPS calibration files (.cfx) modify Android/SoC calibrations.
-These calibrations do not control VIP EEPROM access.
-Therefore, creating custom .cfx files cannot enable ADB.
+---------------------------------------------
+ANSWER: NO. DPS calibration files (`.cfx`) modify Android/SoC calibrations;
+these do not control VIP EEPROM access. Creating custom `.cfx` files cannot
+enable ADB. (Consistent with the 2026-11-07 payload audit in §1, which found
+no setter in the live CalOvride payloads either.)
 
 7.2 CAN DPS MODIFY VIP CALIBRATIONS?
-------------------------------------
-ANSWER: ONLY VIA VIP FIRMWARE FLASH
-
-VIP calibrations are embedded in VIP_APP firmware.
-To modify them, you would need to:
-1. Extract VIP firmware
-2. Modify calibration values
-3. Re-sign firmware (requires GM signing keys)
-4. Flash via DPS
-
-Without GM signing keys, VIP firmware modification is blocked.
+----------------------------------------
+ANSWER: only via VIP firmware flash. VIP calibrations are embedded in
+VIP_APP firmware. To modify them: extract VIP firmware, modify calibration
+values, re-sign (requires GM signing keys — see GSK for the signing-trust
+chain), flash via DPS. Without GM signing keys, VIP firmware modification is
+blocked.
 
 7.3 REMAINING ATTACK VECTORS
-----------------------------
-1. PHYSICAL EEPROM MODIFICATION (Proven working)
-   - Direct I2C access to M24C64
-   - Modify 0x0440 and 0x0A80
+---------------------------------
+1. Physical EEPROM modification `[U]` — unverified claim as stated in this
+   doc's own prior draft ("proven working," no citation here); the actual
+   I2C mechanism and any confirmed bypass are owned by ELA — do not treat
+   this doc as the source for that claim.
+2. Y177 firmware downgrade — SELinux-enforcing status corrected; see History
+   below. Requires testing AVB rollback behavior (owned by
+   GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt).
+3. VIP utility file reverse engineering — if DPS utility `.dll`/`.zip` files
+   contain I2C opcodes, could potentially write EEPROM via DPS; requires RE
+   of the utility format (see §1's `UDS_SetMecToZero_Radio.zip` finding).
+4. VIP UART console — `/dev/ttyACM1` accessible; may accept debug commands;
+   may require bypassing a 74LVC08A gate.
+5. VIP JTAG — physical debug access; full firmware dump/modify; requires
+   hardware probing.
 
-2. Y177 FIRMWARE DOWNGRADE
-   - SELinux permissive in Y177 -- CORRECTED 2026-08-25: stock Y177 is ENFORCING (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
-   - More exploration possible
-   - Requires testing AVB rollback
-
-3. VIP UTILITY FILE ANALYSIS
-   - If utility files contain I2C opcodes
-   - Could potentially write EEPROM via DPS
-   - Requires reverse engineering .dll format
-
-4. VIP UART CONSOLE
-   - /dev/ttyACM1 accessible
-   - May accept debug commands
-   - May require bypassing 74LVC08A gate
-
-5. VIP JTAG
-   - Physical debug access
-   - Full firmware dump/modify
-   - Requires hardware probing
+History: this section originally stated "SELinux permissive in Y177" for
+vector 2. Corrected 2026-08-25: stock Y177 downgrade yields ENFORCING, not
+permissive (per the research corpus's SELinux-enforcing finding, now owned by
+`platform/security.md`/GBUR — not restated here). The stale claim is removed;
+only the corrected state is kept above.
 
 ================================================================================
 8. RESEARCH PRIORITIES
 ================================================================================
 
 8.1 HIGH PRIORITY
------------------
-[1] TEST Y177 DOWNGRADE
-    - Version check disabled
-    - CORRECTED 2026-08-25: stock Y177 downgrade yields ENFORCING, not permissive (security/KERNEL_CVE_ANALYSIS.txt Appendix E.8)
-    - Test AVB rollback behavior
-
-[2] EEPROM FLAG EXPLORATION
-    - Test 0x0B40 (suspected developer mode)
-    - Map other security-related flags
-    - Document flag persistence
+---------------------
+[1] Y177 downgrade test — AVB rollback behavior still untested on this
+    bench; the premise is now known-corrected (ENFORCING, not permissive, per
+    the 2026-08-25 fix folded into §7.3 above) — the open work is the AVB
+    rollback test itself, not a re-check of the SELinux state.
+[2] EEPROM flag exploration — test 0x0B40 (suspected developer-mode flag;
+    note VIP_CONTROL_ANALYSIS.txt's own correction that the verified bypass
+    write is 0x0B41, with 0x0B40 left stale in its Appendix A — see VCA's
+    Open Conflicts, not restated here); map other security-related flags;
+    document flag persistence. Owned by ELA/VCA, tracked here as a priority
+    only.
 
 8.2 MEDIUM PRIORITY
--------------------
-[3] UTILITY FILE REVERSE ENGINEERING
-    - Analyze .dll opcode format
-    - Determine if I2C write opcodes exist
-    - Could enable EEPROM writes via DPS
-
-[4] VIP UART CONSOLE
-    - Probe /dev/ttyACM1 for commands
-    - Check if debug mode exists
-    - Bypass 74LVC08A if needed
+-----------------------
+[3] Utility file reverse engineering — analyze DPS `.dll` opcode format;
+    determine if I2C write opcodes exist; could enable EEPROM writes via DPS.
+[4] VIP UART console — probe `/dev/ttyACM1` for commands; check for a debug
+    mode; bypass the 74LVC08A gate if needed.
 
 8.3 LOW PRIORITY
-----------------
-[5] VIP FIRMWARE ANALYSIS
-    - JTAG extraction
-    - Analyze security check code
-    - Identify bypass points
-
-[6] CALDEF EXPLOITATION
-    - EXPIRATION_ENFORCEMENT = FALSE
-    - May allow expired certs
-    - Limited security impact
+--------------------
+[5] VIP firmware analysis — JTAG extraction; analyze security-check code;
+    identify bypass points.
+[6] CalDef exploitation — `EXPIRATION_ENFORCEMENT` = FALSE may allow expired
+    certs; limited security impact.
 
 ================================================================================
 APPENDIX: FILE REFERENCES
 ================================================================================
-
 CalDef Database:
-  /misc/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/
+  `/misc/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/`
 
-Key CalDef Files:
+Key CalDef files:
   - SFS2_SecurityExtensionsFRD.caldef (security extensions)
   - GIS763_InfotainmentProg_GlobalB.caldef (programming control)
   - SFS22_SecurityEventLoggingFRD.caldef (security logging)
   - GIS618_SystemState.caldef (system state, VIN relearn)
   - GIS641_DiagnosticCalDef_GlobalB.caldef (diagnostics)
+  - GIS363_InfotainmentProg_GlobalA.caldef (programming control, GlobalA)
 
-VIP Log:
-  /logs/VIP_log_2B.174.4.1_10JUL24.txt
+VIP log:
+  `/logs/VIP_log_2B.174.4.1_10JUL24.txt`
 
-Related Documentation:
-  - DPS_AND_MODIFICATION_LANDSCAPE.txt
-  - DPS_SECURITY_ANALYSIS.txt
-  - GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt
+Related documentation: DPS_AND_MODIFICATION_LANDSCAPE.txt (carried unchanged),
+MDI2_RAW_UDS_BYPASS_GUIDE.md (carried unchanged), EEPROM_LAYOUT_COMPREHENSIVE_
+AUDIT.md, GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md, VIP_CONTROL_ANALYSIS.txt.
+GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt is retired; its §6.1 CalDef table was
+absorbed into §3.1 above and its own copy removed.
 
 ================================================================================
-END OF DOCUMENT
+OPEN CONFLICTS
 ================================================================================
+These are not settled by this doc; they belong to the named owner's Open
+Conflicts section and are listed here only because this doc's content
+touches them.
+
+1. MEC value semantics — whether a nonzero/244-style Manufacturer Enable
+   Counter reading means "bypassed/unlocked" (VIP_CONTROL_ANALYSIS.txt §5.2,
+   ELA, GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.6-7's per-unit MEC table) or
+   "production/locked" (retired docs). Not closed across any of the four
+   docs that touch it. Owned by GSK and ELA's Open Conflicts — not this doc's
+   to settle; the §6.1 mechanism summary above assumes the "bypass" reading
+   used by GBUR's live-tested path, consistent with ELA/GSK, but the
+   semantic rule itself remains open there.
+2. EEPROM dev-flag byte, 0x0B40 vs 0x0B41 — referenced above in §8.1 item
+   [2]; owned and (per the plan) settled in VCA, not here.

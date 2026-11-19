@@ -1,8 +1,17 @@
 # gminfo37 Research Artifacts — Inventory
 
-Persistent storage of all derived/extracted artifacts from gminfo37 (2024 Silverado ICE) reverse-engineering project. Replaces volatile /tmp storage.
+**Scope:** directory manifest of derived/extracted artifacts from the gminfo37 (2024 Silverado
+ICE) reverse-engineering project (replaces volatile `/tmp` storage), plus the external-tooling
+clone/PDF appendix. **Not here:** trust-chain/boot-chain analysis (→ GM_INFO37_BOOT_CHAIN_ANALYSIS.md,
+`../platform/vip_ipc_ghs.md`), key-offset/EEPROM detail (→ EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
+bypass-technique analysis (→ `../platform/security.md`), or the VIP/ELK trigger finding
+(→ GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) — those sections restated other docs and are pointers
+only now, see "Analytical sections" below.
 
-**Total size: 6.3 GB** (mostly firmware extractions in firmware_carved/)
+**Total size at last count: 6.3GB**, of which 211MB was `ct5_extracted/` (2026 Cadillac CT5 /
+Qualcomm SA8195AU — wrong platform, not gminfo37; dropped from this manifest per the reader
+report that flagged it mis-filed. The directory itself is untouched on disk; it belongs in a
+CT5/Cadillac-platform inventory, which does not exist in this tree).
 
 ## firmware_carved/ — 5.7GB
 Carved/decompressed firmware from OTA modules
@@ -10,11 +19,11 @@ Carved/decompressed firmware from OTA modules
 | File | Source | Description |
 |------|--------|-------------|
 | `ghs_integrity.elf` | Y181/85098662 | GHS INTEGRITY hypervisor (14.93MB ELF, stripped, x86, contains current_android_key at offset 0xe3ca34) |
-| `elk.bin` | extracted from SOC_ABL OBBP partition | Intel kernelflinger-07.02 with Harman ipk wrapper (1.06MB) |
+| `elk.bin` | extracted from SOC_ABL OBBP partition | Intel kernelflinger-07.02 with Harman ipk wrapper (1.06MB). **Correction (2026-09-10):** this is a `fastboot`-class Intel Kernelflinger bootloader with AVB active, **not** a Linux shell/USB-rootfs environment — that trait belongs to the GWMv2 sibling platform only (GitHub issue #1, @DymOK93), not to GM. |
 | `elk_inner.elf` | elk.bin offset 0x22C | Inner ELF: kernelflinger + libavb + BoringSSL + .oemkeys RSA-4096 |
 | `vip_boot.bin` | Y181/85056831 stripped | Renesas RH850 VIP bootloader (1.93MB, contains Harman SBAT pubkey @ 0x29f1) |
 | `vip_app.bin` | Y181/86331656 stripped | Renesas RH850 VIP application (1.93MB, AUTOSAR Classic; OS kernel unidentified) |
-| `vmlinux_y181` | Linux kernel from boot.img | 42.6MB stripped ELF, 4.19.305-240125T-gf1edde901aa7 (CONFIG_GM_SIGNATURE=y) |
+| `vmlinux_y181` | Linux kernel from boot.img | 42.6MB stripped ELF, 4.19.305-240125T-gf1edde901aa7 (CONFIG_GM_SIGNATURE=y, GM signature kernel subsystem built in at ~0x1f61500) |
 | `y181_kconfig.txt` | IKCONFIG from vmlinux | 6456 lines of CONFIG_* flags |
 | `SOC_BOOT_extracted/` | Y181/86331652 | Android boot.img unpacked: kernel, ramdisk (LZ4), second-stage VBT |
 | `SOC_PRODUCT_extracted/` | Y181/86331636 | Android product partition (ext4) — 2.7GB raw image |
@@ -74,17 +83,6 @@ Complete extraction of GM DPS v4.56.0000 installer
 | `dps_install/` | Original installer hierarchy |
 | `dps_rar/` | RAR variant of installer |
 
-## ct5_extracted/ — 211MB
-2026 Cadillac CT5 (VCUUM-371.5) OTA package extracted artifacts
-
-| Contents |
-|----------|
-| Qualcomm SA8195AU bootloader bundle (xbl, abl_fastboot, tz, mifs_hyp, aop, cmnlib, km5virt, NON-HLOS, BTFM) |
-| QNX 7.1.0 hypervisor (mifs_hyp_la.img) |
-| VCU app + bootloader + HSM (Bosch-supplied AUTOSAR Vector FBL) |
-| Android 14 AAOS partition references |
-| Per-module signing certs |
-
 ## scripts/ — 72KB
 Custom analysis scripts created during research
 
@@ -104,7 +102,7 @@ Custom analysis scripts created during research
 All analysis reports and logs
 
 | File | Description |
-|------|-------------|
+|------|--------------|
 | `forensic_out.txt` | Full forensic analysis output |
 | `crypto_findings.json` | 1,716 crypto artifacts identified (mostly false positives, real keys catalogued separately) |
 | `ghidra*.log`, `*.log` | Headless analysis logs |
@@ -112,50 +110,34 @@ All analysis reports and logs
 
 ---
 
-# Key facts at a glance
+## Analytical sections (moved out — pointers only)
 
-## Trust chain (immutable software-only)
-```
-Intel CSE silicon (QFPROM OEM_PK_HASH)
-  → rot.key (Intel ROT)
-  → oem.key (Harman, modulus a178eb3e)
-  → IBBL/IBB/ELK (BPM hash1/hash2/hash3)
-  → ELK has baked-in RSA-4096 .oemkeys
-  → GHS hypervisor (signed by Harman oem.key)
-       ├── current_android_key HARDCODED at offset 0xe3ca34 (RSA-2048, beef8eee)
-       │   → verifies vbmeta on eMMC
-       │   → vbmeta hashes/hashtree gate Android partitions
-       └── VMM1 (libavb parser — Green Hills compiled, decompilation blocked)
-```
+This doc previously carried four analytical sections that restated findings owned elsewhere.
+Per the corpus's "contested topics: pointer, not copy" rule, each is now a one-line pointer:
 
-## Key locations (definitively mapped)
-- **GM CSM cert chain root**: in 86331665.smd (X.509 PEM)
-- **Harman OEM key**: SOC_ABL/oem.key (also embedded in VIP_BOOT @ 0x29f1)
-- **ELK AVB anchor (4096-bit)**: ELK .oemkeys @ 0xfe8e0 (purpose unclear — not vbmeta verifier)
-- **vbmeta verifier (current_android_key)**: HARDCODED in GHS @ 0xe3ca34
-- **AOSP attestation chain (4× RSA-1024)**: GHS @ 14607467/489/153/175 — PUBLIC keys
-- **GM signature kernel subsystem**: BUILT-IN to vmlinux @ ~0x1f61500
-
-## Bypass paths (confirmed)
-1. **EEPROM byte 0x441 = 0xFF** → ADB enable (single-byte flip, CRC not enforced)
-2. **/proc/cmdline `androidboot.bootreason=warm`** → gm_protokey skips validation
-3. **Delete /data/vendor/gm/security/.validation** → TOFU re-provisioning with any PAL key
-4. **Set property `gm_protokey_recovery_prop`** → GM ProtoKey recovery override (purpose TBD)
-5. **Touch /data/gmprotokey/trigger/** → free recovery re-key oracle (shell-writable)
+- **Trust chain** (immutable software-only boot/signing chain, Intel CSE → rot.key → oem.key →
+  IBBL/ELK → GHS → current_android_key/VMM1) → see GM_INFO37_BOOT_CHAIN_ANALYSIS.md and
+  `../platform/vip_ipc_ghs.md`.
+- **Key locations** (cert/key offset table: GM CSM root, Harman OEM key, ELK AVB anchor,
+  vbmeta verifier, AOSP attestation chain, GM signature kernel subsystem) →
+  see EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md.
+- **Bypass paths** (EEPROM byte flip, cmdline bootreason=warm, `.validation` delete,
+  `gm_protokey_recovery_prop`, `/data/gmprotokey/trigger/`) → see `../platform/security.md`.
+- **VIP/ELK findings** (Channel-7 serial-IPC ELK/reboot trigger, RID=0xFF01/sub 0x01,
+  `FUN_000641c2`@0x64208) → see GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, which owns the
+  live-tested ELK-trigger fact.
 
 ## Definitive blockers for software-only trust replacement
-- All trust roots in BG-locked binaries (Harman/Intel/GM HSM keys required)
-- ISSI SPI replacement won't bypass AVB (current_android_key hardcoded in GHS, BG-locked)
-- Modifying any partition triggers downstream signature/hash check
-- Software-only path requires either HSM key compromise OR parse-bug exploit chain (volatile per-boot)
-
-## Pending hardware experiments
-1. **ISSI 2MB SPI flash dump** — discover what's stored there (BG-irrelevant config? Additional keys? Boot Policy backup? Attestation blobs?)
-2. **64GB Samsung eMMC dump** — offline access to runtime state, GHS host_os partition, current vbmeta, FBE-encrypted /data structure (won't decrypt offline)
-3. **Black-box vbmeta fuzzing** on test eMMC against VMM1 libavb parser
+- ISSI SPI replacement won't bypass AVB (`current_android_key` hardcoded in GHS, BG-locked) —
+  see `research/session_logs/RESEARCH_STATE_MAP_JUN2026.md:201`.
+- All trust roots sit in BG-locked binaries (Harman/Intel/GM HSM keys required).
+- Modifying any partition triggers a downstream signature/hash check.
+- A software-only path requires either HSM key compromise or a parse-bug exploit chain
+  (volatile per-boot).
 
 ## Mempalace reference
-Wing `gminfo37` contains ~22 drawers across rooms `architecture`, `security`, `attack-surface`, `tooling`, `references` with full project record.
+Wing `gminfo37` contains ~22 drawers across rooms `architecture`, `security`,
+`attack-surface`, `tooling`, `references` with full project record.
 
 ---
 
@@ -172,24 +154,15 @@ Location: ~/Downloads/github/
 | intel-FSP (sparse) | ~/Downloads/intel-FSP/ApolloLakeFspBinPkg | master | Apollo Lake FSP binaries (Fsp.fd, VBT) |
 | slimbootloader (sparse) | ~/Downloads/slimbootloader | master | Platform/ApollolakeBoardPkg — GPMRB reference, Stage2BoardInitLib.c |
 
-## PDFs Downloaded (2026-06-29)
+### PDFs Downloaded (2026-06-29)
 | Document | Path | Source |
 |---|---|---|
 | Intel APL UEFI Enabling Guide #671281 | ~/Downloads/intel_apl_uefi_enabling_guide_671281.pdf | cdrdv2-public.intel.com |
 
-## Key Binary Finding (2026-06-29)
-RSA-1024 private key in ghs_integrity.elf at byte offset 12924442 (609 bytes, sha1=78d9a50f). ONLY private key in the entire corpus. Function unknown. See research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md.
+---
 
-## VIP/ELK Findings (2026-09-10, HIGH confidence)
-Fresh VIP RH850 + GHS INTEGRITY disassembly locates the ELK/reboot trigger: an unauthenticated
-internal serial-IPC message (SERIAL_IPC_CONTROL_CHANNEL / "Channel-7", RID=0xFF01 + subcommand
-0x01) handled by VIP `FUN_000641c2` @0x64208, no `$27`/session/dev/EEPROM gate at the VIP. Also
-corrects `elk.bin`'s identity (row above): it is a `fastboot`-class Intel Kernelflinger
-bootloader with AVB active, **not** a Linux shell/USB-rootfs environment — that trait belongs
-to the GWMv2 sibling platform only (GitHub issue #1, @DymOK93), not to GM. OPEN: whether an
-external DoIP/MDI2 tester or the uid-2000 Android guest can make the SoC emit the Channel-7
-trigger. Full writeup: research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md (Part 2, "RH850 VIP IPC
-Injection"), research/GORDON_PEAK_CELADON_INTELLIGENCE.md ("ELK trigger chain"),
-research/VIP_CONTROL_ANALYSIS.txt (cross-reference notes + §4.2).
+**Related:** GM_INFO37_BOOT_CHAIN_ANALYSIS.md, `../platform/vip_ipc_ghs.md`,
+EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md, `../platform/security.md`,
+GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md.
 
 Last updated: 2026-09-10

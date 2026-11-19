@@ -1,28 +1,77 @@
 # DPS Type4 custom calibration workflow and current acceptance limits
 
-**Target:** Silverado gminfo37 / Y17x / Y181/B, A11 CSM radio `0x80`.
-**Corrected 2026-11-11:** the former checksum-only deployment recipe was unsupported. All
-14 stock CSM containers have independently verified RSA-2048 signatures and production-CA
-signer-record signatures. Modified containers failed the reported 2026-11-10 write attempts;
-the exact live rejection mechanism is not isolated. This page retains the Type4/payload
- distinction and calibration glossary; the
-[central reference](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md) owns seed/key, signature,
-certificate and acceptance evidence.
+**Scope:** the live CAN-bench record of what actually happens when a hand-edited Type4/
+calibration payload is sent to the gminfo37 A11 CSM radio (`0x80`, Silverado gminfo37 /
+Y17x / Y181/B) — the Type4-vs-calibration-value distinction, the chronological trial/
+supersession log (2026-11-07 → 2026-11-17), and the one documented successful custom-write
+path (a scoped temporary VIP-RAM write over CAN613/614). This is the workflow/evidence
+record, not the crypto or protocol reference.
+
+**Does NOT live here:** seed/key exchange, CMAC, the signed-container RSA/SHA verification
+trace (Ghidra function/address level) and the SBA-ticket NVM-storage trace — all owned by
+[`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
+("GSK" below), pointer only. CAN bus-level session/profile mechanics and the stock-rewrite/
+VIN-learning campaign are owned by `../platform/can_network.md`. The byte-level checksum/
+hash/container-format mechanics for specific calibration edits (GMBrand, screen resolution,
+the standalone XML loader) are owned by
+[`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md)
+("CHS" below), pointer only — this doc keeps just the write-sequence/outcome summary. The
+full 404-entry A11 LTZ slot04 calibration-key glossary has moved out in full to
+[`calibration_glossary.md`](calibration_glossary.md) — see the one-line pointer at the end
+of this doc; nothing from it is restated here.
+
+**Related:** GSK (central reference for signature/seed/key/certificate evidence), CHS
+(checksum/container-edit mechanics), `calibration_glossary.md` (the 404-key catalog),
+`../platform/can_network.md` (CAN campaign/bus mechanics), `../mdi2_client/README.md`
+(MDI2 client evidence).
+
+## Current state and correction history
+
+**Current installed custom slot (2026-11-17):** SXM disabled plus Apple CarPlay/Android
+Auto feature-enable overrides disabled; the owner independently confirmed both projection
+entries disappeared from the UI. The SXM-only predecessor survived a cold power cycle;
+projection persistence under a cold cycle has not yet been tested.
+
+**History:**
+- **2026-11-10:** stock LTZ write succeeded under the SBI-dependent all-FF seed; same-day
+  modified-package attempts were rejected (`7F 36 72`). The rejection mechanism was not
+  isolated at the time.
+- **2026-11-11 (correction):** the earlier checksum-only deployment recipe was withdrawn as
+  unsupported. All 14 stock CSM containers have independently verified RSA-2048 signatures
+  and production-CA signer-record signatures. The prior claims that no RSA exists, that `$27`
+  is the only gate, and that `Sign Type=NONE` or a catalog override permits unsigned custom
+  calibrations are withdrawn, as is the claim that a malformed edit leaves the prior
+  calibration untouched.
+- **2026-11-16:** VIP signed-header verification failure confirmed as the live rejection
+  path on the tested CAN5 route (signature-only control, immediate PEC `0015` readback,
+  matching firmware-branch analysis — trace detail at GSK). A scoped temporary VIP-RAM write
+  over CAN613/614 (not a provisioned ticket) then bypassed that path and produced the first
+  accepted custom write, with an owner-confirmed runtime effect (see "Successful custom SXM
+  calibration" below).
+- **2026-11-16/17:** the bypass was reused for CarPlay/Android Auto disable, a GMBrand
+  change, a full stock LTZ restoration, and several further calibration trials (screen
+  resolution, Google-app visibility, recorder, porch-view) — see the chronological log below
+  for the full supersession chain.
+
+This page keeps the Type4/calibration-value distinction and the CAN-bench trial record; GSK
+owns the seed/key/signature/certificate evidence.
 
 ## 1. Type4 workflow files and calibration data are different artifacts
 
 A Type4 application is a PE32 diagnostic-driving DLL plus a `.cfx` XML workflow. The `.cfx`
 contains action IDs and UI text, not the `SCREEN_RESOLUTION` value. Sending an arbitrary UDS
 request through a DLL or raw MDI2 transport does not establish that the ECU will accept the
-payload. Tool catalog selection, diagnostic SecurityAccess, signed-container authenticity,
-inner integrity and application of the calibration are distinct checks.
+payload. Tool-catalog selection, diagnostic SecurityAccess, signed-container authenticity,
+inner integrity, and application of the calibration are distinct checks.
 
 The existing archive-format references describe different DPS/Type4 packaging workflows;
 this document does not establish that a hand-written archive will load in DPS. See
 [`DPS_ARCHIVE_CREATOR_ANALYSIS.md`](/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/DPS_ARCHIVE_CREATOR_ANALYSIS.md),
 [`SPS_TO_DPS_TYPE4_CONVERSION.md`](/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/SPS_TO_DPS_TYPE4_CONVERSION.md),
-and the worked [reset application](canbus_reset/CANBUS_RESET_ANALYSIS.txt).
-A successful archive import would still not bypass radio-side verification.
+and the worked [reset application](canbus_reset/CANBUS_RESET_ANALYSIS.txt) (links kept as-is;
+the first two are absolute paths outside this repo and the third is in an excluded research/
+subdirectory — not resolved here). A successful archive import would still not bypass
+radio-side verification.
 
 ## 2. The actual calibration value
 
@@ -36,635 +85,460 @@ A successful archive import would still not bypass radio-side verification.
 | Recorded CalValue | 2 |
 | EnumID | `_PWvKYIQHEeWHkIX-EVZFdA` |
 
-Enum members are `0=800x480`, `1=1280x720`, `2=1280x768`, `3=1920x1080`, `4=2400x960`.
-The existence of these enum members does not prove that selecting one changes the physical
-panel timing or produces the desired UI. A custom change has not been demonstrated here.
-The calibration store is `/mnt/vendor/calibration/database/CalSets.db`; override application
-and direct database access require the appropriate filesystem and SELinux access.
+Enum members are `0=800x480`, `1=1280x720`, `2=1280x768`, `3=1920x1080`, `4=2400x960`. The
+existence of these enum members does not prove that selecting one changes the physical panel
+timing or produces the desired UI. The calibration store is
+`/mnt/vendor/calibration/database/CalSets.db`; override application and direct database
+access require the appropriate filesystem and SELinux access.
 
-## 3. Signed-container facts and the obsolete recompute recipe
+## 3. Signed-container facts (pointer)
 
-The stock container's payload digest is at `[30:62]` and equals `SHA256(container[858:])`.
-Its embedded signer modulus is `[88:344]`; its calibration signature `[600:856]` verifies
-using RSA-2048 PKCS#1 v1.5/SHA-256 over `[2:600]`. A separate production-CA signature at
-`[344:600]` authenticates the custom signer record `[62:344]`. All 14 stock containers passed
-these offline checks. The embedded record is not an ordinary X.509 certificate.
+The stock container is protected by a payload digest plus a two-tier RSA-2048/SHA-256
+signature and a production-CA signer record, each over defined byte ranges of the container.
+All 14 stock containers pass these checks offline. **The full offset map, verifier
+implementation, and Python re-implementation live in GSK** — not restated here to avoid
+duplicating the charter owner.
 
-Updating a payload digest changes signed header bytes, invalidating the existing signature.
-The transport additive checksum and SHA-256 can be recomputed, but doing so has not yielded
-an accepted modified package. The old claims that no RSA exists, that `$27` is the only gate,
-and that `Sign Type=NONE` or a catalog override permits unsigned custom calibrations are
-withdrawn. The active target UDS signature/root verifier still needs to be traced; genuine
-signed bytes alone do not prove which runtime gate produced an error.
+The one fact load-bearing for this doc's trial log: recomputing the transport checksum/digest
+after editing a payload does not, by itself, produce an accepted custom package, because
+editing the payload invalidates the signature computed over the edited header bytes. This is
+the operative constraint behind every custom-write attempt logged below. The old claims that
+no RSA exists, that `$27` is the only gate, and that an unsigned or catalog-overridden
+calibration would be accepted are withdrawn (2026-11-11 correction, above).
 
-## 4. What was demonstrated
+## 4. Chronological trial log
+
+### 2026-11-10: stock write succeeds, modified package rejected
 
 The documented 2026-11-10 stock LTZ write used the SBI-dependent all-FF seed and a 12-byte
-zero response, transferred all 14 containers, finalized, reset and passed metadata readback.
-That demonstrates the stock programming sequence with that security state, not arbitrary
+zero response, transferred all 14 containers, finalized, reset, and passed metadata readback.
+That demonstrates the stock programming sequence under that security state, not arbitrary
 payload acceptance or a real-seed CMAC implementation. See the
 [client's current evidence](../mdi2_client/README.md).
 
 The same day's modified-package attempts were rejected with `7F 36 72` after the payload
-digest was recomputed; an earlier stale-digest edit failed at transfer exit. NRC `0x72` is
-not signature-specific. The source notes alternated between a stale transport checksum and
-RSA verification as the cause, without an isolated test. Failed modified writes removed
-slots and required recovery with stock LTZ. The earlier assurance that a malformed edit
-leaves the prior calibration untouched is withdrawn.
+digest was recomputed; an earlier stale-digest edit failed at transfer exit. NRC `0x72` is not
+signature-specific on its own. Failed modified writes removed slots and required recovery
+with stock LTZ.
+
+### 2026-11-16: direct CAN5 repeat and header-signature rejection confirmed
+
+After successful genuine LTZ and HC writes without MDI2, the earlier slot0C/part 85102312
+experiment was reconstructed in memory: only `SXM_Enabled` (`_ysOddU1AEeO3UM5MzM17kw`) changed
+true→false in the inner XML. Stock header RSA verified; the edited payload digest and
+production-CA signer record verified, while edited-header RSA did not. The 1455-byte candidate
+SHA-256 was `58ea702ae33c99543e75f1395da224c068bea9fb8d196746871aea48e7cf0e83`. No candidate
+file or altered stock folder was created.
+
+Only slot0C was attempted, because its genuine container is identical in LTZ and HC. With
+known-good CAN5 preparation, `34` returned `74 20 0F FF`, but the first `36 01` carrying 1022
+container bytes returned **`7F 36 72`**. No custom transfer exit was sent. In the same
+programming session, the genuine 1457-byte slot0C container negotiated successfully, both
+data blocks returned `76`, and exit returned `77`. Immediate readback matched all fourteen HC
+identities, all module statuses 00, and F0F1/F0F2 = `0000`. The
+[CAN campaign](../platform/can_network.md#full-stock-ltz-rewrite-through-canable-2026-11-16)
+owns the stock-write, VIN-learning, and recovery setup. This reproduced the earlier failure
+independently of the MDI2 tool; the old repacking script's claim that RSA is "UDS-inert" is
+contradicted on this tested path and must not be used as a programming assumption.
+
+A set of controls then confirmed the rejection is signature-driven rather than a generic
+transport-checksum fault: a stock 1457-byte slot0C container with only one signature bit
+flipped reproduced the same `7F 36 72` rejection and PEC `0015` (signature-only candidate
+SHA-256 `e822a9f83d93d44b8e4939018be7696d12ebb6a91ae09fdb022c25c7a467479c`), while
+genuine-container restoration in the same session passed both blocks and exit cleanly. (An
+earlier control attempt stopped at `10 02 -> NRC22` before any download and is excluded from
+these results; after a mute restart, preparation with approximately 700ms settling between
+requests reached programming normally.) **Full Ghidra function/address trace for this
+verification path** (kept here rather than GSK, which does not carry this level of detail):
+wrapper file/runtime address `564D0`/`7DF4A`, parser runtime address `7E7CA`, PEC `0015`
+setter address `86302` writing RAM address `FEBF0002`, boot crypto API pointer `0x844` (a
+truncated Ghidra function body initially rendered it as an empty function; assembly confirms
+it is not a no-op or a proven bypass). The operative conclusion for this doc: the original
+edited package's failure is confirmed as **signed-header verification failure** on the tested
+level-01 CAN5 path, not merely inferred from a generic NRC72. F0F1 is a programming-error
+**code (PEC)**; older "error count" wording and the legacy client field name do not describe
+this live value.
+
+**Separate prerequisite/exception (bridges to the CAN613/614 result below):** the verifier
+can accept a failed header-signature check if VIP RAM `FEBF0BF8`/`FEBF0BFC` already holds the
+complementary validated SBA-ticket marker pair `A5163829`/`5AE9C7D6`. A dedicated ticket
+validator sets that pair only after its own ticket/signature checks succeed — this is distinct
+from a UDS `27` grant and is not established by the all-FF seed exchange. No valid SBA ticket
+has ever been supplied here, and no CAN/T1 activation procedure for one has been demonstrated.
+The signer-record check (§3) occurs before this exception is even reachable. Full NVM/RAM-flag
+storage/revalidation trace for this ticket path (kept here, not GSK, which does not carry this
+level of detail): NVM-block-86 reader offset `61AD2`, error string `DIDF0F4`; handler `61B72`
+(descriptor size `0x336` bytes); flag-setter `56C8C` (sets RAM `FEBF0C00`); consumer `56C48`
+(selects init state 7, reads block 86 into `FEBF0050`); validator `5667A` on `FEBF0052`;
+success value `80` stored at `FEBF0C01`; logging routine `56B76` ("SbaTicketValidation
+validation passed" for status 80); helper `563DA` (raw validation byte) and helper `56C98`
+(bit7 boolean). The operative point carried forward here is that **an NVM write acknowledgment
+is not proof of ticket acceptance**, and no valid ticket was available or loaded at any point
+in this bench work. The CAN613/614 result below used only a temporary RAM overwrite of these two
+words, not ticket issuance.)
+
+The pinned Y175 VIP_APP 85759599 reference has SHA-256
+`d729fa4b59095b03b05ee26e09e3eb31dda36678055f77be11f24416dd1ad239`. Live CAN F181 identifies
+module 01 as 85759599/DLS CJ; F180 identifies VIP_BOOT 85056831/AA. This matches module
+identity, not a full live flash-byte readback.
+
+### 2026-11-16: additional CAN security-profile trials
+
+A fresh in-memory candidate changing only `SXM_Enabled` (`_ysOddU1AEeO3UM5MzM17kw`) true→false
+was tried against three CAN security profiles before the scoped bypass was attempted:
+
+| CAN security profile | Preparation and custom outcome | Recovery |
+|---|---|---|
+| 03 | Grant, `FF01`, `021E`, and programming session accepted; `34 → 74 20 0F FF`; first `36 01 → 7F 36 72`; immediate F0F1 = `0015`. | Pinned genuine slot0C: `76 01`, `76 02`, `77`; full F182 response unchanged. |
+| 05 | Same preparation, negotiation, and first-block rejection; immediate F0F1 = `0015`. | Pinned genuine slot0C: `76 01`, `76 02`, `77`; full F182 response unchanged. |
+| 09 (Engineering enum) | SecurityAccess granted; `FF01` positive; `31 01 02 1E → 7F 31 33`. | No download or custom block sent; F182 unchanged. Not a signature-acceptance test. |
+
+The candidate is 1448 bytes, SHA-256
+`4653a2e36754f0d1d6e2ef8f13a75d5d9d2688aaa0f285006c09537199c8fa84` (differs from the earlier
+1455-byte repack; the requested XML edit is the same). Subsequent readback listed all 14
+calibration slots 02–0F with status 00, F0F1 = `0000`, F0F2 = `0000`. Immediate cleanup was
+not uniformly accepted: communication re-enable returned `7F 28 22`, and a delayed sequence
+also returned session-specific `7F 28 7F`/`7F 85 7F`. A fresh extended-session sequence
+accepted DTC logging enable (`C5 01`) and default session, but communication enable still
+returned NRC22 — do not report communication cleanup as positively confirmed. The CAN adapter
+was accessed directly after the old local control endpoint returned
+`ConnectionRefusedError: [Errno 61] Connection refused`. No ticket, calibration-clear routine,
+or alternate CAN development-enable bit was written. These three trials establish rejection
+without the temporary RAM intervention; profiles 01/03/05 alone still do not establish a
+signature exemption.
+
+### 2026-11-16: successful custom SXM calibration through CAN613/614
+
+**Result:** the 1448-byte candidate above was accepted, and the owner observed that SXM
+disappeared from AAOS Radio. Candidate SHA-256:
+`4653a2e36754f0d1d6e2ef8f13a75d5d9d2688aaa0f285006c09537199c8fa84`. Stock recovery source
+remains the pinned 1457-byte slot0C container, SHA-256
+`c8c36547fa2292b5aed6bb58b063e34da8b4490c60747dee5c40e50f6edf532e`. This candidate was
+retained at that checkpoint; the later full stock LTZ restoration (below) superseded it. **This
+is the only documented successful custom-calibration write path in this corpus.**
+
+**Development-interface memory route:** receive ID 613 (standard 11-bit CAN, DLC 8) uses
+callback slot 4; its compiled callback at `10DA5A` maps to file offset `E5FE0` in the pinned
+VIP_APP 85759599. Replies use standard ID 614. Live connect `FF 00` returned
+`FF 0C 00 08 08 00 01 01`; status `FD` returned `FF 20 00 08 00 00 01 01`. These exchanges
+worked without a new Engineering-09 grant — do not attribute this route to `27 09`, or infer
+every advertised capability from resource bits alone.
+
+Static command dispatch at file offset `E5348` indexes the compiled table at `73524`. `F6`
+selects a memory transfer address; `F5` reads bytes; `F0` writes bytes. Address-translation
+helper `E4A76` returns its address argument; read helper `E4970` and write helper `E49F6`
+directly copy memory with alignment-sensitive access — no SecurityAccess check was identified
+in this traced command path. Live reads of the two verifier words and the validation-status
+byte returned zero. This demonstrates reads at the tested addresses, not a complete VIP RAM
+dump; the full valid RAM map and a coherent whole-memory snapshot were not verified. VIP memory
+access does not expose AAOS/SoC RAM automatically.
+
+**Scoped intervention:** after ordinary profile-01 programming preparation, the experiment
+saved the two zero words at VIP RAM `FEBF0BF8`/`FEBF0BFC`, wrote `A5163829`/`5AE9C7D6` through
+the development-memory route, and verified both by readback — these are the complementary
+words consulted by the header-signature verifier on failure (§4, 2026-11-16 above). This was a
+temporary RAM condition, **not a provisioned or cryptographically validated SBA ticket**. No
+ticket NVM write, EEPROM edit, flash patch, or calibration-clear routine was used.
+
+| Step | Observed result |
+|---|---|
+| Profile-01 grant; `FF01`; `021E`; DTC/communication preparation; programming session | All accepted. |
+| Temporary verifier words | Both written and read back as expected. |
+| Custom RequestDownload | `74 20 0F FF`. |
+| Custom TransferData blocks 01 and 02 | `76 01`, `76 02`. |
+| Custom RequestTransferExit | `77`. |
+| Restore original verifier words | Both restored to zero and verified by readback; development connection disconnected. |
+| Immediate programming error | `62 F0 F1 00 00`. |
+| F182 | Full response unchanged from the pre-write baseline — expected, since part identity was retained. |
+| Runtime application | Owner confirmed AAOS Radio no longer offers SXM. |
+
+**Initial verification limits:** at the first-transfer checkpoint, no post-write reboot or
+post-reboot calibration-value readback had been performed (the cold-cycle result below
+supersedes the restart-pending portion). F182 alone does not establish the modified value; the
+owner-observed application change is separate evidence. Immediate extended-session cleanup
+returned `7F 10 22`; communication/DTC cleanup then returned `7F 28 7F`/`7F 85 7F`.
+Default-session requests were accepted; a subsequent status request timed out. Do not infer
+complete communication cleanup, restart persistence, or absence of pending state work from the
+successful transfer — these limits do not retract the positive block/exit acknowledgments and
+the observed SXM removal.
+
+### 2026-11-17: development-interface (XCP-style) command inventory
+
+Pinned VIP_APP 85759599 dispatch at file offset `E5348` indexes the 64-entry function table at
+runtime `73524` by `(~command)&0xff` for commands `C0`–`FF`. The following 24 entries have
+non-default targets. Addresses are signed-container file offsets; names follow
+[Vector XCP protocol definitions](https://raw.githubusercontent.com/vectorgrp/XCPlite/master/src/xcp.h),
+not a claim that every feature of the external implementation exists here.
+
+| Command | Function | File offset | Evidence/limit |
+|---|---|---|---|
+| FF | CONNECT | E4B3C | Live verified |
+| FE | DISCONNECT | E4BC0 | Live verified |
+| FD | GET_STATUS | E4BC6 | Live verified |
+| FC | SYNCH | E4BE4 | Mapped; not live tested |
+| FB | GET_COMM_MODE_INFO | E4BEC | Mapped; not live tested |
+| FA | GET_ID | E4C34 | Static response has zero identifier length |
+| F6 | SET_MTA | E4C06 | Live address-selection verified |
+| F5 | UPLOAD | E4C44 | Live reads at selected RAM addresses verified |
+| F4 | SHORT_UPLOAD | E4C9C | Mapped; not live tested |
+| F2 | TRANSPORT_LAYER_CMD | E4D10 | Empty return/no-op handler, not an IPC bridge |
+| F0 | DOWNLOAD | E4D42 | Scoped live RAM writes/readback verified |
+| EE | DOWNLOAD_MAX | E4D92 | Static memory-write path; not live tested |
+| E2 | SET_DAQ_PTR | E4DD6 | Mapped; not live tested |
+| E1 | WRITE_DAQ | E4E1E | Mapped; not live tested |
+| E0 | SET_DAQ_LIST_MODE | E4EAA | Mapped; not live tested |
+| DF | GET_DAQ_LIST_MODE | E4F08 | Mapped; not live tested |
+| DE | START_STOP_DAQ_LIST | E4F4E | Mapped; not live tested |
+| DD | START_STOP_SYNCH | E4FE0 | Mapped; not live tested |
+| DA | GET_DAQ_PROCESSOR_INFO | E50C0 | Static info response; not live tested |
+| D9 | GET_DAQ_RESOLUTION_INFO | E50E0 | Static info response; not live tested |
+| D6 | FREE_DAQ | E5102 | Static state reset; not live tested |
+| D5 | ALLOC_DAQ | E5118 | Mapped; not live tested |
+| D4 | ALLOC_ODT | E514E | Static bounded allocation bookkeeping; not live tested |
+| D3 | ALLOC_ODT_ENTRY | E51C0 | Static bounded allocation bookkeeping; not live tested |
+
+All remaining 40 command entries map to `E4B32`, which generates error 20 (command unknown):
+`F9`/`F8`/`F7`/`F3`/`F1`/`EF`/`ED`/`EC`/`EB`/`EA`/`E9`/`E8`/`E7`/`E6`/`E5`/`E4`/`E3`,
+`DC`/`DB`/`D8`/`D7`, and `D2` through `C0` inclusive. **`GET_SEED`/`UNLOCK`, `USER_CMD`,
+`BUILD_CHECKSUM`, calibration-page controls, and all listed flash-programming commands are not
+implemented through these entries.** No execute-function or boot-ELK command was identified.
+The supported RAM `DOWNLOAD` is not proof of a working flash-programming facility.
+
+Bytes below `C0` enter a distinct configured data-buffer path after connection, not this
+command table; DAQ/STIM operation was not live-tested. Advertised resource bits and mapped
+handlers alone do not prove a complete acquisition or stimulation workflow. This interface
+worked without a `27 09` grant and must not be counted as Engineering-profile permission.
+
+### 2026-11-16: SXM cold-power persistence verified
+
+The bench supply output was physically toggled off, application CAN TX was stopped, and 10.505
+seconds elapsed after the completed off command before power-on; no radio CAN frames arrived
+during that off interval, and ADB was absent. After power-on, with the captured full harness
+schedule and existing VIN inputs supplied, at approximately 30 seconds F182 matched the
+pre-cycle baseline, all 14 F0F0 calibration statuses were 00, and F0F1/F0F2 were `0000`. **The
+owner confirmed SXM was still disabled after this cold power cycle.** No custom container was
+retransferred and no verifier markers were re-applied for the restart. ADB had not yet
+returned at the 30-second check, so Android boot-ID comparison and direct database readback
+were unavailable. This verifies one cold-cycle retention of the observed feature change, not
+repeated-cycle reliability.
+
+### 2026-11-16: CarPlay and Android Auto custom calibration accepted
+
+Following the owner-confirmed SXM cold-cycle result, slot0C was rebuilt again. The SXM-false
+override was retained and two previously absent feature-enable Boolean overrides were added,
+each at version 3:
+
+| Feature | Calibration name / ID | Requested value |
+|---|---|---|
+| Apple CarPlay | `Enable_Application_Apple_Carplay` / `_vZTHQMZZEeOEzdA9o_rOxw` | false |
+| Android Auto | `Enable_application_google_Automotive_link` / `_1pZzYMZZEeOEzdA9o_rOxw` | false |
+
+The checked-in GIS513_DeviceProjection.caldef identifies these as **feature** enables,
+explicitly distinct from GIS501 home-screen visibility calibrations (the reference
+`LauncherIconCalibrationHelper` requires both the relevant home-screen flag and the
+feature-enable flag; no home-screen visibility override was changed here). Only the existing
+SXM value changed relative to stock, and only these two new version-3 overrides were added;
+the earlier SXM-only candidate was retained in memory as the recovery payload.
+
+The new container is 1478 bytes, SHA-256
+`d58d353bbd11f945fe839be204dc2acadf23c2b67a796b50473f064bfe5c403f`. With profile-01
+programming and the same temporary CAN613/614 verifier-word intervention, RequestDownload
+returned `74 20 0F FF`; blocks 01/02 returned `76 01`/`76 02`; exit returned `77`; immediate
+PEC was `0000`. Both verifier words were restored to zero and read back; F182 remained
+unchanged. The custom projection/SXM container was retained at that checkpoint; the recovery
+payload was not written — the later full stock LTZ restoration (below) superseded this
+candidate.
+
+**The owner confirmed that both CarPlay and Android Auto disappeared from the radio UI.** This
+establishes accepted transfer plus the observed UI effect of the feature-enable overrides; an
+attached-phone projection-session rejection has not been separately tested, and this candidate
+has not had its own cold-power-cycle test (the earlier cold-cycle result applies only to the
+SXM-only candidate). Immediate cleanup again returned `7F 10 22` for extended-session entry and
+`7F 28 7F`/`7F 85 7F` for communication/DTC control; default-session requests were accepted. A
+later settled check accepted extended session and DTC logging enable (`C5 01`) and default
+session; communication enable still returned `7F 28 22`. All 14 slot statuses were 00 and
+F0F1/F0F2 were `0000` — the transient status timeout did not persist into this later readback,
+but communication re-enable itself still lacks a positive reply.
+
+### 2026-11-16: process-state verification — UI disappearance is not process shutdown
+
+Read-only ADB checks after the projection write found Android user 10 active.
+`com.gm.hmi.sxm` and `com.gm.domain.server.delayed:CarplayService` were still running.
+ActivityManager listed SxmMediaBrowserService, SXMService, CarPlayService,
+CarPlayConnectionService, and RemoteDeviceService. PackageManager showed the SXM, CarPlay, and
+Android Auto packages still installed with default enabled state (`enabled=0`, not a
+disabled-user state). No separately named Android Auto process appeared in that snapshot;
+shared projection services remained present, so this is not proof that Android Auto execution
+was disabled.
+
+**Correction of interpretation:** the custom writes and UI disappearance are confirmed, but
+package/process shutdown and CPU/RAM savings are not. SXM's running process was observed after
+its confirmed cold-cycle test; the projection candidate had not yet had its own cold-cycle
+check. Feature-level connection blocking must be distinguished from package state and
+background-service life.
+
+For the related Google follow-up question: GIS501 defines version-1 home-screen/app-tray
+visibility flags for Assistant (`_vzMekQTMEeuhM_xpS7qcsA`), Maps
+(`_7p18cQTMEeuhM_xpS7qcsA`), and Play Store (`__jFe4QTMEeuhM_xpS7qcsA`). Reference
+`LauncherIconCalibrationHelper` consumes these as visibility gates; Maps additionally checks
+`ENABLE_APPLICATION_NAVIGATION`. No Google-Play-Services process-disable calibration was
+identified in that search. Short live `top` samples showed Assistant and Maps CPU activity
+alongside substantial audio/native-service activity; these samples do not establish a
+before/after resource reduction or the cause of sustained load.
+
+### 2026-11-16: GMBrand zero follow-up
+
+The same scoped CAN613/614 method accepted a custom slot04/part 85045386 with only
+GMBrand 3→0. All 13 data blocks and exit were accepted, PEC `0000`, verifier words
+restored/read back, and F182 unchanged; the slot0C feature-disable module was untouched. On
+2026-11-17, live property readback was `GM_Brand_None` with model still Silverado; all slot
+statuses and F0F1/F0F2 were clean, and the owner confirmed a theme change. Brand-0 physical
+cold-cycle retention remains untested. The
+[owning theme trial](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-themeui-inventory-and-gmbrandscreen_resolution-live-trials)
+records the candidate hash, baseline property, exact scope, and cleanup limits.
+
+### 2026-11-17: full stock LTZ restoration after feature trials
+
+Replaced the custom HC-based calibration set with all 14 stock LTZ containers, slots 02–0F,
+validated against LTZ_REFERENCE before programming: 46162 bytes. All downloads, data blocks,
+and 14 transfer exits were accepted. F182 matched all 14 pinned LTZ identities; all 14 F0F0
+module statuses were 00 and F0F1/F0F2 were `0000`. The temporary verifier words were checked
+zero before programming and were not modified; no calibration-clear or identity-write routine
+was used. **This stock rewrite supersedes the custom SXM/projection, Brand-0, Google
+visibility/navigation, recorder, and porch-view candidates below it in this log.** Immediate
+cleanup returned `7F 10 22` for `1003`, `7F 28 7F` for `28 00 01`, and `7F 85 7F` for `85 01`.
+Settled readback again showed the LTZ identities, all 14 module statuses 00, and F0F1/F0F2 =
+`0000`; session `1003` and DTC-enable `85 01` succeeded, while communication-enable `28 00 01`
+still returned `7F 28 22`. ADB was unavailable after restart, so Android property/UI
+verification and a separate physical cold-cycle test remain pending.
+
+### 2026-11-17: subsequent screen-resolution trial
+
+After the stock LTZ restoration and owner-observed CAN factory reset, slot08 was changed only
+from `SCREEN_RESOLUTION` 4 (2400×960) to 2 (1280×768). Both blocks and exit were accepted, PEC
+`0000`, F182 unchanged, temporary verifier words restored. The owner reported display tearing.
+Original stock slot08 was subsequently restored with both blocks and exit accepted, PEC `0000`,
+without verifier-RAM modification; all slots are again stock LTZ, and the owner confirmed
+normal display output after the rollback. Transfer success is not display success. The
+[owning display trial](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17)
+records hashes, exact scope, and verification limits.
+
+### 2026-11-17: Google visibility and recorder follow-ups
+
+**Google trial:** slot04/85045386 retained Brand-0 and changed the Assistant, Maps, and
+Play Store visibility overrides to false; slot02/87846412 changed only
+`ENABLE_APPLICATION_NAVIGATION` to false. Both transfers and exits were accepted, PEC `0000`,
+temporary verifier words restored, and F182 unchanged. The icons nonetheless remained visible,
+and Assistant, Maps, Play Store, and Play Services packages remained enabled with live
+processes — effective calibration-provider readback is unresolved; transfer acceptance does
+not establish consumer behavior or resource savings. `Navigation_Zone_Enabled` was not
+changed (remains true in source slot02; it controls the porch-view navigation zone
+separately). Google slot04 candidate: 13241 bytes, SHA-256
+`c8c8e5889be80c1fcb27701552bbeada23aa87c9d259d11237cfd4f6906649aa`. Google slot02 candidate:
+1421 bytes, SHA-256 `d32fa1982954de45e5e4a988dedd0bfb6a3d3fd04b8b49e64a975c656b236f4d`. Record
+comparison verified exactly the intended existing-value changes with no additional IDs; no
+Play Services or whole-GAS process-disable flag was found.
+
+**Recorder trial:** added `APPLICATION_HOMESCREEN_VIDEORECORDERLVM_ENABLED=true`, CalID
+`_Mes-0Dz6EeaGEeA8k3J6-w`, override version 3, to the previously accepted slot04. Exact XML
+record comparison verified one added override with every existing record preserved, including
+Brand-0 and the three Google-false values. Candidate length 13266, SHA-256
+`d02a1188c5ec054d7a721ad3abd6834c8a1869b6e1e4bec8e318da8bf1f2db99`. All 13 blocks and transfer
+exit were accepted; PEC `0000`, temporary verifier words restored with readback, and F182
+unchanged. Settled verification found all 14 slot statuses 00 and F0F1/F0F2 = `0000`; the
+owner observed no recorder entry. Recording capability and cold-cycle retention remain
+unverified. `RVS_PRESENT_STATUS` (`_ysAbAE1AEeO3UM5MzM17kw`) already equals 2 in the pinned
+stock slot08/87846432 override version 1 (slot08 was not rewritten in this trial — this is
+source-container evidence, not live per-CalID readback). Framework
+`LauncherIconCalibrationHelper` requires both recorder visibility=true and
+`RVS_PRESENT_STATUS`=2; the latter selects VPM camera processing, not proof of installed
+recorder hardware/software. `Porch_View_Enabled` was not changed in this trial.
+
+### 2026-11-17: explicit porch-view enable trial
+
+Added `Porch_View_Enabled=true` (`_sIt3cGkUEeSgh9VY6ZvAyA`, version 2) to the accepted
+recorder-enabled slot04, preserving every existing override. The reference definition defaults
+true, but no source HC override was found. Candidate length 13290, SHA-256
+`3e471ee507d2055652a0fe5aa69fd074b14f885ad25c361eeed4a5193866d7af`. All 14 transfer blocks and
+exit (`77`) were accepted; PEC `0000`, temporary verifier words restored/read back, F182
+unchanged. Visual effect and cold-cycle retention have not been verified; false has not been
+tested (its defined behavior is to disable access and the page indicator).
+
+The inspected HomeScreen `PorchViewService` (`T/X.java:a`) requires both the Boolean and a
+separate display-support check: `T/C0129w.java:a` allows only `SIZE_1920_BY_1080` or
+`SIZE_1280_BY_768`, and `T/A.java:b` derives that enum from `SCREEN_RESOLUTION`. Source slot08
+specifies 2400×960 — a concrete additional gate that can make a true override ineffective;
+live provider readback remains necessary to confirm running values.
 
 ## 5. Other paths and unresolved questions
 
+**Type4 custom DLL -> arbitrary UDS service ID.** A custom Type4 PE32 DLL (exporting
+`Launch`/`GetResult`/`SetInternal`/`CMessage`, confirmed via the real `GbPowerModeList.dll`
+example) imports `tisvcsv4.dll`'s `CBuildService::BuildRequestedService(eProtocol,
+uint16_t serviceID, long*)`, which accepts an arbitrary 16-bit UDS service ID — meaning a
+custom Type4 DLL could inject arbitrary diagnostic commands (including `$27 02` SendKey)
+through DPS's own already-authenticated session and local `tisvcsv4.dll` builder. This
+doesn't hand over a missing key, but is a real capability for future custom tooling,
+distinct from the CAN613/614 scoped-VIP-RAM-write path (§4) and from `tisvcsv4.dll`'s
+SecurityAccess-algorithm-dispatch role (see
+[GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md §2.1](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md#21-tisvcsv4dll--multi-oem-securityaccess-dispatch-architecture)
+for that unrelated dispatch finding in the same DLL).
+
+**CAN bus data reset recovery (2026-01-01, Y175, tested).** EEPROM bypass state blocks the
+SPS/DPS connection itself: with the EEPROM bypassed (SBI all-`0xFF`, §2.3 of
+[EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md](EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)) the `$27` seed
+comes back all-`0xFF` and SPS refuses the connection outright; with the EEPROM locked (seed =
+ECUID+challenge) SPS connects normally. Recovery procedure for a UI bricked via
+`wm density`/`wm size`: (1) restore the EEPROM SBI bytes (`0x0441`/`0x0A81`) to locked state;
+(2) verify the seed via DPS now shows ECUID, not `0xFF`; (3) apply SPS Type4 PIC6630 / Cal
+`10017909` ("Reset ECU"); (4) post-reset the unit re-enters OOBE with ADB locked — re-apply the
+EEPROM bypass afterward if ADB access is still wanted. Files: `10017909.cfx` (Reset ECU XML
+config), `10017908.dll` (Security DLL, AES-CMAC), session log
+`module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt`. **The catch-22:** ADB access
+needs the EEPROM bypassed, but the SPS recovery path above needs it locked — so this recovery
+procedure itself is unusable from a state where ADB-only access already has the owner stuck
+with a bricked UI and no locked-EEPROM fallback already staged.
+
 A local `calserviced` override/database write is a different access path from UDS. Strings
 such as `OVERRIDE_BACKDOOR` do not prove it is usable on a production build. An SBI-enabled
-ADB shell is uid 2000 and does not automatically acquire `vendor_cald` filesystem access.
-The named Signature-Bypass Ticket is also not a demonstrated usable bypass; its wire mapping,
-authorization and active target-verifier effect require proof. See the
+ADB shell is uid 2000 and does not automatically acquire `vendor_cald` filesystem access. The
+named Signature-Bypass Ticket is also not a demonstrated usable bypass; its wire mapping,
+authorization, and active target-verifier effect require proof. See the
 [central reference](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
-**2026-11-15 follow-up:** a compiled Y175 standalone XML application branch
-has now been traced through `calserviced_main` and its per-row SQL parser.
-It is a different entry point to persistent calibration, not a temporary
-runtime override or a verified UDS setter. File permissions, rebuild paths,
-ownership and rollback remain gates. See the [consolidated loader analysis](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-runtime-controls-and-visual-test-limits-2026-11-15).
+**2026-11-15 follow-up:** a compiled Y175 standalone XML application branch has been traced
+through `calserviced_main` and its per-row SQL parser — a different entry point to persistent
+calibration, not a temporary runtime override or a verified UDS setter. File permissions,
+rebuild paths, ownership, and rollback remain gates. See the
+[consolidated loader analysis](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-themeui-inventory-and-gmbrandscreen_resolution-live-trials).
 
 ## 6. Trim comparison and prototype status
 
-The cached LTZ/High Country payload comparison found slot 04 `85045371`/`85045386` with
+The cached LTZ/High Country payload comparison found slot04 `85045371`/`85045386` with
 `GMTrim=16/1` (LTZ/HighCountry in the Y177 database) and `P_HUD_MENU_AVAILABLE=false/true`.
-Slot 02 differs in fuel-related values and GCWR; slot 05 adds an Alexa setting. These are
-also different model-year/vehicle configurations, so the changes cannot all be attributed
-to trim. The existing `calibration_prototypes/a11_ltz_gmtrim_highcountry.calovride.xml` is
-standalone editable override XML, not a signed SPS/CSM container or proof of a successful
-custom write. It does not establish an EEPROM SBI write.
+Slot02 differs in fuel-related values and GCWR; slot05 adds an Alexa setting. These are also
+different model-year/vehicle configurations, so the changes cannot all be attributed to trim.
+The existing `calibration_prototypes/a11_ltz_gmtrim_highcountry.calovride.xml` (excluded
+research/ subdirectory, link kept as-is, not resolved here) is standalone editable override
+XML, not a signed SPS/CSM container or proof of a successful custom write, and does not
+establish an EEPROM SBI write.
 
-**Correction reason/date (2026-11-11):** replace guessed archive/flash instructions and
-unsigned-calibration assertions with verified signed-format facts, reported write outcomes,
-and explicit runtime-enforcement gaps. The glossary below remains source-derived calibration
-context, not an installation procedure.
+**Correction reason/date (2026-11-11):** this doc replaced earlier guessed archive/flash
+instructions and unsigned-calibration assertions with verified signed-format facts, reported
+write outcomes, and explicit runtime-enforcement gaps.
 
-## A11 LTZ slot 04 calibration glossary (2026-11-07)
+## 7. Calibration-key glossary
 
-Scope: all 404 `OverrideValue` entries in stock LTZ part `85045371`, including GMTrim.
-Names, group names and enum labels come from the local Y177 `CalSets.db`; values and types come
-from the LTZ XML. All 404 IDs also matched the local 2023 GIS-646 CalDef files; 398 have a
-nonempty manufacturer description, reproduced below. Six use an explicitly labeled fallback.
-Only 133 CalDef versions equal the corresponding override version; a version difference is
-marked per entry and the description may not describe the exact installed revision. CalDef
-text is documentation, not a live behavior test. Complex values are summarized; inspect the
-original XML for their fields. String values are omitted. Do not infer undocumented units or
-semantics.
+The full 404-entry A11 LTZ slot04 `OverrideValue` calibration-key catalog (key/description/
+type/value/CalID across 26 named groups, CalDef-cross-matched, with online-search provenance
+notes) has moved out of this workflow doc in its entirety. See
+[`calibration_glossary.md`](calibration_glossary.md) for the complete catalog — nothing from
+it is restated here.
 
-Online method: a separate quoted exact-name-plus-calibration query was submitted for each of the
-404 names using the available search engine (101 four-query requests). Ninety requests returned
-no results; the 11 remaining requests returned mixed results, including unrelated uses of generic
-names and Android documentation. This does not establish that every possible public source was
-searched or that any individual GM-specific definition is absent. Android stream constants are
-documented, but that does not prove how GM maps them.
+## Open conflicts
 
-Public context: [GM guidance on calibration-selected welcome animation](https://gm-techlink.com/wp-content/uploads/2020/12/GM_TechLink_23_December_2020.pdf),
-[Chevrolet HUD guidance](https://www.chevrolet.com/support/vehicle/dashboard-lights-and-signals/how-to-use-the-head-up-display),
-[Android Automotive volume management](https://source.android.com/docs/automotive/audio/volume-management),
-[Android AudioManager stream constants](https://developer.android.com/reference/android/media/AudioManager), and
-[ADASIS objectives](https://adasis.org/objectives/). These explain feature families, not the
-exact behavior of GM's internal keys.
-
-Calibration groups provide useful context: `GIS500_UI` is identity/trim; `GIS501_HOMESCREENUI`
-is application visibility and ordering; `GIS631_CONFIGCHIMEPROD` is chime configuration;
-`GIS621`/`GIS641` are diagnostic masks; `GIS619` is display/indicator brightness; `REQUESTACTIONMAP`,
-`SINKLEVELCONTROL`, `AOSP` and `ROOMMODE` concern audio routing and levels. Group names are
-labels, not proof of an individual setting's effects. Do not alter safety, diagnostics or audio
-alert settings based only on their names.
-
-### ADASIS (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `ADASIS_SUPPORT` | see GDMPRS-923, main switch between ADASIS variants [CalDef v5; override v1] | Enumeration | 0 (ADASIS_DISABLED) | `_yo_jQE1AEeO3UM5MzM17kw` |
-
-### AMPINTERFACE (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `AmplifierType` | The CSM/Low Radio shall use the AmplifierType calibration to determine the type of amplifier within the vehicle. When no premium remote amplifier is present, this calibration notifies the CSM/Low Radio of whether a discrete amplifier or remote ANC module are present. [CalDef v5; override v3] | Enumeration | 3 (BosePremiumAmplifier) | `_skP0gMWPEeOaCvydzCgwdA` |
-
-### AOSPSINKLEVELCONTROL (6)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `SourceOffsetCalibrationMap_DefaultAudioBus` | Map of AOSPBusEnum audio streams for each default audio bus source to the corresponding source offset in dB. [CalDef v2; override v1] | EnumFloatMap | EnumFloatMap (12 direct fields) | `_ez2NkM_mEemA27tS9SmuHQ` |
-| `SourceOffsetCalibrationMap_AudioPatchBus` | Map of AOSPBusEnum audio streams for each patched audio bus source to the corresponding source offset in dB. [CalDef v2; override v1] | EnumFloatMap | EnumFloatMap (11 direct fields) | `_gyzqEM_lEemA27tS9SmuHQ` |
-| `AOSPMinimumVolumeMap` | This is the map of minimum allowed volume index values for each volume group. | EnumIntegerMap | EnumIntegerMap (10 direct fields) | `_OWPYoM9XEemU596RWLqyBw` |
-| `AOSPMaximumVolumeMap` | This is the map of maximum allowed volume index values for each volume group. [CalDef v2; override v1] | EnumIntegerMap | EnumIntegerMap (10 direct fields) | `_XZJHEc9YEemU596RWLqyBw` |
-| `AOSPMinimumActivationVolumeMap` | This is the map of minimum activation volume index values for each volume group. | EnumIntegerMap | EnumIntegerMap (10 direct fields) | `_5Ubg0c9YEemU596RWLqyBw` |
-| `AOSPVolumeGroupInitialDefaultsMap` | Initial default volume setting for each VolumeGroup. | EnumIntegerMap | EnumIntegerMap (11 direct fields) | `_RPPUIc9ZEemU596RWLqyBw` |
-
-### AUDIOHMICALS (5)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `DEFAULT_DSP_MODE` | Determines default DSP mode to set based on requirements in UIS-202 and Audio Equalization function modules. Defaults to NORMAL, which is DSP_MODE_3 [CalDef v3; override v2] | Enumeration | 3 (DSP_MODE_3) | `_XRjNgMZAEeOsIMxD3Xbm-Q` |
-| `ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE` | When this calibration is set to true, HMI shall show the Vehicle Noise Compensation for the branded audio solution. When this calibration set to false, HMI shall show SCV. [CalDef v5; override v3] | Boolean | false | `_yquBkU1AEeO3UM5MzM17kw` |
-| `NOISE_COMP_TEXT_STRING` | When ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE is set to TRUE, the SMT shall set the required text string associated with branded vehicle noise compensation feature. If ENABLE_NOISE_COMP_TEXT_STRING_OVERRIDE set to FALSE, this cal is ignored. Current options: Bose Audio Pilot , Adaptive Volume. This can be changed to other string types using a cal override. [CalDef v5; override v3] | String | string (see source XML) | `_yrT3dU1AEeO3UM5MzM17kw` |
-| `SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE` | When this calibration is set to true, HMI shall show the surround mode UI for the branded audio solution. When this calibration set to false, the surround mode UI shall be removed. [CalDef v3; override v2] | Boolean | false | `_ysCQMU1AEeO3UM5MzM17kw` |
-| `SIMULATED_SURROUND_DISPLAY_TEXT_STRING` | When SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE is set to TRUE, the SMT shall set the required text string associated with branded surround mode feature. If SIMULATED_SURROUND_DISPLAY_TEXT_ENABLE set to FALSE, this cal is ignored. Current options: Bose Centerpoint , Surround. This can be changed to other string types using a cal override. [CalDef v4; override v3] | String | string (see source XML) | `_ysCQMk1AEeO3UM5MzM17kw` |
-
-### BRANDANIMATIONSAUDIOCUES (12)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `AUDIO_CUE_ACUE_RUN_ENABLED` | This calibration controls whether or not a Run Audio Cue is played or not. This is reserved only for Electric/Hybrid vehicles. As long as any of the three Audio Cue CALs (Stop, Run, Welcome) are enabled, ‘Audio Cues’ and ‘Set Audio Cue Volume’ menus are available. If all three Audio Cue CALs are set to False, then the menu items should be hidden. [CalDef v5; override v3] | Boolean | false | `_ypM-oE1AEeO3UM5MzM17kw` |
-| `AUDIO_CUE_ACUE_STOP_ENABLED` | This calibration controls whether or not a Stop Audio Cue is played or not. This is reserved only for Electric/Hybrid vehicles. As long as any of the three Audio Cue CALs (Stop, Run, Welcome) are enabled, ‘Audio Cues’ and ‘Set Audio Cue Volume’ menus are available. If all three Audio Cue CALs are set to False, then the menu items should be hidden. [CalDef v5; override v3] | Boolean | false | `_ypM-oU1AEeO3UM5MzM17kw` |
-| `AUDIO_CUE_SHUTDOWN_ENABLE` | CueCalibrations [CueType] These are the boolean calibration flags for each of the cues defined within the AudioCues Fblock. There are currently 11 Cues defined. The CueType takes values from 0x01 - 0x0B. The diagram below defines the processing within the AudioCue FBlock for generating AudioCues relative to vehicle and system state changes All vehicles will have a Welcome Animation Only Hybrid vehicles would have Startup/Run and Shutdown/Goodbye AudioCues enabled. [CalDef v3; override v2] | Boolean | false | `_ypM-o01AEeO3UM5MzM17kw` |
-| `AUDIO_CUE_STARTUP_ENABLE` | CueCalibrations [CueType] These are the boolean calibration flags for each of the cues defined within the AudioCues Fblock. There are currently 11 Cues defined. The CueType takes values from 0x01 - 0x0B. The diagram below defines the processing within the AudioCue FBlock for generating AudioCues relative to vehicle and system state changes All vehicles will have a Welcome Animation Only Hybrid vehicles would have Startup/Run and Shutdown/Goodbye AudioCues enabled. [CalDef v3; override v2] | Boolean | false | `_ypM-pE1AEeO3UM5MzM17kw` |
-| `AUDIO_CUE_WELCOME_ENABLE` | See section <VERSION_OR_ADDRESS> in GIS. When enabled, an audio cue will play when welcome animation is played. As long as any of the three Audio Cue CALs (Stop, Run, Welcome) are enabled, ‘Audio Cues’ and ‘Set Audio Cue Volume’ menus are available. If all three Audio Cue CALs are set to False, then the menu items should be hidden. [CalDef v6; override v4] | Boolean | false | `_ypNlsE1AEeO3UM5MzM17kw` |
-| `VEHICLE_ANIMATION_SHUTDOWN_TYPE` | Shutdown Animation type The shutdown animation shall be defined by a calibration setting as shown below [CalDef v4; override v3] | Enumeration | 2 (PLAY_ANIMATION) | `_ysLaM01AEeO3UM5MzM17kw` |
-| `VEHICLE_ANIMATION_STARTUP_TYPE` | Start-up Audio Cues type The Start-up Audio Cues shall be defined by a calibration setting as shown below [CalDef v4; override v3] | Enumeration | 1 (CHEVY) | `_ysLaNU1AEeO3UM5MzM17kw` |
-| `VEHICLE_ANIMATION_WELCOME_TYPE` | After powerup the silverbox shall display a Welcome Animation which is specific to the brand of the vehicle. The welcome animation shall be defined by a calibration setting as shown below [CalDef v4; override v2] | Enumeration | 1 (CHEVY) | `_ysMBME1AEeO3UM5MzM17kw` |
-| `VEHICLE_AUDIOCUE_SHUTDOWN_TYPE` | Shutdown Audio Cues type The Shutdown Cues shall be defined by a calibration setting as shown below [CalDef v4; override v3] | Enumeration | 1 (CHEVY) | `_ysMBMk1AEeO3UM5MzM17kw` |
-| `VEHICLE_AUDIOCUE_STARTUP_TYPE` | Start-up Audio Cues type The Start-up Audio Cues shall be defined by a calibration setting as shown below [CalDef v4; override v3] | Enumeration | 1 (CHEVY) | `_ysMBNE1AEeO3UM5MzM17kw` |
-| `VEHICLE_AUDIOCUE_WELCOME_TYPE` | Welcome Audio Cues type The welcome Audio Cues shall be defined by a calibration setting as shown below [CalDef v4; override v3] | Enumeration | 1 (CHEVY) | `_ysMoQE1AEeO3UM5MzM17kw` |
-| `WELCOME_ANIMATION_ENABLED` | This calibration controls whether or not a Welcome Animation is played or not. [CalDef v5; override v3] | Boolean | true | `_ysN2gU1AEeO3UM5MzM17kw` |
-
-### DISPLAYGESTURESANDTIMEOUTS (8)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `ALERTWINDOWELEMENT_DELAYEDACTIONPRESENTATIONTIME` | Time for how long buttons on Alerts and Pop-ups should be delayed before being presented to prevent the user from inadvertently dismissing the pop-up unintentionally. The default time is 500ms. [CalDef v5; override v4] | Integer | 500 | `_ypCmk01AEeO3UM5MzM17kw` |
-| `DEFAULT_AUDIO_TOUCH_FEEDBACK_SETTING` | Audible Touch Feedback specifies if sounds play when you press the touchscreen or a physical control on the radio faceplate. | Boolean | false | `_yp_o3E1AEeO3UM5MzM17kw` |
-| `ENABLE_MENU_AUDIO_TOUCH_FEEDBACK` | Menu Configuration Settings This bit controls the presence of a user selectable menu for audible touchscreen feedback and shall be enabled for all NON-CADILLAC systems with audible beeps and disabled for Cadillac system with Haptic feedback. 2) Potentially need to add new calibration to allow calibration DEFAULTING of the selection of audible touch feedback Currently the MY2014 software defaults the touch feedback setting menu item to OFF. | Boolean | true | `_yqszek1AEeO3UM5MzM17kw` |
-| `FACEPLATE_FLING_MIN_VOLUME_POSITIONS` | This defines the minimum number of volume positions that must be detected before it qualifies the action as a swipe/fling of the faceplate volume. [CalDef v6; override v2] | Integer | 5 | `_yq2kek1AEeO3UM5MzM17kw` |
-| `FACEPLATE_TAP_MAX_TIME` | This defines the amount of time (in milliseconds) that still qualifies the action as a Tap and not a press and hold. Once a press and hold is detected based on this timer, the volume is incremented or decremented by one step, and the timer in VOLUME_PRESS_HOLD_VOLUMESLEWRATE is started to determine when the volume will be incremented or decremented again. [CalDef v5; override v2] | Integer | 500 | `_yq2ke01AEeO3UM5MzM17kw` |
-| `FACEPLATE_SLIDER_POSITIONS_PER_VOLUME_STEP` | This Calibrations defines how sensitive the volume slider should be to obtain the desired effect for the number of swipes needed to reach max volume. It defines how many slider positions must be traversed before the volume is increased by one step. Higher numbers lead to a less sensitive volume bar. [CalDef v5; override v4] | Integer | 3 | `_yq2kfU1AEeO3UM5MzM17kw` |
-| `MAX_FACEPLATE_VOLUME_POSITIONS` | This calibration defines the number of slider postitions that are used to communicate the position of the finger from the far left to the far right side of the slider. This is based on the interface between the faceplate and radio. [CalDef v4; override v3] | Integer | 63 | `_yrNJ1E1AEeO3UM5MzM17kw` |
-| `VOLUME_PRESS_HOLD_VOLUMESLEWRATE` | This defines how quickly the volume should increase or decrease as the user presses and holds their finger. This calibration defines how many milliseconds should pass in between increasing or decreasing the volume by one step while the finger is held. [CalDef v6; override v3] | Integer | 50 | `_ysMoTk1AEeO3UM5MzM17kw` |
-
-### DISTORTIONLIMITING (19)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `DDL_ENABLE` | All amplifier outputs including both the CSM and Low Radio’s internal amplifiers as well as those in a remote amplifier shall provide some form of Dynamic Distortion Limiting to minimize or eliminate clipping of the amplifier speaker output and minimize speaker distortions- The distortion limiting algorithm shall include the following capabilities: 1. The DDL algorithm shall be applied to all amplified speaker outputs. 2. It should be possible, to enable / disable the DDL. | Boolean | true | `_eQ3R4DLREeSm0acW-cA1AQ` |
-| `AmplifierHardwareClipSignalType` | Defines the behavior of the amplifier hardware clip signal for a specific vehicle. | Enumeration | 0 (FrontOutputsOnly) | `_d3vEUHxzEeOvGYtg-Dwcrw` |
-| `FrontSoftwareClipDetectorThreshold` | Threshold for front software clip detector. 0 dB is maximum amplifier output. | Float | 0.0 | `_67gBUX0qEeOrZo4Kbmzuxg` |
-| `FrontSoftwareClipDetectorAttackTime` | No CalDef description; refer to calibration name and group | Integer | 10 | `_FIj48X0wEeOKR8CTsd92Kg` |
-| `FrontSoftwareClipDetectorReleaseTime` | No CalDef description; refer to calibration name and group | Integer | 10000 | `_-3uXkX0wEeOKR8CTsd92Kg` |
-| `FrontLimiterMinimumGain` | No CalDef description; refer to calibration name and group | Float | 0.0 | `_X93ngX0vEeOKR8CTsd92Kg` |
-| `FrontLimiterAttackRate` | Rate at which the front limiter attack is applied in units of dB / ms. Note that the units are set to dB as dB / ms is only used for this calibration and is not defined as a standard unit. | Float | 10.0 | `_hz_XEH06EeOWiNX3NsDM5Q` |
-| `FrontLimiterReleaseRate` | Rate at which the front limiter release is applied in units of dB / ms. Note that the units are set to dB as dB / ms is only used for this calibration and is not defined as a standard unit. | Float | 1.0 | `_WS5kMX-EEeOTAM8ORqTgOg` |
-| `FrontClipSignalSelection` | Selects the clip signal selection for the front speaker amp outputs | Enumeration | 0 (Off) | `_YZUxQH-cEeOTAM8ORqTgOg` |
-| `RearSoftwareClipDetectorThreshold` | Threshold for rear software clip detector. 0 dB is maximum amplifier output. | Float | 0.0 | `_7pDjgX0tEeOKR8CTsd92Kg` |
-| `RearSoftwareClipDetectorAttackTime` | No CalDef description; refer to calibration name and group | Integer | 10 | `_4rFPIX0wEeOKR8CTsd92Kg` |
-| `RearSoftwareClipDetectorReleaseTime` | No CalDef description; refer to calibration name and group | Integer | 1000 | `_VoPoMX-FEeOTAM8ORqTgOg` |
-| `RearLimiterMinimumGain` | No CalDef description; refer to calibration name and group | Float | 0.0 | `_fqkNcX0vEeOKR8CTsd92Kg` |
-| `RearLimiterAttackRate` | Rate at which the rear limiter attack is applied in units of dB / ms. Note that the units are set to dB as dB / ms is only used for this calibration and is not defined as a standard unit. | Float | 10.0 | `_485TgX-DEeOTAM8ORqTgOg` |
-| `RearLimiterReleaseRate` | Rate at which the rear limiter release is applied in units of dB / ms. Note that the units are set to dB as dB / ms is only used for this calibration and is not defined as a standard unit. | Float | 1.0 | `_cs4lEX-EEeOTAM8ORqTgOg` |
-| `RearClipSignalSelection` | Selects the clip signal selection for the rear speaker amp outputs | Enumeration | 0 (Off) | `_Vi9SAX-lEeOTAM8ORqTgOg` |
-| `FrontRearLimiterCombination` | All amplifier outputs including both the CSM and Low Radio’s internal amplifiers as well as those in a remote amplifier shall provide some form of Dynamic Distortion Limiting to minimize or eliminate clipping of the amplifier speaker output and minimize speaker distortions | Enumeration | 0 (FrontRearIndependent) | `_Gfr7sDLREeSm0acW-cA1AQ` |
-| `LOUDNESS_OFFSET` | The CSM and Low radio shall implement the LOUDNESS_OFFSET calibration within their ALC process to adjust loudness curves after sound tuning into the optimal position. As an example, in the table in the previous section, the -20dB row represents the frequency response for 82dB(A) sound pressure level on the driver seat, head position. If corrections are needed, the LOUDNESS_OFFSET calibration should be used to move the curve into the right position. The LOUDNESS_OFFSET calibration is defined in the DistortionLimiting.caldef file within GIS-646 with Range of -20dB ... +20dB (1dB Steps) and a default value of 0dB. | Integer | 0 | `_BUk-MDLQEeSm0acW-cA1AQ` |
-| `LOUDNESS_COMP_ENABLE` | Enables / disables Automatic Loudness Compensation processing. True = Enabled, False = Disabled | Boolean | true | `_87iC8EWqEeSJbrP6o-dHmQ` |
-
-### FACEPLATEBUTTONS\_GLOBALA (29)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `ILIN_FACEPLATE_SWITCH_1` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 23 (PowerSwitch) | `_j6qK8MAdEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_2` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 31 (MenuSwitch) | `_8PXsAMAdEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_3` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 9 (BandSwitch) | `_EUNsMMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_4` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 21 (TuneDownSwitch) | `_GmOyIMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_5` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 20 (TuneUpSwitch) | `_IzyO0MAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_6` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 8 (HomeSwitch) | `_M49UcMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_7` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 22 (SourceAdvanceSwitch) | `_PVKRIMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_8` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 10 (BackSwitch) | `_SCbvsMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_9` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_UeaC4MAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_10` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 28 (ToneSwitch) | `_WYtMYMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_11` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_ZV7ygMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_12` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_bJaiUMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_13` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_dgE3sMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_14` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_hsspIMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_15` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_jdkw4MAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_16` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_lURz0MAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_17` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_nXBHoMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_18` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_pUm1sMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_19` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_rhrKMMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_20` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_tEWd4MAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_21` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_uyxHgMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_22` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_xJbc4MAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_23` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_y49g0MAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_24` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_0uHroMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_25` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_2ZiEkMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_SWITCH_26` | Global A ILIN ICS Faceplate Switch Mapping [CalDef v3; override v1] | Enumeration | 0 (Unused) | `_38basMAeEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_ENCODER_1` | Global A ILIN ICS Faceplate Encoder Mapping [CalDef v3; override v1] | Enumeration | 1 (VolumeEncoder) | `_933o8MAfEeOV2KW0e9ssOw` |
-| `ILIN_FACEPLATE_ENCODER_2` | Global A ILIN ICS Faceplate Encoder Mapping [CalDef v3; override v1] | Enumeration | 2 (TuneEncoder) | `_GjBbMMAgEeOV2KW0e9ssOw` |
-| `BUTTON_BEEP_FEEDBACK` | The default Button Beep Feedback setting should be calibratable, with the intended default to be On. [CalDef v3; override v1] | Boolean | true | `_O-UzkMAgEeOV2KW0e9ssOw` |
-
-### GIS1007\_SETTINGS\_GLOBALB (2)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `P_HUD_MENU_AVAILABLE` | Set when Vehicle is equipped with HUD. When not Set, hide “Head Up Display” menu under Display. Note: False= Menu Off; True=Menu ON | Boolean | false | `_yd3iYE1-EeibCblrVhJh5A` |
-| `P_ADAPTIVE_CRUISE_FROM_SIGN_PRESENT` | For some vehicles, “Adaptive Cruise Speed from Signs” menu is not present under “Collision/Detection Systems” settings menu. Note: False= Menu Off; True= Menu ON | Boolean | false | `_CKeCUE14EeibCblrVhJh5A` |
-
-### GIS500\_UI (3)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `GMTrim` | Trim calibration required for unique welcome animation | Enumeration | 16 (LTZ) | `_M7_ucBzvEeumObnnB0oIhw` |
-| `GMModel` | Model calibration required for GAS integration. | Enumeration | 4 (Silverado) | `_71d3oP_TEemcM4o___siSA` |
-| `GMBrand` | Brand calibration that define which graphics and highlighting will be utilized [CalDef v3; override v1] | Enumeration | 3 (GM_Brand_Chevrolet) | `_6jigAG6rEeSIp5iyPWbHnw` |
-
-### GIS501\_HOMESCREENUI (33)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `APPLICATION_HOMESCREEN_GOOGLEASSISTANT_ENABLED` | This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. | Boolean | true | `_vzMekQTMEeuhM_xpS7qcsA` |
-| `APPLICATION_HOMESCREEN_GOOGLEMAPS_ENABLED` | This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. | Boolean | true | `_7p18cQTMEeuhM_xpS7qcsA` |
-| `APPLICATION_HOMESCREEN_PLAYSTORE_ENABLED` | This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. | Boolean | true | `__jFe4QTMEeuhM_xpS7qcsA` |
-| `APPLICATION_HOMESCREEN_CAMERA_ENABLED` | This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. | Boolean | true | `_laqIAQTNEeuhM_xpS7qcsA` |
-| `APPLICATION_HOMESCREEN_TEENDRIVER_ENABLED` | This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. | Boolean | true | `_k7bOUQTNEeuhM_xpS7qcsA` |
-| `ApplicationOrdering1` | Application 1 on HomeScreen [CalDef v5; override v1] | Enumeration | 0 (Audio) | `_MbJEMbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering2` | Application 2 on HomeScreen [CalDef v5; override v1] | Enumeration | 30 (GoogleMaps) | `_M0qXcbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering3` | Application 3 on HomeScreen [CalDef v5; override v1] | Enumeration | 2 (Phone) | `_NENPUbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering4` | Application 4 on HomeScreen [CalDef v5; override v1] | Enumeration | 33 (Camera) | `_NUMMEbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering5` | Application 5 on HomeScreen [CalDef v5; override v1] | Enumeration | 31 (GoogleAssistant) | `_NfutsbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering6` | Application 6 on HomeScreen [CalDef v5; override v1] | Enumeration | 32 (PlayStore) | `_Nt3QUbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering7` | Application 7 on HomeScreen [CalDef v5; override v1] | Enumeration | 10 (AndroidAuto) | `_N5KhYbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering8` | Application 8 on HomeScreen [CalDef v5; override v1] | Enumeration | 8 (CarPlay) | `_OD5xwbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering9` | Application 9 on HomeScreen [CalDef v5; override v1] | Enumeration | 11 (Trailering) | `_OOssgbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering10` | Application 10 on HomeScreen [CalDef v6; override v1] | Enumeration | 13 (Climate) | `_ObImAbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering11` | Application 11 on HomeScreen [CalDef v6; override v1] | Enumeration | 20 (RearClimate) | `_OoE10bhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering12` | Application 12 on HomeScreen [CalDef v6; override v1] | Enumeration | 27 (APA) | `_OzeNgbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering13` | Application 13 on HomeScreen [CalDef v6; override v1] | Enumeration | 7 (Settings) | `_PN-YMbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering14` | Application 14 on HomeScreen [CalDef v7; override v1] | Enumeration | 5 (WiFiHotspot) | `_QTwUgbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering16` | Application 16 on HomeScreen [CalDef v7; override v1] | Enumeration | 19 (Video) | `_QsF8AbhtEeSmdeXBYRoUqg` |
-| `ApplicationOrdering17` | Application 17 on HomeScreen [CalDef v6; override v1] | Enumeration | 34 (TeenDriver) | `_Q8vnIbhtEeSmdeXBYRoUqg` |
-| `AppTray_ApplicationOrdering1` | Application 1 on the App Tray | Enumeration | 0 (Audio) | `_Dsa9sQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering2` | Application 2 on the App Tray | Enumeration | 30 (GoogleMaps) | `_OzxsoQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering3` | Application 3 on the App Tray | Enumeration | 2 (Phone) | `_OkG48QTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering4` | Application 4 on the App Tray | Enumeration | 11 (Trailering) | `_OVMTMQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering5` | Application 5 on the App Tray | Enumeration | 31 (GoogleAssistant) | `_ODopIQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering6` | Application 6 on the App Tray | Enumeration | 32 (PlayStore) | `_NuuJEQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering7` | Application 7 on the App Tray | Enumeration | 10 (AndroidAuto) | `_ifbX4QTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering8` | Application 8 on the App Tray | Enumeration | 8 (CarPlay) | `_iIoBcQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering9` | Application 9 on the App Tray | Enumeration | 33 (Camera) | `_h6naoQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering10` | Application 10 on the App Tray | Enumeration | 13 (Climate) | `_hokoYQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering11` | Application 11 on the App Tray | Enumeration | 20 (RearClimate) | `_jaWIAQTLEeuhM_xpS7qcsA` |
-| `AppTray_ApplicationOrdering12` | Application 12 on the App Tray | Enumeration | 7 (Settings) | `_gaGDEQTLEeuhM_xpS7qcsA` |
-
-### GIS502\_TUNERHMI (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `Album_Art_Menu_Item_On` | The Album_Art_Menu_Item_On calibration defines the HMI menu item default state for Album Art. When TRUE, Album Art images are displayed. When FALSE, Album Art images are not displayed. The default setting is TRUE. (On) [CalDef v3; override v1] | Boolean | false | `_UK-wwblJEeSMLcx9-dghJQ` |
-
-### GIS507\_SETTINGS (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `TRANSMITTER_POCKET_LOCATION` | This CAL is used to show the corresponding image on the radio display of the pocket location for a given vehicle the user will be instructed to put their keyless transmitter in for teen driver key transmitter learning. For more information on this CAL see Sec¬tion <VERSION_OR_ADDRESS>.1 in the GIS-507. | Enumeration | 7 (Cup_Holder_ForeAndAfter) | `_XtdusFIjEeibCblrVhJh5A` |
-
-### GIS508\_PERSONALIZATIONFBS (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `Last_Profile_Enable` | When enabled, the system will default to the last profile when no identifier is detected or assigned. When disabled, the system will default to the Default profile. [CalDef v4; override v2] | Boolean | true | `_z_620KmXEeSBV82hZ9UINQ` |
-
-### GIS512\_CONNECTIONS (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `BluetoothModuleDeviceName` | The Bluetooth Module device name (user-friendly name) shall be based on the vehicle brand and model. The Bluetooth Module shall not allow changes of the device name. Starting MY18, possible Bluetooth friendly names are: Cadillac vehicles: myCadillac, Chevrolet vehicles: myChevrolet, Buick vehicles: myBuick, GMC vehicles: myGMC, Opel vehicles: myOpel, Vauxhall vehicles: myVauxhall, and Holden vehicles: myHolden [CalDef v3; override v1] | String | string (see source XML) | `_-ofJEG7gEeSssq_awwoZ3g` |
-
-### GIS604\_SAFETYRELATEDVOLUMEGROUPOVERRIDES (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `SAFETY_VOL_OVRD_LEVEL` | A calibration parameter for the volume level to set each volume group to during an override. [CalDef v3; override v1] | Integer | 0 | `_94QswPO6EeavdZd7UaL_VA` |
-
-### GIS619\_BRIGHTNESSCONTROL\_GLOBALA (7)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `INDICATOR_BRIGHTNESS_OUTPUT_TABLE` | Output axis values for indicator brightness. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (19 direct fields) | `_tlzP3vAHEeOg0Bw-hP6AxA` |
-| `CONTROL_BRIGHTNESS_OUTPUT_TABLE` | Output axis values for control brightness. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (19 direct fields) | `_tlz27_AHEeOHWBw-hP6AxA` |
-| `DISPLAY_BRIGHTNESS_OUTPUT_NIGHT_TABLE` | Output axis values for nighttime brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (19 direct fields) | `_tlz28_AHEeOMtBw-hP6AxA` |
-| `DISPLAY_BRIGHTNESS_OUTPUT_DAYTIME_TABLE` | Output axis values for display brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (19 direct fields) | `_tl0eAPAHEeOzExw-hP6AxA` |
-| `DISPLAY_CAMERA_IMAGE_OUTPUT_NIGHT_TABLE` | Output axis values for nighttime brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (19 direct fields) | `_3pwegXl3EeSLs4JOFbfKLg` |
-| `LAG_FILTER_LOW_END_THRESHOLD` | Lag filter low end threshold. When FilteredValue <= this threshold, the output of the FilteredValue shall be set to zero. Default value is N-value, where E=(N/65535)*100 is the low end threshold. | Integer | 0 | `_zsYQQLQ1EeOvU4rhQ1TwqQ` |
-| `INDICATOR_BRIGHTNESS_SOURCE` | This enumeration determines which CAN signal shall be used to compute the indicator brightness. It was specifically defined for Info3/Global B in order to properly handle deadfronted ICSs such as the MY13 and beyond Cadillac ICS. | Enumeration | 0 (NORMAL) | `_3ZChsLRVEeOvU4rhQ1TwqQ` |
-
-### GIS619\_BRIGHTNESSCONTROL\_GLOBALB (7)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `INDICATOR_BRIGHTNESS_OUTPUT_TABLE_GLOBALB` | Output axis values for display brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (21 direct fields) | `_xBa40BMAEeappLMV3_fLfg` |
-| `CONTROL_BRIGHTNESS_INPUT_TABLE_GLOBALB` | Input axis values for Indicator brightness level. Default value is N-value, where E=(N)*1.0 and E is brightness level in percent luminance. [CalDef v3; override v1] | IntegerArray | IntegerArray (11 direct fields) | `_xNC7UAywEeab4ezHobftRw` |
-| `DISPLAY_BRIGHTNESS_INPUT_TABLE_GLOBALB` | Input axis values for brightness level. Default value is N-value, where E=(N)*1.0 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (21 direct fields) | `_sgcWYAy9Eea0_Ls20O9LdA` |
-| `DISPLAY_BRIGHTNESS_OUTPUT_TABLE_GLOBALB` | Output axis values for display brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (21 direct fields) | `_JMmt8AzAEea0_Ls20O9LdA` |
-| `DISPLAY_CAMERA_IMAGE_OUTPUT_TABLE_GLOBALB` | Output axis values for Camera brightness level. Default value is N-value, where E=(N/65535)*100 and E is brightness level in percent luminance. | IntegerArray | IntegerArray (21 direct fields) | `_TJvS4A4oEeaBr7QHlVyUoA` |
-| `LAG_FILTER_LOW_END_THRESHOLD_GLOBALB` | Lag filter low end threshold. When FilteredValue <= this threshold, the output of the FilteredValue shall be set to zero. Default value is N-value, where E=(N/65535)*100 is the low end threshold. | Integer | 0 | `_UE2CcBPJEeappLMV3_fLfg` |
-| `INDICATOR_BRIGHTNESS_SOURCE_GLOBALB` | This enumeration determines which CAN signal shall be used to compute the indicator brightness. It was specifically defined for Info3/Global B in order to properly handle deadfronted ICSs such as the MY13 and beyond Cadillac ICS. | Enumeration | 0 (NORMAL) | `_SKgeQUUBEeaX676o0O3GfQ` |
-
-### GIS621\_DIAGNOSTICCALDEF\_GLOBALA (17)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `DTC_MASK_B1025_01` | B1025_01_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_vkyzUJMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1025_02` | B1025_02_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_yL7NoJMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1025_04` | B1025_04_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc. | Boolean | false | `_5mW-4JMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1035_01` | B1035_01_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_7EMO0JMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1035_02` | B1035_02_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_773dsJMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1035_04` | B1035_04_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc. | Boolean | false | `_33jTsJMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1045_01` | B1045_01_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_6Vk1UJMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1045_02` | B1045_02_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_zDsjIJMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1045_04` | B1045_04_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc. | Boolean | false | `_4tSB0JMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1055_01` | B1055_01_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_3FhZ0JMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1055_02` | B1055_02_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected. | Boolean | false | `_1fgeQJMZEeOhNKe0zA3AsQ` |
-| `DTC_MASK_B1055_04` | B1055_04_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc. | Boolean | false | `_13klsJMpEeOYeLJDBKsy1g` |
-| `DTC_MASK_U150F_00` | U150F_00_TLIN_INTER_DEVICE_DEDICATED_BUS_DTC - The Master CSM shall wait 250ms after its first TLIN message to the Slave and then this DTC will be set after the Master has detected one of the following problems with 3 consecutive TLIN Transmission occurs: | Boolean | false | `_FfJQ8JVuEeO7UP4sq3M7sQ` |
-| `DTC_MASK_U0186_00` | U0186_00_LOST_COMMUNICATION_WITH_AUDIO_AMPLIFIER | Boolean | false | `_fkz9QZKEEeOH48DtJo_c7Q` |
-| `DTC_MASK_U18B1_00` | U18B1_00_LOSS_OF_LINK_WITH_AUDIO_AMPLIFIER_ON_ETHERNET_BUS - The Ethernet switch is unable to establish a link up with the Audio Amplifier. This generates a notification to the CSM application that a fault has occurred. | Boolean | false | `_P74OoJKGEeOH48DtJo_c7Q` |
-| `DTC_MASK_U18B1_02` | DTC U18B0 – U18B1_02_LOSS_OF_LINK_WITH_AUDIO_AMPLIFIER_ON_ETHERNET_BUS - ~MY18 FTB: 02 – Short to Ground [CalDef v2; override v1] | Boolean | false | `_zT_y0La6EeSpA6W9o4B4Rg` |
-| `DTC_MASK_U18B1_04` | DTC U18B0 – U18B1_04_LOSS_OF_LINK_WITH_AUDIO_AMPLIFIER_ON_ETHERNET_BUS - ~MY18 - FTB: 04 – Open Circuit [CalDef v2; override v1] | Boolean | false | `_Or1GoLa7EeSpA6W9o4B4Rg` |
-
-### GIS631\_CONFIGCHIMEPROD\_STDTHEME0\_GLOBALB (159)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `K_THEME_0_VERSION` | String up to 255 characters providing versioning information about the theme. | String | string (see source XML) | `_zHiqAErbEeOF3P4e5N5VOg` |
-| `K_THEME_0_LEVEL_OFFSET` | A Calibration that specifies the overall amplitude offset to apply when playing any chime event from the prescribed theme. [CalDef v2; override v1] | Integer | 0 | `_EiXiIErcEeOF3P4e5N5VOg` |
-| `THEME0_CHIME_ID_100` | SEAT_BELT_REMINDER_GLOBAL [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhmRorkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_110` | SEAT_BELT_REMINDER_GLOBAL_TYPE_2 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_ypZvUryeEeaoE74EvTDyjQ` |
-| `THEME0_CHIME_ID_111` | CLUSTER_CHIME_14 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCorkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_140` | FCA_IMMINENT_ALRT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCpbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_142` | TLA_WARNING [CalDef v2; override v1] | Record | Record (9 direct fields) | `_fjLWEiKzEeaKsqBcbUr-oQ` |
-| `THEME0_CHIME_ID_165` | RR_CROSS_TRAFFIC_ALRT_LFT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCprkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_170` | RR_CROSS_TRAFFIC_ALRT_RGHT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCp7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_175` | FRNT_PED_CLSN_MTGN [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCqbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_176` | CLUSTER_CHIME_13 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCqrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_177` | REAR_PED_CLSN_MTGN_ALERT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCq7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_178` | RIM_INITIAL_COLLISION [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCrLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_179` | RIM_BRAKE_PULSE [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCrbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_180` | CLUSTER_CHIME_9 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCrrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_181` | CLUSTER_CHIME_10 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCr7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_185` | PARK_ASSIST_REAR_FIRST_REPORT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCsLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_186` | APA_STOP_CHIME [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCsbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_187` | APA_SPOT_FOUND [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCsrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_188` | APA_COMPLETE_CHIME [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCs7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_189` | APA_CANCELED [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCtLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_190` | APA_FAILED [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCtbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_195` | PARK_ASSIST_FAIL [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCt7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_200` | PARK_ASSIST_REAR_ROGER [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCuLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_205` | PARK_ASSIST_FRONT_FIRST_REPORT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCubkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_220` | PARK_ASSIST_FRONT_ROGER [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCurkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_225` | PARK_ASSIST_REAR_LEFT_ZONE_1_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCu7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_230` | PARK_ASSIST_REAR_LEFT_ZONE_2_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCvLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_235` | PARK_ASSIST_REAR_LEFT_ZONE_3_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCvbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_240` | PARK_ASSIST_REAR_LEFT_ZONE_4_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCvrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_245` | PARK_ASSIST_REAR_RIGHT_ZONE_1_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCv7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_250` | PARK_ASSIST_REAR_RIGHT_ZONE_2_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCwLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_255` | PARK_ASSIST_REAR_RIGHT_ZONE_3_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCwbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_260` | PARK_ASSIST_REAR_RIGHT_ZONE_4_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCwrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_265` | PARK_ASSIST_REAR_FULL_ZONE_1_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCw7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_270` | PARK_ASSIST_REAR_FULL_ZONE_2_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCxLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_275` | PARK_ASSIST_REAR_FULL_ZONE_3_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCxbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_280` | PARK_ASSIST_REAR_FULL_ZONE_4_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCxrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_285` | PARK_ASSIST_FRONT_LEFT_ZONE_1_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCx7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_290` | PARK_ASSIST_FRONT_LEFT_ZONE_2_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCyLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_295` | PARK_ASSIST_FRONT_RIGHT_ZONE_1_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCybkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_300` | PARK_ASSIST_FRONT_RIGHT_ZONE_2_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PhwCyrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_305` | PARK_ASSIST_FRONT_FULL_ZONE_1_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MkLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_310` | PARK_ASSIST_FRONT_FULL_ZONE_2_NA [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MkbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_315` | PARK_ASSIST_REAR_LEFT_ZONE_1_EU [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MkrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_320` | PARK_ASSIST_REAR_LEFT_ZONE_2_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Mk7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_325` | PARK_ASSIST_REAR_LEFT_ZONE_3_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MlLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_330` | PARK_ASSIST_REAR_LEFT_ZONE_4_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MlbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_335` | PARK_ASSIST_REAR_LEFT_ZONE_5_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MlrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_340` | PARK_ASSIST_REAR_LEFT_ZONE_6_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Ml7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_355` | PARK_ASSIST_REAR_RIGHT_ZONE_1_EU [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MmLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_360` | PARK_ASSIST_REAR_RIGHT_ZONE_2_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MmbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_365` | PARK_ASSIST_REAR_RIGHT_ZONE_3_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MmrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_370` | PARK_ASSIST_REAR_RIGHT_ZONE_4_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Mm7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_375` | PARK_ASSIST_REAR_RIGHT_ZONE_5_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MnLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_380` | PARK_ASSIST_REAR_RIGHT_ZONE_6_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MnbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_395` | PARK_ASSIST_REAR_FULL_ZONE_1_EU [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MnrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_400` | PARK_ASSIST_REAR_FULL_ZONE_2_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Mn7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_405` | PARK_ASSIST_REAR_FULL_ZONE_3_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MoLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_410` | PARK_ASSIST_REAR_FULL_ZONE_4_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MobkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_415` | PARK_ASSIST_REAR_FULL_ZONE_5_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MorkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_420` | PARK_ASSIST_REAR_FULL_ZONE_6_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Mo7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_435` | PARK_ASSIST_FRONT_LEFT_ZONE_1_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MpLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_440` | PARK_ASSIST_FRONT_LEFT_ZONE_2_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MpbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_445` | PARK_ASSIST_FRONT_LEFT_ZONE_3_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MprkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_450` | PARK_ASSIST_FRONT_LEFT_ZONE_4_EU [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5Mp7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_455` | PARK_ASSIST_FRONT_LEFT_ZONE_5_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MqLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_460` | PARK_ASSIST_FRONT_LEFT_ZONE_6_EU [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MqbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_475` | PARK_ASSIST_FRONT_RIGHT_ZONE_1_EU [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MqrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_480` | PARK_ASSIST_FRONT_RIGHT_ZONE_2_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Mq7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_485` | PARK_ASSIST_FRONT_RIGHT_ZONE_3_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MrLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_490` | PARK_ASSIST_FRONT_RIGHT_ZONE_4_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MrbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_495` | PARK_ASSIST_FRONT_RIGHT_ZONE_5_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MrrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_500` | PARK_ASSIST_FRONT_RIGHT_ZONE_6_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Mr7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_515` | PARK_ASSIST_FRONT_FULL_ZONE_1_EU [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MsLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_520` | PARK_ASSIST_FRONT_FULL_ZONE_2_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MsbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_525` | PARK_ASSIST_FRONT_FULL_ZONE_3_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MsrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_530` | PARK_ASSIST_FRONT_FULL_ZONE_4_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5Ms7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_535` | PARK_ASSIST_FRONT_FULL_ZONE_5_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MtLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_540` | PARK_ASSIST_FRONT_FULL_ZONE_6_EU [CalDef v3; override v1] | Record | Record (9 direct fields) | `_Ph5MtbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_561` | CLUSTER_CHIME_11 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MtrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_565` | LANE_DTCTN_WRNG_CTRL_LFT_HAND_SDE [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MuLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_566` | LANE_FOLLOW_WARNING_LFT_HAND_SDE [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MubkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_570` | LANE_DTCTN_WRNG_CTRL_RGHT_HAND_SDE [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MurkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_571` | LANE_FOLLOW_WARNING_RGHT_HAND_SDE [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5Mu7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_575` | LANE_DTCTN_WRNG_CTRL_HANDS_OFF_1 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MvLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_576` | LANE_FOLLOW_WARNING_GENERAL [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MvbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_580` | LANE_DTCTN_WRNG_CTRL_HANDS_OFF_2 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MvrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_581` | KEY_IN_REMINDER [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5Mv7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_582` | SHIFT_TO_PARK [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9lrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_583` | REAR_PED_CLSN_MTGN_NOTIFY [CalDef v2; override v1] | Record | Record (9 direct fields) | `_fjeRACKzEeaKsqBcbUr-oQ` |
-| `THEME0_CHIME_ID_584` | TRAILERING_PHASE_2 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_fjeRASKzEeaKsqBcbUr-oQ` |
-| `THEME0_CHIME_ID_585` | ROLLOVER_DISABLE_STATUS [CalDef v2; override v1] | Record | Record (9 direct fields) | `_8MqhgXRhEea_SczYsO8uNw` |
-| `THEME0_CHIME_ID_586` | LANE_DTCTN_WRNG_CTRL_HANDS_OFF_3 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Rt_iEPOwEeazar-1HUL3Ow` |
-| `THEME0_CHIME_ID_587` | TRAILERING_PHASE_1 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_7-PO0fzCEem-guTQGLehsQ` |
-| `THEME0_CHIME_ID_601` | CLUSTER_CHIME_1 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9l7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_607` | CLUSTER_CHIME_19 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9mLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_608` | CLUSTER_CHIME_8 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9mbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_615` | RR_CLSR_NOTIFICATION [CalDef v2; override v1] | Record | Record (9 direct fields) | `_8Mp6dHRhEea_SczYsO8uNw` |
-| `THEME0_CHIME_ID_617` | RR_CLSR_NOTIFICATION_OFF [CalDef v2; override v1] | Record | Record (9 direct fields) | `_8MqhgHRhEea_SczYsO8uNw` |
-| `THEME0_CHIME_ID_710` | LST_DR_CLOSED_LCKNG_DLYD_LCKNG [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9mrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_711` | LST_DR_CLOSED_LCKNG_DLYD_LCKNG_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5Mt7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_712` | CLUSTER_CHIME_2 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9m7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_713` | CLUSTER_CHIME_18 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9nLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_715` | HEADLAMP_REMINDER [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9nbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_716` | HEADLAMP_REMINDER_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5Mw7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_720` | ELC_PRK_BRK_REMINDER_FXD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9nrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_721` | ELC_PRK_BRK_REMINDER_CONT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9n7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_722` | ONE_SIDED_PARK_LAMP [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9oLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_723` | ONE_SIDED_PARK_LAMP_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MxLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_770` | CLUSTER_CHIME_3_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9k7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_771` | CLUSTER_CHIME_20 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9obkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_772` | CLUSTER_CHIME_7 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9orkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_773` | CLUSTER_CHIME_3 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9o7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_774` | CLUSTER_CHIME_4 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9pLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_776` | MEM_SEAT_SNGL_BEEP_DRV [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9pbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_777` | MEM_SEAT_DBL_BEEP_DRV [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9prkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_778` | MEM_SEAT_TRPL_BEEP_DRV [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9p7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_779` | WALK_AWAY_LOCK_INHIBIT_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MwLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_780` | WALK_AWAY_LOCK_INHIBIT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9qLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_781` | MEM_SEAT_SNGL_BEEP_CO_DRV [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9qbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_782` | MEM_SEAT_DBL_BEEP_CO_DRV [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9qrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_783` | MEM_SEAT_TRPL_BEEP_CO_DRV [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9q7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_784` | MEM_SEAT_SNGL_BEEP_LR [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9rLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_785` | MEM_SEAT_DBL_BEEP_LR [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9rbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_786` | MEM_SEAT_TRPL_BEEP_LR [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9rrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_787` | MEM_SEAT_SNGL_BEEP_RR [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9r7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_788` | MEM_SEAT_DBL_BEEP_RR [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9sLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_789` | MEM_SEAT_TRPL_BEEP_RR [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9sbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_790` | MEM_SEAT_SNGL_BEEP_DRV_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MxbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_791` | MEM_SEAT_DBL_BEEP_DRV_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MxrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_792` | MEM_SEAT_TRPL_BEEP_DRV_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5Mx7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_793` | MEM_SEAT_SNGL_BEEP_CO_DRV_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MyLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_794` | MEM_SEAT_DBL_BEEP_CO_DRV_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MybkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_795` | MEM_SEAT_TRPL_BEEP_CO_DRV_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MyrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_796` | MEM_SEAT_SNGL_BEEP_LR_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5My7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_797` | MEM_SEAT_DBL_BEEP_LR_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MzLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_798` | MEM_SEAT_TRPL_BEEP_LR_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MzbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_799` | MEM_SEAT_SNGL_BEEP_RR_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9kLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_800` | MEM_SEAT_DBL_BEEP_RR_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9kbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_801` | MEM_SEAT_TRPL_BEEP_RR_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9krkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_910` | TELEMATICS_TBT_ATT [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9srkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_925` | NO_REMOTE_DTCTED_WRNG [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9s7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_926` | REMOTE_LEFT_IN_VEHICLE [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9tLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_927` | NO_REMOTE_DTCTED_WRNG_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MwbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_928` | REMOTE_LEFT_IN_VEHICLE_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_Ph5MwrkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_935` | RR_CLSR_NORMAL [CalDef v2; override v1] | Record | Record (9 direct fields) | `_8Mp6cnRhEea_SczYsO8uNw` |
-| `THEME0_CHIME_ID_936` | RR_CLSR_OBSTACLE [CalDef v2; override v1] | Record | Record (9 direct fields) | `_8Mp6c3RhEea_SczYsO8uNw` |
-| `THEME0_CHIME_ID_937` | RR_CLSR_NORMAL_OFF [CalDef v2; override v1] | Record | Record (9 direct fields) | `_8Mp6dXRhEea_SczYsO8uNw` |
-| `THEME0_CHIME_ID_938` | RR_CLSR_OBSTACLE_OFF [CalDef v2; override v1] | Record | Record (9 direct fields) | `_8Mp6dnRhEea_SczYsO8uNw` |
-| `THEME0_CHIME_ID_1461` | CLUSTER_CHIME_16 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9tbkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1462` | CLUSTER_CHIME_17 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9trkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1465` | GO_NOTIFIER_ACC [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9t7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1495` | CLUSTER_CHIME_5 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9uLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1496` | CLUSTER_CHIME_6 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9ubkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1497` | CLUSTER_CHIME_12 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9urkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1498` | CLUSTER_CHIME_15 [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9u7kwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1499` | CLUSTER_CHIME_5_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9lLkwEeWlrfA9YQnlrw` |
-| `THEME0_CHIME_ID_1500` | CLUSTER_CHIME_6_OFF_MD [CalDef v2; override v1] | Record | Record (9 direct fields) | `_PiC9lbkwEeWlrfA9YQnlrw` |
-
-### GIS631\_CONFIGSTDCHIMEPROD\_GENERICCAL\_GLOBALB (1)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `K_TURN_SIGNAL_LEVEL_DB` | This is the fixed level of the turn-signal ('click-clack') sound per GIS-604. [CalDef v5; override v1] | Float | -37.0 | `_Trd-4YhLEeO2nca4zzuiVA` |
-
-### GIS641\_DIAGNOSTICCALDEF\_GLOBALB (16)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `DTC_MASK_B1A23_00` | ETHERNET BUS 6 (+) GENERAL FAILURE. Time between Sync updates of ≥ 10 seconds occurs devices shall assume a failure of the gPTP Grand Master clock and report a DTC | Boolean | true | `_kNdFIBtmEeaVv4YxjvxKoQ` |
-| `DTC_MASK_B1A23_11` | ETHERNET BUS 6 (+) SHORT TO GROUND. This sub type is used for failures where the control module measures ground (battery negative) potential for greater than a specified time period or when some other value less than the low voltage limit DTC Sub Type is measured. | Boolean | true | `_QAEwYBtnEeaVv4YxjvxKoQ` |
-| `DTC_MASK_B1A23_13` | ETHERNET BUS 6 (+) CIRCUIT OPEN. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc. | Boolean | true | `_HQZOABtoEeaVv4YxjvxKoQ` |
-| `DTC_MASK_U0186_00_GlobalB` | Lost Communication with Audio Amplifier – No Sub Type Information. Upon notification by the handler that the associated supervised signal has failed supervision (typically 2.5 times the nominal periodic rate of the monitored signal). An adjustable debounce time, i.e. X of Y strategy, is permitted at the time that notification of failed supervision has been received by the application to delay storing of the DTC. | Boolean | true | `_s5BDsAEUEeiDo-Dq14by9g` |
-| `DTC_MASK_B1960_11` | LEFT FRONT SPEAKER (+) (1) CIRCUIT SHORT TO GROUND. This sub type is used for failures where the control module measures ground (battery negative) potential. [CalDef v2; override v1] | Boolean | false | `_ufm_MCGtEeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1960_12` | Left Front Speaker (+) (1) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured.. [CalDef v2; override v1] | Boolean | false | `_DGVyoCGuEeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1960_13` | Left Front Speaker (+) (1) Circuit Open. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc. [CalDef v2; override v1] | Boolean | false | `_kFxysCGvEeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1961_11` | Right Front Speaker (+) (1) Circuit Short To Ground. This sub type is used for failures where the control module measures ground (battery negative) potential [CalDef v2; override v1] | Boolean | false | `_MTVe8CG0EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1961_12` | Right Front Speaker (+) (1) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured. [CalDef v2; override v1] | Boolean | false | `_jFluwCG0EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1961_13` | Right Front Speaker (+) (1) Circuit Open. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc. [CalDef v2; override v1] | Boolean | false | `_Gqr-8CG1EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1962_11` | Left Rear Speaker (+) Circuit Short To Ground. This sub type is used for failures where the control module measures ground (battery negative) potential. [CalDef v2; override v1] | Boolean | false | `_ZtlBECG1EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1962_12` | Left Rear Speaker (+) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured. [CalDef v2; override v1] | Boolean | false | `_uULRoCG1EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1962_13` | Left Rear Speaker (+) Circuit Open. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc. [CalDef v2; override v1] | Boolean | false | `_ML_HgCG5EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1963_11` | Right Rear Speaker (+) Circuit Short To Ground. This sub type is used for failures where the control module measures ground (battery negative) potential [CalDef v2; override v1] | Boolean | false | `_gTK4MCG5EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1963_12` | Right Rear Speaker (+) Circuit Short To Battery. This sub type is used for failures, where the control module measures vehicle system (battery positive) potential for greater than a specified time period or when some other value higher than the high voltage limit DTC Sub Type is measured. [CalDef v2; override v1] | Boolean | false | `_zYmQ8CG5EeaY4JYlyGk5Lw` |
-| `DTC_MASK_B1963_13` | Right Rear Speaker (+) Circuit Open. This sub type is used for failures, where the control module determines an open circuit via lack of bias voltage, low current flow, no change in the state of an input in response to an output, etc.. [CalDef v2; override v1] | Boolean | false | `_DOegUCHBEeaY4JYlyGk5Lw` |
-
-### REQUESTACTIONMAP (41)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `STREAM_VOICE_CALL` | Action Map for Active Stream Type of STREAM_VOICE_CALL | Record | Record (41 direct fields) | `_jit5oK3VEeOe_uWRKKMYzg` |
-| `STREAM_SYSTEM` | Action Map for Active Stream Type of STREAM_SYSTEM | Record | Record (41 direct fields) | `_kEAo0K3VEeOe_uWRKKMYzg` |
-| `STREAM_RING` | Action Map for Active Stream Type of STREAM_RING | Record | Record (41 direct fields) | `_j0Ad8K3VEeOe_uWRKKMYzg` |
-| `STREAM_MUSIC` | Action Map for Active Stream Type of STREAM_MUSIC | Record | Record (41 direct fields) | `_i3H-8K3VEeOe_uWRKKMYzg` |
-| `STREAM_ALARM` | Action Map for Active Stream Type of STREAM_ALARM | Record | Record (41 direct fields) | `_kFhEsK3VEeOe_uWRKKMYzg` |
-| `STREAM_NOTIFICATION` | Action Map for Active Stream Type of STREAM_NOTIFICATION | Record | Record (41 direct fields) | `_kHKDcK3VEeOe_uWRKKMYzg` |
-| `STREAM_BLUETOOTH_SCO` | Action Map for Active Stream Type of STREAM_BLUETOOTH_SCO | Record | Record (41 direct fields) | `_jkeNIK3VEeOe_uWRKKMYzg` |
-| `STREAM_SYSTEM_ENFORCED` | Action Map for Active Stream Type of STREAM_SYSTEM_ENFORCED | Record | Record (41 direct fields) | `_kIp4QK3VEeOe_uWRKKMYzg` |
-| `STREAM_DTMF` | Action Map for Active Stream Type of STREAM_DTMF | Record | Record (41 direct fields) | `_kKN-gK3VEeOe_uWRKKMYzg` |
-| `STREAM_TTS` | Action Map for Active Stream Type of STREAM_TTS | Record | Record (41 direct fields) | `_jf3Z8K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_AUDIO_CUE` | Action Map for Active Stream Type of STREAM_NATIVE_AUDIO_CUE | Record | Record (41 direct fields) | `_j-IDQK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_LVM_PROMPT` | Action Map for Active Stream Type of STREAM_NATIVE_LVM_PROMPT | Record | Record (41 direct fields) | `_kClFcK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_RDS_TRAFFIC` | Action Map for Active Stream Type of STREAM_NATIVE_RDS_TRAFFIC | Record | Record (41 direct fields) | `_jyHnkK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_AM_TUNER` | Action Map for Active Stream Type of STREAM_NATIVE_AM_TUNER | Record | Record (41 direct fields) | `_i9N_4K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_FM_TUNER` | Action Map for Active Stream Type of STREAM_NATIVE_FM_TUNER | Record | Record (41 direct fields) | `_jBDXAK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_SDARS_TUNER` | Action Map for Active Stream Type of STREAM_NATIVE_SDARS_TUNER | Record | Record (41 direct fields) | `_jEFc4K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_DABFM_TUNER` | Action Map for Active Stream Type of STREAM_NATIVE_DABFM_TUNER | Record | Record (41 direct fields) | `_jHEfcK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_BLUETOOTH_AUDIO` | Action Map for Active Stream Type of STREAM_NATIVE_BLUETOOTH_AUDIO | Record | Record (41 direct fields) | `_jJjLsK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_AUDIO_DISK_PLAYER` | Action Map for Active Stream Type of STREAM_NATIVE_AUDIO_DISK_PLAYER | Record | Record (41 direct fields) | `_jMLB4K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_AUX` | Action Map for Active Stream Type of STREAM_NATIVE_AUX | Record | Record (41 direct fields) | `_jOlcsK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_LVM_STEREO_AUDIO` | Action Map for Active Stream Type of STREAM_NATIVE_LVM_STEREO_AUDIO | Record | Record (41 direct fields) | `_jQ_3gK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_MEDIA_PLAYER` | Action Map for Active Stream Type of STREAM_NATIVE_MEDIA_PLAYER | Record | Record (41 direct fields) | `_jS24sK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_IPOD` | Action Map for Active Stream Type of STREAM_NATIVE_IPOD | Record | Record (41 direct fields) | `_jU0nkK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_INTERNET_APP_AUDIO` | Action Map for Active Stream Type of STREAM_NATIVE_INTERNET_APP_AUDIO | Record | Record (41 direct fields) | `_jW5rMK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_RSI1` | Action Map for Active Stream Type of STREAM_NATIVE_RSI1 | Record | Record (41 direct fields) | `_jaDs4K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_RSI2` | Action Map for Active Stream Type of STREAM_NATIVE_RSI2 | Record | Record (41 direct fields) | `_jdGZ0K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_HFM` | Action Map for Active Stream Type of STREAM_NATIVE_HFM | Record | Record (41 direct fields) | `_jmMEYK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_MUTEX_PROMPT` | Action Map for Active Stream Type of STREAM_NATIVE_MUTEX_PROMPT | Record | Record (41 direct fields) | `_joGv8K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_DTCP_PROMPT` | Action Map for Active Stream Type of STREAM_NATIVE_DTCP_PROMPT | Record | Record (41 direct fields) | `_jp6GwK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_DTCP_CALL` | Action Map for Active Stream Type of STREAM_NATIVE_DTCP_CALL | Record | Record (41 direct fields) | `_jrolEK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_DTCP_ECALL` | Action Map for Active Stream Type of STREAM_NATIVE_DTCP_ECALL | Record | Record (41 direct fields) | `_jtb74K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_ATCP_ECALL` | Action Map for Active Stream Type of STREAM_NATIVE_ATCP_ECALL | Record | Record (41 direct fields) | `_jvua4K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_RING` | Action Map for Active Stream Type of STREAM_NATIVE_RING | Record | Record (41 direct fields) | `_j1xYgK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_DTCP_RING` | Action Map for Active Stream Type of STREAM_NATIVE_DTCP_RING | Record | Record (41 direct fields) | `_j3vucK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_ATCP_RING` | Action Map for Active Stream Type of STREAM_NATIVE_ATCP_RING | Record | Record (41 direct fields) | `_j5KqwK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_SPEECH` | Action Map for Active Stream Type of STREAM_NATIVE_SPEECH | Record | Record (41 direct fields) | `_j6ybYK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_PHN_VR` | Action Map for Active Stream Type of STREAM_NATIVE_PHN_VR | Record | Record (41 direct fields) | `_j8o1gK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_MIX_PROMPT` | Action Map for Active Stream Type of STREAM_NATIVE_MIX_PROMPT | Record | Record (41 direct fields) | `_j_mp8K3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_DTCP_MIX_PROMPT` | Action Map for Active Stream Type of STREAM_NATIVE_DTCP_MIX_PROMPT | Record | Record (41 direct fields) | `_kBDbcK3VEeOe_uWRKKMYzg` |
-| `STREAM_NATIVE_HFM_WB` | Action Map for Active Stream Type of STREAM_NATIVE_HFM_WB | Record | Record (41 direct fields) | `_smLWEF99EeSMT4bpkrv4Pw` |
-| `STREAM_NATIVE_PROJ_ALT_AUDIO` | Action Map for Active Stream Type of STREAM_NATIVE_PROJ_ALT_AUDIO | Record | Record (41 direct fields) | `_01xPIbXPEeikJZsd_WAfzw` |
-
-### ROOMMODE (8)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `RoomModeDelayFrontLeftMap` | This is a supplier-specific calibration. Delay value for each room mode for front left. | EnumFloatMap | EnumFloatMap (5 direct fields) | `_BzdjQcWbEeOaCvydzCgwdA` |
-| `RoomModeDelayFrontRightMap` | This is a supplier-specific calibration. Delay value for each room mode for front right. | EnumFloatMap | EnumFloatMap (5 direct fields) | `_BeoiwcWbEeOaCvydzCgwdA` |
-| `RoomModeDelayRearLeftMap` | This is a supplier-specific calibration. Delay value for each room mode for rear left. | EnumFloatMap | EnumFloatMap (5 direct fields) | `_AeoeUcWbEeOaCvydzCgwdA` |
-| `RoomModeDelayRearRightMap` | This is a supplier-specific calibration. Delay value for each room mode for rear right. | EnumFloatMap | EnumFloatMap (5 direct fields) | `_0G66wMWaEeOaCvydzCgwdA` |
-| `RoomModeLevelAttenuationFrontLeftMap` | This is a supplier-specific calibration. RoomModes attenuation level for front left | EnumFloatMap | EnumFloatMap (5 direct fields) | `_pHIVUIjyEeOKJbstwtEFKg` |
-| `RoomModeLevelAttenuationFrontRightMap` | This is a supplier-specific calibration. RoomModes attenuation level for front right | EnumFloatMap | EnumFloatMap (5 direct fields) | `_1ab6AYjyEeOKJbstwtEFKg` |
-| `RoomModeLevelAttenuationRearLeftMap` | This is a supplier-specific calibration. RoomModes attenuation level for rear left | EnumFloatMap | EnumFloatMap (5 direct fields) | `_4DdxwYjyEeOKJbstwtEFKg` |
-| `RoomModeLevelAttenuationRearRightMap` | This is a supplier-specific calibration. RoomModes attenuation level for rear right | EnumFloatMap | EnumFloatMap (5 direct fields) | `_7YEWEYjyEeOKJbstwtEFKg` |
-
-### SINKLEVELCONTROLCALS (22)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `MinimumVolumeMap` | This is the map of minimum allowed volume index values for each volume group. | EnumIntegerMap | EnumIntegerMap (8 direct fields) | `_IJUX8HPfEeOrWuwMpf0tEg` |
-| `MaximumVolumeMap` | This is the map of maximum allowed volume index values for each volume group. | EnumIntegerMap | EnumIntegerMap (8 direct fields) | `_gNJkYXPfEeOrWuwMpf0tEg` |
-| `MinimumActivationVolumeMap` | This is the map of minimum activation volume index values for each volume group. | EnumIntegerMap | EnumIntegerMap (8 direct fields) | `_gdLPUHPdEeOrWuwMpf0tEg` |
-| `VolumeGroupInitialDefaultsMap` | Initial default volume setting for each VolumeGroup. [CalDef v5; override v1] | EnumIntegerMap | EnumIntegerMap (9 direct fields) | `_AToSwCR6EeOFAcqdxEN3jw` |
-| `SourceOffsetCalibrationMap` | Map of AudioStreamEnum audio streams for each audio source to the corresponding source offset in dB. [CalDef v6; override v1] | EnumFloatMap | EnumFloatMap (43 direct fields) | `_ATpg4CR6EeOFAcqdxEN3jw` |
-| `SeparationGainCalibrationTable` | Separation gain table that contains the dB separation used on the MixPrompt sink. [CalDef v4; override v1] | FloatArray | FloatArray (64 direct fields) | `_ATqvACR6EeOFAcqdxEN3jw` |
-| `SCVEnabled` | Enables or disables the SCV algorithm as well as hides/shows the SCV menu within the HMI. [CalDef v4; override v1] | Boolean | true | `_SzS6MHSWEeONqtLMgOmNHg` |
-| `SCVVolumeCompensationFactorStepTable` | Speed Comp Volume - Volume Compensation Factor Step Index table. [CalDef v4; override v1] | IntegerArray | IntegerArray (5 direct fields) | `_ATqvASR6EeOFAcqdxEN3jw` |
-| `SCVVehicleSpeedUpdateDelta` | This is the minimum delta change in vehicle speed required to trigger a new calculation of the Speed Compensated Volume algorithm [CalDef v4; override v1] | Integer | 1 | `_NEM0MHP4EeOq8K11VvtDWw` |
-| `SCVVolumeCompensationFactorLevelScaleTable` | Volume Compensation Factor Level Scale table within the Speed Compensated Volume algorithm [CalDef v4; override v1] | FloatArray | FloatArray (5 direct fields) | `_ATrWECR6EeOFAcqdxEN3jw` |
-| `SCVLevelScaleTable` | Table of Speed Comp Level scale multipliers relating the level scale to the SCV setting. [CalDef v4; override v1] | FloatArray | FloatArray (6 direct fields) | `_ATrWESR6EeOFAcqdxEN3jw` |
-| `SCVVolumeBoostTable` | Speed compensation volume boost level table. [CalDef v4; override v1] | FloatArray | FloatArray (11 direct fields) | `_ATrWEiR6EeOFAcqdxEN3jw` |
-| `SCVVolumeBoostSpeedTable` | Speed compensation volume boost speed table. [CalDef v4; override v1] | IntegerArray | IntegerArray (11 direct fields) | `_ATrWEyR6EeOFAcqdxEN3jw` |
-| `SCVBassBoostTable` | Speed compensation bass boost level table. [CalDef v4; override v1] | FloatArray | FloatArray (11 direct fields) | `_ATrWFCR6EeOFAcqdxEN3jw` |
-| `SCVBassBoostSpeedTable` | Speed compensation volume bass boost speed table. [CalDef v4; override v1] | IntegerArray | IntegerArray (11 direct fields) | `_ATrWFSR6EeOFAcqdxEN3jw` |
-| `SCVChimeBoostTable` | Speed compensation chime boost level table. [CalDef v3; override v1] | FloatArray | FloatArray (11 direct fields) | `_ATrWFiR6EeOFAcqdxEN3jw` |
-| `SCVChimeBoostSpeedTable` | Speed compensation volume chime boost speed table. [CalDef v3; override v1] | IntegerArray | IntegerArray (11 direct fields) | `_ATrWFyR6EeOFAcqdxEN3jw` |
-| `MaxChimeVolumeStep` | The volume index of the maximum chime level | Integer | 57 | `_ATr9ICR6EeOFAcqdxEN3jw` |
-| `MaxMixPromptLevel` | The maximum level of the mix prompt sink. This value is defined in order to insure that mix prompts are never distorted and remain intelligable. | Float | 0.0 | `_ATskNCR6EeOFAcqdxEN3jw` |
-| `MinAudibleFeedbackLevel` | The minimum level of the AudibleFeedback sink. [CalDef v6; override v1] | Float | -22.0 | `_ATskNSR6EeOFAcqdxEN3jw` |
-| `MaxAudibleFeedbackLevel` | The maximum level of the AudibleFeedback sink. [CalDef v4; override v1] | Float | -6.0 | `_ATskNiR6EeOFAcqdxEN3jw` |
-| `AudibleFeedbackBoostLevel` | The audible feedback boost level above the Mutex sink [CalDef v5; override v1] | Float | 20 | `_ATskNyR6EeOFAcqdxEN3jw` |
-
-### WIFIINFO3 (2)
-
-| Calibration key | CalDef description or labeled fallback | Type | LTZ value | CalID |
-|---|---|---|---|---|
-| `WiFiP2PDeviceName` | WiFiP2PDeviceName is the name of the Wi-Fi Module in the P2P mode. It shall be the same for the P2P Group Owner and Group Client roles. WiFiP2PDeviceName depends on the vehicle model and brand. The WiFiP2PDeviceName shall be the same as the Bluetooth_Module_Device_Name. [CalDef v3; override v1] | String | string (see source XML) | `_dQX7gMTDEeOzhbtZfiZNyg` |
-| `WiFiClientDeviceName` | Name of the Wi-Fi Module in the Wi-Fi Client Mode (STA mode). The WiFi Client Device Name shall be dependent on the vehicle model and brand. The WiFiClientDeviceName shall be the same as the Bluetooth_Module_Device_Name. [CalDef v3; override v1] | String | string (see source XML) | `_wbtpoMSwEeOL876Etsd7Eg` |
+None of this corpus's corpus-wide open conflicts (seed length, MEC semantics, module-72
+naming, VMM1 bitness, EEPROM byte identity, DoIP topology, downgrade rejection point — see
+PLAN.md) name this doc as a routing target. No unresolved contradiction specific to this
+doc's own source ranges (lines 1-546 of the original) was found beyond the corrections already
+folded above.

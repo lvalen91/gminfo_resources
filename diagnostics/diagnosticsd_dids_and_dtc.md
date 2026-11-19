@@ -369,6 +369,40 @@ the USB observer was stopped and the owner's UART logger left running.
 
 ### Read-only calibration identity comparison with the supplied archive
 
+**Module-count clarification (2026-11-17):** offline reconstruction of a retained
+CAN F182 response confirms 28 records, comprising 14 calibration IDs 02–0F
+and 14 other component IDs below. These are hexadecimal IDs; firmware manifests
+usually print the corresponding decimal IDs. The mounted Y175 cleanroom
+`CalSets.db` has exactly 14 `ModuleData` rows (decimal 2–15), all base part
+70008/DLS00. This is an image baseline, not a fresh live database read.
+
+| F182 ID (hex) | Component | Captured part / DLS |
+|---|---|---|
+| 16 | SOC_SYSTEM | 85759600 / GV |
+| 17 | SOC_BOOT | 85759602 / GV |
+| 18 | SOC_UTILS | 85759613 / GV |
+| 1A | SOC_VENDOR | 85759604 / GV |
+| 1C | SXM | 84999468 / AC |
+| 1D | GPS | 0 / AA |
+| 33 | TUNER | 0 / AA |
+| 34 | ETH_SWITCH | 85759612 / AA |
+| 35 | SOC_ANDROID_ODM | 0 / AA |
+| 36 | SOC_ANDROID_ACPI | 0 / AA |
+| 37 | SOC_ACPIO | 85759610 / GV |
+| 38 | SOC_VBMETA | 85759606 / GV |
+| 39 | SOC_PRODUCT | 85759608 / GV |
+| 51 | FIDM | 84961617 / AA |
+
+Component labels follow the [firmware module inventory](../platform/firmware_versions.md).
+Zero part numbers are reported entries, not proof that a corresponding image
+is installed. F180 separately reports boot IDs47/48 and F181 application
+IDs01/15, giving 32 distinct reported identifiers across the three DIDs.
+These additional firmware/component identifiers are not evidence of additional
+CalSets feature-calibration slots or permission to program them through the
+14-container calibration workflow. No additional writable calibration slot
+beyond02–0F has been established. This check sent no CAN requests or writes.
+
+
 A final default-session F182 read returned 28 seven-byte part-number records.
 Native F182 code at 0x2a660 obtains calibration DLS/part numbers through
 GMCalibrationManager.getModuleIDDLS / getModuleIDPartNumber and includes them

@@ -1,25 +1,26 @@
-# Recovery / OTA → GHS `ota_update` RPC Attack Surface Map
+# Recovery/OTA → GHS `ota_update` RPC Attack Surface Map
 
-**Task:** reverse-engineer the RPC protocol between the recovery-side updater and the
-GHS `ota_update` INTEGRITY partition — opcodes, validation, error handling, state machine,
-fuzz targets.
+**Scope:** RE map of the RPC protocol between the Android recovery-side updater and the
+GHS `ota_update` INTEGRITY partition — opcodes, parameter-validation gaps, error handling,
+state-machine assumptions, and 7 ranked fuzz targets. **Secondary to
+[GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) (GBUR) for binary
+provenance and the verified ELK IPC/HECI path** — do not read this doc as primary on those;
+it holds the older RPC/schema hypotheses. It **is** primary for the opcode table, the
+parameter-validation-gaps table, and the fuzz-target ranking — none of which GBUR restates.
 
-**Analyst model:** Opus. **Date:** 2026-08-17.
-**Corpus:** `gminfo_resources/` (no live device this session; static
-artifacts only).
+**Analyst model:** Opus. **Date:** 2026-08-17. **Corpus:** `gminfo_resources/` static artifacts,
+no live device this session.
+
+**Evidence tags:** `[C]` confirmed · `[I]` inferred · `[U]` unknown.
 
 ---
 
 ## 0. Scope and canonical evidence
 
-This document owns the older RPC/schema hypotheses and their
-confirmed/inferred/unknown labels. Current binary provenance, the verified
-ELK IPC/HECI path and recovery behavior are maintained in
-[the consolidated source](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
-The original recovery and `gm_updater` binaries are available in the Y181B
-boot payload. A complete guest-to-host RPC schema remains unproven; the
-hypotheses below must not be read as demonstrated vulnerabilities.
-
+This document owns the older RPC/schema hypotheses and their confirmed/inferred/unknown
+labels. Current binary provenance, the verified ELK IPC/HECI path, and recovery behavior
+are maintained in GBUR. A complete guest-to-host RPC schema remains unproven; the hypotheses
+below must not be read as demonstrated vulnerabilities.
 
 ---
 
@@ -46,17 +47,34 @@ hypotheses below must not be read as demonstrated vulnerabilities.
 
 Two logically distinct planes: **data** (`ConnToVMM_OTA`) and **control**
 (`ConnToVMM_OTA_Control`). The task also owns the **HECI** path to the Intel CSE (Converged
-Security Engine) and the **ABL** (Automotive Bootloader) update — i.e. `ota_update` is the broker
-that turns guest OTA calls into firmware-engine actions. Downstream of this, ECU modules
-(VIP_APP/BOOT, TUNER, GPS, SXM, ETH_SWITCH) are flashed by the **VIP RH850 over UDS/CAN**, not by
-`ota_update` directly.
+Security Engine) and the **ABL** (Automotive Bootloader) update — i.e. `ota_update` is the
+broker that turns guest OTA calls into firmware-engine actions. `gmext.update_ecu` naming alone
+does not prove an external VIP UDS/CAN route; downstream peripheral-update transport must be
+established per module.
+
+**History (2026-11-17):** the tested VIP-application CAN path rejected the stock SXM file
+(`PEC000A`) and a module1C calibration-header-gate probe (`PEC000F`) — its header parser
+accepts calibration IDs `02`–`0F` only — and the mounted Y175 `swu_update_sxm` export returns
+`0B` without a write call. Other bootloader/internal routes remain unresolved. Owner doc for
+this fact: [`platform/ota_programming_roles.md#sxm-stock-file-can-attempt--2026-11-17`](../platform/ota_programming_roles.md#sxm-stock-file-can-attempt--2026-11-17).
 
 ---
 
-## 2. (a) Command opcodes
+## 2. Command opcodes
 
-**No opcode enumeration table is directly recoverable from the available strings** — the
-`.ota_update.text` was not disassembled. What *is* recoverable:
+**No opcode enumeration table is directly recoverable from the available strings.**
+**History:** `.ota_update.text` *was* disassembled and decompiled in a later session
+(not reflected in an earlier draft of this doc) — CFG-driven discovery from the entry
+point found only 37 functions (all generic C-runtime boilerplate); a brute-force
+byte-level sweep of the full 71,451-byte section found 576 more (614 total); all 614
+were decompiled to 18,041 lines of C. The full decompiled corpus has zero references
+to `.ota_update.rodata`'s address range or any of its known string addresses
+(`0xdf60e8`, `0xdf610d`, `0xdf74d2`, `0xdf75e2`, `0xdf7793`) — a cross-validated
+negative result (same pattern independently found in `.vmm1.text`, see
+[`VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)), not a
+coverage gap. The opcode/length-field framing below is therefore real but its dispatch
+table is not found in `.text`/`.rodata`; the next unexplored lead is `.ota_update.data`
+(700 B, not yet dumped). What *is* recoverable from the strings:
 
 **2.1 The `ota-isys` command frame is length-prefixed / opcode-dispatched [I].**
 The single ingress-validation string proves a command frame with a length field:
@@ -79,14 +97,14 @@ CSE/ABL side) [C].** From `.ota_update.rodata` (`ghs_str.txt:38115-38146`):
 | **GET ATTKB** | `Failed to send GET ATTKB HECI command` (attestation key blob; `attkb_magic_file`, `ghs_str.txt:40679`) |
 | HECI transport primitives | connect / disconnect / get-client-properties / read-property / enumeration (`38120-38132`) |
 
-**2.3 ELK / ABL-prompt alternate command path [C].** Symbols
-`BootELKSendAblUserCommand` and `BootELKWaitForRespSent` (`ghs_analysis.txt:291-292`), plus
-`ConnToOTA_BootELK`. `ota_update` can drive the **ABL "user command" prompt** — the rodata even
-carries the ABL prompt banner (`Booted from ABL prompt.`, `gm_part_number=`, `ABL.version=`,
-`ABL.secureboot=`, …, `ghs_str.txt:38155-38166`). This is a *second* command surface into the
-bootloader that bypasses the normal OTA framing — see fuzz targets. The repo already flags this
-as attack vector **#4 "ELK via VIP J6_CDD → HECI → ABL"**, noting ELK *bypasses AVB + GHS misc
-rollback* (`research/security/CVE_ATTACK_SURFACE_ANALYSIS.md:148`).
+**2.3 ELK / ABL-prompt alternate command path [C].** Symbols `BootELKSendAblUserCommand` and
+`BootELKWaitForRespSent` (`ghs_analysis.txt:291-292`), plus `ConnToOTA_BootELK`. `ota_update` can
+drive the **ABL "user command" prompt** — the rodata even carries the ABL prompt banner
+(`Booted from ABL prompt.`, `gm_part_number=`, `ABL.version=`, `ABL.secureboot=`, …,
+`ghs_str.txt:38155-38166`). This is a *second* command surface into the bootloader that bypasses
+the normal OTA framing — see fuzz targets §6. The repo already flags this as attack vector
+**#4 "ELK via VIP J6_CDD → HECI → ABL"**, noting ELK *bypasses AVB + GHS misc rollback*
+(`research/security/CVE_ATTACK_SURFACE_ANALYSIS.md:148`).
 
 **2.4 Guest-side high-level "opcodes" = the Edify `gmext.*` verbs [C]** (these are what the
 recovery updater actually invokes; they descend into the ota-isys path). From the Y181 `.mnf`
@@ -97,7 +115,7 @@ recovery updater actually invokes; they descend into the ota-isys path). From th
 | `gmext.write_emmc_image(mod, pn, /dev/block/by-name/X)` | raw write image → eMMC partition |
 | `gmext.extract_emmc_image(mod, pn, dev)` | extract raw image → partition |
 | `gmext.extract_logical_partition(mod, pn, name)` | write dynamic/super sub-partition |
-| `gmext.update_ecu(mod, pn)` | flash ECU via VIP/UDS |
+| `gmext.update_ecu(mod, pn)` | target-specific update; transport requires tracing |
 | `gmext.switch_slot()` | flip active A/B slot |
 | `gmext.update_dynamic_partition_config()` | rewrite super partition table |
 | `gmext.show_progress()` | progress UI |
@@ -110,7 +128,7 @@ the opcode map.
 
 ---
 
-## 3. (b) Parameter validation gaps
+## 3. Parameter validation gaps
 
 **The RPC layer itself does almost no semantic validation — the real gates are elsewhere (boot-time).**
 
@@ -118,7 +136,7 @@ the opcode map.
 |---|---|---|
 | **OTA command length** | length sanity check only → `Bad command length for OTA command.` [C] | Only a length guard; **no evidence of per-field bounds/type checks** on the payload after length passes. [I] |
 | **Partition / image size** | none at write time — writes are **raw** (system 3.0 GB, product 2.5 GB, vendor 445 MB) [C] | Write phase is a *"dumb pipe"*; the `version check disabled` manifest flag is honored (`UPDATE_PROCESS_ANALYSIS.txt:339-346`). No size/hash/signature check during the write RPC. |
-| **CRC / A/B metadata** | **CRC32 only, no signature** → `VMM: Warning: A/B metatdata CRC failure!` [C] | Metadata = `{magic, version, slot_info[2], crc32}`. CRC32 is **forgeable** (recompute after edit). Magic + version + CRC32 is the entire integrity story on `misc`/vda9. (`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md:344-391`) |
+| **CRC / A/B metadata** | **CRC32 only, no signature** → `VMM: Warning: A/B metatdata CRC failure!` [C] | Metadata = `{magic, version, slot_info[2], crc32}`. CRC32 is **forgeable** (recompute after edit). Magic + version + CRC32 is the entire integrity story on `misc`/vda9. (GBUR owns the full A/B-metadata layout/weakness writeup, [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md:344-391](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md)) |
 | **Slot** | `switch_slot()` is unconditional; slot suffix trusted [C] | No binding between a *completed/verified* write and the slot flip. Mismatch only triggers a reboot (`GHS: Android and INTEGRITY slot mismatch … Rebooting`). |
 | **HECI response length (egress)** | **checked** → `ABL update command returned invalid length`, `Invalid response length to CSE prepare/clear`, `Read more attkb bytes (%d) than expected` [C] | This is defensive on *replies from CSE*, not on *guest ingress*. Still, it shows the parser trusts a declared length then compares — a classic mismatch bug class if the CSE side is MITM'd. |
 | **ATTKB buffer** | explicit size guard → `ATTKB is larger (%d bytes) than data buffer (%ld bytes)`, `Attempting to read too much data from HECI`, `Not enough free space in HECI write buffer` [C] | Guard exists, but the pattern (declared-size vs fixed-buffer) is exactly the shape that breaks on off-by-one / integer-width mismatch (`%d` vs `%ld`). Prime fuzz surface. |
@@ -132,7 +150,7 @@ or on the VIP — not on the command itself.
 
 ---
 
-## 4. (c) Error handling — what happens on RPC failure
+## 4. Error handling — what happens on RPC failure
 
 **4.1 Per-message errors (logged, non-fatal to the host).**
 - Malformed frame → `Bad command length for OTA command.` (drop; **[I]** command discarded).
@@ -150,10 +168,11 @@ downgrade test (`UPDATE_PROCESS_ANALYSIS.txt:313-326`) is the ground truth for t
 2. Reboot → **GHS boot verify rejects** the slot (AVB and/or rollback index).
 3. A/B logic **falls back to the original slot** (tries_remaining / priority).
 4. Android renders an **"Update Failed"** screen (rendered by `gm_update_engine`, not GHS).
-5. Operator uses the encoded `gm_reboot_normal` marker,
-   `Z21fcmVib290X25vcm1hbA==`, on USB to exit; system returns to the **unchanged**
-   prior build. Filename/handler corrected 2026-11-12; see
-   [recovery analysis §4.5](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#45-known-usb-trigger-files).
+5. Operator uses the USB exit marker to return the system to the **unchanged** prior build.
+
+**History (2026-11-12):** the exit-marker filename/handler stated here originally is stale.
+GBUR is the current source of truth for the correct marker and handler — see
+[GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §4.5](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#45-known-usb-trigger-files).
 
 So an RPC/verification failure is **recoverable and non-bricking by design** (A/B fallback), but
 the failure is caught at *boot*, after blind writes — there is no write-time abort. Rollback-index
@@ -162,11 +181,11 @@ rejection is confirmed real: `VMM: ERROR: rollback index is too old: %lu in imag
 
 ---
 
-## 5. (d) State machine assumptions — re-entry, skip, replay
+## 5. State machine assumptions — re-entry, skip, replay
 
 **Two coupled state machines.**
 - **Android SWU:** `mIdle → mDownloadAvailable → mUpdateAvailable → mSecureUnlock → mProgramming
-  → mPostProgramming → mUpdateComplete` (`platform/ota_update_stack.md:111-114`). `mSecureUnlock`
+  → mPostProgramming → mUpdateComplete` (owner: [`platform/ota_update_stack.md`](../platform/ota_update_stack.md), state-table detail there). `mSecureUnlock`
   = UDS SecurityAccess ($27) challenge.
 - **GHS boot verify:** `CheckRecoveryMode → read A/B metadata → AVB (vbmeta→boot) → rollback index
   → run guest`.
@@ -226,11 +245,26 @@ index** in `misc`/vda9 (confirmed to block Y181→Y177 live); **TSS/GPD Producti
 signature; **UDS SecurityAccess** on the VIP for ECU modules; and **SELinux** as the only runtime
 gate on `/dev/ghs/ota-isys` (DAC is world-rw).
 
-**To actually build the opcode table and fuzz harness you still need:** (1) disassembly of
-`.ota_update.text` (71 KB, present in SOC_HOSTOS 85098662 but not decompiled here), and (2) RE of
-`/system/lib64/libghs_lip.so` for the ota-isys ioctl dispatch + frame layout. Specific ELK/HECI branches have since been disassembled, and original recovery/
-updater binaries are available. The remaining gap is a complete guest RPC schema,
-not the absence of those binaries; see the consolidated source for verified paths.
+**Remaining gap, resolved:** this section originally stated flatly that disassembly of
+`.ota_update.text` (71 KB) and RE of `/system/lib64/libghs_lip.so` were still needed to build the
+opcode table and fuzz harness, then had a later note bolted on saying specific ELK/HECI branches
+had since been disassembled — self-contradictory as written. **History:** `.ota_update.text`
+*has* since been fully disassembled and decompiled (§2 above) — this is complete, not
+outstanding, and the opcode-table gap is not a missing-RE problem but a missing dispatch-table
+problem (see §2's "History" note: the negative result rules out `.text`/`.rodata` as the
+dispatch mechanism; `.ota_update.data`, 700 B, is unexamined). What is still genuinely
+outstanding is `libghs_lip.so` ioctl-dispatch RE, and any `.ota_update.data` table it might
+hold — the opcode space at §2.1/§2.5 remains `[U]` for that reason, not for lack of
+`.ota_update.text` coverage. GBUR is the canonical source for which binaries/paths are
+currently verified.
+
+---
+
+## Open conflicts
+
+None specific to this doc. (The corpus-wide items in the top-level plan — MEC semantics, module
+72 naming, VMM1 bitness, EEPROM byte identities, seed length, DoIP topology, Y181→Y177 rejection
+point — do not touch this doc's content and are not repeated here.)
 
 ---
 
@@ -242,11 +276,11 @@ not the absence of those binaries; see the consolidated source for verified path
 - `research/decompiled/ghs_analysis.txt` — `.ota_update.*` section boundaries (`:37-69`),
   `BootELKSendAblUserCommand`/`WaitForRespSent` (`:291-292`), `OtaUpdateToHeciIod`/`BootArgsIod`
   (`:695-696`).
-- `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` — OTA flow (§3.3), A/B metadata layout + CRC32
-  weakness (§3.1), attack-surface table (§6).
+- [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) — OTA flow (§3.3), A/B metadata layout + CRC32
+  weakness (§3.1), attack-surface table (§6), USB trigger-file truth (§4.5).
 - `research/UPDATE_PROCESS_ANALYSIS.txt` — `gmext.*` manifest verbs (§4.1), raw-image confirmation,
   live downgrade test + rollback-index string (§6).
-- `platform/ota_update_stack.md` — SWU state machine, package signing tiers, USB flags.
-- `platform/ota_programming_roles.md` — engine chain (`gm_update_engine → rb_ua → VIP RH850`).
+- [`platform/ota_update_stack.md`](../platform/ota_update_stack.md) — SWU state machine, package signing tiers, USB flags.
+- [`platform/ota_programming_roles.md`](../platform/ota_programming_roles.md) — engine chain (`gm_update_engine → rb_ua → VIP RH850`), SXM-attempt history.
 - `research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` — ota-isys node, ioctl-guess note, rollback path.
 - `research/security/CVE_ATTACK_SURFACE_ANALYSIS.md` — ELK/HECI (#4) and ota-isys (#6) status.

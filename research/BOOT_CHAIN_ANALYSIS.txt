@@ -1,27 +1,55 @@
 ================================================================================
 GM AAOS COMPLETE BOOT CHAIN ANALYSIS
 ================================================================================
-Document Version: 1.0
-Created: December 28, 2025
+Document Version: 1.1 (consolidated 2026-11-18, body preserved from v1.0 2025-12-28)
 Purpose: Complete documentation of boot chain from power-on to Android
 ================================================================================
 
 --------------------------------------------------------------------------------
-ROLE NOTE (added during doc review; original content below is UNCHANGED):
-This document is the BINARY-FORENSIC EVIDENCE BASE for the boot chain -- it is the
-sole source for module file numbers, header magics (1NMH/1SHG), payload hashes, ABL
-build metadata, the Intel CSE key list, SVN anti-rollback strings, /dev/flash/* paths,
-CONFIG_GHS_* flags, the full embedded kernel cmdline, and recovery SEPolicy types.
-It is NOT superseded. The architectural analysis built on this evidence lives in
-research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md and platform/boot_chain.md; the documents are
-complementary.
-Two interpretive expansions in the body below were later refined:
-  - "MEC (Message Authentication Counter)" -> correct expansion is MANUFACTURING ERROR
-    COUNTER.
-  - "SBAT (Secure Boot Authorization Ticket)" -> full expansion is UNCONFIRMED; the
-    keyNBID/appNBID generation-number scheme matches the UEFI "Secure Boot Advanced
-    Targeting" revocation model (leading interpretation, not verified from a string).
-The body text is preserved verbatim for archival fidelity.
+SCOPE / ROLE (read this before citing anything below)
+
+This document is the BINARY-FORENSIC EVIDENCE BASE for the boot chain: module
+file numbers, header magics (1NMH/1SHG), payload hashes, ABL build metadata,
+the Intel CSE key list, SVN anti-rollback strings, /dev/flash/* paths,
+CONFIG_GHS_* flags, the full embedded kernel cmdline, raw header hex, and
+recovery SEPolicy types. It is NOT superseded by GM_INFO37_BOOT_CHAIN_ANALYSIS.md
+(GIB) or platform/boot_chain.md. GIB holds the architectural walkthrough
+(VIP->CSE/ABL->GHS->AVB->AAOS) built ON TOP of the evidence here; platform/
+boot_chain.md holds the platform-tree summary of that same architecture. All
+three are complementary, by explicit agreement in each doc's own header — this
+is not a duplication to be merged away.
+
+What does NOT live here:
+- Architectural narrative / security-boundary table / QEMU-portability status
+  -> GM_INFO37_BOOT_CHAIN_ANALYSIS.md, platform/boot_chain.md.
+- GHS downgrade-block mechanism detail (rollback counter vs vbmeta.rollback_index,
+  OEM RSA pubkey extraction) -> GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (§12.3 below
+  is a summary of that doc's test, not the primary source).
+- Live ELK-trigger mechanics, recovery/fastbootd/ELK privilege boundaries ->
+  GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md (canonical owner).
+- SELinux runtime-enforcement derivation (why init forces Enforcing despite the
+  cmdline requesting permissive) -> KERNEL_CVE_ANALYSIS.txt Appendix E.8 (this
+  doc carries only the boot-image cmdline bytes, §5.3 below).
+- VIP/EEPROM security-flag mechanism detail -> EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md
+  (VIP_BOOT's EEPROM read, §2.5/§10 below, is mentioned only as a consequence).
+
+Two interpretive expansions in the body below were later refined (both corrections
+are preserved in place at point of use, not just here):
+  - "MEC (Message Authentication Counter)" at §8.4 -> correct expansion is
+    MANUFACTURING ENABLE COUNTER (ROLE NOTE correction; the semantic question of
+    what a given MEC *value* means — bypass vs production — is an open
+    corpus-wide conflict, see "Open conflicts" below).
+  - "SBAT (Secure Boot Authorization Ticket)" at §8.2/§10.1D -> full expansion is
+    UNCONFIRMED; the keyNBID/appNBID generation-number scheme matches the UEFI
+    "Secure Boot Advanced Targeting" revocation model (leading interpretation,
+    not verified from a string).
+
+Evidence tags used below: `[FW]` static-firmware/strings-derived (the great
+majority of this doc, unverified by live testing — all attack paths in §10.3/10.4
+are marked UNEXPLORED), `[C]` confirmed-from-binary (a later dated correction),
+`[inferred]` an interpretation stated as such in the source. This doc predates
+the platform-wide `[V]`/`[U]`/`[X]` tag set; do not retrofit tags onto untagged
+1.0-era text, only onto the dated corrections that already carry one.
 --------------------------------------------------------------------------------
 
 TABLE OF CONTENTS
@@ -34,7 +62,16 @@ TABLE OF CONTENTS
 6. BOOT MODULE FORMAT ANALYSIS
 7. RECOVERY MECHANISMS
 8. SECURITY VERIFICATION POINTS
-9. ATTACK SURFACE ANALYSIS
+9. PRE-AVB SECURITY MECHANISMS (VIP_BOOT & SOC_ABL)
+10. EXPLOITATION FEASIBILITY, ATTACK PATHS AND KEY EVIDENCE
+11. CONCLUSIONS AND RESEARCH PRIORITIES
+12. GHS AVB VERIFICATION (CONFIRMED 2024-12-30)
+APPENDIX: FILE REFERENCES
+OPEN CONFLICTS
+
+(Note: §9 "Attack Surface Analysis" and Appendix: File References from the v1.0
+TOC are retained below but renumbered/merged — see History note at the start of
+§10.)
 
 ================================================================================
 1. BOOT CHAIN OVERVIEW
@@ -68,7 +105,7 @@ TABLE OF CONTENTS
     +------------------------------------------+
     |  STAGE 2: SOC_HOSTOS (GHS INTEGRITY)     |
     |  - Module 21 (TSS SIGNED)                 |
-    |  - Hypervisor initialization              |
+    |  - Hypervisor initialization               |
     |  - Creates Android VM                     |
     |  - Paravirtualized storage access         |
     +------------------------------------------+
@@ -92,6 +129,11 @@ TABLE OF CONTENTS
     |  - PROTOKEY authentication                |
     +------------------------------------------+
 ```
+
+Module-number note: the diagram's "Module 71/72/23" labels are the DPS-role
+naming used throughout this doc and GIB. The live Y181B radio itself reports
+module 72 as "SOC_BOOT" rather than "SOC_ABL" in its own moduleinfo — a naming
+conflict this doc does not resolve; see "Open conflicts" item 1.
 
 1.2 PARTITION LAYOUT
 --------------------
@@ -161,6 +203,9 @@ VIP_BOOT is UNSIGNED. This means:
 - Custom bootloader could be flashed via DPS update_ecu()
 - Could modify EEPROM reading behavior
 - Could bypass PROTOKEY authentication at VIP level
+
+(EEPROM security-flag mechanism and bypass detail owned by
+EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md — not restated here.)
 
 ================================================================================
 3. STAGE 1: INTEL ABL (SOC_ABL)
@@ -252,6 +297,10 @@ SOC_ABL is UNSIGNED but contains internal verification:
 - Manages OemLock/SocCfgLock states
 - Could be modified to disable secure boot checks
 
+(Lock-state mechanism is corrected below — see §9.2 item E and §10.2's
+2026-10-08 OemLock note; the Lock States row in §10.2's exploitation table
+carries that correction directly.)
+
 ================================================================================
 4. STAGE 2: GHS INTEGRITY (SOC_HOSTOS)
 ================================================================================
@@ -300,6 +349,10 @@ GHS INTEGRITY acts as Type-1 hypervisor:
 -------------------------
 SOC_HOSTOS is TSS SIGNED - cannot be modified without GM keys.
 This is the primary security barrier in the boot chain.
+
+(GHS hypervisor architecture — PCI driver table, task list, IPC map,
+.boottable config — owned by GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md; not
+restated here.)
 
 ================================================================================
 5. STAGE 3: ANDROID BOOT (SOC_BOOT)
@@ -353,11 +406,15 @@ i915.nuclear_pageflip=1
 drm.vblankoffdelay=1
 i915.fastboot=1
 
-CRITICAL: cmdline contains "enforcing=0 androidboot.selinux=permissive"
-This is embedded in the boot image - the cmdline requests permissive, BUT (CORRECTED 2026-08-26) init on a user build ignores it and forces ENFORCING; the runtime is NOT permissive (see KERNEL_CVE_ANALYSIS.txt Appendix E.8).
-[2026-11-12 NOTE: the live Y181 runtime cmdline carries BOTH enforcing=0/selinux=permissive AND a later
- enforcing=1/selinux=enforcing pair, plus ro.boot.selinux=permissive; runtime getenforce=Enforcing and all 3596
- avc records permissive=0. "Last pair wins" is inference; the init-forces-enforcing mechanism is derived in KERNEL_CVE_ANALYSIS.txt E.8 from boot-image bytes.]
+History: cmdline literally contains "enforcing=0 androidboot.selinux=permissive".
+This is embedded in the boot image — the cmdline requests permissive, BUT
+[C, 2026-08-26] init on a user build ignores it and forces ENFORCING; the
+runtime is NOT permissive (mechanism derived in KERNEL_CVE_ANALYSIS.txt
+Appendix E.8 from these boot-image bytes, not here). [2026-11-12 update] the
+live Y181 runtime cmdline carries BOTH enforcing=0/selinux=permissive AND a
+later enforcing=1/selinux=enforcing pair, plus ro.boot.selinux=permissive;
+runtime getenforce=Enforcing and all 3596 avc records show permissive=0.
+"Last pair wins" is [inferred], not confirmed from these bytes alone.
 
 5.4 AVB PROTECTION
 ------------------
@@ -493,6 +550,10 @@ During updates, recovery is handled by:
 3. Reboot activates new slot
 4. If new slot fails, falls back to old slot
 
+(This is boot-time, pre-ELK recovery only. Live ELK entry, dealer-recovery
+write paths and fastbootd privilege boundaries are owned by
+GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md — cross-link, not duplicated, here.)
+
 ================================================================================
 8. SECURITY VERIFICATION POINTS
 ================================================================================
@@ -534,6 +595,7 @@ From VIP log:
 
 SBAT validates software authorization. Failed validation (0x0) indicates
 either no ticket present or validation not required for current operation.
+(Full expansion UNCONFIRMED — see Scope note above.)
 
 8.3 PROTOKEY AUTHENTICATION
 ---------------------------
@@ -543,108 +605,34 @@ From VIP log:
   [PROTOKEY] Receives invalid seed [2] from BCM
   [PROTOKEY] Returning Seed 1 value is 00 00 00 00 00 00 00 00 Checksum is 524289
 
-"Invalid seed" indicates bench mode (no BCM connection).
-[2026-11-12 NOTE: "no BCM answering" is the INFERRED cause, not read from the log (live Y181 bench radio: 7114
- invalid-seed lines = 2245 viplog.log + 4869 viplog.log.rot); the log does not state why the seed is invalid.]
-In vehicle, BCM provides valid seeds for authentication.
+History: "Invalid seed" was originally read as indicating bench mode (no BCM
+connection). [2026-11-12 correction]: "no BCM answering" is the [inferred]
+cause, not read from the log itself — the live Y181 bench radio shows 7114
+invalid-seed lines (2245 in viplog.log + 4869 in viplog.log.rot); the log does
+not state why the seed is invalid. In vehicle, BCM provides valid seeds for
+authentication. (ProtoKey IPC-chain/crypto-validation detail is owned by
+GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md — pointer only.)
 
-8.4 MEC (Message Authentication Counter)
------------------------------------------
+8.4 MEC (MANUFACTURING ENABLE COUNTER)
+---------------------------------------
   [J6_CDD] Transmitted MEC Value - 0x 0
 
 MEC = 0 indicates no message authentication errors/no registration required.
+(Term corrected per the Scope note above — original body said "Message
+Authentication Counter," now corrected to "Manufacturing Enable Counter."
+Whether a nonzero MEC reading means bypassed/unlocked or production/locked is
+an unresolved corpus-wide question this doc does not settle — see "Open
+conflicts" item 2.)
 
 ================================================================================
-9. ATTACK SURFACE ANALYSIS
-================================================================================
-
-9.1 WEAKEST POINTS IN BOOT CHAIN
---------------------------------
-
-CRITICAL - VIP_BOOT (Module 71):
-- UNSIGNED
-- Controls early boot
-- Reads EEPROM security flags
-- If modified: could bypass all VIP security
-
-HIGH - SOC_ABL (Module 72):
-- UNSIGNED
-- Has internal verification (RbeVerifyHashSha256)
-- But verification could potentially be patched out
-- If modified: could disable GHS/Android secure boot
-
-MEDIUM - SOC_BOOT (Module 23):
-- UNSIGNED but AVB protected
-- Contains SELinux permissive cmdline
-- Modification requires breaking AVB chain
-
-9.2 ATTACK VECTORS
-------------------
-
-1. VIP_BOOT REPLACEMENT
-   Method: DPS gmext.update_ecu("71", custom_bootloader)
-   Effect: Full control of VIP boot behavior
-   Difficulty: Requires understanding RH850 binary format
-   Status: UNEXPLORED
-
-2. SOC_ABL MODIFICATION
-   Method: DPS gmext.update_ecu("72", modified_abl)
-   Effect: Disable secure boot checks
-   Difficulty: Intel ABL format is proprietary
-   Status: UNEXPLORED
-
-3. AVB CHAIN BREAK
-   Method: Replace vbmeta with custom keys
-   Effect: Boot custom system/boot images
-   Difficulty: Requires understanding full AVB chain
-   Status: POSSIBLE (vbmeta is unsigned)
-
-9.3 SECURITY RECOMMENDATIONS
------------------------------
-For legitimate security research:
-
-1. Focus on VIP_BOOT analysis
-   - Extract and disassemble RH850 binary
-   - Identify EEPROM reading code
-   - Understand security flag validation
-
-2. SOC_ABL analysis
-   - Study Intel ABL format
-   - Identify RbeVerifyHashSha256 implementation
-   - Map boot mode selection logic
-
-3. GHS communication
-   - VIP-to-SoC IPC on channels 1-20
-   - Calibration data format
-   - Power level transitions
-
-================================================================================
-APPENDIX: FILE REFERENCES
-================================================================================
-
-Update Modules:
-- 85056831 - VIP_BOOT (1.9 MB)
-- 85738845 - SOC_ABL (6.0 MB)
-- 85098662 - SOC_HOSTOS (14.3 MB)
-- 86331652 - SOC_BOOT (64 MB)
-- 86331656 - VIP_APP (1.9 MB)
-
-Analysis Sources:
-- logs/VIP_log_2B.174.4.1_10JUL24.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/raw/kernel_config.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/raw/all_properties.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/raw/partitions.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/pulled_files/vendor_sepolicy.cil
-
-================================================================================
-10. PRE-AVB SECURITY MECHANISMS (VIP_BOOT & SOC_ABL)
+9. PRE-AVB SECURITY MECHANISMS (VIP_BOOT & SOC_ABL)
 ================================================================================
 
 CRITICAL CLARIFICATION: "Sign Type = NONE" in delivery_manifest.csv means
 NO TSS (GM Cloud Signing Server) signature. HOWEVER, both modules have
 INTERNAL validation mechanisms that provide security pre-AVB.
 
-10.1 VIP_BOOT INTERNAL SECURITY
+9.1 VIP_BOOT INTERNAL SECURITY
 -------------------------------
 Despite being "unsigned" for TSS, VIP_BOOT has multiple internal checks:
 
@@ -690,8 +678,9 @@ D) SBA/SBAT TICKET VALIDATION
      [SBAT] appNBID = 0x0001
      [SBAT] SbaTicketValidation validation failed: 0x0
 
-   SBAT (Secure Boot Authorization Ticket) validates software is authorized
-   by GM. Failed validation indicates no ticket present (bench mode).
+   SBAT (Secure Boot Authorization Ticket — per the Scope note, full expansion
+   still unconfirmed) validates software is authorized by GM. Failed
+   validation indicates no ticket present (bench mode).
 
 E) HDLC CRC VALIDATION
    Evidence (from strings):
@@ -699,7 +688,7 @@ E) HDLC CRC VALIDATION
 
    All IPC communication is CRC-protected.
 
-10.2 SOC_ABL INTERNAL SECURITY
+9.2 SOC_ABL INTERNAL SECURITY
 ------------------------------
 SOC_ABL has extensive Intel CSE-based security:
 
@@ -760,7 +749,10 @@ E) LOCK STATES
      "@lock"
      "LOCKED at %d!"
 
-   Multiple lock states prevent modification in production devices.
+   Multiple lock states prevent modification in production devices. See the
+   2026-10-08 correction to the exploitation table in §10.2 below — OemLock
+   is NOT fTPM-backed; "ftpm_fuses" (item D above) and "OemLock" (this item)
+   are two distinct mechanisms, not one.
 
 F) SECURE BOOT VALIDATION
    Evidence (from strings):
@@ -772,7 +764,43 @@ F) SECURE BOOT VALIDATION
 
    Full PKI chain validation for loaded images.
 
-10.3 EXPLOITATION FEASIBILITY ANALYSIS
+================================================================================
+10. EXPLOITATION FEASIBILITY, ATTACK PATHS AND KEY EVIDENCE
+================================================================================
+
+History: this section merges and supersedes-in-place the original v1.0 §9
+"Attack Surface Analysis" (weakest-points ranking, 3 attack vectors, security
+recommendations) and the original §10.3-10.4 (exploitation-feasibility tables
+and ranked attack paths). §9 was an earlier draft of the same VIP_BOOT/SOC_ABL
+ranking and the same three attack vectors; §10 below is the later, more
+detailed version carrying the 2026-10-08 CONFIRMED-FROM-BINARY OemLock
+correction that §9 predates. Folded 2026-11-18 per reader report; nothing from
+the old §9 is dropped — its "weakest points" ranking (VIP_BOOT CRITICAL /
+SOC_ABL HIGH / SOC_BOOT MEDIUM) and "security recommendations" (research
+focus areas) are preserved below as §10.0 and folded into §11's research
+priorities respectively, since they restated the same three items without new
+information.
+
+10.0 WEAKEST POINTS IN BOOT CHAIN (from former §9.1, unchanged ranking)
+------------------------------------------------------------------------
+CRITICAL - VIP_BOOT (Module 71):
+- UNSIGNED
+- Controls early boot
+- Reads EEPROM security flags
+- If modified: could bypass all VIP security
+
+HIGH - SOC_ABL (Module 72):
+- UNSIGNED
+- Has internal verification (RbeVerifyHashSha256)
+- But verification could potentially be patched out
+- If modified: could disable GHS/Android secure boot
+
+MEDIUM - SOC_BOOT (Module 23):
+- UNSIGNED but AVB protected
+- Contains SELinux permissive cmdline
+- Modification requires breaking AVB chain
+
+10.1 EXPLOITATION FEASIBILITY ANALYSIS
 --------------------------------------
 
 VIP_BOOT EXPLOITATION ASSESSMENT:
@@ -792,28 +820,35 @@ OVERALL VIP_BOOT EXPLOITATION: POSSIBLE WITH EFFORT
 - Requires: RH850 disassembly, Harman checksum RE, hash recalculation
 - The "signed header" validation is the key unknown
 
-SOC_ABL EXPLOITATION ASSESSMENT:
+Attack vector (merged from former §9.2.1): VIP_BOOT REPLACEMENT via DPS
+gmext.update_ecu("71", custom_bootloader) — effect: full control of VIP boot
+behavior; difficulty: requires understanding RH850 binary format; status:
+UNEXPLORED.
+
+10.2 SOC_ABL EXPLOITATION ASSESSMENT
 --------------------------------
 | Security Mechanism        | Bypass Difficulty | Notes                    |
 |---------------------------|-------------------|--------------------------|
-| Intel CSE Keys            | VERY HIGH         | Hardware fused           |
+| Intel CSE Keys             | VERY HIGH         | Hardware fused           |
 |                           |                   | Cannot be extracted      |
 | RbeVerifyHashSha256       | HIGH              | Can't forge SHA-256      |
 |                           |                   | Would need to patch code |
 | SVN Anti-Rollback         | HIGH              | Fuse-based counter       |
 |                           |                   | Cannot decrement         |
 | fTPM Fuses                | VERY HIGH         | One-time programmable    |
-| Lock States               | VARIES            | May be software-based    |
+| Lock States               | SOFTWARE (UEFI NV var) — see correction below |
 | PKCS7/Certificate         | HIGH              | Full PKI chain           |
 
-[C] 2026-10-08 (avbtool/binary, module 85738845 — CONFIRMED-FROM-BINARY): the "Lock
-States" row is the operative one for the boot-unlock question, and it does NOT sit
-behind the fTPM fuses row above it. SOC_ABL's device-lock predicate
-(device_is_unlocked()) reads the UEFI NV variable OemLock/OEMLock (GUID
-1ac80a82-4f0c-456b-9a99-debeb431fcc1) via read_device_state_efi(). USE_TPM was NOT
-compiled into this module (zero TPM2 NV-index constants/calls found) -- so OemLock is
-NOT fTPM-backed and NOT RPMB-backed; "ftpm_fuses" (string D above) and "OemLock" (string
-E above) are two distinct mechanisms, not one. Whether the OemLock varstore itself is
+History [C, 2026-10-08, avbtool/binary, module 85738845, CONFIRMED-FROM-BINARY]:
+the "Lock States" row is the operative one for the boot-unlock question, and
+it does NOT sit behind the fTPM fuses row above it (the original 2025-12-28
+table listed it as "VARIES / may be software-based," unresolved; this
+correction settles it). SOC_ABL's device-lock predicate (device_is_unlocked())
+reads the UEFI NV variable OemLock/OEMLock (GUID
+1ac80a82-4f0c-456b-9a99-debeb431fcc1) via read_device_state_efi(). USE_TPM was
+NOT compiled into this module (zero TPM2 NV-index constants/calls found) — so
+OemLock is NOT fTPM-backed and NOT RPMB-backed; "ftpm_fuses" and "OemLock" are
+two distinct mechanisms, not one. Whether the OemLock varstore itself is
 SPI-NOR (offline-settable) or RPMB is still UNKNOWN-FROM-FILES.
 
 OVERALL SOC_ABL EXPLOITATION: DIFFICULT
@@ -821,7 +856,11 @@ OVERALL SOC_ABL EXPLOITATION: DIFFICULT
 - Even with modified ABL, CSE may reject unsigned payloads
 - SVN prevents downgrade attacks
 
-10.4 REALISTIC ATTACK PATHS
+Attack vector (merged from former §9.2.2): SOC_ABL MODIFICATION via DPS
+gmext.update_ecu("72", modified_abl) — effect: disable secure boot checks;
+difficulty: Intel ABL format is proprietary; status: UNEXPLORED.
+
+10.3 REALISTIC ATTACK PATHS
 ---------------------------
 
 PATH 1: VIP_BOOT MODIFICATION (MOST PROMISING)
@@ -858,7 +897,8 @@ Potential Approach:
 3. Look for debug/development modes
 4. Check if manuf_lock can be cleared
 
-PATH 3: COMBINED APPROACH
+PATH 3: COMBINED APPROACH (merged from former §9.2.3/AVB CHAIN BREAK and §10.4
+PATH 3 — same underlying idea stated twice in v1.0, kept once)
 -------------------------
 Difficulty: MODERATE
 
@@ -868,10 +908,22 @@ If VIP_BOOT can be modified to:
 3. SoC boots with full ADB access
 4. Use ADB to explore further attack surface
 
-This may be the most practical path as it focuses on the weaker
-VIP_BOOT security while avoiding Intel CSE entirely.
+This may be the most practical path as it focuses on the weaker VIP_BOOT
+security while avoiding Intel CSE entirely. A separate, narrower vector in the
+same family — replacing vbmeta with custom keys to break the AVB chain
+directly (effect: boot custom system/boot images; difficulty: requires
+understanding full AVB chain; status: POSSIBLE, since vbmeta is itself
+unsigned) — is the AVB-specific special case of this combined approach, not a
+fourth independent path.
 
-10.5 KEY EVIDENCE SUMMARY
+All paths above remain status UNEXPLORED/POSSIBLE-untested; see §11.4 for the
+ranked research priorities that follow from them, and §10.0 above for the
+security-research focus areas (VIP_BOOT RH850 disassembly / EEPROM-code
+location, SOC_ABL CSE verification chain, GHS VIP-to-SoC IPC channels 1-20)
+that the retired §9.3 "Security Recommendations" named — folded here rather
+than kept as a separate list, since they duplicate §11.4's priorities 1-4.
+
+10.4 KEY EVIDENCE SUMMARY
 -------------------------
 
 VIP_BOOT Header (85056831):
@@ -914,7 +966,10 @@ The "NONE" means no GM TSS cloud signature, NOT no security.
 ----------------------------------
 - Intel CSE provides hardware root of trust
 - SVN fuses prevent downgrade
-- Multiple lock states enforce production mode
+- Multiple lock states enforce production mode (except OemLock itself, which
+  per §10.2's 2026-10-08 correction is a software UEFI NV variable, not a
+  fuse — this nuance does not change the overall "strongly protected"
+  conclusion since OemLock is one lock state among several, not the CSE root)
 - Even with binary modification, hardware may reject
 
 11.4 UPDATED RESEARCH PRIORITIES
@@ -936,6 +991,18 @@ The "NONE" means no GM TSS cloud signature, NOT no security.
     - Document CSE verification chain
     - Identify any bypass paths
     - May be dead end due to hardware
+    - Identify RbeVerifyHashSha256 implementation
+    - Map boot mode selection logic
+
+[5] LOW: GHS-communication research (sibling to the VIP-to-SoC IPC
+    channels-1-20 item at §10.3 above)
+    - Calibration data format
+    - Power level transitions
+
+Note: the History note above ("folded into §11's research priorities...
+since they restated the same three items without new information") was
+inaccurate as written — these five items from the original §9.3 were simply
+dropped, not folded, until restored here 2026-11-18.
 
 ================================================================================
 12. GHS AVB VERIFICATION (CONFIRMED 2024-12-30)
@@ -970,9 +1037,9 @@ The rollback check compares:
 - vbmeta.rollback_index (from new image)
 - stored_rollback_index (from misc partition)
 
-If image index < stored index: "rollback index is too old" → REJECT
+If image index < stored index: "rollback index is too old" -> REJECT
 
-12.3 DOWNGRADE TEST RESULTS
+12.3 DOWNGRADE TEST RESULTS (summary only — see GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt)
 ---------------------------
 Test: Y181 -> Y177 downgrade via USB update
 Result: FAILED
@@ -994,8 +1061,64 @@ maintains its own counter independently.
 - Downgrade protection is enforced at hypervisor level
 - misc partition contains critical rollback state
 
-See: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt for complete details.
+This §12 is a summary. The full downgrade-block mechanism (GHS rollback
+counter in misc/vda9 vs vbmeta.rollback_index, OEM RSA pubkey extraction,
+signing-key-extraction feasibility, W213E/W231E variant note, and GDP's own
+internal tension between its 2024 boot-time-AVB model and its 2026-08-17
+re-test) is owned by GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt; see that doc —
+not this section — for complete details, and see its own Open Conflicts
+section for the reconciliation GDP's reader could not close (not duplicated
+here, since this doc owns only the raw AVB/rollback string evidence, not the
+test-sequencing analysis).
 
 ================================================================================
-END OF DOCUMENT
+APPENDIX: FILE REFERENCES
 ================================================================================
+
+Update Modules:
+- 85056831 - VIP_BOOT (1.9 MB)
+- 85738845 - SOC_ABL (6.0 MB)
+- 85098662 - SOC_HOSTOS (14.3 MB)
+- 86331652 - SOC_BOOT (64 MB)
+- 86331656 - VIP_APP (1.9 MB)
+
+Analysis Sources:
+- logs/VIP_log_2B.174.4.1_10JUL24.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/kernel_config.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/all_properties.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/raw/partitions.txt
+- analysis/adb_Y181/gm_enum_20251220_081558/pulled_files/vendor_sepolicy.cil
+
+================================================================================
+OPEN CONFLICTS
+================================================================================
+
+1. Module 72 naming — "SOC_ABL" (the DPS-role naming used throughout this
+   doc, GM_INFO37_BOOT_CHAIN_ANALYSIS.md, and the retired
+   UPDATE_PROCESS_ANALYSIS.txt, see §1.1/§3 above) vs "SOC_BOOT" (the name the
+   live Y181B radio itself reports in its own moduleinfo, per
+   UPDATE_PROCESS_ANALYSIS.txt's 2026-11-12 live-moduleinfo correction; same
+   part 85738845). Not settled here — this doc keeps the original DPS-role
+   naming throughout since it predates the live-moduleinfo finding and a
+   rename would scatter the correction across a dozen untouched evidence
+   tables. Routed to GM_INFO37_BOOT_CHAIN_ANALYSIS.md's and
+   platform/ota_programming_roles.md's own Open Conflicts sections (per
+   PLAN.md); not re-litigated here.
+
+2. MEC value semantics — whether a nonzero/244-style Manufacturing Enable
+   Counter reading (§8.4 above; this doc only has the single MEC=0 bench
+   reading) means "bypassed/unlocked" or "production/locked" is unresolved
+   across VIP_CONTROL_ANALYSIS.txt §5.2, EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md,
+   and GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.6-7's per-unit MEC table
+   (207/227/241/244/0 across Y175/Y181/Y181B) vs the retired docs that read
+   nonzero as production/locked. This doc's single MEC=0 data point does not
+   bear on the dispute either way. Routed to GM_SEED_KEY_AND_CALIBRATION_
+   SIGNATURES.md's and EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md's Open Conflicts
+   sections (per PLAN.md); not settled here.
+
+3. VMM1/.vmm1 task-code bitness — not this doc's evidence (owned by
+   VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md); flagged here only because §12's AVB
+   guard-string evidence is sometimes conflated with the separate
+   elk_inner.elf/.vmm1 RE dispute. This doc's §12 strings are AVB/rollback
+   error messages read from SOC_HOSTOS directly, not from .vmm1, and do not
+   speak to that dispute at all.

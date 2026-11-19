@@ -2,7 +2,63 @@
 
 > Part of the [`diagnosticsd` Ethernet UDS bridge](ethernet_uds_diagnosticsd.md) doc set (port 49156).
 
+**2026-11-16 scope update:** the later CANable campaign independently granted
+the nine known seed profiles01/03/05/09/0B/0D/11/13/15 on direct CAN5/F1 and
+T1. These are the known profiles tested, not proof of every possible OEM
+security level or increasing numeric privilege. The
+[CAN campaign](../platform/can_network.md#expanded-validation-campaign--2026-11-16)
+owns the session/power-mode matrices and subsequent genuine LTZ/HC writes.
+Historical level01-only scopes below describe their original tests.
+
+**Package authentication is separate:** Nov16 level01 CAN5 tests granted access
+and entered programming, but an edited header and a signature-only control were
+rejected at block01. Immediate PEC0015 matches the pinned VIP signed-header
+verification failure branch. The parser's separate validated-SBA-ticket marker
+was not established by that grant. Additional CAN03/05 trials reproduced PEC0015; Engineering09 granted but
+rejected021E before download. A later custom SXM write succeeded using separate
+CAN613/614 temporary VIP RAM writes, after which the owner confirmed SXM removal.
+The RAM words were restored. This does not make any grant a signature bypass;
+the owner confirmed retention after a10.505-second supply-off cycle with clean CAN status. See the [verification record](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#header-signature-rejection-confirmed--2026-11-16).
+
 ---
+
+## Engineering selector09: verified scope and limits (2026-11-17)
+
+27 09/27 0A selects an independent authorization profile, not a universal
+superuser/development mode. Known special permissions in the recovered native
+T1 table are readF0A7 (also0B/0D), service23 (also0B), and writeE010 (also0D).
+The exhaustive T1 DID sweep under09 had135 positive identifiers, versus134 in
+the default comparison; the additional identifier wasF0A7. This is a complete
+result for that sweep, not an exhaustive inventory of all profile-enabled
+services across builds and transports.
+
+Memory service23 passed the09 security gate but ended7F2325 after pending
+responses; no successful memory read through that route was established.
+0248 favorites actions were exercised under09 (audio reset and no-op accepted;
+phone/navigation reset attempts rejected). Shared/default-access diagnostics
+are not capabilities unique to09. Programming-session10 02 and routine021E
+belong to profiles01/03/05 in the recovered permissions; direct CAN09 granted
+but021E returned7F3133. No signature exemption, ADB persistence, root access,
+ELK entry or full engineering capability catalog follows from the grant.
+
+**E010 clarification:** `2E E0 10 <payload>` denotes WriteDataByIdentifier for
+E010. Only its09/0D permission row has been recovered. The pinned VIP CAN
+221-identifier table does not containE010; the mounted Y175 cleanroom
+DelayedWKSApp dex files contain no DIDE010-named handler. No payload format,
+semantic effect or successful write is established. No E010 write was sent.
+It must not be described as an ADB/debug-enable or ELK boot control.
+
+The separate CAN613/614 memory/development interface has its own
+[command inventory](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#development-interface-command-inventory--2026-11-17).
+
+**F000/8180 distinction,2026-11-17:** Engineering09 alone returned7F3133 for
+`31 01 F000 8180 03`. Profile0D satisfied that routine's DCM security mask,
+but an independent application-security word remained0. A bounded, restored
+RAM change of that word to1 enabled a positive routine response and UART ELK
+request/response followed by reset. USB fastboot subsequently returned
+`kernelflinger-07.02-userdebug`, confirming ELK entry. This was not an
+Engineering09 grant effect; no ELK flash/unlock permission was tested. See the
+[ELK dispatcher analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
 ## Live T1 SecurityAccess correction (2026-11-14)
 
@@ -50,9 +106,11 @@ SecurityAccess validation; the separate ECUReset follow-up is documented below. 
 UpdateService dump reported `SBI=false`, `MEC=-1` despite the accepted
 exchange; those application values are not an authoritative VIP-state reading.
 
-The MDI2/CAN reference also uses a 31-byte all-FF seed and a 12-zero-byte
-response. This supports shared UDS behavior; the custom TCP framing is not
-MDI2 transport, CAN ISO-TP, or DoIP. Neither identical payloads nor overlapping
+The historical MDI2/CAN reference reports the same seed/response shape, but its
+transport attribution is qualified because an MDI2 attempt lacked external 12 V.
+The independent direct-CAN5 validation below now establishes the shared exchange
+on that physical pair. The custom TCP framing is not MDI2 transport, CAN ISO-TP,
+or DoIP. Neither identical payloads nor overlapping
 service names prove the complete OBD connector → gateway → A11 internal route
 or the component performing the key comparison.
 
@@ -62,6 +120,32 @@ historically documented GHS candidates. Targeted candidate connections did
 not complete. This bounds external reachability under the tested switch
 configuration; it does not show that GHS is absent or stopped. Temporary host
 VLAN interfaces were removed; no packet-capture file was created.
+
+---
+
+## Live direct CAN5 SecurityAccess validation (2026-11-15)
+
+The powered CANable, connected directly to the radio's CAN5 pair at 500 kbit/s
+with the harness MCU absent, exchanged ISO-TP using request ID `0x14DA80F2`
+and actual response ID `0x14DAF280`. TesterPresent returned `7E 00` and
+extended-session entry returned `50 03 00 64 01 F4`. Level-1 seed request
+`27 01` returned a 31-byte all-FF seed; the documented response was accepted
+with **`67 02`**. This is a fresh physical CAN5 result, independent of T1 and
+the earlier MDI2 transport qualification.
+
+Seed/key payloads were handled in memory, with redacted CAN/UART exchange
+metadata retained instead of raw seed/key bytes. After the grant, TesterPresent
+kept the same extended session active. All 256 domains of the enable-only
+candidate `31 01 03 32 DD 42 10 01` returned **`7F 31 31`**, with no other final
+response or timeout. Default session was restored with
+`50 01 00 64 01 F4`; the passive ADB observer remained disconnected.
+
+This validates only the observed level-1 grant on direct CAN5. It does not
+grant other security profiles or programming access, validate the ADB routine,
+or identify the firmware component performing the comparison. No disable,
+ECU reset, download, EEPROM write or calibration change was requested.
+The [CAN reference](../platform/can_network.md#direct-can5-adb-enable-diagnostics--2026-11-15)
+owns the complete physical-path and candidate-test comparison.
 
 ---
 

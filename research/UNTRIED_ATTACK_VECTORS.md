@@ -1,120 +1,77 @@
-# Untried Attack Vectors — GM Info 3.7 (gminfo37) Y181→Y177 Downgrade
+# Untried Attack Vectors — gminfo37 Y181→Y177 Downgrade (Status Tracker)
 
-**Initial research:** 2026-06-29
-**Control/import research updated:** 2026-11-15
-**Project:** gminfo37 — downgrade GM Info 3.7 head unit from Y181 to Y177
-**Current access:** uid=2000 ADB shell, physical board access, Renesas RH850 VIP MCU
+**Scope:** status tracker for the Y181→Y177 downgrade attack-vector catalog (17 ranked vectors,
+dependency graph, execution order). What does NOT live here: live T1 UDS/SecurityAccess bench
+status (owned by `../diagnostics/`, see pointer below), EEPROM mechanism detail (owned by
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`), the Y175/Y177/Y181 firmware-diff evidence itself (owned
+by `VIP_FIRMWARE_Y177_Y181_COMPARISON.md`, carried unchanged — cited by name/section only).
+
+Evidence tags `[C]` confirmed live / `[V]` verified / `[FW]`/`[S]` static firmware / `[inferred]`
+/ `[U]` unverified / `[X]` external, per `platform/README.md`'s legend.
+
+**Related:** `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` (ELK trigger, live-tested), `VIP_FIRMWARE_Y177_Y181_COMPARISON.md`
+(carried unchanged — the Y177-stub refutation), `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`,
+`../diagnostics/diagnosticsd_security_access.md`, `../diagnostics/diagnosticsd_routines_and_recovery.md`,
+`../diagnostics/diagnosticsd_protocol.md`.
 
 ---
 
-## Overview
+## Overview — the founding premise is refuted
 
-As of 2026-06-29, several high-value attack vectors identified in the research have never been attempted. This document tracks untried paths ranked by probability of advancing the Y177 downgrade goal.
+**The original goal — a Y181→Y177 software downgrade to obtain a permissive SELinux posture —
+does not hold.** Full primary-evidence extraction of the Y177 system image (`86283152`, corrected
+2026-09-26) shows stock **Y177 boots SELinux `Enforcing`**, not permissive:
 
-The original goal was a Y181→Y177 software downgrade to obtain a permissive SELinux posture.
-**CORRECTED 2026-09-26 (full primary-evidence extraction of the Y177 system image, `86283152`):** the
-premise is **refuted** — stock **Y177 boots SELinux `Enforcing`**, not permissive. Verified against the
-actual Y177 files, not documentation:
 - **Boot cmdline** (signed boot image `86283154`): the early `enforcing=0 androidboot.selinux=permissive`
-  is overridden by the extra_cmdline's final tokens **`enforcing=1 androidboot.selinux=enforcing buildvariant=user`** (last token wins).
+  token is overridden by the extra_cmdline's final tokens `enforcing=1 androidboot.selinux=enforcing
+  buildvariant=user` (last token wins).
 - **`/system/build.prop`**: `ro.build.type=user`, `ro.secure=1`, `ro.debuggable=0`, release-keys →
   AOSP init forces enforcing on user builds and ignores `androidboot.selinux=permissive`.
-- **Compiled policy**: all four CIL sources (plat/vendor/plat_pub_versioned/product) have **0 permissive
-  domains**; the monolithic `sepolicy` is byte-identical to vendor `precompiled_sepolicy` (sha `027861ca…`).
-- **Y177 `plat_sepolicy.cil` is byte-identical to Y181's** (0 diff) → there was **no "unintended
-  permissive policy change" for GM to correct** between Y177 and Y181; both are the same enforcing policy.
-- **No permissive lever exists**: `init` uses stock `security_setenforce`/`getenforce` with no VIP/MEC/gmauth
-  hook, and across all 2093 system+vendor binaries the only `setenforce 0` caller is a manual Intel
-  gfx-debug script behind an opt-in `--selinux_disable` flag (not boot- or VIP-gated).
-- Adjacent real-device captures: Y175 (user build) and Y181 both `getenforce=Enforcing`.
+- **Compiled policy**: all four CIL sources (plat/vendor/plat_pub_versioned/product) have **0
+  permissive domains**; the monolithic `sepolicy` is byte-identical to vendor `precompiled_sepolicy`
+  (sha `027861ca…`).
+- **Y177 `plat_sepolicy.cil` is byte-identical to Y181's** (0 diff) — there was no "unintended
+  permissive policy change" for GM to correct between Y177 and Y181; both are the same enforcing
+  policy. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2 for the primary diff (cite only, carried
+  unchanged).
+- **No permissive lever exists**: stock `init` uses `security_setenforce`/`getenforce` with no
+  VIP/MEC/gmauth hook; across all 2093 system+vendor binaries the only `setenforce 0` caller is a
+  manual Intel gfx-debug script behind an opt-in `--selinux_disable` flag (not boot- or VIP-gated).
+- Adjacent real-device captures: Y175 (user build) and Y181 both report `getenforce=Enforcing`.
 
-**On the VIP-analogy (why ADB is influenceable but SELinux is not):** the ADB bypass works because GM
-built a deliberate userspace lever — `gmauthmanagerservice` reads the VIP's MEC/`is_secure_mode` and
-relaxes adb-auth. SELinux enforcement has **no analogous GM hook**: neither adbd nor gmauth is a
-`setenforce` caller, and `is_secure_mode` does not touch SELinux. So the old "VIP forces permissive"
-theory does not transfer. **Residual gap:** no Y177 *runtime* `getenforce` capture exists; static
-evidence is conclusive, but an emulator/live-unit readout would close it 100%.
-So **a Y177 downgrade would not yield a permissive posture**, and this doc's permissive-via-downgrade
-rationale no longer holds. (The 2026-08-25 sub-finding stands: the VIP function at 0xb67d0 is a
-~906-byte `$27`/seed validator in Y175/Y177/Y181 alike with no SELinux logic — and per the 2026-09-26
-SBI verification it is **not** the ADB gate either; see item-3 note in `PROJECT_MASTER_CHECKLIST.txt`.)
+**Why the VIP-ADB-bypass analogy does not transfer:** the ADB bypass works because GM built a
+deliberate userspace lever — `gmauthmanagerservice` reads the VIP's MEC/`is_secure_mode` and
+relaxes adb-auth. SELinux enforcement has no analogous GM hook: neither `adbd` nor `gmauth` is a
+`setenforce` caller, and `is_secure_mode` does not touch SELinux. The old "VIP forces permissive"
+theory does not transfer to SELinux.
 
-Vectors are ranked by: (1) likelihood of breaking the current blocker, (2) estimated effort, (3) available access level.
+**Residual gap:** no Y177 *runtime* `getenforce` capture exists; static evidence is conclusive,
+but an emulator/live-unit readout would close it 100%.
+
+**Conclusion: a Y177 downgrade would not yield a permissive posture.** This doc's original
+permissive-via-downgrade rationale no longer holds; the vector catalog below is kept as a status
+tracker (several vectors are independently useful for ADB/seed-validator/ELK research), not as an
+active plan toward the original goal.
+
+Vectors are ranked by: (1) likelihood of breaking the current blocker, (2) estimated effort, (3)
+available access level. Historical rankings below retain their original framing for traceability;
+their presence is not a recommendation to brute-force writes, clear overrides, induce repeated
+boot failures, or try generic root recipes.
 
 ---
 
-## Current UDS and T1 priorities (2026-11-15)
+> **Outbound pointer — not edited in this pass.** The "Current UDS and T1 priorities (2026-11-15)"
+> status block (original source lines ~46-113: SID22 DID coverage audit, IOCID inventory/live
+> control table, ABFT routine0475, `IECUUpdate.copyFile`, Type2 package registration, FSA
+> RemoteModuleHMI) is live bench-status tracking for the diagnostics tree, not an untried-vector
+> catalog entry. It already cites and belongs under `../diagnostics/diagnosticsd_routines_and_recovery.md`
+> (diagnostic control coverage audit) and `../diagnostics/diagnosticsd_protocol.md` (IOCID
+> inventory / live bench controls). **This reorg has no authority to edit the diagnostics tree** —
+> flagging for the user/planner to move that block there; it is not folded into this doc.
 
-**Useful controls remain partially tested.** The exhaustive prior experiment covered
-65,536 SID22 DID numbers in one security/session profile, not every write,
-I/O-control or routine payload. It produced 135 positive DIDs; 136 is the
-later union after a state-changing audio routine exposed another read.
-The 5,120-request ADB experiment enumerated variants of one reported RID0332
-layout. It was not an all-services control sweep. The
-[coverage audit](../diagnostics/diagnosticsd_routines_and_recovery.md#diagnostic-control-coverage-audit-2026-11-15)
-owns the exact tested/discovered distinction. The subsequent authorized live
-pass exercised 24 of 25 IOCID IDs with bounded operations. Subsequent actual
-FM/AM switching and frequency round-trips worked. USB discovery/parser tests
-established an eight-character native basename requirement, without
-demonstrated single-brand override application. Calibration clearing remains
-forbidden; no package installation or reboot was performed.
-
-| Priority | Concrete lead | Work needed before a live claim |
-|---|---|---|
-| 1 | Working display/audio/input IOCIDs | Extend the now-verified bounded controls to useful selector/state coverage; do not infer untested speaker routing or VIP reset from Android input. |
-| 2 | Partially tested source/AF/surround/DAB controls | FM/AM switching and tuning now verified with rollback. USB/media requests lacked a verified playback transition; AF stayeddisabled even with FM active; surround/DAB NRC22. Tone wire mapping remains inconclusive because same-run known-signal controls were also silent. |
-| 3 | ABFT routine0475 | Install-plan JSON schema now recovered. Missing-field-only starts returned NRC31 at level05/NRC33 at level09; results NRC22. Review module writers, signatures and A/B selection before any complete plan; Stop invokes cancelUpdate(true), not a read-only query. |
-| 4 | Native IECUUpdate.copyFile | Current shell lookup is denied by SELinux find on gm_update_engine_hwservice. Recover an authorized client/proxy path; the copier was not invoked. |
-| 5 | Type2 package registration/restoration | Determine a supported caller path to the existing privileged installer on production builds. |
-| 6 | FSA RemoteModuleHMI and coordination schemas | NAM requests now reach Wi-Fi/cellular trackers and return DOWN; peer emulation on9005/9012/9018 remains blocked by host T1 reachability, not protocol exhaustion. |
-
-The [current IOCID inventory](../diagnostics/diagnosticsd_protocol.md#implemented-iocid-inventory-and-candidate-controls-2026-11-15)
-contains 25 IDs, including key events, tones, equalizers, audio-source and
-frequency controls. 41D8 is an input-control candidate rather than a root
-shell; 41DB additionally selects SWC mute and other keys, with a fixed 300 ms
-tap rather than a hold. 43FC injects the named GM tune-encoder key245.
-FACEPLATE reaches a vendor panel interface whose downstream path remains open;
-the traced SWC VHAL path emits Android-facing events with no VIP/CAN transmit.
-The [live control table](../diagnostics/diagnosticsd_protocol.md#live-bench-controls-2026-11-15)
-records actual display changes, restored audio readbacks and SWC volume
-events; zero/nonzero encoder requests prove event routing but have not
-demonstrated a controlled frequency step.
-Return/reset/freeze semantics vary by handler,
-and routine-results is not universally read-only: 0249 can clear data.
-
-**The update mechanism does contain a protected file-placement step.**
-Current Y175 DevCaloverrideInstaller copies registered calibration files and
-reboots to recovery. Its USB discovery branch is gated to non-user builds;
-normal install IPC is not a demonstrated arbitrary XML importer. MediaStore
-did permit a byte-exact 308-byte XML write at the connected FAT32 USB root;
-native selection requires an eight-character basename. A short-name manifest
-marker reached staging and the parser; the valid XML now uses
-`a11brand.calovride`. No calibration-discovery/install event or application
-was demonstrated, including with a temporary auto-install marker. See the
-[updater reference](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15).
-An original [2023 command gist](https://gist.github.com/NativeDevlopment/fb3683c94858ef2aee580aa1ac93e1a0)
-uses calibration overrides but assumes root/remount and identifies no working
-production A11 build. It supports terminology, not the missing privilege path.
-
-**No independently reproduced GM A11 UID0 shell emerged from the bounded
-community search.** A Harman GWM OEM root-property report is cross-platform:
-the inspected GM adbd binaries lack its hooks, and current GM root-service
-code checks Android debug capability before GM secure mode. The
-[root/access assessment](security/SHELL_ACCESS_ESCALATION_Jun2026.md#community-root-reports-and-target-applicability-2026-11-15)
-owns original forum links, the retrieval caveat and binary fingerprints.
-The [Global B ADB article](https://surrealdev.com/the-abcs-of-global-b/) and
-[GWM boot-target implementation](https://github.com/DymOK93/GWM-CAN-Tools/blob/master/uds.py#L351)
-are useful leads, not demonstrated alternate root access on this unit.
-The project's own repository is not independent corroboration.
-
-The older downgrade-oriented rankings below retain their historical context.
-Their presence is not a recommendation to brute-force writes, clear overrides,
-induce repeated boot failures or try generic root recipes. Current priority
-is tracing a known implementation and its real caller/state boundary.
+---
 
 ## Critical Priority (Direct Impact on Downgrade Goal)
-
----
 
 ### 1. Return-to-Dealer Screen ADB/USB State
 
@@ -163,52 +120,59 @@ Note the typo "metatdata" — this is verbatim from the binary. The word "Warnin
 
 ---
 
-### 3. RH850 JTAG — Direct VIP Firmware Extraction and Patch
+### 3. RH850 JTAG — Direct VIP Firmware Extraction and Observation
 
-**Status:** NOT TRIED
-**Priority rationale:** Single highest-leverage hardware vector. If OCD fuse is unblown, this sidesteps the entire GHS rollback counter approach.
+**Status:** NOT TRIED — scope reduced; patch premise void (History below)
+**Priority rationale:** still the single highest-leverage hardware vector for observing the VIP
+ADB/seed validator and the ELK trigger format.
 
 **Hardware required:**
 - Renesas E10A-USB debugger (~$150 new, ~$40–80 used/clone)
 - Renesas CS+ IDE (free download from Renesas website)
 - Fine-pitch probe or soldered wires to QFP-176 JTAG pins (TCK, TMS, TDI, TDO, TRST)
 
-**What JTAG access provides:**
+**What JTAG access still provides:**
 - Full VIP firmware dump — no indirect Ghidra analysis from partial binary extraction
-- Live breakpoints on security function at **0xb67d0** — observe exact inputs and branch logic
-- ~~Ability to **patch 0xb67d0 in-place** with a 4-byte stub (equivalent to the Y177 behavior)~~ — **VOID (2026-08-25):** Y177 has no stub; the function is full in every build, so there is no "Y177 behavior" to reproduce and no VIP path to SELinux (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2)
+- Live breakpoints on security function at `0xb67d0` — observe exact inputs and branch logic
 - Direct view of the J6_CDD channel message handler and the exact OBBPELK trigger format
 - EEPROM 0x0A00 structure read behavior observable in-debugger under real execution conditions
 
-**Why ~~game-changing~~ downgraded (2026-08-25):** the "patch 0xb67d0 → permissive SELinux" premise is refuted — no stub exists in any build and the VIP does not decide SELinux mode. RH850 JTAG (if the OCD fuse is unblown) is still useful for *observing* the ADB/seed validator's inputs and the J6_CDD/OBBPELK format, but it does not yield permissive SELinux and does not make the downgrade optional.
+**History:** originally framed as patching `0xb67d0` in-place with a 4-byte stub "equivalent to
+Y177 behavior." **Corrected 2026-08-25:** void — Y177 has no stub; the function is full in every
+build, so there is no "Y177 behavior" to reproduce and no VIP path to SELinux (per
+`VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2). JTAG remains useful for *observing* the ADB/seed
+validator's inputs and the J6_CDD/OBBPELK format, but does not yield permissive SELinux and does
+not make the downgrade optional.
 
 **OCD fuse status:** Unknown. Production RH850 units are frequently shipped without OCD fuse blown — the fuse is typically blown only in high-security applications. Probability of access: estimated moderate-to-high.
 
-**Next action:** Acquire E10A-USB debugger. Identify TCK/TMS/TDI/TDO/TRST on the QFP-176 pinout against the RH850/F1K datasheet (marking TM52176; confirmed: /Volumes/stuff/misc/research/GM_research/csm_eeprom/RH850_Vol_Glitch_Tools.txt).
+**Next action:** Acquire E10A-USB debugger. Identify TCK/TMS/TDI/TDO/TRST on the QFP-176 pinout against the RH850/F1K datasheet (marking TM52176; confirmed: `/Volumes/stuff/misc/research/GM_research/csm_eeprom/RH850_Vol_Glitch_Tools.txt`).
 
 ---
 
-### 4. ELK Trigger via J6_CDD — Compiled Selector 8180; CAN Validation Pending
+### 4. ELK Trigger via J6_CDD — RESOLVED: Selector Compiled; Outer Gates Unverified
 
-**Updated 2026-11-15:** the former "exact selector unknown / not tried" state
-is superseded. Y175 VIP_APP has a descriptor/callback for selector `0x8180`
-and a compiled branch that logs the ELK request and sends byte `E0` through
-IPC API selector `0x0C`. The complete CAN request and outer authorization
-checks remain unverified. Runtime/file offsets must use the corrected module
-payload mapping; see the [owning ELK analysis](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+**Status:** RESOLVED (2026-11-15) — formerly "exact selector unknown / not tried"; the owning
+record is `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`, this entry is a pointer, not a restated finding.
 
-The GWM `FDF0` writes and candidate GM `2F 81 80 03` were **attempted through
-Android diagnosticsd**, with level-1 SecurityAccess. All returned NRC 31;
-Android logged missing DID/IOCID handler classes and did not reboot. This is
-not a CAN-side rejection. See the [exact live test results](../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15).
+Y175 VIP_APP has a descriptor/callback for selector `0x8180` and a compiled branch that logs the
+ELK request and sends byte `E0` through IPC API selector `0x0C`. The complete CAN request and
+outer authorization checks remain unverified. Runtime/file offsets must use the corrected module
+payload mapping; see the owning [ELK analysis](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
+(owner of the live-tested RID=0xFF01/`FUN_000641c2` ELK-trigger fact per the corpus-wide pointer
+rule — this doc does not restate it).
 
-**Next:** validate the selector through the direct CAN adapter when delivered,
-trace the descriptor/session/security/mode gates, and observe the control
-response and actual boot environment. No broad DID-write sweep is required.
-A successful request must not be presumed to bypass signatures, rollback,
-bootloader lock state or ELK provisioning gates. The previous modified-image
-loading claim was speculative; compiled ELK reachability alone does not
-establish it.
+The GWM `FDF0` writes and candidate GM `2F 81 80 03` were attempted through Android `diagnosticsd`,
+with level-1 SecurityAccess. All returned NRC 31; Android logged missing DID/IOCID handler classes
+and did not reboot. This is not a CAN-side rejection. See the live results at
+`../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15`.
+
+**Next:** validate the selector through the direct CAN adapter when delivered, trace the
+descriptor/session/security/mode gates, and observe the control response and actual boot
+environment. No broad DID-write sweep is required. A successful request must not be presumed to
+bypass signatures, rollback, bootloader lock state, or ELK provisioning gates. The previous
+modified-image-loading claim was speculative; compiled ELK reachability alone does not establish
+it.
 
 ---
 
@@ -219,6 +183,8 @@ establish it.
 - `research/tools/ghs_probe/ghs_probe.c`
 - `research/tools/ghs_probe/CMakeLists.txt`
 - `research/tools/ghs_probe/AndroidManifest.xml`
+
+(Path kept as-is; `research/tools/` is an excluded subdirectory not opened in this reorg pass.)
 
 **Build procedure:**
 ```bash
@@ -248,47 +214,42 @@ adb shell /data/local/tmp/ghs_probe
 
 ## High Priority
 
----
+### 6. androidboot.bootreason=warm → gm_protokey Bypass — CORRECTED, does not reach UDS SecurityAccess
 
-### 6. androidboot.bootreason=warm → gm_protokey Bypass
-
-**Status:** NOT TRIED
+**Status:** NOT TRIED as a probe; **corrected scope** (2026-09-27) — resolving the "what would it
+even get you" question that made this vector worth tracking.
 **Finding source:** INVENTORY.md bypass #2
 
-**Finding:** `/proc/cmdline` value `androidboot.bootreason=warm` causes `gm_protokey` to skip seed-to-key validation entirely.
+**Finding:** `/proc/cmdline` value `androidboot.bootreason=warm` causes `gm_protokey` to skip
+seed-to-key validation entirely. `/proc/cmdline` is denied from uid=2000 shell context; the
+bootreason value is typically also exposed as an Android system property (`ro.boot.bootreason`),
+and whether `gm_protokey` reads `/proc/cmdline` directly or via a property API is unresolved.
 
-**Current blocker:** `/proc/cmdline` is denied from uid=2000 shell context. However, the bootreason value is typically also exposed as an Android system property.
+**How to probe:** `adb shell getprop ro.boot.bootreason`; `adb shell find /vendor/etc/init
+/system/etc/init -name "*.rc"` and check for bootreason conditionals; `adb shell cat
+/proc/$(adb shell pidof gm_protokey)/maps | grep cmdline` to determine whether `gm_protokey`
+reads `/proc/cmdline` directly or via a property API.
 
-**How to probe:**
-```bash
-# Check if bootreason is readable as a property
-adb shell getprop ro.boot.bootreason
-
-# Check init.rc for bootreason conditionals
-adb shell find /vendor/etc/init /system/etc/init -name "*.rc" 2>/dev/null
-
-# Determine if gm_protokey reads /proc/cmdline or uses a property API
-adb shell cat /proc/$(adb shell pidof gm_protokey)/maps 2>/dev/null | grep cmdline
-```
-
-**Potential impact:** If `gm_protokey` can be bypassed, the boot-time proto-key/disk-encryption (DATA_LOCKED)
-gate it controls becomes accessible. **[C] Corrected (2026-09-27):** this does NOT unlock UDS `SecurityAccess
-($27)` — `gm_protokey` is unrelated to the diagnosticsd UDS chain. `$27` for `ETHERNET`/`NOTIFICATION` tiers is
-checked in-process by `diagnosticsd`'s own `libuds`; the `VIP` tier is forwarded off-SoC to the VIP MCU via
+**History:** originally framed as a path to unlocking UDS `SecurityAccess ($27)`.
+**Corrected 2026-09-27:** this does NOT unlock `$27` — `gm_protokey` is unrelated to the
+diagnosticsd UDS chain. `$27` for `ETHERNET`/`NOTIFICATION` tiers is checked in-process by
+`diagnosticsd`'s own `libuds`; the `VIP` tier is forwarded off-SoC to the VIP MCU via
 `ProxyOfExtComp`/`SockAdaptor`, gated by the SBI EEPROM byte there — see
-`diagnostics/ethernet_uds_diagnosticsd.md`. Opening the `diagnosticsd` code path (vector #9) is a separate,
-unrelated escalation, not something a `gm_protokey` bypass grants.
+`../diagnostics/ethernet_uds_diagnosticsd.md`. Opening the `diagnosticsd` code path (vector #9) is
+a separate, unrelated escalation; a `gm_protokey` bypass does not grant it. What remains open here
+is only the boot-time proto-key/disk-encryption (DATA_LOCKED) gate itself, not UDS access.
 
 ---
 
-### 7. Delete /data/vendor/gm/security/.validation (TOFU Re-provisioning)
+### 7. Delete /data/vendor/gm/security/.validation (TOFU Re-provisioning) — CORRECTED, same scope limit as #6
 
-**Status:** NOT TRIED
+**Status:** NOT TRIED; **corrected scope** (2026-09-27)
 **Finding source:** INVENTORY.md bypass #3
 
-**Finding:** Deleting `/data/vendor/gm/security/.validation` triggers TOFU (Trust On First Use) re-provisioning, allowing injection of a researcher-controlled PAL key into the device trust chain.
+**Finding:** Deleting `/data/vendor/gm/security/.validation` triggers TOFU (Trust On First Use)
+re-provisioning, allowing injection of a researcher-controlled PAL key into the device trust
+chain.
 
-**How to probe:**
 ```bash
 adb shell ls -laZ /data/vendor/gm/security/
 adb shell ls -laZ /data/vendor/gm/security/.validation 2>/dev/null
@@ -298,10 +259,11 @@ adb shell rm /data/vendor/gm/security/.validation
 adb logcat | grep -i "protokey\|TOFU\|provision\|PAL"
 ```
 
-**Potential impact:** A researcher-controlled PAL key in the trust chain could be leveraged to sign update
-packages accepted by the GHS update path. **[C] Corrected (2026-09-27):** this would NOT unlock UDS
-`SecurityAccess ($27)` — that gate is unrelated to `gm_protokey`/the PAL trust chain (see the correction on
-vector #6, above, and `diagnostics/ethernet_uds_diagnosticsd.md`).
+**History:** originally framed as a lever that could get update packages signed and accepted by
+the GHS update path. **Corrected 2026-09-27:** this would NOT unlock UDS `SecurityAccess ($27)` —
+that gate is unrelated to `gm_protokey`/the PAL trust chain (same correction as vector #6; see
+`../diagnostics/ethernet_uds_diagnosticsd.md`). The update-path-signing question itself remains
+open, but is decoupled from the original UDS-escalation framing.
 
 ---
 
@@ -312,14 +274,11 @@ vector #6, above, and `diagnostics/ethernet_uds_diagnosticsd.md`).
 
 **Finding:** `/data/gmprotokey/trigger/` is writable from the shell. Writing files to this directory may trigger behavioral changes in the `gm_protokey` process.
 
-**Action:**
 ```bash
 adb shell ls -laZ /data/gmprotokey/
 adb shell ls -laZ /data/gmprotokey/trigger/
-# Create a trigger file and observe
 adb shell touch /data/gmprotokey/trigger/test_probe
 adb logcat -s gm_protokey &
-# Watch for property changes
 adb shell while true; do getprop | grep protokey; sleep 1; done
 ```
 
@@ -352,16 +311,16 @@ adb shell while true; do getprop | grep protokey; sleep 1; done
 
 ---
 
-### 10. diagnosticsd logical tester and session sequence
+### 10. diagnosticsd logical tester and session sequence — RESOLVED: live-verified sequence
 
-**Corrected 2026-11-14 — live-verified, not an untried trust-tier hypothesis.**
-The old FA/F1/F0 source values and unvalidated-target claim were not the
-accepted sequence. Use tester F4, target 0x0084 and the eight-byte `>HHI`
-header; the old `>HHIH` example incorrectly inserted two extra bytes.
-Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
-`27 02` plus 12 zero bytes returned `67 02`. Default session was restored.
-See the [owning diagnostic sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
-calibration-write, Android-root or GHS-shell result follows from this grant.
+**Status:** RESOLVED (corrected 2026-11-14) — live-verified, not an untried trust-tier hypothesis.
+
+The old FA/F1/F0 source values and unvalidated-target claim were not the accepted sequence. Use
+tester F4, target `0x0084` and the eight-byte `>HHI` header; the old `>HHIH` example incorrectly
+inserted two extra bytes. Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
+`27 02` plus 12 zero bytes returned `67 02`. Default session was restored. See the owning record:
+`../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14`.
+No arbitrary-key, calibration-write, Android-root, or GHS-shell result follows from this grant.
 
 ---
 
@@ -380,8 +339,6 @@ calibration-write, Android-root or GHS-shell result follows from this grant.
 
 ## Medium Priority
 
----
-
 ### 12. EEPROM 0x0B40 Developer Flag
 
 **Status:** NOT TRIED
@@ -395,20 +352,29 @@ calibration-write, Android-root or GHS-shell result follows from this grant.
 
 **Action:** Flip bit with XGecu T48, reboot, observe any behavioral change in logcat, VIP diagnostic responses, or SELinux domain assignments.
 
-**Note:** A VIP-layer behavioral change may alter how 0xb67d0 evaluates the **ADB/seed** check (not a SELinux "version check" — corrected 2026-08-25; see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2).
+**Note:** A VIP-layer behavioral change may alter how `0xb67d0` evaluates the ADB/seed check (not
+a SELinux "version check" — corrected 2026-08-25; see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2).
+See also `VIP_CONTROL_ANALYSIS.txt`'s own open conflict on whether the verified bypass byte is
+`0x0B40` or `0x0B41` (routed in VCA's Open Conflicts, not restated here).
 
 ---
 
 ### 13. EEPROM 0x0A00 — Base Structure Testing
 
 **Status:** NOT TRIED (despite being ranked vector #2 in early prioritization)
-**Current understanding:** `0x0A00` is the Backup Security Block base pointer (range `0x0A00–0x0AFF`), not a single flag. The 871 VIP firmware references observed in the binary reflect structure member access patterns, not a single critical field.
+**Current understanding:** `0x0A00` is the Backup Security Block base pointer (range
+`0x0A00–0x0AFF`), not a single flag. The 871 VIP firmware references observed in the binary
+reflect structure member access patterns, not a single critical field.
 
-**Internal tension:** The EEPROM analysis document says "Do NOT Modify 0x0A00" while teardown.md ranks it as High Feasibility / Low Risk. These assessments must be reconciled before proceeding.
-
-**Resolution path:** Map VIP function at `0x9ce22` (which loads RAM address `0x714f` and branches to init at `0x97d78`) against the `0x0A00` structure layout in Ghidra. Identify which structure fields gate which behaviors before any modification.
+**Resolution path:** Map VIP function at `0x9ce22` (which loads RAM address `0x714f` and branches
+to init at `0x97d78`) against the `0x0A00` structure layout in Ghidra. Identify which structure
+fields gate which behaviors before any modification.
 
 **Action:** Complete the Ghidra mapping of `0x9ce22` before touching `0x0A00`.
+
+(See **Open conflicts** below — this vector's own "Do NOT Modify" vs "Low Risk" tension between
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` and `hardware/teardown.md` is carried there rather than
+resolved here, since it touches a doc outside this reorg's authority.)
 
 ---
 
@@ -430,7 +396,6 @@ calibration-write, Android-root or GHS-shell result follows from this grant.
 **Status:** NOT ANALYZED
 **Finding:** A dedicated ABL update partition (`vda4`, labeled `ghs_abl_update`) is routed through GHS. Content and update structure are unknown — no analysis has been performed.
 
-**Action:**
 ```bash
 adb shell ls -laZ /dev/block/by-name/ | grep vda4
 adb shell dd if=/dev/block/vda4 bs=4096 count=256 2>/dev/null | xxd | head -100
@@ -461,17 +426,21 @@ adb shell dd if=/dev/block/vda4 bs=4096 count=256 2>/dev/null | xxd | head -100
 
 ---
 
-### 17. IDiagnosticsInternalService via vndbinder
+### 17. IDiagnosticsInternalService via vndbinder — RESOLVED: surface still unverified, but not a required path
 
-**Status:** NOT TRIED
-**Corrected 2026-11-14:** the internal HIDL service is a separate surface;
-  it is not needed to avoid the old invalid-tester TCP rejection. The direct
-  F4/extended-session flow now obtains `67 02`. Live shell `lshal debug`
-  could not connect to the internal service (missing service or permission);
-  its methods and trust model remain unverified. The TCP format is custom GM
-  framing, not DoIP.
+**Status:** RESOLVED as a dependency question (corrected 2026-11-14); methods/trust model of the
+internal service itself remain unverified — **not** a blanket "not tried."
 
-**Prerequisite:** Access to a vendor SELinux domain — not achievable directly from the uid=2000 shell domain without a prior privilege escalation step. This vector becomes accessible if vectors #6, #7, or #9 yield a higher-privilege execution context.
+The internal HIDL service is a separate surface; it is not needed to avoid the old invalid-tester
+TCP rejection. The direct F4/extended-session flow (vector #10) now obtains `67 02` without it.
+Live shell `lshal debug` could not connect to the internal service (missing service or
+permission); its methods and trust model remain unverified. The TCP format is custom GM framing,
+not DoIP.
+
+**Prerequisite:** Access to a vendor SELinux domain — not achievable directly from the uid=2000
+shell domain without a prior privilege escalation step. This vector becomes accessible if vectors
+#6, #7, or #9 yield a higher-privilege execution context (note: #6/#7 no longer feed UDS
+escalation per their corrections above — only #9 plausibly does).
 
 ---
 
@@ -480,7 +449,7 @@ adb shell dd if=/dev/block/vda4 bs=4096 count=256 2>/dev/null | xxd | head -100
 | Tool | Purpose | Status |
 |---|---|---|
 | ghs_probe APK | Probe `/dev/ghs/*` ioctls and Trusty IPC ports | Written, not built |
-| Frida S84.dll hooks | Capture the diagnosticsd/VIP `$27` seed→key transform (NOT gm_protokey — see the [C] corrections above; gm_protokey is the unrelated boot-time proto-key/disk-encryption gate) | Script ready; needs Windows host + DPS + MDI2 hardware |
+| Frida S84.dll hooks | Capture the diagnosticsd/VIP `$27` seed→key transform (NOT gm_protokey — see the corrections on vectors #6/#7; gm_protokey is the unrelated boot-time proto-key/disk-encryption gate) | Script ready; needs Windows host + DPS + MDI2 hardware |
 | Renesas E10A-USB debugger | RH850 VIP JTAG access | Not acquired (~$150) |
 | XGecu T48 + BGA-153 ISP adapter | Dump Samsung KLMCG4JEUD eMMC without reballing | Not acquired |
 | ChipWhisperer or equivalent | Voltage glitch misc/AB0 CRC check in VMM | Not acquired |
@@ -492,7 +461,7 @@ adb shell dd if=/dev/block/vda4 bs=4096 count=256 2>/dev/null | xxd | head -100
 ```
 Physical JTAG (E10A-USB)
   └── Vector #3: RH850 JTAG → OBSERVE 0xb67d0 ADB/seed gate  [patch-to-stub VOID 2026-08-25]
-  └── Vector #4: J6_CDD ELK DID discovery
+  └── Vector #4: J6_CDD ELK DID — RESOLVED selector, outer gates unverified
 
 Dealer Screen (software trigger)
   └── Vector #1: SELinux/UID state during dealer mode
@@ -504,10 +473,10 @@ eMMC BGA-153 dump
 
 diagnosticsd exploit
   └── Vector #9: malloc-before-check → uid=0 shell
-      └── Vector #10: Source-address spoofing (lower bar, try first)
-          └── Vector #17: IDiagnosticsInternalService (post-escalation)
+      └── Vector #10: RESOLVED live-verified session sequence (not source-address spoofing)
+          └── Vector #17: IDiagnosticsInternalService (post-escalation, methods unverified)
 
-gm_protokey bypass
+gm_protokey bypass (decoupled from UDS SecurityAccess — see #6/#7 corrections)
   └── Vector #6: bootreason=warm
   └── Vector #7: .validation delete → TOFU
   └── Vector #8: trigger/ directory oracle
@@ -517,15 +486,34 @@ gm_protokey bypass
 
 ## Recommended Execution Order (Next Session)
 
+Kept for historical traceability; items referencing a now-resolved/corrected vector (#10 source-
+address spoofing, #4 selector discovery) should be re-read against that vector's corrected entry
+above before acting on this list.
+
 1. **Vector #1** — Reproduce the dealer screen trigger; immediately probe ADB UID and `getenforce` while in that state. Zero hardware cost, uses existing access.
-2. **Vector #10** — Source-address spoofing on port 49156. Pure software, 30-minute test.
+2. **Vector #10** — now resolved (live F4/extended-session sequence); any remaining interest here is port-49156 testing per vector #9, not source-address spoofing.
 3. **Vector #5** — Build and deploy `ghs_probe.c`. Requires NDK setup, 2–4 hour effort.
-4. **Vector #7 + #8** — Check `.validation` and `trigger/` directory. Pure shell, 15-minute test.
-5. **Vector #6** — Probe `ro.boot.bootreason` and `gm_protokey` behavior. Pure shell, 15-minute test.
-6. **Acquire E10A-USB** — Unblocks vectors #3 and #4, the highest-leverage hardware path.
-7. **Vector #12** — EEPROM 0x0B40 flip. Low risk, confirmed safe to test per checklist.
+4. **Vector #7 + #8** — Check `.validation` and `trigger/` directory (TOFU/oracle question only — decoupled from UDS per correction above). Pure shell, 15-minute test.
+5. **Vector #6** — Probe `ro.boot.bootreason` and `gm_protokey` behavior (DATA_LOCKED gate only — decoupled from UDS per correction above). Pure shell, 15-minute test.
+6. **Acquire E10A-USB** — Unblocks vectors #3 and #4's outer-gate tracing, the highest-leverage hardware path.
+7. **Vector #12** — EEPROM 0x0B40 flip. Low risk, confirmed safe to test per checklist (see VCA's own 0x0B40-vs-0x0B41 open conflict before relying on the address).
 8. **Vector #2** — After eMMC dump or misc write path confirmed via vector #1.
 
 ---
 
-*Document generated: 2026-06-29. Update status fields as vectors are attempted.*
+## Open conflicts
+
+1. **EEPROM 0x0A00 "Do NOT Modify" vs teardown.md "High Feasibility / Low Risk" (source L407).**
+   `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` states "Do NOT Modify 0x0A00" for the Backup Security
+   Block base pointer (range `0x0A00–0x0AFF`); `hardware/teardown.md` independently ranks the same
+   address as High Feasibility / Low Risk. No dated correction in either doc reconciles this.
+   **Flagging only** — `hardware/teardown.md` is outside this reorg's authority to edit, and ELA's
+   own in-pass correction trail (per PLAN.md's EEPROM charter) does not address this specific
+   cross-doc tension. Route: the EEPROM-charter owner (`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`) and
+   `hardware/teardown.md` need to reconcile which risk rating stands before vector #13 is attempted.
+2. **EEPROM 0x0B40 vs 0x0B41 developer-flag byte** (touches vector #12 above) — owned and tracked
+   in `VIP_CONTROL_ANALYSIS.txt`'s Open Conflicts per PLAN.md item 5; not restated here, see VCA.
+
+---
+
+*Document generated: 2026-06-29. Status tracker; update status fields as vectors are attempted.*

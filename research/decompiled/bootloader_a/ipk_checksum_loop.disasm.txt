@@ -1,0 +1,95 @@
+0x128089a2      8b742434       mov esi, dword [esp + 0x34]
+0x128089a6      03742424       add esi, dword [esp + 0x24]
+0x128089aa      8b442458       mov eax, dword [esp + 0x58]
+0x128089ae      83c0e4         add eax, 0xffffffe4
+0x128089b1      0f84b3020000   je 0x12808c6a
+0x128089b7      890424         mov dword [esp], eax
+0x128089ba      89442420       mov dword [esp + 0x20], eax
+0x128089be      e80dfe0800     call 0x128987d0
+0x128089c3      85c0           test eax, eax
+0x128089c5      0f8417030000   je 0x12808ce2
+0x128089cb      8944241c       mov dword [esp + 0x1c], eax
+0x128089cf      8b5508         mov edx, dword [ebp + 8]
+0x128089d2      8b8280000000   mov eax, dword [edx + 0x80]
+0x128089d8      31c9           xor ecx, ecx
+0x128089da      80bb4c3b10..   cmp byte [ebx + 0x103b4c], 0
+0x128089e1      8b9284000000   mov edx, dword [edx + 0x84]
+0x128089e7      895c2438       mov dword [esp + 0x38], ebx
+0x128089eb      89f7           mov edi, esi
+0x128089ed      be00007d00     mov esi, 0x7d0000
+0x128089f2      0f44f1         cmove esi, ecx
+0x128089f5      8b4008         mov eax, dword [eax + 8]
+0x128089f8      03742430       add esi, dword [esp + 0x30]
+0x128089fc      897c2434       mov dword [esp + 0x34], edi
+0x12808a00      89f9           mov ecx, edi
+0x12808a02      83d100         adc ecx, 0
+0x12808a05      8b00           mov eax, dword [eax]
+0x12808a07      83c61c         add esi, 0x1c                           ; 28
+0x12808a0a      83d100         adc ecx, 0
+0x12808a0d      894c240c       mov dword [esp + 0xc], ecx
+0x12808a11      89742408       mov dword [esp + 8], esi
+0x12808a15      8b5c2438       mov ebx, dword [esp + 0x38]
+0x12808a19      8b74241c       mov esi, dword [esp + 0x1c]
+0x12808a1d      89742414       mov dword [esp + 0x14], esi
+0x12808a21      8b4c2420       mov ecx, dword [esp + 0x20]
+0x12808a25      894c2410       mov dword [esp + 0x10], ecx
+0x12808a29      89442404       mov dword [esp + 4], eax
+0x12808a2d      891424         mov dword [esp], edx
+0x12808a30      ff5208         call dword [edx + 8]                    ; 8
+0x12808a33      85c0           test eax, eax
+0x12808a35      0f88b1020000   js 0x12808cec
+0x12808a3b      8b442420       mov eax, dword [esp + 0x20]
+0x12808a3f      c1e802         shr eax, 2
+0x12808a42      0f84f8020000   je 0x12808d40
+0x12808a48      89442420       mov dword [esp + 0x20], eax
+0x12808a4c      89f0           mov eax, esi
+0x12808a4e      83c010         add eax, 0x10                           ; 16
+0x12808a51      89442440       mov dword [esp + 0x40], eax
+0x12808a55      31d2           xor edx, edx
+0x12808a57      c644241b01     mov byte [esp + 0x1b], 1
+0x12808a5c      bf00000000     mov edi, 0
+0x12808a61      85d2           test edx, edx
+0x12808a63      89542424       mov dword [esp + 0x24], edx
+0x12808a67      0f843d010000   je 0x12808baa
+0x12808a6d      31ff           xor edi, edi
+0x12808a6f      b800000000     mov eax, 0
+0x12808a74      83fa08         cmp edx, 8                              ; 8
+0x12808a77      0f8223010000   jb 0x12808ba0
+0x12808a7d      89d1           mov ecx, edx
+0x12808a7f      83e1f8         and ecx, 0xfffffff8                     ; 4294967288
+0x12808a82      83c1f8         add ecx, 0xfffffff8
+0x12808a85      c1e903         shr ecx, 3
+0x12808a88      89d0           mov eax, edx
+0x12808a8a      25f8ffff7f     and eax, 0x7ffffff8
+0x12808a8f      8d70f8         lea esi, [eax - 8]
+0x12808a92      89f2           mov edx, esi
+0x12808a94      c1ea03         shr edx, 3
+0x12808a97      83c201         add edx, 1
+0x12808a9a      83fe18         cmp esi, 0x18                           ; 24
+0x12808a9d      730c           jae 0x12808aab
+0x12808a9f      660fefc0       pxor xmm0, xmm0
+0x12808aa3      31f6           xor esi, esi
+0x12808aa5      660fefc9       pxor xmm1, xmm1
+0x12808aa9      eb7c           jmp 0x12808b27
+0x12808aab      8d7901         lea edi, [ecx + 1]
+0x12808aae      83e7fc         and edi, 0xfffffffc                     ; 4294967292
+0x12808ab1      f7df           neg edi
+0x12808ab3      660fefc0       pxor xmm0, xmm0
+0x12808ab7      31f6           xor esi, esi
+0x12808ab9      660fefc9       pxor xmm1, xmm1
+0x12808abd      8b5c241c       mov ebx, dword [esp + 0x1c]
+0x12808ac1      90             nop
+0x12808ac2      90             nop
+0x12808ac3      90             nop
+0x12808ac4      90             nop
+0x12808ac5      90             nop
+0x12808ac6      90             nop
+0x12808ac7      90             nop
+0x12808ac8      90             nop
+0x12808ac9      90             nop
+0x12808aca      90             nop
+0x12808acb      90             nop
+0x12808acc      90             nop
+0x12808acd      90             nop
+0x12808ace      90             nop
+0x12808acf      90             nop

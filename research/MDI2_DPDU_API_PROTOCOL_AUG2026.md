@@ -1,55 +1,83 @@
 # MDI2 D-PDU API Protocol — Full Reconstruction from Real DPS Captures
 
-**Date:** 2026-08-24 (corrected in place 2026-11-14 — see the dated notes in §11-§12; operator summary in
-`mdi2_client/docs/PROTOCOL.md`)
-**Context:** Bench work to build a native macOS/Python client for the Bosch GM MDI2 that talks
-UDS to the vehicle with **zero GM Windows software** (DPS/SPS/MDI Manager). No hardware was
-available for this pass (MDI2 + vehicle not on the bench; the later live bench is MDI2 over direct USB RNDIS to radio ECU 0x80, never on a vehicle OBD2 port — 2026-11-14) — this is a from-capture protocol
-reconstruction so implementation work can continue offline. Source: ~170MB of Wireshark
-captures taken earlier the same day (`DPS+SPS.pcapng`, `SPS_radioCal_and_OS_UpdateCHeck.pcapng`,
-plus three of our own failed native-client attempts), reduced to reassembled PDU-API messages
-(`msgs.pkl`, 6528 messages) and a UDS record extract (`diag_records_fixed.pkl`, 257 requests),
-then analyzed by four parallel agents (byte-level, frame-cited) plus a local-model cross-check.
+**Scope:** The Bosch GM MDI2's D-PDU (ISO 22900-2) wire protocol tunnelled on TCP/10123 —
+frame format, two-socket session topology, the mid-opcode table, per-operation bring-up
+sequences, the `PDUSetUniqueRespIdTable` addressing scheme, UDS session-control/SecurityAccess
+*ordering* over this transport, server-side RE of `DPDULib.dll`/`bvtx4j32.dll`
+(DPDULib/bvtx4j32), the port-9xxx management-plane pre-activation sequence, and the
+loopback ident service (TCP/8125) resolution.
+**Does NOT live here:** the raw-DoIP (.70:13400) session-level narrative and the
+DoIP-responder-topology question — see `AUG24_SESSION_FULL_PCAP_TIMELINE.md` (APT) finding #1;
+the settled SecurityAccess key-derivation algorithm and canonical seed/key facts — see
+`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK); raw UDS bypass technique — see
+`MDI2_RAW_UDS_BYPASS_GUIDE.md` (carried unchanged, cited by name only); the MDI2 *Manager*
+stack (GM_MDI_Ident.exe, Blowfish-ECB session JSON, log-pull) — see
+`MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md` (MML).
 
-## 0. The one finding that changes the plan
-
-**CORRECTION (2026-08-24, later same day):** the original wording below ("real DPS never uses
-raw DoIP") is too absolute and was refuted by cross-referencing a pre-existing analysis corpus
-(`gm_dps/docs/`, specifically `DPS_MASTER_REFERENCE.md` §15.5 and `LIVE_DPS_CAPTURE_ECU80_AUG2026.md`)
-that predates this doc. **Both transports are real and both carry live UDS diagnostics — which
-one is used is a user/config choice in DPS, not a fixed rule.** A live-captured DPS session with
-Vehicle Architecture = `GM VIP/SDV1 (GB)`, Subtype = `DoIP (Optimal)` ran genuine raw ISO-13400
-DoIP through `GM_DOIP_32.dll` (source address `0x0EF5`) and captured real `$27 01`→`$67 01`
-SecurityAccess directly on the DoIP wire for all 27 ECUs on that vehicle. Today's capture set
-(below) happened to be entirely sessions that used the D-PDU/PDU-API subtype instead — that's
-real and correctly documented, but it's evidence for "the D-PDU path exists and works," not for
-"the DoIP path is never used." `mdi2_doip_query.py`'s approach was therefore NOT chasing a dead
-end — it needs the same session-control fix originally suspected (retry `10 03` through NRC
-`0x21`, etc.), not abandonment. Treat §9's "do not continue investing in raw DoIP" as WITHDRAWN.
-The two transports should be thought of as parallel, both-real paths to reimplement, not a
-right-answer/wrong-answer pair.
-
-Original (2026-08-24, morning) finding, kept for the capture evidence it's still accurate about:
-Across the 10 real DPS sessions captured that day (streams 106,131,183,215,244,296,317,360,415,438
-— spanning a full radio recalibration/flash, several "read installed software" inventory passes,
-and a bus-topology probe), **zero** UDS bytes travelled over `192.168.171.70:13400` — but this
-was because none of those particular sessions happened to be running the `DoIP (Optimal)`
-subtype, not because that subtype doesn't exist or doesn't work. The MDI2 *does* run its
-Ethernet/DoIP-enable IOCTL sequence (`IOCTL 28` → `IOCTL 37` → `IOCTL 22`, see §5) once per DPS
-launch, and `.70:13400` does come up (confirmed via UDP vehicle-announcement broadcasts); in the
-sessions captured that day, DPS happened to route every diagnostic request through the
-**D-PDU API (ISO 22900-2) tunnelled over the same TCP/10123 PDU-API socket** instead, via
-`PDUCreateComLogicalLink` + `PDUStartComPrimitive` (fully documented below, still accurate for
-that transport).
-
-**Implication (revised):** `mdi2_doip_query.py` (dialing `.70:13400` and sending raw ISO-13400 DoIP
-diagnostic messages) is chasing a transport DPS itself doesn't use for UDS. It's not wrong that
-the relay/DoIP-entity comes up — it does — but getting a real ECU response through it is
-unproven and off the path DPS actually takes. **`mdi2_replay.py`'s approach (PDU-API passthrough)
-is the right transport; it was just missing most of the required setup.** All future native-client
-work should target the D-PDU API flow documented below, not the raw-DoIP path.
+**Date:** 2026-08-24, corrected in place through 2026-11-14 (see History lines throughout).
+Operator summary lives outside this tree at `mdi2_client/docs/PROTOCOL.md`.
+**Bench context:** MDI2 over direct USB RNDIS to radio ECU 0x80, never on a vehicle OBD2 port
+(confirmed 2026-11-14; some capture-derived prose below still describes the original vehicle
+capture, not the current bench — flagged inline where it matters).
+**Evidence base:** §1-§9 reconstructed from DPS-side Wireshark captures (~170MB,
+`DPS+SPS.pcapng`, `SPS_radioCal_and_OS_UpdateCHeck.pcapng`), reduced to `msgs.pkl` (6528
+reassembled PDU-API messages) and `diag_records_fixed.pkl` (257 UDS requests), cross-checked by
+4 parallel agents + a local-model pass. §10 is independent server-side binary RE (3 decompiled
+Bosch VCI Software 9.1.2752.177 binaries, 170-function candidate subset, 6 Opus passes:
+STRONG 157/MAJORITY 13/NONE 0). §11-§12 are live-hardware bench results layered on top of both.
 
 ---
+
+## 0. Both transports are real — this doc covers only the D-PDU path
+
+**Finding (2026-08-24, corrected same day):** an earlier draft of this section claimed "real
+DPS never uses raw DoIP." That is wrong and is withdrawn. Cross-referencing a pre-existing
+corpus (`gm_dps/docs/DPS_MASTER_REFERENCE.md` §15.5, `LIVE_DPS_CAPTURE_ECU80_AUG2026.md`) shows a
+live DPS session (Vehicle Architecture `GM VIP/SDV1 (GB)`, Subtype `DoIP (Optimal)`) ran genuine
+ISO-13400 DoIP through `GM_DOIP_32.dll` (source address `0x0EF5`) and captured real `$27 01` →
+`$67 01` SecurityAccess directly on the DoIP wire, across 27 ECUs. **Both the D-PDU/PDU-API
+path (TCP/10123) and the raw-DoIP path (`.70:13400`) are real, both carry live UDS, and which
+one a given DPS session uses is a config/subtype choice, not a fixed rule.**
+
+That 27-ECU DoIP sweep found the defect isolated to one ECU: only radio ECU `0x80` returns the
+degenerate all-`0xFF` SecurityAccess seed; all 26 other swept ECUs return varied real seeds.
+This confirms the all-`0xFF` behavior is specific to this one ECU's own `$27` implementation,
+not a systemic transport or tooling artifact.
+
+**`J2534Wrapper.dll` is not a thin pass-through.** It independently performs DoIP discovery
+(`DoIPSendDiscoveryRequest[Ex]`, a `CDHCPListener` class that listens for DHCP offers to learn
+the MDI2's IP), device enumeration, and management of `GM_MDI_Ident.exe` as a Windows service
+(`OpenSCManager`/`StartService`). It shares source path
+`j2534-wrapper\win32\solutions\doip-stack\channel.cpp` with `GM_DOIP_32.dll` — same authored
+codebase, confirming the raw-DoIP and D-PDU paths above are sibling implementations, not
+independent ones. Separately confirmed: **actual UDS diagnostics never flow through the J2534
+PassThru read/write API at all** (`j2534_api_log.txt` — only 6 distinct call types across the
+whole file: Open/ReadVersion/Connect/Ioctl/Disconnect/Close, no
+ReadMsgs/WriteMsgs/StartMsgFilter ever) — real UDS traffic goes exclusively over one of the two
+paths above.
+
+The 10 sessions this doc's captures are built from (streams 106,131,183,215,244,296,317,360,
+415,438 — a full radio recalibration/flash, several inventory reads, a bus-topology probe) all
+happened to use the D-PDU/PDU-API subtype. Zero UDS bytes crossed `.70:13400` in those sessions
+**because none of them ran the `DoIP (Optimal)` subtype**, not because that path doesn't work —
+the MDI2 still runs its Ethernet/DoIP-enable IOCTL sequence (`IOCTL 28`→`37`→`22`, §4/§10.4) once
+per DPS launch regardless, and `.70:13400` does come up (confirmed via UDP vehicle-announcement
+broadcasts).
+
+**What this means for this doc:** everything below (§1-§12) documents the D-PDU/PDU-API
+transport only, because that's what this capture set exercised end-to-end and server-side RE
+confirmed independently. It is not a claim that D-PDU is "the right path" and raw DoIP "the
+wrong path" — both are legitimate GM transports. The raw-DoIP session itself (topology,
+responder behavior, `.70` ownership question) is out of scope for this doc; see
+`AUG24_SESSION_FULL_PCAP_TIMELINE.md` finding #1, which carries that as its own open item.
+
+> History: the original text here, and §9's closing paragraph, stated "do not continue
+> investing in the raw-DoIP path" / "mdi2_doip_query.py is chasing a dead end" as a flat
+> conclusion. That conclusion directly contradicted this section's own correction (both
+> transports are real) and has been dropped in this pass rather than carried forward
+> contradicting itself. `mdi2_doip_query.py`'s approach needs the same session-control fix
+> suspected at the time (retry `10 03` through NRC `0x21`, etc.), not abandonment — but that
+> investigation belongs to the raw-DoIP doc, not here.
 
 ## 1. Wire framing
 
@@ -77,7 +105,10 @@ connections to `192.168.171.2:10123`, always adjacent stream ids (e.g. 317/318, 
   multi-frame UDS response).
 
 **A client that only opens one socket will never see a diagnostic response**, even if its
-request goes out correctly — this is very likely why earlier native-client attempts saw silence.
+request goes out correctly.
+
+**History:** to replay against a live MDI, capture the live channel id from the `0x885` reply
+(payload offset 12) and substitute the channel byte in each command frame's leading handle word.
 
 ## 3. D-PDU API mid opcode table (reconciled across all 4 agent reports; hex = decimal mid)
 
@@ -87,11 +118,11 @@ request goes out correctly — this is very likely why earlier native-client att
 | `0x886`/`0x887` | bind event channel | used on the event socket |
 | `0x888`/`0x889` | capability query / keepalive ping | harmless to poll; carries no diag data |
 | `0x44D`/`0x44E` (1101/1102) | GetVersion | |
-| **`0x44F`/`0x450`** (1103/1104) | **PDUCreateComLogicalLink** | resource id at payload byte 9: `0x06`=raw CAN, `0x2A`=MDI-managed ISO-TP. **The `0x450` reply is status-only (`0c000000 50040000 00000000`) — it does NOT return a handle.** The CLL handle is CLIENT-assigned and deterministic: `handle = (channel_id << 24) \| index` (high byte = channel from the `0x885` reply, low byte = sequential CLL index). See CORRECTION 2026-08-27. |
+| **`0x44F`/`0x450`** (1103/1104) | **PDUCreateComLogicalLink** | resource id at payload byte 9: `0x06`=raw CAN, `0x2A`=MDI-managed ISO-TP. The `0x450` reply is status-only (`0c000000 50040000 00000000`) — it does **not** return a handle. The CLL handle is client-assigned and deterministic: `handle = (channel_id << 24) \| index` (high byte = channel from the `0x885` reply, low byte = sequential CLL index). |
 | `0x451`/`0x452` (1105/1106) | **PDUDestroyComLogicalLink** | payload = handle only |
 | `0x457`/`0x458` (1111/1112) | **PDUGetComParam**(handle, paramId) | |
 | `0x459`/`0x45A` (1113/1114) | **PDUSetComParam**(handle, paramId, value) | 34-byte payload, paramId @off17, value @off30 |
-| **`0x45D`/`0x45E`** (1117/1118) | **PDUSetUniqueRespIdTable** | 24B = clear table, 174B = install 6-entry addressing table (see §4) |
+| **`0x45D`/`0x45E`** (1117/1118) | **PDUSetUniqueRespIdTable** | 24B = clear table, 174B = install 6-entry addressing table (§5) |
 | **`0x45F`/`0x460`** (1119/1120) | **PDUConnect**(handle) | resp = `00000000 <u32 timestamp>` |
 | `0x461`/`0x462` (1121/1122) | **PDUDisconnect**(handle) | |
 | **`0x463`/`0x464`** (1123/1124) | **PDUStartComPrimitive** | the only mid that carries UDS bytes out; see §4 layout |
@@ -99,22 +130,20 @@ request goes out correctly — this is very likely why earlier native-client att
 | `0x863` (2147, event socket only) | async diagnostic event | TX-confirm (`blockLen`=0) or RX data (`blockLen`>0); see §4 |
 | `1505` (event socket only) | multi-frame length indication | precedes a multi-frame `0x863` response |
 
-> **CORRECTION 2026-08-27 (live bench, native macOS replay of stream 414 + DoIP x80 read):**
-> - `PDUCreateComLogicalLink` does **not** return a handle. `0x450` reply = `0c000000 50040000 00000000`
->   (12 bytes, status word only). The handle is **client-assigned**: `handle = (channel_id << 24) | index`,
->   verified against every `0x459/0x45D/0x45F/0x461/0x463` frame in stream 414 (channel `0x13` →
->   handles `0x13000002 … 0x13000006`). To replay against a live MDI, capture the live channel id from
->   the `0x885` reply (payload offset 12) and substitute the channel byte in each command frame's leading
->   handle word — no handle needs to be scraped from any response.
-> - `.70` DHCP lease requires the `br-usb` bridge to stay up **~18.85 s** (SET_BRIDGE enable→disable in
->   the capture); the bare eth-enable IOCTLs alone do not lease `.70` if the session is torn down promptly.
->   The SET_BRIDGE-enable IOCTL blocks **~3.28 s** server-side while eth0 links.
-> - DoIP addressing confirmed live: tester `0x0EF5`, gateway `0x0C45` (answers from proxy source `0x0045`),
->   radio ECU 0x80 physical target `0x0A80` (answers from `0x2580`), functional `0xEFFE`.
->   `wakeUpNetworks` = `31 01 02 0E FF FF FF` (the `FF FF FF` suffix is required; omitting it → `7F 31 13`).
->   Radio `27 01` seed is a **null 31×`0xFF`** and the ID/SBI DIDs read with **no** SecurityAccess unlock.
-> - Full results: `~/Desktop/MDI2_DPDU_DoIP_x80_bench_report.md`. Replay engine: `mdi2_client/mdi2/dpdu_replay.py`
->   (supersedes the guess-based `mdi2/dpdu.py`, whose builders are unverified — recommend deleting it).
+> History (2026-08-27, live bench, native macOS replay of stream 414 + DoIP x80 read): confirmed
+> the client-assigned handle formula above against every `0x459/0x45D/0x45F/0x461/0x463` frame
+> in stream 414 (channel `0x13` → handles `0x13000002…0x13000006`) — no handle needs to be
+> scraped from any response. Same pass also established: `.70` DHCP lease requires the
+> `br-usb` bridge to stay up **~18.85 s** (bare eth-enable IOCTLs alone do not lease `.70` if
+> the session tears down promptly); the SET_BRIDGE-enable IOCTL blocks **~3.28 s** server-side
+> while eth0 links; DoIP addressing confirmed live as tester `0x0EF5`, gateway `0x0C45`
+> (answers from proxy source `0x0045`), radio ECU 0x80 physical target `0x0A80` (answers from
+> `0x2580`), functional `0xEFFE`; `wakeUpNetworks` = `31 01 02 0E FF FF FF` (the `FF FF FF`
+> suffix is required — omitting it gives `7F 31 13`); radio `27 01` seed on this path is a
+> **null 31×`0xFF`**, and the ID/SBI DIDs read with no SecurityAccess unlock. Full bench log:
+> `~/Desktop/MDI2_DPDU_DoIP_x80_bench_report.md` (outside this tree). Replay engine:
+> `mdi2_client/mdi2/dpdu_replay.py` supersedes the earlier guess-based `mdi2/dpdu.py`
+> (unverified builders — recommended for deletion).
 
 ## 4. Per-operation bring-up sequence (gold-standard reconstruction, from stream 317 — a full
 radio flash — cross-checked against streams 106/131/183/215/244/296/360/415/438)
@@ -169,12 +198,12 @@ u32 CLLhandle | u16 copId | u16 (channel<<8)|0x10 | u16 copType | u16 0x0000 | u
 | u8 0x01 | u32 Time_ms | u32 NumSendCycles | u32 NumReceiveCycles
 | u32 0 | u32 0x00000004 | u32 flags | u32 0
 ```
-> **[Updated 2026-11-08:** the u16 after `copId` is **`(channel << 8) | 0x10`**, not a fixed
-> `0x2510`. `channel` is the D-PDU channel = the CLL handle's high byte (`handle >> 24`). The
-> captured `0x2510` is only the vehicle-tested channel-0x25 case; the `mdi2_direct_client_WIP`
-> capture on channel 0x1E shows `0x1E10`, and channel 0x2C would be `0x2C10`. Code derives this
-> via `_cop_marker(handle)` in `live_programming_transport.py` /
-> `programming_transport.build_one_shot`.**]**
+The u16 after `copId` is `(channel << 8) | 0x10`, where `channel` is the D-PDU channel = the CLL
+handle's high byte (`handle >> 24`) — not a fixed `0x2510`. (History, 2026-11-08: the originally
+captured `0x2510` was only the vehicle-tested channel-0x25 case; channel 0x1E gives `0x1E10`
+(source capture: `mdi2_direct_client_WIP`), channel 0x2C gives `0x2C10`. Code derives this via
+`_cop_marker(handle)` in `live_programming_transport.py` / `programming_transport.build_one_shot`.)
+
 `Time_ms`/`NumSendCycles`=-1 on a *separate* CLL is how DPS offloads **cyclic TesterPresent**
 to the MDI hardware: `3E 80` on functional id `0x10DBFEF1`, Time=1000ms, NumSendCycles=-1 —
 confirmed by `0x863` TX-confirm events landing at exactly 1.000s spacing for the life of the
@@ -209,29 +238,27 @@ address byte):
 | `0x145A` | 0x60, 0x68, 0x80, 0x81, 0x97, 0xBE |
 | `0x14DA` | 0x45 (the only ECU that responds on the "expected" prefix) |
 
-> **Tester-source-byte reconciliation:** the addresses above are from this doc's D-PDU/PDU-API
-> pcaps, in which DPS uses tester byte **`F1`** (GMLAN-standard physical tester), e.g. ECU 0x80 =
-> req `0x14DA80F1` / resp `0x145AF180`, ECU 0x45 = req `0x14DA45F1` / resp `0x14DAF145`. A
-> separate GDS-side capture enumerates the *same* ECU set with tester byte **`F2`** instead —
-> ECU 0x80 = req `0x14DA80F2` / resp `0x145AF280` (confirmed:
-> `diagnostics/icloud_diag/dps_logs/A11_CSM_x80.Txt`). The **response prefix** (0x145A for 0x80,
-> 0x14DA for 0x45) is identical in both; only the low tester byte differs. The tester source byte
-> (F1 vs F2) is therefore tool/session-dependent, not a fixed vehicle property — F1 is the generic
-> GMLAN/OBD tester address. When targeting ECU 0x80 outside these pcaps, treat `0x14DA80F2 /
-> 0x145AF280` (the GDS-captured pair) as the canonical addressing.
+**Tester-source-byte reconciliation:** the table above is from this doc's D-PDU/PDU-API pcaps,
+in which DPS uses tester byte `F1` (GMLAN-standard physical tester), e.g. ECU 0x80 =
+req `0x14DA80F1` / resp `0x145AF180`, ECU 0x45 = req `0x14DA45F1` / resp `0x14DAF145`. A
+separate GDS-side capture (`diagnostics/icloud_diag/dps_logs/A11_CSM_x80.Txt`) enumerates the
+*same* ECU set with tester byte `F2` instead — ECU 0x80 = req `0x14DA80F2` / resp `0x145AF280`.
+The **response prefix** (0x145A for 0x80, 0x14DA for 0x45) is identical in both; only the low
+tester byte differs — it is tool/session-dependent, not a fixed vehicle property. When
+targeting ECU 0x80 outside these pcaps, treat `0x14DA80F2 / 0x145AF280` (the GDS-captured pair)
+as the canonical addressing.
 
 Functional broadcast request id: `0x10DBFEF1` (used for `3E 80` TesterPresent and the `22 F1B0`
 node-discovery sweep). A separate, unrelated functional id `0x18DB33F1` (OBD-II style, 11/29-bit)
 appears only in a legacy-bus-probe stream and gets NRC `0x22 conditionsNotCorrect` — this
-vehicle is GMLAN-only, the legacy probe is DPS being thorough, not a required step.
+vehicle is GMLAN-only; the legacy probe is DPS being thorough, not a required step.
 
 ## 6. UDS session-control / SecurityAccess ordering (ground truth from stream 317's full flash
-+ streams 183/215's read-only passes — supersedes the earlier "add 10 03/27 01 before every
-read" hypothesis, which was based on incomplete data)
++ streams 183/215's read-only passes)
 
 1. **Reads and routine calls generally do NOT require `10 03` or `27` first**, as long as a
-   functional `3E 80` TesterPresent is being kept alive on `0x10DBFEF1` (explicitly, ~800ms
-   apart, or via the hardware cyclic cop). Confirmed: `22 F0F3`, `22 F1B0`, `22 F190` (VIN),
+   functional `3E 80` TesterPresent is being kept alive on `0x10DBFEF1` (~800ms apart, or via
+   the hardware cyclic cop). Confirmed: `22 F0F3`, `22 F1B0`, `22 F190` (VIN),
    `22 F181/F182/F1CB/F081/F1A0/F0B4`, and `31 01 FF01` all succeed with **no** prior session
    control or security access, across 5 independent sessions (106,131,183,215,296,360,415,438).
 2. **The one exception:** ECU `0x45` gets an explicit physical `10 03` (extended session) +
@@ -244,25 +271,29 @@ read" hypothesis, which was based on incomplete data)
    - Before the `34/36/37` download sequence (flashing new calibration data to ECU `0x80`).
    - Before a batch of `2E WriteDataByIdentifier` calls (writing `F198` repairShopCode, `F199`
      programmingDate, `F190` VIN) + `31 01 03 9B` + `11 01` ECUReset.
-   Seed request: `27 01` → seed response `67 01 <seed bytes>`. **CORRECTED 2026-09-10**: RH850
-   VIP `$27` handler disasm (`FUN_000b67d0`) confirms the seed structure is **16-byte fixed
-   ECUID + random challenge**, not the pre-2026-09-10 "31-byte seed / 12-byte key" figure (that
-   older figure was a byte-offset misread of an earlier capture).
-   **Byte-count discrepancy, unresolved as of 2026-09-10 — flagged, not silently picked:**
-   this doc previously stated the total seed as 32 bytes (16-byte ECUID `004B41DC…14AC` +
-   16-byte random), attributed to a live capture. A second, independently and programmatically
-   re-parsed capture (`module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt`, ECUID
-   `002642250000160006104145610114AC`, a different physical unit) shows `67 01` followed by
-   **31 bytes** (16-byte ECUID + **15**-byte random challenge) — double-counted by hand and by
-   script; high confidence in this specific 31-byte read. SecurityAccess seed length is an ECU
-   firmware property, not per-unit-variable, so the two captures should agree; they currently
-   don't. Re-verify the original 32-byte capture's raw bytes the same way (script, not by-eye)
-   before treating either figure as final. Key:
-   `27 02 <key bytes>`, computed by DPS in ~0.7-1.1s. Response is `7F 27 78` (responsePending)
-   then `67 02` (unlocked) — **`0x78` must be treated as "keep waiting", not a failure.**
-   The handler is **SHA-256-based** (H0..H7 init constants + a CRC-32 poly-`0xEDB88320` table
-   both present in the binary), not an LFSR or small-seed scheme — see
-   `eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` for the full disasm writeup. The actual
+
+   Seed request: `27 01` → seed response `67 01 <seed bytes>`. History (corrected 2026-09-10):
+   RH850 VIP `$27` handler disasm (`FUN_000b67d0`) confirms the seed structure is a **16-byte
+   fixed ECUID + random challenge**, not the pre-2026-09-10 "31-byte seed / 12-byte key" figure
+   (that older figure was a byte-offset misread of an earlier capture).
+
+   **Open conflict — see §Open Conflicts #1 below:** the exact total seed length is disputed
+   between a 32-byte reading (16-byte ECUID `004B41DC…14AC` + 16-byte random, attributed to a
+   live capture) and a 31-byte reading (16-byte ECUID `002642250000160006104145610114AC` +
+   15-byte random, from an independently re-parsed capture,
+   `module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt`, a different physical unit).
+   This doc's own re-check as of 2026-09-10 had high confidence in the 31-byte reading but could
+   not re-verify the original 32-byte capture's raw bytes by script (only by eye) before closing
+   the question, and is therefore unresolved on its own evidence — not resolved by picking
+   GSK's 31-byte figure, since GSK's number comes from a different capture set than this doc's
+   32-byte outlier. Carried forward rather than silently dropped.
+
+   Key: `27 02 <key bytes>`, computed by DPS in ~0.7-1.1s. Response is `7F 27 78`
+   (responsePending) then `67 02` (unlocked) — `0x78` must be treated as "keep waiting," not a
+   failure. The handler is **SHA-256-based** (H0..H7 init constants + a CRC-32 poly-`0xEDB88320`
+   table both present in the binary), not an LFSR or small-seed scheme — see
+   `eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` for the full disasm writeup and
+   `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK) for the canonical seed/key doc. The actual
    key-derivation algorithm (how the 16-byte key is computed from ECUID+challenge) was **not**
    recovered from this handler — no static secret/salt found in the VIP image — **OPEN**.
 4. **`10 02` (programmingSession) is requested AFTER SecurityAccess succeeds, not before** —
@@ -283,7 +314,7 @@ header: `03 01 00 <u16 blockId> 00 "CSM" 00×21 <32-byte digest>` followed by AS
 reads `22 F0F0` (pending, then positive) which returns the list of just-programmed block IDs —
 a natural post-flash verification read to replicate.
 
-## 8. What our native client is currently missing (both scripts — consolidated)
+## 8. Native-client gap analysis (both existing scripts)
 
 `mdi2_replay.py` and `mdi2_doip_query.py` together implement only the session hello
 (`0x884`/`0x885`) and the device-global Ethernet-activation IOCTLs (28/37/22) — **neither ever
@@ -291,10 +322,10 @@ sends a `PDUCreateComLogicalLink`, so neither ever obtains a CLL handle, so neit
 call `PDUConnect` or `PDUStartComPrimitive`. Zero UDS bytes reach the wire in any of the three
 captured attempts.** This is confirmed by direct comparison against real DPS traffic from the
 identical `0x884` handshake onward — real DPS's very next calls are `PDUIoCtl(0,0x0B)` →
-`PDUCreateComLogicalLink` (which our client never sends).
+`PDUCreateComLogicalLink` (which the client never sends). This gap applies to both the D-PDU and
+the raw-DoIP script equally — it says nothing about which transport is "right" (§0).
 
-Additional bugs found in the existing scripts (secondary to the above, for when a proper D-PDU
-implementation exists):
+Secondary bugs found in the existing scripts:
 - `mdi2_replay.py` opens only **one** TCP connection; a second, channel-bound connection is
   required to ever see a response (`0x863` never arrives on the command socket).
 - `mdi2_replay.py`'s `send_raw()` uses a flat 2.0s recv timeout; the real IOCTL 37 ack takes
@@ -306,39 +337,40 @@ implementation exists):
 - Both scripts send a second, redundant `0x884` on the same socket; the channel-bound `0x884`
   belongs on the second (event) connection, not repeated on the first.
 
-## 9. Recommended path forward (no hardware needed to prepare this)
+## 9. Recommended path forward (D-PDU, no hardware needed to prepare this)
 
-Build a new client around the resource-`0x2A` CLL flow in §4, targeting ECU `0x45` first (it's
-the only ECU that needs an explicit wake — `10 03` retried through `7F 10 21`, then
-`31 01 02 0E FF FF FF`), then read `22 F0F3` as the simplest possible "did we get a real
-response" smoke test (expected: `62 F0F3 <16 bytes>`). This exactly mirrors stream 317 frames
-24531-24638 and needs two sockets, the full resource-0x2A bring-up sequence, and the
-174-byte `PDUSetUniqueRespIdTable` with `0x1F=0x14DA45F1` / `0x22=0x14DAF145`. Once that round-
-trips, the same skeleton generalizes to any ECU by discovering its response prefix via the
-`22 F1B0` functional sweep first (§5) rather than assuming `0x14DAF1<ecu>`.
+Build a client around the resource-`0x2A` CLL flow in §4, targeting ECU `0x45` first (it's the
+only ECU that needs an explicit wake — `10 03` retried through `7F 10 21`, then
+`31 01 02 0E FF FF FF`), then read `22 F0F3` as the simplest "did we get a real response" smoke
+test (expected: `62 F0F3 <16 bytes>`). This mirrors stream 317 frames 24531-24638 and needs two
+sockets, the full resource-0x2A bring-up sequence, and the 174-byte `PDUSetUniqueRespIdTable`
+with `0x1F=0x14DA45F1` / `0x22=0x14DAF145`. Once that round-trips, the same skeleton generalizes
+to any ECU by discovering its response prefix via the `22 F1B0` functional sweep first (§5)
+rather than assuming `0x14DAF1<ecu>`.
 
-**Do not continue investing in the raw-DoIP-on-.70:13400 path** (`mdi2_doip_query.py`) for UDS
-traffic — it's architecturally real (the MDI2 does bring up a DoIP entity there) but is not what
-gets a working ECU response in any of today's 10 real-DPS sessions.
+> History: this section originally closed with "do not continue investing in the raw-DoIP-on-
+> .70:13400 path," presented as a standing recommendation. That line is withdrawn per §0 — both
+> transports are real GM paths; this section's actual contribution is the concrete D-PDU
+> build-order recommendation above, not a verdict on DoIP.
 
 ---
 
 ## 10. Server-side confirmation from the MDI2 Manager binaries (2026-08-25)
 
-Everything above (§1-§9) was reconstructed **from the DPS side**, byte-by-byte, out of Wireshark
+Everything in §1-§9 was reconstructed **from the DPS side**, byte-by-byte, out of Wireshark
 captures. This section is the **other half of the wire**: the same protocol read directly out of
 the MDI2 Manager / Bosch VCI Software implementation, i.e. the code on the far end of the socket.
 The two reconstructions were produced independently and they agree.
 
-**Provenance.** Three newly-decompiled binaries from the Bosch VCI Software (GM) 9.1.2752.177
+**Provenance.** Three decompiled binaries from the Bosch VCI Software (GM) 9.1.2752.177
 installer — `DPDULib.dll` (Bosch's ISO 22900-2 D-PDU API implementation, 17,229 functions),
 `bvtx4j32.dll` (the SAE J2534 PassThru DLL layered on top of it, 7,764 functions), and
 `gm_mdi_manager.exe` (the MFC manager GUI, 4,477 functions). A 170-function protocol-candidate
-subset was annotated by six independent Opus passes; consensus **STRONG 157 / MAJORITY 13 /
-NONE 0**. Per-function detail:
-`gm_dps/disassembly/annotations/mdi2mgr_candidates.annotations.md`. These binaries retain real
-C++ class/method names, `__FILE__` paths (`D:\ws\Global_VCI\vtx-vci\GM_9_1\6\...`) and unstripped
-log literals, which is why convergence was total.
+subset was annotated by six independent Opus passes; consensus STRONG 157 / MAJORITY 13 /
+NONE 0. Per-function detail: `gm_dps/disassembly/annotations/mdi2mgr_candidates.annotations.md`
+(outside this tree). These binaries retain real C++ class/method names, `__FILE__` paths
+(`D:\ws\Global_VCI\vtx-vci\GM_9_1\6\...`) and unstripped log literals, which is why convergence
+was total.
 
 ### 10.1 The DoIP version check is computed, not a constant (`02 FD` explained)
 
@@ -350,15 +382,15 @@ else if ((*param_1 == (byte)~param_1[1]) && (*param_1 < 3)) { return 0; }  /* ac
 else                                                        { return 1; }  /* reject */
 ```
 
-- This **confirms** our capture-derived `02 FD` prologue: `~0xFD == 0x02`.
-- It also **extends** it: the check is `hdr[0] == ~hdr[1] && hdr[0] < 3`, so protocol versions
+- This confirms the capture-derived `02 FD` prologue: `~0xFD == 0x02`.
+- It also extends it: the check is `hdr[0] == ~hdr[1] && hdr[0] < 3`, so protocol versions
   `0x00` (`00 FF`), `0x01` (`01 FE`) and `0x02` (`02 FD`) are **all** accepted by the MDI2;
   `0x03` and above are rejected. A native client must send a matching complement pair, but is
   not restricted to `02 FD`.
 - It explains a long-standing dead end: grepping the binaries for a literal `0x02`/`0xFD`
   constant finds nothing, because the constant is never materialised.
 
-A second, **mode-aware** version check exists separately in `DoIPUDPComm::ProcessVa`
+A second, mode-aware version check exists separately in `DoIPUDPComm::ProcessVa`
 (`0x10123230`): on the vehicle-announcement path it explicitly rejects a stored version byte of
 `1` when running in ISO mode, logging `"ISO - But v1"`. So `0x01` is accepted by the generic
 header parser but refused by the ISO-mode VA handler. Send `02 FD`.
@@ -366,33 +398,31 @@ header parser but refused by the ISO-mode VA handler. Send `02 FD`.
 ### 10.2 `DoIPVCIProto::ChkMsgHdr` is a source-address filter, NOT the version check
 
 `FUN_1012d960` — despite the name — never looks at the version bytes. It resolves the VCI's
-logical address from **ComParam `0x6b` (primary)** falling back to **ComParam `0x6c` (secondary)**
-via `FUN_101346e0` and filters the message on source address. Any prior note attributing the
-version check to `ChkMsgHdr` is wrong; the version check is §10.1.
+logical address from ComParam `0x6b` (primary) falling back to ComParam `0x6c` (secondary) via
+`FUN_101346e0` and filters the message on source address. Any prior note attributing the version
+check to `ChkMsgHdr` is wrong; the version check is §10.1.
 
 ### 10.3 UDP port 13401 is transient, which is why captures never show it
 
 Port `0x3459`/**13401** is written in exactly one place in the whole DLL:
-`CModuleSystem::VehicleIdRequest` (`0x10037460`). For **"combination mode 1"** only, it sets
+`CModuleSystem::VehicleIdRequest` (`0x10037460`). For "combination mode 1" only, it sets
 `this+0x1d6 = 0x3459` (13401), `this+0x1d8 = 0x3458` (13400), `this+0x1d4 = 1`, performs the
 combined vehicle-ID scan, and then **restores `this+0x1d6 = 0`** before returning. The
 constructor `CModuleSystem::CModuleSystem` (`0x10033270`) initialises `+0x1d8 = 0x3458` and
 `+0x1d6 = 0`, i.e. 13400 is the steady state and 13401 exists only inside one call.
 
-Related: in `ProcessEntityIdMsg` (full DLL; not in the candidate subset, around `0x100eb580`)
-the port-13401 comparison only selects a **log label / bitmask** — "VAM" vs "VId Response" — it
-is **not** an accept/reject gate. Actual acceptance is gated by the `DoIPFilterNetworks` bit
-`0x40000000` plus `AllowedAddress()`.
+Related: in `ProcessEntityIdMsg` (full DLL, around `0x100eb580`) the port-13401 comparison only
+selects a log label/bitmask ("VAM" vs "VId Response") — it is **not** an accept/reject gate.
+Actual acceptance is gated by the `DoIPFilterNetworks` bit `0x40000000` plus `AllowedAddress()`.
 
 **Practical upshot:** a native client should listen on 13400 and does not need to bind 13401.
 
 ### 10.4 The Ethernet/DoIP-enable IOCTL sequence, confirmed at the implementation level
 
-Our captures showed `IOCTL 28` → `IOCTL 37` → `IOCTL 22` once per DPS launch (§5). The source of
-that sequence is now identified exactly. In `bvtx4j32.dll`:
-
-`CJ2534Channel_Ethernet::PassThruConnect` → `SetProtocolConnectionComParameters` issues, in this
-order, all with `hCLL = 0xFFFFFFFF` (module-level, no logical link):
+The captures showed `IOCTL 28` → `IOCTL 37` → `IOCTL 22` once per DPS launch. The source of that
+sequence: in `bvtx4j32.dll`, `CJ2534Channel_Ethernet::PassThruConnect` →
+`SetProtocolConnectionComParameters` issues, in this order, all with `hCLL = 0xFFFFFFFF`
+(module-level, no logical link):
 
 | # | Captured IOCTL | Registered name | Notes |
 |---|---|---|---|
@@ -400,20 +430,19 @@ order, all with `hCLL = 0xFFFFFFFF` (module-level, no logical link):
 | 2 | 37 (`0x25`) | `PDU_IOCTL_MS_SET_BRIDGE_SWITCH_STATE` | id global `DAT_10147cf8`; sets `this+0x568 = 1`, payload at `this+0x570` |
 | 3 | 22 (`0x16`) | `PDU_IOCTL_GET_ETH_PIN_OPTION` | id global `DAT_10147cc0`; read-back / verification |
 
-**NEW — teardown (not in the capture-derived doc):** `CJ2534Channel_Ethernet::PassThruDisconnect`
-**reverses** the activation order:
-
+**Teardown** (not visible in captures): `CJ2534Channel_Ethernet::PassThruDisconnect` **reverses**
+the activation order:
 1. `this+0x568 = 0`, then `PDU_IOCTL_MS_SET_BRIDGE_SWITCH_STATE` (`DAT_10147cf8`) — bridge switch OFF
 2. then `PDU_IOCTL_MS_SET_ETH_PIN_OPTION` (`DAT_10147cd8`) with a zeroed value — eth pin option OFF
 
 There is no read-back on teardown. A native client that wants to leave the MDI2 in the state DPS
 leaves it in should replay this reversed pair on shutdown.
 
-### 10.5 CAVEAT: the numeric IOCTL / ComParam IDs are MDF-assigned at runtime, not constants
+### 10.5 CAVEAT: the numeric IOCTL/ComParam IDs are MDF-assigned at runtime, not constants
 
 This is the most important operational caveat in this section. `CJ2534Server::Initialize`
-(`bvtx4j32.dll`) does **not** use compile-time IOCTL numbers. It registers **35 vendor IOCTL
-names as strings**:
+(`bvtx4j32.dll`) does **not** use compile-time IOCTL numbers. It registers 35 vendor IOCTL names
+as strings, e.g.:
 
 ```c
 (*vtbl+0x18)(0x8023, "PDU_IOCTL_RESET",                    &DAT_10147c70);
@@ -433,53 +462,49 @@ supplied **by the MDF (manufacturer definition file) at connect time** and writt
 per-name global. The same is done in bulk for ComParams a few lines earlier
 (`PDUGetObjectId(0x8024, 0xab, ...)` over the `CP_*` name table).
 
-**Therefore:** our hardcoded `0x1c` / `0x25` / `0x16` are correct **for the captured session and
+**Therefore:** the hardcoded `0x1c` / `0x25` / `0x16` are correct **for the captured session and
 that MDF**, but are not guaranteed stable across DPS versions, firmware versions or MDF
 revisions. **The durable facts are the STRING names and the CALL ORDER, not the numbers.** A
-robust native client should resolve ids by name (or at minimum re-derive them per session) rather
-than baking in hex.
+robust native client should resolve ids by name (or at minimum re-derive them per session)
+rather than baking in hex.
 
 ### 10.6 ADJUDICATED: positional index in the registration list is NOT the IOCTL id
 
 One analysis pass proposed mapping `22 = PDU_IOCTL_VEHICLE_ID_REQUEST` and
 `28 = PDU_IOCTL_MS_CLEAR_DOIP_ENTITY_LIST` by assuming the 1-based position of a name in the
-35-name registration list equals its numeric id. **This is rejected.** Reasons, in order of
-strength:
+35-name registration list equals its numeric id. **Rejected**, in order of strength:
 
 1. **Arithmetically impossible.** The list has exactly 35 entries (globals `DAT_10147c70` …
-   `DAT_10147cf8`, stride 4 ⇒ `(0xcf8-0xc70)/4 + 1 = 35`). No positional scheme, 0-based or
-   1-based, can yield **37** — which is one of the three ids we actually captured.
+   `DAT_10147cf8`, stride 4 ⇒ `(0xcf8-0xc70)/4 + 1 = 35`). No positional scheme, 0- or 1-based,
+   yields **37** — one of the three ids actually captured.
 2. **Contradicted by the mechanism (§10.5).** Each name gets its own out-parameter global that
-   `PDUGetObjectId` fills at runtime from the MDF. Position in the source listing carries no
+   `PDUGetObjectId` fills at runtime from the MDF; position in the source listing carries no
    information about the assigned value.
-3. **Contradicted by direct behavioural observation (§10.4).** We do not have to guess: we can
-   read *which global is passed to which call at which point in the connect sequence*.
-   `PassThruConnect` demonstrably calls `DAT_10147cd8` first, `DAT_10147cf8` second and
-   `DAT_10147cc0` third, and the capture shows `28` then `37` then `22` in exactly those
-   positions. That fixes 28 = `MS_SET_ETH_PIN_OPTION`, 37 = `MS_SET_BRIDGE_SWITCH_STATE`,
-   22 = `GET_ETH_PIN_OPTION`.
-   (For completeness, the positional guess would have given 21/20 for `GET_ETH_PIN_OPTION` —
-   it does not even self-consistently reproduce one of the three.)
+3. **Contradicted by direct behavioural observation (§10.4).** `PassThruConnect` demonstrably
+   calls `DAT_10147cd8` first, `DAT_10147cf8` second and `DAT_10147cc0` third, and the capture
+   shows `28` then `37` then `22` in exactly those positions, fixing 28 =
+   `MS_SET_ETH_PIN_OPTION`, 37 = `MS_SET_BRIDGE_SWITCH_STATE`, 22 = `GET_ETH_PIN_OPTION`. (The
+   positional guess would have given 21/20 for `GET_ETH_PIN_OPTION` — it does not even
+   self-consistently reproduce one of the three.)
 
 Behavioural evidence beats name-position inference. §10.4's mapping stands.
 
 ### 10.7 Protocol identity and framing constants, confirmed
 
-Independently confirmed on the MDI2 side, matching our capture reconstruction:
+Independently confirmed on the MDI2 side, matching the capture reconstruction:
 
-- Bus type string: **`IEEE_802_3`**. Protocol string: **`ISO_14229_5_ON_ISO_13400_2`**
-  (UDS-on-DoIP). These are the exact literals to request when selecting a resource.
-- DoIP framing: **8-byte header**, payload length **big-endian at offset +4**, maximum accepted
-  payload **`0x100400`** (1 MiB + 1 KiB) — anything larger is rejected before allocation.
-- **Routing Activation request: 15 bytes** (19 with the optional OEM-specific field).
-- **Routing Activation response** is validated as: source address `@+8`, entity address `@+10`,
+- Bus type string: `IEEE_802_3`. Protocol string: `ISO_14229_5_ON_ISO_13400_2` (UDS-on-DoIP).
+  These are the exact literals to request when selecting a resource.
+- DoIP framing: 8-byte header, payload length big-endian at offset +4, maximum accepted payload
+  `0x100400` (1 MiB + 1 KiB) — anything larger is rejected before allocation.
+- Routing Activation request: 15 bytes (19 with the optional OEM-specific field).
+- Routing Activation response is validated as: source address `@+8`, entity address `@+10`,
   response code `@+12`.
-- **Vehicle announcement / VIR response** layout: VIN `@+8` (17 bytes), logical address `@+0x19`,
+- Vehicle announcement / VIR response layout: VIN `@+8` (17 bytes), logical address `@+0x19`,
   EID `@+0x1b` (6 bytes), GID `@+0x21` (6 bytes).
-- **Vehicle Identification Request** sizes: **8 B** (broadcast), **14 B** (by EID),
-  **25 B** (by VIN).
+- Vehicle Identification Request sizes: 8 B (broadcast), 14 B (by EID), 25 B (by VIN).
 
-### 10.8 RESOLVED — `Port='8080'` in the PDUConstruct option string is the loopback ident-service default, overridden at runtime
+### 10.8 `Port='8080'` in the PDUConstruct option string is the loopback ident-service default
 
 `CJ2534Server::Initialize` builds the D-PDU API construct option string as:
 
@@ -487,86 +512,37 @@ Independently confirmed on the MDI2 side, matching our capture reconstruction:
 FUN_10034cb0(local_6c, "VCIName='%s' Port='8080'");   /* -> m_PduApi.Construct(local_6c, this) */
 ```
 
-i.e. it hands `PDUConstruct` an option string containing **`Port='8080'`**, which does not match
-the **TCP/10123** PDU-API port we captured (nor 13400/13401). `PDUConstruct`'s export wrapper
+i.e. it hands `PDUConstruct` an option string containing `Port='8080'`, which does not match the
+TCP/10123 PDU-API port in the captures (nor 13400/13401). `PDUConstruct`'s export wrapper
 (`DPDULib.dll` `0x10083510`) treats the argument as free-form text and passes it straight to
-`CPDUAPI::Construct`, so the value is consumed somewhere deeper in `DPDULib`/`bvtx_vci_rt`.
+`CPDUAPI::Construct`, so the value is consumed deeper in `DPDULib`/`bvtx_vci_rt`.
 
 **Resolved (2026-08-25).** The `'8080'` literal is a hardcoded *default* in `bvtx4j32`'s option
-string; it is **not** the port actually dialed. The value reaching `bvtx_vci_rt` is the
-**loopback ident-service port, computed at runtime as `8097 + ProductGroupId`** (the only
-compile-time constant is the offset `0x1fa1 = 8097`; `lea esi,[eax+0x1fa1]` at `0x1005f6d2`,
-both upstream and downstream sockets to `127.0.0.1`). `ProductGroupId` is a small integer read
-from the Windows registry (`HKLM\SOFTWARE\WOW6432Node\BOSCH\VTX-VCI\GM\ProductGroupId`); absent/0
-→ port `8097`. For this bench's live `ProductGroupId = 0x1c = 28`, the port is **`8125`** —
-exactly the `127.0.0.1:8125` loopback ident service observed in §12. The ident-service TCP client
-is `BVTX-VCI-RT.dll` (`CIdentClient::Connect`); `dps.exe`/`dpsvcs.dll`/`tisvcsv4.dll`/`vcs_dps.dll`
-are Winsock-free. This has **no** relation to the TCP/10123 D-PDU port or 13400/13401. (Confirmed:
+string; it is **not** the port actually dialed. The value reaching `bvtx_vci_rt` is the loopback
+ident-service port, computed at runtime as `8097 + ProductGroupId` (the only compile-time
+constant is the offset `0x1fa1 = 8097`; `lea esi,[eax+0x1fa1]` at `0x1005f6d2`, both upstream and
+downstream sockets to `127.0.0.1`). `ProductGroupId` is a small integer read from the Windows
+registry (`HKLM\SOFTWARE\WOW6432Node\BOSCH\VTX-VCI\GM\ProductGroupId`); absent/0 → port `8097`.
+For this bench's live `ProductGroupId = 0x1c = 28`, the port is **8125** — exactly the
+`127.0.0.1:8125` loopback ident service in §12. The ident-service TCP client is
+`BVTX-VCI-RT.dll` (`CIdentClient::Connect`); `dps.exe`/`dpsvcs.dll`/`tisvcsv4.dll`/`vcs_dps.dll`
+are Winsock-free. This has no relation to the TCP/10123 D-PDU port or 13400/13401. (Confirmed:
 `diagnostics/gm_dps/docs/BVTX_VCI_PROTOCOL_DETAIL_ports_and_config.txt:15-50`,
-`CONFIG_ARCHAEOLOGY_AUG2026.md:15-17`.)
+`CONFIG_ARCHAEOLOGY_AUG2026.md:15-17`, both outside this tree.)
 
 ### 10.9 What this section changes for the native-client plan
 
-- §5's IOCTL sequence is **confirmed**, and now has a **documented teardown** (§10.4).
-- The DoIP prologue is **confirmed and slightly relaxed** (`00`/`01`/`02` accepted, §10.1).
-- Port **13401 can be ignored** (§10.3).
-- Hardcoded IOCTL numbers should be treated as **session-specific**, with the string names as the
-  stable identifier (§10.5). This is the one place our existing scripts are silently fragile.
+- §5's IOCTL sequence is confirmed, and now has a documented teardown (§10.4).
+- The DoIP prologue is confirmed and slightly relaxed (`00`/`01`/`02` accepted, §10.1).
+- Port 13401 can be ignored (§10.3).
+- Hardcoded IOCTL numbers should be treated as session-specific, with the string names as the
+  stable identifier (§10.5). This is the one place the existing scripts are silently fragile.
 
-## 11. Port 10123 pre-activation sequence (live hardware + capture reconstruction, 2026-08-25)
+---
 
-**2026-11-07 correction — decoded application-start request:** Decrypting the original capture's
-port-9050 traffic using the documented per-device Blowfish key reveals that the three preceding
-queries return a `PDU` application entry and frame 7762 requests `APP_NAME=PDU` and
-`COMMAND=START`. The request ends in the current management session ID as a little-endian u32;
-it matches the session ID in the preceding successful `session_open` response. The response echoes
-the command, and the diagnostic port accepted connections immediately afterward. This identifies
-a strong startup candidate, but does not prove that this command alone starts the service. Replaying
-the old ciphertext also reuses the old session ID, so identical replies do not establish that the
-request was authorized or took effect. A new request must use the current session ID and key.
+## 11. Port 10123 pre-activation, the management-plane handshake, and the loopback ident service
 
-Live follow-up: after a complete MDI2 power cycle, the native Python client opened the 13 captured
-management channels, successfully opened a session (`master=false`), opened the 9011 channel,
-queried the PDU entry, and sent the captured `PDU START` request with the fresh session ID. The
-device replied and port 10123 opened; it remained open after the management session closed. The
-Python D-PDU client then opened its command and event sockets and obtained a channel ID.
-Subsequently, with the engine off and ignition on, a capture-derived resource-0x2A link was
-configured for radio ECU 0x80 (request `14DA80F1`, response `145AF180`). A single read-only
-`22 F1 A0` produced an MDI transmit confirmation and ECU response `62 F1 A0 F2`. The link was
-disconnected and destroyed. This validates native Python CAN transmit and receive for this read;
-it does not validate the ADB routine or identify its domain byte.
-In the same bench session, a user-requested radio hard reset (`11 01`) returned `7F 11 7F`
-in the initial session. Extended session `10 03` then returned `50 03 00 64 01 F4`, but a
-second `11 01` returned `7F 11 22` (conditions not correct). A subsequent extended-session soft
-reset `11 03` returned `7F 11 12` (subfunction not supported). No reset was confirmed; the unmet
-condition for hard reset is unknown. One earlier event socket closed during cleanup (`closed mid-frame`).
-Follow-up: native CAN `10 03` returned `50 03`, `27 01` returned a 31-byte all-FF seed, and
-`27 02` with a 12-byte zero key returned `67 02`. The subsequent `11 01` returned `51 01`:
-the radio accepted the hard reset after level-1 SecurityAccess; the radio was observed turning off
-immediately afterward. Reboot completion was not verified. The test did not include any
-calibration write or programming routine. This establishes the successful sequence on this
-unit in its observed state, not that SecurityAccess was the sole missing precondition on all units.
-The SPS calibration capture independently shows `11 01` followed by `51 01` (event frame 29532),
-after security access and programming operations; it is not a standalone-reset capture.
-Repeat after the ADB routine-domain tests: `10 03` returned `50 03`, level-1 SecurityAccess
-returned `67 02`, and `11 01` returned `7F 11 22` (conditions not correct). The radio did not
-confirm a reset on this attempt; the unmet condition and current power-mode state were not determined.
-After another rejected retry, a fresh management session issued `PDU START` again, then a new
-D-PDU CAN session repeated `10 03`, `27 01`/`27 02` (all-FF seed, 12-byte zero key), and `11 01`.
-The radio returned `50 03`, `67 02`, and `51 01` respectively. This confirms reset acceptance on
-that retry. Other state may also have changed, so it does not establish that repeating `PDU START`
-caused acceptance or that `PDU START` is necessary before each reset.
-Another fresh `PDU START` preceded a rejected reset (`7F 11 22`), and the next fresh `PDU START`
-preceded an accepted reset (`51 01`). Vehicle power mode was not independently measured for these
-attempts. The first successful reset followed a reported engine-off, accessory-on setup; the exact
-power mode at the instant of reset was not captured. These observations do not establish whether
-accessory-off is required. The separate SPS `Power Mode Control Off` Type 4 application establishes
-that such a workflow exists, not that SPS used it in the captured radio-reset sequence.
-Before the power cycle the 9052 handshake and `session_open` had timed out; their cause was not
-independently established. *(Corrected 2026-11-14: the common cause is session-table exhaustion from
-sessions opened without `session_close`; 9052 never answers the client's control frame and `session_open` returns no session
-id. Releasing sessions / letting the table drain recovers it; the power cycle was a last resort that, by
-restarting the device, also cleared the table.)*
+### 11.1 The 7-step pre-activation sequence (2026-08-25, capture + live replay)
 
 Real capture `DPS+SPS.pcapng` (frames 7447-7791) shows port **10123 refuses connections until a
 specific 7-step sequence completes on other ports first**. Reconstructed byte-for-byte from the
@@ -576,7 +552,7 @@ host was `.30`):
 1. **13-port magic handshake**, standard ports `9052,9001,9006,9051,9007,9014,9009,9003,9012,
    9050,9008,9010,9013`: connect, send `0053500000300000` (8B), receive `0053500000310000` (8B).
 2. **Port 9052 extra exchange #1**: send captured 212-byte blob, receive 92-byte response.
-3. **Port 9011 handshake — NON-STANDARD magic**: send `0053500000210000` (not `...300000`),
+3. **Port 9011 handshake — non-standard magic**: send `0053500000210000` (not `...300000`),
    receive `0053500000200000` (not `...310000`). This port uses a different magic pair than the
    other 13 and was skipped in earlier partial reconstructions.
 4. **Port 9052 extra exchange #2**: send captured 60-byte blob, receive 212-byte response.
@@ -588,198 +564,219 @@ host was `.30`):
    frame (counter `f9`), which gets a 108-byte response.
 7. Real capture: TCP SYN to port 10123 **0.5ms after step 6 completes**, and it succeeds.
 
-**All request/response payloads share an 8-byte header**: 4 zero bytes + a big-endian
-length-of-remainder field (e.g. `...00cc` = 204 bytes follow -> 212-byte total frame), followed
-by what looks like a per-port session tag (4 bytes, e.g. `fba0ae42`, `a2404d1c`, `d177f3f6`) that
-increments by a fixed +1 in its low byte on the 3 identical 9050 polls, then encrypted/opaque
-content.
+All request/response payloads share an 8-byte header: 4 zero bytes + a big-endian
+length-of-remainder field (e.g. `...00cc` = 204 bytes follow → 212-byte total frame), followed by
+a per-port session tag (4 bytes, e.g. `fba0ae42`, `a2404d1c`, `d177f3f6`) that increments by a
+fixed +1 in its low byte on the 3 identical 9050 polls, then encrypted/opaque content.
 
 **Live-hardware replay result (byte-verbatim, all 7 steps exactly as captured, run 2026-08-25)**:
 every response byte matched the captured response byte-for-byte, for every step, including the
-9052/9009 "encrypted" exchanges — **strong evidence this layer is a deterministic function of
-input bytes only, not a live random nonce/session key** (a true nonce-based session would not
-reproduce identical ciphertext for identical stale-request replay days later). Despite the
-byte-perfect replay of the full reconstructed sequence, **port 10123 remained refused
-(`ECONNREFUSED`)** in this live test.
+9052/9009 "encrypted" exchanges — strong evidence this layer is a deterministic function of input
+bytes only, not a live random nonce/session key (a true nonce-based session would not reproduce
+identical ciphertext for identical stale-request replay days later). Despite the byte-perfect
+replay, **port 10123 remained refused (`ECONNREFUSED`)** in this live test — see §11.3/§11.4 for
+the eventual explanation.
 
-**Not yet resolved — leading hypotheses, untested**:
-- The device's internal state machine may have been desynced by this session's earlier *partial*
-  and *malformed* replay attempts (wrong counter offset, incomplete port coverage) against the
-  same live unit before this full-sequence test ran; embedded custom protocols like this are
-  often not re-entrant/idempotent per boot. A physical power-cycle of the MDI2 (USB replug) before
-  the next attempt was proposed as the highest-value untried step. *(2026-11-14: the likelier
-  explanation is session-table exhaustion from un-closed sessions, not firmware state corruption;
-  try releasing sessions/idling before a power-cycle.)*
-- Source IP mismatch: real capture client was `192.168.171.30`; our replay used `.10`. Unlikely to
-  gate a device-side listener but not eliminated.
-- Original capture's client TCP source ports were sequential (`54519`-`54534`); our sockets use
-  OS-assigned ephemeral ports. Unlikely but not eliminated.
-- There may be additional required traffic on ports not covered by this reconstruction's frame
-  window (7447-7791) — e.g. something earlier in the capture that primes device state once per
-  power-on rather than once per PDU-API session.
+Reconstruction script: `mdi2_full_sequence.py` (scratchpad; implements all 7 steps with literal
+captured bytes).
 
-Reconstruction script: `mdi2_full_sequence.py` (scratchpad, session
-`c702cbc7-7dd0-4f49-994c-6ee0703cd474`), implements all 7 steps with literal captured bytes.
+### 11.2 Cross-cycle confirmation (18 cycles in the same capture, frames 13039-13064)
 
-### 11.1 Cross-cycle confirmation (2nd of 18 cycles in same capture, frames 13039-13064)
-
-The capture contains **18 repeats** of this full cycle before a 10123 connection (paired SYNs at
-frames 7764/7774, 13064/13075, 15413/15425, ... 47231/47244, etc.) — this is a **per-session
-ritual repeated every time**, not a one-time device-boot unlock.
+The capture contains **18 repeats** of the §11.1 cycle before a 10123 connection (paired SYNs at
+frames 7764/7774, 13064/13075, 15413/15425, … 47231/47244, etc.) — a **per-session ritual
+repeated every time**, not a one-time device-boot unlock.
 
 Diffing cycle 1 (frame 7743+) against cycle 2 (frame 13039+) byte-for-byte isolates the actual
-variable: each TCP connection gets a **4-byte tag** immediately after the 8-byte header (e.g.
-`fba0ae42` cycle 1 vs `9e3e5132` cycle 2 on port 9052; `d177f3f6` vs `a8a7c135` on port 9050) that
-**increments by exactly +1 per subsequent message sent on that same connection** (9052 extra1→
-extra2: `...42`→`...43` cycle 1, `...32`→`...33` cycle 2; 9050 poll low byte `f6,f7,f8,f9` cycle 1,
-`35,36,37,38` cycle 2) — but the **encrypted payload content after the tag is byte-identical
-across cycles**. This is consistent with the tag being a **client-chosen, per-connection
-nonce/counter** that the device simply echoes and increments against, not a device-issued
-session secret — i.e. our live replay's reuse of stale tag values (`d177f3f6...`) was not
-functionally wrong, since the device honored it and returned the expected structurally-correct
-response both times. This rules out "wrong nonce" as the reason 10123 stayed refused in the live
-test, and strengthens the leading hypothesis in §11 that **live-device internal state was left
-desynced by this session's earlier partial/malformed manual attempts**, recoverable only by a
-power cycle (untested at time of writing — requires physical MDI2 USB replug). *(2026-11-14: "only
-by a power cycle" was too strong; the state is most likely session-table exhaustion, see §11 note.)*
+variable: each TCP connection gets a 4-byte tag immediately after the 8-byte header (e.g.
+`fba0ae42` cycle 1 vs `9e3e5132` cycle 2 on port 9052; `d177f3f6` vs `a8a7c135` on port 9050)
+that increments by exactly +1 per subsequent message sent on that same connection, but the
+encrypted payload content after the tag is byte-identical across cycles. This is consistent with
+the tag being a client-chosen, per-connection nonce/counter that the device simply echoes and
+increments against, not a device-issued session secret — i.e. the live replay's reuse of stale
+tag values was not functionally wrong, since the device honored it and returned the
+expected structurally-correct response both times. This rules out "wrong nonce" as the reason
+10123 stayed refused in §11.1's live test.
 
-### 11.2 Native in-package live client — findings 2026-11-07 (`mdi2_client/mdi2/`)
+### 11.3 `PDU START` resolved (2026-11-07) — port 10123's actual re-arm mechanism
 
-A native D-PDU writer was built and partially live-validated this session
-(`mdi2_client/mdi2/live_programming_transport.py`, `live_calibration.py`). Established on this
-bench's MDI2 (serial-derived Blowfish key, radio ECU 0x80, tester byte F1):
+Decrypting the original capture's port-9050 traffic using the documented per-device Blowfish key
+reveals that the three preceding queries return a `PDU` application entry, and frame 7762
+requests `APP_NAME=PDU`, `COMMAND=START`, ending in the current management session id as a
+little-endian u32 (matching the preceding `session_open` response). The response echoes the
+command, and the diagnostic port accepted connections immediately afterward.
 
-- **`PDU START` re-arm works and is now reconstructed field-by-field.** Flow:
-  `session_open` on 9052 (`master=True`) returns `{"session": <id>, "port": 9011}`; then on **9050**
-  send three polls (`2e08000001000000`) and the START message
-  (`30080000…APP_NAME…PDU…COMMAND…START` + **session id as trailing LE u32**). This reopens TCP/10123
-  reliably (`live_calibration.rearm_dpdu_tunnel`). The §11-era "PDU START" is on **9050**, not 9011.
-- **The 10123 tunnel is non-idempotent and fragile — confirmed first-hand.** One malformed D-PDU
-  frame closed 10123; it did **not** self-rearm. Repeated connection attempts then **exhausted the
-  device's session table** (9052/9050/9011/9009 stopped answering their control handshake; 9052 is
-  normally silent until the client sends its control frame, so "no reply" here means no session slot),
-  which did not drain after 75 s idle, so a **USB power-cycle** was used (last resort, not first fix;
-  corrected 2026-11-14 — was described as a "wedged" session service needing a power-cycle).
-  After the power-cycle + `rearm_dpdu_tunnel`, full function returned. Note: after a USB replug macOS
-  re-assigns `en17` a /32, so `sudo ifconfig en17 inet 192.168.171.30 netmask 255.255.255.0` is
-  required before the device is reachable (the /32→/24 reset recurs after every replug; discovery keys
-  off the subnet, not the interface name — 2026-11-14).
+Live follow-up, native Python client: after a full MDI2 power cycle, the client opened the 13
+management channels, opened a session (`master=false`), opened the 9011 channel, queried the PDU
+entry, and sent the captured `PDU START` request with the fresh session id. Port 10123 opened
+and stayed open after the management session closed. The D-PDU client then opened its command and
+event sockets and obtained a channel id. A resource-0x2A link to radio ECU 0x80 (request
+`14DA80F1`, response `145AF180`) then produced a successful `22 F1 A0` read-only transmit
+confirmation and ECU response `62 F1 A0 F2`; this validates native Python CAN transmit/receive
+for this read, but does not validate the ADB routine or identify its domain byte.
+
+This is reconstructed field-by-field in the live native client (`mdi2_client/mdi2/`,
+`live_calibration.rearm_dpdu_tunnel`): `session_open` on 9052 (`master=True`) returns
+`{"session": <id>, "port": 9011}`; then on **9050** send three polls (`2e08000001000000`) and
+the START message (`30080000…APP_NAME…PDU…COMMAND…START` + session id as trailing LE u32). This
+reliably reopens TCP/10123. **Correction: `PDU START` lives on port 9050, not 9011** (§11.1's
+step 3 handshake on 9011 is a separate, unrelated exchange).
+
+This identifies a strong startup candidate, but does not prove that this command alone starts
+the service. Replaying the old ciphertext also reuses the old session ID, so identical replies
+do not establish that the request was authorized or took effect — a new request must use the
+current session ID and key.
+
+### 11.4 Session-table exhaustion, not device state corruption or a WiFi credential (resolved 2026-11-14)
+
+§11.1's byte-perfect replay still left 10123 refused. At the time, the leading hypothesis was
+that the device's internal state machine had been desynced by this session's earlier
+partial/malformed replay attempts, recoverable only by a physical USB power-cycle. **That
+explanation is superseded.** The actual mechanism, confirmed 2026-11-14: port 10123 (and the
+9052/9050/9011/9009 management handshake) is non-idempotent and fragile — one malformed D-PDU
+frame can close 10123 without self-rearming, and repeated reconnection attempts **exhaust the
+device's session table** (9052 stops answering its control frame — normally silent until the
+client sends it — and `session_open` returns no session id). The table does not drain on idle
+(75 s tested); a USB power-cycle clears it only because it restarts the device, not because the
+device was "wedged." **Releasing sessions (`session_close`) or letting the table drain is the
+correct fix; power-cycling is a last resort, not the first one.**
+
+After a power-cycle + `rearm_dpdu_tunnel`, full function returns. Operational note: after a USB
+replug, macOS re-assigns `en17` a /32, so `sudo ifconfig en17 inet 192.168.171.30 netmask
+255.255.255.0` is required before the device is reachable again (discovery keys off the subnet,
+not the interface name).
+
+A repeated bench sequence makes the pattern concrete: `10 03`→`50 03`, `27 01`/`27 02` (all-FF
+seed, 12-byte zero key)→`67 02`, then `11 01` (hard reset) sometimes returned `51 01` (accepted)
+and sometimes `7F 11 22` (conditions not correct) on consecutive attempts with a fresh `PDU
+START` each time, including once after an engine-off/accessory-on setup, and once with the
+engine off and ignition on for the `22 F1 A0` resource-0x2A validation read in §11.3 above. A
+separate soft-reset attempt, `11 03`, returned `7F 11 12` (subfunction not supported); this was
+repeated after the ADB routine-domain tests specifically, and the radio was observed turning off
+immediately afterward — reboot completion was not verified, and the test did not include any
+calibration write or programming routine. Vehicle power mode was not independently measured for
+any of these attempts, so this establishes only that the sequence *can* succeed on this unit in
+this observed state — not that SecurityAccess was the sole missing precondition on all units, nor
+that repeating `PDU START` itself caused acceptance, nor that accessory-off is required. (The
+separate SPS `Power Mode Control Off` Type 4 application establishes that such a workflow exists,
+not that SPS used it here.) The SPS calibration capture independently shows `11 01` followed by
+`51 01` (event frame 29532) after security access and programming operations — not a
+standalone-reset capture.
+
+### 11.5 Local loopback Manager IPC (127.0.0.1:8125) — ident service and the WiFi-credential finding
+
+While investigating a frame gap (7516-7730) in §11.1's capture, this pcapng turned out to also
+contain merged USB-level frames (Wireshark multi-adapter capture) revealing a second, unrelated
+service: **TCP port 8125 on `127.0.0.1`** (loopback, tablet-local, not device traffic) — a local
+IPC/RPC service exposed by the Windows MDI2 Manager background process, that DPS/SPS talk to
+*while* the device-side low-port dance (§11.1) is still in progress. Per §10.8 this port is
+`8097 + ProductGroupId`; for this bench (`ProductGroupId=28`) that's 8125. Decoded frames (format
+`[u32 total_len][u32 opcode][...payload]`, opcodes pair as request N / response N+1 or N+3):
+
+- `0x7f2`→`0x7f5`: client sends hostname + a sequence id; server responds "Identification
+  Service" + three IPs: `192.168.171.30` (tablet), `192.168.171.2` (this MDI2), and a
+  previously-unseen third IP `192.168.177.2` (different subnet — a second adapter/MDI unit or a
+  diagnostic bridge, unexplored).
+- `0x8bf`→`0x8c0`: capability/count query → responds `count=1`.
+- `0x8d1`→`0x8d2` (capture frame 7650): client sends a string `"BSH:<SERIAL>:28:9.1.2752.177:08"`
+  (Bosch format: serial = this unit's own serial, confirmed matching `GM VCIHistory
+  ...-D<SERIAL>.txt`; `module_type=28`; firmware `9.1.2752.177`), followed by a 28-byte
+  credential, hex-encoded as ASCII: **`<REDACTED_WIFI_PASSPHRASE>`**. Server responds with a bare
+  status value (`3`).
+- Two ~16.7KB responses list installed driver/module info per adapter
+  (`ax9u_dlink_drivers-kernel_modules`, `ax9u_dlink_drivers-tools`, versions `0.1.2735.5` /
+  `3.0.14`, serial-like `370A0A00`) — `ax9u_dlink` appears to be a gadget-side internal driver
+  codename.
+
+**What the 28-byte value actually is (resolved 2026-08-25, traced end-to-end in Ghidra
+pseudocode):** the 8125 loopback server is hosted by `gm_mdi_ident.exe`, dispatched in
+`CClientConnectionMgr::OnDataReceived`. The `0x8d1` branch's own log string identifies it
+explicitly as `"SID_WIFI_CREDENTIALS_SEND"`, deserializing a `CWifiCredentials_Send` object and
+routing to `CIdentWifi::SetWifiCredentials` (log format `"%s ssid = %s serial_number = %s ...
+version = %s"`), which builds a Windows WLAN profile (`CreateProfile`, auth `"AES-CCMP"`). The
+sender side, `bvtx_vci_rt_j.dll` `CDeviceMgr::SetConfigItems`, pulls the pair from config items
+literally named `"SSID"` and `"Passphrase"` (config IDs `0x12`/`0x13`). **So: the "SN:module:fw"
+string is the VCI's own WiFi SSID, and the 28-byte hex value is its WPA passphrase** — config
+data for pairing to the MDI2's own WiFi access point, unrelated to TCP/10123 authorization. It is
+a device config item (`VtxRtGetConfigItems`/`SetConfigItems`, opcodes `0x7e3`/`0x7e4`), only
+format-validated (`ifm::ValidateWifiConfig`: hex length 26/10 = WEP, 8-64 chars = WPA-PSK) — not
+generated or looked up from any registry/DPAPI/backend store, confirming it is not derivable from
+the network capture alone, but for an unrelated reason than first suspected.
+
+**This rules out** the original working theory (that this credential gates TCP/10123). With it
+ruled out, and content/timing/source-IP/TCP-options/L2-MAC-identity/device-freshness all also
+ruled out by direct live testing (2026-08-25), **the actual answer is §11.4's session-table
+exhaustion** — the 10123 refusals in §11.1/§11.3 were not a missing credential or desynced device
+state, they were a management-plane resource leak from repeated partial/malformed connection
+attempts during the same debugging session.
+
+> History: an earlier draft of this section led with "MAJOR FINDING... likely the actual
+> blocker" around the credential theory above, and proposed next targeting the vehicle's raw-
+> DoIP gateway (`192.168.171.70:13400`) instead of continuing to chase the 10123 unlock. Both the
+> credential theory and that next step are superseded: the credential is a WiFi passphrase
+> (above), and the live-validated bench (2026-11-14) runs the MDI2 over direct USB RNDIS with no
+> vehicle DoIP gateway reachable at all — vehicle/OBD2 wording elsewhere in this doc describes
+> the original capture environment, not the current bench. The `.70:13400` DoIP-responder-
+> topology question itself remains open; it is `AUG24_SESSION_FULL_PCAP_TIMELINE.md`'s open item
+> (finding #1), not this doc's.
+
+### 11.6 Native in-package live client — further findings (2026-11-07, `mdi2_client/mdi2/`)
+
+Established on this bench's MDI2 (serial-derived Blowfish key, radio ECU 0x80, tester byte F1),
+beyond the `PDU START` mechanism in §11.3:
+
 - **Resource-0x2A bring-up + a radio read round-trips live.** A full bring-up (CreateCLL 0x2A,
   GetComParam×4, 174-byte SetUniqueRespIdTable for 0x80, SetComParam set, Connect, persistent-RX
   StartComPrimitive, STARTCOMM, UPDATEPARAM) followed by `22 F190` returned the real VIN
-  (`62 F190` + 17 ASCII bytes) on the **persistent RX cop (cop 1), event type 1**, preceded by a
-  `mid 1505` length indication — validating the correlation design against hardware. TX confirms are
-  **event type 2**; the strict `parse_radio_rx` allow-filter + skip-None discipline classifies them
-  correctly.
-- **Correction 2026-11-07 — malformed one-shot framing, not a proven power-mode gate.**
-  `build_one_shot()` already returns the complete D-PDU frame, but the live sender wrapped it
-  in another length/message header. That is now corrected, with a regression against the
-  captured stream-317 seed request. ComParam `0x19` and UPDATEPARAM trailers also now match
-  the capture (`0x22` and a 25-byte trailer, respectively). Previous `0x2830` adapter rejections
-  do not establish ECU power mode or resource-lock state; no ECU response was obtained from
-  those malformed sends. The calibration workflow checks BCM F085 directly for the observed
-  OFF value `00`. The data-wipe Service Mode prerequisite must not be generalized to calibration.
+  (`62 F190` + 17 ASCII bytes) on the persistent RX cop (cop 1), event type 1, preceded by a
+  `mid 1505` length indication — validating the correlation design against hardware. TX confirms
+  are event type 2; the strict `parse_radio_rx` allow-filter + skip-None discipline classifies
+  them correctly.
+- **Corrected: malformed one-shot framing, not a proven power-mode gate.** `build_one_shot()`
+  already returns the complete D-PDU frame, but the live sender had been wrapping it in another
+  length/message header. That is now corrected, with a regression against the captured
+  stream-317 seed request. ComParam `0x19` and UPDATEPARAM trailers also now match the capture
+  (`0x22` and a 25-byte trailer, respectively). Previous `0x2830` adapter rejections do not
+  establish ECU power mode or resource-lock state; no ECU response was obtained from those
+  malformed sends. The calibration workflow checks BCM F085 directly for the observed OFF value
+  `00`. The data-wipe Service Mode prerequisite must not be generalized to calibration.
 - **CLL resource hygiene.** `LiveDpduSession.close` destroys its CLLs; partial link construction
-  now closes the session too. Cleanup remains necessary, but the malformed-send rejection
-  does not independently demonstrate a leaked CLL or identify a resource-lock status.
+  now closes the session too. Cleanup remains necessary, but the malformed-send rejection does
+  not independently demonstrate a leaked CLL or identify a resource-lock status.
 - **Not yet done:** the single live LTZ **write**. The corrected transport requires live
   revalidation; an open diagnostic port alone does not establish radio communication. The
-  source-profile gate now accepts the documented High Country baseline as well as LTZ,
-  while the target still requires all fourteen pinned, unchanged LTZ containers. Reset,
-  reconnect, identity, BCM OFF and post-reset voltage checks precede any programming.
+  source-profile gate now accepts the documented High Country baseline as well as LTZ, while the
+  target still requires all fourteen pinned, unchanged LTZ containers. Reset, reconnect, identity,
+  BCM OFF and post-reset voltage checks precede any programming.
 
-## 12. MAJOR FINDING: local loopback Manager IPC (127.0.0.1:8125) precedes/interleaves the
-    device-side low-port dance — likely explains why byte-perfect §11 replay still fails
+---
 
-While investigating the frame gap (7516-7730) between the first 11 and last 3 ports of the §11
-14-port precheck, found this capture **also contains USB-level frames (protocol `USBCOM`/`USB`)
-merged into the same pcapng** (Wireshark multi-adapter capture) — previously missed because file
-search was by filename ("usb") not by content.
+## Open Conflicts
 
-**Critical discovery: TCP port 8125 on `127.0.0.1` (loopback, tablet-local, NOT device
-traffic)** — a local IPC/RPC service, almost certainly exposed by the Windows MDI2 Manager
-background process (`gm_mdi_manager.exe` or a service DLL it hosts), that DPS/SPS talk to
-*while* the device-side low-port dance is still in progress. Decoded frames (all format:
-`[u32 total_len][u32 opcode][...payload]`, opcodes pair as request N / response N+1 or N+3):
+1. **SecurityAccess seed length, 31 vs 32 bytes.** §6 explicitly leaves this unresolved on its
+   own evidence: a 32-byte reading (16-byte ECUID `004B41DC…14AC` + 16-byte random, from a live
+   capture) vs a 31-byte reading (16-byte ECUID `002642250000160006104145610114AC` + 15-byte
+   random, from an independently and programmatically re-parsed capture,
+   `module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt`, a different physical unit).
+   SecurityAccess seed length is an ECU firmware property, not per-unit-variable, so the two
+   captures should agree and currently don't; the 32-byte capture's raw bytes were never
+   re-verified by script (only by eye). `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK) states
+   31 bytes (16B ECUID + 15B challenge) as settled, drawing on its own capture set — but this
+   doc's reader could not confirm that GSK's number closes this doc's specific 32-byte outlier,
+   since the two docs' disputed figures trace to different capture sets. Carried here (per
+   PLAN.md Open Conflicts item 6) in addition to GSK's own Open Conflicts section, rather than
+   treating GSK's settlement as automatically resolving this doc's unresolved reading.
 
-- **opcode `0x7f2`→`0x7f5`**: client sends hostname (`"zeno"` — the tablet's own hostname) +
-  a sequence id; server responds `"Identification Service"` + **three IPs**:
-  `192.168.171.30` (tablet), `192.168.171.2` (this MDI2), and a **previously-unseen third IP
-  `192.168.177.2`** (different subnet — a second adapter/MDI unit or a diagnostic bridge,
-  unexplored).
-- **opcode `0x8bf`→`0x8c0`**: capability/count query → responds `count=1`.
-- **opcode `0x8d1`→`0x8d2`** — **the key frame** (capture frame 7650): client sends a string
-  `"BSH:<SERIAL>:28:9.1.2752.177:08"` (Bosch-format: **serial `<SERIAL>`** = this exact unit's
-  serial, confirmed matching `GM VCIHistory ...-D<SERIAL>.txt`; `module_type=28`; firmware
-  `9.1.2752.177`) **followed by a 28-byte credential, hex-encoded as ASCII**:
-  `5F06abb5de50a079fCd1e8f69d3EaF16c8D3E5Ee4F55eF31cB0A3fdE`. Server responds with a bare
-  status value (`3`).
-- Two ~16.7KB responses (frames 7574/7576/7671/7709) list installed driver/module info per
-  adapter (`ax9u_dlink_drivers-kernel_modules`, `ax9u_dlink_drivers-tools`, versions
-  `0.1.2735.5` / `3.0.14`, serial-like `370A0A00`) — `ax9u_dlink` appears to be gadget-side
-  internal driver codename.
+---
 
-**Why this matters**: this 28-byte credential is per-installation (or per-license) secret
-material the *client software* already possesses and hands to the local Manager — it is **not
-derivable from anything in the network capture**, was not found anywhere on disk in this
-research tree (`grep` across all of `gm_dps` for the exact hex string: no hits; only the device
-serial `<SERIAL>` itself appears, in log/VCIHistory files — a *different*, device-manufactured
-16-byte `serialnum` value, not this 28-byte credential). It most plausibly lives in a
-Windows-side protected store (registry/DPAPI blob, or is itself fetched from a GM licensing
-server at Manager startup) tied to the specific DPS/SPS installation.
+## Related
 
-**Working theory**: the Manager service uses this credential (received here over loopback) to
-compute or unlock whatever makes the device-side 9052/9050 "encrypted" exchange authoritative —
-our §11 replay reuses only the *outer* captured ciphertext bytes with no access to this
-credential, which is consistent with every result so far: content/timing/IP/TCP-options/L2 MAC
-identity/device-freshness all ruled out by direct live testing (2026-08-25), yet port 10123
-still refuses. **This finding, not a further network-level replay refinement, is the likely
-actual blocker** — pure IP-level replay from macOS cannot succeed without either (a) obtaining
-or deriving this per-installation credential, or (b) running the real Manager service itself
-(e.g. under Wine) so it performs its own authenticated device handshake and our client only
-needs to speak D-PDU/PDU-API on 10123 *after* the Manager has already unlocked it.
-
-Not yet attempted: extracting this credential from the actual Windows Manager process (Wine)
-via memory/API hooking, or locating it in the installed MDI2 Manager's registry/config on the
-Windows tablet if that filesystem is available for imaging.
-
-### 12.1 CORRECTION (2026-08-25): opcode 0x8d1/0x8d2 is WiFi AP pairing, NOT a 10123-auth credential
-
-Traced end-to-end in the Ghidra pseudocode (not guessed): the 0x8125 loopback server is hosted
-by **`gm_mdi_ident.exe`**, dispatched in `CClientConnectionMgr::OnDataReceived`. The `0x8d1`
-branch's own log string identifies it explicitly: **`"SID_WIFI_CREDENTIALS_SEND"`**, deserializing
-a **`CWifiCredentials_Send`** object and routing to **`CIdentWifi::SetWifiCredentials`**
-(log format `"%s ssid = %s serial_number = %s ... version = %s"`), which builds a Windows WLAN
-profile (`CreateProfile`, auth `"AES-CCMP"`). The sender side, `bvtx_vci_rt_j.dll`
-`CDeviceMgr::SetConfigItems`, pulls the pair from config items literally named **`"SSID"`** and
-**`"Passphrase"`** (config IDs `0x12`/`0x13`).
-
-**So: the "SN:module:fw" string is the VCI's WiFi SSID, and the 28-byte hex value is its WPA
-passphrase** — config data for pairing to the MDI2's own WiFi access point, unrelated to
-TCP/10123 authorization. It is a device config item (`VtxRtGetConfigItems`/`SetConfigItems`,
-opcodes `0x7e3`/`0x7e4`), only format-validated (`ifm::ValidateWifiConfig`: hex length
-26/10 = WEP, or 8-64 chars = WPA-PSK) not generated or looked up from any registry/DPAPI/backend
-store — confirming it genuinely isn't recoverable by us, but for an unrelated reason than
-originally claimed here.
-
-**This invalidates the working theory above** that this credential explains port 10123's
-`ECONNREFUSED`. Also checked and ruled out: whether the real capture used WiFi instead of the
-USB/RNDIS-style transport we're replaying from macOS (which would have reframed everything) —
-`capinfos` on the source pcap shows `Capture oper-sys: 64-bit Windows 11`, interface
-**`"Ethernet 2"`**, i.e. the same Ethernet-gadget-style transport as our `en17`, not WiFi. So the
-transport match is confirmed correct.
-
-**Net result: the actual gate on port 10123 remains unexplained** after this correction. Every
-network-observable variable tested live (2026-08-25) — content, timing, source IP, TCP options,
-L2 MAC identity, device freshness (full power cycle) — was ruled out, and the loopback-credential
-explanation is now also ruled out. The two unresolved candidates from §11: (a) something in the
-221KB port-9052 bulk transfer discovered separately (§13 — a static, non-random on-device data
-image, confirmed byte-identical across sessions, so *not* session credential material either),
-or (b) a control-plane step outside the frame windows examined so far. Next actionable step:
-target `192.168.171.70` (the vehicle's own DoIP gateway, found directly reachable over TCP/13400
-without needing 10123 at all — see `AUG24_SESSION_FULL_PCAP_TIMELINE.md` finding #1) instead of
-continuing to chase the 10123 unlock when a vehicle is present.
-*(Bench-environment correction 2026-11-14: the live-validated setup is the MDI2 on a direct USB RNDIS
-link reaching radio ECU 0x80 through the D-PDU CAN tunnel on 10123 — not connected to a vehicle OBD2
-port, and no vehicle DoIP gateway is reachable on the bench. Vehicle/OBD2 wording elsewhere in this
-doc describes the source captures, not the current bench.)*
+- `AUG24_SESSION_FULL_PCAP_TIMELINE.md` (APT) — the 6-pcap Aug-24 session this doc's raw captures
+  come from; owns the DoIP-responder-topology open item (its finding #1) and the full
+  radio-calibration-flash wire sequence.
+- `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK) — canonical seed-key/SecurityAccess/
+  calibration-signature doc; owns the settled SHA-256 handler framing and key-derivation status.
+- `MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md` (MML) — the separate MDI2 Manager stack (GM_MDI_Ident.exe,
+  14-port bank, Blowfish-ECB session JSON, log-file pull), now live-validated end to end.
+- `MDI2_RAW_UDS_BYPASS_GUIDE.md` — carried unchanged; raw UDS bypass technique via MDI2.
+- `eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` (outside this tree) — full RH850 `$27` handler
+  disassembly writeup.

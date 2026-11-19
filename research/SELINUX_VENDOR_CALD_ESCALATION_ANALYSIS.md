@@ -1,101 +1,168 @@
-# `vendor_cald` / `calserviced` Reachability from `untrusted_app` — SELinux Audit
+# SELinux + DAC reachability audit: `calserviced` / `vendor_cald` (`.calovride` write path)
 
-**2026-10-30, Y175:** A UID 1000 shell in the `system_app` SELinux domain
-received `Permission denied` when attempting to inspect `/mnt/vendor/calibration`
-and its `overrides` directory. This is a metadata-access test, not a write or
-Binder authorization test; it does not establish whether that identity can use
-another calibration interface.
+**Target:** GM MY22/Y181 IVI (Intel Apollo Lake SoC, GHS INTEGRITY host + Android 12L guest),
+2024 Silverado head unit — the owner's own module.
 
-**Direct app/shell path: DENIED.** Neither `untrusted_app` (sideloaded app) nor `shell` (adb) can write
-`/mnt/vendor/calibration/overrides/` or reach `calserviced`'s IPC. The `*.calovride`
-OVERRIDE_BACKDOOR is real and (per provenance audit #37/#38) present in the binary, but it is only
-triggerable by a domain that *already* holds calibration-write — it is not a `$27`-free path from
-an app or an adb shell.
+**Scope — what lives here:** can `untrusted_app` (sideloaded app) or adb `shell` reach the
+`calserviced` daemon or write `/mnt/vendor/calibration/overrides/*.calovride`? CIL rule IDs
+(write-allow list, neverallows), hwbinder/socket/Binder reachability gates, DAC (uid/gid/mode)
+gates, a feasibility table, and the current verdict.
 
-**2026-11-15 static follow-up:** the Y175 main/parser path now confirms a
-compiled `.calovride` → per-row SQL application path, beyond warning-string
-presence. It remains a persistent calibration mechanism and does not remove
-the DAC/SELinux gates below. The [owning loader analysis](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-runtime-controls-and-visual-test-limits-2026-11-15)
-records the version/rebuild branches, ownership effects and visual-test limits.
+**What does NOT live here:**
+- The `.calovride` container format, checksum/SHA-256 scheme, and the loader's version/rebuild
+  behavior → owned by
+  [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md)
+  (§3e). This doc states only the DAC/MAC facts needed to gate that write path.
+- CAN613/614 scoped-VIP-RAM-write mechanism and the Ghidra signature-verification trace →
+  owned by
+  [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md), which
+  points seed/signature detail onward to
+  [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+- CalDef record structure / VIP calibration-index tables → owned by
+  [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](CALDEF_VIP_CALIBRATION_ANALYSIS.txt).
+- The updater's own package-provenance/install-IPC narrative (DevCaloverrideInstaller discovery
+  rules, APK provenance) → owned by
+  [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15).
+  This doc only states the SELinux/DAC consequence (a privileged writer does not relax shell's
+  own permissions) and defers the caller-boundary question itself to that doc.
+- The Android-framework `gm.permission.*_DIAGNOSTIC_CALIBRATION_DATA` Binder permission gate is a
+  **different, non-SELinux** mechanism; it is noted below (§ Environment) as a cross-check only,
+  not owned here.
+
+Evidence tags: `[C]` = confirmed live on-device, `[inferred]` = transferred from a sibling
+build's policy without independent live confirmation, `[U]` = explicitly unverifiable from a
+locked shell.
+
+---
+
+## Verdict (current)
+
+**No established route.** Direct `.calovride` writes to
+`/mnt/vendor/calibration/overrides/` and direct `calserviced` IPC are unreachable from
+`untrusted_app` or adb `shell` under every inspected identity and build. The caveat is scope,
+not strength: a legitimate privileged updater path (DevCaloverrideInstaller) exists and its
+caller boundary toward an unprivileged invoker has not been fully traced — see
+[`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
+for that open question. No calibration deployment via this path has been performed.
+
+> **History:** the original 2026-10-30 analysis stated an absolute "DENIED, no route" verdict.
+> The 2026-11-15 follow-up walked this back to the current framing — "no *established* route;
+> the updater's caller boundary is a separate, unresolved question" — after confirming a
+> legitimate privileged updater copier exists and recognizing that an RCE prerequisite is not a
+> complete model of every authorized import path. **The 2026-11-15 wording is the current
+> verdict; the earlier absolute "no route" framing is superseded, not restated as current.**
 
 ## Terminology correction (load-bearing)
-The task conflates two distinct identities:
-- **`vendor_cald`** = the Unix **user/uid** the daemon runs as. Confirmed live:
+
+Two distinct identities are frequently conflated:
+- **`vendor_cald`** = the Unix **uid** the daemon runs as. `[C]` confirmed:
   `processes.txt` → `vendor_cald 585 1 ... S calserviced`.
 - **`calserviced`** = the **SELinux domain** (`type calserviced`, entered via
   `typetransition init_32_0 calserviced_exec process calserviced`).
 
-There is **no SELinux type named `vendor_cald`.** The overrides dir is gated by BOTH:
-- **DAC:** `mkdir /mnt/vendor/calibration/overrides 770 vendor_cald system` (owner `vendor_cald`,
-  group `system`, mode 770 → "others" = 0).
-- **MAC:** the dir/file SELinux type is `calibration_data_file` (the label applied under
-  `/mnt/vendor/calibration`, a locked ext4 partition — `fstab.txt` /
-  `mounts.txt: /mnt/vendor/calibration ... rw,seclabel`).
+There is **no SELinux type named `vendor_cald`.** The overrides directory is gated by both:
+- **DAC:** `mkdir /mnt/vendor/calibration/overrides 770 vendor_cald system` — owner `vendor_cald`,
+  group `system`, mode 770 (others = 0 permissions).
+- **MAC:** the directory/file SELinux type is `calibration_data_file`, applied under
+  `/mnt/vendor/calibration`, a locked ext4 partition (`fstab`/`mounts`:
+  `/mnt/vendor/calibration ... rw,seclabel`).
 
-Environment: **SELinux Enforcing** (`selinux_status.txt`); bootloader **locked**
-(`ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`), verified boot **green**, `ro.boot.avb_version=1.2` (AVB spec 1.1 per `avb_version.h` MAJOR 1/MINOR 1 — the `1.2` is the avbtool/property version, not the spec),
-`ro.secure=1`, `ro.adb.secure=1`.
+The `*.calovride` `OVERRIDE_BACKDOOR` string and per-row SQL application path are real and
+present in the binary (per `PROVENANCE_AUDIT_AUG2026.md` #37/#38; container/loader mechanics
+owned by CALSETSDB §3e), but it is only triggerable by a domain that **already** holds
+calibration-write — it is not a `$27`(SecurityAccess)-free path from an app or adb shell.
 
-> **[2026-11-13] ADB key-authorization scope:** see [Bus 2 source note §9.4](file:///Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md#94-2026-11-13-adb-per-key-authorization-not-enforced--c) for the same-radio authorization finding; the root/SELinux conclusions here remain separately scoped.
+## Environment
+
+`[C]` SELinux **Enforcing**; bootloader **locked** (`ro.boot.flash.locked=1`,
+`ro.boot.vbmeta.device_state=locked`); verified boot **green**; `ro.boot.avb_version=1.2`
+(avbtool/property version — the AVB spec itself is 1.1 per `avb_version.h` MAJOR 1/MINOR 1);
+`ro.secure=1`; `ro.adb.secure=1`.
+
+`[C]` 2026-10-30, Y175: a UID 1000 shell in the `system_app` SELinux domain received
+`Permission denied` when attempting to inspect `/mnt/vendor/calibration` and its `overrides`
+directory. This is a metadata-access test, not a write or Binder authorization test; it does
+not establish whether that identity can use another calibration interface.
+
+Separately, `[C]` live-Y175 2026-11-13: ADB per-key authorization is not enforced on this radio
+(same-radio finding, external source note, out of this doc's corpus); that finding is about ADB
+**key** authorization scope and stays separately scoped from the root/SELinux conclusions here —
+it does not change this doc's verdict.
+
+The framework-level Binder permission gate on GM's calibration API (a **different** mechanism
+from the filesystem/hwbinder path analyzed below) resolves on live Y175 as:
+`gm.permission.WRITE_DIAGNOSTIC_CALIBRATION_DATA` = `dangerous`,
+`gm.permission.READ_DIAGNOSTIC_CALIBRATION_DATA` = `normal` (`permissions_full.txt`).
+`dangerous` is not auto-granted, which only reinforces the sealed verdict — but it is a distinct
+gate from the `.calovride`/`calserviced` surface analyzed here, not restated further.
 
 Source of truth: `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (compiled CIL,
 neverallows retained). Cross-checked against `apr2026` and base `Y181` CILs — identical results.
 
-> **[C] live-Y175 2026-10-05 — the sealing *preconditions* re-confirmed on a LIVE Y175 radio; the CIL
-> analysis itself stays Y181-scoped (can't pull sepolicy from a locked user shell).** Read-only capture
-> of `W213E-Y175.5.2-SIHM22B-383.1` (`/tmp/radio_audit/20261005_232227/raw/`) corroborates every live
-> environment fact this verdict rests on, on Y175 as well as Y181:
-> - SELinux **Enforcing** (`00_whoami.txt:3`; 179/179 avc `permissive=0`), bootloader **locked**
->   (`ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`), verified boot **green**,
->   `ro.secure=1`, `ro.adb.secure=1`, `ro.debuggable=0` — same posture as the Y181 analysis.
-> - `calserviced` runs as user **`vendor_cald`**, SELinux domain **`calserviced`**, on Y175 too:
->   `u:r:calserviced:s0  vendor_cald  573 1 ... S calserviced` (`ps.txt:124`) — the exact
->   uid-vs-domain split this doc's terminology correction describes.
-> - `/mnt/vendor/calibration` is a live **rw,seclabel** ext4 mount on Y175 (`mounts.txt`,
->   `ext4 ... calibration ... rw,nosuid,nodev`).
-> - The adb `shell` on Y175 is `uid=2000`, groups carry **no `system`(1000) and no `vendor_cald`**
->   (`00_whoami.txt`) — the DAC floor that denies the overrides-dir write holds on Y175.
-> - Live avc log has **zero** `untrusted_app`/`shell` denials against `calibration_data_file`,
->   `mnt_vendor`, `cald`, or `calserviced` (grep: no hits) — consistent with no such edge existing, but
->   note this is a non-attempt, **not** positive proof of a grant/deny; it does not substitute for the
->   CIL read.
->
-> **UNVERIFIABLE-FROM-LIVE on Y175:** the actual allow/neverallow set in §(a)/(b) is read from Y181's
-> `vendor_sepolicy.cil`; a locked user shell cannot pull Y175's sepolicy, so the per-rule claims
-> (hwservice whitelist, `shell` → `dir getattr` only, the neverallows) are **not** independently
-> re-derived on Y175 — they transfer by the usual Y177/Y181 policy-reuse inference, not by live Y175
-> evidence. Separately, the **framework** permissions gating GM's calibration *Binder* API (distinct
-> from this filesystem/hwbinder path) resolve on live Y175 as `gm.permission.WRITE_DIAGNOSTIC_CALIBRATION_DATA`
-> = `dangerous` and `gm.permission.READ_DIAGNOSTIC_CALIBRATION_DATA` = `normal` (`permissions_full.txt`);
-> `dangerous` is not auto-granted, which only reinforces "SEALED" — but it is a different gate from the
-> `.calovride`/`calserviced` surface this doc sealed, so it does not change the verdict.
+## Live re-verification trail
 
-> **[C] live-Y181.3.2 2026-11-12:** the bench radio, probed read-only over adb, is `uid=2000(shell)` / `u:r:shell:s0`, `getenforce`=Enforcing,
-> `ro.boot.selinux=permissive` (the cmdline also carries a later `enforcing=1`/`androidboot.selinux=enforcing` pair; last-pair-wins is an inference, not read), patch level 2025-06-05, `user`/`release-keys`; all 3596 runtime `avc` records (194 kernel + 1055 main + 2347 events, overlapping streams) are `permissive=0`. (Corrected 2026-11-12: this note previously said "8270 `avc` lines", which no source supports; see `gminfo37_update_cache_FORENSIC_LLM.txt` FACT lines for the 3596 count.)
-> The "Enforcing" premise of this verdict holds today. The shell can read `/vendor/etc/selinux/vendor_sepolicy.cil` (checked 2026-11-12), but the CIL rules cited below were not re-diffed today.
+Four dated live-verification passes re-confirm or upgrade the base analysis; each is folded
+in place rather than left as a stacked patch.
 
-> **[C] Y181.3.2-ref 2026-10-06 — the §(a)/(b) CIL rule-set re-derived VERBATIM from a LIVE Y181.3.2 root
-> reference, not just the jun2026 pull.** Read directly from the on-device `/vendor/etc/selinux/vendor_sepolicy.cil`
-> (root shell, `W231E-Y181.3.2-SIHM22B-499.3`, SELinux Enforcing). Every load-bearing rule this verdict
-> rests on is present on Y181.3.2:
-> - `:2317 (allow calserviced gm_calibration_hwservice (hwservice_manager (add find)))` and
->   `:2320 (allow calserviced gm_calibration_provider_hwservice (hwservice_manager (add find)))` — CONFIRMED verbatim.
-> - The `find` whitelist: `gm_sxm_32_0` (`:2566`/`:2565`), `hal_calibration_client` (`:2949`),
->   `hal_calibration_provider_client` (`:2938`), `gmlocation-hal-1_0d` (`:5156`). (The `hal_calibration_server`/
->   `hal_calibration_provider_server` of §(a) reach their own service via the `add find` server grant, not a
->   standalone `find` line — same net whitelist, finer mechanism.)
-> - `:2346 (allow shell_32_0 calibration_data_file (dir (getattr)))` — CONFIRMED verbatim as the **only** `shell`
->   grant on `calibration_data_file` (no `file create`/`write`/`add_name`/`open`). The "`shell` is defanged" claim holds on Y181.3.2.
-> - `untrusted_app` has **zero** allow rules against `calibration`/`calserviced`/`mnt_vendor`/`hwservice`/`hwbinder`
->   in the live CIL (the only `untrusted_app` hits are the giant `domain`/`file_type` typeattributeset declarations,
->   not allows) — total MAC denial CONFIRMED.
-> - Neverallows present but as **separate** statements, not the combined `(add find)` the doc quotes:
->   `gm_calibration_hwservice (add)` `:2952` / `(find)` `:2953`; `gm_calibration_provider_hwservice (add)` `:2322`/`:2941` /
->   `(find)` `:2942`. Net effect identical (both `add` and `find` neverallowed for the negated base attribute).
-> - `/mnt/vendor/calibration` is a live `ext4 ... errors=panic ... wait,check,formattable,nofail` mount in
->   `/vendor/etc/fstab` on Y181.3.2 too.
-> This upgrades §(a)/(b) from "Y181 jun2026 pull" to "live Y181.3.2 on-device CIL." Y175 per-rule claims remain
-> *inferred* (no bootable Y175 policy); the Y175 live-environment preconditions were separately re-confirmed above.
+**`[C]` live-Y175 2026-10-05** (`W213E-Y175.5.2-SIHM22B-383.1`,
+`/tmp/radio_audit/20261005_232227/raw/`): re-confirms the sealing *preconditions* on a live Y175
+radio — the CIL rule analysis itself stays Y181-scoped (a locked user shell cannot pull Y175's
+sepolicy).
+- SELinux **Enforcing** (`00_whoami.txt:3`; 179/179 avc `permissive=0`); locked bootloader;
+  verified-boot green; `ro.secure=1`/`ro.adb.secure=1`/`ro.debuggable=0` — same posture as Y181.
+- `calserviced` runs as uid **`vendor_cald`**, SELinux domain **`calserviced`**, on Y175 too:
+  `u:r:calserviced:s0 vendor_cald 573 1 ... S calserviced` (`ps.txt:124`).
+- `/mnt/vendor/calibration` is a live **rw,seclabel** ext4 mount on Y175 (`mounts.txt`).
+- adb `shell` on Y175 is `uid=2000`, groups carry **no `system`(1000) and no `vendor_cald`**
+  (`00_whoami.txt`) — the DAC floor denying the overrides-dir write holds on Y175.
+- Live avc log has **zero** `untrusted_app`/`shell` denials against `calibration_data_file`,
+  `mnt_vendor`, `cald`, or `calserviced` — consistent with no such edge existing, but this is a
+  non-attempt, not positive proof of a grant/deny; it does not substitute for the CIL read.
+
+`[U]` **Unverifiable from live Y175:** the actual allow/neverallow set in §(a)/(b) below is read
+from Y181's `vendor_sepolicy.cil`; a locked user shell cannot pull Y175's own sepolicy, so the
+per-rule claims (hwservice whitelist, `shell` → `dir getattr` only, the neverallows) transfer by
+the usual Y177/Y181 policy-reuse inference (`[inferred]`), not by independent live Y175 evidence.
+
+**`[C]` live-Y181.3.2 2026-11-12** (bench radio, read-only adb): `uid=2000(shell)` /
+`u:r:shell:s0`, `getenforce`=Enforcing, patch level 2025-06-05, `user`/`release-keys`; all 3596
+runtime `avc` records (194 kernel + 1055 main + 2347 events, overlapping streams) are
+`permissive=0`.
+
+> **History:** this note previously stated "8270 `avc` lines," which no source supports;
+> corrected 2026-11-12 to the 3596 count per `gminfo37_update_cache_FORENSIC_LLM.txt` FACT lines.
+
+The "Enforcing" premise holds today. The shell can read
+`/vendor/etc/selinux/vendor_sepolicy.cil` (checked 2026-11-12), but the CIL rules cited below
+were not re-diffed on that date.
+
+**`[C]` Y181.3.2-ref 2026-10-06** — §(a)/(b)'s CIL rule set re-derived **verbatim from a live
+Y181.3.2 root reference** (`W231E-Y181.3.2-SIHM22B-499.3`, SELinux Enforcing), not just the
+jun2026 pull. Read directly from the on-device `/vendor/etc/selinux/vendor_sepolicy.cil`:
+- `:2317 (allow calserviced gm_calibration_hwservice (hwservice_manager (add find)))` and
+  `:2320 (allow calserviced gm_calibration_provider_hwservice (hwservice_manager (add find)))` —
+  CONFIRMED verbatim.
+- `find` whitelist: `gm_sxm_32_0` (`:2566`/`:2565`), `hal_calibration_client` (`:2949`),
+  `hal_calibration_provider_client` (`:2938`), `gmlocation-hal-1_0d` (`:5156`). (The
+  `hal_calibration_server`/`hal_calibration_provider_server` of §(a) reach their own service via
+  the `add find` server grant, not a standalone `find` line — same net whitelist, finer
+  mechanism.)
+- `:2346 (allow shell_32_0 calibration_data_file (dir (getattr)))` — CONFIRMED verbatim as the
+  **only** `shell` grant on `calibration_data_file` (no `file create`/`write`/`add_name`/`open`).
+  The "`shell` is defanged" claim holds on Y181.3.2.
+- `untrusted_app` has **zero** allow rules against `calibration`/`calserviced`/`mnt_vendor`/
+  `hwservice`/`hwbinder` in the live CIL (only hits are the giant `domain`/`file_type`
+  `typeattributeset` declarations, not allows) — total MAC denial CONFIRMED.
+- Neverallows present but as **separate** statements, not the combined `(add find)` form:
+  `gm_calibration_hwservice (add)` `:2952` / `(find)` `:2953`;
+  `gm_calibration_provider_hwservice (add)` `:2322`/`:2941` / `(find)` `:2942`. Net effect
+  identical (both `add` and `find` neverallowed for the negated base attribute).
+- `/mnt/vendor/calibration` is a live `ext4 ... errors=panic ... wait,check,formattable,nofail`
+  mount in `/vendor/etc/fstab` on Y181.3.2 too.
+
+This upgrades §(a)/(b) from "Y181 jun2026 pull" to "live Y181.3.2 on-device CIL." Y175 per-rule
+claims remain `[inferred]` (no bootable Y175 policy); Y175 live-environment preconditions were
+separately confirmed above.
 
 ---
 
@@ -139,7 +206,7 @@ no `Context.getSystemService`/`ServiceManager.getService` handle an app SDK coul
 init, vendor_init, vold, calserviced, camerad, gm_diagnosticsd,
 gm_update_engine, gmloggervendorserviced, bootanim, system_app, shell(!)
 ```
-The trust floor is **"system/vendor or above."** Notably `gm_diagnosticsd` = the UDS/`$27` path
+The trust floor is **"system/vendor or above."** Notably `gm_diagnosticsd` is the UDS/`$27` path
 the backdoor was meant to sidestep.
 
 **`shell` is on that list but is defanged** — its only grant is:
@@ -159,8 +226,8 @@ neverallow base_typeattr_* gm_calibration_hwservice          (hwservice_manager 
 neverallow base_typeattr_* gm_calibration_provider_hwservice (hwservice_manager (add find))
 ```
 These are the compiled `neverallow { domain -<whitelist> } ...` forms — `untrusted_app`/`shell`
-fall inside the negated attribute sets, so even a policy-add mistake that granted an app `find`
-would fail CTS/`checkpolicy`. hwbinder-to-app is a hard AOSP neverallow.
+fall inside the negated attribute sets, so even a policy-add mistake granting an app `find` would
+fail CTS/`checkpolicy`. hwbinder-to-app is a hard AOSP neverallow.
 
 ## (c) Side-channel vectors
 
@@ -169,26 +236,24 @@ would fail CTS/`checkpolicy`. hwbinder-to-app is a hard AOSP neverallow.
   boot. **Blocked.**
 - **Runtime init trigger via property:** the writable calibration props
   (`exported_calibration_prop`, `exported_rvc_prop`) are `property_service set`-able **only by
-  `calserviced`**, not by `shell`/`untrusted_app`. No app-settable property spawns a
-  cald-context action. **Blocked.**
-- **DAC group angle:** dir group is `system` (gid 1000). adb `shell` groups (from
-  `current_user.txt`) are `shell,input,log,adb,sdcard_rw,sdcard_r,ext_data_rw,ext_obb_rw,net_bt*,
-  inet,net_bw_stats,readproc,uhid,readtracefs` — **no `system`, no `vendor_cald`.** A sideloaded
-  app's uid is likewise outside both. DAC denies regardless of MAC.
-- **Privileged writers exist; their caller boundary is the question.** The
-  earlier statement that memory corruption was the only genuine route was
-  too broad. The updater contains a legitimate DevCaloverrideInstaller that
-  copies into the protected destination. Current Y175 USB discovery selects
-  that package type only on non-user builds; invoking the normal install IPC
-  has not been shown to register arbitrary shell-supplied files. The
-  [updater owner](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
-  records current-APK provenance, discovery/installer separation and open
-  native boundaries. This does not relax shell DAC/MAC permissions.
-- **Via system services:** a supported privileged importer and an exploitable
-  confused deputy are different claims. The calibration service itself has
-  no newly demonstrated ordinary-app write API; the updater's independent
-  package-registration and caller gates must be traced before claiming it
-  can place a file on an unprivileged caller's behalf.
+  `calserviced`**, not by `shell`/`untrusted_app`. No app-settable property spawns a cald-context
+  action. **Blocked.**
+- **DAC group angle:** dir group is `system` (gid 1000). adb `shell` groups are
+  `shell,input,log,adb,sdcard_rw,sdcard_r,ext_data_rw,ext_obb_rw,net_bt*,inet,net_bw_stats,
+  readproc,uhid,readtracefs` — **no `system`, no `vendor_cald`.** A sideloaded app's uid is
+  likewise outside both. DAC denies regardless of MAC.
+- **Privileged writers exist; their caller boundary is the question.** An earlier statement that
+  memory corruption was the only genuine route was too broad. The updater contains a legitimate
+  DevCaloverrideInstaller that copies into the protected destination. Current Y175 USB discovery
+  selects that package type only on non-user builds; invoking the normal install IPC has not been
+  shown to register arbitrary shell-supplied files. See
+  [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
+  for current-APK provenance, discovery/installer separation, and the open native boundaries —
+  not restated here. **This does not relax shell DAC/MAC permissions.**
+- **Via system services:** a supported privileged importer and an exploitable confused deputy are
+  different claims. The calibration service itself has no newly demonstrated ordinary-app write
+  API; the updater's independent package-registration and caller gates must be traced (owned by
+  the OTA doc above) before claiming it can place a file on an unprivileged caller's behalf.
 
 ---
 
@@ -204,15 +269,11 @@ would fail CTS/`checkpolicy`. hwbinder-to-app is a hard AOSP neverallow.
 | Edit `calserviced.rc` / add init svc | No (verity + locked) | No |
 | Property-triggered init action | No (props are cald-only) | No |
 
-**Conclusion, corrected 2026-11-15:** the direct `.calovride` filesystem path
-remains unavailable to the inspected ordinary shell/app identities. A local
-loader does not itself confer write permission. A legitimate privileged
-updater copier also exists, so an RCE prerequisite is not a complete model
-of every authorized import path. No supported production-shell route to
-register and invoke that copier was established. Current updater/ABFT/native
-entry-point research remains separate from direct HIDL access or a proven
-arbitrary file-write primitive. No calibration deployment was performed in
-this research follow-up.
+## Open conflicts
+
+None specific to this doc. (The corpus-wide MEC/module-naming/VMM1-bitness/EEPROM-byte/seed-length
+items in `PROVENANCE_AUDIT_AUG2026.md`/README.md's cross-doc Open Conflicts do not touch
+`calserviced`/`vendor_cald` reachability.)
 
 ### Evidence files
 - `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (policy; apr2026 + base Y181 concur)
@@ -223,3 +284,16 @@ this research follow-up.
 - `enumeration/Y181/jun2026/raw/{fstab,mounts}.txt` (`/mnt/vendor/calibration` mount)
 - `research/PROVENANCE_AUDIT_AUG2026.md` #36–38 (backdoor + `770 vendor_cald system` provenance)
 - `research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` L98–117 (backdoor description)
+
+## Related
+- [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) —
+  `.calovride` container/checksum/loader format (this doc owns the write-path reachability only).
+- [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md) — the
+  one documented successful custom-write path (CAN613/614 scoped-VIP-RAM-write), unrelated to
+  this filesystem/hwbinder surface.
+- [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](CALDEF_VIP_CALIBRATION_ANALYSIS.txt) — CalDef/VIP
+  calibration record structure.
+- [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15) —
+  updater caller-boundary / DevCaloverrideInstaller provenance (owner of the §(c) open question).
+- [`../platform/security.md`](../platform/security.md) — general SELinux/FBE posture by firmware
+  build; this doc is the research-tier deep dive on one specific daemon/path.

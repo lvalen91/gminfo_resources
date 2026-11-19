@@ -13,8 +13,8 @@
 | GM Service P/N | 3765210 |
 | Harman Assembly P/N | 91.UMAF2HG.GS6FAAG |
 | HWID | ZQ68GEC80317, EC-Index 20 |
-| Production Serial | U1J3N05D2F01C01 |
-| Mfg Trace | F2G6MHBW0114601N01PSXXX |
+| Production Serial | <PRODUCTION_SERIAL> |
+| Mfg Trace | <MANUFACTURING_TRACE> |
 | CAN Architecture | GM VIP/SDV1 (GB) — CAN 2.0, 29-bit extended |
 | CAN IDs | Req: 0x14DA80F2, Rsp: 0x145AF280 (HS-CAN, dedicated tester F2 per A11_CSM_x80.Txt). Generic OBD tester F1 (Req 0x14DA80F1 / Rsp 0x145AF180) also reaches ECU 0x80 — the value the DPS bench GCI read logs use. |
 
@@ -103,7 +103,7 @@ Three-processor design on a single PCB:
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — confirmed IFWI/TXE boot flash per Intel Apollo Lake platform requirements. NOT dumped. |
 | Ethernet MAC | Intel WGI210CL (I210) rev A3 (2214ASP) | QFN-48 | GbE for AVB audio, 25MHz xtal; [shipped Marvell port-speed settings / numbering caveat](../platform/networking.md#shipped-switch-speeds--c-2026-11-13), 2026-11-13 |
 | WiFi/BT | Shielded module (PN 4D+0847, EC-02 7A85H.G05) | Module | ~21.3 x 12.9 x 7.9mm |
-| USB-UART | Microchip MCP2200 | QFN | Debug console -> /dev/ttyACM1 (world-rw), 12MHz xtal |
+| USB-UART | Microchip MCP2200 | QFN | SXM-associated serial -> AAOS /dev/ttyACM1; native Linux /dev/ttyACM0, 12MHz xtal (function corrected2026-11-17 from SXeDL path and live policy) |
 | CAN Transceiver | NXP C26004 | TSSOP | HS-CAN interface |
 
 ### Audio & Display
@@ -114,7 +114,7 @@ Three-processor design on a single PCB:
 | Audio Amplifier | NXP TDF8532 | — | External, connected via AVB Ethernet |
 | Display Serializer | TI DS90UH949-Q1 (UH949Q, AT3S G4) | QFP-48 | FPD-Link III TX to display panel |
 | Camera Deserializer | TI DS90UB954-Q1 (UB954Q, AVG3 G4) | QFP-48 | FPD-Link III RX hub for cameras |
-| Backlight Driver | Analog Devices LT3899 (B64240) | QFN | Dual boost LED driver |
+| Backlight Driver | Analog Devices LT3899 (B64240) | QFN | Dual boost LED driver — **role unsupported 2026-11-17:** no GHS- or native-Linux-controlled backlight driver was found on the SoC/I2C side (`video/display_subsystem.md`); the live backlight path is an in-band I2C write (register `0x20`) to the faceplate controller at `0x12`, reached over FPD-Link through the DS90UH949-Q1/DS90UB948 serializer link, not a discrete LED-driver IC addressed from the SoC. This part's function in the chain is unconfirmed; it may sit downstream of the faceplate controller, on the panel side of the link. |
 
 ### Power
 
@@ -282,7 +282,7 @@ All 4 DPS read sessions for Y181 returned identical results — fully determinis
 
 ### IFWI/TXE Boot Flash (IS25WP064A-JHLA3)
 
-The 8MB ISSI IS25WP064A-JHLA3 (BGA) is **confirmed** as the Apollo Lake IFWI/TXE boot flash per Intel platform documentation. Apollo Lake has no internal NOR — an external 8MB SPI NOR on CS0 is mandatory for boot. This IC is the only non-SOIC flash on the board besides the Samsung eMMC.
+The board inventory identifies an 8MB ISSI IS25WP064A-JHLA3 SPI NOR, consistent with the Apollo Lake early-firmware architecture. The live firmware-window readback below establishes mapped IFWI contents; it does not by itself verify the chip wiring, package adapter requirements, or complete physical flash layout.
 
 #### Cross-Platform Confirmation
 
@@ -303,54 +303,66 @@ All three known A3960 AAOS deployments share this architecture:
 
 Sources: Intel E3900/A3900 Datasheet Addendum (CDI 336256), Apollo Lake SPI & SMIP Programming Guide (CDI 559702), Intel TXE FW Bring-Up Guide, FCC filings 2ACRL-X297 and LTQIHU4, Yole SystemPlus IHU4 teardown (Dec 2021).
 
-#### IFWI Flash Layout (8MB)
+#### Live firmware-window readback — 2026-11-17
 
-```
-Offset      Region                  Typical Size    Encrypted?
-─────────────────────────────────────────────────────────────
-0x000000    Flash Descriptor        4KB             No — signature 0x0FF0A55A at 0x10
-0x001000    TXE Region              ~2-3MB          YES (AES-256, Intel keys)
-~0x300000   IFWI/BIOS Region        ~4-5MB          Mixed
-            ├─ Boot Partition 1 (BPDT)
-            │  ├─ IBB (Initial Boot Block)          No (signed)
-            │  ├─ OBB (OEM Boot Block)              No (signed)
-            │  ├─ PMC firmware                      No (signed)
-            │  ├─ Microcode                         YES (Intel encrypted)
-            │  └─ SMIP                              No — platform strap config
-            └─ Boot Partition 2 (A/B redundancy)
-~0x7F0000   Device Expansion (PDR)  ~1MB            No — OEM data
-```
+Probe08 successfully read the fixed physical window `0xFF800000–0xFFFFFFFF`
+through a temporary kernel misc device. The module used `ioremap` and
+`memcpy_fromio`, exposed only read/seek operations with mode `0400`, and was
+unloaded after verification. No flash programming, erase, controller-command,
+or flash-status-register write was issued. The running kernel lacks both
+`CONFIG_MTD` and `CONFIG_DEVMEM`; the existing `intel-spi` platform device
+advertises controller resources at `0xFED01000–0xFED01FFF`.
 
-#### Dump Feasibility
+The readback is **8,388,608 bytes**, SHA-256
+`9eaeaf92fa6e747d6887af0e4fc00d3faf5ab9e798d4801b2df8e0d7a8c12221`.
+A second complete read hashed on the radio matched the transferred file.
+The backup is `ifwi_mapped_ff800000_8MiB.bin` alongside the Y175 bench eMMC
+backup. This is a **CPU-visible firmware-window backup**, not yet a certified
+whole-chip SPI backup. No Intel flash-descriptor signature was found; the
+first 4 KiB reads as `FF`, while later regions contain structured firmware.
 
-The IS25WP064A-JHLA3 package is WSON-8/BGA — requires a WSON-8 clip/adapter or TFBGA socket for the XGecu programmer. ISSI parts are well-supported in minipro/xgpro.
+| Component | Readback file offset | Physical address | Verification |
+|---|---:|---:|---|
+| First BPDT | `0x200000` | `0xFFA00000` | BPDT signature |
+| IBBL container | `0x28C440` | `0xFFA8C440` | Exact 16,384-byte match to staged IBBL |
+| IBB container | `0x290440` | `0xFFA90440` | Exact 225,280-byte match to staged IBB |
+| Second BPDT | `0x500000` | `0xFFD00000` | BPDT signature |
+| OBBP CPD | `0x501000` | `0xFFD01000` | Directory containing ELK |
+| ELK container | `0x501040` | `0xFFD01040` | Exact 1,130,756-byte match to staged ELK |
+| ELK executable | `0x50126C` | `0xFFD0126C` | Exact 1,122,304-byte match to extracted ELF |
 
-**What is readable in a raw dump:**
-- Flash Descriptor — fully documented Intel structure
-- UEFI/BIOS region (IBB/OBB) — Harman/GM boot config, secure boot keys, platform straps
-- SMIP — hardware strap configuration (GPIO, SPI, clock settings)
-- Boot Guard key hashes — reveals whose keys are in OTP fuses
-- PMC firmware — power management controller binary
-- TXE version/config — firmware version, OEM configuration data
-- Device Expansion / PDR — OEM-configurable platform data
+The comparison source is the 8 MiB `ghs_abl_update` eMMC staging partition,
+SHA-256 `43e73da0adf8a08c3d1f7af6cea096e9baeedee06ec23c64469c1d2720276c88`.
+ELK ELF SHA-256:
+`3acbf174207a2c621d24ba5a1278c3b214b11c88e580228599057b4ad3a8951c`.
+This establishes ELK in the live firmware mapping as well as in the eMMC
+update package. It does not prove that ELK can be selected from cold power
+with blank eMMC, or that all its initialization paths tolerate missing media.
 
-**What is NOT readable:**
-- TXE code modules — AES-256 encrypted by Intel, opaque blobs
-- Microcode — Intel encrypted
-- AES-CMAC master key — stored in TXE Sealed Storage, encrypted with key derived from hardware fuses inside the A3960 die (inaccessible even with full dump)
-
-**Analysis tools:** UEFITool (GUI, opens IFWI tree), MEAnalyzer (TXE/ME region), Intel FIT (Flash Image Tool), ifwitool (coreboot CLI)
+**Correction:** the previous generic table assigning a separate TXE region,
+an encrypted microcode region, and a PDR region was not a measured layout of
+this board and has been removed. Encryption and fuse/key contents cannot be
+inferred merely from component names. Physical SPI readback is still needed
+to establish any regions not exposed by the CPU mapping.
 
 #### Key Implications
 
-1. AES-CMAC master key is unreachable — inside TXE Sealed Storage, encrypted with hardware fuse-derived key
-2. SBI bypass makes the key irrelevant — EEPROM mod bypasses the entire security chain
-3. VIP is security-transparent — no independent verification, pure relay
-4. GHS hypervisor adds complexity — Android runs as a VM, not bare metal
-5. OTA persistence is the main challenge — each update re-locks EEPROM
-6. Bench mode is predictable — without gateway/SoC, VIP always returns 0xFF seeds
-7. IFWI dump is useful for platform understanding but cannot reveal the master key
-8. Boot Guard v2 root of trust anchored in TXE ROM — tampering with IFWI bricks boot
+Corrected 2026-11-17 from the mapped-firmware audit:
+
+1. ELK lock state and early image authentication are separate. Probe reports
+   inherited `ABL.secureboot=1` while ELK previously reported `secure=no`.
+2. Both stock GHS eMMC slots have valid RSA-2048 signatures matching the
+   firmware's OS Kernel key usage. IBB contains a policy-gated rejection path
+   for unsigned or unauthenticated images.
+3. IBBL, IBB and ELK hashes match the signed boot-policy manifest. The CSE
+   partitions and key manifests also validate cryptographically.
+4. These results do not establish the device's physical fuse state, a blanket
+   EEPROM bypass of all security, or automatic recovery after arbitrary flash
+   changes. Such claims require separate evidence.
+5. The readback establishes accessible firmware contents, not recovery of
+   private signing keys or hardware-derived secrets.
+
+See the [expanded audit](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#expanded-readback-audit-and-coverage--2026-11-17).
 
 > **[C] 2026-10-08 (avbtool/binary, SOC_ABL 85738845 — CONFIRMED-FROM-BINARY/F1, F2, F4):**
 > The real OFFLINE unlock target is **not** the Boot Guard chain itself but the device
@@ -411,13 +423,15 @@ Every link is cryptographically bound to the one above it. Breaking any single l
 4. **No "virgin state" exists** — The fuses are burned. There is no way to return the A3960 to an unprogrammed state. Even erasing the entire SPI flash just produces a unit that won't boot.
 5. **Writing a custom IFWI requires Harman/GM's RSA private key** — Without it, any modified image fails signature verification.
 
-#### Why TXE Region Modification Fails
+#### TXE integrity evidence and limits
 
-Even targeting the TXE firmware directly:
-- TXE code modules are AES-256 encrypted with Intel's key (not OEM's)
-- The TXE configuration (including Boot Guard policy) is signed
-- No public Boot Guard bypass exists for Apollo Lake TXE 3.0
-- Older Intel ME exploits (CVE-2019-0090, CVE-2017-5705) do not apply to this TXE generation
+Corrected 2026-11-17: the earlier blanket claim that TXE code modules are
+AES-256-encrypted was incorrect for this dump. CSE modules were extracted as
+uncompressed, LZMA or Huffman-coded content and their recorded hashes validated.
+Readable code does not imply modifiable trusted firmware: eight partition
+manifest signatures and both key-manifest signatures validate. Whether every
+hardware-rooted mismatch is enforced, and what recovery follows a failure,
+requires evidence beyond this static window. No modified IFWI was flashed.
 
 #### What Actually Works (Current Capabilities)
 
@@ -620,7 +634,7 @@ networked hypervisor bridge.
 ### UART Interfaces
 | Device | Permissions | Notes |
 |--------|------------|-------|
-| /dev/ttyACM1 | crw-rw-rw- (world) | MCP2200 USB-UART — debug console |
+| /dev/ttyACM1 | crw-rw-rw- (world) | MCP2200 USB-UART — SXM-associated serial, not a generic debug console (corrected2026-11-17) |
 | /dev/ttyS0 | crw-rw---- bluetooth | Bluetooth HCI |
 | /dev/ttyS1 | crw------- root | [C] VIP IPC (HDLC) — live-confirmed as `ipc_serial_device` in `platform/networking.md` |
 | /dev/ttyS2 | crw------- root | [C] Console (`serial_device`) — live-confirmed in `platform/networking.md` |
@@ -692,6 +706,105 @@ adapter configuration or UART transmit operation was performed.
 | 74 | P1_5 / RLIN35TX | Channel 5 TX alternative; compare if pin 8 remains silent |
 | 64 | P2_3 / RLIN28TX | RLIN2 channel 8 TX; not the console identification |
 | 65 | P2_2 / RLIN28RX | RLIN2 channel 8 RX; not the console identification |
+
+### Probe VIP UART versus Renesas programming access — 2026-11-17
+
+**Finding:** Probe's `/dev/ttyS1` accesses the running VIP application's
+HDLC/IPC endpoint. It is not a shell, debugger, or established ROM-programmer
+session. Evidence is the stock GHS `VipUART`/`SerialDev1` binding and the live
+1 Mbps CRC-valid reset/acknowledgment, channel-flow-control and channel-3
+exchanges documented in the [native transport analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#native-probe-to-vip-transport-and-elk-prerequisites--2026-11-17).
+The Linux root shell belongs to the Intel SoC; it confers no direct RH850
+CPU privilege. The exact VIP-side RLIN channel/pin for this IPC wire has not
+been established. Do not equate the SoC's `ttyS1` numbering with RH850 RLIN1
+or the separate owner-reported RLIN34 diagnostic TX.
+
+The RH850/F1K hardware manual Rev.1.10 distinguishes normal user-program
+execution from serial programming (section 6, p.290). Serial programming is
+selected at reset by FLMD0=1/FLMD1=0; section 37.6 (p.2757) assigns the
+programming UART to **JP0_0/FPDR** and **JP0_1/FPDT**, not an arbitrary RLIN
+port. For the 176-pin package, table 2.3 identifies these as pins **47** and
+**46**, with FLMD0 on pin **63**. Board routing and access to these pins have
+not been verified. No mode-pin changes or programmer-mode entry were tested.
+
+The [G3KH software manual](https://www.renesas.com/en/document/mas/rh850g3kh-users-manual-software?language=en)
+(R01US0165EJ0120, sections 2.1, 2.7 and 5) describes a 32-bit memory-mapped
+address space, supervisor/user CPU modes and MPU restrictions. These are CPU
+execution properties, not UART login levels. The current IPC handler's PSW/MPU
+state was not measured. A UART peer cannot directly address memory merely
+because the MCU has a readable address space.
+
+For R7F7015873AFP, hardware table 4.1 (p.262) gives:
+
+| Region | CPU address range | Size |
+|---|---|---|
+| Main code flash | `0x00000000–0x001FFFFF` | 2 MiB |
+| Extended user code flash | `0x01000000–0x01007FFF` | 32 KiB |
+| Local RAM | `0xFEBD0000–0xFEBEFFFF` | 128 KiB |
+| Retention RAM | `0xFEBF0000–0xFEBFFFFF` | 64 KiB |
+| Data flash | `0xFF200000–0xFF20FFFF` | 64 KiB |
+
+These are memory-map facts, **not verified remotely readable ranges**. A
+complete MCU backup must also consider configuration/option/security areas
+and distinguish them from the separate external EEPROM and update containers.
+
+**Firmware-read feasibility:** hardware table 37.3 (p.2753) supports flash
+reading through serial programming and user code. Table 37.4 (p.2754) lists
+programmer authentication, connection prohibition and read-command prohibition;
+the current unit's settings are unknown. The [flash hardware-interface manual](https://www.renesas.com/en/document/mah/rh850f1k-users-manual-flash-hardware-interface?language=en)
+(R01UH0622EJ0130, section 5.1, p.42) distinguishes CPU-readable flash in read
+mode from program/erase modes. None of this proves that Harman's IPC dispatcher
+exports those bytes. A verified IPC read-memory/upload handler, or another
+established read-access path, is still required. Existing HDLC acknowledgments
+prove transport only; no VIP firmware dump was attempted or completed here.
+
+### VIP UART read-handler trace — 2026-11-17
+
+**Result:** a fixed-record read service was traced in VIP_APP `85759599`, but
+no suitable full-firmware readback handler was established. This was static
+analysis; no unverified request was transmitted to Probe's VIP UART.
+All code addresses below are signed-container **file offsets**, not addresses
+to use in a live memory request. Absolute firmware references require the
+existing load-map adjustment (`runtime = file offset + 0x27A7A` for the mapped
+region); RAM addresses are already runtime addresses.
+
+Incoming diagnostics dispatcher `0x74F14` accepts message type `0x09` and
+selects internal operation from payload byte 5. For operation 0 it requires
+an eight-byte message, combines bytes 6/7 into a 16-bit identifier and calls
+`0x89D78`, which queues event 7. Consumer `0x640E4` receives that identifier
+and calls `0x63E6E`. The latter selects fixed DID readers, including
+`0000`, `F08C`, `F09A`, `F0B4`, `F0F1/F0F2/F0F3/F0F4/F0F6`,
+`F190/F198/F199`, `F1A0`, `F1CB/F1CC`, `F1DB/F1DC/F1DE`.
+Other identifiers take the error/zero-length result path. Reply construction
+at `0x63B3C` passes the identifier, result length and fixed buffer to `0x5C506`.
+This is not a generic address-plus-length memory service. The transport header,
+logical-to-wire channel mapping and live request/response still need validation
+before using even these fixed-record reads from Probe.
+
+`F0F4` sets result length `0x336` (822 bytes) and calls `0x62F30`, which reads
+fixed NVM block `0x86` through `0xE1362`. DID `0000` calls `0x637E4`, which
+collects a fixed set of NVM blocks into a response buffer. Neither accepts a
+flash source address or walks arbitrary code-flash ranges. Operations 1 and
+`0x14` under message `0x09` instead queue write/routine-related work; they
+must not be mistaken for alternate memory readers.
+
+Message type `0x17` queues at most 33 bytes through `0x89DFC`/event 10 into
+`0x65398`. Its relocated branch table leads to security-access handling
+(`0x643A0` for supported even selectors), not an established bulk-upload
+operation. This does not rule out every other IPC service; it rules out
+classifying this candidate as a firmware dump command without further evidence.
+
+**Analysis correction:** the installed RH850 SLEIGH decoder lacks the long
+`Bcond disp17` form and renders affected instructions as `ld.hu ...,r0`.
+The [Renesas G3KH software manual](https://www.renesas.com/en/document/mas/rh850g3kh-users-manual-software?language=en),
+section 7, pp.161–163, supplies the encoding used to recover these branches.
+For example file `0x74F5C` branches to `0x75538` for message `0x09`, and
+`0x63E94` branches to `0x64060` for DID `0000`. Uncorrected decompilation
+omits reachable paths. A separate decompile failure at `0x65398` reported
+`Low-level Error: Bad instruction count exceeded` with overlapping instructions
+at `0x8D04C`/`0x8D04A`; the absolute jump-table reference was checked using the
+load-map correction instead of trusting that output. No global decoder or
+radio firmware was modified.
 
 **2026-11-14 dual-adapter receive-only check:** USB device descriptors
 identified FT232R (0403:6001, owner-reported pin 52) and CP2102
@@ -1058,7 +1171,7 @@ Same SHA-256 (`317ae85c...`). The hypervisor, VMM, kernel, all RTOS modules — 
 - **Normal A/B**: Standard boot with slot selection
 - **Recovery**: `boot-recovery` BCB command (no recovery partition — GHS IS the recovery mechanism)
 - **See-Dealer**: `GHS: [LIFECYCLE] Booting 'see-dealer' mode` — dealer diagnostic/service mode
-- **ELK**: `GHS: [LIFECYCLE] Got request to boot to ELK` — the Intel Kernelflinger fastboot environment (ABL boot target `OBBPELK`, AVB active), reached on catastrophic boot failure. It is **not** a Linux kernel or shell — it exposes fastboot commands (`flash`/`erase`/`getvar`, `oem set-storage`) and reports `USB storage unsupported`. Triggered via `ConnToOTA_BootELK` or `ConnToLifecycle_BootELK` IPC. State machine: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand` (sends HECI command to ABL).
+- **ELK**: `GHS: [LIFECYCLE] Got request to boot to ELK` — the Intel Kernelflinger fastboot environment (ELK entry in the bootloader package, AVB active), reached on catastrophic boot failure. It is **not** a Linux kernel or shell — it exposes fastboot commands (`flash`/`erase`/`getvar`, `oem set-storage`) and reports `USB storage unsupported`. Triggered via `ConnToOTA_BootELK` or `ConnToLifecycle_BootELK` IPC. State machine: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand` (sends HECI command to ABL).
 - **Diagnostic**: `Diagnostic channel active`
 
 **There is NO recovery partition.** GHS itself is the recovery mechanism — it's always running as the hypervisor, has direct display access (camera overlays, error screens), and can rewrite any Android partition via its OTA module. As long as `ghs_isys` boots (which has its own A/B redundancy), the entire radio is recoverable.
@@ -1263,7 +1376,7 @@ SbaTicketValidation validation failed: 0x0
 ### Boot Reason Record (BRR)
 `RstRsn=0x33, SoCReqType=0, RetRsn=0, UnqBtCnt=4066, RstFctr=0x201`
 
-**SoCReqType=0 means normal boot.** This field exists as a mechanism for the VIP to encode boot type requests. Non-zero values could trigger recovery/fastboot/programming mode boot.
+**Corrected 2026-11-17:** `SoCReqType` is recorded by reset/shutdown handlers and reported as boot-reason metadata. Zero was observed during normal boot, but no consumer has been traced that uses this field to select recovery or Intel ELK. Nonzero values are not a demonstrated boot-target injection mechanism. See the [cold-entry selector trace](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#cold-entry-selector-trace--2026-11-17).
 
 ---
 
@@ -1363,32 +1476,32 @@ misc partition layout (conceptual):
 
 ### ELK
 
-**What it is:** GHS boot mode for catastrophic Android failure. It is the **Intel Kernelflinger fastboot** environment (ABL boot target `OBBPELK`), **not a Linux kernel or shell** — it exposes fastboot commands (`flash`/`erase`/`getvar`, `oem set-storage`), reports `USB storage unsupported`, and keeps **AVB active**. It boots via a completely different path than normal Android, bypassing the misc/BCB boot chain entirely.
+**What it is:** GHS boot mode for catastrophic Android failure. It is the **Intel Kernelflinger fastboot** environment (ELK entry in the bootloader package), **not a Linux kernel or shell** — it exposes fastboot commands (`flash`/`erase`/`getvar`, `oem set-storage`), reports `USB storage unsupported`, and keeps **AVB active**. It boots via a completely different path than normal Android, bypassing the misc/BCB boot chain entirely.
 
-**Boot path:** HECI → Intel CSE → ABL (boot target `OBBPELK`) — can boot even if eMMC is corrupted.
+**Boot path, corrected 2026-11-17:** SoC software can select ELK through HECI/CSE and reset. Native Probe has reproduced that operation. Entry after complete eMMC corruption/erasure, without any working SoC OS, remains unverified. `OBBP` and `ELK` are adjacent CPD directory names, not a decoded literal boot-target identifier.
 
 **Three trigger paths:**
-1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI command to ABL → `OBBPELK`. Updated 2026-11-15: compiled control selector `0x8180` and an E0 request helper are traced; exact CAN format/gates and live entry remain unverified. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI/CSE selection → ELK. Updated 2026-11-15: compiled control selector `0x8180` and an E0 request helper are traced; exact CAN format/gates and live entry remain unverified. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 2. **GHS lifecycle state machine** — Last resort after shutdown fails. State progression: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand`. Triggers after repeated boot failure escalation.
 3. **OTA IPC** — `ConnToOTA_BootELK` / `ConnToLifecycle_BootELK` IPC within GHS task architecture.
 
-**ELK image location:** Unknown — NOT found in any update package (Y177/Y181) or extracted partition. Possibly embedded in GHS binary (85098662) or stored in SPI NOR flash alongside IFWI.
+**ELK image location, corrected 2026-11-17:** The Y175 SoC bootloader update blob contains CPD partition `OBBP`, entry `ELK`, at file `0x30105C` with length `0x114104`. Its executing storage location and complete cold-boot dependencies remain unverified; see the owning recovery analysis.
 
 | Property | Known | Evidence |
 |---|---|---|
-| Boot path | OBBPELK via ABL | ABL strings in 85738845 |
+| Packaged component | CPD partition `OBBP`, entry `ELK` | Adjacent directory names; not a literal target selector |
 | Trigger (CAN) | VIP J6_CDD diagnostic channel | VIP firmware: "Diag Elk Reboot Req" |
 | Trigger (GHS) | Lifecycle state machine last-resort | State: BootELKSendAblUserCommand |
 | Trigger (OTA) | ConnToOTA_BootELK IPC | GHS OTA task can trigger it |
 | Boot mechanism | HECI → CSE → ABL (NOT BCB/misc) | Bypasses normal boot chain |
-| Image location | Unknown — not in update packages | Possibly embedded in GHS binary or SPI flash |
+| Packaged image location | Y175 SoC bootloader blob, CPD `OBBP` / `ELK` | Entry at `0x30105C`, length `0x114104`; executing copy unverified |
 | Display | Likely yes | Purpose is emergency/diagnostic |
 | Update capability | Likely yes | ConnToOTA_BootELK exists |
 | ADB/shell | Unknown | No evidence either way |
 | SELinux | Unknown | Not Android, may not apply |
 | Network | Possibly | OTA connection suggests it |
 
-**Resolved (2026-09-10):** ELK is **not** a general-purpose Linux shell. It is the Intel Kernelflinger fastboot environment (ABL target `OBBPELK`; `flash`/`erase`/`getvar` + `oem set-storage`; strings `"USB storage is unsupported"`; libavb-linked with **AVB active**; unlock device-state-gated). So the "full Linux with shell access / no SELinux / direct block-device access" path is closed — there is no unrestricted rootfs shell here. It is still reachable via a CAN diagnostic command the VIP relays without crypto verification (see below), but what it reaches is a fastboot with AVB enforced, not an Android-stack bypass.
+**Resolved (2026-09-10):** ELK is **not** a general-purpose Linux shell. It is the Intel Kernelflinger fastboot environment (ELK component; `flash`/`erase`/`getvar` + `oem set-storage`; strings `"USB storage is unsupported"`; libavb-linked with **AVB active**; unlock device-state-gated). So the "full Linux with shell access / no SELinux / direct block-device access" path is closed — there is no unrestricted rootfs shell here. It is still reachable via a CAN diagnostic command the VIP relays without crypto verification (see below), but what it reaches is a fastboot with AVB enforced, not an Android-stack bypass.
 
 **Observed "return to dealer" incident:** The radio was caused to fail to boot by disabling system packages via `pm disable --user` for user 0 and user 10 from ADB shell. This entered the return-to-dealer screen. Recovery was done using a datawipe update package via USB (which resets `/data/` including `pm disable` state in `/data/system/`). **ADB/USB exposure was NOT checked during the return-to-dealer state.** This is the highest-priority test — the return-to-dealer screen may be ELK or a pre-Android state with relaxed security.
 
@@ -1492,7 +1605,7 @@ br0:        192.168.5.1/24     -- WiFi bridge (AP mode)
 |---|--------|------|-------------|-------|
 | 1 | **A/B metadata manipulation (vda9, CRC32-only)** | Medium | **Low-Medium** | AB0 format decoded (magic "AB0", CRC32). But AB0 is GHS-managed — no Android process writes it. Offline eMMC mod or /dev/ghs/ota-isys exploitation needed. |
 | 2 | **EEPROM 0x0A00 investigation (871 firmware refs)** | Low | High | Physical EEPROM access already proven, just need to test values |
-| 3 | **SoCReqType in BRR (boot type injection)** | Medium | Medium | Requires understanding VIP→SoC boot reason encoding |
+| 3 | **SoCReqType in BRR** | Unassessed | Unproven | Reset/shutdown metadata; no boot-target consumer identified (corrected 2026-11-17) |
 | 4 | **ttyACM1 VIP UART from ADB shell** | Low | High | World-readable, already have shell access |
 | 5 | **/dev/ghs/ota-isys exploration** | Medium | Medium | gm_update_engine has ghs_device ioctl + connects to ipc_serverd. This is the Android↔GHS OTA interface. Could it command GHS to modify AB0? REMOTEREFLASH power mode (0x10) exists. |
 | 6 | **Frida S84.dll key capture** | Low | Medium | Script ready, needs Windows + DPS + MDI2 |
@@ -1537,7 +1650,7 @@ Physically dump Samsung KLMCG4JEUD 64GB eMMC (BGA-153). Find misc partition. AB0
 
 **Option 2: Trigger ELK via VIP Diagnostic Channel**
 
-VIP firmware has explicit ELK reboot support via J6_CDD. Boots via HECI → CSE → ABL (target OBBPELK), bypassing normal misc/BCB boot chain entirely. ELK is the Intel Kernelflinger fastboot (AVB active, "USB storage unsupported"), **not** a minimal Linux with direct block-device access — so it does not provide an unrestricted misc-write primitive; any write path is gated by fastboot's AVB/device-state checks.
+VIP firmware has explicit ELK reboot support via J6_CDD. Boots via HECI → CSE → ABL/ELK selection, bypassing normal misc/BCB boot chain entirely. ELK is the Intel Kernelflinger fastboot (AVB active, "USB storage unsupported"), **not** a minimal Linux with direct block-device access — so it does not provide an unrestricted misc-write primitive; any write path is gated by fastboot's AVB/device-state checks.
 
 Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. Updated 2026-11-15: selector `0x8180` is traced statically; the Android T1 candidate was rejected by a missing IOCID handler. CAN validation remains pending; see [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 

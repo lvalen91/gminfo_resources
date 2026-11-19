@@ -1,708 +1,687 @@
 ================================================================================
 GHS INTEGRITY DOWNGRADE PROTECTION ANALYSIS
 ================================================================================
-Document: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt
-Date: 2024-12-30
-Status: CONFIRMED - Y177 DOWNGRADE BLOCKED BY GHS
+Original: GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (2024-12-30, layered edits through
+2026-11-12). This pass folds in the downgrade-test narrative and root-cause
+diagrams from the retired UPDATE_PROCESS_ANALYSIS.txt §6 (deduped, one copy) and
+reconciles/relocates stacked dated corrections per the reorg rules.
+
+SCOPE: the Y181->Y177 (and Y181->Y175) USB downgrade-block mechanism — the GHS
+rollback counter in misc/vda9 vs vbmeta.rollback_index, the GHS binary/version
+strings and partition layout that evidence it, OEM RSA public-key extraction and
+why private-key/signing-key extraction is infeasible, and the W213E/W231E
+hardware-identity note.
+
+NOT HERE (pointer only, do not restate):
+- Live ELK entry, boot-mode/privilege-boundary mechanics, the SBI->MEC->ADB-cert
+  bypass chain, A/B+BCB+trigger-file mechanics, and the reboot/USB-trigger-file
+  table -> GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md ("GBUR"), the canonical boot/
+  update/recovery/ELK owner. GBUR §0.1 (binary provenance/arch), §2.3.6-2.3.7
+  (MEC table, ADB-cert chain), §3.1/§3.3/§3.4 (A/B slot mgmt, OTA handling, AVB
+  error handling), §4.1-4.7 (trigger-file mechanisms) own that content; this doc
+  only cites what's needed to source the rollback-counter finding.
+- AVB/vbmeta parser-level RE (TOCTOU/overflow guard functions, `.vmm1` bitness
+  dispute) -> VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md ("VPF").
+- GHS hypervisor architecture (PCI/task/IPC maps, `.boottable`, SELinux labels)
+  -> GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md ("GIC").
+- Byte-offset map of the SOC_HOSTOS (85098662) GHS monolith -> GHS_FILE_MAP_85098662.md
+  ("GFM"); this doc cites specific offsets but does not restate the table.
+- Seed/key/CMAC and module-signing trust chain -> GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md
+  ("GSK"); this doc's §8 (signing-key extraction) is scoped to the GHS/vbmeta/CSE
+  boot-verification key, not the UDS SecurityAccess exchange GSK owns.
+- Raw manifest/gmext module-signing and per-module downgrade-risk routing ->
+  `platform/ota_programming_roles.md` and `platform/ota_update_stack.md`.
+
+Evidence tags: [C] confirmed live/field-observed, [V] verified (static artifact),
+[FW]/[S] static firmware, [inferred] reasoned from evidence but not disassembled/
+proven, [U] unverified, [X] external. Dated per-claim tags override surrounding
+prose.
+
+Related: GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md,
+GHS_FILE_MAP_85098662.md, VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md,
+GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md, BOOT_CHAIN_ANALYSIS.txt,
+VIP_CONTROL_ANALYSIS.txt, PROVENANCE_AUDIT_AUG2026.md (#19),
+`platform/ota_update_stack.md`, `platform/ota_programming_roles.md`,
+`platform/boot_chain.md`, `platform/security.md`.
 
 ================================================================================
 1. EXECUTIVE SUMMARY
 ================================================================================
 
-DOWNGRADE ATTEMPT: Y181 -> Y177
-RESULT: FAILED
+DOWNGRADE ATTEMPT: Y181 -> Y177 (and, per the 2026-08-25 addendum, Y181 -> Y175)
+RESULT: BLOCKED, both directions. [C] field-observed, repeated bench testing,
+own unit (2026-08-17 re-test, §2.2 below).
 
-Attempted to downgrade from Y181 (W231E-Y181.3.2-SIHM22B-499.3) to Y177
-(W231E-Y177.6.1-SIHM22B-499.2) via USB update. The update was recognized,
-accepted, and partition writes appeared to complete (progress bar), but the
-system rejected the downgrade at boot verification and reverted to Y181.
+WHAT IS CONFIRMED: a lower-version USB update package is rejected and the
+active Y181 slot is left unmodified. Same-version reinstall and upgrades both
+succeed, which isolates the block to a version/rollback-index check rather than
+a signature, packaging, or USB-media problem (§2.2).
 
-ROOT CAUSE: GHS INTEGRITY hypervisor performs rollback protection independently
-of Android. The "version check disabled" in the update manifest only affects
-gm_update_engine, not GHS boot-time verification.
+WHAT IS NOT CONFIRMED, AND CONTESTED WITHIN THIS DOC'S OWN HISTORY: exactly
+*where* the rejection happens and by what mechanism. The original 2024-12-30
+account (§2.1) describes a full partition write to the inactive slot followed
+by a post-write GHS boot-time AVB/rollback-verification revert. The 2026-08-17
+owner re-test (§2.2) instead observed a version-gated rejection that, on normal
+boot, never even prompts, and in recovery mode fails early (progress bar starts,
+then "update not supported / invalid") — consistent with an early reject at
+update/write time rather than a full write-then-revert. This document's own
+Conclusions (§9, formerly "11.1 CONFIRMED FINDINGS") never reconciled the two
+models and continued to assert the original post-write-verification account
+after the re-test contradicted it. This is carried as Open Conflict #1 below
+(= consolidation-plan Open Conflicts item 8) rather than silently resolved.
+
+The manifest's "version check disabled" flag only affects `gm_update_engine`'s
+write phase (Android side); it does not disable whatever check performs the
+actual rejection — GHS boot-time AVB/rollback verification under the original
+model, or an earlier version-gate under the re-test's model (§3, §6.1).
 
 ================================================================================
 2. OBSERVED BEHAVIOR
 ================================================================================
 
-2.1 DOWNGRADE ATTEMPT SEQUENCE
-------------------------------
-1. USB with Y177 package inserted
-2. Radio recognized USB and prompted for "update"
-3. Update accepted by user
-4. System rebooted into recovery mode
-5. Progress bar incremented (partitions being written)
-6. System rebooted multiple times
-7. "Update Failed" screen displayed
-8. Used the gm_reboot_normal recovery trigger to exit the error screen
-   (encoded filename Z21fcmVib290X25vcm1hbA==; clarified 2026-11-12).
-9. System booted back to UNCHANGED Y181
+2.1 ORIGINAL TEST SEQUENCE (2024-12-30, archival — superseded in part by §2.2)
+-------------------------------------------------------------------------------
+Test: Y181 (W231E-Y181.3.2-SIHM22B-499.3) -> Y177 (W231E-Y177.6.1-SIHM22B-499.2)
+via USB update.
 
-2.2 KEY OBSERVATION
--------------------
-The system returned to Y181 completely unchanged. This means:
-- Partitions were written to INACTIVE A/B slot
-- Boot verification FAILED before slot switch committed
-- A/B fallback mechanism reverted to original slot
-- Original Y181 slot was never modified
+1. USB with Y177 package inserted; radio recognized it and prompted for "update"
+2. Update accepted by user
+3. System rebooted into recovery mode
+4. Progress bar incremented (partitions reported being written)
+5. System rebooted multiple times
+6. "Update Failed" screen displayed
+7. The gm_reboot_normal recovery trigger was used to exit the error screen
+   (encoded filename `Z21fcmVib290X25vcm1hbA==`; see GBUR §4.5 for the current,
+   corrected account of this trigger — not restated here)
+8. System booted back to UNCHANGED Y181
 
-2.3 COMPARISON WITH OTHER UPDATE SCENARIOS
-------------------------------------------
-| Transition      | Result   | Notes                              |
-|-----------------|----------|------------------------------------|
-| Y181 -> Y181    | SUCCESS  | Same version reinstall works       |
-| Y177 -> Y181    | SUCCESS  | Upgrade works                      |
-| Y181 -> Y177    | FAILURE  | Downgrade blocked                  |
+Interpretation at the time: partitions were written to the inactive A/B slot;
+boot verification failed before the slot switch committed; A/B fallback
+reverted to the original slot, which was never modified. [inferred] — this
+write-then-revert read is the part §2.2's re-test calls into question.
 
-2.4 OWNER BENCH RE-TEST (2026-08-17) — refines 2.1
---------------------------------------------------
-Evidence class: OWNER FIELD OBSERVATION (repeated bench testing on own unit). This
-resolves the provenance-audit flag that the downgrade result had "no capture artifact"
-(see PROVENANCE_AUDIT_AUG2026.md #19): the behavior is runtime-only and is confirmed by
-direct owner observation, which is the appropriate evidence class for it.
+2.2 OWNER BENCH RE-TEST (2026-08-17) — refines/contradicts §2.1
+-------------------------------------------------------------------------------
+Evidence class: [C] owner field observation, repeated bench testing on own unit.
+This resolves PROVENANCE_AUDIT_AUG2026.md #19's flag that the downgrade result
+had "no capture artifact": the behavior is runtime-only and direct owner
+observation is the appropriate evidence class for it.
 
-Observed matrix (USB update media):
-  - Active Y181 + Y177 USB, NORMAL boot .......... NOTHING happens (no update prompt at all).
-  - Active Y181 + Y177 USB, RECOVERY mode (blank
-    screen entry) ................................. Progress bar starts as if the update is
-                                                    beginning, then STOPS and displays
-                                                    "update not supported / invalid".
-  - Active Y177 + Y177 USB ...................... Prompts for update, REAPPLIES same build (OK).
-  - Active Y181 + Y181 USB ...................... Same-build reapply works (OK).
-  - Any downgrade attempt ....................... Either does nothing at all, or fails entirely.
+Observed matrix:
+
+| Condition                                          | Result                                                      |
+|-----------------------------------------------------|---------------------------------------------------------------|
+| Active Y181 + Y177 USB, NORMAL boot                 | NOTHING happens — no update prompt at all                    |
+| Active Y181 + Y177 USB, RECOVERY mode (blank-screen entry) | Progress bar starts as if beginning, then STOPS: "update not supported / invalid" |
+| Active Y177 + Y177 USB                              | Prompts for update, REAPPLIES same build (OK)                |
+| Active Y181 + Y181 USB                              | Same-build reapply works (OK)                                |
+| Any downgrade attempt                                | Either nothing happens, or fails entirely                     |
 
 Interpretation:
-  - Same-build reapply succeeding (both directions) isolates the failure to a VERSION /
-    ROLLBACK-INDEX check — it is NOT a signature, packaging, or USB-media problem (the media
-    and package are accepted for equal-or-newer).
-  - The normal-boot "nothing happens" indicates the updater declines a lower-version package
-    at manifest/version-check time (before any user prompt). Recovery mode gets as far as
-    starting the progress bar but is rejected with "not supported/invalid" — i.e. the reject
-    is at/near update start, not merely a post-write boot-verification revert.
-  - This REFINES the Dec-2024 account in 2.1 (which described a full write to the inactive
-    slot followed by a boot-verification revert). The current, directly-observed behavior is a
-    version-gated rejection that (on normal boot) never prompts and (in recovery) fails early.
-    The 2.1 sequence is retained for archival fidelity; where they differ, 2.4 is the more
-    accurate current observation.
-  - Net: the GHS/AVB anti-rollback mechanism inferred from rb_ua.conf + A/B fstab + TSS/AVB
-    manifest is now CORROBORATED by field behavior. Downgrade is blocked; equal-or-newer is not.
+- Same-build reapply succeeding in both directions isolates the failure to a
+  VERSION / ROLLBACK-INDEX check, not a signature, packaging, or USB-media
+  problem — media and package are accepted for equal-or-newer.
+- Normal boot's "nothing happens" indicates the updater declines a lower-version
+  package at manifest/version-check time, before any user prompt. Recovery mode
+  gets as far as starting the progress bar but is rejected "not supported/
+  invalid" near update start — not a full write followed by a post-write revert.
+- This REFINES §2.1 (full write to inactive slot + boot-verification revert).
+  §2.1 is kept for archival fidelity; where the two differ, §2.2 is the more
+  accurate current observation.
+- Net: the GHS/AVB anti-rollback mechanism inferred from rb_ua.conf + A/B fstab
+  + the TSS/AVB manifest strings (§3-4) is CORROBORATED as *a* blocking
+  mechanism by field behavior; which stage actually issues the rejection is
+  Open Conflict #1 below.
+
+2.3 COMPARISON ACROSS UPDATE SCENARIOS
+-------------------------------------------------------------------------------
+(Merges the Dec-2024 table with the identical table in retired
+UPDATE_PROCESS_ANALYSIS.txt §6.5 — one copy.)
+
+| Transition     | Result  | Notes                          |
+|----------------|---------|---------------------------------|
+| Y181 -> Y181   | SUCCESS | Same-version reinstall works    |
+| Y177 -> Y181   | SUCCESS | Upgrade works                   |
+| Y181 -> Y177   | FAILURE | Downgrade blocked                |
+| Y181 -> Y175   | FAILURE | Downgrade blocked (§5)            |
+
+2.4 PER-MODULE DOWNGRADE RISK (absorbed from retired UPDATE_PROCESS_ANALYSIS.txt §6.6)
+-------------------------------------------------------------------------------
+Unique content not present in the original GDP body; the rest of that doc's §6
+(its own §6.1-6.5, §6.7) duplicated this document's §2/§3/§4/§7 verbatim and is
+dropped (see ledger).
+
+| Component   | Downgrade Risk | Status                                   |
+|-------------|----------------|-------------------------------------------|
+| SOC_SYSTEM  | BLOCKED        | Rejected per §2/§3 mechanism              |
+| SOC_BOOT    | BLOCKED        | Rejected per §2/§3 mechanism              |
+| VIP_APP     | BLOCKED        | Part of rejected update package           |
+| VIP_BOOT    | N/A            | Same binary (85056831) in Y177 and Y181   |
+| SOC_HOSTOS  | N/A            | Same binary (85098662) in Y177 and Y181   |
+| SOC_ABL     | N/A            | Same binary (85738845) in Y177 and Y181   |
+
+(Module-72 "SOC_ABL" vs "SOC_BOOT" live-radio naming collision is a corpus-wide
+open item routed to GM_INFO37_BOOT_CHAIN_ANALYSIS.md and
+`platform/ota_programming_roles.md`'s Open Conflicts — not this doc's to settle.)
 
 ================================================================================
 3. GHS INTEGRITY AS VERIFICATION GATEKEEPER
 ================================================================================
 
-3.1 ARCHITECTURE CONFIRMATION
------------------------------
-The update mechanism is a two-phase process:
+3.1 TWO-PHASE MODEL (write vs verify)
+-------------------------------------------------------------------------------
+As originally stated, the update mechanism is modeled as two phases:
 
-PHASE 1: WRITE (gm_update_engine in Android)
-- Reads manifest from USB
-- Writes raw partition images to inactive A/B slot
-- "version check disabled" in manifest = no version check here
-- Essentially a "dumb pipe" - just copies bytes
-- Does NOT verify or reject based on version
+PHASE 1 — WRITE (`gm_update_engine` in Android): reads the manifest from USB,
+writes raw partition images to the inactive A/B slot. "version check disabled"
+in the manifest means no version check in this phase — it is a "dumb pipe,"
+does not reject or verify based on version.
 
-PHASE 2: VERIFY (GHS INTEGRITY at boot)
-- GHS loads BEFORE Android
-- Performs AVB (Android Verified Boot) verification
-- Checks rollback index against stored value
-- REJECTS boot if verification fails
-- Falls back to original slot on failure
+PHASE 2 — VERIFY (GHS INTEGRITY, modeled as happening at boot): GHS loads
+before Android, performs AVB verification, checks the rollback index against a
+stored value, rejects boot on failure, falls back to the original slot.
 
-This design separates "can we write it" from "can we boot it".
+This two-phase separation ("write anything, GHS decides if it boots") is the
+original 2024-12-30 explanation for why "version check disabled" doesn't defeat
+the block (§6.1 original). It remains a reasonable account of the *write* phase
+(confirmed: the write phase itself is version-blind) but §2.2's re-test shows
+the *rejection* can occur before a full write-and-boot cycle, which this
+two-phase framing does not by itself explain — see Open Conflict #1.
 
-3.2 GHS PERFORMS AVB VERIFICATION (NOT ANDROID)
------------------------------------------------
-Evidence from GHS binary (85098662) string analysis:
+3.2 GHS PERFORMS AVB VERIFICATION (evidence: binary strings)
+-------------------------------------------------------------------------------
+Evidence from GHS binary (85098662, GFM-owned byte map) string analysis [S]:
 
-```
-VMM: Error: vbmeta signing key does not match known valid key
-VMM: vbmeta: image verification failed!
-VMM: %s: no signed boot partition in vbmeta.
-Android image failed verification: verity disabled?
-```
+    VMM: Error: vbmeta signing key does not match known valid key
+    VMM: vbmeta: image verification failed!
+    VMM: %s: no signed boot partition in vbmeta.
+    Android image failed verification: verity disabled?
 
-These strings prove GHS validates vbmeta BEFORE starting the Android VM.
+These strings establish that GHS validates vbmeta before starting the Android
+guest; they do not by themselves establish *when* in the update flow that
+validation first has an effect (see §2.2, Open Conflict #1).
 
-3.3 GHS SLOT MANAGEMENT
------------------------
-GHS maintains its own slot state and boot failure counting:
+3.3 GHS SLOT MANAGEMENT (evidence: binary strings)
+-------------------------------------------------------------------------------
+    GHS: Android and INTEGRITY slot mismatch.  INTEGRITY: %s Android: %s Rebooting...
+    GHS: [LIFECYCLE] Android failed to boot (count=%lu)
 
-```
-GHS: Android and INTEGRITY slot mismatch.  INTEGRITY: %s Android: %s Rebooting...
-GHS: [LIFECYCLE] Android failed to boot (count=%lu)
-```
-
-If GHS detects a slot mismatch or boot failure, it initiates recovery.
+GHS maintains its own slot state and boot-failure counting; on slot mismatch or
+boot failure it initiates recovery.
 
 ================================================================================
 4. ROLLBACK PROTECTION MECHANISM
 ================================================================================
 
-4.1 CRITICAL FINDING: GHS HAS EXPLICIT ROLLBACK CHECK
------------------------------------------------------
-Found in GHS binary at offset 0x00cf85ac:
+4.1 GHS HAS AN EXPLICIT ROLLBACK CHECK (evidence: binary string)
+-------------------------------------------------------------------------------
+GHS binary offset 0x00cf85ac (`.vmm1.rodata`):
 
-```
-VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
-```
+    VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
 
-This confirms GHS:
-1. Reads rollback index from vbmeta image
-2. Compares against a STORED rollback index
-3. Rejects if image index < stored index
+Confirms GHS: (1) reads a rollback index from the vbmeta image, (2) compares it
+against a STORED rollback index, (3) rejects when image index < stored index.
+[S] string-level, not disassembled — see Open Conflict #2.
 
-4.2 ROLLBACK INDEX STORAGE: MISC PARTITION
-------------------------------------------
-The stored rollback index is maintained in the misc partition (vda9):
+4.2 ROLLBACK INDEX STORAGE: MISC PARTITION — hypothesis, not disassembled
+-------------------------------------------------------------------------------
+The stored rollback index is modeled as living in the misc partition (vda9),
+based on these strings:
 
-```
-VMM: ERROR: failed to read A/B metadata from 'misc'
-VMM: Warning: A/B metadata: magic number mismatch
-VMM: ERROR: A/B metadata: version on disk too new
-VMM: A/B metadata updated
-misc
-VMM: ERROR: Android boot requires misc partition
-```
+    VMM: ERROR: failed to read A/B metadata from 'misc'
+    VMM: Warning: A/B metadata: magic number mismatch
+    VMM: ERROR: A/B metadata: version on disk too new
+    VMM: A/B metadata updated
+    VMM: ERROR: Android boot requires misc partition
 
-Partition mapping:
-- misc = /dev/block/vda9
-- Contains A/B bootloader control structure
-- Includes stored rollback index
-- Updated by GHS after successful boot
+Partition mapping: misc = /dev/block/vda9; holds the A/B bootloader-control
+structure; the stored rollback index is presumed to live inside it and be
+updated by GHS after a successful boot. [inferred] — the exact structure was
+never disassembled (Open Questions, §9).
 
-4.3 VBMETA ROLLBACK INDEX ANALYSIS
-----------------------------------
-Both Y177 and Y181 vbmeta files have rollback_index = 0:
+4.3 VBMETA ROLLBACK_INDEX IS FLAT 0 ACROSS RELEASES
+-------------------------------------------------------------------------------
+Both Y177 and Y181 vbmeta files have rollback_index = 0 at offset 0x70:
 
-Y181 vbmeta (86331644) at offset 0x70:
-  0000 0000 0000 0000  (rollback_index = 0)
+    Y181 vbmeta (86331644): 0000 0000 0000 0000
+    Y177 vbmeta (86283158): 0000 0000 0000 0000
 
-Y177 vbmeta (86283158) at offset 0x70:
-  0000 0000 0000 0000  (rollback_index = 0)
+(Extended by the 2026-08-25 addendum to Y175 = 0 as well — §5.) This means the
+AVB `rollback_index` field does NOT encode version ordering; GHS must be
+maintaining its own counter elsewhere (misc, §4.2) independent of this field.
 
-This indicates GHS maintains its OWN rollback counter in the misc partition,
-independent of the vbmeta.rollback_index field.
+4.4 PROPOSED ROLLBACK MECHANISM (hypothesis diagram)
+-------------------------------------------------------------------------------
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  misc partition (vda9) — persistent storage                         │
+    │  A/B metadata structure containing: magic number, version field,    │
+    │  stored rollback index (GHS's counter), CRC checksum, per-slot boot │
+    │  attempt counters                                                   │
+    └─────────────────────────────────────────────────────────────────────┘
 
-4.4 PROPOSED ROLLBACK MECHANISM
--------------------------------
-Based on evidence, GHS likely operates as follows:
+    Boot flow (hypothesis):
+    1. GHS reads A/B metadata from misc
+    2. Loads vbmeta from the target slot
+    3. Compares vbmeta.rollback_index against stored_rollback_index
+    4. If vbmeta.rollback_index < stored_rollback_index: "rollback index is too
+       old"; increment boot-failure counter; after max failures, fall back to
+       the original slot
+    5. If verification passes: boot Android; on success, update
+       stored_rollback_index in misc
 
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  misc partition (vda9) - Persistent Storage                                 │
-│  ───────────────────────────────────────────────────────────────────────────│
-│  A/B metadata structure containing:                                         │
-│  - Magic number (for validation)                                            │
-│  - Version field                                                            │
-│  - Stored rollback index (GHS's counter)                                    │
-│  - CRC checksum                                                             │
-│  - Boot attempt counters per slot                                           │
-└─────────────────────────────────────────────────────────────────────────────┘
+[inferred]. This is one candidate mechanism for the *original* (§2.1) write-
+then-revert model. It is not the only model consistent with the evidence —
+§2.2's early-reject observation is also consistent with an equivalent check run
+earlier in the flow. Not disassembled either way (Open Conflict #1, #2).
 
-Boot Flow:
-1. GHS reads A/B metadata from misc partition
-2. Loads vbmeta from target slot
-3. Compares vbmeta.rollback_index against stored_rollback_index
-4. If vbmeta.rollback_index < stored_rollback_index:
-   → "rollback index is too old" error
-   → Increment boot failure counter
-   → After max failures, switch back to original slot
-5. If verification passes:
-   → Boot Android
-   → On successful boot, update stored_rollback_index in misc
+4.5 WHY REINSTALL WORKS BUT DOWNGRADE FAILS (theory)
+-------------------------------------------------------------------------------
+Theory: GHS's stored rollback value tracks version, not the (flat-0) AVB
+rollback_index field:
+- After Y181's first boot: stored_rollback reflects the Y181 version.
+- Y181 reinstall: GHS sees same/equal version -> allow (same-version may be
+  special-cased).
+- Y177 downgrade: GHS compares Y177's version against the Y181-derived stored
+  value -> reject ("rollback index is too old").
 
-4.5 WHY Y181 REINSTALL WORKS BUT Y177 DOWNGRADE FAILS
------------------------------------------------------
-Theory: GHS increments stored_rollback_index based on version comparison,
-not vbmeta.rollback_index value:
-
-Initial state (after Y181 first boot):
-  stored_rollback = some value based on Y181 version
-
-Y181 Reinstall attempt:
-  GHS sees same/equal version → ALLOW
-  (possibly special-cases same version)
-
-Y177 Downgrade attempt:
-  GHS compares Y177 version < Y181 stored version → REJECT
-  "rollback index is too old"
-
-The exact comparison method (version string, build number, etc.) is unclear,
-but the behavior confirms version-aware protection.
+The exact comparison method (version string, build number, numeric field) is
+unclear; see Open Questions, §9.
 
 ================================================================================
-5. GHS BINARY ANALYSIS DETAILS
+5. Y175 EXTENSION AND BUILD-VARIANT IDENTITY (addendum, 2026-08-25)
 ================================================================================
 
-5.1 FILE INFORMATION
---------------------
-File: 85098662 (SOC_HOSTOS)
-Size: 14,929,956 bytes
-Structure:
-  - Offset 0x000: GM package header
-  - Offset 0x220: Intel ipk header ("ipk.")
-  - Offset 0x27C: ELF header declares ELF32/i386; actual kernel/task code is x86-64.
-    Architecture, extraction boundaries and hashes: gminfo_resources/research/
-    GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md section 0.1.
+Scope: extends §4 to Y175, and settles whether Y175's board is the same
+hardware as Y177/Y181.
 
-5.2 GHS VERSION STRINGS
------------------------
-```
-GM Version:       MY22-026
-Core Version:     23739
-Modules Version:  11500
-Secure Boot:      Enabled
-```
+A) Y175 DOWNGRADE / ANTI-ROLLBACK — confidence HIGH on the AVB facts, MEDIUM on
+   the downgrade verdict (GHS HOSTOS compare logic itself not disassembled)
 
-Build path references:
-```
-/home/mal/gm_release/MY22-026/final/iot/rtos/libs/gm-i35/rel/work/
-/home/mal/gm_release/MY22-026/final/iot/cust-build_sb/gm-i35/rel/
-```
+All three SOC_VBMETA images parsed (AVB0, libavb 1.0, avbtool 1.2.0,
+alg=1/SHA256-RSA), no chain-partition descriptors in any of them:
 
-5.3 RELEVANT ERROR MESSAGES IN GHS
-----------------------------------
-Boot Verification:
-```
-VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
-VMM: Error: vbmeta signing key does not match known valid key
-VMM: vbmeta: image verification failed!
-Android image failed verification: verity disabled?
-VMM: Error: Kernel extends past end of boot image.
-VMM: Error: RAM disk extends past end of boot image.
-```
+    AVB rollback_index           : Y175 = 0   Y177 = 0   Y181 = 0
+    AVB rollback_index_location  : Y175 = 0   Y177 = 0   Y181 = 0
 
-A/B Metadata:
-```
-VMM: ERROR: failed to read A/B metadata from 'misc'
-VMM: Warning: A/B metadata: magic number mismatch
-VMM: ERROR: A/B metadata: version on disk too new
-VMM: Warning: A/B metatdata CRC failure!
-VMM: A/B metadata updated
-VMM: A/B Boot: ERROR: no valid boot slot
-VMM: A/B Boot: No more remaining attempts for slot %d
-```
+The AVB rollback_index does not encode the Y175<Y177<Y181 ordering — it is flat
+0 across every release (confirms and extends §4.3). Embedded os_version = 12
+for all three. Version ordering lives in the build fingerprint + security patch
+level (SPL), which is monotonic increasing:
 
-Slot Management:
-```
-A/B Boot Slot: boot%s
-GHS: Android and INTEGRITY slot mismatch.  INTEGRITY: %s Android: %s Rebooting...
-VMM: Failed to verify slot %s
-ghs_androidboot.altsloterror=%s
-```
+    Y175  W213E-Y175.5.2-SIHM22B-383.1  security_patch 2024-05-05
+    Y177  W231E-Y177.6.1-SIHM22B-499.2  security_patch 2025-02-05
+    Y181  W231E-Y181.3.2-SIHM22B-499.3  security_patch 2025-06-05
+
+VERDICT: Y181 -> Y175 is blocked by the same mechanism as Y181 -> Y177, at least
+as hard. The floor is not the AVB rollback_index (identical 0 everywhere); it is
+GHS's own misc-partition counter per §4.2/§4.4. Since Y175 is an older version
+than Y177, any comparison rejecting Y177 against a Y181-provisioned stored
+counter rejects Y175 a fortiori. CANNOT CONFIRM without disassembling GHS
+HOSTOS internals: the exact per-release integer and the precise comparison
+(>, >=) — i.e. whether counter *equality* would ever permit a lateral move. The
+AVB evidence only proves the floor is not in AVB.
+
+B) BUILD-VARIANT W213E vs W231E — confidence HIGH (same hardware/board)
+
+W213E (Y175) vs W231E (Y177/Y181) is a software build-line/tag token in
+`ro.build.id`, not a different hardware/board SKU. Identifiers compared (Y175
+extracted trees vs Y181 vendor partition 86331650):
+
+| Identifier                       | Y175            | Y181            | Match |
+|-----------------------------------|-----------------|-----------------|-------|
+| ro.board.platform                 | broxton         | broxton         | same  |
+| ro.soc.manufacturer / model       | Intel / A3960   | Intel / A3960   | same  |
+| ro.hardware.gralloc/hwc/vulkan    | broxton         | broxton         | same  |
+| ro.product.*.device               | gminfo37        | gminfo37        | same  |
+| ro.product.*.name / board         | full_gminfo37_gb| full_gminfo37_gb| same  |
+| ro.product.*.brand / model        | gm / gminfo37   | gm / gminfo37   | same  |
+| vbmeta device codename            | gminfo37        | gminfo37        | same  |
+| os_version                        | 12              | 12              | same  |
+
+The W2xxE token tracks the build incremental (Y175 fingerprint tail "/213:user"
+vs Y177/Y181 "/231:user"), not a panel/SoC/board change; SIHM22B-383 vs -499
+likewise moves with the build-line, not the hardware. CONSEQUENCE: Y175 <->
+Y177/Y181 OS-partition comparisons carry no hardware caveat — same Intel A3960
+"broxton" gminfo37 board across all three.
+
+================================================================================
+6. GHS BINARY AND PARTITION REFERENCE
+================================================================================
+
+6.1 FILE AND CONTAINER STRUCTURE
+-------------------------------------------------------------------------------
+File: 85098662 (SOC_HOSTOS), 14,929,956 bytes. Container structure (GM package
+header, Intel ipk header, ELF header declaring ELF32/i386 while actual
+kernel/task code is x86-64) and the architecture/extraction-boundary evidence
+are owned by GBUR §0.1 and the byte-offset map by GFM — not restated here.
+
+6.2 VERSION STRINGS AND BUILD PATHS
+-------------------------------------------------------------------------------
+    GM Version:       MY22-026
+    Core Version:     23739
+    Modules Version:  11500
+    Secure Boot:      Enabled
+
+    /home/mal/gm_release/MY22-026/final/iot/rtos/libs/gm-i35/rel/work/
+    /home/mal/gm_release/MY22-026/final/iot/cust-build_sb/gm-i35/rel/
+
+6.3 RELEVANT ERROR-MESSAGE CATALOGUE
+-------------------------------------------------------------------------------
+Boot verification:
+    VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
+    VMM: Error: vbmeta signing key does not match known valid key
+    VMM: vbmeta: image verification failed!
+    Android image failed verification: verity disabled?
+    VMM: Error: Kernel extends past end of boot image.
+    VMM: Error: RAM disk extends past end of boot image.
+
+A/B metadata:
+    VMM: ERROR: failed to read A/B metadata from 'misc'
+    VMM: Warning: A/B metadata: magic number mismatch
+    VMM: ERROR: A/B metadata: version on disk too new
+    VMM: Warning: A/B metatdata CRC failure!
+    VMM: A/B metadata updated
+    VMM: A/B Boot: ERROR: no valid boot slot
+    VMM: A/B Boot: No more remaining attempts for slot %d
+
+Slot management:
+    A/B Boot Slot: boot%s
+    GHS: Android and INTEGRITY slot mismatch.  INTEGRITY: %s Android: %s Rebooting...
+    VMM: Failed to verify slot %s
+    ghs_androidboot.altsloterror=%s
 
 Lifecycle:
-```
-GHS: [LIFECYCLE] Android failed to boot (count=%lu)
-GHS: [LIFECYCLE] Lost Android SoH - rebooting
-GHS: [LIFECYCLE] Booting 'see-dealer' mode
-GHS: [LIFECYCLE] Failed to write Lifecycle settings to EMMC
-```
+    GHS: [LIFECYCLE] Android failed to boot (count=%lu)
+    GHS: [LIFECYCLE] Lost Android SoH - rebooting
+    GHS: [LIFECYCLE] Booting 'see-dealer' mode
+    GHS: [LIFECYCLE] Failed to write Lifecycle settings to EMMC
 
-5.4 GHS CHECKSUM/HASH FUNCTIONS
--------------------------------
-```
-BSP_CRCCheck
-BSP_SHA1Check
-BSP_CRCFailure
-BSP_SHA1Failure
-__ghs_checksum
-checkSHA1hash
-CRC error in FLASH, failing
-SHA-1 hash error in FLASH, failing
-```
+Checksum/hash functions:
+    BSP_CRCCheck   BSP_SHA1Check   BSP_CRCFailure   BSP_SHA1Failure
+    __ghs_checksum   checkSHA1hash
+    CRC error in FLASH, failing
+    SHA-1 hash error in FLASH, failing
 
-================================================================================
-6. IMPLICATIONS FOR DOWNGRADE ATTEMPTS
-================================================================================
+String offsets (GHS binary 85098662, section `.vmm1.rodata`):
+    0x00cf85ac  "VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu"
+    0x00cf88d3  "rollback_error"
+    0x00cf8520  "VMM: A/B: no boot image for slot %s"
+    0x00cf8657  "VMM: ERROR: A/B metadata: version on disk too new"
 
-6.1 WHY "VERSION CHECK DISABLED" DOESN'T HELP
----------------------------------------------
-The manifest flag only affects gm_update_engine:
+6.4 PARTITION LAYOUT REFERENCE
+-------------------------------------------------------------------------------
+| Partition    | Device | Purpose                         |
+|--------------|--------|----------------------------------|
+| misc         | vda9   | A/B metadata, stored rollback    |
+| vbmeta_a     | vda10  | AVB metadata slot A              |
+| vbmeta_b     | vda11  | AVB metadata slot B              |
+| ghs_isys_a   | vda1   | GHS INTEGRITY hypervisor slot A  |
+| ghs_isys_b   | vda2   | GHS INTEGRITY hypervisor slot B  |
+| ghs_storage  | vda3   | GHS persistent storage           |
+| boot_a       | vda7   | Android boot image slot A        |
+| boot_b       | vda8   | Android boot image slot B        |
 
-Manifest (86331663.mnf):
-```
-assert(ui_print("version check disabled "));
-```
-
-This means:
-- gm_update_engine will write ANY version to inactive slot
-- No version comparison during partition write phase
-- GHS verification happens AFTER partitions are written
-- GHS has its own independent version/rollback check
-
-6.2 SECURITY DESIGN RATIONALE
------------------------------
-This is a robust security design:
-
-1. UPDATE ENGINE: "I'll write whatever package you give me"
-   - Fast, simple, no validation logic
-   - Can recover from corrupt writes via A/B fallback
-   - Version check disabled = simpler code, fewer bugs
-
-2. GHS HYPERVISOR: "I'll verify before booting and reject old versions"
-   - Single point of enforcement
-   - Cannot be bypassed from Android
-   - Hardware-level trust anchor
-
-Separation of concerns: Write anything, but GHS decides if it boots.
-
-6.3 ATTACK SURFACE ANALYSIS
----------------------------
-To bypass downgrade protection, would need to:
-
-Option A: Modify misc partition stored_rollback_index
-  - misc partition (vda9) is accessible from Android
-  - BUT: GHS validates CRC and magic number
-  - Would need to understand exact A/B metadata structure
-  - Risk: Corrupt structure = no boot at all
-
-Option B: Modify GHS binary to skip rollback check
-  - GHS (85098662) is TSS signed
-  - Cannot flash modified version via normal update
-  - Would require breaking GM's signing
-
-Option C: Reset misc partition to factory state
-  - If factory reset clears stored_rollback_index
-  - Need to test if factory reset affects this
-  - May require dealer-level reset
-
-Option D: Physical access to eMMC
-  - Direct write to misc partition
-  - Bypass GHS entirely at hardware level
-  - Very invasive
+6.5 VBMETA Y177 vs Y181 FILE COMPARISON
+-------------------------------------------------------------------------------
+Y177 vbmeta: 86283158.zip (1,689 B compressed), 4,096 B uncompressed.
+Y181 vbmeta: 86331644 (4,096 B). Identical AVB header structure (Magic AVB0,
+avbtool 1.2.0, rollback_index = 0 at offset 0x70, §4.3). Build fingerprints
+differ only in Y-number/minor version/SIHM version (gm/full_gminfo37_gb/
+gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys vs .../
+W231E-Y177.6.1-SIHM22B-499.2/.../release-keys). Hash descriptors (product/
+system/vendor) differ as expected for different partition contents; both
+signed "release-keys" with (as far as the string-level evidence shows) the
+same signing key, different signatures.
 
 ================================================================================
-7. VBMETA COMPARISON: Y177 vs Y181
+7. REBOOT-FILE / TRIGGER MECHANISM — pointer only
 ================================================================================
-
-7.1 FILE DETAILS
-----------------
-Y177 vbmeta: 86283158.zip (1,689 bytes compressed), 4,096 bytes uncompressed
-Y181 vbmeta: 86331644 (4,096 bytes)
-
-7.2 HEADER COMPARISON (IDENTICAL STRUCTURE)
--------------------------------------------
-Both files have identical AVB header structure:
-- Magic: AVB0
-- avbtool version: 1.2.0
-- rollback_index: 0 (at offset 0x70)
-
-7.3 BUILD FINGERPRINT DIFFERENCES
----------------------------------
-Y181: gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231:user/release-keys
-Y177: gm/full_gminfo37_gb/gminfo37:12/W231E-Y177.6.1-SIHM22B-499.2/231:user/release-keys
-
-Differences:
-- Y-number: Y181 vs Y177
-- Minor version: 3.2 vs 6.1
-- SIHM version: 499.3 vs 499.2
-
-7.4 HASH DESCRIPTORS
---------------------
-Hash descriptors differ (expected - different partition contents):
-- product partition hash: different
-- system partition hash: different
-- vendor partition hash: different
-- Partition sizes slightly different
-
-7.5 SIGNING
------------
-Both signed with "release-keys" but signatures differ (expected for different content).
-Signing key appears to be the same (both are official GM releases).
+The gm_reboot_normal recovery-exit trigger (encoded filename
+`Z21fcmVib290X25vcm1hbA==`) and the broader filename-triggered-behavior table
+(e.g. `gm_usb_ignore_battery`) are NOT this doc's content — they are owned by
+GBUR §4.1-4.7, which carries the 2026-11-12 correction that the encoded marker
+is parsed by guest recovery, not by GHS or by the normal-AAOS
+`gm_update_engine` (the pre-2026-11-12 draft of this analysis attributed it to
+`gm_update_engine`'s USB-filesystem permissions alone; that attribution is
+superseded — see GBUR §4.1-4.7 for the corrected trace). This mechanism does
+not bypass GHS rollback protection, AVB signature verification, or the secure
+boot chain; it only exits the error screen after a failed update.
 
 ================================================================================
-8. PARTITION LAYOUT REFERENCE
+8. SIGNING-KEY EXTRACTION AND FEASIBILITY
 ================================================================================
 
-Relevant partitions for downgrade protection:
+8.1 KEY ARCHITECTURE OVERVIEW
+-------------------------------------------------------------------------------
+The vbmeta signing key used for AVB is modeled as protected by layered hardware
+security:
 
-| Partition      | Device   | Purpose                           |
-|----------------|----------|-----------------------------------|
-| misc           | vda9     | A/B metadata, stored rollback     |
-| vbmeta_a       | vda10    | AVB metadata slot A               |
-| vbmeta_b       | vda11    | AVB metadata slot B               |
-| ghs_isys_a     | vda1     | GHS INTEGRITY hypervisor slot A   |
-| ghs_isys_b     | vda2     | GHS INTEGRITY hypervisor slot B   |
-| ghs_storage    | vda3     | GHS persistent storage            |
-| boot_a         | vda7     | Android boot image slot A         |
-| boot_b         | vda8     | Android boot image slot B         |
+    Hardware Root of Trust (Intel CSE)
+      - CSE IVB Root Key (fused), CSE Intel Fixed Root Key,
+        CSE BXT IVB Integrity/Confidentiality Keys, rot.key, oem.key
+        (GM's signing key), rpmb_key
+    -> GHS INTEGRITY hypervisor
+      - ELF section `.mr_r_mod_android_key` (NOBITS, empty in file; symbols
+        __ghsbegin_mr_r_mod_android_key / __ghsend_mr_r_mod_android_key;
+        key loaded from bootloader modules at runtime)
+      - Error strings: "Android signing key boot module not found",
+        "Signing key modulus mismatch", "Signing key exponent mismatch",
+        "vbmeta signing key does not match known valid key"
+    -> Android Verified Boot (vbmeta)
+      - Contains PUBLIC key hash, not the full key; rollback_index = 0 in both
+        Y177 and Y181; signed with "release-keys"
 
-================================================================================
-9. REBOOT FILE MECHANISM (EXPANDED)
-================================================================================
+8.2 KEY STORAGE LOCATIONS
+-------------------------------------------------------------------------------
+1. SOC Bootloader (85738845, Intel IPK format) — CSE key-management structures,
+   `ipk.` header.
+2. GHS binary `.mr_r_mod_android_key` section — NOBITS, size 0x1000, virtual
+   address 0x02201000; key loaded at runtime from bootloader modules; symbol
+   names present, key data NOT in the binary.
+3. Trusty TEE Keymaster — Android keystore (application keys), not the boot-
+   verification key.
 
-9.1 FILENAME-TRIGGERED BEHAVIORS
---------------------------------
-GM's update system uses empty files with specific names to trigger behaviors.
-The encoded Y181B recovery marker is handled by /system/bin/recovery, not GHS.
-Normal-AAOS gm_update_engine is a separate update component.
+8.3 OEM PUBLIC KEY EXTRACTED (correction folded in — see History)
+-------------------------------------------------------------------------------
+Extracted the OEM RSA-2048 public key from the SOC Bootloader's `.oemkeys` ELF
+section:
 
-Known trigger files:
-| Filename              | Effect                                  |
-|-----------------------|-----------------------------------------|
-| Z21fcmVib290X25vcm1hbA== | Exit dealer recovery; label gm_reboot_normal |
-| gm_usb_ignore_battery | Skip battery level check during update  |
+    Source file: update_packages/Y181/85738845 (SOC Bootloader)
+    ELF offset:  0x301288 (embedded ELF inside the Intel IPK package)
+    Key section: .oemkeys at offset 0xfe8e0 in the embedded ELF
 
-9.2 gm_reboot_normal DETAILS
-----------------------------
-The filename is Z21fcmVib290X25vcm1hbA==; its decoded label is gm_reboot_normal.
-Corrected 2026-11-12 against Y181B recovery code and GM PIT6209:
-https://static.nhtsa.gov/odi/tsbs/2024/MC-11007670-0001.pdf
-The traced recovery path encodes the label before matching; plain-name
-equivalence is not established. See GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md
-sections 2.2.1 and 4.4-4.5 for code and original-SPS provenance. No other
-bulletin-backed encoded trigger procedure was identified.
+    Public-Key: (2048 bit)
+    Modulus:
+        00:d8:04:af:e3:d3:84:6c:7e:0d:89:3d:c2:8c:d3:
+        12:55:e9:62:c9:f1:0f:5e:cc:16:72:ab:44:7c:2c:
+        65:4a:94:b5:16:2b:00:bb:06:ef:13:07:53:4c:f9:
+        64:b9:28:7a:1b:84:98:88:d8:67:a4:23:f9:a7:4b:
+        dc:4a:0f:f7:3a:18:ae:54:a8:15:fe:b0:ad:ac:35:
+        da:3b:ad:27:bc:af:e8:d3:2f:37:34:d6:51:2b:6c:
+        5a:27:d7:96:06:af:6b:b8:80:ca:fa:30:b4:b1:85:
+        b3:4d:aa:aa:c3:16:34:1a:b8:e7:c7:fa:f9:09:77:
+        ab:97:93:eb:44:ae:cf:20:bc:f0:80:11:db:23:0c:
+        47:71:b9:6d:d6:7b:60:47:87:16:56:93:b7:c2:2a:
+        9a:b0:4c:01:0c:30:d8:93:87:f0:ed:6e:8b:be:30:
+        5b:f6:a6:af:dd:80:7c:45:5e:8f:91:93:5e:44:fe:
+        b8:82:07:ee:79:ca:bf:31:73:62:58:e3:cd:c4:bc:
+        c2:11:1d:a1:4a:bf:fe:27:7d:a1:f6:35:a3:5e:ca:
+        dc:57:2f:3e:f0:c9:5d:86:6a:f8:af:66:a7:ed:cd:
+        b8:ed:a1:5f:ba:9b:85:1a:d5:09:ae:94:4e:3b:cf:
+        cb:5c:c9:79:80:f7:cc:a6:4a:a8:6a:d8:d3:31:11:f9:f6
+    Exponent: 65537 (0x10001)
 
-- File must be present on USB root directory
-- File content can be empty (0 bytes)
-- Filename triggers recovery to reboot normally
-- Does NOT affect the update result or partition contents
-- Simply exits the error state gracefully
-- Filename matching is verified in Y181B /system/bin/recovery, not GHS
+This is the PUBLIC key used to verify signatures; the corresponding PRIVATE key
+(needed to create signatures) is not present here and is not extractable by
+this method.
 
-9.3 IMPLEMENTATION LOCATION
----------------------------
-Recovery itself handles the encoded marker. The following normal-AAOS updater
-permissions do not establish the recovery handler:
+History: the original §10.3 ("key extraction feasibility") stated the public
+key is "protected by hardware... cannot be read even with root access," citing
+CSE-encrypted storage. §10.5 (this section) then extracted that same public key
+in plaintext from the bootloader's `.oemkeys` ELF section with no CSE
+involvement. These are not actually in tension once the key class is specified:
+the PUBLIC key (non-secret by design, used only for verification) was always
+extractable from the bootloader image; it is the PRIVATE signing key that
+remains held off-device in GM's build infrastructure and is the thing §8.4
+below concludes is infeasible to extract. The original §10.3 text conflated the
+two; folded in place rather than carried as an open conflict, since the
+public/private distinction fully resolves it.
 
-Evidence from SELinux policy (vendor_sepolicy.cil):
-- gm_update_engine has permissions to read vfat (USB) filesystem
-- gm_update_engine can read/write files on mounted USB
-- Service runs continuously: [init.svc.gm_update_engine]: [running]
+8.4 FEASIBILITY CONCLUSION AND ATTACK SURFACE
+-------------------------------------------------------------------------------
+KEY EXTRACTION (of the PRIVATE signing key) IS NOT FEASIBLE VIA SOFTWARE:
+private key never exposed on-device or in update packages (only the public key
+and signatures are present); the public key is delivered via the Intel
+multiboot protocol from the bootloader to GHS at boot ("Android signing key
+boot module not found" = key not yet loaded into GHS, not "unreadable");
+SOC_HOSTOS's own key section is NOBITS/empty.
 
-The previously listed normal-updater inputs were manifests, battery-control
-markers and status/indication files; these were not reverified in this pass.
-The encoded gm_reboot_normal marker must not be attributed to that service from
-USB permissions alone: its Y181B recovery handler is verified separately.
+Attack-surface options considered for forging signed images or bypassing the
+rollback/signature check (all speculative/untested, [inferred] unless noted):
 
-9.4 SECURITY IMPLICATIONS
--------------------------
-This mechanism provides a recovery path from failed updates without requiring:
-- Dealer diagnostic tools
-- UART console access
-- Physical disassembly
+  A. Obtain GM's private signing key — held in GM's build infrastructure behind
+     an HSM; not present on vehicle or in update packages. Infeasible without
+     insider access.
+  B. Compromise Intel CSE — hardware attack on the CSE subsystem; requires
+     physical lab equipment; designed to resist this. Extremely difficult.
+  C. Replace the public key on-device, or modify misc's stored rollback index —
+     GHS validates CRC/magic on misc and the key is used elsewhere in the boot
+     chain; tampering is expected to be detected. High risk of bricking.
+  D. Find a vulnerability in the signature-verification code itself — would
+     require disassembly of GHS's AVB-verification path; no vulnerability
+     identified from string-level analysis alone. See VPF for the parser-level
+     (TOCTOU/overflow) fuzz-target analysis of the related `.vmm1`/libavb port
+     — a different, lower-level question than this section's key-handling
+     model.
+  E. Factory/dealer-level reset of the misc partition, if it clears the stored
+     rollback index — untested; see Open Questions §9.
+  F. Physical eMMC access, direct write to misc — bypasses GHS entirely at the
+     hardware level; very invasive.
+  G. Modify the GHS binary itself to skip the rollback check — GHS
+     (`85098662`) is TSS-signed; cannot flash a modified version via the
+     normal update path without breaking GM's signing chain.
 
-However, it does NOT bypass:
-- GHS rollback protection (downgrade still blocked)
-- AVB signature verification
-- Secure boot chain
+Significance of the OEM public key, independent of the above: it lets a third
+party verify the authenticity of existing GM-signed images; it does not permit
+creating new signatures or modifying images.
 
-================================================================================
-10. SIGNING KEY EXTRACTION ANALYSIS
-================================================================================
-
-10.1 KEY ARCHITECTURE OVERVIEW
-------------------------------
-The vbmeta signing key used for Android Verified Boot is protected by multiple
-layers of hardware security:
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Hardware Root of Trust (Intel CSE - Converged Security Engine)            │
-│  ───────────────────────────────────────────────────────────────────────────│
-│  - CSE IVB Root Key (fused in silicon)                                      │
-│  - CSE Intel Fixed Root Key                                                 │
-│  - CSE BXT IVB Integrity/Confidentiality Keys                               │
-│  - rot.key (Root of Trust key)                                              │
-│  - oem.key (OEM key - GM's signing key)                                     │
-│  - rpmb_key (Replay Protected Memory Block key)                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  GHS INTEGRITY Hypervisor                                                   │
-│  ───────────────────────────────────────────────────────────────────────────│
-│  ELF section: .mr_r_mod_android_key (NOBITS - empty in file)                │
-│  Symbols: __ghsbegin_mr_r_mod_android_key, __ghsend_mr_r_mod_android_key    │
-│  Runtime: Key loaded from bootloader modules at boot                        │
-│  Error strings indicate key validation:                                     │
-│    - "VMM: Error: Android signing key boot module not found"                │
-│    - "VMM: Error: Signing key modulus mismatch"                             │
-│    - "VMM: Error: Signing key exponent mismatch"                            │
-│    - "VMM: Error: vbmeta signing key does not match known valid key"        │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Android Verified Boot (vbmeta)                                             │
-│  ───────────────────────────────────────────────────────────────────────────│
-│  - vbmeta contains PUBLIC key hash (not full key)                           │
-│  - rollback_index = 0 in both Y177 and Y181 images                          │
-│  - Signed with "release-keys"                                               │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-10.2 KEY STORAGE LOCATIONS
---------------------------
-1. SOC Bootloader (85738845 - Intel IPK format):
-   - Contains CSE key management structures
-   - Keys encrypted/protected by Intel hardware
-   - File header: "ipk." (Intel Package)
-
-2. GHS Binary (.mr_r_mod_android_key section):
-   - Section type: NOBITS (size 0x1000, no data in file)
-   - Virtual address: 0x02201000
-   - Key loaded at RUNTIME from bootloader modules
-   - Symbol names present, actual key data NOT in binary
-
-3. Trusty TEE Keymaster:
-   - Implements Android keystore
-   - RSA/EC key generation strings present
-   - Used for application keys, NOT boot verification keys
-
-10.3 KEY EXTRACTION FEASIBILITY
--------------------------------
-CONCLUSION: KEY EXTRACTION IS NOT FEASIBLE VIA SOFTWARE
-
-Reasons:
-1. PRIVATE KEY NEVER EXPOSED
-   - Only public key used for verification in vbmeta
-   - Private key held by GM's signing infrastructure
-   - GHS only validates, never generates signatures
-
-2. PUBLIC KEY PROTECTED BY HARDWARE
-   - Loaded from Intel CSE protected storage
-   - CSE uses hardware encryption (fused keys)
-   - Cannot be read even with root access
-
-3. MULTIBOOT MODULE ARCHITECTURE
-   - Key delivered via Intel multiboot protocol
-   - Bootloader provides key to GHS at boot
-   - "Android signing key boot module not found" = key not in GHS
-
-4. NO KEY MATERIAL IN UPDATE PACKAGES
-   - Update packages contain signed images
-   - vbmeta contains signature, not signing key
-   - SOC_HOSTOS (GHS) section is empty (NOBITS)
-
-10.4 ATTACK SURFACE ANALYSIS
------------------------------
-To forge signed update images, attacker would need:
-
-Option A: Obtain GM's Private Signing Key
-  - Stored in GM's secure build infrastructure
-  - Protected by HSM (Hardware Security Module)
-  - Not present on vehicle or in update packages
-  - INFEASIBLE without insider access
-
-Option B: Compromise Intel CSE
-  - Hardware attacks on CSE subsystem
-  - Would require physical lab equipment
-  - CSE is designed to resist such attacks
-  - EXTREMELY DIFFICULT
-
-Option C: Replace Public Key in Device
-  - Would require modifying misc partition AND bootloader
-  - GHS validates key matches expected value
-  - CRC/magic number validation would detect tampering
-  - Boot would fail with corrupted key storage
-  - HIGH RISK of bricking device
-
-Option D: Find Vulnerability in Signature Verification
-  - GHS binary analysis could reveal bugs
-  - Would require deep reverse engineering
-  - No obvious vulnerabilities found in string analysis
-  - SPECULATIVE - requires extensive research
-
-10.5 OEM PUBLIC KEY EXTRACTED
------------------------------
-CRITICAL FINDING: Successfully extracted the OEM RSA-2048 public key from the
-bootloader's .oemkeys ELF section.
-
-Source file: update_packages/Y181/85738845 (SOC Bootloader)
-ELF offset: 0x301288 (embedded ELF inside Intel IPK package)
-Key section: .oemkeys at offset 0xfe8e0 in embedded ELF
-
-Extracted key saved to: analysis/extracted_oem_pubkey.pem
-
-Public-Key: (2048 bit)
-Modulus:
-    00:d8:04:af:e3:d3:84:6c:7e:0d:89:3d:c2:8c:d3:
-    12:55:e9:62:c9:f1:0f:5e:cc:16:72:ab:44:7c:2c:
-    65:4a:94:b5:16:2b:00:bb:06:ef:13:07:53:4c:f9:
-    64:b9:28:7a:1b:84:98:88:d8:67:a4:23:f9:a7:4b:
-    dc:4a:0f:f7:3a:18:ae:54:a8:15:fe:b0:ad:ac:35:
-    da:3b:ad:27:bc:af:e8:d3:2f:37:34:d6:51:2b:6c:
-    5a:27:d7:96:06:af:6b:b8:80:ca:fa:30:b4:b1:85:
-    b3:4d:aa:aa:c3:16:34:1a:b8:e7:c7:fa:f9:09:77:
-    ab:97:93:eb:44:ae:cf:20:bc:f0:80:11:db:23:0c:
-    47:71:b9:6d:d6:7b:60:47:87:16:56:93:b7:c2:2a:
-    9a:b0:4c:01:0c:30:d8:93:87:f0:ed:6e:8b:be:30:
-    5b:f6:a6:af:dd:80:7c:45:5e:8f:91:93:5e:44:fe:
-    b8:82:07:ee:79:ca:bf:31:73:62:58:e3:cd:c4:bc:
-    c2:11:1d:a1:4a:bf:fe:27:7d:a1:f6:35:a3:5e:ca:
-    dc:57:2f:3e:f0:c9:5d:86:6a:f8:af:66:a7:ed:cd:
-    b8:ed:a1:5f:ba:9b:85:1a:d5:09:ae:94:4e:3b:cf:
-    cb:5c:c9:79:80:f7:cc:a6:4a:a8:6a:d8:d3:31:11:f9:f6
-Exponent: 65537 (0x10001)
-
-IMPORTANT: This is the PUBLIC key used to VERIFY signatures.
-The corresponding PRIVATE key (needed to CREATE signatures) is NOT extractable.
-
-Significance:
-1. Can verify authenticity of existing GM-signed images
-2. CANNOT create new signatures or modify images
-3. Confirms signing mechanism uses standard RSA-2048 with SHA-256
-
-10.6 RELEVANT BINARY STRINGS
-----------------------------
-Key-related error messages in GHS (85098662):
-
-Signing verification:
-  VMM: Error: vbmeta signing key does not match known valid key
-  VMM: Error: Failed to load Android signing key
-  VMM: Error: Signing key modulus mismatch
-  VMM: Error: Signing key exponent mismatch
-  VMM: Error: Android signing key boot module not found
-
-Certificate parsing:
-  VMM: Error: Android signature certificate public key info is invalid
-  VMM: Error: Android signature certificate public key info algorithm identifier is invalid
-  VMM: Error: Android signature certificate public key is invalid
-  VMM: Error: Android signature certificate public key tag is invalid
-  VMM: Error: Android signature certificate public key bit string length is invalid
-
-Key module management:
-  current_android_key
-  .mr_r_mod_android_key
-  __ghsbegin_mr_r_mod_android_key
-  __ghsend_mr_r_mod_android_key
-  Insufficient space for additional current_android_keymodule. Skipped.
+Relevant binary strings (signing verification, certificate parsing, key-module
+management) — catalogued once in §6.3 (error-message catalogue); not repeated
+here.
 
 ================================================================================
-11. CONCLUSIONS
+9. CONCLUSIONS
 ================================================================================
 
-11.1 CONFIRMED FINDINGS
------------------------
-1. GHS INTEGRITY hypervisor enforces rollback protection, not Android
-2. "version check disabled" only affects gm_update_engine write phase
-3. GHS stores rollback index in misc partition (vda9)
-4. Both Y177 and Y181 vbmeta have rollback_index = 0
-5. GHS maintains its own rollback counter independent of vbmeta
-6. Downgrade Y181->Y177 is blocked at GHS boot verification
-7. Same-version reinstall (Y181->Y181) is allowed
-8. The SOC_HOSTOS (GHS) binary is IDENTICAL in Y177 and Y181
-9. Signing key extraction via software is NOT FEASIBLE
-10. Keys protected by Intel CSE hardware and loaded at runtime
-11. CORRECTED 2026-11-12: encoded gm_reboot_normal/gm_capture_log markers
-    are parsed by guest recovery, not GHS or the normal-AAOS gm_update_engine.
-    See GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md sections 4.2-4.7.
+9.1 WHAT IS ACTUALLY CONFIRMED (field-observed, [C])
+-------------------------------------------------------------------------------
+1. A lower-version USB update package is blocked, in both the Y181->Y177 and
+   Y181->Y175 directions (§2.2, §5A).
+2. Same-version reinstall (Y181->Y181, Y177->Y177) and upgrade (Y177->Y181) are
+   allowed (§2.2, §2.3).
+3. Both Y177 and Y181 (and Y175) vbmeta images carry rollback_index = 0 — the
+   AVB field itself does not encode version ordering (§4.3, §5A).
+4. The SOC_HOSTOS (GHS, 85098662) binary is IDENTICAL in Y177 and Y181 (and,
+   per §5B, the underlying hardware is identical across Y175/Y177/Y181) — the
+   per-release rollback counter, whatever it is, is not baked into a
+   per-release GHS binary difference; it must live in persistent state
+   (supports, but does not prove, the misc/vda9 hypothesis of §4.2).
+5. The OEM RSA-2048 public key was extracted in plaintext from the SOC
+   Bootloader's `.oemkeys` ELF section (§8.3); the private signing key was not,
+   and is assessed infeasible to extract by software (§8.4).
 
-11.2 OPEN QUESTIONS
--------------------
-1. Exact structure of A/B metadata in misc partition
-2. How GHS determines version ordering (string compare? numeric?)
-3. Does factory reset clear stored rollback index?
-4. Can misc partition be safely modified from Android?
-5. Complete list of filename triggers supported by gm_update_engine
+9.2 WHAT IS INFERRED/HYPOTHESIS, NOT DISASSEMBLED ([inferred])
+-------------------------------------------------------------------------------
+- The misc-partition (vda9) A/B-metadata structure and the claim that it holds
+  GHS's stored rollback counter (§4.2, §4.4). The original document's
+  Conclusions (its "11.1 CONFIRMED FINDINGS" items 3 and 5 — "GHS stores
+  rollback index in misc partition," "GHS maintains its own rollback counter
+  independent of vbmeta") labeled this CONFIRMED while its own Open Questions
+  (its "11.2," reproduced below) listed the structure, the comparison method,
+  and misc's modifiability as unresolved. That is an internal inconsistency in
+  evidence-tagging, not a cross-source contradiction with a settling date; it
+  is fixed here by downgrading the claim to [inferred] rather than [C] and is
+  carried forward as Open Conflict #3 below, since the original text is not
+  being discarded, only re-tagged.
+- The exact version-comparison method (string vs numeric, strict `<` vs `<=`).
+- Whether the GHS HOSTOS downgrade-compare logic treats Y175/Y177/Y181
+  identically (§5A verdict is MEDIUM confidence for this reason).
 
-11.3 RECOMMENDED NEXT STEPS
----------------------------
-1. Dump misc partition via ADB for structure analysis
-2. Test factory reset impact on downgrade protection
-3. Analyze A/B metadata structure in misc partition
-4. Consider UART console access to capture GHS boot logs
-5. Reverse engineer gm_update_engine binary for full trigger list
+9.3 OPEN QUESTIONS
+-------------------------------------------------------------------------------
+1. Exact structure of the A/B metadata in the misc partition.
+2. How GHS determines version ordering (string compare? numeric?).
+3. Does factory/dealer reset clear the stored rollback index?
+4. Can the misc partition be safely modified from Android?
+5. Complete list of filename triggers supported by `gm_update_engine` (partial
+   list and current corrected account: GBUR §4.1-4.7, not restated here).
+
+9.4 RECOMMENDED NEXT STEPS
+-------------------------------------------------------------------------------
+1. Dump the misc partition via ADB for structure analysis.
+2. Test factory-reset impact on downgrade protection.
+3. Disassemble the GHS A/B-metadata/rollback-compare routine directly (string-
+   level evidence only, to date).
+4. UART console access to capture GHS boot logs during a downgrade attempt, to
+   settle Open Conflict #1 (does the "rollback index is too old" message
+   actually fire on a Y181->Y177 attempt, or does rejection happen earlier?).
+5. Reverse-engineer `gm_update_engine` for the full trigger/version-check list
+   (scope boundary with GBUR §4 — coordinate so the finding lands in one doc).
+
+================================================================================
+OPEN CONFLICTS
+================================================================================
+
+1. Y181->Y177 (and Y175) DOWNGRADE REJECTION POINT — early-reject-at-write/
+   update-time vs boot-time AVB/rollback verification after partitions are
+   written. (= consolidation-plan Open Conflicts item 8.)
+   - Model A ("early reject," §2.2): the 2026-08-17 owner bench re-test found
+     that on normal boot a downgrade package produces NO update prompt at all,
+     and in recovery mode the progress bar starts then stops with "update not
+     supported / invalid" — consistent with a version-gate checked at or near
+     update start, before any full partition write-and-boot cycle.
+   - Model B (original, Dec-2024, §2.1): a full write to the inactive slot,
+     followed by a GHS boot-time AVB/rollback-verification revert and A/B
+     fallback. This model is still asserted as CONFIRMED in the document's
+     exec summary (now §1), §3.1 ("GHS performs AVB verification... REJECTS
+     boot if verification fails... Falls back to original slot on failure"),
+     §4.4's flow diagram, §6.1/§8.4-style "verification happens AFTER
+     partitions are written" framing, and the original Conclusions item 6
+     ("blocked at GHS boot verification") — none of which were revised after
+     §2.2 was added.
+   - This document's own reader review could not reconcile the two across the
+     rewrite; it is carried here unresolved rather than silently picked. Note
+     also: an early-reject-at-update-start behavior is at least as consistent
+     with an Android-side (`gm_update_engine`/recovery) version check as with
+     GHS — which would cut against this document's own headline claim that GHS
+     (not Android) is the enforcement point. Owner observation to date does
+     not distinguish which component issues the actual rejection.
+   - Settling evidence needed: a UART/console capture of a live downgrade
+     attempt showing whether the GHS "rollback index is too old" string
+     actually fires, and at what point in the sequence.
+
+2. GHS ROLLBACK-CHECK MECHANISM — string-level only, not disassembled. The
+   "rollback index is too old" string (§4.1, offset 0x00cf85ac) proves GHS
+   *has* a rollback-index comparison; it does not prove the comparison runs
+   where either Model A or Model B in #1 above places it, nor does it prove the
+   misc/vda9 storage hypothesis in §4.2/§4.4. No disassembly of the compare
+   routine exists in this source; kept as hypothesis per §9.2.
+
+3. MISC-PARTITION-COUNTER STATUS: CONFIRMED (original Conclusions) vs OPEN
+   (original Open Questions) — the source document's own "11.1 CONFIRMED
+   FINDINGS" asserted items 3 and 5 (stored-counter location, GHS's independent
+   counter) as confirmed, while its own "11.2 OPEN QUESTIONS" items 1-4 (exact
+   structure, comparison method, factory-reset behavior, modifiability from
+   Android) list the same mechanism as unresolved. No later dated correction in
+   the source closes this gap. Resolved here by re-tagging the claim
+   [inferred] rather than [C] (§9.1 item 4 / §9.2) — flagged so the downgrade
+   is visible rather than silently applied.
+
+(Corpus-wide items routed elsewhere, not re-litigated here: MEC-value semantics
+-> GSK/ELA Open Conflicts; module-72 SOC_ABL-vs-SOC_BOOT naming -> GIB/
+`platform/ota_programming_roles.md` Open Conflicts; `.vmm1` 32-bit-ELF-class vs
+64-bit-task-code bitness dispute -> VPF Open Conflicts, see README.md's
+corpus-wide Open Conflicts section.)
 
 ================================================================================
 APPENDIX A: KEY FILE REFERENCES
@@ -711,98 +690,27 @@ APPENDIX A: KEY FILE REFERENCES
 GHS Binary Analysis:
 - Source: update_packages/Y181/85098662
 - ELF offset: 636 bytes into file
-- Architecture evidence: see gminfo_resources/research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md
-  section 0.1. The declared ELF32/i386 header is not the instruction-set conclusion.
-- Strings extracted at: /tmp/ghs_elf.bin (temporary)
+- Architecture evidence: GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §0.1 (the declared
+  ELF32/i386 header is NOT the instruction-set conclusion — see that section)
 
 vbmeta Files:
 - Y181: update_packages/Y181/86331644
 - Y177: update_packages/Y177/86283158.zip
+- Y175: update_packages/Y175/extracted/85759606 (§5)
 
-Relevant Documentation:
-- BOOT_CHAIN_ANALYSIS.txt - Boot sequence details
-- UPDATE_PROCESS_ANALYSIS.txt - Update mechanism
-- VIP_CONTROL_ANALYSIS.txt - VIP MCU details
+Relevant documentation (by current, post-reorg name):
+- BOOT_CHAIN_ANALYSIS.txt — raw boot-sequence/binary-forensic evidence
+- VIP_CONTROL_ANALYSIS.txt — VIP MCU details
+- `platform/ota_update_stack.md` — general update-engine mechanism (the retired
+  UPDATE_PROCESS_ANALYSIS.txt's non-downgrade content landed there; its §6
+  downgrade narrative landed in this document, see ledger)
+- GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md — boot/recovery/ELK, trigger files, A/B
+  mechanics (canonical owner, §0 above)
 
 ================================================================================
 APPENDIX B: GHS ERROR STRING OFFSETS
 ================================================================================
-
-Key strings in GHS binary (85098662):
-
-Offset 0x00cf85ac: "VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu"
-Offset 0x00cf88d3: "rollback_error"
-Offset 0x00cf8520: "VMM: A/B: no boot image for slot %s"
-Offset 0x00cf8657: "VMM: ERROR: A/B metadata: version on disk too new"
-
-Section: .vmm1.rodata (read-only data for VMM module)
-
-================================================================================
-ADDENDUM 2026-08-25: Y175 DOWNGRADE / ANTI-ROLLBACK + BUILD-VARIANT NOTE
-================================================================================
-
-Scope: extends section 4 (rollback) to Y175, and answers whether Y175's board is
-the same HW as Y177/Y181. Evidence: parsed AVB headers of all three SOC_VBMETA
-images and mined Y175 build.props (Y181 vendor for contrast).
-
-A) Y175 DOWNGRADE / ANTI-ROLLBACK  (confidence: HIGH on AVB facts, MEDIUM on the
-   downgrade verdict — GHS HOSTOS compare logic not disassembled here)
-
-SOC_VBMETA images parsed (all AVB0, libavb 1.0, avbtool 1.2.0, alg=1/SHA256-RSA):
-  - Y175 = Y175/extracted/85759606 (zip-wrapped 4096B vbmeta; inner 85759606)
-  - Y177 = Y177/86283158.zip       (inner 86283158)
-  - Y181 = Y181/86331644
-
-  AVB header rollback_index          : Y175 = 0    Y177 = 0    Y181 = 0
-  AVB rollback_index_location        : Y175 = 0    Y177 = 0    Y181 = 0
-  Chain-partition descriptors        : NONE in any (this vbmeta carries the
-      boot/system/vendor/product hashtree+hash descriptors directly; there is no
-      chained rollback_index_location to differentiate versions)
-
-  => The AVB rollback_index does NOT encode the Y175<Y177<Y181 ordering; it is a
-     flat 0 across every release. Confirms and extends section 4.3 (Y177/Y181=0)
-     with Y175 also = 0. Embedded os_version = 12 for all three.
-
-  Version ordering is real but lives elsewhere (build fingerprints + SPL):
-     Y175 W213E-Y175.5.2-SIHM22B-383.1  security_patch 2024-05-05
-     Y177 W231E-Y177.6.1-SIHM22B-499.2  security_patch 2025-02-05
-     Y181 W231E-Y181.3.2-SIHM22B-499.3  security_patch 2025-06-05
-  Monotonic increasing; Y175 is OLDER than Y177 (which is older than Y181).
-
-  VERDICT — Y181 -> Y175 is blocked by the SAME mechanism that stops Y181 -> Y177,
-  and at least as hard. The floor is NOT AVB rollback_index (identical 0); it is the
-  GHS VMM's own A/B-metadata/rollback counter stored in misc (/dev/block/vda9), per
-  section 4.2/4.4. Since Y175 presents a lower version than Y177, any comparison that
-  rejects Y177 against a Y181-provisioned stored counter rejects Y175 a fortiori
-  ("VMM: ERROR: rollback index is too old" / "A/B metadata: version on disk too new").
-  CANNOT CONFIRM without GHS HOSTOS internals: the exact integer the VMM derives per
-  release and the precise compare (>, >=), i.e. whether same-counter equality would
-  ever permit a lateral move. AVB evidence only proves the floor is not in AVB.
-
-B) BUILD-VARIANT W213E vs W231E  (confidence: HIGH — same hardware/board)
-
-W213E (Y175) vs W231E (Y177/Y181) is a SOFTWARE build-line / build-tag token in
-ro.build.id, NOT a different hardware or board SKU. Concrete identifiers compared
-(Y175 extracted trees vs Y181 vendor partition 86331650):
-
-  identifier                    Y175            Y181            match
-  ro.board.platform             broxton         broxton         same
-  ro.soc.manufacturer / model   Intel / A3960   Intel / A3960   same  (Apollo Lake auto)
-  ro.hardware.gralloc/hwc/vulkan broxton        broxton         same
-  ro.product.*.device           gminfo37        gminfo37        same
-  ro.product.*.name / board     full_gminfo37_gb full_gminfo37_gb same
-  ro.product.*.brand / model    gm / gminfo37   gm / gminfo37   same
-  vbmeta device codename        gminfo37        gminfo37        same
-  os_version                    12              12              same
-
-  The W2xxE token tracks the build incremental (Y175 fingerprint tail "/213:user"
-  vs Y177/Y181 "/231:user" — 213<->W213E, 231<->W231E), i.e. it is the build-line
-  label, not a panel/SoC/board change. The SIHM22B-383 vs -499 field likewise
-  moves with the build-line, not the hardware.
-
-  CONSEQUENCE: Y175 <-> Y177/Y181 OS-partition comparisons carry NO hardware caveat.
-  Same Intel A3960 "broxton" gminfo37 board across all three; differences are
-  software (build-line, SPL, versioned content).
+See §6.3 (error-message catalogue) — not duplicated here.
 
 ================================================================================
 END OF DOCUMENT

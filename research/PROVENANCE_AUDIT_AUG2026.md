@@ -1,22 +1,39 @@
 # Provenance / QA Audit — gminfo_resources
 
-Date: 2026-08-17. Method: each claim checked against on-disk ground-truth artifacts
-(EEPROM .bin, enumeration/Y181/apr2026 raw dumps, scratchpad/diagx firmware extract,
-CalSets.db, external GM_research VIP binary + delivery_manifest). Default = disbelief.
+**Why this exists:** the owner flagged that prior AI research sessions may have written
+inferred or hallucinated findings into this repo as if they were fact. This ledger is the
+skeptical cross-check against that risk.
 
-> **Why this exists.** The owner flagged that prior AI research sessions may have written
-> inferred or hallucinated findings into this repo as if they were fact. This ledger is the
-> skeptical cross-check: it classifies the decision-driving claims by how well the *actual
-> artifacts* back them, so a reader knows what is measured vs guessed. See the
-> "Resolutions applied" section at the bottom for what was corrected as a result.
+**Scope:** cross-cutting claim-verification ledger. Every decision-driving claim made
+elsewhere in this corpus, checked against on-disk ground-truth artifacts (EEPROM `.bin`
+dumps, Y181/apr2026 enumeration raw dumps, scratchpad/diagx firmware extract, `CalSets.db`,
+external `GM_research` VIP binary + `delivery_manifest.csv`). Default posture = disbelief;
+a row earns VERIFIED only when an artifact backs it.
+**Not in scope:** this doc does not own any subsystem's facts — each cluster below is a
+skeptic's audit *of* content that lives in a topic doc; follow the pointer at the top of
+each cluster to the doc that owns the underlying claim. This doc also does not restate the
+content of the 3 corpus-wide "carried unchanged" docs (cited by name only where relevant).
 
-Verdict key: VERIFIED (artifact shows it) / INFERRED (plausible, backed by derived or
-partial evidence, stated harder than warranted) / UNSUPPORTED (asserted as fact, no
-artifact) / CONTRADICTED (an artifact refutes it).
+Date of base pass: 2026-08-17. Later dated corrections are layered in per claim with a
+`History:` line (latest-dated wins; superseded readings are not left standing beside their
+correction).
+
+Verdict key: **VERIFIED** (artifact shows it) / **INFERRED** (plausible, backed by derived
+or partial evidence, stated harder than warranted) / **UNSUPPORTED** (asserted as fact, no
+artifact) / **CONTRADICTED** (an artifact refutes it).
+
+**Related:** `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (ELA), `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK),
+`platform/security.md`, `platform/ethernet_networking.md`, `platform/vehicle_config.md`,
+`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`, `platform/ota_programming_roles.md`,
+`platform/hardware_specs.md`, `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` (carried unchanged — cited by
+name/section only, never restated).
 
 ---
 
 ## CLUSTER 1 — EEPROM offset→function mappings
+
+> Owner of the underlying claims: `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (ELA). This cluster
+> audits ELA/UNDOC-tier claims against artifacts; it does not restate ELA's memory map.
 
 | # | claim (short) | doc:location | verdict | ground-truth evidence | note |
 |---|---|---|---|---|---|
@@ -27,11 +44,15 @@ artifact) / CONTRADICTED (an artifact refutes it).
 |5| "Firmware refs" counts (0x04A0=17, 0x04C0=11, 0x0A40=28, 0x0BE0=24, 0x0A00=871, 0x0B00=311) | UNDOC:§2,§5 | UNSUPPORTED (self-admitted) | not reproducible from shipped artifacts; doc's own note: two passes disagree (0x0A00 871 vs 854; 0x0B00 311 vs 305) | doc honestly flags this at lines 14-20 |
 |6| Debug-string context anchors `[IPC_S]`,`[SS_SWC]`,`[GYROACCL]`,`[CAL]`,`PROTOKEY`,`ICUSB` in VIP binary | UNDOC:§10.2 | VERIFIED | `strings 86331656` returns all of them | string anchoring legit even if ref COUNTS aren't |
 |7| "Zero literal marker patterns (`69 00 69`,`C3 00 C3`,`5A FF 5A`) in binary" | UNDOC:§13.4 line 565 | **CONTRADICTED** | hex scan of 86331656: `690069`×3, `c300c3`×4 (only `5aff5a`=0) | literal "zero" is false; broader runtime-marker thesis still separately supported by #4 |
-|8| VIP validation fn @ 0xb67d0 (Y177 4-byte stub vs Y181 906-byte), chain 0xecd84/0xb6652/0xaee28, flag @ RAM 0x3e06 | UNDOC:§8,§10.1 | **RESOLVED 2026-08-25: the "Y177 stub" is REFUTED** | Three-way VIP_APP diff (Y175/Y177/Y181) shows a full ~906-byte fn in ALL builds (Y177 @0xb67d4, Y175 @0xb6708); "stub" was a fixed-address misread. Confirmed at byte level. See VIP_FIRMWARE_Y177_Y181_COMPARISON.md §2 | asm-quote non-reproducibility now explained: the stub never existed |
+|8| VIP validation fn @ 0xb67d0 (Y177 4-byte stub vs Y181 906-byte), chain 0xecd84/0xb6652/0xaee28, flag @ RAM 0x3e06 | UNDOC:§8,§10.1 | **REFUTED** | Three-way VIP_APP diff (Y175/Y177/Y181) shows a full ~906-byte function in ALL builds (Y177 @0xb67d4, Y175 @0xb6708); "stub" was a fixed-address misread. Confirmed at byte level — see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2 (carried unchanged, cited by name only) | **History:** 2026-08-25 — the "Y177 stub" theory is refuted, not merely unresolved; asm-quote non-reproducibility is now explained: the stub never existed. |
 |9| VIP PN 86331656 hash = `c381ed1c507d6ac6381c315fe94d9114` | UNDOC:§13.1 line 536 | UNSUPPORTED/CONTRADICTED | md5 of shipped `.../Y181/86331656` = `e47928d9f409834083abc9a068ce65e0` (≠) | may be a packaging diff; hash not reproducible from this artifact |
 |10| EEPROM 0x0E13=900 "display width" / 0x0E17=600 etc. (Store A) | Report:336, T1:§5 Store A | INFERRED (self-marked) | no dump-decode proof; T1 correctly marks `[I]` "bit mapping GUESSED" | honest |
 
 ## CLUSTER 2 — Security / lockdown verdicts
+
+> Owner of the underlying claims: `platform/security.md`. This cluster audits lockdown/AVB/
+> SELinux/ADB claims against artifacts; it does not restate `security.md`'s own mechanism
+> tables.
 
 | # | claim | doc:location | verdict | evidence | note |
 |---|---|---|---|---|---|
@@ -40,16 +61,18 @@ artifact) / CONTRADICTED (an artifact refutes it).
 |13| oem_unlock disabled | T1:57 | VERIFIED | `sys.oem_unlock_allowed=0` | |
 |14| ro.debuggable=0 / ro.adb.secure=1 (adb not root-able) | T1:57 | VERIFIED | `debug_props.txt` + `all_properties.txt` both show 0 / 1; adbd running without root | |
 |15| SELinux Enforcing (Y181) | QUICK_REF:61 | VERIFIED | `selinux_status.txt` = `Enforcing` | |
-|16| **IOMMU/VT-d is OFF (`intel_iommu=off`)** `[C]` | T1:71-73 | **UNSUPPORTED as of 2026-08-17; PARTIALLY RESOLVED 2026-11-12** | `cmdline.txt` = permission-denied (never captured) at the time of this audit; only IOMMU artifact then available was `kernel_config.txt: INTEL_IOMMU=y` (compiled IN). **2026-11-12 note:** a separate static artifact, `.../Y181B/mountables/BOOT_MOUNT_CHAIN.md:62`, lists `intel_iommu=off` in the extracted boot image's own kernel cmdline — this is cited and correctly scoped in `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` (§"IOMMU/VT-d") as confirming the **guest kernel's own** cmdline token, while explicitly leaving the GHS hypervisor's platform-level VT-d state (the thing the wire→host DMA vector actually needs) still unestablished. So the guest-cmdline half of claim #16 is now VERIFIED (static firmware artifact, not a live `/proc/cmdline` capture); the platform/hypervisor-VT-d half remains UNSUPPORTED exactly as this audit found. | `[C]` marker was unjustified for the platform/hypervisor claim and still is; the guest-only cmdline sub-claim is no longer unsupported |
+|16| **IOMMU/VT-d is OFF (`intel_iommu=off`)** `[C]` | T1:71-73 | **UNSUPPORTED as of 2026-08-17; PARTIALLY RESOLVED 2026-11-12** | `cmdline.txt` = permission-denied (never captured) at the time of this audit; only IOMMU artifact then available was `kernel_config.txt: INTEL_IOMMU=y` (compiled IN). A separate static artifact, `.../Y181B/mountables/BOOT_MOUNT_CHAIN.md:62`, lists `intel_iommu=off` in the extracted boot image's own kernel cmdline — cited and correctly scoped in `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` (§"IOMMU/VT-d") as confirming the **guest kernel's own** cmdline token, while explicitly leaving the GHS hypervisor's platform-level VT-d state (what the wire→host DMA vector actually needs) still unestablished. | `[C]` marker was unjustified for the platform/hypervisor claim and still is; the guest-only cmdline sub-claim is no longer unsupported. **History:** 2026-11-12 — guest-cmdline half upgraded to VERIFIED (static firmware artifact, not a live `/proc/cmdline` capture); platform/hypervisor-VT-d half remains UNSUPPORTED exactly as the base audit found. |
 |17| No virtio-net in guest | T1:65 | VERIFIED | `kernel_modules.txt`: only `trusty_virtio`, no `virtio_net` | |
 |18| **Guest drives eth0 with `e1000e`** `[C]` | T1:65 | **CONTRADICTED** | `network_interfaces.txt`: `eth0 Driver igb_avb`; `kernel_modules.txt` loads `igb_avb`, no e1000e. Also contradicts T1's own §1 | |
-|19| Y181→Y177 downgrade blocked by GHS rollback counter (misc/vda9, "tested FAILED") | QUICK_REF:64-65,278; T1:106 | INFERRED / UNSUPPORTED as measured **→ NOW OWNER-VERIFIED, see Resolutions** | rb_ua.conf + A/B fstab + TSS/AVB manifest support a rollback mechanism; empirical result now corroborated by owner bench re-test (2026-08-17) | mechanism plausible; behavior now field-confirmed |
+|19| Y181→Y177 downgrade blocked by GHS rollback counter (misc/vda9, "tested FAILED") | QUICK_REF:64-65,278; T1:106 | INFERRED/UNSUPPORTED-as-measured at base pass | rb_ua.conf + A/B fstab + TSS/AVB manifest support a rollback mechanism | mechanism plausible at base pass. **History:** 2026-08-17 — upgraded to OWNER-VERIFIED by an owner bench re-test corroborating the behavior; see Resolutions below. |
 |20| DSU/GSI present but dead (sepolicy-blocked) | QUICK_REF:185-193 | Split: present VERIFIED / dead INFERRED | `service_list.txt`: `dynamic_system` service present; sepolicy-block claim not confirmable (cil not in provided set) | |
 |21| No adb→root path | security corpus | VERIFIED (as configured) | ro.debuggable=0 + ro.adb.secure=1 (preconditions) | |
 
 > **[2026-11-13] ADB key-authorization scope:** see [Bus 2 source note §9.4](file:///Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md#94-2026-11-13-adb-per-key-authorization-not-enforced--c) for the same-radio authorization finding; the root/SELinux conclusions here remain separately scoped.
 
 ## CLUSTER 3 — Network topology + listeners
+
+> Owner of the underlying claims: `platform/ethernet_networking.md`.
 
 | # | claim | doc:location | verdict | evidence | note |
 |---|---|---|---|---|---|
@@ -68,25 +91,32 @@ artifact) / CONTRADICTED (an artifact refutes it).
 
 ## CLUSTER 4 — Calibration / $27
 
+> Owner of the underlying claims: `CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` (CHS) for
+> `CalSets.db`/container facts; `platform/vehicle_config.md` for live RPO/props facts.
+
 | # | claim | doc:location | verdict | evidence | note |
 |---|---|---|---|---|---|
-|34| Cal blob unsigned: checksum + SHA-256 only, no RSA/X.509 | T1:88-89 | **SUPERSEDED 2026-11-11** | All 14 examined stock CSM containers independently verify under their embedded RSA signer chain and payload digest | Signed format established; active UDS enforcement remains open. See [central evidence](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md). |
-|35| Single gate = UDS `$27` SecurityAccess | T1:90 | **OVERSTATED; corrected 2026-11-11** | Diagnostic symbols establish a SecurityAccess gate, not absence of other checks; containers are signed | Distinguish UDS authorization, package signatures, Android overrides and boot verification; active UDS verifier unresolved. |
+|34| Cal blob unsigned: checksum + SHA-256 only, no RSA/X.509 | T1:88-89 | **SUPERSEDED** | All 14 examined stock CSM containers independently verify under their embedded RSA signer chain and payload digest | Signed format established; active UDS enforcement remains open. See `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK). **History:** 2026-11-11 — "unsigned" reading superseded; do not cite the old claim as current. |
+|35| Single gate = UDS `$27` SecurityAccess | T1:90 | **OVERSTATED; corrected** | Diagnostic symbols establish a SecurityAccess gate, not absence of other checks; containers are signed | Distinguish UDS authorization, package signatures, Android overrides and boot verification; active UDS verifier unresolved. **History:** 2026-11-11 — corrected alongside #34 (same evidence pass). |
 |36| Self-write path overrides dir → inotify → processZippedModFile → CalSets.db | T1:82-86 | VERIFIED | calserviced strings: `/mnt/vendor/calibration/overrides/`, `inotify_add_watch`, `processZippedModFile`, `apply_overrides`; `calserviced.rc` creates the dirs | |
 |37| `*.calovride` OVERRIDE_BACKDOOR with "!!!DISABLE BEFORE RELEASE!!!" at main | T1:98-102 | VERIFIED (verbatim) | `bin__calserviced`: `main: !!!WARNING!!! !!!OVERRIDE_BACKDOOR (*.calovride) HAS BEEN ENABLED!!!  !!!DISABLE BEFORE RELEASE!!!` and `.calovride` | whether *compiled active* still open, correctly `[O]` |
 |38| Backdoor needs vendor_cald ctx, overrides dir mode 770 | T1:102 | VERIFIED | `calserviced.rc`: `mkdir /mnt/vendor/calibration/overrides 770 vendor_cald system`; service `user vendor_cald` | |
 |39| SCREEN_RESOLUTION: CalType 4, value 2=1280×768, enum 0:800×480/1:1280×720/2:1280×768/3:1920×1080/4:2400×960, file GIS738_RVCVIDEOROBUSTNESSREQUIREMENT v7 | T1:96-97,§5 | VERIFIED (exact) | `CalSets.db`: AllCalSets row CalType 4 CalValue 2; EnumSets 5 rows match exactly; CalDefFileName + v7 match | strongest single verification in the corpus |
-|40| Logical tester validation and session sequencing | T1:54-55; corrected 2026-11-14 | VERIFIED for corrected F4 live sequence; old FA/F1/F0 tier values withdrawn | Y181B address handler checks F4/F5; live Y175 direct T1 F4 + extended session yields 31-FF seed and accepts 12 zero bytes with `67 02`. See [owning reference](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). | Not arbitrary-key, root or programming-write proof. |
+|40| Logical tester validation and session sequencing | T1:54-55 | VERIFIED for corrected F4 live sequence; old FA/F1/F0 tier values withdrawn | Y181B address handler checks F4/F5; live Y175 direct T1 F4 + extended session yields 31-FF seed and accepts 12 zero bytes with `67 02`. See `../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14` | Not arbitrary-key, root or programming-write proof. **History:** 2026-11-14 — live T1 correction supersedes earlier tier values. |
 |41| diagnosticsd uid=0 (all caps, no seccomp) | T1:109 | uid=0 VERIFIED / caps+seccomp INFERRED | `vendor.gm.diagnostics.rc`: `user root`; no seccomp directive present (absence ≠ proof) | |
 
 ## CLUSTER 5 — Module ID / signing table
 
+> Owner of the underlying claims: `platform/ota_programming_roles.md`.
+
 | # | claim | doc:location | verdict | evidence | note |
 |---|---|---|---|---|---|
-|42| Full module table (ID/name/sign-type: 1 VIP_APP TSS, 21 HostOS TSS/GHS, 22 System TSS, 23 Boot NONE, 24 Utils NONE, 26 Vendor TSS, 28 SXM, 29 GPS, 51 Tuner, 52 EthSwitch, 55 ACPIO, 56 VBMETA, 57 Product, 71 VIP_BOOT, 72 SOC_ABL) | QUICK_REFERENCE:37-56 | VERIFIED | `delivery_manifest.csv`: every module ID, name, and Sign Type matches (86331656 VIP_APP id1 TSS; 85098662 SOC_HOSTOS id21 TSS "GHS INTEGRITY OS and Hypervisor"; 85738845 SOC_ABL id72 NONE "Intel Automotive Bootloader"; etc.) | all hex conversions correct too |
+|42| Full module table (ID/name/sign-type: 1 VIP_APP TSS, 21 HostOS TSS/GHS, 22 System TSS, 23 Boot NONE, 24 Utils NONE, 26 Vendor TSS, 28 SXM, 29 GPS, 51 Tuner, 52 EthSwitch, 55 ACPIO, 56 VBMETA, 57 Product, 71 VIP_BOOT, 72 SOC_ABL) | QUICK_REFERENCE:37-56 | VERIFIED | `delivery_manifest.csv`: every module ID, name, and Sign Type matches (86331656 VIP_APP id1 TSS; 85098662 SOC_HOSTOS id21 TSS "GHS INTEGRITY OS and Hypervisor"; 85738845 SOC_ABL id72 NONE "Intel Automotive Bootloader"; etc.) | all hex conversions correct too. Module 72's "SOC_ABL" vs "SOC_BOOT" naming is a separate, still-open corpus-wide item owned by `GM_INFO37_BOOT_CHAIN_ANALYSIS.md`/`platform/ota_programming_roles.md` — not restated here. |
 |43| EEPROM ADB flip 0x0440 `C3 00 C3→5A FF 5A`, 0x0A80 `FF FF FF→5A FF 5A` | QUICK_REFERENCE:18-19 | VERIFIED (consistent) | matches UNDOC stock markers (0x0440 stock C3, 0x0A80 stock FF) and final LTZ bin `5A FF 5A` | |
 
 ## CLUSTER 6 — Stale-spec / misc self-corrections
+
+> Owner of the underlying claims: `platform/hardware_specs.md`.
 
 | # | claim | doc:location | verdict | evidence | note |
 |---|---|---|---|---|---|
@@ -103,23 +133,53 @@ artifact) / CONTRADICTED (an artifact refutes it).
 - Split/partial: #3, #20, #28, #41 (verified core + inferred tail)
 
 ## Top claims the owner should NOT rely on
-1. **`intel_iommu=off` `[C]` (T1 §3a).** Not captured live — `/proc/cmdline` was permission-denied; the only IOMMU artifact available in 2026-08-17 (`kernel_config`) showed it compiled IN. **Update 2026-11-12:** `BOOT_MOUNT_CHAIN.md:62` (extracted firmware boot image) does show `intel_iommu=off` in the guest kernel's own cmdline — see `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md`. That settles the guest-kernel-cmdline sub-claim but *not* the GHS hypervisor's platform-level VT-d state, which the "crafted-frame/DMA → hypervisor" wire→host vector actually depends on and which remains UNSUPPORTED.
-2. **"Guest drives eth0 with `e1000e`" `[C]` (T1 §3a).** CONTRADICTED — driver is `igb_avb` (network_interfaces + kernel_modules), and it even contradicts T1's own §1.
-3. **"Zero literal marker patterns in the VIP binary" (UNDOC §13.4).** CONTRADICTED — `69 00 69`×3, `C3 00 C3`×4 are present. The marker-runtime-generation conclusion survives on other evidence, but this specific supporting statement is false.
-4. **EEPROM "firmware refs" counts (§2/§5) and the 0xb67d0 asm quotes (§8/§10).** UNSUPPORTED / non-reproducible — the doc itself admits this. **Update 2026-08-25:** the `0xb67d0` "Y177 stub" asm quote is now RESOLVED as **refuted** by the three-way VIP_APP diff (full ~906-byte fn in all builds; see VIP_FIRMWARE_Y177_Y181_COMPARISON.md §2). The EEPROM ref counts remain un-reproduced; don't build a flag-testing plan on the exact counts.
-5. **VIP PN 86331656 hash `c381ed1c…` (§13.1).** Does not match the shipped file's md5 (`e47928d9…`).
-6. **90xx "No route to host even locally" (T1 §6).** open_ports shows the guest holding ESTABLISHED connections to .1:9005/9010/9012/9018 — reachable in the client direction.
-7. **Y181→Y177 "tested FAILED" downgrade block.** Mechanism plausible; the empirical result was asserted without a capture artifact — **now corroborated by owner bench re-test (2026-08-17), see Resolutions.**
+
+1. **`intel_iommu=off` `[C]` (T1 §3a).** Not captured live — `/proc/cmdline` was
+   permission-denied; the only IOMMU artifact available in 2026-08-17 (`kernel_config`)
+   showed it compiled IN. **History:** 2026-11-12 — `BOOT_MOUNT_CHAIN.md:62` (extracted
+   firmware boot image) does show `intel_iommu=off` in the guest kernel's own cmdline; see
+   `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md`. That settles the guest-kernel-cmdline sub-claim
+   but *not* the GHS hypervisor's platform-level VT-d state, which the "crafted-frame/DMA →
+   hypervisor" wire→host vector actually depends on and which remains UNSUPPORTED.
+2. **"Guest drives eth0 with `e1000e`" `[C]` (T1 §3a).** CONTRADICTED — driver is `igb_avb`
+   (network_interfaces + kernel_modules), and it even contradicts T1's own §1.
+3. **"Zero literal marker patterns in the VIP binary" (UNDOC §13.4).** CONTRADICTED —
+   `69 00 69`×3, `C3 00 C3`×4 are present. The marker-runtime-generation conclusion survives
+   on other evidence, but this specific supporting statement is false.
+4. **EEPROM "firmware refs" counts (§2/§5) and the 0xb67d0 asm quotes (§8/§10).**
+   UNSUPPORTED / non-reproducible — the doc itself admits this. **History:** 2026-08-25 — the
+   `0xb67d0` "Y177 stub" asm quote is REFUTED (not merely unresolved) by the three-way
+   VIP_APP diff; see cluster 1 row #8 and `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2. The
+   EEPROM ref counts remain un-reproduced; don't build a flag-testing plan on the exact
+   counts.
+5. **VIP PN 86331656 hash `c381ed1c…` (§13.1).** Does not match the shipped file's md5
+   (`e47928d9…`).
+6. **90xx "No route to host even locally" (T1 §6).** open_ports shows the guest holding
+   ESTABLISHED connections to .1:9005/9010/9012/9018 — reachable in the client direction.
+7. **Y181→Y177 "tested FAILED" downgrade block.** Mechanism plausible; the empirical result
+   was asserted without a capture artifact — **History:** 2026-08-17 — now corroborated by
+   owner bench re-test, see Resolutions below.
 
 ## Core claims that ARE solidly ground-truth-verified
+
 - **SCREEN_RESOLUTION** CalType/value/enum/CalDef file — exact match in CalSets.db (#39).
-- **Calibration containers are signed (corrected 2026-11-11):** all 14 examined stock CSM containers independently verify; the old negative-string inference (#34) did not establish an unsigned format. The active UDS signature-enforcement path remains unresolved (#35). See [central evidence](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
-- **`*.calovride` OVERRIDE_BACKDOOR** string + "DISABLE BEFORE RELEASE" — present verbatim in bin__calserviced (#37); override→inotify→CalSets.db path real (#36); vendor_cald/770 gating real (#38).
-- **Security lockdown posture** — flash.locked=1, vbmeta locked, verifiedbootstate green, oem_unlock=0, debuggable=0, adb.secure=1, SELinux Enforcing (#11-15) all straight from getprop/status dumps.
-- **Network fabric** — eth0/vlan5/vlan4 IPs+MAC+driver, br0 down, 6363/49156 listeners, 90xx on 192.168.1.1, no 13400 (#22-26,31).
+- **Calibration containers are signed:** all 14 examined stock CSM containers independently
+  verify; the old negative-string inference (#34) did not establish an unsigned format. The
+  active UDS signature-enforcement path remains unresolved (#35). **History:** 2026-11-11.
+  See `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`.
+- **`*.calovride` OVERRIDE_BACKDOOR** string + "DISABLE BEFORE RELEASE" — present verbatim in
+  bin__calserviced (#37); override→inotify→CalSets.db path real (#36); vendor_cald/770
+  gating real (#38).
+- **Security lockdown posture** — flash.locked=1, vbmeta locked, verifiedbootstate green,
+  oem_unlock=0, debuggable=0, adb.secure=1, SELinux Enforcing (#11-15) all straight from
+  getprop/status dumps.
+- **Network fabric** — eth0/vlan5/vlan4 IPs+MAC+driver, br0 down, 6363/49156 listeners, 90xx
+  on 192.168.1.1, no 13400 (#22-26,31).
 - **Module ID / signing table** — every row matches delivery_manifest.csv (#42).
-- **EEPROM ADB SBI bytes + marker-agnostic bypass** — confirmed across two variant bins (#2-4,43).
-- **diagnosticsd = root, cts-on-gsi stop hook, TCPServer/UDS symbols** — from rc + binary (#33,41).
+- **EEPROM ADB SBI bytes + marker-agnostic bypass** — confirmed across two variant bins
+  (#2-4,43).
+- **diagnosticsd = root, cts-on-gsi stop hook, TCPServer/UDS symbols** — from rc + binary
+  (#33,41).
 
 ---
 
@@ -140,4 +200,5 @@ Actions taken in response to this audit:
   normal boot and fails "update not supported/invalid" in recovery) is the signature of a
   version/rollback-index rejection, corroborating the inferred GHS/AVB anti-rollback mechanism.
 - **#5 ref-counts, #8 asm quotes** — already self-flagged by the source doc's own provenance
-  note; left as-is with that caveat standing.
+  note; left as-is with that caveat standing (see #8's History line above for the later
+  2026-08-25 refutation).

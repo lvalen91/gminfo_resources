@@ -149,12 +149,16 @@ SECURITY CONSIDERATIONS
 
 CONCLUSION
 ----------
-This Type4 Application provides a CAN-level factory data reset for the A11
-Radio module. It requires:
-- GM SPS/TIS2Web infrastructure
-- Proper VCI connection
-- Security Access authentication
-- Vehicle in Run/Service power mode
+The Type4 application provides a factory-reset workflow, but SPS/TIS2Web and
+MDI2 are not prerequisites for issuing the underlying reset routine. Correction
+2026-11-17: direct CAN on the isolated bench accepted 31 01 02 47 after extended
+session and level1 SecurityAccess while CAN20D byte4 bits5–7 held power mode2.
+The rest of the captured harness and all other payload bits were preserved.
+Radio F085 became02; the reply was71 01 02 47. Android logged successful vehicle
+settings restoration and the owner observed the factory reset occurring.
+Original20D restored afterward; no calibration-clear or VIP RAM write used.
+Final post-wipe completion was not verified. See MDI2_RAW_UDS_BYPASS_GUIDE for
+addresses, source hashes, negative controls and the distinction from11 01.
 
 Correction 2026-11-07: the old SPS trace stopped before the wipe and did not
 establish 0x3208. Later Type 4 disassembly identified candidate RID 0x0247.

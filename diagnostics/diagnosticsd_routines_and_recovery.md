@@ -4,6 +4,25 @@
 
 ---
 
+### CANable stock-write follow-up (2026-11-16)
+
+The later direct CAN5 campaign transferred all fourteen genuine LTZ containers
+without MDI2 or calibration clearing, including already-matching modules.
+Working restart verification required the vehicle-VIN CAN input test after an
+intermediate NoVIN failure. The owner confirmed the homescreen; fresh readback
+matched all fourteen LTZ identities and the supplied VIN, all module statuses00,
+and F0F1/F0F2=`0000`. Genuine HC has subsequently transferred all fourteen
+containers and completed F198/F199/039B/F190 finalization. HC mute restart
+reached calibration state2/HMI ready/Propulsion; all fourteen HC identities,
+the VIN and module/error statuses were verified afterward. The owner observed
+the distinct HC logo and then confirmed its moving welcome animation. A later
+modified slot0C test was rejected with `7F 36 72`; genuine slot0C was restored
+in the same session and HC restart/identity/status checks passed again. The owning
+[CAN campaign](../platform/can_network.md#full-stock-ltz-rewrite-through-canable-2026-11-16)
+records preparation, transport differences, NoVIN recovery and remaining limits.
+Historical failed T1 attempts below are not a current claim that MDI2 is required.
+No `0249`, `FF00`, or substitute calibration clear was used in this campaign.
+
 ### Resolution work and controlled actions
 
 Follow-up tests retained concurrent USB logcat and append-only UART observation.
@@ -124,7 +143,7 @@ the missing converter mapping already documented, rather than a working reader.
 | 0475 results, level 05 | 7F 31 22. Current Y175 gm_update_engine DiagnosticsHandler is at RVA64330, corrected from the earlier51910 attribution after byte-hash-checked inspection. It implements start/stop branches; no valid complete install plan or transfer was submitted. See the ABFT follow-up below. |
 | 0200 / 0204 / 0205 / 0332 / 039B results, level 03 | All 7F 31 31. MY23's fixed RIDxxxxHandler lookup found no corresponding classes. This does not prove every start payload or another transport is unsupported. |
 | 0405 registration trigger | 71 01 04 05. Tested with no active Android default network and registration service initially stopped. Its local service reads MEC; no MEC setter was found in that service. MEC remained FF and the service was stopped afterward; cleanup reported it was already not running. No completed remote registration was demonstrated. |
-| 0247 full user-data wipe | Not sent. Live code calls vehicle-settings restore followed by RecoverySystem.rebootWipeUserData asynchronously. No full recovery wipe was performed or claimed. |
+| 0247 full user-data wipe | Not sent in this routine campaign. Live code calls vehicle-settings restore followed by RecoverySystem.rebootWipeUserData asynchronously. Separate historical reset and2026-11-17 direct-CAN retest are recorded in MDI2_RAW_UDS_BYPASS_GUIDE: the latter initially returned7F3122; setting CAN20D byte4 bits5–7 to2 subsequently produced71010247 and an owner-observed factory reset. |
 | 021E VIP pass-through | Its live handler requires authenticated system power mode 1 or 2 before forwarding; no unclassified VIP start was issued. |
 | FF00 per-module calibration erase | Not sent; the later explicitly requested 0249 all-overrides clear was the calibration action. |
 
@@ -375,7 +394,7 @@ existing output-only capture; no serial input or UART shell command was sent.
 **Result: the previously cleared A11 radio was restored with the stock LTZ
 package and the owner confirmed normal display and radio operation.** All
 14 calibration slots 02–0F matched post-reset F182 metadata, the supplied VIN
-matched readback, and F0F1 programming-error count and F0F2 boot-information
+matched readback, and F0F1 programming-error code and F0F2 boot-information
 status both returned `0000`. This supersedes the unresolved recovery status
 after the direct-T1 attempt above; that attempt itself transferred no data.
 
@@ -751,12 +770,42 @@ calibration transfer, flash erase or persistent Android configuration edit
 was performed. The default diagnostic session was restored, UART reader
 closed, and temporary ADB forward removed. The MDI2 was not connected; the
 owner is awaiting a USB CAN adapter after unreliable MDI2/CAN communication.
-CAN-side testing remains pending, not completed or disproven.
+CAN-side testing was pending at this checkpoint. The2026-11-17 follow-up below
+records two rejected direct-CAN candidates.
 
 The [owning firmware analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
 records the matched cleanroom APK, corrected VIP payload load map and compiled
 selector-8180 → one-byte E0 control request. That compiled branch narrows the
 next CAN test; it is not a verified universal boot-target command.
+
+**Direct-CAN ELK follow-up,2026-11-17:** Extended session and profile01 granted.
+`2F 81 80 03 → 7F 2F 31`; separate native-label candidate
+`AE 81 80 03 → 7F AE 11`. Neither produced a positive ELK control response.
+No ELK boot was established; no ADB boot comparison or new UART evidence was
+available. Default session restored. The compiled internal sender alone does
+not establish an external CAN invocation path. The owning firmware analysis
+above records the callback chain. Subsequent static tracing resolved this
+rejection: parserD1498 callsCC95E against the221-entry CAN identifier table;
+8180 is absent, so NRC31 is returned before callback dispatch. None of the39
+configured2F short-term-control callback entries points to57BC8. Normal I/O
+forwarding uses transaction kind5; ELK8180 uses the distinct kind4 adapter.
+This is not a missing security or power-mode prerequisite for the tested request.
+
+**F000/8180 follow-up,2026-11-17:** A distinct routine path was subsequently
+traced and exercised: `31 01 F000 8180 03`. T1/profile01 returned7F3131;
+direct CAN profiles01/09/0B/0D returned7F3133. Immediate RAM readback under0D
+showed the routine's required DCM access mask satisfied (session4, security40),
+but its separate application-security word FEBD0CF8 remained0. Temporarily
+setting that word to1 with verified readback yielded `7101F000818003`.
+The original zero word was restored and verified immediately afterward.
+UART recorded `Diag Elk Reboot Req`, `Elk Reboot Response 0`, controlled reset
+and a new VIP boot; the display turned off and ADB disconnected. T1 reconnect
+timed out. USB subsequently enumerated titan_gm_my22 (8087:09EF), and
+`fastboot getvar version-bootloader` returned `kernelflinger-07.02-userdebug`,
+confirming SoC ELK execution. Three subsequent variable queries timed out;
+repeat-command reliability and write permissions remain unverified.
+The owning firmware analysis above records the dispatcher,
+two separate access gates and post-reset observations.
 
 #### ABFT handler and validation-only follow-up (2026-11-15)
 

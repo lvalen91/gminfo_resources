@@ -3,14 +3,32 @@
                     Security Research Findings
 ================================================================================
 
-DISCLAIMER: This analysis is for educational and security research purposes.
-Findings are based on static firmware analysis of GM AAOS (Android Automotive).
+DISCLAIMER: Static firmware analysis of GM AAOS (Android Automotive), owner's own
+hardware. "Bypass"/"inject"/"attack surface" below are the neutral automotive/security
+vocabulary defined in gminfo_resources/CLAUDE.md, not an offensive campaign.
+
+SCOPE: telematics/CGM vs A11-radio remote-access paths, the OTA update chain, GM cloud
+endpoints, and GHS-hypervisor camera/display bypass. Does NOT own: EEPROM security-flag
+addresses/mechanism (-> EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md, "ELA"), GHS hypervisor
+architecture/attack-surface catalog (-> GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md, "GIC";
+platform/vip_ipc_ghs.md), downgrade/rollback mechanism detail (-> GHS_DOWNGRADE_
+PROTECTION_ANALYSIS.txt, "GDP"; GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, "GBUR"), VLAN/port
+reference tables beyond what's needed for the remote-access narrative (-> platform/
+ethernet_networking.md), or the rights/legal framing of this same surface (-> GM_LOCKDOWN_
+ANALYSIS_AND_COUNTERARGUMENTS.txt, "GLA").
+
+Evidence tags: [FW]/[S] static firmware, [V] verified/bench-confirmed, [inferred] inference
+from static analysis or indirect behavior (not directly observed), [U] unverified, [C]
+confirmed live. Dated per-claim tags override surrounding prose.
 
 RELATED (rights/remote/AOSP trio -- kept separate, complementary):
   - GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt -- the rights/legal framing of the same
     telemetry & lockdown surface described here.
-  - AOSP_REPLACEMENT_RESEARCH.txt -- the replacement/attack roadmap; its EEPROM 0x0440/0x0A80
-    "ADB enable" is the bypass that this doc's section 5.4 calibration security-reset re-locks.
+  - AOSP_REPLACEMENT_RESEARCH.txt -- the replacement/attack roadmap; its EEPROM 0x0440/
+    0x0A80 "ADB enable" finding is unrelated to this doc's old (now refuted) section 5.4
+    "calibration security reset" claim -- that claim never "re-locked" anything; see the
+    History note under section 5.4 below. For the current address assignment at those
+    EEPROM offsets, see ELA (owner of EEPROM addresses), not this doc.
 
 ================================================================================
                          EXECUTIVE SUMMARY
@@ -32,12 +50,18 @@ These capabilities exist through TWO independent systems:
                     SECTION 1: NETWORK ARCHITECTURE
 ================================================================================
 
-GM vehicles use a complex internal network connecting multiple ECUs:
+GM vehicles use a complex internal network connecting multiple ECUs. Full VLAN/
+port reference tables live in platform/ethernet_networking.md; this section keeps only
+what the remote-access chain narrative needs.
 
-PHYSICAL LAYER - Broadcom BCM8953x Ethernet Switch:
-[2026-11-12 NOTE: switch IC is a board variant -- Broadcom BCM89551 on the MY22/DV teardown unit; the live Y181
- bench radio reports a Marvell 88Q5050 (module52 MVL88Q5050_globalB_234702AB_02_09_1003, part 85759612). Same
- port spec; variant, not contradiction. 'BCM8953x' below is a family label, not verified for the bench radio.]
+PHYSICAL LAYER - Ethernet switch (Broadcom BCM8953x family label):
+The switch IC is a board variant, not a contradiction: the MY22/DV teardown unit carries
+a Broadcom BCM89551; the live Y181 bench radio reports a Marvell 88Q5050 (module52
+MVL88Q5050_globalB_234702AB_02_09_1003, part 85759612). Same port spec on both. "BCM8953x"
+below is the family label used by the original firmware strings, not independently
+verified for the bench radio. [FW, variant per board rev -- see memory note on board
+variants; not re-litigated here]
+
 +------------------------------------------------------------------+
 |  Port 0: RSI (Rear Seat Interface)                               |
 |  Port 1: AMP (Amplifier)                                         |
@@ -87,22 +111,30 @@ EXTERNAL CONNECTIVITY:
 |                                                                  |
 +------------------------------------------------------------------+
 
-[Updated 2026-11-11 per Y175_2026-11-02 Bus 2 tap bench finding:] a direct physical T1 tap
-on Ethernet Bus 2 (A11 Radio <-> K56 gateway) confirms a third VLAN not shown above: VLAN 2
-(PCP 2) carries AVB/TSN audio (IEEE-1722 AVTP, ~2,900 pps bench flood) and gPTP, with no IP
-addressing of its own -- it is not a service or diagnostic plane. Separately, this radio's
-internal bridge `br0` (192.168.5.1/24, members wlan1/wlan2) is the Wi-Fi/phone-projection AP
-bridge serving DHCP+DNS to paired-phone clients -- it is NOT a diagnostic or telematics
-plane, correcting any reading of it as such. An exhaustive full-port (1-65535) x full-source
-(/24) sweep of VLAN 5 and VLAN 4 from a direct tap found exactly three reachable services --
-192.168.1.100:9016 (NetworkAccessManager, source allow-list {.102,.112}), :9002
-(RemoteModuleHMI, {.106,.109,.112}), and 172.16.4.100:49156 (diagnosticsd, {.107,.112}) --
-with no undocumented allow-listed identity and no undocumented listening port anywhere in
-either /24. The "Port 2: CGM" switch-port labeling above is a separate claim (physical
-switch port enumeration, not VLAN/bus identity) that this bus-2 tap finding does not confirm
-or refute; it is left as-is pending its own verification. See
-.../Y175_2026-11-02/Y175_LIVE_RADIO_T1_SECURITY_ASSESSMENT_2026-11-02.md and
-.../source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md.
+BUS-2 DIRECT TAP (Y175, 2026-11-02 bench finding): a direct physical T1 tap on
+Ethernet Bus 2 (A11 Radio <-> K56 gateway) confirmed a third VLAN not in the diagram
+above -- VLAN 2 (PCP 2) carries AVB/TSN audio (IEEE-1722 AVTP, ~2,900 pps bench flood)
+and gPTP, with no IP addressing of its own; it is a media-transport plane, not a
+service/diagnostic plane. [V, bench tap]
+
+Separately, this radio's internal bridge `br0` (192.168.5.1/24, members wlan1/wlan2) is
+the Wi-Fi/phone-projection AP bridge serving DHCP+DNS to paired-phone clients -- it is NOT
+a diagnostic or telematics plane, correcting any earlier reading of it as such. [V, bench]
+
+An exhaustive full-port (1-65535) x full-source (/24) sweep of VLAN 5 and VLAN 4 from the
+direct tap found exactly three reachable services and no undocumented listening port or
+allow-listed identity anywhere in either /24:
+  - 192.168.1.100:9016  NetworkAccessManager, source allow-list {.102, .112}
+  - 192.168.1.100:9002  RemoteModuleHMI, source allow-list {.106, .109, .112}
+  - 172.16.4.100:49156  diagnosticsd, source allow-list {.107, .112}
+[V, bench sweep]
+
+The "Port 2: CGM" switch-port labeling in the physical-layer diagram above is a separate
+claim (physical switch port enumeration, not VLAN/bus identity) that this bus-2 tap
+finding does not confirm or refute -- left as-is pending its own verification (Open
+Conflicts, below). Full tap methodology: platform/ethernet_networking.md and
+platform/avb_audio_transport.md (VLAN 2 / AVTP detail); bench provenance in the research
+tree's session_logs/ (not resolved by this reorg per the writer brief).
 
 ================================================================================
                  SECTION 2: REMOTE ACCESS COMPONENTS
@@ -175,7 +207,7 @@ SELinux Permissions:
 Binary: /vendor/bin/rb_ua
 Size: 929,880 bytes
 
-Identified Capabilities (from strings analysis):
+Identified Capabilities (from strings analysis -- string presence, not observed behavior):
   - "(mandatory)" - Supports mandatory updates
   - Self-update capability
   - Recovery update mode
@@ -207,6 +239,9 @@ HAL Interfaces:
   - vendor.gm.swupdate::IECUInformation
   - vendor.gm.swupdate::IECUUpdate
 
+Full update-engine state machine / Binder map: platform/ota_update_stack.md (not yet
+consolidated there; this section's tables are the research-tier source).
+
 ================================================================================
                  SECTION 4: REMOTE SERVER INFRASTRUCTURE
 ================================================================================
@@ -227,10 +262,16 @@ GM Cloud Endpoints (from CalDef analysis):
 Enabled Features (CalDef defaults):
   - GIS768_Remote_Reflash_Feature = TRUE
   - GIS768_OMADM_Feature = TRUE
-  - GIS768_IgnoreCurrentPartNumberCheck = TRUE  <-- bypasses GM's PART-NUMBER check only
-       (CORRECTION: this does NOT enable a real downgrade. Rollback is enforced BELOW the
-       Android update layer by the GHS hypervisor's rollback counter in misc/vda9; Y181->Y177
-       was tested and FAILED. A part-number-check flag != AVB/GHS rollback bypass.)
+  - GIS768_IgnoreCurrentPartNumberCheck = TRUE  <-- bypasses GM's part-number check ONLY.
+       This flag does not enable a real firmware downgrade: anti-rollback is enforced
+       below the Android update layer, by the GHS hypervisor's rollback counter in
+       misc/vda9 (vs the vbmeta.rollback_index Android normally checks). A live owner
+       test of Y181->Y177 FAILED at boot. Mechanism detail, live-test evidence, and the
+       GDP-internal open question of exactly where in the boot sequence the block fires:
+       GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (GDP) / GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md
+       (GBUR) -- not duplicated here. [History: originally read (pre-2026-11) as a
+       potential downgrade-enabling flag; corrected 2026-11-12 after the misc/vda9
+       rollback-counter mechanism was identified and bench-tested.]
   - SECURITY_EVENT_LOGGING_ENABLED = TRUE
   - BACK_OFFICE_SERVER_ENABLED = TRUE
 
@@ -252,38 +293,31 @@ Enabled Features (CalDef defaults):
 
 5.3 POTENTIALLY CONSENT-BYPASSING
 ---------------------------------
-  - "(mandatory)" flag in Red Bend UA suggests forced updates possible
+  - "(mandatory)" flag in Red Bend UA suggests forced updates possible [inferred, string-only]
   - gmConnectionService has REBOOT permission (can reboot without consent)
   - gmConnectionService has START_ACTIVITIES_FROM_BACKGROUND
   - WRITE_SECURE_SETTINGS allows modifying system settings
 
-5.4 CALIBRATION FILE SECURITY RESET
-------------------------------------
-GM added security flag reset to calibration files (defense-in-depth):
+5.4 CALIBRATION FILE SECURITY RESET -- REFUTED, see History
+------------------------------------------------------------
+Originally reported: a calibration file (85783460, SW ID 07) was claimed to contain an
+encrypted payload resetting EEPROM 0x0440/0x0A80/0x0B40 to re-lock security/backup/debug
+flags, implying SPS calibration visits could silently reset owner EEPROM modifications.
 
-File: 85783460 (SW ID 07)
-Contains encrypted payload that resets:
-  - EEPROM 0x0440 -> C300 (Security LOCKED)
-  - EEPROM 0x0A80 -> C300 (Backup LOCKED)
-  - EEPROM 0x0B40 -> 6900 (Debug mode OFF)
-
-This means SPS calibration visits can reset security modifications.
-
-[CORRECTED 2026-11-12: this "Encrypted EEPROM Payload (0x050-0x367) in file
-85783460" claim is refuted byte-for-byte per AUG24_25_DOC_REVIEW_CORRECTIONS_
-AUG2026.md's correction #1 -- the quoted bytes sit inside the gzip-compressed
-CalOvride XML stream, not an EEPROM address:value table, and all 14
-decompressed CSM cal files have zero hits for "0440/0a80/0b40/eeprom/security/
-SBI/bypass". The owner-observed EEPROM-bypass reset after SPS visits (see
-AUG24_SESSION_FULL_PCAP_TIMELINE.md §5) is real, but this specific file/
-payload mechanism is NOT its confirmed cause -- treat the three bullets above
-as an unverified/superseded hypothesis, not a documented mechanism.]
+REFUTED. [History: corrected 2026-11-12, per AUG24_25_DOC_REVIEW_CORRECTIONS_AUG2026.md
+correction #1 -- the quoted byte range sits inside the gzip-compressed CalOvride XML
+stream, not an EEPROM address:value table, and all 14 decompressed CSM cal files have
+zero hits for "0440/0a80/0b40/eeprom/security/SBI/bypass". The owner-observed EEPROM-
+bypass reset after SPS visits (AUG24_SESSION_FULL_PCAP_TIMELINE.md §5) is real, but this
+file/payload was never its confirmed mechanism.] Current EEPROM address assignments and
+the SPS-reset mechanism (if later identified) are owned by ELA, not this doc -- do not
+reintroduce 0x0440/0x0A80/0x0B40 as a security-reset payload here.
 
 ================================================================================
                SECTION 6: TELEMATICS vs INFOTAINMENT
 ================================================================================
 
-CRITICAL: OnStar/Telematics operates INDEPENDENTLY of A11 Radio!
+CRITICAL: OnStar/Telematics operates INDEPENDENTLY of A11 Radio.
 
 +------------------------------------------------------------------+
 | CAPABILITY              | TELEMATICS (CGM) | A11 RADIO (AAOS)    |
@@ -297,16 +331,13 @@ CRITICAL: OnStar/Telematics operates INDEPENDENTLY of A11 Radio!
 +------------------------------------------------------------------+
 * Requires physical disconnection of telematics module
 
-PROOF: Remote start, lock, and climate control work even with
-A11 radio removed. This confirms telematics has independent:
-  - Cellular modem
-  - CAN bus connection
-  - Command execution capability
-[NOTE: this table is derived from STATIC firmware analysis and is consistent with
- OnStar's known design (telematics/CGM is independent of the AAOS infotainment radio).
- Runtime execution of remote commands was not directly observed in this analysis -- treat
- the "YES" cells as strong static-analysis inferences, not bench-verified behavior. See the
- disclaimer at the end of this document.]
+This table, and the independence claim above it, is a STATIC-firmware-analysis
+inference, consistent with OnStar's known design (telematics/CGM independent of the
+AAOS infotainment radio) -- but runtime execution of remote commands was not directly
+observed in this analysis. Read every "YES" cell as a strong static-analysis inference,
+not bench-verified behavior; cellular modem presence, direct CAN wiring, and command-
+execution capability on the telematics module are architecturally supported by the
+firmware/wiring evidence, not captured in a live test. [inferred]
 
 ================================================================================
               SECTION 7: COMPLETE REMOTE ACCESS CHAIN
@@ -357,6 +388,9 @@ VEHICLE CONTROL PATH (CAN Bus Commands):
 |                                                                  |
 +------------------------------------------------------------------+
 
+Both chains above are STATIC reconstructions (binary/service/permission evidence chained
+together), not a traced live transaction; see the document footer disclaimer.
+
 ================================================================================
                   SECTION 8: ISOLATION RECOMMENDATIONS
 ================================================================================
@@ -385,11 +419,14 @@ FOR RESEARCH/TESTING PURPOSES ONLY:
   - sit-gm.cs21.force.com
 
 ================================================================================
-            SECTION 9: GHS HYPERVISOR ARCHITECTURE
+            SECTION 9: GHS HYPERVISOR CAMERA/DISPLAY BYPASS
 ================================================================================
 
-GM's A11 radio uses a GHS (Green Hills Software) Hypervisor that runs BELOW
-Android, providing safety-critical functions independently of the OS.
+GM's A11 radio uses a GHS (Green Hills Software) INTEGRITY hypervisor that runs BELOW
+Android, providing safety-critical functions independently of the OS. This section
+covers only the camera/display-bypass angle; the hypervisor's own PCI/task/IPC
+architecture and attack-surface catalog are owned by GIC (GHS_INTEGRITY_COMPREHENSIVE_
+ANALYSIS.md) and platform/vip_ipc_ghs.md -- not restated here.
 
 9.1 HYPERVISOR DEVICE INTERFACES
 --------------------------------
@@ -408,10 +445,11 @@ GHS provides multiple device interfaces to Android:
 
 9.2 CAMERA BYPASS ARCHITECTURE
 ------------------------------
-CRITICAL FINDING: Backup camera works DURING Android reboot!
+FINDING: Backup camera works DURING Android reboot.
 
-When Android reboots (adb reboot, steering wheel hold), the display shows
-the backup camera feed if the vehicle is shifted into reverse. This proves:
+When Android reboots (adb reboot, steering wheel hold), the display shows the backup
+camera feed if the vehicle is shifted into reverse. This indicates [inferred, from
+observed reboot behavior, not a traced data-path capture]:
 
   1. GHS hypervisor continues running when Android restarts
   2. GHS receives CAN bus signals (gear position) independently
@@ -446,8 +484,8 @@ SELinux capabilities of early_evs domain:
   - can_socket access (CAN bus!)
   - serial_device access
 
-The early_evs service was designed to provide camera during early boot
-BEFORE Android fully starts. In production, this is handled by GHS directly.
+The early_evs service was designed to provide camera during early boot BEFORE Android
+fully starts. In production, this role is handled by GHS directly.
 
 9.4 WHO ACCESSES GHS CAMERA?
 ----------------------------
@@ -469,14 +507,18 @@ Display panel devices (/dev/ttyS3, /dev/i2c-7) are accessed by:
   - remote_display
   - system_app
 
-This multi-layered access confirms GHS can control display independently.
+This multi-layered access is consistent with GHS controlling the display independently
+of any single Android component, though it is a permission-table reading, not a traced
+runtime arbitration test.
 
 9.6 SECURITY IMPLICATIONS
 -------------------------
   - GHS continues operating when Android crashes or reboots
   - Camera feed is a SAFETY feature - must work without Android
-  - GHS has direct hardware access, bypassing Android security
-  - GHS could theoretically display anything on screen without Android
+  - GHS has direct hardware access, independent of Android's own security model
+  - GHS could, in principle, display content on screen without Android's involvement
+    [inferred -- no content-injection test performed; a capability reading, not an
+    observed exploit]
   - CAN bus signals reach GHS before Android processes them
 
 ================================================================================
@@ -485,11 +527,12 @@ This multi-layered access confirms GHS can control display independently.
 
 1. GM has DUAL remote access paths (Telematics + A11 Radio)
 
-2. Telematics module operates INDEPENDENTLY - removing the radio
-   does NOT disable remote vehicle control
+2. Telematics module operates INDEPENDENTLY, per static analysis -- removing the radio
+   does NOT disable remote vehicle control in the firmware/wiring model reconstructed
+   here (not directly bench-verified; see section 6)
 
 3. Red Bend Update Agent supports "(mandatory)" updates - potential
-   for forced updates without user consent
+   for forced updates without user consent (string-level finding)
 
 4. gmConnectionService has REBOOT permission - can restart device
    without user interaction
@@ -500,38 +543,54 @@ This multi-layered access confirms GHS can control display independently.
 6. A11 and Telematics share internal Ethernet network - data can
    flow between them
 
-7. GIS768_IgnoreCurrentPartNumberCheck = TRUE bypasses the part-number check
-   on updates ONLY -- it does NOT enable a firmware downgrade. The actual
-   anti-rollback is the GHS hypervisor's rollback counter (misc/vda9), which
-   blocks Y181->Y177 at boot (tested FAILED). See section 5.4 correction above.
+7. GIS768_IgnoreCurrentPartNumberCheck = TRUE bypasses the part-number check on updates
+   ONLY -- it does NOT enable a firmware downgrade. The actual anti-rollback is the GHS
+   hypervisor's rollback counter in misc/vda9, which blocked a tested Y181->Y177 at boot.
+   See section 4 above; mechanism detail in GDP/GBUR.
 
-8. Calibration files now include security reset payloads as
-   defense-in-depth against EEPROM modifications
+8. REFUTED (see section 5.4 History) -- there is no confirmed calibration-file security-
+   reset payload acting as defense-in-depth against EEPROM modifications. The underlying
+   SPS-visit EEPROM-reset observation is real; this specific mechanism claim is not.
 
-9. Complete remote access chain: Cloud -> Telematics -> Android
+9. Complete remote access chain (static reconstruction): Cloud -> Telematics -> Android
    Service -> Update Engine -> Red Bend -> Flash
 
 10. No way to fully disable remote access without physical
     disconnection of telematics module
 
-11. GHS Hypervisor operates BELOW Android, controlling camera and
-    display directly - backup camera works even during Android reboot
+11. GHS Hypervisor operates BELOW Android, controlling camera and display directly -
+    backup camera works even during Android reboot (section 9.2, inferred from behavior)
 
-12. GHS has direct CAN bus access and can overlay content on display
-    independently of Android OS state
+12. GHS has direct CAN bus access and can, in principle, overlay content on display
+    independently of Android OS state (capability reading, not an observed exploit)
+
+================================================================================
+                         OPEN CONFLICTS (local to this doc)
+================================================================================
+
+1. **Switch port 2 "CGM" labeling vs diagram "Port 5 = host"** -- section 1's physical-
+   layer diagram labels port 2 as the CGM/telematics port; this is a separate claim from
+   VLAN/bus identity and the 2026-11-02 bus-2 tap finding neither confirms nor refutes
+   it. No later dated correction settles which physical switch port actually carries CGM
+   traffic on the bench unit. Left open pending a physical port-trace; see platform/
+   ethernet_networking.md if that tree later resolves it.
 
 ================================================================================
                          DOCUMENT INFO
 ================================================================================
 
-Analysis Date: January 2026
+Analysis Date: January 2026 (base analysis); inline corrections dated 2026-11-11/12
+folded into their claims above, each with a History note (sections 1, 4, 5.4, 10).
+
 Firmware Analyzed: GM AAOS Y177/Y181
 Platform: Intel Apollo Lake (bxtp)
 Radio: A11 (Info 3.x)
 
-This analysis is based on static firmware examination. Actual behavior
-may vary. Dynamic analysis (packet capture, runtime monitoring) would
-be needed to confirm all capabilities.
+This analysis is based on static firmware examination, supplemented by the dated bench
+findings called out inline (bus-2 tap, switch-IC variant, rollback-counter test). Cells
+and claims not marked [V]/[C] remain static-analysis inferences; packet capture and
+runtime monitoring of the remote-command paths (section 6, 9.2, 9.6) have not been
+performed.
 
 ================================================================================
                       END OF ANALYSIS

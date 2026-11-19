@@ -1,0 +1,8 @@
+SOC_ABL image-format dispatch table @ vaddr 0x128dc2e8 (.rodata)  [GOT base 0x128fd8d5]
+Recognized container/image magics:
+  0x128dc2e8  0x2e6b7069  "ipk."            <- GHS (ghs_isys), bootloader_a, ghs_abl_update
+  0x128dc2ec  0x1badb002  Multiboot1        <- SOC_ABL itself (entry0 multiboot header)
+  0x128dc2f0  0x31304246  "FB01"            <- fastboot image
+Handler dispatch: format loader -> call dword [handler+8]
+  ipk/multiboot handler: fcn.12808b00  (0x128088e6-0x12808f02)
+  FB01 handler:          fcn ~0x12809a00

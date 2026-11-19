@@ -1,5 +1,15 @@
 # CSE / HECI Command Protocol of the GHS `ota_update` Partition
 
+**Scope:** HECI/MKHI command-protocol reverse-engineering for the GHS INTEGRITY `ota_update`
+partition on gminfo37/A3960 (Apollo Lake, Intel CSE/TXE) — bus-message transport, the 4 CSE
+opcodes, the state machine, the 3-tier validation gates, and ranked fuzz targets. Does **not**
+own: GHS hypervisor architecture/PCI-driver/IPC maps (see GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md),
+boot/recovery/ELK mechanics or the live anti-rollback/SVN enforcement narrative (see
+GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), the Celadon/kernelflinger public-source comparison (see
+GORDON_PEAK_CELADON_INTELLIGENCE.md), or the `/dev/ghs/*` SELinux-gate attack-surface catalog (see
+HARDWARE_HYPERVISOR_ATTACK_VECTORS.md). This doc's only unique content is the HECI/MKHI/CSE
+protocol RE itself.
+
 **Target:** GM Info 3.7 (gminfo37 / A3960), Y181 `W231E-Y181.3.2-SIHM22B-499.3`, INTEGRITY IoT
 2020.18.19 `MY22-026`, Intel Apollo Lake (Atom Goldmont, TXE/CSE).
 **Method:** Reverse-engineering of recovered GHS `.rodata` string tables and symbol table,
@@ -9,19 +19,14 @@ protocol headers.
 
 ## Sources
 
-- `research/decompiled/ghs_str.txt` lines 38092–38148 — the full `ota_update` HECI/OTA error
-  string block (the `.ota_update.rodata` content described in the task).
-- `research/decompiled/ghs_analysis.txt` lines 302–333 (addressed strings `0x00df70xx–0x00df77xx`)
-  and 696 (`OtaUpdateToHeciIod`), 264/267 (`CseSeed`, `Intel HECI`), 5384/5412
-  (`cseseed_iodevice.c`, `intel_heci.c`).
-- `~/Downloads/github/kernelflinger/` — Intel's ABL EFI bootloader, the authoritative public source
-  for the HECI/MKHI message layer:
-  - `libkernelflinger/protocol/MkhiMsgs.h` — MKHI header + group/command opcodes.
-  - `libheci/hecisupport.c`, `include/hecisupport.h` — HECI transaction flow (EOP example).
-  - `libkernelflinger/protocol/BootloaderSeedProtocol.h` — ATTKB / seed structures.
-  - `kf4abl.c` — ABL update / IFWI capsule path.
-- `research/GORDON_PEAK_CELADON_INTELLIGENCE.md`, `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`,
-  `research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` — architecture + reachability context.
+See `platform/external_references.md` for the full kernelflinger path list, which includes
+(roles not carried there — kept here): `libkernelflinger/protocol/MkhiMsgs.h` (MKHI header +
+group/command opcodes), `libheci/hecisupport.c` + `include/hecisupport.h` (HECI transaction
+flow, EOP example), `libkernelflinger/protocol/BootloaderSeedProtocol.h` (ATTKB/seed
+structures), and `kf4abl.c`. See also the `research/decompiled/ghs_str.txt`
+(lines 38092–38148) / `ghs_analysis.txt` (lines 302–333, 696, 264/267, 5384/5412) ranges this
+doc's RE is built on. Architecture/reachability context: GORDON_PEAK_CELADON_INTELLIGENCE.md,
+GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, HARDWARE_HYPERVISOR_ATTACK_VECTORS.md.
 
 ---
 
@@ -60,8 +65,10 @@ Intel CSE / TXE  (Converged Security Engine — the firmware trust anchor)
 
 Key architectural fact: **the guest never speaks HECI.** It speaks a small GM RPC verb set to
 `ota-isys`; `OtaUpdateToHeciIod` is the *only* thing that builds HECI/MKHI frames and touches the
-CSE MMIO. That indirection is the whole security boundary and the crux of the reachability question
-(§6).
+CSE MMIO. That indirection is the whole security boundary and the crux of the reachability
+question (§6). The `/dev/ghs/ota-isys` node itself — its SELinux domain gate, DAC mode, and its
+place in the full `/dev/ghs/*` attack-surface catalog — is owned by
+HARDWARE_HYPERVISOR_ATTACK_VECTORS.md's `/dev/ghs/*` IOCTL table; see §6 below for the pointer.
 
 ---
 
@@ -225,11 +232,12 @@ codes above):**
   M1-manifest validation results — the CSE checks the update payload's signed manifest. This is the
   **Boot Guard / CSE-anchored signature gate**; the private key is not in any extracted artifact.
 - **Anti-rollback (SVN):** `SEC_M1_DATA_OLDER_VER (0x03)` is the CSE refusing a *downgrade* — the
-  update's Security Version Number is compared against the CSE-fused minimum SVN. This is the
-  firmware-level enforcement that blocks Y181→Y177 (`GORDON_PEAK_CELADON_INTELLIGENCE.md`: "anti-
-  rollback version enforcement" in the HECI/CSE layer). The seed/ATTKB are **SVN-bound**
+  update's Security Version Number is compared against the CSE-fused minimum SVN, independent of
+  the GHS boot-time AVB/rollback-counter mechanism. The seed/ATTKB are **SVN-bound**
   (`BOOTLOADER_SEED_INFO.cse_svn`), so a successful rollback would also break attestation — a second
-  interlock.
+  interlock. For the live-tested GHS-side anti-rollback/SVN enforcement this CSE-level gate sits
+  alongside (not instead of), see GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md and
+  GORDON_PEAK_CELADON_INTELLIGENCE.md — this doc does not restate that narrative.
 - **Length/format:** CSE validates payload length and message structure server-side, surfacing as
   `SEC_INVALID_MESSAGE`.
 
@@ -289,10 +297,11 @@ frames. A guest RPC to `/dev/ghs/ota-isys` reaches CSE only *through* the four v
 
 **The gates between a guest and CSE:**
 
-1. **SELinux on `/dev/ghs/ota-isys`.** DAC is `rw-rw-rw-`, but the shell domain is denied. Reaching
-   the node needs a less-restricted domain (a compromised system/vendor service) or a policy
-   escalation. This is the primary barrier from an unprivileged guest.
-   (`HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` §"/dev/ghs/* IOCTL Interface".)
+1. **SELinux on `/dev/ghs/ota-isys`.** Reaching the node needs a less-restricted domain (a
+   compromised system/vendor service) or a policy escalation; this is the primary barrier from an
+   unprivileged guest. The full `/dev/ghs/*` node table, DAC/SELinux posture, and risk ranking is
+   owned by HARDWARE_HYPERVISOR_ATTACK_VECTORS.md's `/dev/ghs/*` IOCTL Interface section — see
+   that doc rather than this one for the gate detail.
 2. **Unknown ioctl/RPC framing.** The `ota-isys` dispatch table is not recovered — the `ghs_probe`
    tool exists but was never built, and the ioctl values are guesses pending
    `/system/lib64/libghs_lip.so` RE. So even with node access, the RPC verb encoding must be
@@ -307,11 +316,11 @@ frames. A guest RPC to `/dev/ghs/ota-isys` reaches CSE only *through* the four v
   length/opcode (§5 #1–#3) *before* CSE validation, a guest could corrupt GHS hypervisor memory —
   which is far more valuable than flashing (GHS is the trust root above CSE for the rollback
   counter). This is a memory-safety attack on the *broker*, not a protocol attack on CSE.
-- **Rollback-counter angle.** The documented interest in `ota-isys` is that it "owns the misc/vda9
-  rollback counter." A native rollback verb likely exists (legitimate downgrade support). If that
-  verb is reachable and under-validated, it is a downgrade primitive that sidesteps the *GHS*
-  counter — but the *CSE* SVN fuse still independently blocks a firmware rollback, so this would
-  weaken AVB/GHS rollback protection, not CSE's.
+- **Rollback-counter angle.** `/dev/ghs/ota-isys` "owns the misc/vda9 rollback counter" per
+  HARDWARE_HYPERVISOR_ATTACK_VECTORS.md — a native rollback verb likely exists (legitimate
+  downgrade support). If that verb is reachable and under-validated, it is a downgrade primitive
+  that sidesteps the *GHS* counter — but the *CSE* SVN fuse still independently blocks a firmware
+  rollback, so this would weaken AVB/GHS rollback protection, not CSE's.
 - **DMA bypass (out of band), IOMMU-state-dependent.** The kernel is built with `INTEL_IOMMU=y`
   (IOMMU compiled IN); its *runtime* state was never captured (the `cmdline` read was
   permission-denied), so whether DMA remapping is actually enforced is an open, unverified research
@@ -323,9 +332,10 @@ frames. A guest RPC to `/dev/ghs/ota-isys` reaches CSE only *through* the four v
 mediated and validated by `OtaUpdateToHeciIod`, and CSE independently enforces signature + rollback.
 The realistic exploit target is a **memory-safety bug in the GHS RPC→HECI broker** (ATTKB size
 handling and the RPC length dispatcher are the standout candidates), reached only after clearing the
-SELinux gate on `/dev/ghs/ota-isys` and reversing the `ota-isys` RPC framing (needs `libghs_lip.so`
-RE). Compromising the broker yields hypervisor-memory corruption; it does **not** yield arbitrary
-firmware flashing, which stays behind the CSE M1-manifest + SVN fuses.
+SELinux gate on `/dev/ghs/ota-isys` (HARDWARE_HYPERVISOR_ATTACK_VECTORS.md) and reversing the
+`ota-isys` RPC framing (needs `libghs_lip.so` RE). Compromising the broker yields hypervisor-memory
+corruption; it does **not** yield arbitrary firmware flashing, which stays behind the CSE M1-manifest
++ SVN fuses.
 
 ---
 
@@ -341,3 +351,15 @@ firmware flashing, which stays behind the CSE M1-manifest + SVN fuses.
   domain to enumerate the `ota-isys` verb space empirically.
 - **Confirm ATTKB `%d` vs `%ld` size types** in the disassembly — signed/width confusion is the
   highest-probability memory-safety bug from the string evidence.
+
+## Related
+
+- GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md — GHS hypervisor architecture, `/dev/ghs/*` + SELinux
+  label owner.
+- GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md — live anti-rollback/SVN enforcement and boot-chain
+  narrative this doc's Tier-3 SVN gate sits alongside.
+- GORDON_PEAK_CELADON_INTELLIGENCE.md — public Celadon/kernelflinger comparison and anti-rollback
+  context.
+- HARDWARE_HYPERVISOR_ATTACK_VECTORS.md — `/dev/ghs/*` node table, SELinux-gate detail, and
+  rollback-counter attack framing cited in §6.
+- `platform/external_references.md` — kernelflinger source paths.

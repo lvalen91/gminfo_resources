@@ -195,7 +195,7 @@ The large multi-bay Stac64 housings carry the vehicle harness. Circuit names/num
 | Backup lamp ctrl | `GRN/WHT 24` | To exterior-lights system |
 | Radio SW power/buttons/vol±  | `BRN/WHT`, `VIO/WHT`, `BLU`, `GRY/BRN` | Steering-wheel / panel switch pack |
 | Infotainment display 5 V ref / low ref | `BLU/RED`, `BLK/WHT` | Display power/reference (panel is remote) |
-| Display LCD enable / backlight enable / backlight dimming | `GRY/BLU`, `GRY/VIO`, `BLU/GRN` | |
+| Display LCD enable / backlight enable / backlight dimming | `GRY/BLU`, `GRY/VIO`, `BLU/GRN` | **Role unresolved 2026-11-17:** `video/display_subsystem.md` now shows the actual backlight control path is in-band over the Center-Stack-LVDS/FPD-Link I2C (serializer→panel register `0x20`, write-gated by GHS), not a discrete enable wire. These harness-named discretes may be a secondary/legacy enable or may serve a different function than their BBM label suggests; treat as unconfirmed until traced to a schematic net, not as the live backlight-enable path. |
 | Radio switch dimming ctrl | `BLU/GRY` | |
 | Cell-phone mic / voice-recognition mic (± / sig / low-ref) | `BLU`(655/5149), `BLK/BRN`(654/5152), `VIO/YEL 7043`, `BLU/BLK 7044` | Mic pairs |
 
@@ -359,7 +359,8 @@ Intel Atom **A3960** Apollo Lake, Broadcom **BCM89551** Ethernet switch (this ph
 - **Radio USB cable (bench, owner-sourced) — GM Molex PN `87813526`:** HSAutoLink connector
   (radio/X8 side) → **Male Mini-A USB** plug (receptacle side). This is the physical adapter from
   the radio's HSAL-2 header to the standard-USB world that the front receptacles mate to. [C owner]
-- On-board debug USB-UART (Microchip MCP2200 → `/dev/ttyACM1`) is internal, not a rear harness
+- On-board SXM-associated USB-UART (Microchip MCP2200 → AAOS `/dev/ttyACM1`,
+  native Linux `/dev/ttyACM0`; corrected2026-11-17) is internal, not a rear harness
   connector — see [`teardown.md`](teardown.md).
 
 ### The three USB receptacles (ALLDATA + owner field data) — [C]

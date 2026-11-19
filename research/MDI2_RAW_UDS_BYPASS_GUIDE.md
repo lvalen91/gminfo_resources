@@ -404,11 +404,25 @@ print("[*] Sending $37 (RequestTransferExit)...")
 client.send_request(services.RequestTransferExit.Request())
 print("[+] Calibration write sequence complete")
 
-# 4. Tester present ($3E) every 5 seconds (keep session alive during flash)
+# 4. Tester present ($3E) below the observed ~5s session timeout (e.g. every 2s)
 #    While calserviced processes the override
 ```
 
-**Checksum/SHA-256 note:** **CORRECTED 2026-11-10:** the cal container is in fact RSA-2048 **signed** (SHA256withRSA over a `CalSignedHeader` that holds the SHA-256 payload digest, with an embedded GM-rooted cert chain). The 16-bit checksum + SHA-256 are genuine but are *lower-layer* integrity beneath the signature; the authenticity gate IS an RSA signature verified against a GM public key. The blob structure is `[header + checksum + data + SHA256]`. If you're hand-editing a cal, recompute both after the edit. **Live test 2026-11-10: a hand-edited cal with *both* fields recomputed correctly was STILL rejected — at the TransferData (`0x36`) stage, NRC `0x72`, before the SoC cal service even processed it. So recomputing checksum + SHA-256 is NOT sufficient; an additional UDS/bridge-layer gate blocks modified containers. Treat this hand-edit recipe as UNPROVEN until that gate is reverse-engineered.**
+**Integrity/authentication correction, 2026-11-16:** stock CSM containers carry
+RSA-2048 signatures over the header containing the payload SHA-256 digest.
+Their signer records are separately authenticated. The native additive/XOR
+checksum belongs to an internal calibration-message layer; the old generic
+`[header + checksum + data + SHA256]` CSM layout and “recompute both” deployment
+advice were not a validated public-wire format.
+
+The earlier digest-correct edit failed at `36`/NRC72. Follow-up direct CAN5
+testing now isolates the signed-header gate: a signature-only one-bit mutation
+with unchanged XML/digest/length was rejected, and the original SXM edit returned
+PEC0015 before stock recovery. The matching VIP header-verification failure
+branch sets0015 and its first-block caller returns NRC72 before SoC calibration
+init. A separate validated-SBA-ticket exception exists in code but has not been
+activated. See the [confirmed verification record](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#header-signature-rejection-confirmed--2026-11-16).
+This is not an accepted custom-calibration deployment recipe.
 
 ---
 
@@ -494,7 +508,23 @@ different parts of ADB access; the UDS routine remains unconfirmed here.
 | `10` | DATAID `0x10` (16) |
 | `EE` | Value: `01` = enable ADB, `00` = disable ADB |
 
-**Live CAN attempt 2026-11-07:** With the radio rebooted and USB debugging reported off,
+**Transport qualification, 2026-11-15:** the earlier MDI2 attempt lacked the
+required external 12 V supply. The historical MDI2-labelled results below must
+not be used as proof that the current physical CAN5 path was exercised; their
+transport attribution requires verification against the original records.
+Direct powered-CANable/CAN5 results are now recorded in
+[the CAN reference](../platform/can_network.md#direct-can5-adb-enable-diagnostics--2026-11-15),
+separately from the confirmed T1 trials.
+
+**Fresh direct-CAN5 follow-up, 2026-11-15:** the powered CANable received real
+ISO-TP responses from radio `0x80`, then obtained level-1 SecurityAccess with
+`67 02`. All 256 enable-only domain values returned `7F 31 31` both before
+and after the grant in extended session. Default session was restored and
+ADB remained disconnected. This independently establishes the negative result
+for the tested direct CAN5 contexts; see the CAN reference linked above and
+[the SecurityAccess validation](../diagnostics/diagnosticsd_security_access.md#live-direct-can5-securityaccess-validation-2026-11-15).
+
+**Historical CAN report, 2026-11-07:** With the radio rebooted and USB debugging reported off,
 native Python through the MDI2 addressed ECU 0x80. Extended session `10 03` returned `50 03`;
 level-1 SecurityAccess succeeded (`27 01` returned a 31-byte all-FF seed; a 12-byte zero key
 returned `67 02`). A single provisional request `31 01 03 32 00 42 10 01` returned
@@ -593,6 +623,53 @@ read on ECU `0x40` returned `62 F0 85 00`, so the observed data byte did not sat
 that the candidate is implemented and accepted under these conditions. The radio restarted,
 displayed wipe activity, booted AAOS, and the owner confirmed its user data was wiped and it was
 in the default post-reset state. No calibration transfer was performed.
+
+**Direct CAN bench retest, 2026-11-17:** After restoring the full stock LTZ
+set, direct CAN with the captured bench harness accepted extended session and
+level1 SecurityAccess. One `31 01 02 47` request returned `7F 31 22`
+(conditions not correct), with no positive wipe acceptance. Radio F085 returned
+`62 F0 85 04`. This is a radio reading, not the BCM F085=02 Service Mode check
+used in the earlier successful procedure; the values must not be equated across
+ECUs. The request was not repeatedly retried and no calibration-clear routine
+was substituted. This demonstrates a rejected direct-CAN attempt in the current
+bench environment, not that CAN factory reset is unsupported or that a wipe
+completed. The service/power prerequisite was subsequently resolved below.
+
+**Direct CAN prerequisite resolved, 2026-11-17:** The pinned RH850 VIP
+APP85759599 (SHA256 `d729fa4b59095b03b05ee26e09e3eb31dda36678055f77be11f24416dd1ad239`)
+handler at file offset4E856 checks RAM FEBD3725 on initial dispatch: values1
+or2 pass; other values return NRC22 before forwarding RID0247 through4E2FC.
+Setter8D8D2 and selector9C590 trace the value to validated primary/backup
+power-mode inputs. RAM was read for observation only, never patched for reset.
+
+The working bench input is standard CAN20D, DLC6, **byte4 bits5–7** (zero-based):
+`new_byte4 = (original_byte4 & 0x1F) | (2 << 5)`. Preserve all other captured
+bytes and continue the full captured harness. On this profile byte4 changed82→42.
+VIP FEBD3725 changed4→2, backup status FEBD36FC remained3, and radio F085
+changed04→02. A preliminary byte5 bits2–4 probe did not change the gate and was
+restored; that field is not the demonstrated solution. Primary status FEBD3716
+was2 during the successful backup-input test. These are observed internal status
+values, not a general claim that any arbitrary frame is authenticated.
+
+With mode2 held, extended session1003 and level1 SecurityAccess succeeded.
+A single `31 01 02 47` then returned **`71 01 02 47`**. Live Android logs reported
+`restoreCustomizationDefaults success: true`; ADB disconnected, and the owner
+observed the factory reset occurring. This confirms direct-CAN reset initiation
+on the isolated bench, without MDI2, a BCM, T1 diagnostics, calibration clears or
+VIP RAM writes. Final post-reset setup/completion remains separately observable.
+The original20D payload was restored after reset initiation; RAM gate readback
+returned4 with backup status3. Subsequent calibration-status requests during
+the reset reported `TimeoutError: CAN radio response timeout`, so no fresh
+post-wipe calibration-status result is claimed. Later, before the screen-resolution
+trial, CAN responses returned: F182 retained the LTZ identities and all14 F0F0
+module statuses were00. This confirms diagnostic recovery and retained metadata,
+not a complete audit of wiped Android user data.
+
+Mounted Y175 cleanroom DelayedWKSApp.apk SHA256
+`5916ad9f7d40d2683e4dac49b7cc5086104dd27042c7fc32716fc3094288e241`
+contains RID0247Handler: restore vehicle settings, then call wipeUserData; zero
+option bytes. Static acceptance of internal mode1 was not separately live-tested.
+The proven bench recipe uses mode2 (the Service Mode value used historically).
 
 **Read-only follow-up during apparent wipe:** Two samples returned `F1A0=F0`,
 `F081=00 00 00 00 00 00`, `F0F1=00 00`, and `F0F2=00 00`. The earlier `F1A0` sample

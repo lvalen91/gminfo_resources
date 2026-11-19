@@ -1,10 +1,32 @@
-# GHS SOC_HOSTOS `85098662` — 100% edge-to-edge byte map
+# GHS File Map — SOC_HOSTOS `85098662`
 
-Module: `…/Y181B/USB_Files/85098662`, **14,929,956 B (0x0–0xE3D024)**, sha256 `317ae85c…`.
-Built from four independent FABLE cartographer agents (ranges A 0x0–0x3C0000, B–0x780000, C–0xB40000,
-D–EOF); each parsed the ELF itself and walked its range byte-by-byte. **Coverage: contiguous, 0 gaps,
-reaches EOF.** Every claim is traced to the file; purpose comes from the GHS symtab (kernel) or from
-section names + `.boottable`/`.secinfo` records + in-section content (servers carry no symbols).
+## Scope
+Byte-level address-space map of the GHS INTEGRITY `SOC_HOSTOS` monolith (file `85098662`,
+`…/Y181B/USB_Files/85098662`): container/ELF structure, the full offset→section→purpose table,
+the GHS USB-passthrough mechanism, and opaque-byte accounting. Pure reference — this doc does
+not restate boot-chain, EEPROM, VIP, seed/key, or calibration content owned elsewhere; other docs
+cite this one by file offset instead of repeating the table. Not covered here: boot
+phases/recovery/ELK (`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`), hypervisor task/IPC/attack-surface
+architecture (`GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`), ADB/gadget/role-switch logic on the
+Android side (`USB_ADB_SESSION_FINDINGS_2026-10-10.md`, which points its own §3/§8 GHS byte-map
+restatements back here).
+
+## Evidence legend
+`[C]` confirmed live, `[V]` verified (static re-derivation), `[FW]`/`[S]` static firmware,
+`[inferred]`, `[U]` unverified, `[X]` external. Unless noted otherwise, every entry below is
+`[V]` — re-derived byte-by-byte from the file itself by four independent cartographer passes
+(ranges A `0x0–0x3C0000`, B `–0x780000`, C `–0xB40000`, D `–EOF`), each of which parsed the ELF
+and walked its range directly; coverage is contiguous, 0 gaps, reaches EOF. The two explicitly
+`[U]` items (Android key, signature block) are flagged inline.
+
+## Related
+`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` (boot/recovery/ELK), `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`
+(hypervisor architecture, PCI/IPC/task maps, `.boottable` guest config, attack surface),
+`USB_ADB_SESSION_FINDINGS_2026-10-10.md` (Android-side USB/ADB logic that consumes the
+passthrough mechanism documented here), `../platform/vip_ipc_ghs.md`, `../platform/hardware_specs.md`.
+
+## Module identity
+`…/Y181B/USB_Files/85098662`, **14,929,956 B (0x0–0xE3D024)**, sha256 `317ae85c…`.
 
 ## Container & format (re-derived, not trusted)
 - `0x0–0x27C` (636 B): GM **ipk wrapper** — `BM`@0x0a, `1SHG`@0x24 with length field, 128-bit hex
@@ -22,8 +44,9 @@ section names + `.boottable`/`.secinfo` records + in-section content (servers ca
   2020.18.19, Core 23739.
 
 ## Edge-to-edge map (file offset → section → purpose)
-Segment/section granularity; interior alignment padding is all-zero and omitted for brevity (agents
-confirmed every gap is zero-fill or interior WAV/BMP/const data — no unaccounted bytes).
+Segment/section granularity; interior alignment padding is all-zero and omitted for brevity (all
+four cartographer passes confirmed every gap is zero-fill or interior WAV/BMP/const data — no
+unaccounted bytes).
 
 | file range | section (vaddr) | kind | purpose (traced) |
 |---|---|---|---|
@@ -67,9 +90,9 @@ confirmed every gap is zero-fill or interior WAV/BMP/const data — no unaccount
 | `0xE3ACE4–0xE3BF04` | **program-header table** | headers | 145 × 32 B (authoritative) |
 | `0xE3BF04–0xE3CC9C` | GHS ext 64-bit segment-address table | headers | 62 × 56 B full LOAD vaddrs |
 | `0xE3CC9C–0xE3CCB0` | — | string | ASCII `"current_android_key\n"` |
-| `0xE3CCB0–0xE3CDB0` | — | **key (opaque)** | 256 B — RSA-2048-modulus-sized Android key (exposed to Guest1 via `AndroidKeyVMR`). Content UNVERIFIED |
+| `0xE3CCB0–0xE3CDB0` | — | **key (opaque)** `[U]` | 256 B — RSA-2048-modulus-sized Android key (exposed to Guest1 via `AndroidKeyVMR`). Content UNVERIFIED |
 | `0xE3CDB0–0xE3CE20` | — | trailer + fill | `01 00 01 00`, tag `c6 db 19 50` (not a reproducible CRC), then 0xFF fill |
-| `0xE3CE20–0xE3D020` | — | **signature (opaque)** | 512 B — RSA-4096-sized signature block. Content UNVERIFIED |
+| `0xE3CE20–0xE3D020` | — | **signature (opaque)** `[U]` | 512 B — RSA-4096-sized signature block. Content UNVERIFIED |
 | `0xE3D020–0xE3D024` | — | trailer | `01 00 01 00` |
 
 ## USB — what GHS actually does (traced in `.vmm1`, links @0x200000/0x400000/0x600000)
@@ -93,7 +116,7 @@ the Android guest as a **mediated (para-virtual) passthrough**:
   GHS supplies the surface; the Android guest owns the role decision.
 - **Absent everywhere in GHS:** `dabridge`, `dabr_udc`, `bridgeport`, `usb_otg_switch`,
   `intel_xhci_usb_sw`, `role-switch`, `cbc-signals`, `dwc3`, `gadget` — all the role/gadget logic is
-  Android-side.
+  Android-side; see `USB_ADB_SESSION_FINDINGS_2026-10-10.md` for that side of the boundary.
 
 ## Opaque-byte accounting (the honest residue)
 Of 14,929,956 B, the **only** bytes whose content could not be read are **768 B**: the 256 B Android
@@ -110,3 +133,8 @@ guidelines, OTA, calibrations, GVT-g vGPU, display-I²C, 5× TEE, **vmm1** hyper
 30 overlay BMPs) + **guest ACPI/boottable** + header tables + a 768 B key/signature tail. Its USB role
 is mediated passthrough of the real Intel xHCI/xDCI to the Android guest, with the `OTGD` ACPI surface
 the guest uses for role-switch. No Android-side role/gadget logic lives here.
+
+## Open conflicts
+None. No corpus-wide or doc-local contradiction touching this file's byte map was flagged by the
+reader pass or by the plan's "Open conflicts" list (see `PLAN.md`) — none of the 8 cross-doc items
+there name GFM as a routing target.

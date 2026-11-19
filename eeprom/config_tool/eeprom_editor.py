@@ -81,6 +81,7 @@ SECURITY_FLAGS = [
      "conf": "CONFIRMED",
      "on": 0xFF, "off": 0x00, "on_label": "Bypass", "off_label": "Lock",
      "states": {0x00: ("LOCKED", "bad"), 0xFF: ("BYPASSED", "good")},
+     "static": "Known effect: 0x0441=0xFF → non-zero MEC → ADB does not require the GM client. Y175 read path: Dispatcher A 0xBA316 → CalGroup 0x3B → FUN_00091AEC.",
      "note": "0x00 = secured; 0xFF opens ADB. Aug26: the ADB path IS now confirmed -- VIP "
              "transmits MEC=0xFF via DID 0xF1A0 at boot -> SoC is_secure_mode bypass (boot-log "
              "+ guest RE, EEPROM_LAYOUT §0.10/§0.14). The SBI is ALSO broader than ADB -- "
@@ -106,12 +107,14 @@ SECURITY_FLAGS = [
              "empirical bypass-works observation is NOT in question -- only the "
              "mechanism/claim about how it relates to sbi1 is. See "
              "eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md §5."},
-    {"key": "debug", "base": 0x0B40, "name": "Debug / Developer Mode",
-     "conf": "PLAUSIBLE",
-     "on": 0x01, "off": 0x00, "on_label": "On", "off_label": "Off",
-     "states": {0x00: ("OFF", "neutral"), 0x01: ("ON", "good")},
-     "note": "Developer/debug mode flag. 0x01 = on, 0x00 = off. Not covered by the "
-             "Aug26 EEPROM-flag-scope analysis (not one of the 4 candidates checked)."},
+    {"key": "debug", "base": 0x0B40, "name": "0x0B41 calibration byte — debug meaning unproven",
+     "conf": "UNCONFIRMED",
+     "on": 0x01, "off": 0x00, "on_label": "0x01", "off_label": "0x00",
+     "states": {0x00: ("0x00", "neutral"), 0x01: ("0x01", "warn")},
+     "static": "Y175: Dispatcher A 0xBA48A → CalGroup 0xA3 → FUN_0009414A (also recovered in FUN_0008EAE4). Read/validate path; no debug consumer found.",
+     "note": "The cell is genuinely read by VIP_APP, but no recovered consumer names it as a "
+             "developer/debug control. Bench tests of 0x00, 0x01, and 0xFF reported no observed "
+             "effect. It must not be presented as Debug/Developer Mode or as an enable control."},
 ]
 
 # Best-effort ASCII string fields: [marker][ascii...][marker][0xFF pad]
@@ -239,8 +242,9 @@ FF = [0x00, 0x01, 0xFF]   # default option set
 FEATURE_FLAGS = [
     {"base": 0x0000, "name": "Boot/Init complete flag", "risk": "high", "options": FF,
      "note": "Header. Corrupting may make EEPROM look virgin."},
-    {"base": 0x0020, "name": "Secondary boot flag", "risk": "med", "options": FF,
-     "note": "Report: try 0xFF (unknown feature #1)."},
+    {"base": 0x0020, "name": "Byte 0x0021 — purpose unknown", "risk": "med", "options": FF,
+     "conf": "PLAUSIBLE", "static": "Y175: Dispatcher A 0xBA46C → CalGroup 0x01 → FUN_0008FEA8. Read/validate path; semantic consumer unknown.",
+     "note": "A real VIP_APP accessor cell, not a recovered boot-mode flag. No semantic action is proven."},
     {"base": 0x0B80, "name": "Feature enable #1", "risk": "med", "options": FF,
      "note": "Unknown feature; report suggests 0xFF."},
     {"base": 0x0BA0, "name": "Feature enable #2", "risk": "med", "options": FF,
@@ -265,14 +269,11 @@ FEATURE_FLAGS = [
              "The one apparent hit is a confirmed false positive (a struct-relative "
              "offset inside an unrelated UDS-style dispatcher). Testing this address "
              "is now low-expected-value; kept here for completeness, not as a lead."},
-    {"base": 0x04C0, "name": "CONFIRMED real, purpose UNKNOWN (Aug26)", "risk": "high", "options": FF,
+    {"base": 0x04C0, "name": "Byte 0x04C1 — real calibration cell; purpose unknown", "risk": "high", "options": FF,
      "conf": "PLAUSIBLE",
-     "note": "Aug26: genuinely real -- CalGroup 0x44, cells 0x4b8-0x4c5, handler "
-             "vip_app.bin FUN_ram_00091f82. Structurally identical to the primary SBI "
-             "block (same interleaved pack/unpack pattern) but administratively "
-             "separate (different CalGroup, different status byte). What it actually "
-             "gates is still unknown -- genuinely worth testing, more so than before "
-             "this correction, now that it's a confirmed real flag and not a guess."},
+     "static": "Y175: Dispatcher A 0xBA05E → CalGroup 0x44 → FUN_00092136. Read/validate path; semantic consumer unknown.",
+     "note": "It is a real, separately loaded calibration cell. The consumer and external action "
+             "are not recovered; it is not established as a security, debug, or feature enable flag."},
     {"base": 0x0A40, "name": "CLOSED — no code reference found (Aug26)", "risk": "low", "options": FF,
      "note": "Aug26: zero hits in either binary via the confirmed EEPROM-cell "
              "accessor or as a literal operand. Real neighboring CalGroups (0xa26, "
@@ -299,6 +300,28 @@ FEATURE_FLAGS = [
              "redundant field). Same observed values: stock=0x69, LTZ=0xC3, HighCountry=0xF0. "
              "Set both 0x0AA0 and 0x0AE5 to match a full trim dump when testing."},
 ]
+
+# Exact Y175 VIP_APP static-accessor result for editable single-byte candidates.
+# Absence here means only that the cell is not in the recovered generic-accessor
+# loader set; it is not proof that a raw/bulk or runtime-generated path cannot read it.
+STATIC_CELL_EVIDENCE = {
+    0x0001: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x0021: "Y175: Dispatcher A 0xBA46C → CalGroup 0x01 → FUN_0008FEA8. Read/validate path; semantic consumer unknown.",
+    0x04A1: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x04C1: "Y175: Dispatcher A 0xBA05E → CalGroup 0x44 → FUN_00092136. Read/validate path; semantic consumer unknown.",
+    0x0A41: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x0AA0: "Y175: no recovered generic-accessor loader for this cell; trim/theme meaning unproven.",
+    0x0AE5: "Y175: no recovered generic-accessor loader for this cell; trim/theme meaning unproven.",
+    0x0B41: "Y175: Dispatcher A 0xBA48A → CalGroup 0xA3 → FUN_0009414A. Read/validate path; no debug consumer found.",
+    0x0B81: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x0BA1: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x0BC1: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x0BE1: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x0C01: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x1501: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x15C1: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+    0x1A01: "Y175: no recovered generic-accessor loader for this cell; semantic action unknown.",
+}
 
 # UI flags block at 0xE80: [marker][b1 b2 ...]; individual data bytes.
 UI_FLAGS_BASE = 0x0E80
@@ -708,6 +731,7 @@ def build_state():
             "marker": marker, "value": val, "orig": o[base + 1],
             "modified": val != o[base + 1], "conf": f.get("conf", ""),
             "label": label, "css": css, "note": f["note"],
+            "static": f.get("static", ""),
             "interp": SBI_INTERP.get(val, "") if f["key"] in ("sbi1", "sbi2") else "",
             "reset_by": SBI_CAL_RESET,
             "options": [{"val": f["on"], "label": f["on_label"]},
@@ -765,6 +789,7 @@ def build_state():
                       # specific entry earned a higher tag (e.g. 0x04C0 = confirmed-real block).
                       "conf": f.get("conf", "UNCONFIRMED"),
                       "label": label, "css": css, "risk": f["risk"], "note": f["note"],
+                      "static": f.get("static", STATIC_CELL_EVIDENCE.get(base + 1, "")),
                       "options": [{"val": v, "label": "0x%02X" % v} for v in f["options"]]})
 
     # UI flags
@@ -1035,10 +1060,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif name == "adb_relock":
             EE.write_bytes(0x0441, [0x00])
             EE.write_bytes(0x0A81, [0x00])
-        elif name == "debug_on":
-            EE.write_bytes(0x0B41, [0x01])
-        elif name == "debug_off":
-            EE.write_bytes(0x0B41, [0x00])
         elif name == "set_vin":
             if body.get("learn"):
                 EE.write_bytes(VIN_DATA, [0xFF] * VIN_LEN)
@@ -1246,8 +1267,9 @@ function flagRows(items){
     const risk=f.risk?`<span class="risk-${f.risk}">●</span> `:'';
     const interp=f.interp?('<div class="interp">→ '+esc(f.interp)+'</div>'):'';
     const reset=f.reset_by?('<div class="resetby" title="'+esc(f.reset_by)+'">⟲ reverts on SPS programming (cal SW ID 7/13)</div>'):'';
+    const stat=f.static?('<div class="note mono">'+esc(f.static)+'</div>'):'';
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${risk}${esc(f.name)}${cpill(f.conf)}${f.note?('<div class="note">'+esc(f.note)+'</div>'):''}${interp}${reset}</td>
+    tr.innerHTML=`<td>${risk}${esc(f.name)}${cpill(f.conf)}${stat}${f.note?('<div class="note">'+esc(f.note)+'</div>'):''}${interp}${reset}</td>
       <td class="addr mono">${hx(f.addr,4)}</td>
       <td class="mono mut">${f.marker!=null?hx(f.marker):'—'}</td>
       <td><span class="pill ${f.css}">${esc(f.label)}</span>${f.modified?'<span class="modbadge">MOD</span>':''}</td>
@@ -1265,8 +1287,7 @@ function secPanel(){
   q.innerHTML=`<span class="mut small">Quick:</span>
     <button class="good" onclick="action('adb_bypass')">Apply ADB bypass</button>
     <button class="danger" onclick="action('adb_relock')">Re-lock</button>
-    <button onclick="action('debug_on')">Debug ON</button>
-    <button onclick="action('debug_off')">Debug OFF</button>`;
+    `;
   p.appendChild(q);
   p.appendChild(flagRows(S.security));
   return p;}

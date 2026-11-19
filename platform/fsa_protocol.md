@@ -2,14 +2,35 @@
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton), Android 12 guest under GHS INTEGRITY
-**Research Date:** June 2026 (Y181 `W231E-Y181.3.2-SIHM22B-499.3`)
-**Data source:** live ADB shell (uid=2000), `enumeration/Y181/jun2026/` capture, `DelayedWKSApp.apk` decompilation
+**Research Date:** June 2026 (Y181 `W231E-Y181.3.2-SIHM22B-499.3`), with Y175 live-bench
+follow-ups through 2026-11-17
+**Data source:** live ADB shell (uid=2000), `enumeration/Y181/jun2026/` capture,
+`DelayedWKSApp.apk` decompilation, Y175 bench port scans and Bus-2 T1 tap captures
+
+**Scope:** FSA/NFSA wire format, service catalog (port/serviceId/partition mapping), per-service
+function tables, recovered protobuf definitions, live query results, and FSA-protocol-layer
+security findings (parser bugs, auth model, injection surfaces). Vehicle-telemetry content that
+rides this transport (`DisplaysCoordination`) is in scope here because the transport framing,
+not the signal list, is this doc's subject.
+
+**Evidence legend:** `[C]` confirmed live (ADB/bench/tap); `[U]` update/correction superseding
+earlier text in this doc; `[P]` protocol/catalog finding reconciling static vs. live data;
+`[?]` unverified/open; `[F-*]` named security finding, cross-referenced to the offensive-audit
+ranking doc.
+
+**Related:** [`ethernet_networking.md`](ethernet_networking.md) (VLAN topology, listening ports, partition
+addresses, firewall posture) · [`ethernet_networking.md`](ethernet_networking.md) (consolidated
+port/VLAN/firewall reference) · [`projection/cluster_navigation.md`](../projection/cluster_navigation.md)
+(RemoteModuleHMI rendering pipeline, NFSA naming) · [`vip_ipc_ghs.md`](vip_ipc_ghs.md) (GHS VP
+crash semantics) · [`ota_programming_roles.md`](ota_programming_roles.md) (Global-B HMI-only
+demotion) · [`research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md)
+(severity ranking for the `[F-*]` findings below)
 
 > **Terminology.** GM's own code names this `com.gm.fsa.service` ("FSA"). The
 > jun2026 logcat shows `FSAServiceConnectedClient`, `FSANetCommsService9016`,
 > `FSAProperty`, `FSAServiceEventHandler` etc. and the literal log line
 > *"FSA: Read Header size 20"*. The expansion **Feature Service Architecture**
-> is used here. [`platform/networking.md`](networking.md) refers to the same
+> is used here. [`ethernet_networking.md`](ethernet_networking.md) refers to the same
 > layer as **NFSA (Network Function Service Architecture)** — they are the same
 > protocol; `com.gm.nfsa.*` is the cluster-side Java package name (see
 > [`projection/cluster_navigation.md`](../projection/cluster_navigation.md)).
@@ -17,9 +38,14 @@
 FSA is GM's proprietary service-oriented middleware running over TCP between
 hypervisor partitions on the vehicle backbone (VLAN 5, 192.168.1.0/24). Each
 message is a **20-byte big-endian binary header** followed by a **Protocol
-Buffers** payload. Service discovery uses SOME/IP-SD multicast
-(`239.192.0.1`, UDP **30490** — confirmed by the live Y181 network scan; the
-earlier `:3000` reading is superseded).
+Buffers** payload. Service discovery uses SOME/IP-SD multicast to
+`239.192.0.1`. The discovery **port** is contested between two evidence
+sources (live Y181 network scan: UDP **30490**; decompiled `FSACatalog.java`
+constant: UDP **3000**) and is not reconciled — see
+[Open Conflicts](#open-conflicts). (The original intro called the earlier
+`:3000` reading "superseded" by the live scan, while its own `[F-udp]` finding
+called the discrepancy unresolved; the "superseded" claim is therefore not
+carried forward as established.)
 
 ---
 
@@ -41,7 +67,10 @@ Offset  Size  Field
 
 All multi-byte integers are **big-endian**. The constant `0x5AA5` at offset 10
 is a frame sync/magic value written on send (matches the cluster wire
-format documented in `cluster_navigation.md`); **corrected 2026-11-12:** per the jadx-RE note under *Security Notes* below it is never checked on receive, so it is not a framing gate. The 20-byte header size is
+format documented in `cluster_navigation.md`). **It is never checked on
+receive — not a framing gate** (jadx RE, confirmed by the live anonymous-peer
+test under [Security Notes](#security-notes); History: corrected 2026-11-12,
+earlier text implied it was validated). The 20-byte header size is
 confirmed by the runtime log `FSA: Read Header size 20`.
 
 > **Reserved field (offset 12).** `0` in the CSM (Android) implementation, but
@@ -149,7 +178,12 @@ heartbeat status frames.
 | 9021 | FTPCONTROL | — | CSM (.100), dynamic; allowed from IPC; closed on bench |
 | 9022 | FTPDATA | — | CSM (.100), dynamic; allowed from IPC; closed on bench |
 | 9025 | MAPIMAGE | — | CSM (.100), dynamic; allowed from RSI1; closed on bench |
-| 30490 | SOME/IP-SD multicast | — | `239.192.0.1` group (UDP; live-scan-confirmed) |
+| 30490 | SOME/IP-SD multicast | — | `239.192.0.1` group (UDP; live-scan-confirmed; see [Open Conflicts](#open-conflicts)) |
+
+This table is the service→address mapping of record; it is kept here (not in
+`ethernet_networking.md`) because serviceId/port/partition is FSA-protocol
+data. For VLAN topology, switch config, and the general listening-port/firewall
+inventory, see [`ethernet_networking.md`](ethernet_networking.md).
 
 ### DeviceInformation instanceId → partition
 
@@ -175,6 +209,26 @@ serviceId 1001 runs on every partition; `instanceId` selects which one.
 See `projection/cluster_navigation.md` for the VCU/CIP (QNX) inter-VM FSA
 topology (`192.168.118.x` / `172.16.5.x`).
 
+### Live capture cross-check — IHU server/client roles (Y175, 2026-10-05)
+
+A live socket snapshot (`net_sockets.txt`) independently confirms the IHU's
+server/client split for the catalog above and adds timing/direction detail
+the static catalog doesn't carry:
+
+**IHU as server (LISTEN):** 192.168.1.100:9002, :9010, :9016 — matches the
+catalog.
+
+**IHU as client (connects out):** catalog says `.102:9005/9012/9018`
+(TCP/CGM_OTA partitions). The live snapshot instead shows uid 1000 (system)
+in **SYN_SENT to 192.168.1.112:9010 and 192.168.1.112:9018** (`.112` = CGM,
+not `.102`), plus an established `192.168.1.100:9016 <-> 192.168.1.100:58814`
+loopback-on-vlan5 pair. The `.102:9005/9012/9018` client targets were **not
+observed** in this capture — not refuted, UNVERIFIABLE-FROM-LIVE. This capture
+is from an out-of-vehicle bench (Radio + Display + GM USB receptacles, no
+vehicle bus/ECUs); `.112` (CGM) and `.102` (TCP) are external vehicle nodes not
+present on the bench, so the SYN_SENT to an absent `.112` peer is the IHU
+reaching for a partner that isn't there — expected, not a defect.
+
 ---
 
 ## Services in Detail
@@ -197,7 +251,7 @@ accepts only its vlan4 source IP (172.16.4.112).
 > cellular antenna connected, `172.16.4.1` (MAC identical to `192.168.1.102`,
 > confirming same physical module) now also answers on 9010
 > (`DeviceInformation`) and 9012 (`RemoteReflash`) — previously dead on bench,
-> see [`networking.md`](networking.md#vlan-4--vcs--eocm-network-172164x24).
+> see [`ethernet_networking.md`](ethernet_networking.md).
 > Same accept-then-close single-client behavior as the vlan5 face; a raw
 > `rmIdentification`/RemoteModuleHMI frame (wrong serviceId for this port) got
 > no response, as expected, since 9010/9012 use serviceId 1001/1025, not 1007.
@@ -237,49 +291,47 @@ cellular network authentication. NAM brokers the challenge/response between the
 telematics SIM (TCP/CGM side) and the network and manages which VLANs/ECUs get
 off-board connectivity.
 
-**Live results (bench, off-network):**
-- `provideNetworkList` (fn2602): 1 entry — `display="None"`, `networkType=0`
-  (`NAM_NONE`). Raw: `0a 0c 0a 08 08 00 12 04 4e 6f 6e 65 10 00`.
-- `networkStatus` (fn2604) subscribe `08 AC 14` → `{functionID:2604,
-  successful:true}`; no events in 10 s. **Varint:** 2604 = `0xAC 0x14` (not
-  `0xCC 0x14`).
-- `getControlledECUList` (fn2607, GET): empty — Android NAM controls no ECUs.
-- `networkRequest` (fn2601, CELLULAR/WIFI, APID="CSM"): no Response. The prior
-  payload has not been checked against the corrected required fields below;
-  missing fields are another explanation, so off-network state alone is not established.
+**Live results, bench off-network (initial pass):** `provideNetworkList`
+(fn2602) returned 1 entry — `display="None"`, `networkType=0` (`NAM_NONE`),
+raw `0a 0c 0a 08 08 00 12 04 4e 6f 6e 65 10 00`. `networkStatus` (fn2604)
+subscribe `08 AC 14` → `{functionID:2604, successful:true}`, no events in 10 s
+(varint 2604 = `0xAC 0x14`, not `0xCC 0x14`). `getControlledECUList` (fn2607,
+GET) returned empty — Android NAM controls no ECUs. The initial `networkRequest`
+(fn2601, CELLULAR/WIFI, APID="CSM") got no Response, but the payload used an
+not checked against the corrected required fields (see protobuf correction below);
+missing fields are another explanation, so off-network state alone is not established.
 
-**Live follow-up, 2026-11-15:** NAM9016, RemoteModuleHMI9002 and
-DeviceInformation9010 accepted instance1 heartbeat subscriptions and streamed
-heartbeats. NAM2602 with the corrected APID-string request returned one
-`None`/NAM_NONE entry;2607 returned an empty controlled-ECU list. HMI705
-returned an empty app-list status. These were on-radio socket exchanges over
-USB ADB, not proof of host-to-radio T1 reachability.
+**History (2026-11-15 follow-up, on-radio over USB ADB):** with the corrected
+request layout, NAM9016/RemoteModuleHMI9002/DeviceInformation9010 all accepted
+instance-1 heartbeat subscriptions and streamed heartbeats; NAM2602 with the
+corrected APID-string request again returned the single `None`/NAM_NONE entry,
+2607 again returned an empty controlled-ECU list, HMI705 returned an empty
+app-list status. Correctly formed NAM2601 Wi-Fi and cellular acquire/release
+pairs (temporary probe APID, synthetic network name) all four received
+function2601/op595 responses; NAM logs confirmed required fields present and
+dispatch to `WifiTrackerService`/`TcpTrackerService`; all returned network
+status 0/DOWN. No off-board link or NAT forwarding was demonstrated. Wi-Fi was
+enabled before and after the test; the Wi-Fi-release log line "Disabled WiFi"
+is unconditional text, not an actual state measurement. None of this is proof
+of host-to-radio T1 reachability — it is on-radio socket exchange over USB ADB.
 
-Correctly formed NAM2601 Wi-Fi and cellular acquire/release pairs used a
-temporary probe APID and an explicitly synthetic network name. All four
-received function2601/op595 responses. NAM logs confirmed required fields
-present and dispatch to WifiTrackerService/TcpTrackerService; all returned
-network status0/DOWN. No off-board link or NAT forwarding was demonstrated.
-Wi-Fi was enabled before and after the test. The Wi-Fi release log says
-"Disabled WiFi" unconditionally; it is not an actual state measurement.
-
-**Transport correction:** use bidirectional `adb shell -T` when piping FSA
-request bytes into on-radio `nc`; `adb exec-out` did not deliver request
-stdin in this test harness. Those initial no-reply trials are invalid service
-negatives. Localhost ADB forwards also closed without replies because the
-FSA listeners bind the radio VLAN address. Direct host T1 attempts returned
-`[Errno 65] No route to host`; external peer emulation for9012/9005/9018
-remains unperformed, not exhausted. Temporary clients used bounded timeouts;
-no existing FSA service was stopped or replaced.
+**Transport note:** use bidirectional `adb shell -T` when piping FSA request
+bytes into on-radio `nc`; `adb exec-out` did not deliver request stdin in this
+harness, so the initial no-reply trials above are invalid service negatives,
+not confirmed negatives. Localhost ADB forwards also closed without replies
+because the FSA listeners bind the radio's VLAN address, not loopback. Direct
+host-to-T1 attempts returned `[Errno 65] No route to host`; external peer
+emulation for 9012/9005/9018 remains unperformed, not exhausted. Temporary
+clients used bounded timeouts; no existing FSA service was stopped or replaced.
 
 **Static control consequences (current Y175; live request dispatch above):**
-WifiTrackerService gates enabling Wi-Fi through
+`WifiTrackerService` gates enabling Wi-Fi through
 `GMWlanServiceManager.canWifiEnabled()`, checks the requested SSID before
 proxy setup, and can release an app or disable Wi-Fi when the last app leaves
 in state 3. Proxy enable calls `setIpForwardingEnabled(true)`,
 `startInterfaceForwarding(networkInterfaceName,WIFI_INTERFACE)` and
 `enableNat`; disable reverses NAT/interface forwarding without an explicit
-global-forwarding reset in the inspected code. TcpTrackerService resolves the
+global-forwarding reset in the inspected code. `TcpTrackerService` resolves the
 source IP and changes controlled-ECU allowed state; a firewall effect has not
 been proven. These are network-policy controls, not a shell/debug API.
 
@@ -293,6 +345,8 @@ been proven. These are network-policy controls, not a shell/debug API.
 
 These roles come from the current matched APK noted in the schema section,
 not the cached older APK. No live FSA calls accompanied this static follow-up.
+See [`ota_programming_roles.md`](ota_programming_roles.md) for who actually
+flashes what (ProgrammingMaster/CGM/VIP roles, DPS module inventory).
 
 ### RemoteModuleHMI (serviceId 1007, CSM port 9002) — Cluster HMI bridge
 
@@ -346,7 +400,9 @@ the navigation-glyph / maneuver-enum rendering pipeline that rides this service.
 
 Hosted by Visteon IPC (192.168.1.106:9020). Not connected on bench (SYN timeout,
 no RST — likely a switch ACL or no response to unknown clients; distinct from
-"connection refused"). When the vehicle is on it exposes:
+"connection refused"). This is a documented FSA attack surface (see
+[Security Notes](#security-notes)) that has **not** been live-fired: the host
+is unreachable off-vehicle on this bench. When the vehicle is on it exposes:
 
 - **READ (FSAProperty):** `getEngineOilLife`, `getTirePressure`,
   `getAirFilterLife`, `getBrakePadLife`, `getFuelEconomyKm_L`,
@@ -373,12 +429,13 @@ Not connected on bench (needs active cellular modem).
 
 ## Recovered Protobuf Definitions
 
-From the FSA-annotated message classes in `DelayedWKSApp.apk`.
-
-**Current Y175 schema correction, 2026-11-15:** fresh DelayedWKSApp SHA-256
-`5916ad9f7d40d2683e4dac49b7cc5086104dd27042c7fc32716fc3094288e241`
-confirms these tags in both Protos and the active legacy Nano serializer;
-this is not attribution from the older cached `8a4fd60d…78cfb9` APK.
+From the FSA-annotated message classes in `DelayedWKSApp.apk`. **History:**
+2026-11-15, re-pulled against the current Y175 `DelayedWKSApp` build (SHA-256
+`5916ad9f7d40d2683e4dac49b7cc5086104dd27042c7fc32716fc3094288e241`) — confirmed
+in both the Protos and the active legacy Nano serializer; the tables below are
+from that build, not the older cached `8a4fd60d…78cfb9` APK the fields were
+originally pulled from. The `NetworkRequest_request_response` layout changed
+as a result (see below); all other message shapes were unaffected.
 
 **`NetworkRequest_request_response`:**
 
@@ -392,9 +449,9 @@ this is not attribution from the older cached `8a4fd60d…78cfb9` APK.
 | 6 | networkCost, integer |
 | 7 | sourcePort, uint32 |
 
-Active NAMFsaMessenger requires the presence of fields 2/3/4/5 before calling
-the network tracker. The earlier four-field networkType/APID/priority/handle
-layout was incorrect.
+Active `NAMFsaMessenger` requires fields 2/3/4/5 present before calling the
+network tracker. (The earlier four-field networkType/APID/priority/handle
+layout, used in the first NAM test pass above, was incorrect.)
 
 **`ProvideNetworkList_request_response` / `_response`:** request field 1 is
 APIDString, **not a network-type filter**. Response field 1 networkList
@@ -433,84 +490,68 @@ uint32); response 1 functionID (uint32 echoed), 2 successful (bool).
 
 ### IPC ECUResetInfo (fn4, instanceId=6) — GHS Virtual Processor crash
 
-Raw response payload (63 bytes):
-```
-0a 3b 12 13 31 39 37 30 2d 30 31 2d 30 31 20 30 30 3a 30 33 3a 31 39
-1a 24 56 50 20 46 61 69 6c 75 72 65 20 49 44 3a 20 30 30 37 2c 20 45
-72 72 6f 72 20 49 44 3a 20 30 78 30 43 30 33 10 01
-```
-
-Decoded `ReadECUResetInfo_status`: field 1 `eCUResetInfo` { 2 timestamp
-`"1970-01-01 00:03:19"` (epoch+199 s, clock unset at crash); 3 reason
-**`"VP Failure ID: 007, Error ID: 0x0C03"`** }; field 2 = `1`.
-
-**Interpretation:** "VP" = **Virtual Processor** in the GHS INTEGRITY
-hypervisor. The Visteon IPC logs GHS partition (VP) crashes — VP 007 failed with
-`0x0C03`. This confirms the IPC partition has **visibility into hypervisor VP
-failure events**. Open: correlate VP 007 with a partition name
-(`/dev/hvc*`, `/vendor/etc/init/*.rc`); decode `0x0C03` (likely an INTEGRITY
-kernel error code). See [`research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
+An FSA query (`ReadECUResetInfo_status`, field 1 `eCUResetInfo` { timestamp,
+reason }) returned a decoded GHS INTEGRITY hypervisor **Virtual Processor
+crash record**: `"VP Failure ID: 007, Error ID: 0x0C03"`, timestamp
+`1970-01-01 00:03:19` (epoch+199 s, clock unset at crash). This confirms the
+IPC partition has visibility into hypervisor VP failure events. The raw bytes,
+full decode, VP-to-partition-name correlation, and `0x0C03` error-code
+analysis are owned by [`vip_ipc_ghs.md`](vip_ipc_ghs.md) — this FSA-layer
+summary exists only to record *how* the data was obtained (query over FSA,
+not a VIP-side log pull).
 
 ---
 
 ## Security Notes
 
-- The FSA wire layer has **no authentication** — constant magic `0x5AA5` + length
-  field only; peer identity is inferred from source IP and enforced (where at all)
+- The FSA wire layer has **no authentication** — constant magic `0x5AA5` (see
+  Wire Format; written on send, never checked on receive) plus a length field
+  only. Peer identity is inferred from source IP and enforced (where at all)
   by `iptables` (INPUT policy DROP) and the single-client limit, not by the
-  protocol. Any client able to reach a CSM FSA port and not blocked by the
-  firewall can speak it. See `projection/cluster_navigation.md` for the
-  (unverified) cluster-injection topology analysis and
+  protocol. See `projection/cluster_navigation.md` for the (unverified)
+  cluster-injection topology analysis and
   `research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt` for the broader posture.
 - The Android guest's FSA servers (9002/9010/9016) accept unauthenticated
   Subscribe/Get/RequestResponse from the unprivileged shell (confirmed above).
-- **[C] No authentication at the FSA protocol/app layer, confirmed by jadx RE + live
-  validation (2026-09).** The accept loop caps clients at 6 and dedups by source IP;
-  the only gates ever checked **inside the FSA code itself** are equality of
-  `serviceId`/`instanceId` against constants that are public in every FSA client APK.
-  There is no TLS, no crypto, and no allow-list *in the protocol*. Magic `0x5AA5`
-  (offset 10) is **written on send but never checked on receive** — it is not a
-  framing gate. **Live-proven:** an anonymous vlan5 TCP peer sent one 22-byte fkt120
-  SUBSCRIBE frame (`opType=674`) and the real cluster service subscribed it to
-  StateOfHealth and streamed live HEARTBEAT data; a follow-up GET (`opType=421`)
-  returned a live property value. Tools: `~/gm_emu/ae/{fsaprobe,fsalisten4}`
-  (raw-syscall `connect`/`accept4` to bypass the netd fwmark handshake, required
-  because the emulator has no default data NIC). Full writeup:
+- **[C] No authentication at the FSA protocol/app layer — jadx RE + live
+  validation (2026-09).** The accept loop caps clients at 6 and dedups by
+  source IP; the only gates ever checked **inside the FSA code itself** are
+  equality of `serviceId`/`instanceId` against constants that are public in
+  every FSA client APK. There is no TLS, no crypto, and no allow-list *in the
+  protocol*. **Live-proven on the `gm_emu` emulator:** an anonymous vlan5 TCP
+  peer sent one 22-byte fkt120 SUBSCRIBE frame (`opType=674`) and the real
+  cluster service subscribed it to StateOfHealth and streamed live HEARTBEAT
+  data; a follow-up GET (`opType=421`) returned a live property value. Tools:
+  `~/gm_emu/ae/{fsaprobe,fsalisten4}` (raw-syscall `connect`/`accept4` to
+  bypass the netd fwmark handshake, required because the emulator has no
+  default data NIC). Full writeup:
   [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md).
-  **[Corrected 2026-11-11 per Y175_2026-11-02 external Bus 2 tap bench finding:**
-  this "anonymous peer, no allow-list" result was captured **on the `gm_emu`
-  emulator** (`~/gm_emu/ae/...`, no default data NIC, "no real bus and no real
-  peers" per `research/AE_RESEARCH_HANDOFF.md:184`), which runs the real FSA/Android
-  binaries but does **not** reproduce the physical radio's kernel-level `iptables`
-  firewall. The live Y175 bench tap (full 1–65535 scan from the external wire,
-  2026-11-02) found 9002 and 9016 on the real radio **are** gated by a source-IP
-  allowlist (`{.106,.109,.112}` and `{.102,.112}` respectively) — any non-allowlisted
-  source gets no reply at the TCP level, before an FSA frame is ever parsed. The two
-  findings do not contradict: the FSA **protocol itself** has zero app-layer
-  authentication (true on both the emulator and the real radio — confirmed by this
-  file's own frame-format analysis), but the **physical radio** additionally fronts
-  the exposed FSA ports with a network-layer (netfilter) source-IP gate that the
-  emulator does not model. "Any client able to reach a CSM FSA port... can speak it"
-  (above) is accurate as a statement about the protocol, but is no longer accurate as
-  a statement about real-radio *network* reachability for 9002/9016 specifically —
-  reaching those two ports from the external wire now requires an allowlisted source
-  IP. Whether other FSA-hosting ports/instances (vlan4, other partitions) carry the
-  same gate is unverified; see `research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt`
-  and `T1_RADIO_NETWORK_STRUCTURE.txt` (external bench corpus, not in this repo; full path recorded in `research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md:382`) for the full allowlist table.]
+
+  **History (corrected 2026-11-11, per the Y175_2026-11-02 external Bus 2 tap
+  bench finding):** the emulator result above was captured on `gm_emu`, which
+  runs the real FSA/Android binaries but has no default data NIC ("no real bus
+  and no real peers", `research/AE_RESEARCH_HANDOFF.md:184`) and so does not
+  reproduce the physical radio's kernel-level `iptables` firewall. A live Y175
+  bench tap (full 1–65535 scan from the external wire, 2026-11-02) found 9002
+  and 9016 on the **real radio** are gated by a source-IP allowlist
+  (`{.106,.109,.112}` and `{.102,.112}` respectively) — a non-allowlisted
+  source gets no TCP reply at all, before any FSA frame is parsed. The two
+  results do not contradict: the FSA **protocol itself** has zero app-layer
+  authentication, true on both emulator and real radio (this file's own
+  frame-format analysis confirms it independent of either test); but the
+  **physical radio** additionally fronts the exposed FSA ports with a
+  network-layer (netfilter) source-IP gate that the emulator does not model.
+  Net effect: "any client that can reach a CSM FSA port can speak it" remains
+  true as a protocol statement, but is no longer true as a *real-radio network
+  reachability* statement for 9002/9016 specifically — reaching those two ports
+  from the external wire now requires an allowlisted source IP. Whether other
+  FSA-hosting ports/instances (vlan4, other partitions) carry the same gate is
+  unverified; see `research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt` and
+  `T1_RADIO_NETWORK_STRUCTURE.txt` (external bench corpus, not in this repo;
+  path recorded in `research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md:382`)
+  for the full allowlist table.
 
 ### [F-inject] Cluster-injection surface
-
-> **[C] CORRECTED (2026-09) — opType was misattributed to EVENT/1032.** Prior
-> revisions of this doc (and of `vehicle_network.md`, `emulator.md`,
-> `research/AE_RESEARCH_HANDOFF.md`) stated this surface fires via
-> `EVENT`/`opType=1032`. That is wrong. Deobfuscated FSA service library
-> RE (`com/gm/fsa/service/`, cross-checked against ClusterService's router
-> `f/d.java`, `f/h.java`, `h/b.java`) shows `opType 1032` (Event) in the
-> router only ever drives `OfferService`/discovery multicast logic — it never
-> reaches `ClusterViewManager`. The cluster methods dispatch via the **method
-> handler** on `REQUEST` (`opType=641`) and `REQUESTRESPONSE` (`opType=674`),
-> matching this doc's own live-verified shell session above (`rmIdentification`/
-> `clientFocus` both used `opType=0x02a2=674`).
 
 `REQUEST`/`REQUESTRESPONSE` (`opType=641`/`674`) for `fktId >= 700` dispatch
 straight into `ClusterViewManager` via the method handler, with no additional
@@ -518,8 +559,21 @@ gate beyond the service/instance check above: `712` `CLIENTFOCUS` (moves
 cluster focus), `700`/`714` asset state, `707`/`708`/`710`/`711`/`713`/`715`
 widget data, `720`/`721` activity indicator. Any anonymous peer that can reach
 `9002` can drive the instrument cluster, pending each individual method's
-protobuf field validation (not yet examined per-method). Ranked severity and
-Phase-2 plan: [`research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
+protobuf field validation (not yet examined per-method).
+
+**History (corrected 2026-09):** prior revisions of this doc (and of
+`vehicle_network.md`, `emulator.md`, `research/AE_RESEARCH_HANDOFF.md`) stated
+this surface fires via `EVENT`/`opType=1032`. That was wrong. Deobfuscated FSA
+service library RE (`com/gm/fsa/service/`, cross-checked against
+ClusterService's router `f/d.java`, `f/h.java`, `h/b.java`) shows `opType 1032`
+(Event) in the router only ever drives `OfferService`/discovery multicast
+logic — it never reaches `ClusterViewManager`. The cluster methods dispatch via
+the method handler on `REQUEST`/`REQUESTRESPONSE` only, matching this doc's own
+live-verified shell session above (`rmIdentification`/`clientFocus` both used
+`opType=0x02a2=674`).
+
+Ranked severity and Phase-2 plan:
+[`research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
 
 ### [F-udp] UDP/multicast discovery-listener crash (AIOOBE) — HIGH, unauthenticated
 
@@ -528,9 +582,9 @@ Phase-2 plan: [`research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../re
 constructor (`FSAMessage.java:55-77`) — compiled into every FSA-hosting app
 (9002/9010/9016/etc, shared library). The UDP receive buffer is a **fixed 256
 bytes** (`NetCommsService.java:214`), reused every iteration, joined on
-multicast group `239.192.0.1:3000` per `FSACatalog.java:97,115` (this doc's
-live network scan sees `:30490` on the real radio — port discrepancy flagged,
-not yet resolved; confirm empirically before a live PoC). `FSAMessage` reads
+multicast group `239.192.0.1` at the port given by the `FSACatalog.java:97,115`
+constant (**3000** in the decompiled source — see [Open Conflicts](#open-conflicts)
+for the discrepancy against the live-scanned 30490). `FSAMessage` reads
 `payloadLength` from header bytes 16-19 (attacker-controlled int32), then does
 `new byte[payloadLength]; System.arraycopy(data, 20, bArr, 0, payloadLength)` —
 `data` is always the 256-byte UDP buffer regardless of actual datagram size.
@@ -550,7 +604,8 @@ accept loop). Blast radius: every FSA-hosting process on the vlan5 segment
 joins the same multicast group — one spoofed packet kills discovery in all of
 them simultaneously. PoC shape (Phase 2, needs a UDP sender —
 `fsaprobe`/`fsalisten4` are TCP-only): 20-byte datagram to `239.192.0.1:3000`
-(or `:30490`, verify), bytes 16-19 = large `payloadLength` (e.g. `0x00001000`).
+(or `:30490`, verify empirically which the real radio binds before building
+the PoC), bytes 16-19 = large `payloadLength` (e.g. `0x00001000`).
 
 ### [F-udp-inject] UDP/multicast connectionless FSA injection bypasses all gates — HIGH
 
@@ -601,14 +656,37 @@ earlier "why doesn't the live scan show a 9011 server?" contradiction between
 the static catalog and the live-scan port list: Global-B demoted infotainment
 from Programming Master to HMI-only (see
 [`ota_programming_roles.md`](ota_programming_roles.md)), and the catalog
-simply was never pruned of the dead entry.
+simply was never pruned of the dead entry. Independently corroborated (not
+re-derived) by [`ota_update_stack.md`](ota_update_stack.md) and
+[`ota_programming_roles.md`](ota_programming_roles.md), which both cite this
+section as the source finding.
+
+---
+
+## Open Conflicts
+
+- **SOME/IP-SD discovery port: 30490 vs 3000.** The intro and Service Catalog
+  state UDP **30490** (live Y181 network scan, confirmed empirically on the
+  real radio). The `[F-udp]` finding's code citation (`FSACatalog.java:97,115`,
+  decompiled) hard-codes UDP **3000**. No dated correction reconciles these —
+  it is unresolved which value the live radio actually binds for discovery
+  vs. what the inspected code constant says, or whether the constant is
+  overridden by config/build variant. Confirm empirically (packet capture on
+  both ports) before building any UDP PoC against the discovery listener.
 
 ## Cross-References
 
-- [`platform/networking.md`](networking.md) — VLAN topology, listening ports,
+- [`ethernet_networking.md`](ethernet_networking.md) — VLAN topology, listening ports,
   partition addresses, firewall posture
+- [`ethernet_networking.md`](ethernet_networking.md) — consolidated VLAN/port/
+  firewall reference (service→address mapping stays in this doc; general
+  network topology lives there)
 - [`projection/cluster_navigation.md`](../projection/cluster_navigation.md) —
   RemoteModuleHMI cluster nav pipeline, maneuver enum, CT5/QNX inter-VM FSA
+- [`vip_ipc_ghs.md`](vip_ipc_ghs.md) — GHS INTEGRITY hypervisor, VP crash
+  decode/semantics (raw bytes and full analysis live there, not here)
+- [`ota_programming_roles.md`](ota_programming_roles.md) — who actually
+  flashes what; Global-B HMI-only demotion behind the dead ProgrammingMaster
 - [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md)
   — the separate (non-FSA) UDS-over-TCP diagnostic channel on port 49156
 - Source data: `enumeration/Y181/jun2026/raw/{logcat,open_ports,binder_services}.txt`

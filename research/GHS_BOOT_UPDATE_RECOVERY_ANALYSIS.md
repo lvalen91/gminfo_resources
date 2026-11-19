@@ -1,12 +1,16 @@
 # GHS INTEGRITY Boot, Update, and Recovery Analysis
 
 **Initial analysis:** 2026-01-05
-**Consolidated findings updated:** 2026-11-15
+**Consolidated findings updated:** 2026-11-17
 **Binary Analyzed:** SOC_HOSTOS (85098662)
 **OS Version:** INTEGRITY IoT 2020.18.19
 **Platform:** Intel Apollo Lake (Broxton) / GM-i35
 
 > Consolidated findings and source conventions: §0. Distinct inventory owners are linked there.
+> This document absorbed `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md`'s tool-setup/status
+> narrative as §0.4 (history); that session's confirmed AVB-guard RE findings
+> (`elk_inner.elf`) live in [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md),
+> not here.
 
 ---
 
@@ -17,13 +21,22 @@
 This document owns the consolidated Y181B GHS/recovery investigation: primary
 binary provenance, security-candidate limits, guest/dealer/fastbootd/ELK
 boundaries, MEC and ADB privilege distinctions, recovery arguments, encoded USB
-markers, log capture and dealer-wipe behavior. Update the owning section here;
+markers, log capture and dealer-wipe behavior. It also owns the live-tested
+ELK-trigger fact (the CAN routine-ID F000/selector-8180 RAM-assisted request —
+candidate frame `31 01 F0 00 81 80 03`, callback chain `57BC8`→`4E08A`→`5C0C0`→
+`757D4`→`75794`→`7F642`, confirmed live 2026-11-17 producing UART
+`Elk Reboot Response 0` and a controlled reset into Kernelflinger — see the VIP
+ELK control selector mega-section under §2.3.3) that
+HARDWARE_HYPERVISOR_ATTACK_VECTORS.md, GORDON_PEAK_CELADON_INTELLIGENCE.md,
+VIP_CONTROL_ANALYSIS.txt and INVENTORY.md also state; those documents keep
+pointers here rather than independent copies. Update the owning section here;
 other documents link here instead of carrying independent copies.
 
 | Topic | Owning section |
 |---|---|
 | Binary fingerprints, extraction boundaries, debugger and CVE evidence | §0.1 |
 | Y181B recovery USB export provenance, member fingerprints and time limits | §0.2 |
+| `.vmm1`/`.ota_update` RE tooling history (Aug 2026 session) | §0.4 |
 | Failed boots, modes, ELK IPC/HECI/ACPI transition and privilege gates | §2.2.1–§2.3.6 |
 | MEC certificate gate, target readings, root and registration limits | §2.3.7 |
 | Recovery argument parser and dealer-wipe package | §4.2–§4.2.1 |
@@ -46,6 +59,9 @@ No complete live ELK transition, guest escape or accepted custom wipe package
 is established by this static evidence.
 
 ### 0.1 Y181B binary provenance and security evidence (2026-11-12)
+
+Y181 and Y177's `85098662` module are byte-identical (`md5` match) — a direct
+measurement, not just a citation of the same claim elsewhere.
 
 Original Y181B module `85098662` is 14,929,956 bytes, SHA-256
 `317ae85ccf759476755411e66593dde9f879a43732cd342b4e101e4026535ed3`.
@@ -221,6 +237,68 @@ not three independently established boots. The fixed rotation window drops
 older numbered installer histories; retain the first archive for those
 member-specific citations. Unchanged properties, E820 ranges and calibration
 data do not add independent confirmations from normal Android operation.
+
+### 0.4 `.vmm1`/`.ota_update` RE tooling history (Aug 2026 session)
+
+**History, absorbed from the retired `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md`
+(that document is retired with a pointer to this subsection).** This records the
+tool-setup/status narrative of the session that first obtained real disassembly
+of this binary; its confirmed AVB-guard-verification findings (the `elk_inner.elf`
+RE that matched `avb_descriptor_validate_and_byteswap`, `avb_safe_add_to` and
+`avb_vbmeta_image_verify` against upstream libavb) are owned by
+[VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md) and are not
+restated here.
+
+**Starting blocker:** the raw `85098662` container is a proprietary Green Hills
+INTEGRITY download image, not a format any standard tool (`file`, `r2`, `objdump`)
+auto-parses. A manually reverse-engineered end-of-file directory/symbol table
+(~48 KiB region near `0xe35000`) is a 64-bit canonical-VA + 32-bit size + name-string
+debug symbol table, cross-validated against known sections in
+`research/decompiled/ghs_analysis.txt`; it has no file-offset field, so it does not
+by itself enable section-byte extraction.
+
+**Prior-analyst artifact recovered:** an existing, working Ghidra project
+(`ghidra_projects/ghs32.rep`, program `ghs_integrity.elf`, language
+`x86:LE:32:default`) was found in the external research archive. A documented
+`firmware_carved/ghs_integrity.elf` (standard-ELF conversion) no longer exists on
+disk — the same provenance-drift pattern seen elsewhere in this corpus (documented,
+not persisted).
+
+**Tooling stood up this session:** Ghidra 12.1.3 + PyGhidra (`brew install ghidra`,
+`pip3 install` the bundled PyGhidra wheel) were installed and used to open the
+existing `ghs32` project headlessly
+(`GHIDRA_INSTALL_DIR=/opt/homebrew/Cellar/ghidra/<ver>/libexec`,
+`nested_project_location=False`). This cleanly extracted real section bytes for
+`.vmm1.text` (244,706 B), `.vmm1.rodata` (170,832 B), `.ota_update.text` (71,451 B)
+and `.ota_update.rodata` (6,588 B) — sizes match `ghs_analysis.txt` exactly.
+
+**Blocker diagnosed, not initially resolved:** the corpus's pre-written
+`research/scripts/avb_audit.py`, run against the real loaded program via PyGhidra,
+produced zero results. `.vmm1.text`'s 140 identified function boundaries were
+mostly undefined/never disassembled, and reference counts to known AVB string
+addresses were zero — confirming `INVENTORY.md`'s own prior note that the decompiled
+`vmm1_all.c` is "UNUSABLE due to Green Hills toolchain — no string refs."
+
+**Bitness dispute surfaced here:** while diagnosing the above, `radare2`
+disassembly of `.vmm1.text` at Ghidra-identified function entries decoded cleanly
+and idiomatically **only under a 64-bit interpretation** (`push rbp; mov rbp,rsp`,
+`fs:`-segment TLS access), even though the binary's ELF header is byte-verified
+EM_386/ELFCLASS32. This is the corpus-wide **VMM1/.vmm1 task-code bitness** open
+conflict (32-bit ELF class vs. disassembled-64-bit task code); it is carried in
+[VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)'s own Open
+Conflicts, not resolved here or there — see this document's own
+[Open conflicts](#open-conflicts) section below for the pointer.
+
+**Resulting pivot (history only; see VPF for the finding itself):** after an
+exhaustive string/table/xref search found no AVB guard-string references anywhere
+in `.vmm1`/`.ota_update`, the investigation traced the full guard-string set and the
+literal source path `hardware/intel/kernelflinger/avb/libavb/avb_vbmeta_image.c` into
+a *separate* binary, `elk_inner.elf` (the ELK/kernelflinger component, also covered
+live in §2.3.3 and the VIP-ELK mega-section below). That binary was reconstructed
+from its `objdump` listing, re-imported into Ghidra, and fully decompiled there,
+leading to VPF's confirmed guard matches. This pivot answers *which binary* carries
+the real AVB guards; it does not settle the bitness dispute above, which concerns a
+different binary/question and remains open.
 
 ## 1. GHS Boot Process
 
@@ -1172,6 +1250,36 @@ The ELK container at file offset `0x501040` and embedded ELF at `0x50126C`
 match the staged package byte for byte; IBBL and IBB also match. This
 establishes a live mapped ELK copy, without reading it through eMMC. It does
 not establish a complete physical SPI backup or blank-eMMC boot behavior.
+**Physical-flash boundary corrected 2026-11-18:** the device is an 8 MiB SPI
+part whose final 1 MiB is under protected space. Thus an 8 MiB CPU-mapped
+window must not be described as a complete physical-SPI acquisition unless
+the protected-region contents and its mapping/access semantics are separately
+demonstrated. The readback above proves the mapped address window and the
+reported ELK/IBB bytes, not coverage of protected physical flash. The final
+1 MiB of this mapped artifact is all `0xFF`; that is consistent with
+protected-read masking but cannot distinguish masking from genuinely erased
+physical flash.
+
+**Protected-tail dependency boundary, 2026-11-18:** no direct dependency on
+physical `0xFFF00000`--`0xFFFFFFFF` has been demonstrated in the recovered
+executable path. A literal-operand scan of decoded IBB stage 1 (loaded at
+`0xE0000`) found no operand in that physical interval. The visible policy
+chain instead uses IBBL SRAM/low-RAM handoff data (`0xC0200`) and a relocated
+FIT view at `0xFEFFFFC0`; neither address is the physical final SPI MiB.
+Likewise, the traced CSE RBE/BUP policy path uses its hardware window or a
+readable stored `$UEP` record, not a demonstrated final-tail read.
+
+The unknown tail can still contain an **earlier root of execution**. Apollo
+Lake reference build logic places reset/FIT/flash-map anchors at the top of
+the 4 GiB firmware address space (for example `0xFFFFFFF0`, `0xFFFFFFC0`,
+and `0xFFFFFFF8`) and FIT records can describe the ACM, key manifest, boot
+policy manifest, microcode, and initial boot block. That reference layout is
+not proof of this unit's masked bytes. Because this unit's corresponding
+mapped range is all `0xFF`, neither the reset vector nor physical FIT contents
+can be parsed or attributed without a physical read or an authoritative flash
+layout. Therefore the supported conclusion is: downstream IBB/IBBL/GHS/ELK
+selection does not currently call the tail directly; the pre-IBBL cold-reset
+root remains unknown.
 See [the readback map](../hardware/teardown.md#live-firmware-window-readback--2026-11-17).
 The module was unloaded; no flash write or erase was performed.
 No hardware strap or blank-eMMC recovery path has been validated on this
@@ -1396,9 +1504,10 @@ unverified. No erase, flash or unlock was sent in this transport-isolation test.
 
 ### Early-firmware eMMC authentication gate — 2026-11-17
 
-Analysis of the complete 8 MiB mapped readback identified an authentication
+Analysis of the 8 MiB mapped-address readback identified an authentication
 barrier **before ELK's downloaded-image policy**. This is not a certification
-that every byte or security-engine module has been reverse engineered.
+that every byte or security-engine module has been reverse engineered, nor
+evidence that the physical SPI's protected final 1 MiB was acquired.
 The live readback's IBB container is identical to its staged counterpart.
 Its first compressed stage starts at container offset `0xEC`: a four-byte
 output-size field (`0x1D440`), raw LZ4 data at `0xF0` through `0x15930`,
@@ -1445,12 +1554,414 @@ origin remain outside a completed end-to-end audit. Do not infer that
 arbitrary unsigned eMMC replacements will boot, and do not erase the original
 boot path based on ELK RAM-boot success.
 
+#### IBB-stage1 reconstruction and handoff revalidation — 2026-11-18
+
+The mapped IFWI's stage-1 LZ4 record has now been round-tripped at its actual
+file location. The little-endian decoded-size field at `0x29052C` is
+`0x1D440`; the raw LZ4 stream is `0x15841` bytes at `0x290530` through
+`0x2A5D70` inclusive. Replacing precisely that range in a copy of the mapped
+8 MiB image with the extracted original stream produced a byte-for-byte equal
+IFWI (both SHA-256
+`9eaeaf92fa6e747d6887af0e4fc00d3faf5ab9e798d4801b2df8e0d7a8c12221`).
+The reconstructed image independently decompresses to the same 119,872-byte
+stage-1 payload and SHA-256
+`06e4c0a30bc8c4ccd838149360f816dd3b02490da6600f693bdb7df23ea93345`.
+This is functional identity by construction; it is not a newly compressed
+replacement stream.
+
+Forward and backward tracing agree when that decoded payload is mapped at
+`0xE0000`. The image-loader function begins at `0xED792`. Its candidate-entry
+local is `[ebp-0x234]`: candidate/helper paths populate it (including the
+default metadata-derived path), and `0xEE3ED` validates/prepares the chosen
+image before writing its entry pointer through the address supplied for that
+local. `0xEE03B` rejects a zero value. On the successful path, `0xEE0A1`
+logs the entry/setup pair, `0xEE0C7`--`0xEE0D9` restore preserved registers,
+`0xEE0DF` executes `cli`, and `0xEE0E0` performs `jmp dword [ebp-0x234]`.
+Thus the final transfer target is readable decoded IBB logic and selected
+image metadata, not an unresolved value in the protected final MiB. This is
+static trace evidence; it does not itself prove a particular candidate was
+successfully booted on hardware.
+
+#### Live normal-boot policy corroboration and VIP boundary — 2026-11-17
+
+Read-only T1 SSH checks on `7.3.5-probe-stable04` reproduced the retained
+IBB policy dword `0xFEF92001` at `0xC0200`; the authentication bit is set.
+Neighboring `0xC0204` and `0xC020C` are both `0x000055AA`. The boot arguments
+still contain `ABL.secureboot=1` and `ABL.status=0x9`. These are surviving
+handoff data, not observation of a new cold boot or proof that every byte
+of low RAM is immutable after handoff.
+
+HECI PCI configuration again reports FWSTS1 `0x80000245`, FWSTS2
+`0x80100000`, FWSTS3 `0x30370608`, FWSTS4 `0x00080000`, FWSTS5 zero and
+FWSTS6 `0x40000000`. The hardware-source MCA read of
+`/fpf/intel/SocCfgLock` succeeded with result zero, one data byte, value 1.
+This corroborates committed fuse configuration and completed successful IBB
+verification. It does not decode every OEM security fuse or establish
+host flash-write permissions. The exact eight-byte `pread` of MSR `0x13A`
+returned `pread MSR 0x13a on cpu0: n=-1 errno=I/O error`; no usable value
+was obtained. An earlier exploratory `dd` used a different offset and is
+not counted as the `0x13A` test.
+
+The saved GPT and live first 512 bytes agree for `ghs_isys_a`, `ghs_isys_b`,
+`ghs_abl_update`, `bootloader_a` and `bootloader_b`. Both GHS headers start
+with `ipk.` and have byte 5 = `0x03`, including the signed-image flag.
+This is a header comparison, not a new full-partition integrity check.
+The initial attempt used absent `mmcblk0p1` and generated empty-stream
+hashes; those were discarded. Successful reads used this boot's discovered
+`mmcblk1p*` devices with pipeline failure checking.
+
+**Reject versus log-and-execute is resolved for this gate.** Reinspection
+of decoded IBB-stage1 (SHA-256
+`06e4c0a30bc8c4ccd838149360f816dd3b02490da6600f693bdb7df23ea93345`,
+x86 little-endian 32-bit, loaded code region at `0xE0000`) confirms:
+
+* `0xED837` reads the policy byte; `0xED83D` tests bit 0.
+* With bit 0 set, `0xED84B` calls `0xF3F04` with purpose `0x27`.
+* A false result reaches `0xED854`/`0xED859`, then the error-reporting
+  path at `0xEE072` and function exit via `0xEE0E9`. It does not reach
+  the image-entry transfer at `0xEE0E0`.
+* `0xEC0EA` permits the next configured candidate after a loader returns.
+  Thus rejection can lead to another GHS slot or SPI ELK; continued boot
+  activity is not execution of the rejected image.
+
+Consequently, a structurally valid but unsigned/incorrectly signed direct
+GHS replacement is rejected under the observed policy. A raw Android
+`boot.img` also lacks the required outer container. This conclusion is
+static control-flow evidence corroborated by live policy; no intentionally
+invalid image was written or booted from storage in this check.
+
+**What would have to change:** an image could satisfy the existing purpose-
+`0x27` trust chain with an authorized signature; alternatively, an accepted
+CSE policy/token/context path would have to clear verification before FIT
+publication, or the enforcing loader would need to be changed. The last
+option is not self-authorizing: IBB is itself authenticated upstream.
+Changing `0xC0200` after Linux starts would only alter old handoff RAM,
+not the policy used to authenticate the next normal boot. No persistent,
+authorized policy-setting interface or accepted custom signing key has
+been demonstrated. Clearing this gate alone would not settle later GHS,
+Android AVB, image-format or boot-selection requirements.
+
+**VIP/RH850 influence:** VIP manages SoC power/reset and forwards the known
+ELK request through channel 12. The traced `0x75794` sender requires peer
+channel availability and sends `E0`; SoC-side lifecycle/OTA code performs
+HECI/CSE selection before reset. This is a boot-target request, not a
+verified CSE authentication-policy write. The temporary VIP diagnostic RAM
+gate is separate from the Intel IBB policy byte. No traced VIP CAN/UART
+operation writes CSE `SbPolicies`, installs an accepted unlock token, or
+changes committed Intel fuses. VIP-driven power/reset events could affect
+CSE transition context, so its indirect influence remains relevant; however,
+no tested VIP sequence produces the qualifying `pm_trans` bit 3/context and
+counter combination. Do not infer either that VIP can unlock the SoC or
+that it has no possible influence beyond power management.
+
+The radio remained in Probe with working key-authenticated T1 SSH. No
+flash, eMMC, boot-selector, policy-memory or reset changes were made.
+
+#### HECI selector acceptance test — 2026-11-17
+
+From stable04 Probe, sent the established 133-byte MKHI user-command frame
+with its selector byte changed from 2 to 3, then 4, recalculating the raw
+CRC32C each time. CSE returned exactly `20 87 00 00` for both. A cleanup
+command restored selector 2 and received the same acknowledgment. No reset
+was performed; neither alternate selection was boot-tested. The next-boot
+selection was deliberately left at the previously demonstrated ELK value 2.
+
+| Selector | CRC32C | CSE response | Scope |
+|---|---|---|---|
+| 3 | `E0CC3C07` | `20 87 00 00` | Stored-command acceptance only |
+| 4 | `943C586E` | `20 87 00 00` | Stored-command acceptance only |
+| 2, cleanup | `458DAE79` | `20 87 00 00` | Known ELK selection restored |
+
+The bounded test stopped before 5. Static IBB function `0xEC325` tests
+`0xC0218 & 0x1F`: when configuration tag `0x5A` is present, value 5 enters
+an infinite loop. Value 4 selects an alternate tag `0x60` if present,
+otherwise clears the low five selector bits and uses ordinary tag `0x4B`.
+This is a boot-index consumer, not a confirmed list of named HECI modes.
+The complete connection from the stored command payload to this byte still
+needs explicit tracing before assigning every selector a boot-mode name.
+No rejection boundary was reached by the live test. A zero-status CSE reply
+must not be treated as proof that the selected boot path exists or executes.
+
+The temporary client restricted inputs to 2/3/4, passed its CRC self-test,
+checked the MEI message-size limit and exact reply bytes, and contained no
+reset operation. Local review flagged a possible device write overflow;
+manual inspection found the existing `max_msg_length >= sizeof(frame)`
+check and bounded 133-byte write, so that finding was not substantiated.
+
+#### Selector 0/1 reboot trials — 2026-11-17
+
+Selector 0 was sent from stable04 Probe with raw CRC32C `0AE2FC74`;
+CSE replied `20 87 00 00`. After `sync; /bin/reboot -f`, the owner
+confirmed the AAOS home screen. ADB did not enumerate, so the active Android
+slot and exact GHS candidate were not independently read. This establishes
+AAOS startup after selector 0, not a measured slot-A handoff.
+
+The known CAN ELK procedure then returned `71 01 F0 00 81 80 03`; the
+saved VIP application-security word was restored. USB exposed ELK's
+FF/42/03 interface, and ELK accepted the hash-verified stable04 image for
+RAM boot. The USB shell confirmed `7.3.5-probe-stable04`. CAN replay resumed
+and reported increasing radio reception with its error count stable after
+adapter recovery.
+
+From that Probe, selector 1 was sent with CRC32C `AFA36E0A`. CSE returned
+`20 87 00 00`. The client succeeded, followed by `sync; /bin/reboot -f`;
+the SSH connection subsequently ended. The owner subsequently confirmed
+AAOS booted after selector 1 as well. The actual selected partition remains
+unverified: reaching AAOS does not distinguish first-candidate success from
+fallback. Selectors 3, 4 and 5 were subsequently reboot-tested as recorded below.
+
+`FEBD0CF8=1` is the separate VIP diagnostic application-security gate,
+not the Intel selector value. Returning through that CAN procedure selects
+ELK; selector 1 in this trial was set directly through MEI inside Probe.
+
+#### Selector 3 reboot issued — 2026-11-17
+
+After the confirmed selector-1 AAOS boot, the established CAN routine
+returned `71 01 F0 00 81 80 03`; the VIP application gate was restored.
+ELK enumerated as FF/42/03 and returned
+`OKAYkernelflinger-07.02-userdebug`. Stable04 was RAM-booted again;
+the USB console confirmed its kernel version and T1 SSH was re-established.
+Selector 3 (CRC32C `E0CC3C07`) returned `20 87 00 00`, after which the
+command chain issued `sync; /bin/reboot -f`. The owner reported a black
+display. Subsequent checks found no Intel USB enumeration and no ICMP reply
+from the former Probe endpoint (3 packets sent, 100% loss), despite an active
+T1 link. A 20-second VIP UART observation received 1,080 bytes, repeatedly
+reporting `[J6_CDD] Unable to Transmit RTE Date/Time` once per second;
+VIP timestamps advanced monotonically from approximately 158 to 177 seconds.
+CAN radio reception increased by 1,230 frames per 30 seconds (about 41/s)
+with error count stable at 146 across the observed samples. Thus VIP/CAN
+remained alive, while its time-message IPC send path was unavailable. No VIP
+restart loop was observed in that bounded UART window. This does not identify
+the exact SoC execution point or distinguish halted code from a loader that
+has not initialized IPC/USB/networking. In particular, link LEDs and CAN
+activity do not establish AAOS startup or execution of the proposed
+bootloader-offset candidate. CAN replay remained enabled.
+
+#### CAN reset request following selector 3 — 2026-11-17
+
+At the owner's request, sent the previously verified CAN mute-hold pattern
+(`526`, eight bytes, byte 5 bit 7) while retaining the harness replay. VIP
+logged `Mute buttons pressed`, then `SWC Reset Button Press detected` after
+10.01 seconds. The input was released with zero payloads. VIP then logged
+`evResetRequestCSM` and `SetShutdownAndResetCSM`. No shutdown-completion,
+new-boot or HMI-ready marker was observed in the following 25-second window.
+A subsequent five-second UART observation captured a new VIP uptime
+sequence (approximately 1–5 seconds) and `evSoC_StartupComplete` at 5.591
+seconds, with `isResetPending = false` and `isShutdownPending = false`.
+Thus the reset subsequently completed and VIP reported SoC startup; the
+initial 25-second observation had been too short. The owner then confirmed
+AAOS booted. This was a coordinated reset, not a VIP-only operation.
+Normal CAN replay was resumed. No calibration/flash writes or new
+boot-selector command were issued between the selector-3 black-screen state
+and AAOS recovery. This is consistent with a consumed/cleared override or
+reset-dependent selection/fallback, but does not establish which mechanism
+occurred or which partition actually executed.
+
+#### Selector 4 reboot trial — 2026-11-17
+
+Following AAOS recovery, the established CAN ELK entry succeeded and restored
+the temporary VIP application gate. ELK's FF/42/03 interface was verified,
+and the unchanged stable04 image was RAM-booted. USB shell reported
+`7.3.5-probe-stable04`; T1 SSH was established. Selector 4 with raw CRC32C
+`943C586E` returned `20 87 00 00`, then the host executed
+`sync; /bin/reboot -f`. A UART observer started before this restart captured
+`evSoC_StartupComplete` at VIP time 76.433 seconds and `evHMIReady` at
+91.970 seconds. These are VIP uptime values, not reboot durations.
+
+This establishes post-selector-4 application-ready signaling, but neither
+identifies the exact boot partition nor establishes that alternate tag
+`0x60` was present or used. Static fallback to ordinary boot remains a
+possible explanation. The owner subsequently confirmed AAOS loaded.
+CAN replay remained active. No storage-image write was performed; selector 5
+was subsequently tested in the separate trial below.
+
+#### Selector 5 reboot trial — 2026-11-17
+
+At the owner's explicit request after the halt-case discussion, returned
+from AAOS through the established CAN ELK procedure, verified the FF/42/03
+USB interface, and RAM-booted unchanged stable04. USB shell confirmed the
+kernel version and T1 SSH worked. The temporary client's allowlist was
+extended to selector 5; its build and on-device CRC self-test passed.
+The local review tool failed with
+`qrev: failed: Unterminated string starting at: line 1 column 12708 (char 12707)`;
+no successful automated review is claimed for this revision.
+
+Selector 5, raw CRC32C `317DCA10`, received `20 87 00 00`, followed by
+`sync; /bin/reboot -f` and SSH disconnection. A 45-second UART observer
+started before the restart received 2,925 bytes: `evStartupTimeout`,
+`FAILURE DETECTED: SoC Startup Timeout`, and repeated
+`Unable to Transmit RTE Date/Time`. No `evSoC_StartupComplete` or
+`evHMIReady` marker was observed. No Intel USB interface appeared in a
+30-second check. CAN reception continued with stable error count after the
+adapter recovery associated with entering Probe.
+
+The startup-timeout timestamp was VIP uptime around 60 seconds, and the
+observer had started around 55 seconds while Probe was still running.
+The timeout may include that preceding Probe interval, which lacks full
+stock lifecycle processing; it is not independently proof of selector-5
+execution at the static infinite loop. The observed absence of application
+startup is consistent with that halt case, but the exact execution point
+and display state were initially unverified. A subsequent owner-requested
+coordinated reset recovered the boot sequence, as recorded below. CAN replay
+remains active.
+
+#### Reset recovery after selector 5 — 2026-11-17
+
+The owner requested a VIP reset. The verified CAN mute-hold sequence
+triggered `SWC Reset Button Press detected` after 10.01 seconds, followed
+by `evResetRequestCSM` and `SetShutdownAndResetCSM` at VIP uptime 146.833
+seconds. The input was released immediately. After roughly 43 seconds,
+VIP logged pending-CSM-reset state and its uptime restarted; the new boot
+reported `BRR_RESET_REASON_VIP_SOFTWARE updated to 39`, `AnimationInit`,
+`evSoC_StartupComplete` at 5.702 seconds and `HmiInit` at 8.673 seconds.
+Reset/shutdown pending flags were false. The owner reported AAOS booting.
+
+This confirms coordinated-reset recovery from the post-selector-5 state
+without a new HECI selector command or storage-image write. It does not
+identify the selector-consumption/clearing mechanism or prove the CPU had
+executed the static halt loop. CAN harness replay remains active.
+
 #### Automatic selection and ELK startup — 2026-11-17
 
 **Static finding:** the shipped SMIP configuration includes SPI ELK as an
 ordinary automatic boot candidate. ELK selection is therefore not exclusively
 an AAOS-requested action. This corrects the previous unresolved-selection
-assessment; it does not establish successful recovery after erasing eMMC.
+assessment. The live test below confirms fallback with both GHS images absent;
+recovery with the entire eMMC erased remains untested.
+
+**Live confirmation, 2026-11-17:** both 64 MiB GHS partitions were checked
+against the saved eMMC backup, then zero-filled without changing the GPT or
+other partitions. Full-partition readback SHA-256 for each erased partition:
+`3b6a07d0d404fab4e23b6d34bc6696a6a312dd92821332385e5af7c01c421351`.
+Intel selector 0 was acknowledged with `20870000`, followed by a Probe reboot.
+USB fastboot enumerated and returned `OKAYkernelflinger-07.02-userdebug`.
+This confirms automatic ELK recovery with both GHS images missing, rather than
+an explicit selector-2 ELK request. The first trial also successfully RAM-booted
+stable04 Probe and restored both partitions to the backup SHA-256
+`13e168dd9ff073f2c40ef1fb42ed44627474554dbf9d4a2f23879a8c77f525a0`.
+A second requested trial repeated the verified zero-fill and selector-0 reboot,
+then left ELK running without downloading or booting Probe. Both GHS images
+remain erased after that second trial; CAN keepalive remains active.
+This was a warm reboot with the GPT, other eMMC partitions, boot areas and SPI
+preserved. It does not demonstrate blank-eMMC or cold-power recovery.
+Raw USB here carries the normal fastboot protocol; it exposes exact replies,
+not a separate privileged debug interface.
+
+**Subsequent raw-image placement test, 2026-11-17:** after returning to
+RAM-booted stable04, the verified 30,306,304-byte Probe Android `boot.img`
+was written directly at offset zero of `ghs_isys_a`, at the owner's request.
+The original GHS backup was hash-verified before writing. Full 64 MiB readback
+matched the Probe image followed by zeros, SHA-256
+`30ad12e2cf1ad6dd7aa71c56b8f6f1bc1a3ccb6a509da9455cab576ab0487b84`.
+`ghs_isys_b` remained verified zero-filled and the GPT was unchanged.
+A subsequent test set HECI selector 0 (CSE acknowledgment `20870000`),
+then issued `sync; /bin/reboot -f` from Probe. The Linux USB gadget disappeared;
+approximately seven seconds later USB fastboot answered
+`OKAYkernelflinger-07.02-userdebug`. No image was downloaded after that reboot.
+The raw Probe placement did not produce an observed Linux boot; the radio
+returned to ELK. This is consistent with rejection of the unsupported Android
+boot-image container in an IPK slot. No early IBB error was captured, so this
+test does not distinguish header/format rejection from authentication failure
+or another loader failure, and does not test a properly wrapped custom image.
+This supersedes the preceding trial's state of both GHS partitions being empty:
+slot A now contains a raw Android boot image, without an IPK wrapper.
+
+**Wrapped entry-probe experiment, 2026-11-17:**
+`research/tools/build_ipk_entry_probe.py` builds an unsigned IPK from the
+hash-pinned archived ELK container. It preserves the four IPK components,
+recomputes the raw CRC32C header/body checksums, strips the signature trailer,
+and redirects the ELF32 entry to a new stub within verified zero file padding.
+The extended first load segment contains a zero-initialized marker location
+at `0x12901C50`. The stub writes `IPK_ENTRY_PROBE_V1_EXECUTED_OK!!` there and
+jumps to the original `0x12800000` ELK entry without changing registers, flags
+or stack. This is an execution test and does not bypass authentication.
+
+The output ELF segments were loaded in Unicorn; execution of the actual stub
+reached the original entry with all tested registers/flags unchanged and the
+expected marker present. Output size: 1,130,124 bytes; image SHA-256:
+`9bed567d121c1d93935306ce5af4abfbe5a9ecad8c07ae7b7b3436ee047209f3`.
+Local model review produced an unsubstantiated slice-overflow finding; bounds
+were manually checked. An independent FABLE review timed out after 240 seconds
+without a verdict. Emulator success does not validate the entire IBB handoff
+or prove that stock ELK will preserve the marker indefinitely.
+
+The candidate replaced the raw Probe image in GHS A, padded with zeros to
+64 MiB. Full readback SHA-256:
+`38290db2d2638051411586d24026015cd2d5846f296006a7d3abf3c4c3e88784`.
+GHS B remained zero-filled and GPT bytes were unchanged. Selector 0 returned
+`20870000`; Probe then rebooted. ELK fastboot returned
+`kernelflinger-07.02-userdebug`. Its built-in crashmode ADB memory reader showed
+neither the stub nor the marker at the expected addresses; marker bytes were
+`4c39cc89d9acdc389e29fd28ad38fe08c5945695e69f453a46805438c3945706`.
+Policy bytes at `0xC0200` were `01 20 F9 FE` (authentication bit still set).
+No custom entry execution was demonstrated. The result is consistent with
+stock SPI-ELK fallback and the traced unsigned-image rejection gate; no early
+IBB error was captured to distinguish every possible rejection stage.
+
+A subsequent owner-reported full power cycle was checked before downloading
+any RAM image. USB identified ELK fastboot; switching to its in-process
+crashmode ADB reader again found no marker or stub. The 32 bytes at
+`0x12901C50` were
+`181789869d9299178b06b816f916b926cecd5dddede64e725cc84e41d9dc4c5c`.
+Policy at `0xC0200` remained `0xFEF92001`. This adds a cold-power observation
+consistent with fallback, but neither proves the precise IBB rejection stage
+nor excludes a marker-lifetime defect. Partition contents were not reread
+during this diagnostic-only observation.
+
+Storage immediately after the experiment contained the unsigned entry-probe
+IPK in GHS A and zeros in GHS B, superseding the raw-Probe placement.
+**Restored after testing, 2026-11-17:** both GHS partitions were restored from
+the original eMMC backup while running RAM-booted stable04. Each complete
+64 MiB partition readback matched SHA-256
+`13e168dd9ff073f2c40ef1fb42ed44627474554dbf9d4a2f23879a8c77f525a0`.
+The live GPT header and entries were verified before writing and remained
+byte-identical afterward. Current storage has both original GHS images;
+no reboot was performed after restoration. Probe remained running in RAM.
+The next successful milestone must distinguish authenticated container acceptance
+from merely well-formed headers; passing an ELF emulator is insufficient.
+
+**Separate Android boot-partition placement test, 2026-11-17:** after
+restoring GHS and successfully reaching the stock HMI, ADB reported
+`ro.boot.slot_suffix=_a`, `ro.build.type=user`, and `sys.boot_completed=1`.
+The radio clock was synchronized from the host before subsequent work.
+The documented CAN ELK-entry routine succeeded and its temporary VIP gate
+was restored; stable04 Probe was then RAM-booted for the storage operation.
+
+The live GPT identified `boot_a` at LBA 436224 (byte offset `0x0D500000`),
+size 64 MiB. Before writing, the full live partition matched the saved eMMC
+backup SHA-256
+`610ffec9c52ca0658d4c13663015e3496854d66c9be380b6161b563b765dbaf3`.
+The complete partition was zero-filled and its zero readback hash verified.
+The 30,306,304-byte stable04 Probe boot image was written at partition offset
+zero, leaving a zero tail. Full 64 MiB readback then matched SHA-256
+`30ad12e2cf1ad6dd7aa71c56b8f6f1bc1a3ccb6a509da9455cab576ab0487b84`.
+Independent before/after hashes confirmed `boot_b`, `ghs_isys_a`, and
+`ghs_isys_b` unchanged; the GPT was also byte-identical. No reboot was issued
+after this write. Current state: Probe running in RAM; stock GHS A/B and
+stock boot B retained; boot A contains Probe. Successful guest boot or
+recovery from a rejected Android boot image was not established by the
+storage-only operation. A subsequent reboot reached VIP `evSoC_StartupComplete`,
+`HmiInit`, and `evHMIReady`, without a Probe USB gadget. After ADB was enabled,
+AAOS reported `ro.boot.slot_suffix=_b`, `ro.build.type=user`,
+`sys.boot_completed=1`, and kernel
+`4.19.283-PKT-230612T042614Z-ga53d763f5b0d`. Thus the observed result was a stock
+slot-B boot after replacing active boot A with Probe, not execution of Probe.
+No manual slot switch was issued. This establishes recovery to the intact B
+slot in this trial, but does not identify the precise image rejection stage
+or establish ELK recovery if both Android boot slots fail. At that checkpoint,
+runtime was stock AAOS on B and boot A contained Probe. The clock was
+resynchronized from the host during the ADB check.
+
+**Restoration after the slot-B observation:** the documented CAN ELK entry
+succeeded, its temporary VIP gate was restored, and stable04 was RAM-booted.
+Only boot A was restored from the backup; the full 64 MiB readback matched
+`610ffec9c52ca0658d4c13663015e3496854d66c9be380b6161b563b765dbaf3`.
+Before/after hashes confirmed boot B, both GHS partitions, and misc unchanged;
+GPT bytes also remained unchanged. HECI selector 0 was acknowledged with
+`20870000`. No reboot followed this restoration. Current runtime is Probe
+in RAM; boot A/B and GHS A/B contain stock images. Selector 0 requests the
+normal firmware path and does not itself establish that Android slot A has
+been reactivated; slot metadata was deliberately left untouched.
 
 IBB main `0xE03E4` reaches the automatic selector `0xEC325`. Its ordinary
 configuration tag is `0x4B`; `0xEF2BE` walks matching records and invokes
@@ -1464,8 +1975,25 @@ words and contain the following order (offsets relative to that section):
 | `0x1C` | eMMC / 1 | `0` | `ghs_isys_a` |
 | `0x28` | eMMC / 2 | `0` | `ghs_isys_b` |
 | `0x34` | SPI / default component | `0` | `ELK`, with `OBBX` lookup fallback |
-| `0x40` | eMMC / 5 | `0x7D0000` | Offset within `bootloader_a` |
+| `0x40` | eMMC / 5 | `0x7D0000` | IPK-wrapped Kernelflinger OS-loader image within `bootloader_a` |
 | `0x4C` | CLI | — | Firmware command interface |
+
+**Offset image identified, 2026-11-17:** the saved eMMC dump contains an
+`ipk.` container at `bootloader_a + 0x7D0000` (absolute `0x0A0D0000`).
+An ELF32 little-endian x86 header occurs at container offset `0x22C`, with
+entry point `0x12800000`. Embedded strings identify
+`hardware/intel/kernelflinger/kf4abl.c`, `kernelflinger-07.02`, Android boot
+parameters and USB/TCP fastboot. This identifies a Kernelflinger OS-loader
+component, not the Android kernel or GHS image. `bootloader_b + 0x7D0000`
+(absolute `0x0BED0000`) has the same first 512 bytes and matching sampled
+identifying strings; no full-image equality is claimed. The first-512-byte
+SHA-256 for both is
+`43bed592674ae8b86e81492f19ca7b0403f4174ac9f8f3ede2359062ccfa2938`.
+The loader code's `osloader.bin` lookup and raw-offset fallback corroborate
+the component role. Sharing Kernelflinger lineage and entry address with
+SPI ELK does not establish binary identity or equivalent standalone startup.
+The selector-3 black-screen trial does not prove this component's entry
+point was reached; its authentication/handoff result was not captured.
 
 The callback skips candidates preceding the requested boot index. When a
 loader returns, including a returned authentication error, the callback returns
@@ -1540,6 +2068,40 @@ This connects the eMMC image, permitted signing key, verifier and policy gate.
 Signature validity does not by itself prove enforcement; the separate live
 `ABL.secureboot=1` observation supports that part of the chain.
 
+### Full-dump GHS-slot structural corroboration — 2026-11-18
+
+The complete eMMC backup GPT places `ghs_isys_a` at sectors 2048–133119 and
+`ghs_isys_b` at 133120–264191; each is 64 MiB. Read-only extraction found both
+slots byte-identical:
+
+```text
+SHA-256  13e168dd9ff073f2c40ef1fb42ed44627474554dbf9d4a2f23879a8c77f525a0
+```
+
+Both begin with an IPK-style header whose visible metadata includes
+`board=harman_info35` and `gm_part_number=85098662BM`. At partition offset
+`0x5c`, each contains the same 14,924,936-byte ELF: `ELFCLASS32`, little-endian
+`EM_386`, statically linked and stripped, entry `0x200000`. This corroborates
+the GHS/VMM model from the separately recovered boot flow; it is not a Linux
+kernel or filesystem.
+
+The ELF section map includes `.bootargs`, `.boottable`, `.vmm1.text`,
+`.vmm1.rodata`, `Guest1_VM_Memory_RAM0` through `Guest1_VM_Memory_RAM4`, and
+`.mr_r_mod_android_key`. Its retained names/string evidence include
+`BootargsDev`, `OtaUpdateBootArgsIod`, `KeymasterBootArgsIod`, `IOD_Bootargs`,
+`kernel_boot_params`, `parse_cmdline`, `VMM1_InitialTask`, and
+`ASP_VMX_SetGuestKernelAddr`/`ASP_RunGuestVM` evidence documented in §1. This
+is consistent with GHS assembling guest inputs, selecting/verifying the Android
+boot image, allocating Guest1 memory, then launching the Android kernel as a
+VM. It does not alone prove the precise producer/consumer path for every
+Android cmdline token; the retained guest cmdlines and the VMM1 launch trace in
+§1 remain the evidence for that behavior.
+
+Static string inspection also found console-logging and Ethernet/ARP routines.
+It found no demonstrated interactive shell daemon or service (`ssh`,
+`dropbear`, `telnet`, or `inetd`). Console/network code therefore must not be
+reported as a GHS shell or a retained management channel.
+
 **Remaining IBB payloads:** four-byte alignment between compressed blocks
 resolves the previously unparsed payloads. Their block starts are `0x15938`
 and `0x19EB0` within IBB, with compressed allocations `0x4576` and `0x1C191`.
@@ -1556,11 +2118,105 @@ absolute references. At `0xFEFFD283` it selects a copy descriptor containing
 destination `0xC0000`, count `0x430` dwords, source `0xFEFFD500`; helper
 `0xFEFFD1ED` performs `REP MOVSD`. Consequently policy location `0xC0200`
 comes from SRAM `0xFEFFD700`. Startup then jumps to `0xE0080`.
-The initialization path includes calls outside the extracted IBBL range
-(`0xFEF829EA`, `0xFEF84640`); their implementations and the policy source
-cannot be recovered merely by treating this 8 MiB dump as flat executable
-memory. The software-visible policy is established above; its hardware-rooted
-provenance remains unresolved.
+**Initializer resolved further, 2026-11-17:** the calls outside IBBL resolve
+into decoded IBB payload 3 at base `0xFEF82800`, not an inaccessible SPI tail.
+At payload offset `0x1EA` (`0xFEF829EA`), the entry calls `0xFEF854F0`
+(payload offset `0x2CF0`) with a local output word; instruction `0xFEF82A21`
+stores that word at `0xFEFFD700`. The IBBL copy described above subsequently
+places it at `0xC0200`. The base is corroborated by the caller destination,
+function prologue, and absolute string pointers (`CPU: ` at `0xFEF8291E`,
+`No CSE bp, halt` at `0xFEF854DF`).
+
+`0xFEF854F0` reads the FIT pointer at `0xFEFFFFC0`, walks 16-byte records,
+and selects `(record[14] & 0x7F) == 0x10` and `record[11] == 3`. It copies
+up to two bytes from the selected record's address. The first byte's bits
+2 and 3 replace bits 0 and 1 of the output byte:
+`output = (output & ~3) | ((record_payload[0] >> 2) & 3)`.
+Absence of the matching record prints `No CSE bp, halt` and enters a HLT loop.
+Thus the immediate authentication-policy input is this CSE boot-policy FIT
+record: its bit 2 supplies the IBB authentication-enable bit.
+
+**Producer resolved, 2026-11-17:** CSE RBE creates the `ifp_uep` handoff;
+CSE BUP reads `SbPolicies` from it and constructs the FIT record consumed by
+IBB. The previous “creator unresolved” conclusion is superseded by the trace
+below. No VIP, CAN, or external EEPROM writer was found in this chain.
+
+#### CSE producer of IBB boot policy — 2026-11-17
+
+Address spaces must remain separate: RBE code is based at `0x40000`, BUP code
+at `0x26000`, and the host IBB payload-3 code at `0xFEF82800`. The RBE module
+SHA-256 is `6e3e85b1b09a4af39310bfdcb6db6cf5bc2c8d1b207bc3439f8c55f678b11571`;
+BUP is `d43565540bd95402d5ee99923ea93889da72873dc103836bbb87b47025a0ffda`.
+These modules were extracted from the readable mapped IFWI.
+
+1. **RBE creates the incoming object.** `0x43BB2` calls `0x416EE` to allocate
+   named object `ifp_uep`, length `0x108` (264 bytes), in its outgoing handoff
+   buffer. The payload is an eight-byte header followed by 256 bytes of data.
+   It passes bits 27:24 of CSE register `0xF6170810` to `0x41F3B`.
+   That predicate returns true when either upper nibble bit and either lower
+   nibble bit are set: `((n & 0xC) != 0) && ((n & 3) != 0)`.
+2. **Hardware versus stored source.** On true, RBE copies 256 bytes from
+   CSE hardware window `0xF6170800–0xF61708FF` into the object after its header
+   and writes header marker `REAL` (`0x4C414552`). These are CSE-space addresses,
+   not addresses proven accessible through Probe `/dev/mem`. Otherwise
+   `0x43A67` looks up record type `0x11` through `0x42048`, requires length
+   `0x108`, reads it through `0x44CE2`, and validates `$UEP` plus a 16-bit CRC
+   through `0x43A38`/`0x43A0D`. The CRC covers bytes 6 through 263, starts at
+   `0xFFFF`, and uses the table at RBE `0x4890C`.
+3. **BUP receives and initializes its reader.** `0x288EF` receives named handoff
+   objects into a list; `0x28D32` looks up their names. Initializer `0x32F50`
+   looks up `ifp_uep`, copies its eight-byte header and 256-byte data into its
+   local context at `0xA47FC`, and records whether the marker is `REAL`.
+   This is an incoming snapshot, not a filesystem lookup of `ifp_uep`.
+4. **The policy item is named.** `0x3315D` calls
+   `0x29D2E(0x23, 2, &0xA5D60)`. Reader `0x29C19` resolves item descriptors
+   through `0x2ACFA`; item `0x23` is `SbPolicies`, a 16-bit type-2 field.
+   Its 44-byte descriptor is at BUP file offset `0x32AD8`, corresponding to
+   the descriptor-table address `0x9FAD8` used by the code. The table starts
+   at file `0x324D4`; its named IDs and stride corroborate the mapping.
+   `0x2CD4A` tests two validity bits at data-bit offset `0x86` through
+   `0x2DFE4`, then reads through `0x28B0E`.
+5. **Three-copy decoding.** Mapping at BUP `0x566F4` is `0x00100140`
+   (16 bits, logical bit offset `0x140`). The mapping table selects copies at
+   data byte offsets `0x28`, `0x6C`, and `0xC0`. `0x2B0ED` combines each bit
+   by majority: `(a & b) | (a & c) | (b & c)`. The resulting word enters
+   `0xA5D60`. Status `0x1C2` instead clears its low 16 bits. `0x3315D` also
+   adds bit `0x200`, separate from the authentication bit.
+6. **CSE can modify the effective policy.** BUP `0x3C51D` clears policy bits
+   2 and 3 (`& 0xF3`) when global `0xA5EA0 & 0x01004000` is nonzero. The
+   branch can also clear bits 0–1 and bit 8 when `0x4000` is set. These are
+   internal startup conditions, not a demonstrated host command or runtime
+   toggle. Static producers of both mask bits are traced below; their live CSE
+   values remain unverified.
+7. **BUP creates the exact FIT record.** `0x3A831` initializes the FIT header.
+   At `0x320DF–0x320FE`, BUP copies the low word of `0xA5D60` into its mapped
+   host handoff buffer at offset `0x420`, then calls `0x2F525` to append an
+   entry with host address `0xFFFE0420`, size 2, type `0x10`, subtype 3.
+   `0x2F525` explicitly fills those fields and increments the FIT count.
+   IBBL later relocates the FIT and eligible payloads; the consumer follows
+   the entry address rather than assuming its original address remains fixed.
+8. **Host-side consumption.** IBB payload 3 `0xFEF854F0` maps payload bits 2–3
+   to its policy bits 0–1; `0xFEF82A21` stores the result at `0xFEFFD700`.
+   IBBL copies that handoff block to `0xC0000`, putting the policy at
+   `0xC0200`. IBB's image-loader authentication gate reads bit 0 there.
+
+**Stored-policy verification:** the actual `$UEP` record is at mapped IFWI
+file offset `0x200210`, length 264, SHA-256
+`558b0ab8659647a4c70f7323356e73c99b64fe793a649378007a261361f9dfa4`.
+Using RBE's own CRC table and algorithm gives `0x3059`, matching its stored
+CRC. Validity bits at `0x86` equal 1. All three `SbPolicies` copies are
+`0x0117`; bit 2 is set, so this stored policy supplies authentication-enable=1
+before any later CSE overrides. A second literal `$UEP` inside RBE code at
+file `0x209A43` fails the record CRC and is not another policy record.
+
+**Evidence boundary:** the creator and both possible backing sources are now
+identified; the source is not established to reside in the blocked final MiB.
+The stored-policy branch demonstrably requests authentication, and previously
+observed `ABL.secureboot=1` is consistent with that. This does not independently
+measure the live hardware snapshot, prove which RBE branch ran, or prove that
+no CSE override applied on a different boot. A complete physical SPI read can
+still contain additional relevant material. No fuse, RPMB, EEPROM, eMMC, SPI,
+CAN state, or live policy values were written by this analysis.
 
 **CSE bring-up:** metadata supplies x86 code base `0x26000` for `bup`,
 `policy` and `fpf`. These are separate modules/address spaces, not one image
@@ -1577,6 +2233,294 @@ and a distinct unlocked ELK RAM-boot path. It does not support a blanket
 "secure=no platform" interpretation or assurance that an arbitrary unsigned
 eMMC replacement will boot. The static inventory/integrity audit covers the
 whole saved window; a complete ROM/fuse/CSE enforcement audit remains open.
+
+
+**`SbPolicies` status `0x1C2` producer resolved, 2026-11-17.**
+This status is generated by the validity check, not a general I/O-error fallback.
+The item-`0x23` descriptor (type 2, BUP file offset `0x32AD8`) selects validity
+bit offset `0x86`. Reader chain:
+`0x29D2E -> 0x29C19 -> 0x2CD4A -> 0x2DFE4 -> 0x28A84`.
+`0x28A84` extracts two bits from the selected in-memory UEP/fuse snapshot.
+After a successful extraction, `0x2E012` tests the extracted byte against 3;
+`0x2E018` executes `MOV AX,0x1C2` only when both bits are zero. Validity
+pairs 01, 10, and 11 pass this check. On 00, `0x2CD4A` returns immediately
+without reading the three policy-value copies through `0x28B0E`.
+
+Initializer `0x3319B` compares the returned status to `0x1C2`; `0x331A2`
+executes `MOV word ptr [0xA5D60],0`. Other nonzero read errors take the
+`0x2B` error path instead. Initialization also reads item `0x16`; successful
+or `0x1C2` handling there permits a success return. The policy word is later
+ORed with `0x200`, so the immediate zero value should not be described as
+its final published value. Source authentication bit 2 remains clear on this
+path unless another later writer changes it.
+
+`0x32F50` copies the 256 data bytes of incoming `ifp_uep` (payload + 8) to
+`0xA47FC`; the validity bits are bits 6–7 of data byte `0x10`. Thus the
+condition depends on the snapshot selected upstream by RBE: hardware-backed
+`REAL` data or the validated stored `$UEP` record. It does not indicate an
+ordinary failed SPI read, nor does it establish which snapshot this boot used.
+
+The saved valid `$UEP` at mapped IFWI offset `0x200210` has data byte `0x10`
+=`0x54` (absolute file offset `0x200228`). Its validity pair is **01**, so
+that stored snapshot does **not** trigger `0x1C2` for `SbPolicies`. This was
+verified by decoding the actual descriptor and saved record, without modifying
+either. The RBE CRC/record checks still precede this reader; malformed storage
+is not demonstrated to produce a benign zero-policy result.
+
+**Override producers traced further, 2026-11-17.** The mask combines two
+independent paths, rather than one unexplained enable flag:
+
+- **Bit 14 (`0x4000`): token knob.** BUP `0x3C4B0` looks up incoming object
+  `utknknobs`. Its payload is a count followed by key/value dword pairs.
+  Key `0x80860030`, value `2`, sets byte `0xA5EA1` bit 6, equivalent to
+  dword `0xA5EA0` bit 14. Value `1` sets bit 15 instead and does not by itself
+  satisfy the override mask. Startup calls policy initialization `0x3315D`,
+  then knob processing `0x3C4B0`, then override application `0x3C51D` at
+  call sites `0x31967`, `0x3197D`, and `0x31982` respectively.
+- **RBE supplies the knob object.** RBE `0x47E7C` obtains a token through
+  `0x47038`, then processes it in `0x478D7`. Sources include an 8 KiB `UTOK`
+  lookup path (`0x46FF4`) and record type `0x12`/selector `0xB` (`0x46F44`).
+  The parser checks lengths and extension type `0x15`; it calls `0x47404`
+  and applicability checker `0x476FC` before creating `utknknobs` at `0x47D8D`.
+  `0x47861` filters permitted knob IDs by token class. The authentication
+  path includes a SHA-256 key-material comparison (`0x41C6A`) and signed
+  `$MN2` manifest verification (`0x4722D`, including modular exponentiation,
+  digest and padding comparisons). One class-3 branch skips the key-hash
+  comparison under additional internal conditions but still invokes manifest
+  verification. No arbitrary unsigned token acceptance was established.
+- **Bit 24 (`0x01000000`): context-gated counter.** In `0x3C51D`, this bit is
+  set only when globals `0xA5E94 == 9`, `0xA5E98 == 3`, policy bit 9 is clear
+  (`0xA5D61 & 2 == 0`), and helper `0x47FF5` returns a nonzero nibble.
+  Assembly confirms that nibble is bits 11:8 of register offset `0x38`,
+  read via service `0x11CD` using selector `0xA471C`. Initialization at
+  `0x3B8D0` sets that selector to `0x17`. These are CSE register-service
+  arguments, not established host physical addresses.
+- **Counter handling.** The successful path calls `0x48017`, which selects
+  operation `0x15` in `0x3CB4D`: `(counter + 15) & 0xF` decrements the nibble.
+  Other paths call `0x4802A(0xF)`, selecting operation `0x16` to write nibble
+  `0xF`. When the context gates pass but the counter is zero, bit 24 is
+  explicitly cleared. When context gates fail, this function does not
+  explicitly clear bit 24; its prior initialization therefore also matters.
+- **Context provenance.** Writes at `0x375DA/0x375DF` copy offsets 8 and 6
+  from the 24-byte context returned by `0x2AD35` into `0xA5E94/0xA5E98`.
+  That reader uses cached context `0xA5860`, or `0x551BC` after initialization
+  flag `0xA5710` is set. `0x55163` reads the CSE-internal object
+  `/snowball/pm_ctxt`; fallback defaults include offset 8 = 9 but offset 6 = 5,
+  which does not satisfy the required value 3. The producer of the qualifying context values and a counter initializer
+  were subsequently traced as detailed below; live branch selection remains
+  unverified. This CSE-internal object is not an AAOS or
+  Probe filesystem path.
+
+**Qualifying context and counter provenance, further trace 2026-11-17.**
+BUP `0x369B1` produces the context pair directly from the nine-byte incoming
+`pm_trans` record. `0x315C6` looks it up by name and copies it to context
+base + `0x58`. Let `T` be its first little-endian dword and `F` its byte 8.
+The branch producing context offset 8 = 9 and offset 6 = 3 requires:
+
+- `F & 1` nonzero;
+- `T & 0x3400 == 0`;
+- `T & 0x110 != 0x110` and `T & 0x120 != 0x120`;
+- `T & 8` nonzero.
+
+It writes context base + `0x28` = 9 and base + `0x26` = 3. `0x3CDF1`
+copies the 24-byte context at base + `0x20` to the cached context at `0xA5860`;
+`0x2AD35` and `0x375DA/0x375DF` subsequently deliver those bytes to the override
+predicate. The later `/snowball/pm_ctxt` path is therefore not the original
+producer of this early pair.
+
+RBE already receives `pm_trans`: `0x4033D` calls object lookup `0x4169C`, which
+walks the existing handoff-object region at `0x08200000`. It saves the payload
+pointer at `0x0604101C`. The examined RBE references consume this record rather
+than constructing it. Consequently the unresolved upstream boundary is the
+pre-RBE producer of this record and the physical event represented by bit 3;
+calling it a specific reset type or a CAN command is not yet justified.
+
+**Pre-RBE boundary audit, 2026-11-17.** Instruction-level confirmation in
+BUP: `0x36A65` executes `TEST DL,8`; when the earlier gates pass, `0x36A6A`
+writes byte `[EBX+0x28]=9` and `0x36A6E` writes `[EBX+0x26]=3`. These are
+writers of the derived context, not writers of the incoming `pm_trans` bit.
+Neighboring cases handle bits 2 and 1 separately, so the labels of those
+transition classes must not be guessed from ordinary host reset terminology.
+
+RBE metadata declares entry `0x40825`. Its initial path calls `0x4000C`
+(copy eight bytes of initialized data), `0x4052E` (clear local BSS and capture
+registers through `0x41F18`), `0x404AD` (early initialization), and then
+`0x40556`. The latter first calls `0x4033D`, which requires existing `pm_trans`
+and other handoff objects. `0x41F18` reads CSE addresses `0xF00B0200/204/208`
+into local cached state; those loads do not construct `pm_trans` or establish
+that its bit 3 equals any particular bit in these registers. Lookup `0x4169C`
+walks the existing object list. Allocator `0x416EE` appends new objects and
+increments the list length; the located `pm_trans` name reference invokes
+lookup, not allocation. The audited path strengthens the pre-RBE provenance
+boundary but does not identify an upstream writer instruction.
+
+No standalone CSE ROM/ROM-bypass binary was found by filename searches of the
+local research, downloaded and temporary artifacts, and no `pm_trans` definition
+was found in the searched Apollo Lake Slim Bootloader/FSP references. This is a
+bounded search, not proof that all archives or unread flash contain no copy.
+Intel's Apollo Lake TXE bring-up guide, Appendix A, identifies a Broxton ROM-bypass
+image in the firmware kit's `Image_Components\TXE` directory:
+[manufacturer-authored guide hosted by Portwell](https://www.portwell.eu/index.php?download=&eID=dumpFile&f=10256&t=f&token=20c391849cdade3c09a5690b3108c9bddae1ac8b).
+That is a candidate analysis artifact, not evidence this production radio uses
+ROM bypass. Locating matching pre-RBE code or an authoritative record definition
+is still required to name the physical event and give the originating writer PC.
+No reset experiment or CSE/PMC register write was performed during this audit.
+
+**Additional artifact search, 2026-11-17.** Raw byte searches found exactly
+two literal `pm_trans` strings in the saved 8 MiB mapped IFWI, at offsets
+`0x20E65D` (RBE) and `0x278C7C` (BUP). The independently captured 7 MiB BIOS
+region has the corresponding two strings at `0x10E65D` and `0x178C7C`.
+Neither saved eMMC boot-area image (`emmc_boot0_wifi.bin` and
+`emmc_boot1_wifi.bin`, each 33,423,360 bytes) contains the literal `pm_trans`
+or `ROMB`. No literal `ROMB` was found in either SPI-related artifact.
+These searches do not exclude compressed code, constructed names, or code
+outside the readable region; they did not locate a new writer.
+
+[Intel support identifies TXE 3.1 firmware package 632453](https://community.intel.com/t/cant-find-txe-rom-spi-image/95861)
+in response to a request for the ROM-bypass image. The referenced package URL
+currently redirects to Intel's `404Redirector.aspx`; no matching package was
+retrieved. The pre-RBE writer PC and physical-event mapping remain unresolved,
+not newly established by the repeated searches. Access to matching ROM/ROM-bypass
+code or a documented CSE transition-record definition is still needed for this
+specific static trace. The existing ROM-origin attribution remains an inference.
+
+**Transition interpretation and address-space qualification, 2026-11-17.**
+Additional BUP string-pool inspection finds `GlobalReset`, `PsuedoGlobalReset`,
+`CseReset`, `HPCR`, `HNPCR`, `CsePowerOff`, `CsePowerOn`, `HostSxEntry`,
+`HostSxExit`, followed later by `CM0`/other CSE power-state names and
+`S0`, `S1`, `S3`, `S4`, `S5`. There are no recovered direct references or
+numeric lookup table binding these names to context enum values. Nonetheless,
+BUP maps transition bits 3/2/1 to event value 9 and prior-state values 3/4/5,
+respectively. Combined with the string vocabulary and allowed context-value
+ranges, this supports **S3/S4/S5 exit** as a candidate interpretation, with
+bit 3 indicating S3 exit. This is inference, not a proven event mapping.
+Do not describe it as an arbitrary reset or a verified authentication-bypass
+trigger. `0x3C47C` also distinguishes prior-state value 3, setting a context
+flag to 2 versus 1 for other states; the downstream meaning is not resolved.
+
+The RBE address `0x08200000` is an address in the CSE execution environment,
+not an established host physical RAM address. RBE `0x460F9`/`0x4618C` manage
+page mappings for the object buffer. Reading host `/dev/mem` at that numeric
+address would not establish that the CSE handoff record had been read.
+No direct host mapping, live `pm_trans` capture, or pre-RBE writer PC was
+established in this follow-up.
+
+The counter has a confirmed software initializer: BUP `0x3C51D` calls
+`0x4802A(15)` when the qualifying context/policy gates fail, and also when the
+qualifying path finds counter zero. `0x3CB4D` operation `0x16` writes this value
+into register bits 11:8 through selector `0x17`, offset `0x38`. A qualifying
+nonzero path instead uses operation `0x15` to decrement it modulo 16 and sets
+bit 24 for that invocation. A zero-count invocation clears bit 24 and reloads
+15. This proves BUP can initialize/reload the field; its silicon reset value
+and retention across different reset/power events remain unverified. A live
+CSE register read has not been performed.
+
+Result: two concrete static mechanisms can suppress policy bits 2–3 before
+FIT publication, but neither is a verified host-accessible command. This trace
+performed no token installation, register writes, or boot-policy changes.
+
+#### Local Apollo Lake reference survey — 2026-11-17
+
+Searched extracted text from all 16 PDFs and the downloaded repository source
+content in the Intel-Apollo-Lake reference collection. These references corroborate
+several field meanings; they do not supply the missing pre-RBE `pm_trans` writer.
+This was a local static survey, not a new hardware test.
+
+* **Exact policy-field names:** Slim Bootloader
+  `Silicon/ApollolakePkg/Include/Library/BootGuardLib20.h:16` defines
+  `Pbe` bit 0, `Bbi` bit 1, `Vb` bit 2, `Mb` bit 3, `KmId` bits 4–7,
+  `Dcd` bit 8, and **`Sb_S3_Opt` bit 9**. Its matching
+  `Library/BootGuardLib20/BootGuardLibrary.c` consumes FIT type `0x10`,
+  subtype `3` for this policy; subtypes `2`, `7`, `8` carry TXE, IBBL,
+  and IBB hashes. Coreboot independently has the same policy layout in
+  `src/soc/intel/apollolake/include/soc/measured_boot.h`.
+  This directly corroborates the traced verification/measurement bits and
+  identifies bit 9 as an S3-related option. The BUP condition requiring bit 9
+  clear now has a named reference counterpart. It strengthens, but does not
+  prove, the inferred S3-exit meaning of `pm_trans` bit 3; neither header
+  defines that transition record or the option's polarity/complete behavior.
+* **Token override semantics:** `Secure_Tokens_APL_GLK.pdf`, printed pages
+  7 and 14, describes signed-token acceptance and a BIOS Secure Boot knob:
+  0 production-key validation; 1 R&D keys/policies; 2 no BIOS BPM validation.
+  Despite the local filename, its body explicitly describes GLK; therefore
+  it is supporting family documentation, not alone proof for this APL unit.
+  MEAnalyzer `MEA.py`, `CSE_Ext_15_Payload_Knob.ext_print`, maps the exact
+  `0x80860030` identifier to these three values for its non-CSME-12+ branch.
+  Together with the target's own authenticated-token parser and value-2
+  consumer, this corroborates the traced override's intended role. It does
+  not establish an accepted token or signing authority for this radio.
+* **IBBL/IBB packaging:** `Signing_and_Manifesting_Guide.pdf`, printed pages
+  19–20, places IBBL, IBB and BPM metadata in the IBB subpartition and
+  describes hashes covering IBBL/IBB/OBB. `UEFI_Firmware_Enabling_Guide.pdf`,
+  pages 9–13, describes BPDT logical boot partitions and TXE loading IBBL
+  into shared SRAM before PMC releases the host from reset. IBB executes
+  in cache-as-RAM and OBB in DRAM. This is not a first-GPT-partition boot rule;
+  the GM-specific later eMMC/GHS selection still requires its own trace.
+* **Two meanings of FIT:** the Flash Image Tool configures/stitches IFWI;
+  the runtime Firmware Interface Table conveys the policy and hashes.
+  These must not be treated as the same object. Slim Bootloader's
+  `Platform/ApollolakeBoardPkg/Script/StitchLoader.py:506` checks a UEP
+  component at relative offset `0x30`, rejecting a nonzero low nibble.
+  This is a tool eligibility check, not a live fuse measurement, and its
+  offset must not be transplanted into the GM image without layout matching.
+* **ROM-bypass lead:** `559702_SPI_SMIP_Programming_Guide.pdf`, page 14,
+  describes an optional TXE ROM-bypass region beginning at flash offset 4 KiB;
+  absent ROM bypass has region size zero. The bring-up guide also describes
+  this development component. Neither establishes that the production GM
+  image contains it, or that the inaccessible SPI tail contains the writer.
+* **ELK status caution:** upstream kernelflinger
+  `libfastboot/fastboot.c:1272` publishes `secure=no` as a literal string.
+  That reference behavior is not a fuse/policy measurement and requires
+  binary matching before attributing the same implementation to GM ELK.
+
+No exact `pm_trans` or `SbPolicies` definition was found in the searched
+reference text/source. The SPI/SMIP guide's section titled “TPM Configuration
+and Boot Guard OEM Policy” only documents TPM presence/location in the shown
+table; its title is not evidence that it explains the missing override.
+The most useful next static comparison is the newly named `Sb_S3_Opt` field
+against the BUP bit-9 branch and the CSE transition-record producer. Policy
+creation and publication are corroborated; the physical event/producer PC
+and a persistent custom-image boot path remain unresolved.
+
+#### Additional reference documents: recovery straps and VIP flash — 2026-11-17
+
+Eight additional PDF filenames were inspected. The explicitly named Intel
+334817 volume 1 revision 004 and 334819 volume 3 revision 005 files are
+byte-identical to the earlier numeric filenames. The other six additions
+are five Renesas manuals and a Bosch VCURH1 regulatory description.
+
+A previously missed lead in Intel 334817, section 2.30/table 2-33, printed
+page 44: `GPIO_47` selects **Force DnX FW Load**, described as recovery for
+corrupted firmware; `GPIO_39` selects **CSE ROM bypass** to patch space;
+`GPIO_44` allows SPI as a boot source. Straps are normally sampled about
+95 ms after `RSM_RST_N` deassertion, with RTC-dependent qualifications.
+These are Intel GPIO numbers, not connector pin numbers or established
+Linux GPIO offsets. The manual is E3900-family reference material; A3960
+applicability and this board's routing/strapping must be verified before
+any experiment. No evidence yet connects these straps to VIP outputs.
+
+Neither strap is documented here as an authentication-disable switch.
+The Apollo Lake Signing and Manifesting Guide section 7.2 specifies that
+DnX checks platform/OEM identifiers and requires a signed image when the
+corresponding fused signed-image configuration applies. It identifies the
+OEM Key Manifest signing key for DnX signing. Thus forced DnX is a possible
+independent recovery lead, not proof of arbitrary image acceptance, ELK
+entry, or recovery availability on this radio. No pins were manipulated.
+
+Renesas `RH850 Code Flash Library` section 4.4.15 documents
+`R_FCL_CMD_GET_READ_PROTECT_FLAG` (one means set, zero clear). This is an
+on-MCU library operation, not a UART wire command. The F1K/F1KM/F1KH Flash
+Memory Hardware Interface manual section 6.3.17 explains configuration-area
+access using `BFASELR` from on-chip RAM; section 7.1 describes ID-gated
+FACI operations. These supply useful targets when identifying existing VIP
+firmware handlers, but do not establish that Probe's IPC UART exposes them
+or determine this VIP's current protection state. No flash configuration,
+protection flags or ID settings were changed.
+
+The Bosch FCC document is for VCURH1 with Qualcomm 8195/8155, RH850F1KM/KH,
+and QNX/Blackberry virtualization. It is not a description of this Intel/GHS
+radio and cannot establish its reset wiring or key policy. The new references
+do not establish a usable signing key or resolve the pre-RBE transition writer.
 
 #### Live Apollo Lake fuse/status check — 2026-11-17
 
@@ -1653,11 +2597,12 @@ The following addresses are x86 ELF virtual addresses, not VIP offsets.
   for state **0**, and `unlocked` is true for state **1**. Consequently these
   responses describe ELK lock state, not a direct measurement of Intel ROM,
   TXE authentication, fuses, or early-firmware signature enforcement.
-- The getter caches its result at `0x12902A44`, reads through `0x128B5900`,
-  and contains an `OEMLock` failure message with a locked fallback. A separate
-  missing-value path can select state 1 after additional predicates; its full
-  provisioning semantics have not been established. Do not claim the previous
-  timed-out unlock command caused the observed state.
+- The getter caches its result at `0x12902A44` and reads through `0x128B5900`.
+  **Corrected 2026-11-17:** the `OEMLock` diagnostic string does not identify an
+  EFI-variable backend in this Y175 executable. The callback resolves to physical
+  RPMB or an emulated record in `teedata`, as traced below. Missing-record fallback
+  can report unlocked without a persisted unlocked byte. Do not attribute the
+  observed state to the earlier timed-out unlock attempt.
 - The fastboot command record at `0x12902030` points to downloaded-image boot
   handler `0x128044C0`. That handler copies the download into a buffer and
   schedules boot. In main `0x12800690`, the returned image proceeds to loader
@@ -1668,6 +2613,67 @@ The following addresses are x86 ELF virtual addresses, not VIP offsets.
 - Separate function `0x128B4E20` writes a `SecureBoot` firmware variable from
   parsed ABL boot arguments. This is distinct from the lock-state predicate
   behind fastboot `secure`.
+
+#### Y175 ELK lock state and eligibility — callback trace, 2026-11-17
+
+Target: x86 little-endian 32-bit ELF, image base `0x12800000`, SHA-256
+`3acbf174207a2c621d24ba5a1278c3b214b11c88e580228599057b4ad3a8951c`.
+These addresses apply to Y175; the older Y181B addresses in §2.3.2 are not
+interchangeable. This pass used headless Ghidra and checked critical assembly.
+
+- Publication at `0x12805B90` and registration at `0x12805D90` use
+  `0x128A79C0` (state equals 1: unlocked) and `0x128A79F0` (state equals 0:
+  secure). Both call cached getter `0x128A7550`; neither reads IBB enforcement
+  fuses. Separately, `secureboot` uses `0x128B4C90` to read `SecureBoot`, whose
+  writer `0x128B4E20` consumes ABL arguments. These names are not synonyms.
+- Getter `0x128A7550` calls `0x128B5900`, which dispatches through
+  `0x12E0413C`. Initializer `0x128B5C30` selects the backend. Its
+  `0x128AB670` predicate is compiled false. A true virtual-media predicate
+  (`0x128AB680`) or true `0x128B4D40` selects physical-RPMB initialization.
+  The latter requires a successful lifecycle query reporting value 1 and
+  `SecureBoot == 1`. Successful initialization selects reader `0x128B6050`;
+  EFI_NOT_FOUND falls back to emulation; other initialization errors return.
+  Otherwise emulation reader `0x128B6700` is selected directly.
+- Physical reader `0x128B6050` reads one RPMB block at address 2 (or `0x82`
+  for virtual media), through `0x128B7260` and the selected RPMB operations.
+  Emulated reader `0x128B6700` reads 256 bytes at `teedata + 0x200`
+  (or `+0x8200` for virtual media), through `0x128B6EE0` and the disk-I/O
+  helper `0x128B6C30`. Assembly confirms the register-passed offset and read
+  flag; a default decompiler prototype omits them. Both expect marker `0xDC`
+  followed by the state byte. Missing marker returns EFI_NOT_FOUND; success
+  supplies the byte whose bit 0 becomes the cached state.
+- On EFI_NOT_FOUND and non-virtual media, the getter initially selects locked,
+  then calls lifecycle helper `0x128AF830`. **This Y175 caller tests its return
+  status, not its output lifecycle boolean:** success or EFI_NOT_FOUND sets
+  provisioning flag `0x12A0D098 = 1` and cached state 1. Other errors leave
+  locked. Therefore the older shorthand “non-ENDUSER only” must not be applied
+  to this Y175 branch. Instruction range `0x128A75B2–0x128A75C9` confirms it.
+- `flashing get_unlock_ability` handler `0x12805FB0` calls `0x12806030`.
+  Provisioning accessor `0x128A7A20` short-circuits to allowed (result 0).
+  The next class predicate `0x128A6640` is compiled false in this image.
+  Otherwise it locates `persistent` and reads its final byte: exactly 1 allows,
+  another value or read failure denies (result 1); lookup failure allows.
+  Result 2 is the class-refusal branch, unreachable through that constant-false
+  predicate. The handler prints the eligibility text and completes with OKAY.
+- Y175 unlock handler `0x12805F10` returns immediately if already unlocked and
+  not provisioning. Otherwise it checks eligibility; a refusal prints
+  `Unlocking anyway since this is not a User build` and still calls
+  `0x12805C10(1,1)`. This differs from the older Y181 refusal trace.
+  The transition may erase userdata when not provisioning, then calls setter
+  `0x128A7640` → `0x128B58D0` → callback `0x12E04138`.
+  Physical writer `0x128B5F50` or emulated writer `0x128B6640` writes marker
+  `0xDC` and the state byte; the cache changes after reported success.
+  This is a genuine state-write path, not evidence it was exercised successfully.
+
+Read-only backup cross-check: the saved Y175 eMMC user image has final
+`persistent` byte `00` and marker/state bytes `00 00` at both `teedata + 0x200`
+and `+0x8200`. These are not valid emulated state records. Together with the
+previous live unlocked/eligible reports, this is consistent with provisioning
+fallback, but does not identify the backend selected during that live ELK boot.
+A runtime callback/lifecycle observation or equivalent boot trace is still needed
+for that attribution. No lock command, userdata erase, RPMB write, or radio
+parameter change was performed in this pass. ELK state does not establish that
+GHS or IBB uses the same state or permits unsigned normal-storage boot.
 
 The live dump contains `$MN2` manifest headers at `0x28C070` (IBBP),
 `0x220130` (FTPR), and `0x30B688` (NFTP), plus `BPM.met` in IBBP. These
@@ -1925,7 +2931,7 @@ hash; it cannot establish MAC authenticity without the RPMB authentication key.
 
 A subsequent native T1 test loaded a matching standard `igb` module for PCI
 `8086:157c`, established VLAN-5 IP/SSH connectivity, and read a hash-matching
-64 MiB eMMC sample at 3.98 MiB/s. See [networking](../platform/networking.md#native-elk-ram-linux-t1-test--2026-11-17).
+64 MiB eMMC sample at 3.98 MiB/s. See [elk_recovery.md](../platform/elk_recovery.md#32-t1-ethernet-test-procedure-and-results) (`platform/networking.md` was retired in the platform/ reorg; this result now lives there).
 This proves an alternate readback path, not improved long-duration reliability.
 
 The complete graphics log shows i915 bound successfully but both native
@@ -2089,6 +3095,53 @@ The eDP link-information warning refers to the disabled eDP path; the verified
 panel uses HDMI-A-1. This bounded inspection is not a complete stress test or
 an assurance that all peripherals operate correctly. The shared build workspace
 was left untouched during the physical test and runtime correction.
+
+#### Linux 7.3.5 stable04 — live boot verified 2026-11-17
+
+The latest locally available image, `boot_r04/boot.img`, was RAM-booted after
+AAOS readiness was verified (`sys.boot_completed=1`, Android slot `_a`) and
+its clock synchronized to the host. CAN profile 0D returned `670E`; the scoped
+F000/8180 request returned `7101F000818003`. The temporary application-security
+word was restored to its saved zero value and read back. ELK was identified by
+USB interface FF/42/03, not VID/PID alone: AAOS also exposed 8087:09EF with
+ADB interface FF/42/01 during this round trip.
+
+Image size 30,306,304 bytes; SHA-256
+`3cbaee1718c4f368008fd1e735ea367fd787aa4cb906bab0682fb6d647598f38`.
+Raw USB download completed in 0.85 seconds; `boot` returned OKAY. USB shell
+and subsequent VLAN-5 T1 SSH both returned `7.3.5-probe-stable04`; SSH returned
+UID 0. Framebuffer was i915drmfb, 2400×960. T1 addressing, public-key access and
+Dropbear listener were configured in RAM. No partition flashing was performed.
+
+The new boot again reports `ABL.status=0x9` and `ABL.secureboot=1`. These are
+inherited boot arguments, not a direct CSE-register or surviving IBB-policy
+memory measurement in that first round trip. A bounded full captured wake
+replay (1,193 frames echoed; 520 radio frames) temporarily recovered CAN replies,
+but errors recurred after reducing replay to `0x529`; the display subsequently
+went off. This does not establish that `0x529` alone maintains this Probe boot.
+
+After a user-performed power cycle on 2026-11-17, full captured replay was restored.
+CAN extended session and profile 0D succeeded, followed by `7101F000818003`;
+the temporary VIP word was restored. AAOS readiness was not independently
+verified by ADB in this repeat. ELK interface FF/42/03 enumerated, accepted the
+same stable04 image, and USB shell confirmed execution. Full replay was retained
+through Probe operation. One transmit-echo timeout caused automatic controller
+recovery; subsequent samples showed increasing radio RX and no additional errors.
+
+Read-only live host-memory checks, repeated over root T1 SSH, returned byte
+`0x01` at `0xC0200`; the containing dword was `0xFEF92001`. Neighboring dwords
+`0xC0204` and `0xC020C` were both `0x000055AA`, consistent with reported BPDT
+signatures. The tested authentication bit is therefore set in the surviving
+memory, consistent with `ABL.status=0x9` and `ABL.secureboot=1`. Establishing that
+this location was not repurposed after IBB remains necessary before treating
+it as conclusive evidence of the original gate value. These reads do not identify
+the RBE hardware-versus-stored-UEP selection or prove mismatch rejection by a
+modified storage image. Framebuffer reported 2400×960 with blank state 4;
+framebuffer registration alone does not establish visible display output.
+
+The Mac VLAN and Probe VLAN-5 public-key SSH listener were restored using runtime
+configuration. T1 SSH verified kernel identity, UID 0, and the same policy byte.
+No persistent firmware or partition writes were performed.
 
 #### Linux 7.3.5 stable02 — verified 2026-11-17
 
@@ -2623,9 +3676,7 @@ It was not repeated in this static pass and must not be merged with the newer
 │     └── "GHS: Android and INTEGRITY slot mismatch. INTEGRITY: %s            │
 │          Android: %s Rebooting..."                                          │
 │                                                                              │
-│  POTENTIAL WEAKNESS:                                                         │
-│  A/B metadata uses CRC32 only, not cryptographic signature                   │
-│  "VMM: Warning: A/B metatdata CRC failure!"                                  │
+│  See §6.1 for the CRC32-only weakness assessment.                           │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -3224,69 +4275,55 @@ an exception to these shipped defaults. No live write was attempted.
 │  │   └── "VipBootCycle: 0x%02x"                                        │    │
 │  │                                                                      │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
-│         │                                                                    │
-│         │ IPC to Android                                                     │
-│         ▼                                                                    │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                    Android VIP Services                              │    │
-│  │                                                                      │    │
-│  │   ├── gm_protokey (/vendor/bin/gm_protokey)                         │    │
-│  │   │   └── Handles EEPROM-derived security state                     │    │
-│  │   │                                                                  │    │
-│  │   └── Power Mode Service                                             │    │
-│  │       └── vendor.gm.powermode@1.0::IPowerModing                     │    │
-│  │                                                                      │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+The "Android VIP Services" layer below this diagram in the original 2026-01-05
+pass duplicated detail that §0.2 and §4.7.1 above now establish at instruction
+level, and conflated two distinct dealer-recovery-reboot producers that write
+similar-looking recovery arguments — they are not the same caller:
+
+- `gm_protokey` (`/vendor/bin/gm_protokey`): writes `--wipe_data --reason=bcm_replacement`
+  after a ProtoKey validation failure, then requests recovery reboot through
+  PowerModing. See §0.2's code-attribution note (2026-11-14).
+- `vendor.gm.powermode@1.0::IPowerModing`'s `plmanager`
+  (`PowerModing::rebootSeeDealer()` / `PowerModing::bootFailed()`): writes
+  `--show_return_to_dealer` after its own independent 3-failure counter. See §4.7.1.
+
+Neither producer is the GHS lifecycle failed-boot counter in §2.2.1 or recovery's
+own `boot_cycle_counter` file; do not merge these four counters.
 
 ---
 
 ## 6. Security Considerations
 
-### 6.1 Potential Weaknesses Identified
+**History:** §6.1/§6.2 originally dated to the 2026-01-05 static-only pass and
+described only coarse, qualitative risk categories (A/B metadata, BCB, trigger
+files, OTA interface) without the confirmed live-ELK, MEC/ADB-cert or
+dealer-recovery findings that the rest of this document now establishes at
+instruction level. That coarse framing is folded into the dated findings below
+rather than left standing beside them; §6.1's table keeps only the one item
+(A/B metadata CRC32) that the later work has not superseded with a more specific
+finding, since §3.1 already cross-references this section instead of repeating it.
 
-| Area | Weakness | Evidence |
-|------|----------|----------|
-| **A/B Metadata** | CRC32 only (no signature) | `VMM: Warning: A/B metatdata CRC failure!` |
-| **BCB Access** | Writable from Android | `misc` partition accessible |
-| **Trigger Files** | File-based triggers | `/update_cache/recovery/command` |
-| **IPC Channels** | Multiple exposed interfaces | `/dev/ghs/*` devices |
+### 6.1 Confirmed and assessed weaknesses (consolidated 2026-11-17)
 
-### 6.2 Attack Surface Analysis
+| Area | Weakness/finding | Risk | Evidence / detail |
+|------|----------|------|----------|
+| **A/B Metadata** | CRC32 only, not a cryptographic signature | MEDIUM-HIGH for forcing a specific slot; GHS/AVB still verifies the loaded image itself | §3.1; `VMM: Warning: A/B metatdata CRC failure!` |
+| **BCB / recovery command file** | Writable from Android by specific privileged callers only (not by an ordinary UID-2000 shell) | MEDIUM, bounded by permissions | §4.2, §4.7.1 (`system:cache 0770`/`system:system 0770`, UID-2000 shell excluded) |
+| **MEC/ADB certificate gate** | Confirmed fail-closed bypass: VIP-reported MEC in [1,255] disables the GM cloud-certificate ADB requirement; MEC socket is unauthenticated plaintext | MEDIUM — depends on MEC value, not independently user-settable from Android; spoofable on an already-compromised guest | §2.3.7 (code-verified 2026-08-26, target readings 2026-11-12) |
+| **ELK/Kernelflinger live entry** | Confirmed live CAN-driven (F000/8180) and native-Linux (HECI) entry into ELK fastboot; ELK reports `unlocked=yes`/`secure=no` as its own OEMLock device-state, not a platform authentication measurement; automatic SPI-ELK fallback exists when both GHS A/B images are blank | Access to ELK fastboot confirmed; unsigned-image/arbitrary-replacement acceptance NOT confirmed (early eMMC-image authentication gate rejects unsigned/incorrectly signed GHS replacements) | §2.3.2–§2.3.3 mega-section (2026-11-15/17) |
+| **Dealer-recovery write path** | Two distinct Android-side producers (`gm_protokey`/bcm_replacement, `plmanager`/`rebootSeeDealer`) can request dealer/recovery boot; both write to a permission-gated file, not an open channel | LOW-MEDIUM, bounded by the same file permissions above | §0.2, §4.7.1, §5.1 |
+| **Trigger files (USB markers, protokey)** | File-based triggers (`gm_reboot_normal`, `gm_capture_log`, protokey recovery) | LOW-MEDIUM; ownership/ACL and recovery-only reachability checked | §4.1, §4.5–§4.6 |
+| **OTA interface** | Signature/AVB-protected; no accepted-unsigned-package path established | LOW | §3.3, §3.4 |
+| **IPC channels** | Multiple exposed `/dev/ghs/*` nodes and VMM IPC connections (textlog/audit/cal/camera/ota-isys/etc.) | Unassessed beyond inventory — no exploitable validation gap demonstrated | §2.4 |
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    BOOT/UPDATE ATTACK SURFACE                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  1. A/B METADATA MANIPULATION                                                │
-│     ├── Risk: MEDIUM-HIGH                                                    │
-│     ├── Vector: Modify misc partition A/B metadata                          │
-│     ├── Protection: CRC32 only (weak)                                       │
-│     └── Impact: Force boot to specific slot                                 │
-│                                                                              │
-│  2. BCB COMMAND INJECTION                                                    │
-│     ├── Risk: MEDIUM                                                         │
-│     ├── Vector: Write recovery command to BCB                               │
-│     ├── Protection: Partition permissions                                    │
-│     └── Impact: Force recovery/special boot modes                           │
-│                                                                              │
-│  3. TRIGGER FILE MANIPULATION                                                │
-│     ├── Risk: LOW-MEDIUM                                                     │
-│     ├── Vector: Create/modify trigger files                                 │
-│     ├── Protection: File ownership checks                                    │
-│     └── Impact: Trigger reboots, protokey recovery                          │
-│                                                                              │
-│  4. OTA INTERFACE                                                            │
-│     ├── Risk: LOW (signature protected)                                      │
-│     ├── Vector: /dev/ghs/ota-isys                                           │
-│     ├── Protection: Package signatures, AVB                                  │
-│     └── Impact: Limited without valid signatures                            │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+None of the rows above establish a confirmed guest escape, GHS privilege
+elevation, accepted unsigned normal-boot image, or persistent unlock; see §0.1's
+evidence-limits note and §2.3.3's root-filesystem-boundary caution, which both
+apply across this table.
 
 ---
 
@@ -3325,6 +4362,11 @@ an exception to these shipped defaults. No live write was attempted.
 
 ## Appendix A: GHS Boot Functions
 
+**Index only — see §1.1 and §3.1 for the analysis.** This appendix condenses the
+2026-01-05 boot-sequence/A/B-boot call trees already given in full in §1.1 and
+§3.1 above, for grep convenience; it adds no evidence beyond those sections and
+predates the 2026-08/11 live-boot findings elsewhere in this document.
+
 ```
 Initialization Sequence:
 ├── BSP_InitializeOnBootCpu
@@ -3352,6 +4394,10 @@ VMM Android Boot:
 ```
 
 ## Appendix B: Error Messages Reference
+
+**Index only — see §1, §2.2, §3.3, §3.4 for the analysis.** This appendix is a
+flat grep-friendly list of literal strings already individually cited and
+analyzed in the referenced sections; it adds no evidence of its own.
 
 ```
 Boot Errors:
@@ -3383,6 +4429,34 @@ OTA Errors:
 
 ---
 
-**Document Version:** 1.0
-**Analysis Method:** Static binary analysis (strings, radare2), init script analysis
+## Open conflicts
+
+This document's own evidence is internally reconciled throughout via inline
+"Corrected YYYY-MM-DD" notes (see §2.3.2, §2.3.3, §2.3.6, §2.3.7, §4.2, §4.4,
+§4.5.2, §4.7 above); none of those are left as stale dangling errata. Two items
+that touch this document are owned and tracked elsewhere, not here:
+
+1. **MEC value semantics** (nonzero/per-unit MEC meaning "bypassed/unlocked" vs.
+   "production/locked") — this document's §2.3.6–§2.3.7 contribute the live
+   per-unit MEC table (Y175=244, Y177=0, Y181 bench=207, Y181 target=241,
+   Y181B=227, Y175 VIP UART=0xFF) and the code-verified MEC-gated ADB
+   certificate-bypass chain, but does not itself settle the general semantic
+   rule across builds. Tracked in GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md's
+   and EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md's own Open Conflicts.
+2. **VMM1/.vmm1 task-code bitness** (32-bit ELF class vs. disassembled-64-bit
+   task code) — surfaced during the §0.4 tool-setup history absorbed from the
+   retired `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md`. Tracked in
+   VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md's Open Conflicts; the §0.4 pivot to
+   `elk_inner.elf` as the binary holding the real AVB guards answers a different
+   question and does not resolve this one.
+
+---
+
+**Document Version:** 2.0 (consolidated 2026-11-17)
+**Analysis Method:** Static binary analysis (strings, radare2, Capstone, Ghidra/PyGhidra
+headless decompilation, symbol/relocation/xref analysis), init script analysis, Unicorn/QEMU
+emulation, native x86 build reproduction, and live-hardware verification (CAN/UART/HECI/MEI/USB,
+T1 SSH, read-only CPU-firmware-window and eMMC/RPMB readback). The 2026-01-05 baseline used
+static-only methods; §0.1–§0.4, §2.2.1–§2.3.7 and §4.2–§4.7.1 add the later dynamic/live-hardware
+layer dated throughout the body.
 **Classification:** Security Research

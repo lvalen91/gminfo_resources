@@ -1,16 +1,29 @@
-# GM Info 3.7 (A11 Module) Complete Boot Chain Analysis
+# GM Info 3.7 (A11 Module) Boot Chain Analysis
 
-**Date:** 2026-01-05
-**Module:** A11 CSM (Central Stack Module)
-**Vehicle:** 2024/2025 Chevrolet Silverado 2500 HD (T1XX Platform)
-**Firmware Version:** Y181 (Primary Analysis), Y177 (Comparison)
+**Module:** A11 CSM (Central Stack Module) | **Vehicle:** 2024/2025 Chevrolet Silverado 2500 HD
+(T1XX platform) | **Firmware:** Y181 primary analysis, Y175/Y177 compared where it matters.
 
-> Companion document: the binary-forensic evidence base (module file numbers, header
-> magics `1NMH`/`1SHG`, payload hashes, ABL build metadata, CSE key list, SVN
-> anti-rollback strings, `/dev/flash/*` paths, `CONFIG_GHS_*` flags, full embedded kernel
-> cmdline, recovery SEPolicy types) lives in `research/BOOT_CHAIN_ANALYSIS.txt`. This
-> document holds the architectural analysis built on that evidence; the two are
-> complementary (neither supersedes the other).
+**Scope:** the architectural, binary-RE walkthrough of one full boot — power-on through VIP,
+Intel CSE/ABL, GHS INTEGRITY, AVB, and AAOS init — plus the security-boundary table this walkthrough
+supports and the research-tier QEMU-portability evidence (raw kernel-config/GHS-coupling facts and
+the per-dependency portability table) that `platform/emulator.md` itself points back into.
+
+**What does NOT live here:** the raw byte-level forensic evidence base (hashes, hex dumps, string
+offsets, full `cmp` diffs) — that's `BOOT_CHAIN_ANALYSIS.txt` (BCA), this doc's explicit companion;
+neither supersedes the other. GHS hypervisor architecture detail (PCI driver table, full task/IPC
+maps, `.boottable` config, `/dev/ghs/*`+SELinux labels, attack-surface catalog) is
+`GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` (GIC). Live-tested recovery/ELK/update privilege
+boundaries, the full SBI→MEC→ADB-cert bypass chain, and A/B+BCB+trigger-file mechanics are
+`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` (GBUR). The canonical EEPROM map is
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (ELA). Seed-key/SecurityAccess/ProtoKey crypto detail is
+`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK). AVB/vbmeta parser fuzz-target RE is
+`VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` (VPF). QEMU bring-up narrative/current status and the
+Y175/Y177/Y181(B) firmware-identity comparison live in `platform/emulator.md` and
+`platform/firmware_versions.md` respectively — this doc cites them, not restates them.
+
+**Evidence tags** (reused from `platform/README.md`): `[C]` confirmed live, `[V]` verified,
+`[FW]`/`[S]` static firmware, `[inferred]`, `[U]` unverified, `[X]` external. Dated per-claim tags
+override surrounding prose.
 
 ---
 
@@ -28,49 +41,49 @@
 10. [Security Boundaries](#10-security-boundaries)
 11. [Key Findings](#11-key-findings)
 12. [Files Analyzed](#12-files-analyzed)
-13. [Appendix: Error Messages](#appendix-a-error-messages)
-14. [Appendix F: Kernel Configuration + GHS Coupling (2026-09)](#appendix-f-kernel-configuration--ghs-coupling-2026-09)
-15. [Appendix G: QEMU Portability Assessment (2026-09)](#appendix-g-qemu-portability-assessment-2026-09)
+13. [Appendix A: Error Messages](#appendix-a-error-messages)
+14. [Appendix B: Timing Specifications](#appendix-b-timing-specifications)
+15. [Appendix C: IPC Protocol](#appendix-c-ipc-protocol)
+16. [Appendix D: Binary Evidence (pointer)](#appendix-d-binary-evidence-pointer)
+17. [Appendix E: Kernel Configuration + GHS Coupling](#appendix-e-kernel-configuration--ghs-coupling)
+18. [Appendix F: QEMU Portability — Dependency Classification](#appendix-f-qemu-portability--dependency-classification)
+19. [Open Conflicts](#open-conflicts)
 
 ---
 
 ## 1. Hardware Architecture Overview
 
-The GM Info 3.7 A11 module uses a **dual-processor architecture** with the Renesas VIP (Vehicle Interface Processor) managing power and vehicle interfaces while the Intel Atom SoC runs the GHS hypervisor and Android guest VM.
+The A11 module uses a dual-processor architecture: the Renesas VIP (Vehicle Interface Processor)
+manages power and vehicle interfaces; the Intel Atom SoC runs the GHS hypervisor and the Android
+guest VM.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                     A11 CSM (Central Stack Module)                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
 │   ┌─────────────────────────┐         ┌─────────────────────────────────┐   │
-│   │  RENESAS VIP (TM52176)  │◄══════►│  INTEL ATOM x7-A3960 (J6/SoC)   │   │
-│   │  RH850/F1K MCU        │  HDLC   │  Apollo Lake (Broxton)          │   │
-│   │                         │   IPC   │                                  │   │
-│   │  • VIP_BOOT (~128KB)    │         │  • SOC_ABL (Bootloader)         │   │
-│   │  • VIP_APP (~1.9MB)     │         │  • GHS INTEGRITY Hypervisor     │   │
-│   │  • EEPROM Access (I2C)  │         │  • Android AAOS (Guest VM)      │   │
-│   │  • CAN/LIN Interface    │         │  • 8GB LPDDR4 / 64GB eMMC        │   │
+│   │  RENESAS VIP             │◄══════►│  INTEL ATOM x7-A3960 (J6/SoC)   │   │
+│   │  R7F7015873AFP           │  HDLC   │  Apollo Lake (Broxton)          │   │
+│   │  RH850/F1K, G3KH core    │   IPC   │                                  │   │
+│   │  (trace marking TM52176) │         │  • SOC_ABL (bootloader)         │   │
+│   │  • VIP_BOOT (~128KB)     │         │  • GHS INTEGRITY hypervisor      │   │
+│   │  • VIP_APP (~1.9MB)      │         │  • Android AAOS (guest VM)       │   │
+│   │  • EEPROM access (I2C)   │         │  • 8GB LPDDR4 / 64GB eMMC        │   │
+│   │  • CAN/LIN interface     │         │                                  │   │
 │   └────────────┬────────────┘         └──────────────┬──────────────────┘   │
-│                │                                      │                      │
-│                │                                      │                      │
 │   ┌────────────▼────────────┐         ┌──────────────▼──────────────────┐   │
 │   │  M24C64 EEPROM (8KB)    │         │  Samsung eMMC (64GB)            │   │
-│   │  • Security Flags       │         │  • A/B Partitions               │   │
-│   │  • VIN, Calibrations    │         │  • boot_a/b, system, vendor     │   │
-│   │  • ProtoKey Config      │         │  • vbmeta, misc partitions      │   │
+│   │  Security flags, VIN,   │         │  A/B partitions, boot_a/b,      │   │
+│   │  calibrations, ProtoKey │         │  system, vendor, vbmeta, misc   │   │
 │   └─────────────────────────┘         └─────────────────────────────────┘   │
-│                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
-
-### Key Components
 
 | Component | Chip | Function |
 |-----------|------|----------|
 | **Main SoC** | Intel Atom x7-A3960 | 4-core CPU, GPU, runs GHS + Android |
-| **VIP MCU** | Renesas TM52176 (RH850) | Power control, CAN/LIN, security |
-| **RAM** | LPDDR4 | 8192 MiB physical; static GHS guest grant 7830 MiB; historical kernel `MemTotal` near 5530 MiB. Y181B recovery E820 usable total **5743.55859375 MiB** measured 2026-11-12; grant-to-visible cause unresolved. [Map and limits](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
+| **VIP MCU** | Renesas R7F7015873AFP (RH850/F1K; trace marking TM52176) | Power control, CAN/LIN, security |
+| **RAM** | LPDDR4, 8192 MiB physical | Static GHS guest grant / visible-memory split, E820 measurement, grant-vs-visible gap: owned by [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md §7a3](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) — not restated here. |
 | **Storage** | Samsung KLMCG4JEUD | 64GB eMMC |
 | **EEPROM** | ST M24C64 | 8KB configuration storage |
 | **CAN Transceiver** | NXP TJA1145T/FDJ | CAN with partial networking |
@@ -89,13 +102,15 @@ The GM Info 3.7 A11 module uses a **dual-processor architecture** with the Renes
 | 4 | Android AVB | T=500-1500ms | Verified boot validation |
 | 5 | Android AAOS | T=1500-15000ms | Full Android boot |
 
+These are estimates derived from the timer/log evidence below (Appendix B), not an independently
+sourced trace.
+
 ---
 
 ## 3. Phase 0: Power On
 
 ```
 Vehicle Battery → A11 Power Supply
-         │
          ├── VIP MCU receives power first (always-on domain)
          ├── VIP monitors GMLAN for wake signals
          └── VIP controls SoC power rails via GPIO
@@ -108,7 +123,7 @@ Vehicle Battery → A11 Power Supply
 | `cal_soc_soh_timeout_msec` | 1500ms | State-of-Health check |
 | `cal_hypervisor_startup_timeout_ms` | 300ms | GHS boot timeout |
 | `cal_shutdown_timeout_msec` | 3500ms | Graceful shutdown |
-| `cal_startup_fault_timeout_sec` | 6000ms | Full boot timeout |
+| `cal_startup_fault_timeout_sec` | 6000ms (see [Open Conflicts #1](#open-conflicts)) | Full boot timeout |
 
 ### Wake Sources
 
@@ -122,7 +137,7 @@ Vehicle Battery → A11 Power Supply
 ## 4. Phase 1: VIP (Renesas RH850) Boot
 
 **Duration:** T=0-50ms
-**Processor:** Renesas R7F7015873AFP (RH850/F1K, G3KH core; trace TM52176)
+**Processor:** Renesas R7F7015873AFP (RH850/F1K, G3KH core; trace marking TM52176)
 
 ### 4.1 VIP_BOOT Execution
 
@@ -138,55 +153,48 @@ VIP_BOOT Sequence:
 
 ### 4.2 VIP_APP Initialization
 
-| Property | Value |
-|----------|-------|
-| **Version (mislabeled "Y177", corrected 2026-11-12)** | 2B.174.4.1 |
-| **Build Date** | 24Mar22-0256 |
-| **Bolo Version** | B2.9C.01.01 |
+| Property | Value | Source |
+|----------|-------|--------|
+| **VIP_APP version (Y181B, live `moduleinfo`)** | `2B.B5.01.01`, build `25Jun19-2209`, image `appl`, part 86331656 | `update_cache/update/moduleinfo`, direct read, 2026-11-12 |
+| **VIP_BOOT version** ("Bolo") | `B2.9C.01.01`, build `23Jul28-1212`, part 85056831 | Same across Y175/Y177/Y181B — part number identical, per `platform/firmware_versions.md` |
+| **SoC-side module (part 85738845)** | version `2344` | Live-read, module slot 72 — naming conflict with "SOC_ABL" used in §5.2/§10.1, see [Open Conflicts #3](#open-conflicts) |
+| **FIDM** | version `6`, part 84961617 | module 81 |
+| **ARXML Version** | 22.22.158 | — |
+| **IPC Version** | 4.1.0 | — |
+| **HwVariant** | 56 | — |
 
-> **Corrected 2026-11-12:** the "Version (Y177)" label on this table was wrong. `2B.174.4.1`
-> (build `24Mar22-0256`) is the version string from `enumeration/VIP_log_2B.174.4.1_10JUL24.txt`, a
-> UART capture whose build date predates even Y175's own VIP_APP (`2B.175.1.5`, build
-> `24Apr23-2202`, part 85759599, per `enumeration/Y175/Y175_VIP.log` and
-> `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §1). Y177's actual VIP_APP (part 86283151) builds
-> `25Feb28-0330` and has no confirmed version string in this repo (`VIP_FIRMWARE_Y177_Y181_COMPARISON.md`
-> §1 lists it as `—`). So `2B.174.4.1` is an older/unidentified-unit capture, not a Y177 value — do
-> not read this row as Y177's VIP_APP version.
->
-> **Updated 2026-11-12 (live Y181B `update_cache/update/moduleinfo`, directly read):** on Y181B,
-> VIP_APP (module 1, part 86331656, DLS CN) = `2B.B5.01.01`, build date 25Jun19-2209, image
-> `appl`; VIP_BOOT (module 71, part 85056831, DLS AA) = `B2.9C.01.01`, build date 23Jul28-1212, image
-> `bolo`. So the "Bolo Version" row above is the **VIP_BOOT** version, not a VIP_APP field, and it is
-> the same across Y175/Y177/Y181B (VIP_BOOT part number identical, per `platform/firmware_versions.md`).
-> SoC boot (module 72, 85738845, DLS AB) = `2344`; FIDM (module 81, 84961617) = `6`.
-| **ARXML Version** | 22.22.158 |
-| **IPC Version** | 4.1.0 |
-| **HwVariant** | 56 |
+**History:** an earlier pass of this table carried a row labeled "Version (Y177)" = `2B.174.4.1`
+(build `24Mar22-0256`). That string is from a UART capture (`enumeration/VIP_log_2B.174.4.1_10JUL24.txt`)
+predating even Y175's own VIP_APP (`2B.175.1.5`, build `24Apr23-2202`, part 85759599); Y177's actual
+VIP_APP (part 86283151) builds `25Feb28-0330` and has no confirmed version string in this repo
+(`VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §1 lists it as `—`). Corrected 2026-11-12: do not read
+`2B.174.4.1` as any Y177 value; the row above replaces it with the directly-read Y181B values.
 
 ### 4.3 VIP Module Initialization Sequence
 
 ```
 VIP_APP Module Init:
-├── SS_SWC     - System State Controller (sleep/wake/shutdown)
-├── PLC        - Power Level Control (SoC power sequencing)
-├── J6_CDD     - Intel Atom (J6) Communication Driver
-├── IPC_S      - Inter-Processor Communication Server
+├── SS_SWC      - System State Controller (sleep/wake/shutdown)
+├── PLC         - Power Level Control (SoC power sequencing)
+├── J6_CDD      - Intel Atom (J6) Communication Driver
+├── IPC_S       - Inter-Processor Communication Server
 ├── AMP_MGR_SWC - Audio Amplifier Manager
-├── PROTOKEY   - Security key management
-├── SBAT       - Secure Boot anti-rollback (keyNBID/appNBID generation numbers)
-├── IOHWAB_MIC - Microphone Hardware Abstraction
-└── NAV        - Navigation/GNSS interface
+├── PROTOKEY    - Security key management
+├── SBAT        - Secure Boot anti-rollback (keyNBID/appNBID generation numbers)
+├── IOHWAB_MIC  - Microphone Hardware Abstraction
+└── NAV         - Navigation/GNSS interface
 ```
 
-> SBAT full expansion is **unconfirmed** from firmware strings. The keyNBID/appNBID
-> generation-number scheme matches the UEFI/shim "Secure Boot Advanced Targeting"
-> revocation model (per-component generation numbers that revoke outdated/vulnerable
-> components), which is the leading interpretation. Earlier docs guessed "Authorization
-> Ticket" / "Authentication Table"; treat any full expansion as unverified.
+SBAT's full expansion is **unconfirmed** from firmware strings. The keyNBID/appNBID generation-number
+scheme matches the UEFI/shim "Secure Boot Advanced Targeting" revocation model (per-component
+generation numbers that revoke outdated/vulnerable components) — the leading interpretation, not a
+confirmed one. SBAT/ProtoKey gate-independence detail: `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`.
 
 ### 4.4 EEPROM Read (M24C64)
 
-VIP reads critical configuration from external EEPROM via I2C:
+VIP reads configuration from external EEPROM via I2C at these addresses (walkthrough-level; the
+canonical map, including the settled 0x0A80-vs-0x0A81 marker/data correction, is
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` — read that for authoritative addresses, not this table):
 
 | Address | Size | Content | Purpose |
 |---------|------|---------|---------|
@@ -194,13 +202,13 @@ VIP reads critical configuration from external EEPROM via I2C:
 | 0x0A80 | 2 | Backup SBI Flag | Redundant security flag |
 | 0x0B40 | 1 | Debug Mode Flag | Developer mode |
 | 0x05C0 | 17 | VIN | Vehicle identification |
-| 0x0600+ | Varies | Calibrations | ~30 cal_* parameters |
+| 0x0600+ | Varies | Calibrations | ~30 `cal_*` parameters |
 
 ### 4.5 Security Validation Function (@ 0xb67d0)
 
-**CORRECTED 2026-08-25 — the earlier "Y177 stub" claim in this section was FALSE.** A three-way
-VIP_APP diff (Y175/Y177/Y181) proves this validator is a **full ~906-byte function in all three
-builds**. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2.
+A three-way VIP_APP diff (Y175/Y177/Y181) proves this validator is a **full ~906-byte function in
+all three builds** — no stub (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2 for the authoritative
+diff).
 
 | Version | Function entry | Function Size | Behavior |
 |---------|----------------|---------------|----------|
@@ -208,27 +216,33 @@ builds**. See `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2.
 | **Y177** | `0xb67d4` | ~906 bytes | Full validation |
 | **Y181** | `0xb67d0` | ~906 bytes | Full validation |
 
-~~Y177 = 4-byte stub `mov 0,r10; jmp [lp]`~~ — **retracted.** That "stub" was a
-fixed-absolute-address misread: reading Y177 at the fixed `0xb67d0` lands 4 bytes early on the
-*tail of the previous function* (`00 52 7f 00 …`); the real function begins at `0xb67d4` (+4).
-Aligned body diffs are only 15/906 bytes (Y177↔Y181) and 18/906 (Y175↔Y181) — same source
-recompiled. Identical entry bytes across all three: `88 07 e3 ff 06 c8 99 00 03 3d 05 45 07 4d 83 a7`.
-
 ```
 Validation function (Y181 @0x000b67d0; Y177 @0xb67d4; Y175 @0xb6708) — FULL in every build:
     ├── Load security/seed flag from memory 0x3e06 (0xFEBD3E06)
     ├── Compare against expected value
     ├── Multiple conditional branches
-    ├── Calls to validation functions:
-    │   ├── 0xecd84
-    │   ├── 0xb6652
-    │   └── 0xaee28
+    ├── Calls to validation functions: 0xecd84, 0xb6652, 0xaee28
     └── Returns error codes on failure
 ```
 
-This function gates **ADB/seed auth** (EEPROM SBI at 0x0440), not SELinux mode — no
-`selinux`/`enforce`/`permissive` strings exist anywhere in the VIP image. No stock build runs
-permissive: Y175/Y177/Y181 share a byte-identical init that forces enforcing (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8).
+**History (the "Y177 stub" retraction, settled 2026-08-25/26):** an earlier pass of this corpus
+claimed Y177's build of this function was a 4-byte stub (`mov 0,r10; jmp [lp]`) and that permissive
+Y177 units existed. Both claims are **retracted**. The "stub" reading was a fixed-absolute-address
+misread: reading Y177 at the fixed offset `0xb67d0` lands 4 bytes early, on the *tail of the previous
+function* (`00 52 7f 00 …`); the real function begins at `0xb67d4` (+4 bytes). Aligned body diffs are
+only 15/906 bytes (Y177↔Y181) and 18/906 bytes (Y175↔Y181) — same source, recompiled. Entry bytes are
+identical across all three builds: `88 07 e3 ff 06 c8 99 00 03 3d 05 45 07 4d 83 a7`. Corroborating:
+SOC_HOSTOS (GHS) and SOC_ABL are byte-identical (MD5-matched) between the Y177 and Y181 update
+packages — only VIP_APP differs build-to-build, and that difference is the 15-18 aligned bytes above,
+not a stub. No stock build runs permissive: a previously reported live-permissive Y177 unit was a
+false finding/misread — both CSMs sampled only ever ran stock packages (`research/security/KERNEL_CVE_ANALYSIS.txt`
+Appendix E.8). This retraction is stated once here; every other place in this corpus that touched the
+"Y177 stub"/permissive-Y177 claim (§10.1, §10.2, §11.2, Appendix D.1/D.4 below) now just points back
+to this section instead of restating it.
+
+**What this function gates:** see the resolved VIP-vs-SoC ADB-gate question in
+[Open Conflicts](#open-conflicts) — summary: this is a `$27`/seed-access validator, not the ADB gate
+and not SELinux. No `selinux`/`enforce`/`permissive` strings exist anywhere in the VIP image.
 
 ### 4.6 ProtoKey Processing
 
@@ -243,6 +257,10 @@ ProtoKey Flow:
 │   └── Skip BCM communication
 └── Channel: SERIAL_IPC_PROTO_KEY_CHANNEL
 ```
+
+The crypto/IPC-chain detail downstream of this (the `gm_protokey` → `libpal_security.so` path,
+16-byte-key handling) is owned by `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`'s ProtoKey section —
+pointer only, not restated here.
 
 ### 4.7 SoC Power Enable
 
@@ -260,7 +278,7 @@ Power Sequence:
 |----------|---------|---------|
 | `cal_background_sleep_timeout_sec` | 10 | Background sleep delay |
 | `cal_sleep_fault_timeout_sec` | 900 | Sleep fault timeout (15 min) |
-| `cal_startup_fault_timeout_sec` | 15 | Boot timeout |
+| `cal_startup_fault_timeout_sec` | 15 (see [Open Conflicts #1](#open-conflicts)) | Boot timeout |
 | `cal_suspend_to_ram_en` | 1 | S2R enabled |
 | `cal_str_min_temp_threshold` | -10 | Min temp for S2R |
 | `cal_hypervisor_startup_timeout_ms` | 300 | GHS boot timeout |
@@ -275,8 +293,6 @@ Power Sequence:
 **Processor:** Intel Atom x7-A3960 (Apollo Lake / Broxton)
 
 ### 5.1 Intel CSE (Converged Security Engine)
-
-The Intel Management Engine initializes first:
 
 ```
 CSE Initialization:
@@ -293,7 +309,11 @@ CSE Initialization:
 |----------|-------|
 | **File** | 85738845 |
 | **Size** | ~6MB (signed) |
-| **Secure Boot** | ABL.secureboot=1 |
+| **Secure Boot** | `ABL.secureboot=1` |
+
+SOC_ABL is kernelflinger ("ELK"). Lock-state backend, Boot Guard/FPF fuse status, and the
+`OEMLock` UEFI variable mechanism are owned by `platform/elk_recovery.md` §2.3 and
+`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` — summarized, not restated, in §10.1 below.
 
 ```
 ABL Execution:
@@ -303,6 +323,10 @@ ABL Execution:
 ├── Configure kernel command line
 └── Transfer control to GHS kernel
 ```
+
+Chain clarification: Intel Slim Bootloader hands off to SOC_ABL (kernelflinger), which loads and
+verifies GHS INTEGRITY. GHS's own VMM1 task — not ABL directly — then performs AVB and launches the
+Android guest VM (§7-§8 below).
 
 ### 5.3 ABL Boot Parameters
 
@@ -335,74 +359,26 @@ androidboot.vbmeta.avb_version=1.1
 | **Core Version** | 23739 |
 | **Modules Version** | 11500 |
 | **GM Version** | MY22-026 |
-| **Build Path** | /home/mal/gm_release/MY22-026/final/iot/rtos/ |
+| **Build Path** | `/home/mal/gm_release/MY22-026/final/iot/rtos/` |
 | **Vendor** | Green Hills Software |
 | **Target** | Intel Apollo Lake (gm-i35) |
-| **File** | SOC_HOSTOS (85098662) - 14.9MB |
+| **File** | SOC_HOSTOS (85098662) — 14.9MB |
 
-### 6.2 GHS Architecture
+### 6.2 GHS Architecture (summary)
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         GHS INTEGRITY LAYERS                                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │ VMM (Virtual Machine Monitor)                                        │    │
-│  │  • VMX (Intel VT-x)                                                  │    │
-│  │  • VT-d (IOMMU)                                                      │    │
-│  │  • EPT (Extended Page Tables)                                        │    │
-│  │  • Guest Memory Management                                            │    │
-│  ├─────────────────────────────────────────────────────────────────────┤    │
-│  │ Kernel Services                                                      │    │
-│  │  • Task/Thread Management                                            │    │
-│  │  • Memory Management                                                  │    │
-│  │  • Interrupt Handling                                                 │    │
-│  │  • IPC (Inter-Process Communication)                                  │    │
-│  ├─────────────────────────────────────────────────────────────────────┤    │
-│  │ Device Drivers                                                       │    │
-│  │  • PCI Device Drivers                                                 │    │
-│  │  • Passthrough Drivers                                                │    │
-│  │  • I/O Device Management                                              │    │
-│  ├─────────────────────────────────────────────────────────────────────┤    │
-│  │ Security Services                                                    │    │
-│  │  • Trusty TEE (Keymaster, Gatekeeper)                                 │    │
-│  │  • Secure Boot Validation                                             │    │
-│  │  • Android Verified Boot (AVB)                                        │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+VMM (VMX/VT-d/EPT/guest memory) → kernel services (task/thread, memory, interrupts, IPC) → device
+drivers (PCI, passthrough, I/O) → security services (Trusty TEE, secure boot, AVB). The full PCI
+driver table, `.boottable` guest/VM config, and per-layer function lists are
+`GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`'s charter — pointer only.
 
 ### 6.3 Stage A: CPU Initialization
 
 ```
-1. BSP_InitializeOnBootCpu
-   ├── x86-64 CPU feature detection
-   ├── Memory controller initialization
-   └── Early hardware setup
-
-2. ASP_PreCrtInitializeBootstrap
-   ├── C runtime initialization
-   ├── Stack setup
-   └── Global constructors
-
-3. ASP_VMX_InitializeOnBootCpu (Intel VT-x)
-   ├── Enable VMX (Virtual Machine Extensions)
-   ├── Initialize VMCS (VM Control Structure)
-   ├── ASP_VMX_SetupMsrBitmap
-   └── Setup EPT (Extended Page Tables)
-
-4. ASP_VTD_Init (Intel VT-d / IOMMU)
-   ├── Vtd_Initialize
-   ├── Enable DMA remapping
-   ├── Vtd_EnableVtdForDevice (per device)
-   └── Vtd_ActivateDmaRemappingUnit
-
-5. BSP_BootSecondaryCpus
-   ├── Wake CPU cores 1-3 via INIT-SIPI sequence
-   ├── AP (Application Processor) boot sequence
-   └── Multi-core synchronization barrier
+1. BSP_InitializeOnBootCpu       — x86-64 feature detection, memory controller init
+2. ASP_PreCrtInitializeBootstrap — C runtime init, stack setup, global constructors
+3. ASP_VMX_InitializeOnBootCpu   — enable VMX, init VMCS, ASP_VMX_SetupMsrBitmap, setup EPT
+4. ASP_VTD_Init                  — Vtd_Initialize, enable DMA remapping, per-device Vtd_EnableVtdForDevice
+5. BSP_BootSecondaryCpus         — wake CPU cores 1-3 via INIT-SIPI, AP boot, multi-core sync barrier
 ```
 
 ### 6.4 Stage B: GHS Kernel Tables
@@ -417,81 +393,21 @@ androidboot.vbmeta.avb_version=1.1
 ### 6.5 Stage C: GHS Tasks Launch
 
 ```
-7. RunInitialTasks - Start all GHS tasks (parallel)
-
-   Core Tasks:
-   ├── VMM1_InitialTask       ← PRIMARY: Android VM Manager
-   ├── Lifecycle_InitialTask  ← Power/boot state management
-   ├── VIP_InitialTask        ← VIP MCU communication (UART IPC)
-   └── OTA_InitialTask        ← OTA update handling
-
-   Hardware Tasks:
-   ├── Camera_InitialTask     ← Intel IPU4 camera processing
-   ├── Audio_InitialTask      ← HDA audio subsystem
-   ├── GPU_InitialTask        ← Intel HD Graphics 505 passthrough
-   ├── Chimes_InitialTask     ← Alert sound generation
-   ├── Dirana_InitialTask     ← Audio DSP control
-   └── DisplayI2C_InitialTask ← Display backlight/control
-
-   Security Tasks:
-   ├── TEE_Keymaster          ← Trusty keymaster service
-   ├── TEE_HW_Crypto          ← Hardware crypto acceleration
-   └── TEE_Storage            ← Secure storage (RPMB)
-
-   Other Tasks:
-   ├── Calibrations_InitialTask
-   └── Lines_InitialTask (graphics overlay)
+7. RunInitialTasks — starts all GHS tasks in parallel: VMM1 (primary, Android VM manager),
+   Lifecycle, VIP, OTA, plus hardware tasks (Camera, Audio, GPU passthrough, Chimes, Dirana,
+   DisplayI2C), security tasks (TEE Keymaster/HW-Crypto/Storage), and Calibrations/Lines.
 ```
 
-### 6.6 GHS IPC Connections Established
+The full enumerated task list and the GHS IPC connection map (`ConnToAndroidVMM`, `ConnToVIP`,
+`ConnToTEE_*`, etc.) are `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`'s charter; not re-tabulated here.
+For this walkthrough, the only task that matters downstream is **VMM1_InitialTask**, which performs
+AVB and launches the Android guest (§7).
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                    GHS IPC CONNECTIONS                            │
-├──────────────────────────────────────────────────────────────────┤
-│                                                                   │
-│  VMM (Android Interface):                                         │
-│  ├── ConnToAndroidVMM                                             │
-│  ├── ConnToVMM_Camera                                             │
-│  ├── ConnToVMM_Display                                            │
-│  ├── ConnToVMM_Chime                                              │
-│  ├── ConnToVMM_Cal                                                │
-│  ├── ConnToVMM_OTA / ConnToVMM_OTA_Control                        │
-│  ├── ConnToVMM_EMMCHealth                                         │
-│  └── ConnToVMM_TextLog / ConnToVMM_Audit                          │
-│                                                                   │
-│  VIP MCU:                                                          │
-│  ├── ConnToVIP                                                     │
-│  └── ConnToVip_Lifecycle_API                                      │
-│                                                                   │
-│  Camera Subsystem:                                                 │
-│  ├── ConnToCamera / ConnToCamera_Camera                           │
-│  ├── ConnToCamera_Capture / ConnToCamera_Display                  │
-│  └── ConnToCamera_I2C / ConnToCamera_RvcStatus                    │
-│                                                                   │
-│  TEE (Trusty):                                                     │
-│  ├── ConnToTEE_Keymaster                                          │
-│  ├── ConnToTEE_Storage                                            │
-│  └── ConnToTEE_Router / ConnToTEE_TEEAtt                          │
-│                                                                   │
-└──────────────────────────────────────────────────────────────────┘
-```
+### 6.6 GHS Device Interfaces
 
-### 6.7 GHS Device Interfaces Created
-
-| Device | Purpose | SELinux Label |
-|--------|---------|---------------|
-| `/dev/ghs/textlog` | GHS kernel logs | ghs_device |
-| `/dev/ghs/audit` | Security audit log | ghs_device |
-| `/dev/ghs/snapshot-dbg` | Debug snapshots | ghs_device |
-| `/dev/ghs/ipc` | IPC channel | ghs_device |
-| `/dev/ghs/cal` | Calibrations | ghs_device |
-| `/dev/ghs/camera` | Camera access | ghs_camera_device |
-| `/dev/ghs/chime` | Chime control | ghs_device |
-| `/dev/ghs/tee-att` | TEE attestation | ghs_device |
-| `/dev/ghs/emmc-health` | eMMC health | ghs_device |
-| `/dev/ghs/ota-isys` | OTA interface | ghs_device |
-| `/dev/ghs/gpu-dbg` | GPU debug | ghs_device |
+`/dev/ghs/{textlog,audit,snapshot-dbg,ipc,cal,camera,chime,tee-att,emmc-health,ota-isys,gpu-dbg}`,
+SELinux-labeled `ghs_device` (camera: `ghs_camera_device`). Full device/label table:
+`GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` §6.7-equivalent.
 
 ---
 
@@ -506,11 +422,14 @@ androidboot.vbmeta.avb_version=1.1
 CheckRecoveryMode():
 ├── Read BCB (Bootloader Control Block) from misc partition
 ├── Parse command field:
-│   ├── "boot-recovery" → Recovery mode
-│   ├── "boot-see-dealer" → Dealer mode
-│   └── Empty → Normal boot
+│   ├── "boot-recovery"    → Recovery mode
+│   ├── "boot-see-dealer"  → Dealer mode
+│   └── Empty              → Normal boot
 └── Determine boot target
 ```
+
+The full trigger-file/USB-marker mechanics behind these BCB states, and the dealer-recovery write
+path, are `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`'s charter — pointer only.
 
 ### 7.2 A/B Slot Selection
 
@@ -543,7 +462,9 @@ A/B Selection:
 └── Log: "A/B Boot Slot: boot%s"
 ```
 
-**Security Note:** A/B metadata uses only CRC32 for integrity, not cryptographic signature.
+**Security note:** A/B metadata uses only CRC32 for integrity, not cryptographic signature — a
+genuine weak point ([inferred] impact: see §11.5), not a cryptographic verification gap in vbmeta
+itself (§7.3-7.4).
 
 ### 7.3 Load and Verify vbmeta
 
@@ -560,11 +481,13 @@ vbmeta Verification:
 └── Prepare for signature verification
 ```
 
-**(2026-09-10, byte-confirmed):** `"AVB0"` is the **stock upstream `libavb` `AVB_MAGIC`**, not a
-GM-custom value — `vbmeta.img` offset 0 = `41 56 42 30`. The header is 100% upstream (RSA2048/SHA256,
-`avbtool 1.2.0`, flags=0x00000000 i.e. verification NOT disabled), with zero GM-specific fields. Do
-not confuse this with the separate `\0AB0` magic used by the misc/BCB A/B-slot-metadata structure
-(§7.2 above) — the two are different magics guarding different structures. (GitHub issue #1, @DymOK93.)
+`"AVB0"` is the stock upstream `libavb` `AVB_MAGIC` (`vbmeta.img` offset 0 = `41 56 42 30`), not a
+GM-custom value — byte-confirmed 2026-09-10. The header is fully upstream (RSA2048/SHA256, `avbtool
+1.2.0`, flags=0x00000000 i.e. verification NOT disabled), with zero GM-specific fields. Do not confuse
+this with the separate `\0AB0` magic guarding the misc/BCB A/B-slot-metadata structure (§7.2) — two
+different magics, two different structures. (The upstream libavb parser's own RE depth — guard
+functions, TOCTOU/overflow fuzz targets against `.vmm1` — is `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`'s
+charter.)
 
 ### 7.4 Verify vbmeta Signature
 
@@ -588,16 +511,16 @@ Rollback Protection:
 └── Prevents firmware downgrade attacks
 ```
 
+The Y181→Y177 downgrade-block mechanism (rollback counter vs `vbmeta.rollback_index`, OEM RSA pubkey
+extraction) is `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt`'s charter — pointer only.
+
 ### 7.6 Load and Verify boot Image
 
 ```
 boot Image Verification:
 ├── Read boot_a or boot_b from eMMC
 │   └── Error: "VMM: A/B: no boot image for slot %s"
-├── Parse Android boot image header:
-│   ├── Kernel offset/size
-│   ├── Ramdisk offset/size
-│   └── Command line
+├── Parse Android boot image header (kernel/ramdisk offset+size, command line)
 ├── Verify boot image signature
 │   └── Error: "VMM: Error: Android signature verification failed"
 ├── Hash kernel and ramdisk
@@ -608,7 +531,7 @@ boot Image Verification:
 
 ```
 Command Line Additions:
-├── androidboot.slot_suffix=%s      ← "_a" or "_b"
+├── androidboot.slot_suffix=%s       ← "_a" or "_b"
 ├── androidboot.verifiedbootstate=%s ← green/yellow/orange/red
 ├── androidboot.vbmeta.avb_version=1.1
 ├── androidboot.trustyimpl=-ghs
@@ -619,11 +542,11 @@ Command Line Additions:
 
 ```
 VM Launch:
-├── ASP_VMX_SetGuestKernelAddr - Set kernel entry point
+├── ASP_VMX_SetGuestKernelAddr — Set kernel entry point
 ├── Configure guest memory map via EPT
 ├── Setup virtio devices for guest
 ├── Initialize guest CPU state
-└── ASP_RunGuestVM - Start Android kernel execution
+└── ASP_RunGuestVM — Start Android kernel execution
 ```
 
 ---
@@ -660,6 +583,10 @@ Init Execution:
 └── Set initial properties
 ```
 
+The authoritative first-stage mount chain (ACPI SSDT `ANDR0001` static-A/B facts, the emulator-only
+fstab patch) is owned by `platform/boot_chain.md` / `platform/partitions_storage.md` — pointer only
+(see also Appendix E below for the unique raw evidence kept in this doc).
+
 ### 8.3 Key Init Scripts
 
 | Script | Purpose |
@@ -670,7 +597,7 @@ Init Execution:
 | `init.audio.rc` | Audio subsystem |
 | `init.crashlogd.rc` | Crash logging |
 
-### 8.4 GHS Trusty Integration (init.trusty-ghs.rc)
+### 8.4 GHS Trusty Integration (`init.trusty-ghs.rc`)
 
 ```
 on early-init
@@ -678,7 +605,7 @@ on early-init
    setprop ro.hardware.keystore trusty
 ```
 
-### 8.5 ProtoKey Service (init.protokey.rc)
+### 8.5 ProtoKey Service (`init.protokey.rc`)
 
 ```
 on post-fs-data
@@ -696,31 +623,13 @@ service gmprotokey /vendor/bin/gm_protokey
 ### 8.6 Critical Services Start Order
 
 ```
-class core:
-├── vold (storage daemon)
-│   └── reboot_on_failure reboot,vold-failed
-├── apexd (APEX daemon)
-│   └── reboot_on_failure reboot,apexd-failed
-├── servicemanager
-├── hwservicemanager
-└── watchdogd
-
-class hal:
-├── android.hardware.automotive.vehicle@2.0-service-gm
-├── android.hardware.boot@1.1-service
-├── vendor.harman.hardware.ame@1.0-service
-├── camera provider
-├── audio HAL
-└── keymaster@3.0 (Trusty-GHS)
-
-class main:
-├── gmprotokey
-├── GHSCalibrations
-├── gm_update_engine
-├── surfaceflinger
-├── audioserver
-└── bootanimation
+class core:  vold, apexd, servicemanager, hwservicemanager, watchdogd
+class hal:   android.hardware.automotive.vehicle@2.0-service-gm, android.hardware.boot@1.1-service,
+             vendor.harman.hardware.ame@1.0-service, camera provider, audio HAL, keymaster@3.0 (Trusty-GHS)
+class main:  gmprotokey, GHSCalibrations, gm_update_engine, surfaceflinger, audioserver, bootanimation
 ```
+
+`vold`/`apexd` both `reboot_on_failure` on crash.
 
 ### 8.7 GM Security Services
 
@@ -774,85 +683,36 @@ POWER ON (T=0ms)
     │
     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 1: VIP (RENESAS TM52176) BOOT                         T=0-50ms        │
-│                                                                              │
-│   VIP_BOOT → VIP_APP → Read EEPROM → Security Check → Enable SoC Power      │
-│                            │                │                                │
-│                    ┌───────┴───────┐   ┌────┴────┐                          │
-│                    │ EEPROM:       │   │ Sec fn: │                          │
-│                    │ 0x0440: SBI   │   │ FULL in │                          │
-│                    │ 0x0A80: SBI   │   │ all bld │                          │
-│                    │ 0x0B40: Debug │   │ (~906 B │                          │
-│                    │ 0x05C0: VIN   │   │ Y175/77 │                          │
-│                    └───────────────┘   │  /81)   │                        │
-│                                        └─────────┘                          │
+│ PHASE 1: VIP (RENESAS RH850) BOOT                            T=0-50ms       │
+│   VIP_BOOT → VIP_APP → Read EEPROM → Security Check (§4.5, FULL in all     │
+│   builds) → Enable SoC Power                                                │
 └────────────────────────────────────────────┬────────────────────────────────┘
-                                             │
                                              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ PHASE 2: INTEL SOC BOOT                                     T=50-200ms      │
-│                                                                              │
-│   Intel CSE (ME) → SOC_ABL (Automotive Bootloader) → Load GHS INTEGRITY     │
-│        │                    │                                                │
-│   ┌────┴────┐        ┌──────┴──────┐                                        │
-│   │ Hardware│        │ Secure Boot │                                        │
-│   │ Root of │        │ Validation  │                                        │
-│   │ Trust   │        │ (ABL.secure │                                        │
-│   │ (OTP    │        │  boot=1)    │                                        │
-│   │  Fuses) │        └─────────────┘                                        │
-│   └─────────┘                                                               │
+│   Intel CSE (ME) → SOC_ABL (kernelflinger) → Load+verify GHS INTEGRITY      │
 └────────────────────────────────────────────┬────────────────────────────────┘
-                                             │
                                              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ PHASE 3: GHS INTEGRITY HYPERVISOR                           T=200-500ms     │
-│                                                                              │
-│   BSP_Init → VMX_Init → VT-d Init → Boot CPUs 1-3 → Start All GHS Tasks     │
-│                                                    │                         │
-│                                        ┌───────────┴───────────┐            │
-│                                        │                       │            │
-│                                   ┌────▼────┐            ┌─────▼─────┐      │
-│                                   │ VMM1    │            │ Tasks:    │      │
-│                                   │ (Android│            │ Camera    │      │
-│                                   │  VMM)   │            │ Audio     │      │
-│                                   └────┬────┘            │ Lifecycle │      │
-│                                        │                 │ VIP, TEE  │      │
-│                                        │                 │ Chimes    │      │
-│                                        │                 │ OTA...    │      │
-│                                        │                 └───────────┘      │
-└────────────────────────────────────────┬────────────────────────────────────┘
-                                         │
-                                         ▼
+│   BSP_Init → VMX_Init → VT-d Init → Boot CPUs 1-3 → Start all GHS tasks      │
+│   (VMM1 = primary Android VM manager; Lifecycle/VIP/OTA/Camera/Audio/GPU/   │
+│   TEE tasks run alongside)                                                  │
+└────────────────────────────────────────────┬────────────────────────────────┘
+                                             ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ PHASE 4: ANDROID VERIFIED BOOT (AVB)                        T=500-1500ms    │
-│                                                                              │
-│   Check BCB → Select A/B Slot → Load vbmeta → Verify Sig → Load boot        │
-│       │             │                │              │            │           │
-│  ┌────▼────┐   ┌────▼────┐    ┌──────▼──────┐ ┌─────▼─────┐ ┌────▼────┐    │
-│  │ misc    │   │ misc    │    │ vbmeta_a/b  │ │ RSA-2048  │ │ boot_a/b│    │
-│  │partition│   │ @0x800  │    │ partition   │ │ SHA-256   │ │partition│    │
-│  │ (BCB)   │   │(CRC32!) │    │             │ │ verify    │ │         │    │
-│  └─────────┘   └─────────┘    └─────────────┘ └───────────┘ └─────────┘    │
-│                                                                              │
-│   → Check Rollback Index → Configure cmdline → ASP_RunGuestVM               │
+│   Check BCB → Select A/B slot (misc@0x800, CRC32 only) → Load vbmeta        │
+│   (AVB0 magic, RSA-2048/SHA-256) → Verify sig → Check rollback → Load boot  │
+│   → Configure cmdline → ASP_RunGuestVM                                     │
 └────────────────────────────────────────────┬────────────────────────────────┘
-                                             │
                                              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ PHASE 5: ANDROID AAOS                                       T=1500-15000ms  │
-│                                                                              │
-│   Linux Kernel → init → Zygote → system_server → CarService → HMI Ready     │
-│        │           │                                                         │
-│  ┌─────▼─────┐  ┌──▼──────────────────────────────────────────────────┐     │
-│  │ dm-verity │  │ Key Services:                                        │     │
-│  │ protected │  │ • gmprotokey (seed validation → ADB/SELinux state)  │     │
-│  │ rootfs    │  │ • GHSCalibrations (calibration data from GHS)       │     │
-│  └───────────┘  │ • gm_update_engine (USB update triggers)            │     │
-│                 │ • keymaster@3.0 (Trusty-GHS)                        │     │
-│                 └─────────────────────────────────────────────────────┘     │
-│                                                                              │
-│   GHS monitors Android Sign-of-Health heartbeat                             │
-│   Failure → "[LIFECYCLE] Lost Android SoH - rebooting"                      │
+│   Linux Kernel → init (dm-verity rootfs) → gmprotokey/GHSCalibrations/      │
+│   gm_update_engine/keymaster@3.0 → Zygote → system_server → CarService →   │
+│   HMI Ready                                                                 │
+│   GHS monitors Android Sign-of-Health heartbeat; failure → reboot           │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -865,58 +725,44 @@ POWER ON (T=0ms)
 | Layer | Mechanism | Bypassable? | Notes |
 |-------|-----------|-------------|-------|
 | **VIP_BOOT** | Harman checksum | Requires RE | Internal RH850 flash |
-| **VIP_APP Security** | Function @ 0xb67d0 | Requires RE | **Full ~906 B in all builds (Y175/Y177/Y181)** — no stub. It is a `$27`/seed-access validator, NOT SELinux and NOT the ADB gate (CORRECTED 2026-08-26: the ADB unlock is SoC-side MEC/`is_secure_mode` via DID 0xF1A0 — see EEPROM_LAYOUT §0.9/§0.10) |
-| **EEPROM SBI Flags** | None (no CRC) | Yes (hardware) | I2C accessible |
+| **VIP_APP Security** | Function @ 0xb67d0 | Requires RE | Full ~906B in all builds (§4.5) — a `$27`/seed-access validator, not SELinux, not (per the resolved ADB-gate question, see Open Conflicts) the ADB gate itself |
+| **EEPROM SBI Flags** | None (no CRC) | Yes (hardware) | I2C accessible — canonical map: `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` |
 | **Intel CSE** | Hardware root of trust | No | OTP fuses |
-| **SOC_ABL** | Intel Boot Guard | **UNKNOWN-FROM-FILES (enforcement is FPF-fuse-dependent)** | Sign Type NONE (not GM TSS-signed). **[C] 2026-10-08 (avbtool/binary, module 85738845):** verified-boot-**capable**, not merely "verified by/with Intel CSE secure boot" — the IFWI contains a production-signed OEM Key Manifest (`oem.key`, `$MN2`), IBB manifest (`IBBP.man`), and a Boot Policy (`BPM.met`) whose three SHA-256 digests match the real IBBL/IBB/OBB bytes exactly. Whether a hash mismatch is REJECTED vs only measured depends on the Intel TXE FPF/OTP fuse state (not in this package) — UNKNOWN-FROM-FILES; settle via MSR `0x13A` or an ISSI SPI dump of the Flash Descriptor/FPF region. Boot Guard digests cover IBBL/IBB/OBB *code* only, not the UEFI NVRAM varstore (see F1 below). |
-| **GHS Signature** | ABL validation | **UNKNOWN-FROM-FILES** | Previously stated "Hardware enforced" — corrected 2026-10-08: not provable from files alone (see SOC_ABL row above); downgrade to "verified-boot-capable, enforcement FPF-dependent" until MSR 0x13A or an FPF-region dump settles it. |
-| **SOC_ABL lock state (`OEMLock`)** | UEFI NV variable, GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1` | Potentially (if varstore is SPI-backed, not RPMB — open question) | **[C] 2026-10-08 (CONFIRMED-FROM-BINARY, F1):** SOC_ABL is kernelflinger ("ELK"); `read_device_state_efi()` reads `OEMLock` and the ordinary successful stored-state read uses bit 0 (`0x01`); gated missing-state/provisioning fallbacks also exist (corrected 2026-11-12; see `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3.2) — predicate is INTACT/unpatched. `USE_TPM` was NOT compiled (zero TPM2 NV-index constants/calls in the 1 MB module): the lock is **NOT fTPM/TPM2-backed and NOT RPMB** (`ABL.rpmb=` is only an androidboot cmdline token). UNKNOWN-FROM-FILES: whether the varstore itself is SPI-NOR- or RPMB-backed. |
+| **SOC_ABL / Boot Guard** | Intel Boot Guard, FPF fuses | FPF fuses confirmed committed and IBB verification confirmed PASS live (2026-11-17); whether a hash mismatch would be *rejected* (Verified profile) vs only measured remains open — MSR 0x13A does not exist on this Apollo Lake core, the live FIT pointer window is closed post-boot, and the top 1 MiB of SPI-NOR (where KM/BPM live) is hardware Protected-Range-blocked (`FLOCKDN`) even with raw controller access. Only a physical SOIC-8 clip read could reach it. Full forensic detail: `platform/elk_recovery.md` §2.3 and `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` — not restated here. |
+| **SOC_ABL lock state (`OEMLock`)** | UEFI NV variable, GUID `1ac80a82-4f0c-456b-9a99-debeb431fcc1` | Potentially, if varstore is SPI-backed rather than RPMB (open question) | SOC_ABL is kernelflinger; `USE_TPM` was not compiled in, so the lock is not fTPM/TPM2-backed and not RPMB. Full predicate/fallback detail: `platform/elk_recovery.md` §2.3 (F1). |
 | **AVB vbmeta** | RSA-2048/SHA-256 | No | Without signing key |
-| **A/B Metadata** | CRC32 only | Potentially | Weak integrity |
+| **A/B Metadata** | CRC32 only | Potentially | Weak integrity (§11.5) |
 | **Rollback Index** | Secure storage | No | Cannot decrement |
 | **dm-verity** | Hash tree | Conditional | Active in enforcing |
-| **SELinux** | MAC policy | OS-side only | No stock build runs permissive; byte-identical init forces enforcing on Y175/Y177/Y181 (NOT VIP/EEPROM). Corrected 2026-08-25, `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8 |
+| **SELinux** | MAC policy | OS-side only | See the single statement below — not VIP/EEPROM-controlled |
 
-### 10.2 VIP Security Control
+**SELinux-enforcing statement (settled; replaces four separate restatements of the same claim):**
+No stock build runs permissive. Y175, Y177, and Y181 share a byte-identical init that forces
+enforcing; SELinux mode is decided OS-side (init/ramdisk), never by the VIP (`research/security/KERNEL_CVE_ANALYSIS.txt`
+Appendix E.8). A previously reported live-permissive Y177 unit was a false finding; both sampled CSMs
+ran only stock packages. **History:** corrected 2026-08-25, consistent with the Y177-stub retraction
+in §4.5.
+
+### 10.2 VIP Security Control (corrected — no Y177/Y181 divergence)
 
 ```
-VIP Security Decision Tree:
-
 EEPROM Read (0x0440, 0x0A80)
          │
-         ▼
+    ┌────┴────┐
+    │ SBI=0x00│──→ Request seed from BCM ──→ Validate seed/key ──→ IPC to SoC: "normal mode"
+    │(Normal) │
+    └─────────┘
     ┌─────────┐
-    │ SBI=0x00│ ────────────────────────────────────────┐
-    │ (Normal)│                                          │
-    └────┬────┘                                          │
-         │                                               ▼
-         │                                    Request seed from BCM
-         │                                               │
-         │                                               ▼
-         │                                    Validate seed/key
-         │                                               │
-    ┌────┴────┐                                          ▼
-    │SBI=0xFF │                              IPC to SoC: "normal mode"
-    │(Bypass) │                                          │
-    └────┬────┘                                          ▼
-         │                                    SELinux: ENFORCING
-         ▼
-    Security Function @ 0xb67d0
+    │ SBI=0xFF│──→ Security function @0xb67d0 (FULL ~906B, same in Y175/Y177/Y181,
+    │(Bypass) │    see §4.5) ──→ IPC: seed/auth state to SoC
+    └─────────┘
          │
-    ┌────┴────────────────────┐
-    │                         │
-   Y177                      Y181
-    │  (fn @0xb67d4)          │  (fn @0xb67d0)
-    ▼                         ▼
-FULL (~906 bytes)      FULL (~906 bytes)     [Y175 @0xb6708 also FULL]
-Validates ADB/seed      Validates ADB/seed   ← corrected 2026-08-25: no stub in any build
-    │                         │
-    ▼                         ▼
-IPC: seed/auth state   IPC: seed/auth state  (VIP does NOT set SELinux mode)
-    │                         │
-    ▼                         ▼
-SELinux mode decided OS-side (ramdisk/init), independent of this function
+         ▼
+SELinux mode decided OS-side (ramdisk/init) — independent of this function and of SBI state.
 ```
+
+The earlier version of this diagram drew a Y177-vs-Y181 divergent branch under the retracted "stub"
+theory; both builds run the identical full function, so there is no divergence to draw.
 
 ### 10.3 MEC Counter Behavior
 
@@ -925,17 +771,20 @@ SELinux mode decided OS-side (ramdisk/init), independent of this function
 [PLC] MEC is 0. Processing Hypervisor Startup Timeout
 ```
 
-- **MEC = 0** (normal): VIP monitors GHS startup, resets on failure
-- **MEC ≠ 0** (bypass mode = 207): VIP ignores hypervisor issues
+- **MEC = 0** (normal): VIP monitors GHS startup, resets on failure.
+- **MEC ≠ 0**: VIP ignores hypervisor-startup issues for that boot cycle.
+
+Whether a nonzero MEC reading means "bypassed/unlocked" or "production/locked" (and the specific
+"207" value sometimes quoted as a bypass marker, `[U]` in this doc) is an open, corpus-wide question
+— see `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` and `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`'s own
+Open Conflicts sections; not resolved here.
 
 ### 10.4 Three Consecutive Reset Behavior
 
-**Distinction verified 2026-11-12:** this section describes VIP reset-timer
-suppression, not the GHS lifecycle failed-Android-boot counter. Y181B lifecycle
-address `0x200E2D` compares that separate counter with 3 and takes the dealer
-branch at >=3. See `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.2.1 for original-SPS
-provenance and instruction addresses.
-
+**Distinction verified 2026-11-12:** this section describes VIP reset-timer suppression, not the GHS
+lifecycle failed-Android-boot counter. Y181B lifecycle address `0x200E2D` compares that separate
+counter with 3 and takes the dealer branch at >=3 — see `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.2.1
+for original-SPS provenance and instruction addresses.
 
 ```
 [PLC] ****There have been 3 Consecutive SoC Startup Failures****
@@ -945,10 +794,8 @@ provenance and instruction addresses.
 [SS_SWC] ****CSM reset for SoC-Only reset will not be active for this boot cycle****
 ```
 
-After 3 consecutive failures:
-- Hypervisor startup timer DISABLED
-- CSM reset DISABLED
-- System continues booting without normal checks
+After 3 consecutive failures: hypervisor startup timer disabled, CSM reset disabled, system
+continues booting without those two normal checks.
 
 ---
 
@@ -956,58 +803,40 @@ After 3 consecutive failures:
 
 ### 11.1 Dual-Processor Architecture
 
-The A11 module contains two independent processors:
-- **VIP (Renesas TM52176)**: Always-on MCU handling power, CAN, and security
-- **Intel Atom x7-A3960**: Main SoC running GHS hypervisor + Android guest
+Two independent processors: VIP (always-on MCU; power, CAN, security) and Intel Atom x7-A3960 (GHS
+hypervisor + Android guest). VIP boots first and controls SoC power sequencing.
 
-VIP boots first and controls SoC power sequencing.
+### 11.2 VIP Does Not Control SELinux Posture
 
-### 11.2 VIP Controls Security Posture (CORRECTED 2026-08-25)
-
-The VIP does **not** control SELinux mode. The prior claim — that permissive required a "Y177
-stubbed security function" plus EEPROM bypass — is retracted: the VIP security function is a full
-~906-byte validator in Y175, Y177, and Y181 alike (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2),
-and the VIP image contains no SELinux logic at all. What the VIP function + EEPROM SBI
-(0x0440/0x0A80) actually gate is **ADB/seed auth** (CAN-confirmed). SELinux runtime mode is an
-OS-side property (init/ramdisk), never the VIP. **Note (2026-08-25):** stock Y177 does NOT run
-permissive either — its init is byte-identical to Y175/Y181 and forces enforcing; a live permissive
-Y177 was a false finding/misread; a modified unit is ruled out — both CSMs only ever ran stock packages (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8).
+See §10.1's settled SELinux-enforcing statement and §4.5's Y177-stub-retraction History. In short:
+the VIP security function is a full validator in every build and contains no SELinux logic; SELinux
+mode is an OS-side property.
 
 ### 11.3 GHS Hypervisor is Mandatory
 
-Android runs as a guest VM under GHS INTEGRITY:
-- VMX (VT-x) hardware virtualization
-- VT-d (IOMMU) for device isolation
-- EPT for memory management
-- Cannot bypass GHS to run modified Android
+Android runs as a guest VM under GHS INTEGRITY: VMX (VT-x) virtualization, VT-d (IOMMU) device
+isolation, EPT memory management. Cannot bypass GHS to run modified Android.
 
 ### 11.4 AVB Enforced by GHS
 
-Android Verified Boot is implemented in the GHS VMM1 task:
-- vbmeta signature verification (RSA-2048)
-- boot image hash verification
-- Rollback index checking
-- Cannot bypass without signing keys
+Implemented in the GHS VMM1 task: vbmeta signature verification (RSA-2048), boot-image hash
+verification, rollback-index checking. Cannot bypass without signing keys.
 
 ### 11.5 A/B Metadata Uses Only CRC32
 
-The A/B slot metadata in the misc partition uses CRC32 for integrity:
-- No cryptographic signature
-- Potential manipulation vector
-- Could force slot switching or boot failures
+No cryptographic signature on the A/B slot metadata in `misc`. `[inferred]`: a potential
+manipulation vector for forcing slot switching or boot failures — not demonstrated in this doc.
 
 ### 11.6 MEC Counter Affects Behavior
 
-When MEC (Manufacturing Error Counter) ≠ 0:
-- VIP ignores hypervisor startup timeout
-- May allow modified boot paths
+When MEC ≠ 0, VIP ignores the hypervisor startup timeout. `[inferred]`/`[U]`: whether this "may allow
+modified boot paths" is unverified in this doc — see §10.3's pointer to the corpus-wide MEC-semantics
+open conflict.
 
 ### 11.7 Failure Recovery Mode
 
-After 3 consecutive boot failures:
-- Hypervisor timer disabled
-- CSM reset disabled
-- Boot continues without normal validation checks
+After 3 consecutive boot failures: hypervisor timer disabled, CSM reset disabled, boot continues
+without those normal validation checks (§10.4).
 
 ---
 
@@ -1024,15 +853,18 @@ After 3 consecutive boot failures:
 | `86331654` | 1.5 GB | SOC_ANDROID_VENDOR (Vendor image) |
 | `86331650` | 467 MB | SOC_ANDROID_PRODUCT (Product image) |
 
-### Documentation Files
+File hashes (SHA-256/MD5) for all of the above: `BOOT_CHAIN_ANALYSIS.txt` — not restated here except
+the one comparison load-bearing for §4.5 (Appendix D.4).
+
+### Documentation Files Consulted
 
 | Path | Content |
 |------|---------|
-| `gm_aaos/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` | GHS hypervisor analysis |
-| `gm_aaos/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | Boot/recovery flow |
-| `gm_dps/VIP_BOOT_CONTROL_ANALYSIS.md` | VIP boot control research |
-| `gm_aaos/VIP_FIRMWARE_Y177_Y181_COMPARISON.md` | Y177 vs Y181 differences |
-| `gm_pi/06_PROTOCOL_DECODER.md` | Hardware architecture |
+| `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` | GHS hypervisor analysis |
+| `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | Boot/recovery flow |
+| `VIP_CONTROL_ANALYSIS.txt` | VIP boot control research |
+| `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` | Y177 vs Y181 differences (carried unchanged) |
+| `gm_pi/06_PROTOCOL_DECODER.md` | Hardware architecture (no longer locatable in the current corpus as of this consolidation pass; row kept for provenance) |
 
 ### Init Scripts Analyzed
 
@@ -1099,6 +931,8 @@ init: critical process died, rebooting
 | Android Init | 3000ms | 6000ms |
 | Boot Complete | 10000-15000ms | 120000ms |
 
+Estimates; no independent timing-trace source stated.
+
 ---
 
 ## Appendix C: IPC Protocol
@@ -1115,12 +949,12 @@ init: critical process died, rebooting
 | **UFRAME Timeout** | 20ms |
 | **Physical** | UART (115200 8N1) |
 
-**Correction (2026-09, kernel `.config` extraction):** this HDLC/IPC framing is the VIP↔SoC link at the
-GHS-task level shown above; on the Android guest side there is **no `N_HDLC` line discipline in the
+**Correction (2026-09, kernel `.config` extraction):** this HDLC/IPC framing is the VIP↔SoC link at
+the GHS-task level above; on the Android guest side there is **no `N_HDLC` line discipline in the
 kernel at all** — the guest never owns `/dev/ttyS1` as a kernel HDLC device. The link surfaces to
 Android guest userspace only, via `IPCServer` fanning the channel into per-channel Unix sockets
-(`/vendor/etc/ipc4.cfg`) that `libipc.so` clients (VHAL, powermode, rtcd, gmlocation) connect to. See
-`platform/boot_chain.md` and `platform/emulator.md` (Un-stub roadmap) for the confirmed wire format.
+(`/vendor/etc/ipc4.cfg`) that `libipc.so` clients (VHAL, powermode, rtcd, gmlocation) connect to. Full
+wire-format confirmation: `platform/boot_chain.md` and `platform/emulator.md` (Un-stub roadmap).
 
 ### GHS IPC Channels
 
@@ -1135,595 +969,154 @@ ConnToCalibrations
 ConnToOTA
 ```
 
----
-
-**Document Version:** 2.0
-**Created:** 2026-01-05
-**Updated:** 2026-01-05 - Added binary verification evidence
-**Analysis Tools:** radare2, Ghidra, strings, file, hexdump, xxd
-**Classification:** Security Research
+Full channel enumeration: `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`.
 
 ---
 
-## Appendix D: Binary Verification Evidence
+## Appendix D: Binary Evidence (pointer)
 
-This appendix provides cryptographic hashes and direct binary extractions that prove the findings in this document.
+The byte-level proof underlying this walkthrough — file hashes, hex dumps, string offsets with
+addresses, full `cmp -l` diff counts, init-script captures, reproduction commands — lives in
+`BOOT_CHAIN_ANALYSIS.txt`, this doc's designated raw-forensic-evidence companion (see header). It is
+not duplicated here. The one exception is the direct evidence for this doc's own headline
+finding, §4.5's stub retraction:
 
-### D.1 Firmware File Identification
-
-#### File Hashes (SHA-256)
-
-| File | Component | SHA-256 Hash |
-|------|-----------|--------------|
-| Y181/85098662 | SOC_HOSTOS (GHS) | `317ae85ccf759476755411e66593dde9f879a43732cd342b4e101e4026535ed3` |
-| Y181/85738845 | SOC_ABL | `77b866c6492aa0e8fd2aab8d986182bdef597820a63e0d688a06a12a67f4aed8` |
-| Y181/86331656 | VIP_APP | `dbdbb9da3dc14f93e37b94c0e1c5a42921c46fc6e89911159872a6e9e0f87acc` |
-| Y177/86283151 | VIP_APP | MD5: `680b0e61aa6c39a28badbd73e5356af2` |
-
-#### Critical Finding: GHS and ABL Identical Between Y177/Y181
+**Critical region @ 0xb67ce (security function), Y177 vs Y181, byte-for-byte:**
 
 ```
-Y177/85098662 MD5: ded73e3f9026fc8f802bd7485837fc45
-Y181/85098662 MD5: ded73e3f9026fc8f802bd7485837fc45  ← IDENTICAL
-
-Y177/85738845 MD5: 61efd392e75660c3eafa92b01be8ed7b
-Y181/85738845 MD5: 61efd392e75660c3eafa92b01be8ed7b  ← IDENTICAL
-
-Y177/86283151 MD5: 680b0e61aa6c39a28badbd73e5356af2
-Y181/86331656 MD5: e47928d9f409834083abc9a068ce65e0  ← DIFFERENT (VIP_APP)
+Y177 (86283151): 000b67ce: ff30 0052 7f00 8807 e3ff 06c8 9900 033d  .0.R...........=
+Y181 (86331656): 000b67ce: 7f00 8807 e3ff 06c8 9900 033d 0545 074d  ...........=.E.M
 ```
 
-**Implication:** The security difference between Y177 and Y181 is ENTIRELY in the VIP firmware.
+The shared function bytes `7f 00 88 07 e3 ff …` appear at `0xb67ce` in Y181 but at `0xb67d2` in
+Y177; the leading `ff 30 00 52` in Y177 is the tail of the *preceding* function, not a return stub
+(§4.5).
+
+Also note, for the record: SOC_HOSTOS (85098662) and SOC_ABL (85738845) are MD5-identical between
+the Y177 and Y181 update packages; only VIP_APP (86283151 vs 86331656) differs. SHA-256:
+Y181/85098662 (SOC_HOSTOS/GHS) `317ae85ccf759476755411e66593dde9f879a43732cd342b4e101e4026535ed3`;
+Y181/85738845 (SOC_ABL) `77b866c6492aa0e8fd2aab8d986182bdef597820a63e0d688a06a12a67f4aed8`;
+Y181/86331656 (VIP_APP) `dbdbb9da3dc14f93e37b94c0e1c5a42921c46fc6e89911159872a6e9e0f87acc`. The
+MD5 trio proving GHS/ABL identity Y177<->Y181, VIP_APP differing: `ded73e3f9026fc8f802bd7485837fc45`
+(85098662, both builds, identical), `61efd392e75660c3eafa92b01be8ed7b` (85738845, both builds,
+identical), and VIP_APP `680b0e61aa6c39a28badbd73e5356af2` (Y177/86283151) vs
+`e47928d9f409834083abc9a068ce65e0` (Y181/86331656, different). This doc's own designated
+raw-evidence companion, `BOOT_CHAIN_ANALYSIS.txt`, does not actually carry this hash table
+despite Appendix D's pointer above claiming it does — kept here instead until that gap is
+closed. This confirms the build-to-build difference is confined to VIP_APP — it does **not**
+mean "the security difference
+between Y177 and Y181 is entirely in the VIP firmware" in the sense of a disabled check; per §4.5,
+there is no VIP-side security difference between these builds beyond the 15-18 recompiled-source
+bytes.
 
 ---
 
-### D.2 GHS INTEGRITY Version Proof
+## Appendix E: Kernel Configuration + GHS Coupling
 
-**Source File:** `Y181/85098662` (SOC_HOSTOS)
-**Offset:** `0x49168d`
+Extracted from the real Y181B boot image, cross-checked byte-identical against the live device's own
+`.config`. **Most of this material is already stated verbatim in `platform/emulator.md`'s kernel
+characterization and `platform/boot_chain.md` — only the facts unique to this research tier (raw
+boot-image/kernel-identity evidence) are kept below; everything else is a pointer.**
 
-#### Hex Dump of Version Block
-
-```
-$ xxd -s 0x49168d -l 128 Y181/85098662
-
-0049168d: 4f53 3a20 2020 2020 2020 2020 2020 2020  OS:
-0049169d: 2020 494e 5445 4752 4954 5920 496f 5420    INTEGRITY IoT
-004916ad: 3230 3230 2e31 382e 3139 0043 6f72 6520  2020.18.19.Core
-004916bd: 5665 7273 696f 6e3a 2020 2020 2032 3337  Version:     237
-004916cd: 3339 004d 6f64 756c 6573 2056 6572 7369  39.Modules Versi
-004916dd: 6f6e 3a20 2031 3135 3030 0000 0000 0000  on:  11500......
-```
-
-#### String Extraction with Offsets
-
-```
-$ strings -t x Y181/85098662 | grep -E "(INTEGRITY|Green Hills|MY22)"
-
-491666: Green Hills Software
-49168d: OS:               INTEGRITY IoT 2020.18.19
-4916b8: Core Version:     23739
-4916d0: Modules Version:  11500
-b5a812: INTEGRITY IoT 2020.18.19 MY22-026
-```
-
----
-
-### D.3 AVB Implementation Proof
-
-**Source File:** `Y181/85098662` (SOC_HOSTOS)
-
-#### AVB Error Strings with Offsets
-
-```
-$ strings -t x Y181/85098662 | grep -E "(vbmeta|rollback|A/B.*CRC)"
-
-cf7ff1: VMM: Error: vbmeta signing key does not match known valid key
-cf85ac: VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu
-cf8762: VMM: Warning: A/B metatdata CRC failure!
-```
-
-#### A/B Metadata Uses CRC32 Only (No Signature)
-
-**Evidence:** Searching for "A/B signature" or "metadata sign" returns NO results:
-
-```
-$ strings Y181/85098662 | grep -iE "(A.B.*signature|metadata.*sign)"
-[NO OUTPUT - confirming no cryptographic signature for A/B metadata]
-
-$ strings Y181/85098662 | grep -i "CRC"
-CalculateCRC32
-VMM: Warning: A/B metatdata CRC failure!
-BSP_CRCFailure
-```
-
-**Conclusion:** A/B slot metadata is protected by CRC32 checksum only, not cryptographic signature.
-
----
-
-### D.4 VIP Y177 vs Y181 Binary Difference
-
-#### Byte-Level Comparison
-
-```
-$ cmp -l Y177/86283151 Y181/86331656 | wc -l
-549518
-
-549,518 bytes differ (28.4% of 1,934,214 total bytes)
-```
-
-#### Critical Region at 0xb67ce (Security Function)
-
-**Y177 (full fn, entry shifted to 0xb67d4):**
-```
-$ xxd -s 0xb67ce -l 20 Y177/86283151
-000b67ce: ff30 0052 7f00 8807 e3ff 06c8 9900 033d  .0.R...........=
-```
-
-**Y181 (full fn, entry at 0xb67d0):**
-```
-$ xxd -s 0xb67ce -l 20 Y181/86331656
-000b67ce: 7f00 8807 e3ff 06c8 9900 033d 0545 074d  ...........=.E.M
-```
-
-**Observation (CORRECTED 2026-08-25):** This is a **+4-byte alignment shift**, not a stub. The
-shared function bytes `7f 00 88 07 e3 ff …` appear at `0xb67ce` in Y181 but at `0xb67d2` in Y177;
-the leading `ff 30 00 52` in Y177 is the *tail of the preceding function*, not a `mov 0,r10;
-jmp[lp]` return stub. The real validation function begins at `0xb67d0` (Y181) / `0xb67d4` (Y177) /
-`0xb6708` (Y175) and is a full ~906-byte function in every build (see `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §2).
-
----
-
-### D.5 VIP Module String Proof
-
-**Source File:** `Y181/86331656` (VIP_APP)
-
-#### Module Names with Offsets
-
-```
-$ strings -t x Y181/86331656 | grep -E "^\[(SS_SWC|PLC|PROTOKEY|J6_CDD)"
-
-0x2dd6: [SS_SWC] VIP Application Version: %02X.%d.%d.%d
-0x2e10: [SS_SWC] Bolo Version: %02X.%02X.%02X.%02X
-0x2e3e: [SS_SWC] ARXML Version: %d.%d.%d
-0xe656: [PLC] MEC is %d. Ignoring Hypervisor Startup Timeout
-0xe6ba: [PLC] MEC is 0. Processing Hypervisor Startup Timeout
-0xe6f2: [PLC] ****There have been 3 Consecutive SoC Startup Failures****
-```
-
-#### 3x Consecutive Reset Behavior
-
-```
-$ strings -t x Y181/86331656 | grep "3 Consecutive"
-
-0x0e6f2: [PLC] ****There have been 3 Consecutive SoC Startup Failures****
-0x1b32a: ****There have been 3 Consecutive SoC-Only resets****
-```
-
-#### MEC Counter Bypass Logic
-
-```
-$ strings -t x Y181/86331656 | grep "MEC is"
-
-0x0e656: [PLC] MEC is %d. Ignoring Hypervisor Startup Timeout
-0x0e6ba: [PLC] MEC is 0. Processing Hypervisor Startup Timeout
-```
-
----
-
-### D.6 IPC Protocol Proof
-
-**Source File:** `Y181/86331656` (VIP_APP)
-
-```
-$ strings Y181/86331656 | grep -E "\[IPC_S\]"
-
-[IPC_S] IPC: IPC-Version: %d.%d.%d %c
-[IPC_S] IPC: API-Version: %04X
-[IPC_S] HDLC: Init: Success: WindowSize-%d, Reset State-%d
-[IPC_S] HDLC: Init: IFRAME Timeout-%d, UFRAME Timeout-%d
-[IPC_S] IFRAME Rx %2d: Rx %d, Exp %d, %d
-[IPC_S] UFRAME RESET, receive payload %d
-[IPC_S] HDLC: CRC Failed 0x%X Last RSeq:%d
-```
-
----
-
-### D.7 ICUSB Key States Proof
-
-**Source File:** `Y181/86331656` (VIP_APP)
-
-```
-$ strings Y181/86331656 | grep "ICUSB enabled"
-
-[AME_DIAG] ICUSB enabled and both key are provisioned.
-[AME_DIAG] ICUSB enabled and no key provisioned.
-[AME_DIAG] ICUSB enabled and Master key provisioned.
-[AME_DIAG] ICUSB enabled and Unlock key provisioned.
-```
-
-**Four distinct key states confirmed.**
-
----
-
-### D.8 ProtoKey Transmission Proof
-
-**Source File:** `Y181/86331656` (VIP_APP)
-
-```
-$ strings Y181/86331656 | grep -E "(PROTOKEY|ProtoKey)"
-
-[PROTOKEY] ICUSB module disabled
-[PROTOKEY] ICUSB module enabled
-[PROTOKEY] Seed %d taken from GMLAN
-[PROTOKEY] Seed %d taken from cache
-[PROTOKEY] No Seed %d received or cached
-[J6_CDD] J6_prv_ProtoKey:Protokey transmitted to SoC, status is %d
-[J6_CDD] J6_prv_ProtoKey:Protokey transmit to SoC Failed. SERIAL_IPC_PROTO_KEY_CHANNEL not available
-```
-
----
-
-### D.9 GHS Task Names Proof
-
-**Source File:** `Y181/85098662` (SOC_HOSTOS)
-
-```
-$ strings Y181/85098662 | grep -E "_InitialTask|ConnTo" | head -20
-
-VMM1_InitialTask
-ConnToVMM
-ConnToVMM_TextLog
-ConnToLifecycle
-ConnToCamera
-ConnToDisplayI2C
-ConnToChimes
-ConnToVIP
-ConnToCalibrations
-ConnToAudit_Crash
-ConnToOTA_BootELK
-ConnToEMMC
-```
-
----
-
-### D.10 VMX/VT-x Implementation Proof
-
-**Source File:** `Y181/85098662` (SOC_HOSTOS)
-
-```
-$ strings Y181/85098662 | grep -E "(ASP_VMX|VMCS|VT-d)"
-
-ASP_VMX_MapEptHelper
-ASP_VMX_UnmapEptHelper
-ASP_VMX_SetGuestKernelAddr
-ASP_VMX_SetGuestKernelOffset
-ASP_VMX_SetGuestKernelLength
-VMCS page is the wrong size
-VMCS memory type is wrong
-VMX is not supported
-VT-d does not support 2MB pages
-VT-d is disabled
-```
-
----
-
-### D.11 Trusty TEE Source Proof
-
-**Source File:** `Y181/85098662` (SOC_HOSTOS)
-
-```
-$ strings Y181/85098662 | grep "keymaster_ipc.cpp" | head -3
-
-/home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 125: error event (0x%x) for port (%d)
-/home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 138: failed to wait for outgoing queue to free up
-/home/mal/gm_release/MY22-026/final/iot/rtos/modules/tee/q/trusty/app/keymaster/ipc/keymaster_ipc.cpp, Line 184: failed (%d) to send_msg for chan (%d)
-```
-
----
-
-### D.12 Android Init Script Verification
-
-**File:** `/vendor/etc/init/hw/init.trusty-ghs.rc`
-
-```bash
-$ cat vendor_extracted/etc/init/hw/init.trusty-ghs.rc
-
-# This file or init.trusty.rc is imported, based on the property
-# value of ro.boot.trustyimpl.
-# This file is used when trusty is provided by the GHS hyper-visor
-
-on early-init
-   setprop ro.hardware.gatekeeper trusty
-   setprop ro.hardware.keystore trusty
-```
-
-**File:** `/vendor/etc/init/init.protokey.rc`
-
-```bash
-$ cat vendor_extracted/etc/init/init.protokey.rc
-
-on post-fs-data
-    mkdir /data/vendor/gm 0771 system system
-    mkdir /data/vendor/gm/security 0771 system system
-    setprop vendor.gm.security.state init
-
-service gmprotokey /vendor/bin/gm_protokey
-    class main
-    user root
-    group root system cache
-    oneshot
-```
-
----
-
-### D.13 Boot Command Line Proof
-
-**Source File:** `Y181/85098662` (SOC_HOSTOS)
-
-```
-$ strings Y181/85098662 | grep "androidboot\." | head -10
-
-clocksource=tsc tsc=reliable acpi_pm_good i915.avail_planes_per_pipe=0x000003 i915.enable_pvmmio=0 androidboot.diskbus=1c.0 androidboot.boot_devices=pci0000:00/0000:00:1c.0 androidboot.trustyimpl=-ghs androidboot.product.hardware.sku=gv221
-androidboot.force_normal_boot=1
-androidboot.slot_suffix=%s androidboot.verifiedbootstate=%s
-androidboot.vbmeta.avb_version=1.1 androidboot.vbmeta.device_state=%s androidboot.vbmeta.hash_alg=sha256
-androidboot.bootreason=cold
-androidboot.bootreason=warm
-androidboot.bootreason=reboot
-```
-
----
-
-## Appendix E: Reproduction Commands
-
-To reproduce any finding in this document, use the following commands:
-
-```bash
-# Navigate to update packages directory
-cd /path/to/gm_aaos/update_packages
-
-# 1. Verify file hashes
-shasum -a 256 Y181/85098662 Y181/85738845 Y181/86331656
-
-# 2. Extract GHS version
-strings -t x Y181/85098662 | grep "INTEGRITY IoT"
-
-# 3. Find AVB error messages
-strings Y181/85098662 | grep -E "(vbmeta|rollback)"
-
-# 4. Find A/B CRC messages (no signature)
-strings Y181/85098662 | grep -i "A/B.*CRC"
-
-# 5. Compare VIP firmware
-cmp -l Y177/86283151 Y181/86331656 | wc -l
-
-# 6. Extract VIP module strings
-strings Y181/86331656 | grep -E "^\[(SS_SWC|PLC|PROTOKEY)"
-
-# 7. Find 3x reset messages
-strings Y181/86331656 | grep "3 Consecutive"
-
-# 8. Find MEC counter messages
-strings Y181/86331656 | grep "MEC is"
-
-# 9. Dump specific hex region
-xxd -s 0x49168d -l 128 Y181/85098662
-```
-
----
-
-## Appendix F: Kernel Configuration + GHS Coupling (2026-09)
-
-Extracted and analyzed the real Y181B (gminfo37 CSM) boot image from the firmware update package,
-cross-checked byte-identical against the live device's own `.config`.
-
-### F.1 Boot Image
+### E.1 Boot Image (unique)
 
 Android boot header v2, page size 2048. Kernel: x86_64 bzImage, 15,364,688 bytes, LZ4-compressed
 vmlinux, load addr `0x10008000`. Ramdisk: 20,984,589 bytes, LZ4-legacy, load `0x11000000`. A "second"
 8061-byte blob is an Intel NHLT audio-DSP ACPI table wrapper, not boot code. `dtb` size 0 (no device
-tree — pure ACPI). Loaded by Intel Slim Bootloader → ABL (kernelflinger), not EFI-stub.
+tree — pure ACPI).
 
-### F.2 Kernel Identity
+### E.2 Kernel Identity (unique)
 
-`Linux version 4.19.305-240125T145315Z-gf1edde901aa7 ... SMP PREEMPT ... Tue Jul 22 07:52:16 EDT 2025`,
-clang 12.0.7 (Android r416183b1), x86_64, SMP, `NR_CPUS=32`, `HZ=1000`, X2APIC, KASLR on. Android Common
-Kernel 4.19 base, heavily GM/Intel-patched (GHS drivers, Titan/Broxton Apollo Lake program, IPU4
-camera, Trusty TEE).
+`Linux version 4.19.305-240125T145315Z-gf1edde901aa7 ... SMP PREEMPT ... Tue Jul 22 07:52:16 EDT
+2025`, clang 12.0.7 (Android r416183b1), x86_64, SMP, `NR_CPUS=32`, `HZ=1000`, X2APIC, KASLR on.
+Android Common Kernel 4.19 base, heavily GM/Intel-patched (GHS drivers, Titan/Broxton Apollo Lake
+program, IPU4 camera, Trusty TEE).
 
-### F.3 The Crux Finding — No pv-ops Contract
+### E.3 GHS Coupling, Platform, Storage, virtio, Cmdline, First-Stage Mount (pointer)
 
-`CONFIG_PARAVIRT` is **not set**. `CONFIG_HYPERVISOR_GUEST=y` exists but only enables optional
-detection — there is no Linux pv-ops contract, no `KVM_GUEST`, `XEN`, `HYPERV`, `PVH`, or
-`JAILHOUSE_GUEST`. The kernel's core MMU/timekeeping/IRQ/scheduling is bare-metal x86_64 — it is **not**
-a paravirtualized-at-the-core guest despite running under GHS INTEGRITY. The only GHS coupling is via
-ordinary Linux DEVICE DRIVERS (not core kernel infrastructure): `CONFIG_GHS_PARAVIRTUAL_SUPPORT=y`,
-`CONFIG_GHS_GUEST_COMMS=y`, `CONFIG_GHS_VMM_BOOTLOADER_CONTROL=y`, `CONFIG_SND_GHS_PCM=y`,
-`CONFIG_ANDROID_GM_GHS_MMC=y`, `CONFIG_TITAN_X86_BROXTON_PROGRAM=y`.
+`CONFIG_PARAVIRT` off / no pv-ops contract, the `ghs_comms` PCI driver (vendor `0x1B95`, device
+`0xA000`) and its sibling GHS-coupled drivers, the Apollo-Lake platform config, the narrow
+virtio-pci-legacy-only storage/console posture (no `VIRTIO_MMIO`/`VIRTIO_NET`, hence incompatible with
+goldfish/ranchu), the full boot cmdline (base `enforcing=0 androidboot.selinux=permissive` tokens
+followed by a later `enforcing=1 androidboot.selinux=enforcing` pair that wins), and the ACPI SSDT
+(`ANDR0001`)/static-A/B first-stage-mount chain are all stated in full in `platform/emulator.md` and
+`platform/boot_chain.md` — not restated here to avoid a fourth copy of material that already lives in
+two platform docs.
 
-### F.4 GHS Transport Mechanism (from binary strings/disasm of `ghs_comms` in vmlinux)
+---
 
-`ghs_comms` is a PCI driver binding to a Green-Hills-presented **virtual PCI function, vendor
-`0x1B95`, device `0xA000`** (subvendor/subdevice=ANY). Standard PCI enumeration
-(`pci_enable_device`, `pci_request_regions`), BAR-mapped send/receive ring registers, MSI-X interrupts,
-and a host/guest **version handshake** (log strings: "Host didn't accept driver version %d or fallback
-version %d", "GHS_VMM: version incompatibility"). A companion driver `ghs_vmm_bc`
-(`GHS_VMM_BOOTLOADER_CONTROL`) talks to the GHS VMM for A/B slot/boot-control and delivers the guest's
-TSC frequency (log string "GHS_VMM: TSC_FREQ = %lld" — the guest's timebase comes from the VMM, not
-native TSC calibration). Other GHS-coupled builtin drivers: `gm_ghs_mmc` (paravirtual MMC, exposes
-`/dev/ghs/emmc-health`), `snd_ghs_pcm` (paravirtual audio PCM), `ghs_camera_memory_map` (IPU4 camera
-buffer sharing). All are ordinary PCI/platform drivers that fail their own `probe()` gracefully (device
-not found → driver stays unbound, no panic) when their backing GHS PCI function is absent — standard
-Linux driver behavior, confirmed structurally from the driver code (probe-based binding, not a hard
-init-time dependency).
+## Appendix F: QEMU Portability — Dependency Classification
 
-### F.5 Platform, Storage, virtio, Networking, Console
+**Current status and milestone narrative (real GM kernel boots autonomously to a themed AAOS home
+screen on plain `qemu-system-x86_64`/q35) is owned by `platform/emulator.md`** — read that doc for the
+live state, the native-VHAL/no-shim-needed finding, and the software-rendering graphics stack that
+replaced the originally-anticipated drm_hwcomposer retargeting. Not restated here.
 
-- **Platform:** Apollo Lake/Broxton — `CONFIG_X86_INTEL_LPSS`, `PINCTRL_BROXTON`,
-  `X86_INTEL_PSTATE`, `VIDEO_INTEL_IPU4` (camera), `DRM_I915=y` **and** `DRM_BOCHS=y` (both compiled
-  in — `DRM_BOCHS` gives a plain framebuffer path independent of i915). `ACPI=y`, `CONFIG_OF` (device
-  tree) not set — fully ACPI-driven, no DT fallback exists.
-- **Storage/verified boot:** `DM_VERITY=y` + `DM_VERITY_FEC=y` (matches AVB hashtree+FEC posture),
-  `DM_DEFAULT_KEY=y`, `MMC_SDHCI_PCI`/`ACPI=y`, EXT4/F2FS with FS encryption, `EFI_PARTITION=y` (GPT).
-- **virtio — present but narrow:** `CONFIG_VIRTIO=y`, `VIRTIO_PCI=y`, **`VIRTIO_PCI_LEGACY=y`** (not
-  modern-only), `VIRTIO_BLK=y`, `VIRTIO_CONSOLE=y`. Notably absent: `VIRTIO_MMIO`, `VIRTIO_NET`,
-  `VIRTIO_INPUT`, `VIRTIO_BALLOON`, `VIRTIO_RPMB`. The existing virtio backs Trusty TEE
-  (`TRUSTY_VIRTIO=m`), not the main rootfs. Absence of `VIRTIO_MMIO` means this kernel is
-  **incompatible with Google's ranchu/goldfish AVD backend** (which uses virtio-mmio) — any real-kernel
-  boot must target plain `qemu-system-x86_64` q35/i440fx (virtio-pci), never the AVD emulator binary.
-- **Networking:** no `VIRTIO_NET`, but `CONFIG_E1000=y` and `CONFIG_E1000E=y` are present — a QEMU
-  `e1000e` NIC would bind with the in-tree driver without any kernel rebuild.
-- **Console:** full 8250 UART stack (`SERIAL_8250_CONSOLE`, `_DW`, `_LPSS`, `_MID` variants, 32 UARTs),
-  `HVC_DRIVER=y`.
+The one table `platform/emulator.md` itself points back into this doc for (its own text: "see
+`research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` Appendix G for the full per-dependency portability
+table") is kept below as the sole surviving unique content of the former Appendix G:
 
-### F.6 Cmdline (captured from the boot image header)
-
-Base: `video=HDMI-A-1:e loglevel=2 enforcing=0 androidboot.selinux=permissive no_timer_check noxsaves
-reboot_panic=p,w i915.hpd_sense_invert=0x7 intel_iommu=off loop.max_part=7 rootfstype=ext4 gpt
-console=tty0 androidboot.hardware=full_gminfo37_gb firmware_class.path=/vendor/firmware
-relative_sleep_states=1 intel_pstate=disable pstore.backend=ramoops
-memmap=0x400000$0x50000000 ramoops.mem_address=0x50000000 ramoops.mem_size=0x400000`; appended (later
-tokens win) `i915.enable_guc=2 intel_ipu4_psys.async_fw_init=Y thermal.off=1 trace_buf_size=64M
-enforcing=1 androidboot.selinux=enforcing buildvariant=user`. Net effective: SELinux enforcing (last
-token wins), no explicit `root=` (system-as-root via first_stage_mount), `intel_iommu=off`,
-`no_timer_check`.
-
-### F.7 First-Stage Init / Mount Chain (also see `platform/boot_chain.md`)
-
-System-as-root, `init -> /system/bin/init`. The ramdisk's own `fstab.full_gminfo37_gb` marks
-partitions `logical,first_stage_mount` (an unused build-mixin default) — the AUTHORITATIVE
-first-stage fstab is actually an **ACPI SSDT table** (`_HID ANDR0001`, OEM Table ID "android") whose
-`_DSD` property gives real by-name **static** partitions on PCI eMMC at `0000:00:1c.0` with
-`wait,slotselect,avb` flags — confirming **static A/B** (no dynamic-partitions `super`, no dm-linear),
-consistent with the static-A/B note in `platform/emulator.md`. `ro.boot.dynamic_partitions=true` exists
-as a prop but is overridden by this static SSDT layout in practice. The SOC_ACPIO firmware module is a
-2MiB Intel ACPI-magic overlay partition carrying exactly this android SSDT plus Broxton platform ACPI
-tables (LPSS, PMC/PUNIT IPC, SDHCI-ACPI). Any future QEMU port needs to inject an equivalent SSDT
-(`-acpitable`) plus Broxton platform ACPI, since QEMU's default q35 ACPI does not provide `ANDR0001`.
-
-The VIP link is a **userspace** protocol confirmed from this kernel config: no `N_HDLC` line discipline
-is compiled in anywhere, so the VIP/RH850 protocol over `ttyS1` cannot be an in-kernel driver
-dependency — see the Appendix C correction above and `platform/boot_chain.md`.
-
-## Appendix G: QEMU Portability Assessment (2026-09)
-
-**Verdict — MILESTONE CONFIRMED (2026-09-27), supersedes the earlier "reaches second-stage init,
-blocked on SELinux-enforcing/vold-failed" interim status recorded in the previous pass of this
-appendix:** the real GM kernel IS portable to plain `qemu-system-x86_64` (q35 machine type), and this is
-now an empirical result at full-boot fidelity, not just a static-analysis claim or a partial-boot
-result. GHS is a SERVICE-layer blocker (specific vendor daemons/HALs stay dead without it), **not** a
-BOOT-layer blocker — the kernel boots without any GHS device present, per the `CONFIG_PARAVIRT`-off
-finding (F.3) and the PCI-driver graceful-degrade structure (F.4), both directly observed at runtime.
-This refines the `platform/emulator.md` claim "GM's real vendor firmware can't boot on goldfish": the
-precise statement is **"can't boot on goldfish/ranchu specifically (virtio-mmio backend, wrong machine
-type) — the real kernel boots on plain qemu-system-x86_64/q35 (virtio-pci backend), and now boots
-AUTONOMOUSLY (no manual intervention) all the way to a fully rendered, themed AAOS home screen, in ~4
-minutes cold boot (q35, `-accel hvf`, virtio-blk-pci, e1000e) on the Mac Pro, isolated from the goldfish
-AVD. Reproduced twice (a manual-assisted first pass, then a clean hands-off autoboot) with matching
-screencaps at different timestamps, confirming reproducibility; verified live via qemu screendump +
-guest shell, not build-only. The previously-blocking `vold-failed`/SELinux-enforcing second-stage reboot
-loop is resolved as part of reaching the home screen. Treat the kernel/vendor-ABI portability question
-as settled at full-boot fidelity — remaining work is now UI/calibration parity with the goldfish hybrid
-(see `platform/emulator.md`'s visual/calibration parity-gap note) and the still-open items below (VHAL
-now runs NATIVELY with no shim needed at all — a further improvement over the "stubbable via
-libipc_shim" classification in G.2 below, since the real IPCServer already provides the link), not a
-kernel or GHS-coupling risk."**
-
-**VHAL update:** the real IPCServer (userspace VIP-link daemon) runs and sets
-`vendor.modules.ipcserver.ready`; `android.hardware.automotive.vehicle@2.0-service-gm` registers for
-real (`lshal` shows `IVehicle/default`), with CarService running 34 real property-subscription clients
-and driving-state correctly deriving PARKED. No `libipc_shim` port was needed here — see
-`platform/emulator.md`'s "VHAL — native, no shim needed" subsection for the full writeup. **Graphics**
-was solved via a from-scratch software-rendering stack (`gralloc.swfb.so` + patched
-`hwcomposer.swfb.so` + SwiftShader sourced from the goldfish `google_apis` image) rather than the
-drm_hwcomposer/SwiftShader retargeting anticipated in G.2 below — see `platform/emulator.md`'s
-"Graphics stack" subsection for the full writeup; the anticipated approach in G.2's Display row is
-superseded by this actually-implemented one.
-
-Two assumptions in this plan were tested and found wrong, then corrected: (1) the extracted ACPI SSDT
-(`ssdt_android.aml`, `_HID ANDR0001`) loads into ACPI fine but does **not** work as a DT-fstab source —
-`fs_mgr`'s `ReadFstabFromDt()` fails because its nested `fstab/<part>/{dev,type,...}` node layout doesn't
-match the flat dotted `_DSD` properties this ACPI path produces; do not rely on the SSDT for partition
-discovery. (2) The actual working fix is patching the ramdisk's plain-text first-stage fstab
-(`first_stage_ramdisk/fstab.full_gminfo37_gb`) directly: drop `logical`/`avb` from fsmgr_flags, point
-each entry at the PCI-scoped `/dev/block/pci/pci0000:00/0000:00:1c.0/by-name/<partition>` path (matching
-wherever virtio-blk attaches) with `slotselect` — the flat `/dev/block/by-name/...` path is never
-created by first-stage init on this kernel. A new hardware-fidelity fact from vendor `file_contexts`:
-`ttyS0`=`bluetooth_serial_device`, `ttyS1`=`ipc_serial_device` (confirms ttyS1 as the real VIP/libipc
-channel by SELinux label); the console must be on `ttyS2`+ (`serial_device`) or SELinux denies the
-write.
-
-**Formerly the stopping point, now resolved:** GM's `user` build forces `enforcing=1` regardless of the
-permissive cmdline arg (`selinux=0` outright breaks `mount(selinuxfs)`, so SELinux can't be compiled out
-either — it's a hard build requirement). This previously caused `vold` to be AVC-denied and killed → a
-second-stage reboot loop. That loop is now resolved as part of the full boot-to-home-screen milestone
-above (see `platform/emulator.md` for the fix details); `data`(f2fs) and a live shell are both reached.
-Remaining open items are UI/calibration parity with the goldfish hybrid and the 38-unidentified-crashes
-item from the logcat analysis (see `platform/emulator.md`'s logcat comparative-analysis subsection), not
-the SELinux/vold boot blocker.
-
-Artifacts (`run.sh`, `mkstatic.py`, `patch_cpio.py`, `ssdt_noavb.aml`/`.dsl`, `fstab.patched`,
-`serial.log`) preserved to
-`/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/realk/`;
-full working tree (incl. the 6GB `gm.img`, not copied off) remains on the Mac Pro at `~/gm_emu/realk/`.
-
-### G.1 Two Strategies Compared
-
-- **(a) RECOMMENDED:** boot GM's real kernel binary as-is on `qemu-system-x86_64`/q35 with
-  virtio-pci-legacy block+console, e1000e NIC, `DRM_BOCHS` framebuffer, ACPI SSDT injection (the
-  extracted `ssdt_android.aml`), and a modified cmdline (add `androidboot.slot_suffix`, adjust display
-  args for bochs instead of i915, handle AVB either via a matching vbmeta or a verity-off cmdline path
-  like the current hybrid). This preserves the exact kernel-vendor ABI — GM's vendor HALs/modules (e.g.
-  an out-of-tree `igb_avb` module) were built against THIS kernel's headers/KMI, and the current
-  goldfish hybrid's whole fidelity problem is a kernel/vendor ABI mismatch that this strategy
-  eliminates entirely for anything that doesn't specifically need a GHS-backed device.
-- **(b) NOT RECOMMENDED:** rebuild an ACK 4.19 kernel retargeted to ranchu/virtio-mmio (flip on
-  `VIRTIO_MMIO`/`VIRTIO_NET`/`DRM_VIRTIO_GPU`, drop GHS/Titan config). Boots "more cleanly" on the
-  existing AVD but reopens exactly the kernel/vendor-ABI gap the project is trying to close (GM's
-  vendor modules would no longer match). Only justified if (a) hits an unforeseen in-tree driver that
-  hard-faults on QEMU (none found in this analysis).
-
-### G.2 Per-Dependency Classification
+### F.1 Per-Dependency Classification
 
 (providable = QEMU supplies it natively; patchable = needs a cmdline/config/ACPI tweak; stubbable =
-needs a software shim, same class as the existing libipc/libpal_tod work; hard-blocker = genuinely
-absent, stays dead)
+needs a software shim; hard-blocker = genuinely absent, stays dead)
 
 | Dependency | Class | Notes |
 |---|---|---|
 | CPU/entry/ACPI-fstab/storage(virtio-blk)/console/e1000e-networking/AVB | Providable/patchable | q35+virtio-pci+ACPI-SSDT-injection, no kernel source changes |
-| Display (i915 expects real Gen9 GPU) | Stubbable / **GPU-accelerable** | `DRM_BOCHS` (already compiled in) + the same drm_hwcomposer/SwiftShader work the goldfish hybrid already solved — not a new problem, same effort retargeted. **(updated 2026-10-01: software rendering is no longer the only option — the kernel was rebuilt from the exact Intel LTS base with `CONFIG_DRM_VIRTIO_GPU` (CRC-matched, re-signed with its own key) and now runs hardware-accelerated virgl via a custom QEMU → ANGLE → Metal; see `platform/emulator.md`.)** |
-| VIP/IPC (ttyS1 userspace protocol) | Stubbable | reuse the existing `libipc_shim.c`/frame-injection tooling verbatim — kernel-agnostic |
-| GHS transport itself (`ghs_comms` PCI device, `/dev/ghs/*`) | Stubbable/absent | driver never binds; no panic. Only matters for what's downstream (next rows) |
-| A/B boot-control (`GHS_VMM_BOOTLOADER_CONTROL`) | Stubbable | `androidboot.slot_suffix` on cmdline + a static/software `IBootControl` HAL (same manifest-swap technique the hybrid already used) |
+| Display (i915 expects real Gen9 GPU) | Stubbable / GPU-accelerable | `DRM_BOCHS` software path; superseded by a hardware-accelerated virtio-gpu build — see `platform/emulator.md` |
+| VIP/IPC (ttyS1 userspace protocol) | Stubbable | reuses `libipc_shim.c`/frame-injection tooling verbatim — kernel-agnostic; superseded by the native IPCServer finding, see `platform/emulator.md` |
+| GHS transport itself (`ghs_comms` PCI device, `/dev/ghs/*`) | Stubbable/absent | driver never binds; no panic |
+| A/B boot-control (`GHS_VMM_BOOTLOADER_CONTROL`) | Stubbable | `androidboot.slot_suffix` on cmdline + a static/software `IBootControl` HAL |
 | Hardware keymaster/attestation/RPMB (Trusty TEE, requires GHS) | Hard blocker | permanent — same as today's software-keymaster stub, no regression |
 | Harman AVB audio (802.1BA + NXP TDF8532 codec) | Hard blocker | permanent — same as today's Google `audio@6.0` stub, no regression |
 | GHS cal/chime/camera/emmc-health overlay tasks | Stubbable/absent | same posture as today |
 
-### G.3 Payoff and Effort Estimate
-
-Booting the real kernel (vs. the current goldfish hybrid) would run on the native kernel/vendor ABI
-instead of goldfish's, unlocking: real vendor `init` + real vendor SELinux domains/policy loaded
-natively (no VINTF-manifest surgery needed to make GM vendor fit a foreign kernel); `diagnosticsd`
-(`:49156`, currently completely absent from the goldfish emulator because its vendor-lib dependency web
-assumes the real kernel/vendor) becomes potentially runnable; the real VHAL's kernel-side dependencies
-resolve natively (still needs a VIP peer via the existing shim, but no cross-kernel-ABI translation
-layer); this is no longer needed via a shim at all, since the real IPCServer resolves natively (see
-VHAL update above). Original effort estimate: ~2-4 focused days to first kernel-up/first-stage-mount/
-adb-shell; +1-2 weeks to a stable AAOS UI (matching the current hybrid's maturity) — **superseded:** the
-home-screen milestone above was reached within that estimate's window; remaining work is UI/calibration
-parity (see `platform/emulator.md`), not additional bring-up.
-
-**Framing for future work:** worth doing specifically for vendor-layer fidelity (`diagnosticsd`, native
-vendor SELinux/HALs) — not a general shortcut over the existing goldfish hybrid, which remains
-better/cheaper for UI/RE work that doesn't need those specific vendor daemons.
+Effort estimate, two-strategy comparison, and payoff framing (formerly G.1/G.3) are historical
+planning notes fully resolved by the completed milestone above — not reproduced here.
 
 ---
 
-**Related Documents:**
-- VIP_FIRMWARE_Y177_Y181_COMPARISON.md
-- GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md
-- VIP_BOOT_CONTROL_ANALYSIS.md
-- EEPROM_CALIBRATION_MAPPING.md
-- SBI_SECURITY_SCOPE_ANALYSIS.md
+## Open Conflicts
+
+Per-doc-local contradictions found in this research tier that no dated correction settles, plus the
+one corpus-wide item this doc is required to carry (PLAN item 2):
+
+1. **`cal_startup_fault_timeout_sec`: 6000ms vs 15 (sec) — UNRESOLVED.** §3's PLC-timer table lists
+   this variable at 6000ms; §4.8's "Key Calibration Values" table lists the same variable at 15,
+   under a column implicitly in seconds given the variable's own `_sec` suffix and the surrounding
+   rows (`cal_background_sleep_timeout_sec`=10, `cal_sleep_fault_timeout_sec`=900, both genuinely in
+   seconds). No dated correction in this doc, or any cited source, addresses the discrepancy — it may
+   be a units mismatch (6000ms = 6s ≠ 15s) or two genuinely different cal tables sampled from
+   different units/builds. Not resolved here; both values kept, flagged at both table rows above.
+
+2. **VIP-vs-SoC-side ADB gate — resolved by the later of two same-corpus dated corrections, applied
+   above (§4.5, §10.1).** §4.5/§11.2 (dated 2026-08-25) state the VIP function + EEPROM SBI
+   (0x0440/0x0A80) "actually gate... ADB/seed auth (CAN-confirmed)." §10.1's security-layer table
+   (dated 2026-08-26, one day later) states the opposite for the same function: "NOT... the ADB gate
+   (CORRECTED 2026-08-26: the ADB unlock is SoC-side MEC/`is_secure_mode` via DID 0xF1A0 — see
+   EEPROM_LAYOUT §0.9/§0.10)." Per the latest-dated-correction rule, the 2026-08-26 reading governs:
+   the VIP function is a `$27`/seed-access validator; the ADB-unlock decision itself is SoC-side
+   (MEC/`is_secure_mode` via DID 0xF1A0), owned by `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` /
+   `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`. §4.5 and §10.1 above reflect this resolution; listed here
+   only so the superseded 08-25 phrasing isn't silently lost.
+
+3. **Module 72 naming: "SOC_ABL" vs "SOC_BOOT" (PLAN corpus-wide item 2).** This doc's own §4.2 (the
+   2026-11-12 live-`moduleinfo` correction block) reads module slot 72 / part 85738845 from the live
+   Y181B unit and labels it only by its numeric version (`2344`), following that read's own "SoC boot"
+   framing; §5.2 of this same doc calls the identical file (85738845) "SOC_ABL" (the DPS/manifest-role
+   name used throughout this doc and `BOOT_CHAIN_ANALYSIS.txt`). No dated correction in this corpus
+   reconciles "SOC_ABL" (manifest/DPS-role naming) against "SOC_BOOT" (the name the live radio itself
+   reports for the same part, per the retired `UPDATE_PROCESS_ANALYSIS.txt`'s 2026-11-12
+   live-moduleinfo correction). Routed to `platform/ota_programming_roles.md`'s Open Conflicts as well,
+   per PLAN.
+
+---
+
+**Related documents:** `BOOT_CHAIN_ANALYSIS.txt` (raw forensic evidence companion),
+`VIP_FIRMWARE_Y177_Y181_COMPARISON.md` (carried unchanged), `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`,
+`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`, `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt`,
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`,
+`VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`, `VIP_CONTROL_ANALYSIS.txt`, `platform/boot_chain.md`,
+`platform/emulator.md`, `platform/elk_recovery.md`, `platform/firmware_versions.md`,
+`platform/security.md`.

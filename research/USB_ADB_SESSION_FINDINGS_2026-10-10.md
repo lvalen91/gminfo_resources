@@ -1,5 +1,12 @@
 # gminfo37 (Silverado CSM) — USB hardware & ADB logic, from direct firmware analysis
 
+**Scope.** USB hardware (X8 connector, controllers), GHS passthrough, Android role-switch/gadget/
+DABridge logic, and the full ADB-exposure condition chain for the gminfo37 CSM. **What does NOT
+live here:** the GHS monolith's byte-level address-space map (container/ELF structure, offset→
+section table, opaque-byte accounting) — that is `GHS_FILE_MAP_85098662.md` (GFM); this doc cites
+GFM by section/offset and does not restate its table. EEPROM SBI-bypass mechanism — pointer only
+(§7.6), owned by `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`.
+
 **Rule for this document:** every claim carries a direct, confirmed reference. Tags:
 - **[FW …]** — byte/line in an extracted firmware file (file + offset or line).
 - **[DIS vaddr]** — instruction traced by disassembly in the decompressed kernel.
@@ -7,6 +14,12 @@
 - **[HW doc]** — physical/connector fact from the hardware references (not firmware; marked as such).
 - **[CONFIRMED ×N]** — independently reproduced by N FABLE verification agents this session.
 - **[UNVERIFIED]** — not established; stated as open, never as fact.
+
+**Related:** `GHS_FILE_MAP_85098662.md` (GHS byte-level map, owner for §3/§8 restatements),
+`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (SBI bypass, owner for §7.6), hardware `connectors.md` /
+`teardown.md` (X8 pinout, physical facts cited [HW doc] throughout).
+
+---
 
 ## 0. Sources (what was opened, and how)
 Y181B GAS USB Full Package, PN 86405303 — `delivery_manifest.csv` [FW USB_Files/delivery_manifest.csv].
@@ -58,10 +71,11 @@ CONFIRMED ×2].
 
 ## 3. GHS (INTEGRITY) layer — passthrough only, no USB role logic
 **Verdict: GHS contains no role-switch / gadget / dabridge / hub logic. It performs a MEDIATED
-(para-virtual) passthrough of both USB controllers to the Android guest.** Four agents converge; the
-full edge-to-edge byte map is in `GHS_FILE_MAP_85098662.md`.
+(para-virtual) passthrough of both USB controllers to the Android guest.** The full edge-to-edge
+byte map of `85098662` (container/ELF structure, offset→section table, opaque-byte accounting)
+is owned by **`GHS_FILE_MAP_85098662.md`** — cited here, not restated.
 
-**[REFINED] It is mediated passthrough, not raw assignment.** The monitor (`.vmm1`) claims the real
+**It is mediated passthrough, not raw assignment.** The monitor (`.vmm1`) claims the real
 PCI functions (`cmp esi,0x5aa88086` xHCI / `cmp esi,0x5aaa8086` xDCI [DIS 85098662 @file 0xcf205b /
 0xcf2184]) and exposes an **emulated PCI function** to the guest (`usb_passthru_emul.c`: virtual config
 space + BAR0 + MSI); the guest's register accesses are trapped and forwarded as RPC verbs
@@ -78,17 +92,22 @@ same (it drives a real-backed xHCI/xDCI), but GHS sits in the register path.
   [FW 85098662 symtab/.vmm1.rodata; CONFIRMED ×2].
 - The `.boottable` assigns **both** controllers to Guest 1: `Guest1_XHCI0`, `Guest1_XDCI`
   [FW 85098662 @~0xe34a1f; CONFIRMED ×2]. So Android owns the real xHCI and the real XDCI.
-- **No hidden code.** Exhaustive compression-magic scan + ~1,000 brute decompression attempts across
-  the blob and every high-entropy window → **0 compressed/encrypted streams** [FW 85098662;
-  CONFIRMED ×2]. Every high-entropy region is identified data (see §8). **[CORRECTED]** the only bytes
-  whose content could not be read are **768 B** at the tail — a 256 B RSA-2048-sized Android key
-  (`current_android_key`, exposed to Guest1 via `AndroidKeyVMR`) + a 512 B RSA-4096-sized signature
-  [FW 85098662 @0xE3CCB0 / 0xE3CE20; region D]. The earlier "~13 KB" figure wrongly counted the TEE
-  blocks, which region D identified as **standard AES T-tables (Te0–3/Td0–3) + SHA-256/512 constants**
-  — not opaque, not secret.
+
+**The only bytes in `85098662` with no USB-unrelated identified content are 768 B at the tail** — a
+256 B RSA-2048-sized Android key (`current_android_key`, exposed to Guest1 via `AndroidKeyVMR`) + a
+512 B RSA-4096-sized signature [FW 85098662 @0xE3CCB0 / 0xE3CE20; region D]. Every other
+high-entropy region (chime audio, camera-overlay BMPs, co-processor firmware blobs — full list and
+addresses in GFM) is identified data, not opaque code; none of it touches the USB controllers.
+*History: the original pass reported "no region hides USB logic... no decodable stream" as if
+negative evidence closed the question, and separately carried an "~13 KB opaque" figure that
+double-counted TEE blocks later identified (2026-11-17) as standard AES T-tables/SHA constants —
+both corrected in place here: absence of a decoded stream does not prove absence of unrecognized
+code, and the only genuinely unaccounted bytes are this 768 B key+signature tail.*
 
 **Meaning:** GHS does not decide host vs device and does not bridge ports. It exposes the XDCI to
 Android through the `OTGD` ACPI OpRegion (§4), and the role decision happens in the Android guest.
+Full byte-map detail, including the chime/BMP/firmware region addresses and the 768 B tail's
+position in the overall accounting: see GFM.
 
 ---
 
@@ -133,6 +152,10 @@ gadget D+ pull-up), and (b) **RULES OUT** hardware VBUS-sense auto-role (VBUS al
 is **not** the `brand=Android` GSI rule — that rule exists [FW init.full_gminfo37_gb.rc] but does not
 fire on a stock GM image; the bench is GM AAOS.
 
+Also resolved this session: the Android ACPIO partition (`86331630`) is only the `ANDR0001`
+fstab/vbmeta descriptor and carries no USB config — USB governance is entirely the GHS `IGS_DSDT`
+XDCI/`OTGD` path above, not this partition.
+
 **CC correction (withdrawn claim):** any statement that "the radio watches CC" is false — CC never
 reaches the radio (§1). The CC `Rd` resistor on a bench breakout only makes the **Mac** become host
 and source VBUS; the radio's role/port-power is **software-commanded** via the path above. [HW doc + FW §4]
@@ -143,6 +166,23 @@ loading is **not a short** (a short is 5 V→GND) — it is a low-energy, curren
 the bench shows it does nothing. When the toggle flips the XDCI to **device**, `SPPS` removes the
 radio's port power → the radio stops sourcing, sinks the Mac's VBUS, asserts D+, and the Mac
 enumerates it. So the dual-source window is momentary and harmless.
+
+### 4.1 Bench ADB persistence inspection (addendum, 2026-11-17)
+After manual Developer Options toggling, one authorized ADB connection reported
+`adb_enabled=1`, `development_settings_enabled=1`, `sys.usb.config=adb`,
+`sys.usb.state=adb`, `persist.sys.usb.config=adb`, `init.svc.adbd=running`,
+`ro.adb.secure=1` and `ro.debuggable=0`. `vendor.sys.usb.role` and both queried TCP-port
+properties were empty. The radio clock was corrected from the workstation. No debugging
+setting, USB property, or authorization store was changed during the inspection.
+
+The persistent USB configuration already requested ADB, so writing that value again is not an
+established boot-persistence fix. No connected ADB device was available before the manual
+toggle, so pre-toggle `adb_enabled`/property values were not captured. A cleared setting,
+vendor startup policy, or a USB-role/gadget startup failure remain alternative explanations,
+not a resolved cause. No calibration module for persistent ADB was identified, and the
+calibration header-verifier RAM words must not be described as ADB authorization — VIP
+authorization, Android ADB state, and USB exposure are three separate controls. Full
+power-cycle persistence was **not** established by this inspection; it stays open (§9).
 
 ---
 
@@ -335,8 +375,10 @@ Combining §1–§6, ADB appears on a USB connection **only** when all of these 
 4. **`adb_enabled=1`.** Set by the Developer-options USB-debugging toggle; GM clears it to 0 every boot
    [repo-sourced connectors.md].
 5. **RSA auth** (`ro.adb.secure=1`) — the key-accept step [repo-sourced].
-6. **(for a shell, not just enumeration) EEPROM SBI bypass** — without it `adbd` enumerates but
-   returns "Secure Client required" [HW doc / owner-bench connectors.md; not a firmware trace here].
+6. **(for a shell, not just enumeration) EEPROM SBI bypass.** Without it `adbd` enumerates but returns
+   "Secure Client required" [HW doc / owner-bench connectors.md]. The mechanism (which byte, how the
+   bypass is written) is owned by `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` — pointer only, not restated
+   here.
 
 On the bench a Mac-side CC `Rd` strap (receptacle or breakout) makes the Mac source VBUS; the radio is
 put in device role by the software toggle. The receptacle "model that exposes ADB" is the
@@ -346,35 +388,18 @@ receptacle is instead recognized by the **Aptiv H2H bridge device** `2996:0105` 
 ---
 
 ## 8. GHS high-entropy regions — all identified (closes the "opaque blob" question)
-No region hides USB logic. [FW 85098662; CONFIRMED ×2, the chime region decomposed ×1 further]
-- `.chime_requester.rodata` (~0x5fcd11–0x922881, 3.3 MB) = **71 uncompressed PCM WAV chime clips**
-  (`CADILLAC_GONG`, `SEAT_BELT_1/2`, `COLL_FRNT`, …); 99.7% of bytes are WAV; only code xref to its
-  base is the OS memory-map descriptor, not USB/decompressor/crypto.
-- `.guidelines.rodata` (~0x951dd2–0xb48e92) = 30 BMP camera-overlay images (124×142×32bpp).
-- `.mr_r_mod_ipu_fw` (`$CPD`, camera ISP), `.mr_r_mod_dsp_fw` (`$AE1`, audio DSP),
-  `GuC_/HuC_Firmware_MR` (i915 GPU microcode) — co-processor firmware, no path to the USB controllers.
-- **768 B** tail = 256 B RSA-2048 `current_android_key` + 512 B RSA-4096 signature [UNVERIFIED
-  content, bounded exactly; not USB].
-
-*(The full edge-to-edge byte map of 85098662 is complete — see `GHS_FILE_MAP_85098662.md` (0x0→EOF,
-0 gaps, 145 phdrs/180 shdrs accounted). It refined two points folded into §3: GHS does **mediated**
-PCI passthrough (emulated PCI fn + RPC register verbs), and the only opaque bytes are the **768 B**
-key+signature tail — the TEE "high-entropy" blocks are identified AES T-tables + SHA constants.)*
+No region hides USB logic [FW 85098662; CONFIRMED ×2, the chime region decomposed ×1 further]. The
+full region list and addresses (chime PCM `.chime_requester.rodata`, camera-overlay BMPs
+`.guidelines.rodata` — pixel dimension 124×142×32bpp — ISP/DSP/GPU co-processor firmware blobs)
+and the complete byte-accounting table are owned by **`GHS_FILE_MAP_85098662.md`** (0x0→EOF, 0
+gaps, 145 phdrs/180 shdrs) — see that doc, not restated further here. The one USB-adjacent fact worth keeping in this doc: the **768 B** key+signature
+tail is the single region genuinely unaccounted for by anything but its own identity (RSA-2048 Android
+key + RSA-4096 signature, §3); none of the other high-entropy regions have any code path to the USB
+controllers.
 
 ---
 
-## 9. Status of former open items
-**RESOLVED this session:**
-- **Bench role-entry (was open #1/#3).** RESOLVED — the **Developer-Options USB-debugging toggle**
-  drives GM's ADB-enable path, which sets the XDCI to device role in software and reconfigures port
-  power/connect via `OTGD`/`SPPS`. Owner-confirmed (ADB off + VBUS = nothing; toggle = ADB). The
-  `brand=Android` GSI rule is **not** the bench mechanism (bench is GM AAOS). **VBUS-sense auto-role is
-  RULED OUT.**
-- **VBUS clash.** RESOLVED — benign; dual ~5 V at boot is low-energy (not a short), and `SPPS` removes
-  the radio's port power on device-role so there's no prolonged dual-source. See §4.
-- **Android ACPIO (`86331630`).** Checked — it is only the `ANDR0001` fstab/vbmeta descriptor; no USB
-  config. USB governance is the GHS `IGS_DSDT` XDCI/`OTGD` (§4).
-
+## 9. Open items
 **Still genuinely open [UNVERIFIED]:**
 1. **Where `sys.usb.controller=dabr_udc.0` and `sys.dabridge.*.portnum` are set** — not in vendor;
    needs the system/product EROFS (`86331654`/`86331636`, not extracted).
@@ -383,10 +408,15 @@ key+signature tail — the TEE "high-entropy" blocks are identified AES T-tables
    receptacle" closure) — snapshot shows 2× bridges; needs per-receptacle enumeration.
 4. **Idle X8 VBUS current** during the momentary boot dual-source window — scope nicety; behavior
    already shown benign.
-5. **Host xHCI PCI address** — resolved to `0000:00:15.0` (XDCI `0000:00:15.1`): sepolicy roots `usb1`/`usb2` under `0000:00:15.0`
-   [FW product_sepolicy.cil:4-8] and the DSDT XDCI `_ADR` is `0x00150001` (dev 0x15 fn 1); `0000:00:14.0` in older docs is only a variant-hedge. [inferred from sepolicy + Broxton layout; confirm with a live `lspci`/`/sys/bus/pci`] — still needs live read.
+5. **Host xHCI PCI address** — sepolicy roots `usb1`/`usb2` under `0000:00:15.0` [FW
+   product_sepolicy.cil:4-8] and the DSDT XDCI `_ADR` is `0x00150001` (dev 0x15 fn 1); this is
+   [inferred] from sepolicy + Broxton layout, not from a live read — `0000:00:14.0` seen in older docs
+   is only a variant-hedge. Still needs a live `lspci`/`/sys/bus/pci` capture to confirm.
 6. **X8 top-row** (6 unwired pins): live 2nd USB port? Physical probe [HW doc].
 7. **Bench CC resistor value** — spec `Rd` = 5.1 kΩ; a true 0 Ω is a short, not a valid `Rd` [HW doc].
+8. **ADB boot-persistence root cause** (§4.1, 2026-11-17 inspection) — a cleared setting, vendor
+   startup policy, or a USB-role/gadget startup failure remain untested alternative explanations; full
+   power-cycle persistence was not established.
 
 ---
 
@@ -397,5 +427,3 @@ checked: (1) kernel/vmlinux dabridge + disasm; (2) vendor partition scripts + VI
 PCM). Corrections they forced over the first draft: VID is not always 0x8087 (AOA=0x18d1); the GHS
 "opaque region" is chime audio, not undetermined; live controller is `dabr_udc.0` not the vendor
 default; the role-switch reaches hardware via the `OTGD` ACPI OpRegion, not a CC pin.
-
-Work trees: `/tmp/gm_usb_re` (primary), `/tmp/agent{1,2,3}`, `/tmp/ph44`.

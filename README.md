@@ -7,7 +7,7 @@ Canonical reference for the **GM Info 3.7** (`gminfo37`) infotainment system —
 
 The consolidated Y181B investigation is maintained in
 [research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
-Use [the research index](research/MASTER_REFERENCE.md) to find topic owners.
+Use [the research index](research/README.md) to find topic owners.
 
 ---
 
@@ -15,7 +15,7 @@ Use [the research index](research/MASTER_REFERENCE.md) to find topic owners.
 
 ```
 gminfo_resources/
-├── platform/          Hardware specs, boot chain, security, networking, FSA protocol, OTA stack, firmware versions, tech specs
+├── platform/          Platform reference (index: platform/README.md): hardware, boot/partitions/recovery, networks and protocols, CAN, OTA, security, vehicle config, emulator
 ├── hardware/          Physical teardown, BOM, photos, EEPROM/IFWI analysis
 ├── eeprom/            EEPROM mod guide, analysis reports, undocumented flags, .bin dumps
 │   ├── bins/          EEPROM binary dumps (Y181 ADB-enabled: HC + LTZ)
@@ -111,9 +111,20 @@ historical MEC readings and unresolved registration behavior are maintained in
 | [`platform/security.md`](platform/security.md) | SELinux, dm-verity, FBE, EEPROM security, CVEs, ProtoKey |
 | [`platform/boot_chain.md`](platform/boot_chain.md) | 5-phase boot, GHS tasks, A/B metadata, misc partition |
 | [`platform/firmware_versions.md`](platform/firmware_versions.md) | Y175/Y177/Y181 diff, DPS/CalDef |
-| [`platform/networking.md`](platform/networking.md) | Ethernet topology, VIP IPC channels, open ports, UART |
+| [`platform/ethernet_networking.md`](platform/ethernet_networking.md) | Interfaces, backbone switch, VLAN 4/5 maps, open ports, network ADB, mDNS, WiFi/BT, physical Ethernet bus map, UART/USB |
 | [`platform/fsa_protocol.md`](platform/fsa_protocol.md) | GM FSA/NFSA protocol: wire format (magic `0x5AA5`), service catalog, protobuf defs, live service sessions (RemoteModuleHMI/NAM/DeviceInfo/DisplaysCoordination) |
 | [`platform/ota_update_stack.md`](platform/ota_update_stack.md) | UpdateService Binder map, SWU state machine, Y181 package format/signing (TSS/GPD CA), OTA engine, USB install path |
+| [`platform/README.md`](platform/README.md) | Index of every platform doc, reading order, evidence-tag legend, "where does X live" table |
+| [`platform/hardware_specs.md`](platform/hardware_specs.md) | SoC/GPU/RAM/storage/display/audio/USB/thermal specs, UART console map, I2C topology, Intel A3960 datasheet facts |
+| [`platform/vip_ipc_ghs.md`](platform/vip_ipc_ghs.md) | RH850 VIP MCU, VIP-SoC IPC channel map, GHS INTEGRITY hypervisor, `/dev/ghs` |
+| [`platform/partitions_storage.md`](platform/partitions_storage.md) | eMMC/GPT map, `super`/dynamic partitions (measured), first-stage mounts |
+| [`platform/elk_recovery.md`](platform/elk_recovery.md) | ELK/kernelflinger, recovery/fastbootd, Boot Guard/TXE forensics, native-Linux probe bring-up |
+| [`platform/eeprom_i2c_security.md`](platform/eeprom_i2c_security.md) | EEPROM memory map and security flags, I2C-bus permission table, local hardware attack surface |
+| [`platform/avb_audio_transport.md`](platform/avb_audio_transport.md) | gPTP, AVTP AAF streams on VLAN 2, usage-to-bus mapping, firmware audio stack |
+| [`platform/can_bench_experiments.md`](platform/can_bench_experiments.md) | CAN bench log: calibration writes, ADB-enable and keep-alive campaign, boot/door/wake behaviour |
+| [`platform/gmsystemui_app_gating.md`](platform/gmsystemui_app_gating.md) | GMSystemUI WhiteList/predicates, CarPlay vs AA asymmetry, display-calibration gate |
+| [`platform/pi_swap_feasibility.md`](platform/pi_swap_feasibility.md) | Replacing the radio with a Raspberry Pi running AAOS: CAN audit, removal consequences, capture plan |
+| [`platform/external_references.md`](platform/external_references.md) | Intel APL/Celadon/bootloader sources, NDA-gated list, surrealdev bibliography |
 | [`diagnostics/ethernet_uds_diagnosticsd.md`](diagnostics/ethernet_uds_diagnosticsd.md) | Root `diagnosticsd` UDS-over-TCP on :49156 — GM 8-byte wire format, UDS dispatch, tester/SecurityAccess trust tiers |
 | [`research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](research/security/SHELL_ACCESS_ESCALATION_Jun2026.md) | uid=2000 Binder access map, kernel extraction + KASLR slide, GM Secure ADB `adbd` auth, escalation gate inventory |
 | [`analysis/platform_faq.md`](analysis/platform_faq.md) | Evidence-backed FAQ (APK decompilation, logcat, ADB) |
@@ -121,7 +132,7 @@ historical MEC readings and unresolved registration behavior are maintained in
 | [`video/cinemo_nme_framework.md`](video/cinemo_nme_framework.md) | CINEMO/NME CarPlay framework architecture |
 | [`enumeration/Y181/`](enumeration/Y181/) | Full ADB enumeration dump, SELinux policy, logcat |
 | [`enumeration/Y175/Y175_VIP.log`](enumeration/Y175/Y175_VIP.log) | VIP UART boot log (IPC timing, ProtoKey, SBAT) |
-| [`research/MASTER_REFERENCE.md`](research/MASTER_REFERENCE.md) | Top-level index of the full GM AAOS research corpus |
+| [`research/README.md`](research/README.md) | Top-level index of the full GM AAOS research corpus |
 | [`eeprom/EEPROM_Analysis_Report.md`](eeprom/EEPROM_Analysis_Report.md) | Full 8 KB EEPROM map: UI flags, checksums, calibration, factory-reset triggers |
 | [`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`](eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md) | 10 undocumented flag candidates, CalGroup marker rotation, VIP 0xb67d0 RE |
 | [`research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md`](research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md) | Three-way VIP security-fn diff (Y175/Y177/Y181): full ~906B in all builds, no stub |

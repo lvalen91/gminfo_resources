@@ -450,7 +450,7 @@ GMSWUpdater.apk (UI) + gm.update.* SDK (in APK dex)
   → /vendor/bin/hw/gm_update_engine   (GM fork of AOSP A/B update_engine)
   → Integrity check: IECUInformation::verifyFCID() + libswupdate_fcid.so
 ```
-(The update libraries are also listed in [`platform/networking.md`](networking.md#update-libraries).)
+(The update libraries are also listed in [`ethernet_networking.md`](ethernet_networking.md).)
 SELinux domain `gm_update_engine` carries `dontaudit gm_update_engine gsi_metadata_file`
 in `vendor_sepolicy.cil`, but this does **not** block GSI installs — `dontaudit` only
 suppresses audit logging and does not deny, and it targets the OTA engine, not the DSU
@@ -569,6 +569,128 @@ on this bench (SYN timeout, no RST).
 
 ---
 
+### Y175 full USB update bench observation — 2026-11-17
+
+The authorized follow-up to the [SXM CAN rejection](ota_programming_roles.md#sxm-stock-file-can-attempt--2026-11-17)
+uses the normal full Y175 USB package, not an SXM-only transfer. The removable
+volume's17 required package files (15 component files,85759595.mnf and85759597.smd)
+were read back and matched the local Y175 source by SHA-256, total3,118,500,573
+bytes. An initial check during copying found partial/zero-length files; the
+final completed-copy check matched all17. This verifies copy integrity, not
+independent package authenticity.
+
+Pre-update live Android build: Y175.5.2/SIHM22B-383.1, active slotB,
+boot_completed1. ADB was available; the radio clock was corrected from the Mac
+before monitoring. CAN F180/F181/F182 baselines were obtained; SXM remained
+84999468/AC, VIP_APP85759599/CJ, HostOS85098662/BM. T1 connection returned
+`[Errno 65] No route to host` despite an active Mac VLAN interface, the owner
+confirming the cable attached, and ADB confirming the radio diagnostic address
+present. Thus no combined T1/CAN SXM transfer was performed at this checkpoint.
+
+RX-only115200-baud UART, all Android logcat buffers with reconnect detection,
+and passive CAN receive capture alongside the32-frame bench harness were
+prepared. Raw observations remain in bounded memory buffers, not durable raw
+logs. UART bytes and CAN frames were arriving; the replacement CAN capture
+reported zero error frames before USB insertion. Android logcat is unavailable
+while ADB is disconnected; UART/CAN alone do not provide all recovery logs.
+
+USB insertion discovered manifest85759595 and SXM module28/part84999468;
+package verification reported STATUS_CODE_SUCCESS. The initial user-visible
+Park prompt did not identify the backend blocker: the service dump showed
+VehicleParked=true, ShiftParked=true, RemoteReflashPowerReadiness=0.0, and its
+condition check returned STATUS_CODE_INSUFFICIENT_BATTERY. No gear frame was
+changed.
+
+The empty `gm_usb_ignore_battery` marker was created at the USB root using
+shell-authorized MediaStore insert/write operations. A software unmount/mount
+triggered rediscovery: mIgnoreBattery=true, mAutoInstall=false,
+isBatterySufficient ignorebat=true, and checkCondition STATUS_CODE_SUCCESS.
+This closes the earlier uncertainty about this marker's battery-gate effect on
+this build. It does not remove signature checks or prove installation success.
+The marker remains on the update USB; automatic installation was not enabled.
+
+After the owner accepted, InitInstallState displayed a vehicle-on prerequisite.
+The service reported SystemPowerMode=OFF although the separate lifecycle state
+was STATE_PROPULSION. Repeating CAN284/DLC6 payload `00 00 00 00 10 00` alongside
+the32-frame harness changed SystemPowerMode toRUN, lifecycle toSTATE_RUN, and
+logged `handlePowerModeMessage RUN available? true`, `PowerMode: 4 is valid`,
+and VehicleOffStateChanged=false. This is raw authenticated-power candidate2
+in zero-based byte4 bits3–5, validity bit2 clear. Park remained true. No20D
+remote-programming-bit override was sent for this USB update.
+
+The owner then pressed Install now. The native-facing updater reported
+startInstall ret=true, ProgrammingType15, manifest85759595 / SIHM22B-00383.01,
+Status3, initial Percentage1 and ErrorCode0. Progress notifications subsequently
+advanced through15% with error=null while UpdateFile verified component-file
+digests. UART reported `st=RemoteReflashProgrammingActive`. ADB was still
+connected at this checkpoint; recovery boot and SXM programming/completion
+were not yet observed. A brief UART receiver replacement occurred before
+these detailed state lines; this is not a gap-free raw capture. One observed
+UART `HDLC: CRC Failed` line is not an updater failure verdict. CAN error-frame
+count remained zero in the replacement capture.
+
+The normal-AAOS stage then advanced through27%. RecoveryModeInstaller emitted
+`Reboot To Recovery`, selecting85759595.mnf and current versionSIHM22B-00383.01;
+it reported the package contains GHS and the pre-recovery active slot is1/B.
+ADB disconnected during Android shutdown. The owner observed display-off/on
+transitions and a separate recovery progress bar restarting at0 then advancing
+through3,18 and22%. Those percentages are visual observations, not CAN-decoded
+module progress. No factory-reset routine was sent for this experiment.
+
+UART reset its timestamps, emitted evRemoteReflashProgrammingBegin,
+SystemState=RemoteVehicleProgramming(0x10), and continued
+RemoteReflashProgrammingActive. CAN error frames accumulated across the reset
+interval to445 and then remained unchanged while RX traffic continued. The
+capture does not classify those error frames as a programming failure; no
+update-completion verdict was available. ADB remained absent in recovery,
+so the normal-AAOS log stream does not contain recovery's per-module write log.
+
+**Completed full-package result:** recovery UI advanced to97%, rebooted, and
+AAOS displayed update success. The generated recovery script explicitly
+scheduled VIP_BOOT71/85056831, VIP_APP1/85759599, HOSTOS21/85098662 and
+SXM28/84999468, among the other package components. This records scheduled
+operations, not per-module write-completion evidence.
+
+The success UI requested vehicle Off, driver-door open/close and a two-minute
+wait. CAN284 was set toall-zero authenticated-Off, captured529 byte1 bit7 was
+cleared, and4DA byte7 bit0 was toggled0→1→0. UART confirmed PowerModeOff,
+DriverDoorOpen, HmiInactive/Requesting Shutdown and DriverDoorClosed; later
+Sleep and Shutdown were observed. RUN was restored only after the full120-second
+interval following door-close. This was a simulated ignition/door sequence,
+not a physical supply interruption; no explicit SoC power-level0 observation
+was obtained here. The owner reported the finalization prompt persisted.
+
+At the owner's request, CAN526 byte5 bit7 was held for11 seconds and released.
+UART confirmed evResetRequestCSM, reset timestamps, HmiInit, HMIReady andRun.
+The owner then confirmed the successful-update screen and accessible home
+screen. ADB required manual off/on toggling; after reconnect the Mac clock
+was reapplied as needed. Read-only verification returned:
+
+| Check | Result |
+|---|---|
+| Android build | Y175.5.2 / SIHM22B-383.1 |
+| Active slot | A, changed from pre-updateB |
+| sys.boot_completed | 1 |
+| Stored update manifest/version | 85759595 / SIHM22B-00383.01 |
+| Stored Status / Percentage / ErrorCode | 1 / 99 / 0 |
+| ReflashCounter | 10; no matching pre-update counter measurement for a delta |
+| F180/F181/F182 | Expected Y175 identities unchanged, including SXM84999468/AC |
+| F0F0 | All14 calibration slots status00 |
+| F0F1/F0F2 | 0000 / 0000 |
+
+Direct reading of the per-module recovery log failed with
+`cat: /cache/recovery/last_log: Permission denied`. No USB volume was mounted
+on the radio or Mac at final cleanup, so no USB-side log was read and the
+created `gm_usb_ignore_battery` marker could not be removed; it remains on the
+update drive. CAN RUN replay was retained. Raw observations were not exported.
+
+This establishes a successful **full USB update with CAN-supplied bench
+conditions**, including a B→A slot change and clean post-update calibration
+status. It does not establish a T1/CAN-only transfer or an SXM-only update.
+The unchanged SXM identity and scheduled update_ecu call do not distinguish
+rewriting its existing version from skipping an unchanged component; a
+per-module recovery completion/skip record remains unavailable.
+
 ## USB Install Path & Flag Files
 
 **Evidence clarified 2026-11-12:** normal-AAOS `gm_update_engine` searches for
@@ -576,7 +698,7 @@ and copies these files from the USB package root:
 
 | Flag file | Prior interpretation | Current verification limit |
 |---|---|---|
-| `gm_usb_ignore_battery` | Suppress battery-level check | Discovery/copy and an empty file in supplied wipe packages are established; the full downstream battery-check bypass was not traced here. |
+| `gm_usb_ignore_battery` | Suppress battery-level check | Y175 bench2026-11-17: marker discovery changed mIgnoreBattery totrue and the condition result from INSUFFICIENT_BATTERY toSUCCESS; package signature checks still ran. See the full USB observation above. |
 | `gm_usb_auto_install` | Install without confirmation | Discovery/copy is established; the complete no-prompt decision path was not traced here. |
 
 A mounted USB package and `gm.update.action.CHECK_UPDATE_RESULT` have been
