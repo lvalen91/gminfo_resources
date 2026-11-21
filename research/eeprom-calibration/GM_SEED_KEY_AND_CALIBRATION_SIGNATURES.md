@@ -797,7 +797,7 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 ### Exact source targets
 
 [S1]: <EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md>
-[S2]: <ANDROID_SIDE_PROTOKEY_TRACE_AUG2026.md> — retired; absorbed into this doc's §5 above.
+[S2]: <#5-protokey--gm_protokey--libpal_securityso-ipc-chain> — retired; absorbed into this doc's §5 above.
 [S3]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/LIVE_DPS_CAPTURE_ECU80_AUG2026.md>
 [S4]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/SPS_radioCal_and_OS_UpdateCHeck.pcapng>
 [S5]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/SPS_RECAL_UDS_SEQUENCE_AUG2026.md>
@@ -817,7 +817,7 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S19]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/EMULATION_ANALYSIS.md>
 [S20]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/dllsecurity.dll.annotations.md>
 [S21]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/TISVCSV4_ANALYSIS.md>
-[S22]: <TISVCSV4_MULTI_OEM_KEYSERVER_AUG2026.md> — retired; absorbed into this doc's §2.1 above.
+[S22]: <#21-tisvcsv4dll--multi-oem-securityaccess-dispatch-architecture> — retired; absorbed into this doc's §2.1 above.
 [S23]: <../../tools/mdi2_client/mdi2/calibration_transaction.py>
 [S24]: <../../eeprom/README.md>
 [S25]: <../../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md>
@@ -833,7 +833,7 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S35]: <CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md>
 [S36]: <../../tools/mdi2_client/README.md>
 [S37]: <DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md>
-[S38]: <SCREEN_RESOLUTION_END_TO_END_WORKFLOW.md> — retired; see its own pointer.
+[S38]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — retired; see its own pointer.
 [S39]: <../../platform/security.md>
 [S40]: <../security/SHELL_ACCESS_ESCALATION_Jun2026.md>
 [S41]: <../security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md>
@@ -853,41 +853,41 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S55]: <../../eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md>
 [S56]: <../../eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md>
 [S57]: <../../hardware/connectors.md>
-[S58]: <../hardware/photos/README.md>
+[S58]: <../../hardware/schematics/board_map/README.md>
 [S59]: <../../hardware/teardown.md>
 [S60]: <../../platform/boot_chain.md>
 [S61]: <../../platform/emulator.md>
 [S62]: <../../platform/firmware_versions.md>
-[S63]: <../platform/hardware.md>
-[S64]: <../platform/networking.md>
+[S63]: <../../platform/README.md#status>
+[S64]: <../../platform/README.md#status>
 [S65]: <../mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md>
-[S66]: <AUG24_25_DOC_REVIEW_CORRECTIONS_AUG2026.md>
+[S66]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S67]: <CALDEF_VIP_CALIBRATION_ANALYSIS.txt>
 [S68]: <../boot-update-recovery/CSE_HECI_ORCHESTRATION_ANALYSIS.md>
-[S69]: <DOCUMENTATION_REVIEW_AND_CORRECTIONS.txt>
+[S69]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S70]: <DPS_AND_MODIFICATION_LANDSCAPE.txt>
-[S71]: <DPS_SECURITY_ANALYSIS.txt> — retired; verbatim-migrated into [S70], carried unchanged. See [Open conflicts](#open-conflicts) item 1 for the one still-live citation (§4.3.1).
-[S72]: <EEPROM_MAPPING_FABLE_REPORT.md>
+[S71]: <DPS_AND_MODIFICATION_LANDSCAPE.txt> — retired; verbatim-migrated into [S70], carried unchanged. See [Open conflicts](#open-conflicts) item 1 for the one still-live citation (§4.3.1).
+[S72]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S73]: <EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md>
 [S74]: <../boot-update-recovery/GHS_FILE_MAP_85098662.md>
 [S75]: <../boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md>
-[S76]: <GHS_PRIVACY_CAPABILITY_ANALYSIS.md>
-[S77]: <GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt> — retired; its §15.9 absorbed into this doc's §1 footnote above.
+[S76]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S77]: <#1-sps-radio-seedkey-and-calibration-p> — retired; its §15.9 absorbed into this doc's §1 footnote above.
 [S78]: <../rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt>
 [S79]: <../security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md>
 [S80]: <../provenance/INVENTORY.md>
-[S81]: <MASTER_REFERENCE.md>
+[S81]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S82]: <../mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md>
 [S83]: <../mdi2-bench-sessions/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md>
 [S84]: <../mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md>
-[S85]: <PROJECT_MASTER_CHECKLIST.txt>
+[S85]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S86]: <../provenance/PROVENANCE_AUDIT_AUG2026.md>
-[S87]: <QUICK_REFERENCE.txt>
+[S87]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S88]: <../boot-update-recovery/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md>
-[S89]: <S27_SOC_VALIDATION_BENCH_TEST.md>
-[S90]: <T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md>
+[S89]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S90]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S91]: <../security/UNTRIED_ATTACK_VECTORS.md>
-[S92]: <UPDATE_PROCESS_ANALYSIS.txt>
+[S92]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
 [S93]: <../mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md>
 [S94]: <VIP_CONTROL_ANALYSIS.txt>
 [S95]: <canbus_reset/CANBUS_RESET_ANALYSIS.txt>
@@ -974,7 +974,7 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S176]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/S84.dll.annotations.md>
 [S177]: <../../tools/mdi2_client/mdi2/captured_events.py>
 [S178]: <../../tools/mdi2_client/mdi2/capture_read_transport.py>
-[S179]: <../mdi2_client/scratch_decode/radio_cal_decode.py>
+[S179]: <../../tools/mdi2_client/scripts/scratch/radio_cal_decode.py>
 [S180]: </tmp/fwtriage/gm-y181-signing>
 [S181]: </tmp/gm_calibration_target_sources/Envelop.java>
 [S182]: </tmp/gm_calibration_target_sources/DiagnosticInstaller.java>

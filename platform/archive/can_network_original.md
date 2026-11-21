@@ -20,8 +20,8 @@ valet-response, folding-top and animation-status fields; minimum frequency and
 the remaining configured fields are unresolved.
 
 This document owns the message dictionary and public-source comparison.
-[Vehicle network](vehicle_network.md) owns topology and diagnostic transport;
-[bench setup](../hardware/bench_setup.md) owns wiring and adapter configuration.
+[Vehicle network](../vehicle_network.md) owns topology and diagnostic transport;
+[bench setup](../../hardware/bench_setup.md) owns wiring and adapter configuration.
 The fixed bench loop is not a complete vehicle CAN model. In-vehicle research
 can describe signals the emulator never exercises. Absence from this bench does
 not disprove those findings or validate their application here.
@@ -47,7 +47,7 @@ NRC22; do not relabel that response as a successful cleanup acknowledgment.
 This is not an Engineering09 grant effect, a valid SBA-ticket load, or proof
 that ordinary profile01 accepts unsigned data. No calibration clear, EEPROM
 change or flash patch was used. The
-[owning success record](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#successful-custom-sxm-calibration-through-can613614--2026-11-16)
+[owning success record](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-successful-custom-sxm-calibration-through-can613614)
 contains the candidate hash, firmware trace, temporary-state restoration,
 protocol acknowledgments and verification limits.
 
@@ -63,7 +63,7 @@ PEC0000 and unchanged F182 metadata. Both temporary words were restored and
 verified. **The owner confirmed both projection features disappeared from the
 radio UI.** No home-screen-only flag was edited. Attached-phone behavior and
 cold-cycle retention of this newer candidate remain untested. The
-[projection record](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#carplay-and-android-auto-custom-calibration-accepted--2026-11-16)
+[projection record](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-carplay-and-android-auto-custom-calibration-accepted)
 owns IDs, versions, candidate hash, exact scope and cleanup limits. Later
 settled readback showed all fourteen slot statuses00 and F0F1/F0F2=0000;
 DTC logging/default session were accepted, while communication enable still
@@ -72,7 +72,7 @@ returned NRC22.
 **Process-state clarification (2026-11-16):** later ADB checks found SXM and
 CarPlay processes/services still running and SXM/CarPlay/Android Auto packages
 still installed with default enabled state. UI disappearance is not evidence
-of process shutdown or resource savings. The [process-state verification](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#process-state-verification-ui-disappearance-is-not-process-shutdown--2026-11-16)
+of process shutdown or resource savings. The [process-state verification](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-process-state-verification--ui-disappearance-is-not-process-shutdown)
 records the distinction and the Google visibility-only findings.
 
 ### Brand-zero follow-up accepted — 2026-11-16
@@ -83,14 +83,14 @@ blocks, positive exit77, PEC0000, original verifier words restored and verified.
 Slot0C feature-disable overrides were untouched. Settled verification on
 2026-11-17 found live brand GM_Brand_None, model Silverado, all slot statuses00
 and F0F1/F0F2=0000. The owner confirmed the theme changed. Brand0 has not yet
-had a separate physical cold-cycle persistence test. See the [theme trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#gmbrand-zero-can-trial--2026-11-16).
+had a separate physical cold-cycle persistence test. See the [theme trial](../../research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-themeui-inventory-and-gmbrandscreen_resolution-live-trials).
 
 ### Stock LTZ restored after custom trials — 2026-11-17
 
 All14 pinned LTZ containers (slots02–0F,46162 bytes) were successfully written
 through CAN. All14 F182 identities matched, module statuses00 and F0F1/F0F2=0000.
 Verifier RAM words remained zero. This supersedes the custom calibration set
-from the feature experiments. See [restoration evidence](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#full-stock-ltz-restoration-after-feature-trials--2026-11-17).
+from the feature experiments. See [restoration evidence](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-full-stock-ltz-restoration-after-feature-trials).
 
 ### Subsequent1280×768 calibration trial — 2026-11-17
 
@@ -99,7 +99,7 @@ only SCREEN_RESOLUTION4→2. Download, both blocks and exit were accepted, PEC00
 F182 unchanged, temporary verifier words restored. Other slots remain stock LTZ.
 The owner observed display tearing. Stock slot08 was restored successfully
 (both blocks and exit, PEC0000), returning the set to stock LTZ; the owner confirmed normal display output
-after rollback. See the [display trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280768-can-trial--2026-11-17).
+after rollback. See the [display trial](../../research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17).
 
 ### Google, recorder and porch-view follow-ups — 2026-11-17
 
@@ -109,7 +109,7 @@ but no recorder entry appeared. RVS_PRESENT_STATUS already equals2 in source
 slot08; it was not rewritten. An explicit Porch_View_Enabled=true override was
 subsequently accepted with clean settled calibration statuses; UI effect is
 unverified. The launcher also gates porch view by display size. See the
-[trial evidence](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#google-visibility-and-recorder-follow-ups--2026-11-17)
+[trial evidence](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-google-visibility-and-recorder-follow-ups)
 for exact scope and limits. Transfer acceptance alone is not UI verification.
 
 ### Direct-CAN factory-reset attempt — 2026-11-17
@@ -123,7 +123,7 @@ by31010247 then returned71010247. Android logged successful customization
 restoration, ADB disconnected and the owner observed the factory reset occurring.
 Original20D restored afterward; no RAM writes or calibration clears used.
 Final post-reset setup/completion is distinct from confirmed reset initiation.
-See the [reset evidence](../research/MDI2_RAW_UDS_BYPASS_GUIDE.md) for the static
+See the [reset evidence](../../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md) for the static
 handler gate, status observations and exact scope.
 
 ### Direct-CAN ELK control candidates — 2026-11-17
@@ -131,7 +131,7 @@ handler gate, status observations and exact scope.
 On stock LTZ, extended session/profile01 granted. `2F818003` returned7F2F31;
 a separate `AE818003` attempt returned7FAE11. No positive acceptance or ELK boot
 was established. No RAM/calibration/firmware writes or wipe were performed.
-See the [ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
+See the [ELK analysis](../../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
 for the internal sender and the unresolved external dispatch path. Subsequent
 read-only RAM tracing found API12 availability bytes both1 and the transaction
 manager idle. No polled ELK request flag was found; the sender allocates and
@@ -233,7 +233,7 @@ timing/state interactions remain possible. A numerically larger seed selector
 is not necessarily a stronger privilege. No programming-session entry succeeded
 in this matrix, and it sent no RequestDownload/TransferData or calibration clear.
 
-The existing [programming-gate analysis](../diagnostics/diagnosticsd_routines_and_recovery.md)
+The existing [programming-gate analysis](../../diagnostics/diagnosticsd_routines_and_recovery.md)
 identifies a specific T1 precondition. Native `diagnosticsd` session transition
 code sends internal query 5; Java `SessionControlHandler` returns positive only
 when `BackupSystemPowerModeProtectedRemoteProgrammingActiveAuthenticated` is
@@ -268,7 +268,7 @@ through live updater readback: repeated284/DLC6 `00 00 00 00 10 00` changed
 AAOS IGNITION_STATE to4/RUN, UpdateService SystemPowerMode fromOFF toRUN, and
 lifecycle STATE_PROPULSION toSTATE_RUN while VehicleParked remained true. This
 satisfied the USB installer's vehicle-on prompt; it does not establish the
-other raw candidates. See the [full USB observation](ota_update_stack.md#y175-full-usb-update-bench-observation--2026-11-17).
+other raw candidates. See the [full USB observation](../ota_update_stack.md#y175-full-usb-update-bench-observation--2026-11-17).
 
 The second T1 session included the deliberately invalid RequestDownload
 format probe `34 00 00 02 00 00`, rejected with `7F 34 22`. It supplied no
@@ -402,7 +402,7 @@ genuine slot0C container was restored in the same session (`76 01`, `76 02`,
 `77`). Subsequent restart reached calibration state2/HMI ready/Propulsion;
 independent readback matched all fourteen HC identities and the supplied VIN,
 all module statuses00 and F0F1/F0F2=`0000`. No calibration clear was used.
-The [custom-calibration workflow](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#4-what-was-demonstrated)
+The [custom-calibration workflow](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#4-chronological-trial-log)
 owns the exact edit, candidate hash and rejection limits. Follow-up now
 **confirms header-signature verification failure**: a one-bit signature-only
 mutation with unchanged stock XML/digest/length was also rejected at block01;
@@ -419,7 +419,7 @@ profile09 granted but denied021E with `7F 31 33`, before any download. No new
 restart/visual verification was performed. Communication re-enable returned
 NRC22 despite fresh extended-session entry; DTC logging enable and default
 session were accepted. Do not claim fully confirmed cleanup. The
-[additional-profile record](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#additional-can-profiles-and-sxm-candidate--2026-11-16)
+[additional-profile record](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-additional-can-security-profile-trials)
 owns the candidate hash, exact outcomes and limits. Those profile-only attempts failed. The later CAN613/614 temporary-RAM
 experiment accepted the custom slot and the owner confirmed SXM removal;
 see the success record above. No general persistent development-mode selector
@@ -435,7 +435,7 @@ not a valid test of the recovered mute predicate. Correct direct indexing maps
 inputs C72–C77 to `526`, b5 bits 7–2. The first input C72/b5-bit7 is checked by
 the timer-arming branch; additional guards use signals DC9 and DD8. Their full
 application meanings remain unresolved. See the existing
-[mute-hold reset analysis](../runtime/boot_timing.md#mute-hold-reset-and-adb-reboot-boundaries-2026-11-15).
+[mute-hold reset analysis](../../runtime/boot_timing.md#mute-hold-reset-and-adb-reboot-boundaries-2026-11-15).
 
 **Live mute-hold reset confirmed:** `526`, DLC 8, synthetic payload with only
 b5 bit 7 set, repeated at approximately 100 ms intervals while original `145`
@@ -580,7 +580,7 @@ length alone does not prove the construction of the SoC's 16-byte ProtoKey.
 The native `gm_protokey` reference validates received material against persisted
 validation state and has a BCM-replacement user-data-wipe branch; the traced
 validator does not compare a textual VIN. See the
-[native validation trace](security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
+[native validation trace](../security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
 No seed mutation, wipe or VIN-mismatch test was performed here. The CAN seeds
 are also distinct from the 31-byte UDS `$27` seed and the MEC/ADB certificate gate.
 
@@ -1355,7 +1355,7 @@ transport participation is not application decoding, and other addresses/inputs 
 untested. No EEPROM, reset, security or programming request was used. After the probe,
 all application TX stopped; ACK-enabled receive recording continued. The later
 owner-reported working launcher and X5 pin 3 signal-ground configuration are
-recorded in the [bench baseline](../hardware/bench_setup.md#harness-replacement-candidate).
+recorded in the [bench baseline](../../hardware/bench_setup.md#harness-replacement-candidate).
 That early probe did not establish long-duration keep-alive; later isolated
 `529` hold tests, including an almost-12-hour result, are documented below.
 
@@ -1805,7 +1805,7 @@ The smart outlet is now connected to the bench supply. Its toggle-only Shortcut
 was validated, the starting Off state established, and subsequent transitions
 tracked. At least **10 seconds after each completed toggle** separates commands.
 Fresh UART confirms power-on, with application TX stopped before power-off;
-see [bench power control](../hardware/bench_setup.md#controlled-physical-power-cycling).
+see [bench power control](../../hardware/bench_setup.md#controlled-physical-power-cycling).
 
 The two-pair fresh-cycle test sent exactly **four additional frames** after the
 eight-frame startup. After observation ADB remained authorized with
@@ -2101,9 +2101,9 @@ observed. NRC `31` does not distinguish an unsupported routine from an invalid
 domain/parameter or another unmet prerequisite. This rejects the reported layout
 in the tested default, extended and level-1-granted extended contexts; other
 security levels, payloads or OEM ADB-control mechanisms remain untested on CAN5.
-See [SecurityAccess validation](../diagnostics/diagnosticsd_security_access.md#live-direct-can5-securityaccess-validation-2026-11-15)
+See [SecurityAccess validation](../../diagnostics/diagnosticsd_security_access.md#live-direct-can5-securityaccess-validation-2026-11-15)
 for the separately scoped transport grant.
-See [the owning diagnostic guide](../research/MDI2_RAW_UDS_BYPASS_GUIDE.md)
+See [the owning diagnostic guide](../../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md)
 for earlier candidate provenance and the separate T1 tests.
 
 [A]: https://github.com/commaai/opendbc/blob/27fa1c5d8eed3238a0a78c52ff5abb6cdc807bd2/opendbc/dbc/generator/gm/gm_global_a_powertrain.dbc
