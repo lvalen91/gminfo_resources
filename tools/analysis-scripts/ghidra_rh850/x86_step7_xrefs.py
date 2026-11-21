@@ -1,8 +1,9 @@
+import os
 #!/usr/bin/env python3
 """Step 7: find code that references key strings (calibrations EMMC save, VIP HDLC),
 decompile the containing functions, and dump to files for manual review."""
 import pyghidra
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
+PROJ_DIR = os.path.join(os.environ["GMINFO_REPO_ROOT"], "evidence/ghidra-projects")
 PROJ_NAME = "hostos_x86"
 pyghidra.start(verbose=False)
 from ghidra.base.project import GhidraProject

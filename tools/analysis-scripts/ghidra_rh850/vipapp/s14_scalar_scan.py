@@ -1,7 +1,8 @@
+import os
 import pyghidra
 
-BIN = "/Volumes/stuff/misc/research/GM_research/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y175/extracted/85759599"
-PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
+BIN = os.path.join(os.environ["GM_RESEARCH_ROOT"], "gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y175/extracted/85759599")
+PROJ_LOC = os.path.join(os.environ["GMINFO_REPO_ROOT"], "evidence/ghidra-projects")
 PROJ_NAME = "85759599_rh850"
 
 targets = set([0x60a6, 0x60d2, 0x60fe, 0x612a, 0x6156, 0x6182, 0x61ae, 0x61da,

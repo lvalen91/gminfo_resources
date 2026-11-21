@@ -1,10 +1,11 @@
+import os
 #!/usr/bin/env python3
 """Step 3: byte-accounting coverage per memory block + disassemble-more pass for
 undefined bytes inside executable/initialized blocks. Save results to TSV."""
 import sys, time
 import pyghidra
 
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
+PROJ_DIR = os.path.join(os.environ["GMINFO_REPO_ROOT"], "evidence/ghidra-projects")
 PROJ_NAME = "hostos_x86"
 
 pyghidra.start(verbose=False)

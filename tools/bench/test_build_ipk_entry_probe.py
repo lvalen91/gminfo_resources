@@ -11,7 +11,7 @@ TOOL = Path(__file__).with_name("build_ipk_entry_probe.py")
 
 BENCH_DIR = Path(os.environ.get(
     "GMINFO_BENCH_DIR",
-    "/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emmc_dump/Y175_bench"))
+    os.path.join(os.environ["GM_RESEARCH_ROOT"], "aaos/gm_aaos/2024_Silverado_ICE/emmc_dump/Y175_bench")))
 
 ELK = dict(
     file="ifwi_mapped_ff800000_8MiB.bin", offset=0x501040,

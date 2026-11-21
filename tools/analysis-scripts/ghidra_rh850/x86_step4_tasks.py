@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """Step 4: seed disassembly at each payload-task .text section start (boottable-confirmed
 entry convention == section start, verified against kernel _start==.kernel_text start),
@@ -5,7 +6,7 @@ run Aggressive Instruction Finder + normal analysis on those blocks, report new 
 import sys, time
 import pyghidra
 
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
+PROJ_DIR = os.path.join(os.environ["GMINFO_REPO_ROOT"], "evidence/ghidra-projects")
 PROJ_NAME = "hostos_x86"
 
 pyghidra.start(verbose=False)

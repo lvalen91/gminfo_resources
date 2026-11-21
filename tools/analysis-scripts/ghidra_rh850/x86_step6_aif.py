@@ -1,10 +1,11 @@
+import os
 #!/usr/bin/env python3
 """Step 6: enable Aggressive Instruction Finder + Function Start Search boldly on the
 still-undefined bytes of exec blocks (all task .text sections + kernel/.text/.t_text),
 then re-run analysis so it sweeps the dark code."""
 import time
 import pyghidra
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
+PROJ_DIR = os.path.join(os.environ["GMINFO_REPO_ROOT"], "evidence/ghidra-projects")
 PROJ_NAME = "hostos_x86"
 pyghidra.start(verbose=False)
 from ghidra.base.project import GhidraProject

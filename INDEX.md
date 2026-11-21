@@ -47,7 +47,7 @@ Routing page for the whole repository. Paths are the current layout (restructure
 | Boot timing, memory pressure, known issues | [runtime/README.md](runtime/README.md) |
 | What third-party apps can access | [analysis/third_party_access.md](analysis/third_party_access.md), [analysis/platform_faq.md](analysis/platform_faq.md) |
 | ADB/fastboot enumeration data by build | [evidence/enumeration/README.md](evidence/enumeration/README.md); scripts in [tools/enumeration/](tools/enumeration/) |
-| Decompiled output and Ghidra data | [evidence/decompiled/](evidence/decompiled/), `evidence/ghidra-projects/` (gitignored), scripts in [tools/analysis-scripts/](tools/analysis-scripts/) |
+| Decompiled output and Ghidra data | [evidence/decompiled/](evidence/decompiled/), `evidence/ghidra-projects/` (gitignored), scripts in [tools/analysis-scripts/](tools/analysis-scripts/) — these read firmware/project paths from the `GM_RESEARCH_ROOT` and `GMINFO_REPO_ROOT` environment variables (unset by default; set them to your own checkout/working-tree locations before running) |
 | Corpus-wide open conflicts, retired docs, evidence-tag convention | [research/README.md](research/README.md) |
 | Provenance and verification | [research/provenance/INVENTORY.md](research/provenance/INVENTORY.md), [research/provenance/PROVENANCE_AUDIT_AUG2026.md](research/provenance/PROVENANCE_AUDIT_AUG2026.md), [VERIFICATION.md](VERIFICATION.md) |
 

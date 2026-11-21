@@ -1,10 +1,11 @@
+import os
 import pyghidra
 pyghidra.start()
 from ghidra.base.project import GhidraProject
 from ghidra.framework.model import ProjectLocator
 from java.io import File
 
-PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
+PROJ_LOC = os.path.join(os.environ["GMINFO_REPO_ROOT"], "evidence/ghidra-projects")
 PROJ_NAME = "85759599_rh850"
 
 loc = ProjectLocator(PROJ_LOC, PROJ_NAME)

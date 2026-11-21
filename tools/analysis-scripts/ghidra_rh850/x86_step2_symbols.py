@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """Step 2: apply GHS 24-byte symtab (FUNC+OBJ) as Ghidra function/label names.
 Then create+disassemble functions at FUNC addresses not yet functions.
@@ -5,9 +6,9 @@ Re-run analysis, save."""
 import sys, time
 import pyghidra
 
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
+PROJ_DIR = os.path.join(os.environ["GMINFO_REPO_ROOT"], "evidence/ghidra-projects")
 PROJ_NAME = "hostos_x86"
-SYMTSV = "/Users/zeno/Downloads/github/gminfo_resources/tools/analysis-scripts/ghidra_rh850/hostos_symbols_funcobj.tsv"
+SYMTSV = os.path.join(os.environ["GMINFO_REPO_ROOT"], "tools/analysis-scripts/ghidra_rh850/hostos_symbols_funcobj.tsv")
 
 pyghidra.start(verbose=False)
 

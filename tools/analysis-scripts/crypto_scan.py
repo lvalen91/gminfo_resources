@@ -21,7 +21,7 @@ TMP_FILES = [
     "/tmp/vip_boot.bin", "/tmp/oem.key", "/tmp/rot.key", "/tmp/ibbp.man",
 ]
 TMP_DIRS = ["/tmp/dps_real", "/tmp/dps_cab"]
-GM_ROOT = "/Users/zeno/Downloads/misc/GM_research/gm_aaos/2024_Silverado_ICE"
+GM_ROOT = os.path.join(os.environ["GM_RESEARCH_ROOT"], "gm_aaos/2024_Silverado_ICE")
 
 # Path filter: include security/key directories; exclude bulky non-crypto.
 INCLUDE_EXT = {".pem", ".cer", ".crt", ".der", ".key", ".pub", ".pfx", ".p12",

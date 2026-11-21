@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import struct, hashlib, os, sys, subprocess
 
-Y181="/Users/zeno/Downloads/misc/GM_research/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181"
-EP="/Users/zeno/Downloads/misc/GM_research/gm_aaos/2024_Silverado_ICE/firmware/extracted_partitions"
+Y181=os.path.join(os.environ["GM_RESEARCH_ROOT"], "gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181")
+EP=os.path.join(os.environ["GM_RESEARCH_ROOT"], "gm_aaos/2024_Silverado_ICE/firmware/extracted_partitions")
 
 def hexd(b,n=16): return b[:n].hex()
 

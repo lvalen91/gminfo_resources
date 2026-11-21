@@ -21,7 +21,7 @@ bridge poke because gmEtherGW resets usb0.
 from __future__ import annotations
 import socket, struct, subprocess, threading, time, sys, os
 
-PCAP = "/Volumes/stuff/misc/research/GM_research/gm_dps/misc/Aug24_session/DPS+SPS.pcapng"
+PCAP = os.path.join(os.environ["GM_RESEARCH_ROOT"], "gm_dps/misc/Aug24_session/DPS+SPS.pcapng")
 TSHARK = "/opt/homebrew/bin/tshark"
 DEVICE_IP = "192.168.171.2"
 PORT = 10123
