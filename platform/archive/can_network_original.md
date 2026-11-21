@@ -402,7 +402,7 @@ genuine slot0C container was restored in the same session (`76 01`, `76 02`,
 `77`). Subsequent restart reached calibration state2/HMI ready/Propulsion;
 independent readback matched all fourteen HC identities and the supplied VIN,
 all module statuses00 and F0F1/F0F2=`0000`. No calibration clear was used.
-The [custom-calibration workflow](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#4-chronological-trial-log)
+The [custom-calibration workflow](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed)
 owns the exact edit, candidate hash and rejection limits. Follow-up now
 **confirms header-signature verification failure**: a one-bit signature-only
 mutation with unchanged stock XML/digest/length was also rejected at block01;

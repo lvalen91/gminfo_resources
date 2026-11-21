@@ -833,7 +833,7 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S35]: <CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md>
 [S36]: <../../tools/mdi2_client/README.md>
 [S37]: <DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md>
-[S38]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — retired; see its own pointer.
+[S38]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — retired; successor listed in the Retired table of research/README.md.
 [S39]: <../../platform/security.md>
 [S40]: <../security/SHELL_ACCESS_ESCALATION_Jun2026.md>
 [S41]: <../security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md>
@@ -853,41 +853,41 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S55]: <../../eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md>
 [S56]: <../../eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md>
 [S57]: <../../hardware/connectors.md>
-[S58]: <../../hardware/schematics/board_map/README.md>
+[S58]: <../../hardware/schematics/board_map/README.md> — `hardware/photos/README.md`, relocated; the photo archive README is now this file.
 [S59]: <../../hardware/teardown.md>
 [S60]: <../../platform/boot_chain.md>
 [S61]: <../../platform/emulator.md>
 [S62]: <../../platform/firmware_versions.md>
-[S63]: <../../platform/README.md#status>
-[S64]: <../../platform/README.md#status>
+[S63]: <../../platform/README.md#status> — `platform/hardware.md`, retired platform doc (see platform/README.md, Status).
+[S64]: <../../platform/README.md#status> — `platform/networking.md`, retired platform doc (see platform/README.md, Status).
 [S65]: <../mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md>
-[S66]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S66]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `AUG24_25_DOC_REVIEW_CORRECTIONS_AUG2026.md`, retired; see the Retired table in research/README.md.
 [S67]: <CALDEF_VIP_CALIBRATION_ANALYSIS.txt>
 [S68]: <../boot-update-recovery/CSE_HECI_ORCHESTRATION_ANALYSIS.md>
-[S69]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S69]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `DOCUMENTATION_REVIEW_AND_CORRECTIONS.txt`, retired; see the Retired table in research/README.md.
 [S70]: <DPS_AND_MODIFICATION_LANDSCAPE.txt>
 [S71]: <DPS_AND_MODIFICATION_LANDSCAPE.txt> — retired; verbatim-migrated into [S70], carried unchanged. See [Open conflicts](#open-conflicts) item 1 for the one still-live citation (§4.3.1).
-[S72]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S72]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `EEPROM_MAPPING_FABLE_REPORT.md`, retired; see the Retired table in research/README.md.
 [S73]: <EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md>
 [S74]: <../boot-update-recovery/GHS_FILE_MAP_85098662.md>
 [S75]: <../boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md>
-[S76]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S76]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `GHS_PRIVACY_CAPABILITY_ANALYSIS.md`, retired; see the Retired table in research/README.md.
 [S77]: <#1-sps-radio-seedkey-and-calibration-p> — retired; its §15.9 absorbed into this doc's §1 footnote above.
 [S78]: <../rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt>
 [S79]: <../security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md>
 [S80]: <../provenance/INVENTORY.md>
-[S81]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S81]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `MASTER_REFERENCE.md`, retired; see the Retired table in research/README.md.
 [S82]: <../mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md>
 [S83]: <../mdi2-bench-sessions/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md>
 [S84]: <../mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md>
-[S85]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S85]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `PROJECT_MASTER_CHECKLIST.txt`, retired; see the Retired table in research/README.md.
 [S86]: <../provenance/PROVENANCE_AUDIT_AUG2026.md>
-[S87]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S87]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `QUICK_REFERENCE.txt`, retired; see the Retired table in research/README.md.
 [S88]: <../boot-update-recovery/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md>
-[S89]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
-[S90]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S89]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `S27_SOC_VALIDATION_BENCH_TEST.md`, retired; see the Retired table in research/README.md.
+[S90]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md`, retired; see the Retired table in research/README.md.
 [S91]: <../security/UNTRIED_ATTACK_VECTORS.md>
-[S92]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved>
+[S92]: <../README.md#retired-folded-into-a-doc-above-original-removed-content-preserved> — `UPDATE_PROCESS_ANALYSIS.txt`, retired; see the Retired table in research/README.md.
 [S93]: <../mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md>
 [S94]: <VIP_CONTROL_ANALYSIS.txt>
 [S95]: <canbus_reset/CANBUS_RESET_ANALYSIS.txt>
