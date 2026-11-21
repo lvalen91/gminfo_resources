@@ -1,4 +1,4 @@
-# DPS Type4 custom calibration workflow and current acceptance limits
+# DPS Type4 Calibration Workflow
 
 **Scope:** the live CAN-bench record of what actually happens when a hand-edited Type4/
 calibration payload is sent to the gminfo37 A11 CSM radio (`0x80`, Silverado gminfo37 /
@@ -494,10 +494,11 @@ ECUID+challenge) SPS connects normally. Recovery procedure for a UI bricked via
 `10017909` ("Reset ECU"); (4) post-reset the unit re-enters OOBE with ADB locked — re-apply the
 EEPROM bypass afterward if ADB access is still wanted. Files: `10017909.cfx` (Reset ECU XML
 config), `10017908.dll` (Security DLL, AES-CMAC), session log
-`module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt`. **The catch-22:** ADB access
-needs the EEPROM bypassed, but the SPS recovery path above needs it locked — so this recovery
-procedure itself is unusable from a state where ADB-only access already has the owner stuck
-with a bricked UI and no locked-EEPROM fallback already staged.
+`module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt`. **Circular dependency:** ADB
+access requires the EEPROM already bypassed, but the SPS recovery path above requires the
+EEPROM already locked — so if the UI is bricked and only ADB-only (bypassed-EEPROM) access is
+available, with no locked-EEPROM fallback already staged, this recovery procedure cannot be
+used.
 
 A local `calserviced` override/database write is a different access path from UDS. Strings
 such as `OVERRIDE_BACKDOOR` do not prove it is usable on a production build. An SBI-enabled

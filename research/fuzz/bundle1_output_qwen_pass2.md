@@ -402,7 +402,7 @@ be misleading as the harness does not parse boot headers.
 import struct
 import os
 
-# Artifact: AvbVBMetaImageHeader Offsets (256 bytes)
+# AvbVBMetaImageHeader Offsets (Pass 2)
 OFF_MAGIC = 0x00       # 4 bytes "AVB0"
 OFF_VER_MAJOR = 0x04   # 4 bytes
 OFF_VER_MINOR = 0x08   # 4 bytes

@@ -1,4 +1,4 @@
-# calibration_glossary.md — A11 LTZ slot04 `OverrideValue` calibration-key catalog
+# Calibration Key Catalog
 
 Pure reference data, research-only: the full 404-entry calibration-key catalog (key /
 description / type / value / CalID, 26 named groups, exactly 404 `OverrideValue` entries)

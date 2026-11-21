@@ -1,4 +1,4 @@
-# diagnosticsd — Ethernet UDS-over-TCP Diagnostic Bridge (port 49156)
+# diagnosticsd — UDS-over-TCP Bridge
 
 **Device:** GM Info 3.7 (gminfo37), Y181 `W231E-Y181.3.2-SIHM22B-499.3`
 **Research Date:** June 2026 - November 15, 2026

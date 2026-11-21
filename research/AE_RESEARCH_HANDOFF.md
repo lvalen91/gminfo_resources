@@ -1,4 +1,4 @@
-# AE (Automotive-Ethernet) Research — Session-State Tracker
+# Automotive-Ethernet Research Tracker
 
 Scope: this doc is the **open-items/status tracker** for automotive-Ethernet / diagnostic-surface
 research on the Y181 Silverado radio (emulator-as-harness + real-radio diag captures as ground

@@ -1,4 +1,4 @@
-# gminfo37 (Silverado CSM) — board map & photos
+# Board Map & Photos
 
 Canonical photo archive for the 2024 Silverado GM Info 3.7 CSM (Harman carrier + Intel Atom
 A3960 SoM + Renesas RH850/F1K VIP). All EXIF/GPS metadata stripped and images re-encoded to

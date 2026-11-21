@@ -1,4 +1,4 @@
-# CINEMO / NME Framework Analysis
+# CINEMO / NME Framework
 
 **Device:** GM Info 3.7 (gminfo37)
 **Framework:** CINEMO Multimedia Framework (Harman/Samsung)

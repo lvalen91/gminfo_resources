@@ -1,4 +1,4 @@
-# GM Seed-Key and Calibration Signatures
+# Seed-Key and Calibration Signatures
 
 Updated 2026-11-18 (this consolidation pass; prior content dated 2026-11-16). The Nov-11
 static/packet audit made no new live changes; the separately dated Nov-16 CANable follow-up

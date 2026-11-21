@@ -1,7 +1,6 @@
-# Hardware and Hypervisor Attack Vectors — GM Info 3.7 (gminfo37)
+# Hardware and Hypervisor Attack Vectors
 
-**Date:** 2026-06-29 (base synthesis); living document, overwritten in place with dated
-corrections through 2026-11-17.
+**Date:** 2026-06-29 (base synthesis), with corrections through 2026-11-17.
 **Platform:** Intel Atom x7-A3960 (Apollo Lake/Goldmont), Android 12 AAOS, GHS INTEGRITY IoT
 2020.18.19, Linux 4.19.305. Physical-access baseline: board exposed, EEPROM (M24C64) already
 bypassed via XGecu, Renesas RH850/TM52176 VIP MCU on board.
@@ -103,9 +102,9 @@ inspection). **Operating voltage:** 1.8V (critical — do NOT use 3.3V programme
 4. `ifdtool -x ifwi_dump.bin` → extracts TXE, BIOS/IFWI, GbE, Platform Data regions.
 5. `MEAnalyzer ifwi_dump.bin -dfpt` → TXE version, SKU, SVN, VCN, production/pre-production status.
 
-**Live-verification results on the Y175 bench unit (2026-11-17), superseding the "what to look
-for" plan below as a live-access question** — primary source
-`GM_INFO37_BOOT_CHAIN_ANALYSIS.md` (SOC_ABL row); this is a secondary citation:
+**Live verification on the Y175 bench unit (2026-11-17).** These results supersede
+the live-access plan below. The primary record is the
+[SOC_ABL row in GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary).
 - **FIT table at physical `0xFFFFFFC0`:** `[C]` reads all-`0xFF` on the running system via a
   custom kernel (`CONFIG_DEVMEM=y` + `iomem=relaxed`) — no FIT is host-visible post-boot
   (CSE/PCH closes that BIOS decode window after the pre-boot reset sequence). Closed for a live
@@ -464,10 +463,8 @@ confirmation.
 
 ## Part 3 — Attack Vector Priority Matrix
 
-This matrix is this doc's own tracking artifact: ranking plus a running results log as vectors
-get attempted. Status column replaces the earlier strikethrough-annotation style (the original
-struck-through "VOID"/"DONE" rows read as live claims on a skim; folded here per corpus-wide
-correction convention).
+The matrix ranks vectors and records results in the Status / Impact column,
+including retractions and completed checks.
 
 | Rank | Vector | Type | Effort | Status / Impact |
 |---|---|---|---|---|

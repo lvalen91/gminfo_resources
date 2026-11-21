@@ -76,8 +76,8 @@ include it in routine instructions.
 ## Cleared A11 recovery 2026-11-14
 
 The complete [A11 recovery record](../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14)
-owns the failure history, workarounds and UART boot evidence. The important
-differences from the normal CLI flow are:
+owns the failure history, workarounds and UART boot evidence. Differences from
+the normal CLI flow:
 
 - UDS 0249 had left all 14 F182 calibration slots at base part **70008 / DLS
   00**. Each record was its slot byte followed by `00 01 11 78 30 30`.

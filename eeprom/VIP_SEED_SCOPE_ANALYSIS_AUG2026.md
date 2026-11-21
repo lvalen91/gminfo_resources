@@ -1,4 +1,4 @@
-# VIP SEED/CHALLENGE SCOPE ANALYSIS — Aug 2026
+# VIP Seed/Challenge Scope
 
 **Question:** Is the VIP's seed-generation logic that the SBI (Seed-Bypass-Indicator, EEPROM
 0x0441/0x0A81 = 0xFF) bypass defeats a separate, ADB-only code path, or is it the same
@@ -129,9 +129,9 @@ Key facts this establishes:
   entire state pool in one place (`febe71f1..febe71fb`, `febd38cb..febd38e9`, etc.) and is the
   only function (together with the trivial one-line `FUN_ram_000b7ad4`, which just does
   `DAT_ram_febd3e06 = 0`) that touches `DAT_ram_febd3e06` besides `0xb67d0` itself reading it.
-  **Correction to a hypothesis I initially formed and want to flag explicitly: `DAT_ram_febd3e06`
+  **Correction: `DAT_ram_febd3e06`
   is a generic "security module initialized" readiness flag (1 = init complete, 0 = reset),
-  not itself the processed SBI/EEPROM value.** The EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md claim
+  not itself the processed SBI/EEPROM value.** The claim in the now-retired EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md (history in ELA §13.3)
   that RAM address "0x3e06" is "the processed EEPROM value loaded during boot, corresponds to
   SBI 0x0440/0x0A80" is **not confirmed** by what this session found — treat that specific claim
   as still unverified/likely mischaracterized, pending someone locating the real EEPROM-read
@@ -171,16 +171,14 @@ Key facts this establishes:
   Combined with the dozens of `Unable to resolve constructor` p-code errors Ghidra logged while
   decompiling elsewhere in this same binary, the most likely explanation is that the actual
   PROTOKEY GetSeed/ICUSB code lives in a **currently mis-disassembled or unreached region** of
-  this same image (not necessarily a different firmware component) — but I cannot rule out that
-  it lives in a different overlay/segment not covered by this flat binary. This is a real,
-  named gap, not a "no evidence either way" shrug: it means the debug strings that would let you
-  directly find and read the GetSeed function by name are architecturally disconnected from
+  this same image (not necessarily a different firmware component); a different overlay/segment
+  not covered by this flat binary cannot be ruled out. This is a named gap: the debug strings that
+  would let you directly find and read the GetSeed function by name are architecturally disconnected from
   static analysis as currently run, and closing it needs either (a) manual jump-table/dispatch
   recovery in Ghidra, or (b) dynamic tracing (e.g. UART debug log capture during a live SecurityAccess
   exchange, since the `[PROTOKEY]`/`[OTA_DIAG]` strings are clearly meant to be printed to a debug
   console) to locate the calling code by correlating printed output to program counter.
-- One interesting, independently-derived architectural fact worth flagging even though it
-  doesn't resolve the main question: the debug strings themselves ("Seed %d taken from **GMLAN**",
+- An independently-derived architectural fact that does not resolve the main question: the debug strings themselves ("Seed %d taken from **GMLAN**",
   "Receives invalid seed [%d] from **BCM**") indicate PROTOKEY's seed does not originate as a
   VIP-internal computation — it is fetched/cached from the Body Control Module over GMLAN and then
   relayed. If true, "the seed algorithm" is partly external to the VIP entirely, and the SBI bypass
@@ -288,16 +286,16 @@ describing a server-issued Global-B workflow, not proving the exact gminfo37 res
   ("GM DPS Certificate to Global B"), is gated behind CameraLoops' "Private Top Secret GM
   Car Hacking Forum" — a "Contributor" membership tier above the account's current access
   level.** Likely the single most directly relevant thread on this exact open problem on the
-  entire site; not read. **Actionable, owner's call:** upgrading CameraLoops membership tier
-  would unlock this thread — flagging as a concrete next step rather than a dead end.
+  entire site; not read. **Actionable:** upgrading CameraLoops membership tier
+  would unlock this thread.
 - **Scope-check, negative result:** CameraLoops sells a
   ["GM Seed Key Generator Tool"](https://www.cameraloops.ru/files/file/416-gm-seed-key-generator-tool/)
   (a popular/advertised tool, linked site-wide in the header ticker). Its own description:
   *"This tool can generate the seed key for all GM 5-Byte and 2-Byte seed electronic
   modules."* This is the **legacy short-seed `$27` algorithm family** (classic GM
   VATS/theft-deterrent-style modules — BCM/ECM/SDM etc., per its own module-ID examples) —
-  it does **not** cover the CSM/A11's 31-byte seed or establish its precise response scheme. Confirmed not a shortcut around the master-key problem; ruling it
-  out rather than leaving it as an unchecked lead. (A commenter in that thread separately
+  it does **not** cover the CSM/A11's 31-byte seed or establish its precise response scheme. Confirmed
+  not a shortcut around the master-key problem. (A commenter in that thread separately
   notes "Gm uses 256 different algo's" — i.e. an 8-bit algorithm-selector code across GM's
   ECU population — consistent with this repo's own `dllsecurity.dll`
   table-selected-by-`(byte)param_3*0xd` finding in §7's reconciliation note; different

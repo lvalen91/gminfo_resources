@@ -1,4 +1,4 @@
-# gminfo37 Research Artifacts — Inventory
+# Research Artifacts Inventory
 
 **Scope:** directory manifest of derived/extracted artifacts from the gminfo37 (2024 Silverado
 ICE) reverse-engineering project (replaces volatile `/tmp` storage), plus the external-tooling
@@ -6,12 +6,12 @@ clone/PDF appendix. **Not here:** trust-chain/boot-chain analysis (→ GM_INFO37
 `../platform/vip_ipc_ghs.md`), key-offset/EEPROM detail (→ EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
 bypass-technique analysis (→ `../platform/security.md`), or the VIP/ELK trigger finding
 (→ GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) — those sections restated other docs and are pointers
-only now, see "Analytical sections" below.
+only, see "Analytical sections" below.
 
 **Total size at last count: 6.3GB**, of which 211MB was `ct5_extracted/` (2026 Cadillac CT5 /
-Qualcomm SA8195AU — wrong platform, not gminfo37; dropped from this manifest per the reader
-report that flagged it mis-filed. The directory itself is untouched on disk; it belongs in a
-CT5/Cadillac-platform inventory, which does not exist in this tree).
+Qualcomm SA8195AU — wrong platform, not gminfo37; omitted from this manifest per the reader report that flagged it mis-filed.
+The directory is unchanged on disk; it belongs in a CT5/Cadillac-platform inventory, which
+does not exist in this tree).
 
 ## firmware_carved/ — 5.7GB
 Carved/decompressed firmware from OTA modules
@@ -115,8 +115,8 @@ All analysis reports and logs
 
 ## Analytical sections (moved out — pointers only)
 
-This doc previously carried four analytical sections that restated findings owned elsewhere.
-Per the corpus's "contested topics: pointer, not copy" rule, each is now a one-line pointer:
+Four analytical sections that restated findings owned elsewhere were replaced with pointers
+(corpus rule: contested topics get a pointer, not a copy):
 
 - **Trust chain** (immutable software-only boot/signing chain, Intel CSE → rot.key → oem.key →
   IBBL/ELK → GHS → current_android_key/VMM1) → see GM_INFO37_BOOT_CHAIN_ANALYSIS.md and

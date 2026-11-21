@@ -1,4 +1,4 @@
-# diagnosticsd — Network Topology (vlan4, Android→CAN UDS surface)
+# diagnosticsd Network Topology
 
 > Part of the [`diagnosticsd` Ethernet UDS bridge](ethernet_uds_diagnosticsd.md) doc set (port 49156).
 

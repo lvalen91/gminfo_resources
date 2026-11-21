@@ -1,4 +1,4 @@
-# GM Info 3.7 — OTA / SWU Update Stack & UpdateService Binder Surface
+# OTA / SWU Update Stack
 
 **Device:** GM Info 3.7 (gminfo37), Y181 `W231E-Y181.3.2-SIHM22B-499.3`
 **Research Date:** June 2026
@@ -36,9 +36,7 @@ through 2026-09-28; manifest `86405527` (`SIHM22B-00499.03`) appears twice — i
 recovery install at 17:27-17:33. `LastCheckUpdateTime` = 2026-11-07 23:09 UTC. `slot_switched` = `N`
 in both exports, i.e. no slot switch pending at export. Module inventory: 18 modules
 (`moduleinfo`, see [`firmware_versions.md`](firmware_versions.md#y181b-runtimeexport-identity-2026-11-12)).
-Corrected 2026-11-12: an earlier version of this note said only the OTA rows and the ProgrammingStatus were dated
-2026-09-28 and the USB manifest row 2026-08-25; the raw `UpdateDB` also holds the second USB `86405527` row (id 29)
-dated 2026-09-28 local, so "USB `00499.03` + 2 OTAs on 2026-09-28" is supported (the 08-25 row is an earlier USB install).
+Corrected 2026-11-12: an earlier version dated only the OTA rows and ProgrammingStatus to 2026-09-28 and the USB manifest row to 2026-08-25. The raw `UpdateDB` also holds a second USB `86405527` row (id 29) dated 2026-09-28 local, so "USB `00499.03` + 2 OTAs on 2026-09-28" is supported; the 2026-08-25 row is an earlier USB install.
 
 Recovery wipe reasons retained in the numbered `recovery/last_log` series (directly read, counter
 order 47 -> 55): 47 and 48 `--wipe_data --reason=bcm_replacement` (from `/update_cache/recovery/command`);
@@ -417,8 +415,8 @@ if (!key.isDebug() || isDebugBuild()) { /* save */ }
 // isDebugBuild() = Build.IS_DEBUGGABLE || !Build.TAGS.startsWith("release")
 // production: ro.debuggable=0, ro.build.tags=release-keys → isDebugBuild()=false → not saveable
 ```
-This is a catch-22: setting the flag needs a debug build; making a debug build
-needs `ro.debuggable=1`, which needs root. (`GMSWUpdater.apk` also has
+The dependency is circular: setting the flag needs a debug build, and a debug
+build needs `ro.debuggable=1`, which needs root. (`GMSWUpdater.apk` also has
 `changeDebugMode(true)`; `UpdateService.Tx13` returns success but Tx14 NPEs —
 app-layer only, not confirmed to bypass signing at the UpdateService level.)
 
@@ -643,9 +641,9 @@ Pre-update live Android build: Y175.5.2/SIHM22B-383.1, active slotB,
 boot_completed1. ADB was available; the radio clock was corrected from the Mac
 before monitoring. CAN F180/F181/F182 baselines were obtained; SXM remained
 84999468/AC, VIP_APP85759599/CJ, HostOS85098662/BM. T1 connection returned
-`[Errno 65] No route to host` despite an active Mac VLAN interface, the owner
-confirming the cable attached, and ADB confirming the radio diagnostic address
-present. Thus no combined T1/CAN SXM transfer was performed at this checkpoint.
+`[Errno 65] No route to host` although the Mac VLAN interface was active, the
+cable was owner-confirmed attached and ADB showed the radio diagnostic address
+present. No combined T1/CAN SXM transfer was performed at this checkpoint.
 
 RX-only115200-baud UART, all Android logcat buffers with reconnect detection,
 and passive CAN receive capture alongside the32-frame bench harness were
@@ -669,7 +667,7 @@ This closes the earlier uncertainty about this marker's battery-gate effect on
 this build. It does not remove signature checks or prove installation success.
 The marker remains on the update USB; automatic installation was not enabled.
 
-After the owner accepted, InitInstallState displayed a vehicle-on prerequisite.
+After the prompt was accepted (owner action), InitInstallState displayed a vehicle-on prerequisite.
 The service reported SystemPowerMode=OFF although the separate lifecycle state
 was STATE_PROPULSION. Repeating CAN284/DLC6 payload `00 00 00 00 10 00` alongside
 the32-frame harness changed SystemPowerMode toRUN, lifecycle toSTATE_RUN, and
@@ -678,7 +676,7 @@ and VehicleOffStateChanged=false. This is raw authenticated-power candidate2
 in zero-based byte4 bits3–5, validity bit2 clear. Park remained true. No20D
 remote-programming-bit override was sent for this USB update.
 
-The owner then pressed Install now. The native-facing updater reported
+Install now was then selected (owner action). The native-facing updater reported
 startInstall ret=true, ProgrammingType15, manifest85759595 / SIHM22B-00383.01,
 Status3, initial Percentage1 and ErrorCode0. Progress notifications subsequently
 advanced through15% with error=null while UpdateFile verified component-file
@@ -692,10 +690,10 @@ count remained zero in the replacement capture.
 The normal-AAOS stage then advanced through27%. RecoveryModeInstaller emitted
 `Reboot To Recovery`, selecting85759595.mnf and current versionSIHM22B-00383.01;
 it reported the package contains GHS and the pre-recovery active slot is1/B.
-ADB disconnected during Android shutdown. The owner observed display-off/on
-transitions and a separate recovery progress bar restarting at0 then advancing
-through3,18 and22%. Those percentages are visual observations, not CAN-decoded
-module progress. No factory-reset routine was sent for this experiment.
+ADB disconnected during Android shutdown. Owner-observed: display-off/on transitions and a separate recovery progress bar restarting at0 then
+advancing through3,18 and22%. Those percentages are visual observations, not
+CAN-decoded module progress. No factory-reset routine was sent for this
+experiment.
 
 UART reset its timestamps, emitted evRemoteReflashProgrammingBegin,
 SystemState=RemoteVehicleProgramming(0x10), and continued
@@ -718,12 +716,12 @@ DriverDoorOpen, HmiInactive/Requesting Shutdown and DriverDoorClosed; later
 Sleep and Shutdown were observed. RUN was restored only after the full120-second
 interval following door-close. This was a simulated ignition/door sequence,
 not a physical supply interruption; no explicit SoC power-level0 observation
-was obtained here. The owner reported the finalization prompt persisted.
+was obtained here. The finalization prompt persisted (owner-reported).
 
-At the owner's request, CAN526 byte5 bit7 was held for11 seconds and released.
+As an owner-requested intervention, CAN526 byte5 bit7 was held for11 seconds and released.
 UART confirmed evResetRequestCSM, reset timestamps, HmiInit, HMIReady andRun.
-The owner then confirmed the successful-update screen and accessible home
-screen. ADB required manual off/on toggling; after reconnect the Mac clock
+The successful-update screen and an accessible home screen were then
+owner-confirmed. ADB required manual off/on toggling; after reconnect the Mac clock
 was reapplied as needed. Read-only verification returned:
 
 | Check | Result |

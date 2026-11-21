@@ -1,4 +1,4 @@
-# GM Info 3.7 Security Architecture
+# Security Architecture
 
 **Device:** GM Info 3.7 (gminfo37) — Intel Apollo Lake (Broxton), Android 12 (API 32).
 Scope: SELinux/FBE/Trusty/kernel hardening posture by firmware build, ADB/ProtoKey

@@ -1,4 +1,4 @@
-# GM Infotainment Audio System Documentation
+# Audio System Reference
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -77,13 +77,12 @@
 
 ## Key Findings
 
-### Strengths
-- Full Android Automotive multi-zone audio architecture
-- Harman-tuned preprocessing for vehicle acoustics
+### Architecture
+- Android Automotive multi-zone audio architecture
+- Harman preprocessing tuned for vehicle acoustics
 - 8 CarAudioService output buses (bus0–bus7); bus8/11/12/13 are Harman-HAL-internal routing nodes, not app-targetable
 - External DSP handles mixing and ducking
-- Low-latency 8ms mix period
-- Comprehensive audio effects library
+- 8ms mix period
 
 ### Audio Features
 - External focus policy support

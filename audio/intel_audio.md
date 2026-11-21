@@ -1,4 +1,4 @@
-# Intel Audio Subsystem on GM AAOS
+# Intel Audio Subsystem
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)

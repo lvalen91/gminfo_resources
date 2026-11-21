@@ -1,4 +1,4 @@
-# GMSystemUI App-Capability + Immersive Gating
+# GMSystemUI App Gating
 
 Static-RE findings on what gates (a) CardView clock/widget panel existence and (b) the CardView-hide/immersive decision in GMSystemUI/GMHomeScreen, and whether native Cinemo CarPlay's bounds can be changed without a calibration write.
 Scope: code-level gates only; emulator calibration behavior lives in [emulator.md](emulator.md#matching-the-real-silverado-ui-calibration-driven) (it holds no hook text; the Xposed/LSPosed-style hook is only proposed, in this doc's [Verdict](#verdict-summary), and was never attempted), locked-radio verdicts in [security.md](security.md).

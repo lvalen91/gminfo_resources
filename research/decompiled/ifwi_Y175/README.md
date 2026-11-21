@@ -1,4 +1,4 @@
-# IFWI / TXE extraction — Y175 bench
+# IFWI/TXE Extraction (Y175)
 
 Unpacked Intel IFWI (CSE/TXE region) and carved ELK bootloader from the Y175 bench eMMC dump.
 

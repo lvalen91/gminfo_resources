@@ -1,4 +1,4 @@
-# GM AAOS CarPlay Video Pipeline Technical Analysis
+# CarPlay Video Pipeline
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)

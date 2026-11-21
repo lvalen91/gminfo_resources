@@ -1,4 +1,4 @@
-# diagnosticsd — DID/DTC Read Sweeps
+# diagnosticsd: DID/DTC Sweeps
 
 > Part of the [`diagnosticsd` Ethernet UDS bridge](ethernet_uds_diagnosticsd.md) doc set (port 49156).
 

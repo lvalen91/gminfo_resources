@@ -1,4 +1,4 @@
-# Boot Trust Anchor and Verification-Key Chain — GM Info 3.7 (gminfo37)
+# Boot Trust Anchor & Keys
 
 Single owner for the **secure-boot / AVB trust anchor, its verification keys, and the
 integrity-vs-authentication status of the GHS image that carries them**: the CSE/IFWI manifest keys,
@@ -172,7 +172,7 @@ GHS receives it as a Multiboot module, but the module's **origin is the GHS imag
 >    `0xe3ce00` — the block ends at `0xe3ce04`, exactly the length of the stripped `payload.bin`
 >    (14,929,412 B). Verifying `s^e mod n` (both big-endian) yields a well-formed PKCS#1 v1.5 pad with
 >    the SHA-256 OID and embedded digest `7b02d1b7…113ed39db`, which equals **`SHA256(image[0:0xe3cb98])`
->    exactly**. This is reproducible math, confirmed ≥3× independently (`scratchpad/ias/rsa_verify.py`).
+>    exactly**. Reproducible; confirmed ≥3× independently (`scratchpad/ias/rsa_verify.py`).
 > 2. **The signing key is the OEM "OS Kernel" key, and it lives in the Boot-Guard-authenticated SPI
 >    OBB** `[S]`. Key fingerprint `SHA256(reversed_modulus ‖ LE_exp)` = `e99d2f48…579beab7` (the GBUR
 >    OEM "OS Kernel"/usage-0x27 key). The same modulus is embedded in the SPI **OBB/ELK @ `0x114000`**
@@ -197,7 +197,7 @@ GHS receives it as a Multiboot module, but the module's **origin is the GHS imag
 >    classified the raw captures (A=booted, B=rejected). Captures:
 >    `scratchpad/ias/runA_capture.txt`, `runB_capture.txt`.
 >
->    **Honest scope of this result:** it proves a signature-dependent check *rejects* a tampered image;
+>    **Scope of this result:** it proves a signature-dependent check *rejects* a tampered image;
 >    it does **not** locate the verifying instruction. No RSA-verify routine over GHS was found on the
 >    captured ABL/IAS path (a rigorous call-graph pass found none) — consistent with enforcement living
 >    **upstream of the dump**, in the CSE/Boot-Guard/OBB stage that runs before ABL and was never
@@ -371,7 +371,7 @@ stock→AAOS, one flipped signature byte→rejected to fastboot).
 
 - **`current_android_key` storage** — *closed 2026-11-20.* Earlier docs split between "hardcoded in
   GHS at `0xe3ca34`" (`INVENTORY.md`) and "NOBITS, not in the binary, externally supplied at runtime"
-  (`GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt §8.2`). Byte analysis shows **both halves of the truth**:
+  (`GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt §8.2`). Byte analysis shows each is partly correct:
   the key bytes **are** embedded in the GHS IPK payload (name @ `0xe3ca7c`, modulus @ `0xe3ca90` —
   INVENTORY's `0xe3ca34`/"hardcoded" is essentially correct), and the NOBITS `.mr_r_mod_android_key`
   is only the **runtime map destination** (GHS_DOWNGRADE's "not in the [ELF] binary" is true of the

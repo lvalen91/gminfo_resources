@@ -148,7 +148,7 @@ lookup failure. Other proprietary/internal entry points remain unestablished.
 Calibration clearing and calibration-override clearing are prohibited **until a
 genuine LTZ write has succeeded and been verified working without NoVIN or other
 issues**, per the owner's clarified
-restriction. Before that milestone, do not invoke routine `0249` through any
+restriction. Until then, do not invoke routine `0249` through any
 transport or subfunction, memory-erase routines or substitute calibration wipes.
 Custom calibration trials follow genuine LTZ success and demonstrated stock recovery.
 The historical stock transaction helper calls `31 01 02 49` before download;
@@ -388,8 +388,8 @@ produced request2 at8.419s VIP uptime, completion approximately14.943s later,
 then request3 and Propulsion at25.227s. A background update-observation helper
 had earlier reasserted Run during an Off test; it was stopped before this
 successful replay. Keepalive helpers must not override deliberate Off/testing
-phases. Genuine LTZ/HC recovery is now established on this bench; the owner
-authorized the next modified-LTZ-package experiment after these results.
+phases. Genuine LTZ/HC recovery is now established on this bench; the owner authorized the next modified-LTZ-package
+experiment after these results.
 Actual VIN values are used only in memory and excluded from capture payloads
 and this document.
 

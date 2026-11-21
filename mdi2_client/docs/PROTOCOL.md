@@ -1,4 +1,4 @@
-# MDI2 protocol reference (operator summary)
+# MDI2 Protocol Reference
 
 Scope: what an operator needs to know about the wire behaviour of the Bosch GM MDI2 as spoken by
 `mdi2_client/mdi2/`. Derivation, evidence and the investigation trail live in the research docs and

@@ -1,4 +1,4 @@
-# VIP SBI write mechanism — full call-chain trace (2026-08-25)
+# VIP SBI Write Mechanism
 
 Resolves the open question left by `VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`: what actually
 writes the SBI EEPROM flag, and what triggers the observed reset-to-secured behavior. Traced by

@@ -33,3 +33,7 @@ __pycache__/
 research/scripts/ghidra_rh850/*_rh850/
 research/scripts/ghidra_rh850/*_broken/
 research/scripts/ghidra_rh850/hostos_x86/
+
+# Agent instruction files (not part of the reference corpus)
+/CLAUDE.md
+/AGENTS.md

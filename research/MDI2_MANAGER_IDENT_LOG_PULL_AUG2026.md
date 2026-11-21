@@ -1,4 +1,4 @@
-# MDI2 Manager — Identification Service, WiFi Pairing, and Device Log-Pull Protocol
+# MDI2 Manager Protocol Notes
 
 **Scope:** the Windows "MDI2 Manager" / "GM MDI Identification Service" stack — `GM_MDI_Ident.exe`,
 the 14-port device-facing transport (900x bank), and the *Get Log Files* pull protocol — as distinct
@@ -85,13 +85,12 @@ Two instances of one binary run concurrently:
 - `8098` — "GM MDI Software\GM MDI Identification Service" instance
 - `8125` — "Bosch\VTX-VCI\VCI Software (GM)\VCI Identification Service" instance
 
-**Bind address (corrected in place 2026-08-25, same live-capture session as the original claim —
-do not use the superseded reading below):** both instances bind **`0.0.0.0`**, confirmed via
+**Bind address (corrected in place 2026-08-25, same live-capture session as the original claim):** both instances bind **`0.0.0.0`**, confirmed via
 `Get-NetTCPConnection -State Listen` on the running Surface (`LocalAddress 0.0.0.0`, ports
 8098/8125) — they are reachable from the host's other subnets, though the Manager itself still
 dials them via `127.0.0.1`. *(History: first read as "127.0.0.1 only, confirmed unreachable from
-the device side and from macOS by direct live probe"; that reading does not hold — same-session
-`Get-NetTCPConnection` capture showed `0.0.0.0`. Superseded reading not carried forward.)*
+the device side and from macOS by direct live probe"; the same-session `Get-NetTCPConnection`
+capture showed `0.0.0.0`, so that reading is superseded.)*
 
 No TLS — plain custom binary protocol over raw `WS2_32` sockets (also a named pipe,
 `\\.\pipe\VTX_Identification_Service`). Wire framing: length-prefixed segments
@@ -222,11 +221,10 @@ encodes a per-port service/type; §0's handshake-direction note (device sends fi
 
 The encrypted body shows repeating 16-byte ciphertext blocks across repeated identical pulls — a
 block cipher in ECB mode, 16-byte block granularity (**ciphertext shape only**; §4.7 identifies the
-actual algorithm). *(History: an early pass over this same evidence guessed "AES-ECB, 16-byte
-block" from the 16-byte ciphertext repeat alone; §4.7's construction-level trace of
-`bvtx_vci_rt_j.dll` found the real primitive is Blowfish-ECB with an 8-byte block — the 16-byte
-repeat is just two concatenated Blowfish blocks, not an AES block. The AES guess never held and is
-not carried forward as a live claim.)*
+actual algorithm). *(History: an early pass guessed "AES-ECB, 16-byte block" from the repeat alone.
+§4.7's construction-level trace of `bvtx_vci_rt_j.dll` shows the primitive is Blowfish-ECB with an
+8-byte block; the 16-byte repeat is two concatenated Blowfish blocks, not an AES block. The AES guess
+never held and is not a live claim.)*
 
 ### 4.3 *Get Log Files* button → port 9052, encrypted stream
 
@@ -319,9 +317,9 @@ The addend is **not** a literal in the binary (0 occurrences); it is computed at
 device's serial number as a raw `uint32` — `blowfish_key[i] = base_key[module_type][i] +
 device_serial`, confirmed by recomputing and matching the live-extracted session key exactly for
 the test unit (full 56 bytes, 100% match). *(History: §5's derivation hunt first produced
-`addend = serial − 0x200` from an off-by-one reading of the test unit's serial digits; recomputing
-with the correct serial value showed the addend **is** the raw serial, no offset — the "−512"
-reading was an arithmetic slip, not a second valid formula, and is not carried forward.)*
+`addend = serial − 0x200` from an off-by-one reading of the test unit's serial digits. Recomputing with the
+correct serial shows the addend **is** the raw serial, no offset; "−512" was an arithmetic slip,
+not a second valid formula.)*
 
 **Result:** the Blowfish key is computable with no Windows and no live extraction — a native
 client reads the device serial (from the beacon, §4.6, or from ident/logs), takes the static

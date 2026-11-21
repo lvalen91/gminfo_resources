@@ -1,4 +1,4 @@
-# research/ — GM Info 3.7 (gminfo37) deep-dive reverse-engineering corpus
+# Deep-Dive Research Corpus
 
 Security/calibration/boot-chain research notes, one level deeper and narrower than the
 `../platform/` reference tree. One document per topic; each doc states its scope, cites the

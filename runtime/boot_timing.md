@@ -1,4 +1,4 @@
-# GM Info 3.7 Boot Timing Analysis
+# Boot Timing Analysis
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)

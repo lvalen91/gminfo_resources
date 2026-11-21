@@ -1,4 +1,4 @@
-# diagnosticsd — Oversized-Payload Behavior & Worker-Starvation DoS
+# diagnosticsd — Worker-Starvation DoS
 
 > Part of the [`diagnosticsd` Ethernet UDS bridge](ethernet_uds_diagnosticsd.md) doc set (port 49156).
 
@@ -40,6 +40,15 @@ before `sendResponse`.
   concurrent-handler capacity despite the process having 10 OS threads total
   (thread count does not grow with stalled connections — the limit is a
   logical handler/queue depth, not the OS thread count).
+  - **Open Conflict (2026-11-21):** [`ethernet_uds_diagnosticsd.md`'s Open
+    Question #6](ethernet_uds_diagnosticsd.md#open-questions) re-reads this
+    same N=1 latency point plus an additional N=2 data point (0.02 s → 2.55 s)
+    as a graded ramp, and argues that pattern "reads more like a
+    serialized/polled accept-dispatch path... than a hard-capacity thread
+    pool" — i.e. a single dispatcher iterating connections, not a fixed-size
+    concurrent-handler slot pool as concluded here. Not resolved; carried
+    forward as an open conflict between the two docs rather than picked one
+    way or the other.
   - **Effect:** the root `diagnosticsd` (UID 0, all capabilities, bridges to
     the RTOS diagnostic endpoint on vlan4/172.16.4.107) stops servicing
     **any** client — including the legitimate RTOS bridge and any real

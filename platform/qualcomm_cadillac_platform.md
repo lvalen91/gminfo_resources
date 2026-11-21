@@ -1,4 +1,4 @@
-# Qualcomm / Cadillac Radio Platform (SA8155P) - platform variant [X]
+# Qualcomm/Cadillac Platform (SA8155P)
 
 Scope: how GM's newer Global-B radio (Qualcomm SA8155P under QNX; Cadillac Lyriq / CT5) differs from this repo's Intel Apollo Lake gminfo37 / A11 Silverado radio. This repo has **no** Qualcomm hardware teardown or CAN-security capture, so everything here is **[X]** = external, single-source, unverified against our own hardware.
 Evidence tag: [X] throughout. Bibliography and licenses: [external_references.md](external_references.md) section 2.
@@ -20,7 +20,7 @@ Deeper GM-side CT5 firmware RE (Android layer) lives in the separate `/Volumes/.
 | Status | Author states Intel exited automotive in 2025, making this platform legacy **[X] unverified** (see below) | GM's forward platform (OTA focus) |
 
 - GM's AAOS variant is **AAOS w/ GAS** - Android Automotive partnered with Google for **Google Automotive Services** - and **AAOS is not Android Auto** (the phone-projection product).
-- **Intel-exit claim [X, unverified].** The statement that Intel discontinued its automotive offerings, and that Qualcomm is therefore GM's forward platform on all head units, rests solely on the author (*ABCs of Global B*: "Intel scuttled their entire automotive offerings in 2025"). It is not verified here; the Intel column "legacy" status is therefore an external assertion, not a repo finding. (History: the source table stated "Intel discontinued automotive; legacy" as fact while its own later text called it unverified; unified under [X] 2026-11.)
+- **Intel-exit claim [X, unverified].** The statement that Intel discontinued its automotive offerings, and that Qualcomm is therefore GM's forward platform on all head units, rests solely on the author (*ABCs of Global B*: "Intel scuttled their entire automotive offerings in 2025"). It is not verified here; the Intel column "legacy" status is therefore an external assertion, not a repo finding. (Correction 2026-11: the source table stated "Intel discontinued automotive; legacy" as fact while its later text called it unverified; both now tagged [X].)
 
 ## Radio internal architecture
 
@@ -48,7 +48,7 @@ Board has **no silkscreen**. Author-reported components:
 - Molex **HSAL2** (High-Speed AutoLink II) - 12-pin gray, 14-pin black
 - **Aptiv AMEC 050**, Molex **stAK50h**
 
-> **Do not graft onto the Intel spec.** This repo's A11 board is **8 GB LPDDR4** (4x Micron), **64 GB eMMC**, RH850/**F1K** - different RAM type/size, storage, and MCU variant. These are genuine platform differences, not corrections to [hardware_specs.md](hardware_specs.md). (Molex HSAL2 / stAK50h connector families do also appear on the A11 harness - see [../hardware/connectors.md](../hardware/connectors.md) - but as different shells.)
+> **Do not graft onto the Intel spec.** This repo's A11 board is **8 GB LPDDR4** (4x Micron), **64 GB eMMC**, RH850/**F1K** - different RAM type/size, storage, and MCU variant. These are platform differences, not corrections to [hardware_specs.md](hardware_specs.md). (Molex HSAL2 / stAK50h connector families do also appear on the A11 harness - see [../hardware/connectors.md](../hardware/connectors.md) - but as different shells.)
 
 ## Boot and VIN gate (summary; details live in the linked docs)
 

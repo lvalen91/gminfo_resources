@@ -1,4 +1,4 @@
-# GM FSA (Feature Service Architecture) Protocol
+# FSA Protocol
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton), Android 12 guest under GHS INTEGRITY
@@ -42,10 +42,9 @@ Buffers** payload. Service discovery uses SOME/IP-SD multicast to
 `239.192.0.1`. The discovery **port** is contested between two evidence
 sources (live Y181 network scan: UDP **30490**; decompiled `FSACatalog.java`
 constant: UDP **3000**) and is not reconciled — see
-[Open Conflicts](#open-conflicts). (The original intro called the earlier
-`:3000` reading "superseded" by the live scan, while its own `[F-udp]` finding
-called the discrepancy unresolved; the "superseded" claim is therefore not
-carried forward as established.)
+[Open Conflicts](#open-conflicts). (Earlier text in this doc called the
+`:3000` reading "superseded" by the live scan, but the `[F-udp]` finding below
+calls the same discrepancy unresolved; "superseded" is not established.)
 
 ---
 
@@ -226,8 +225,8 @@ loopback-on-vlan5 pair. The `.102:9005/9012/9018` client targets were **not
 observed** in this capture — not refuted, UNVERIFIABLE-FROM-LIVE. This capture
 is from an out-of-vehicle bench (Radio + Display + GM USB receptacles, no
 vehicle bus/ECUs); `.112` (CGM) and `.102` (TCP) are external vehicle nodes not
-present on the bench, so the SYN_SENT to an absent `.112` peer is the IHU
-reaching for a partner that isn't there — expected, not a defect.
+present on the bench, so the SYN_SENT target (`.112`, CGM) is an external node
+absent from the bench and no response is expected.
 
 ---
 
@@ -656,7 +655,7 @@ earlier "why doesn't the live scan show a 9011 server?" contradiction between
 the static catalog and the live-scan port list: Global-B demoted infotainment
 from Programming Master to HMI-only (see
 [`ota_programming_roles.md`](ota_programming_roles.md)), and the catalog
-simply was never pruned of the dead entry. Independently corroborated (not
+was never pruned of the dead entry. Independently corroborated (not
 re-derived) by [`ota_update_stack.md`](ota_update_stack.md) and
 [`ota_programming_roles.md`](ota_programming_roles.md), which both cite this
 section as the source finding.

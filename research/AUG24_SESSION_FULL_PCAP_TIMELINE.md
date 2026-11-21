@@ -1,4 +1,4 @@
-# Aug 24 2026 session — full pcap timeline (provenance record, 6 captures)
+# Aug 24 Pcap Timeline
 
 **Scope:** provenance/timeline record for the 6 pcap captures taken `gm_dps/misc/Aug24_session/`
 on 2026-08-24 while GM DPS/SPS and the MDI2 Manager were used against a real MDI2 (Bosch VCI) and
@@ -8,7 +8,7 @@ generic internet/telemetry excluded).
 
 **Not here:** the MDI2 D-PDU wire-protocol mechanics (framing, mid-opcode table, bring-up
 sequences, loopback-ident resolution) — owned by [MDI2_DPDU_API_PROTOCOL_AUG2026.md](MDI2_DPDU_API_PROTOCOL_AUG2026.md)
-(§10-12), this doc only cites findings against it. The MDI2 *Manager* 900x/9052 log-pull
+(§10-11), this doc only cites findings against it. The MDI2 *Manager* 900x/9052 log-pull
 protocol (port bank, Blowfish-ECB, JSON session layer, Get-Log-Files container) — owned by
 [MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md](MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md). The captured
 seed/key material's cryptographic meaning (CMAC algorithm, gate-independence table, signature
@@ -48,15 +48,15 @@ scan does not refute captured traffic from this responder on a different capture
 Across `capture_attempt1/2` and `multiple_intefaces_attempt1`, TCP/10123 opens successfully
 multiple times from the low-port dance + Manager IPC alone, before any vehicle is present on the
 bus. This confirms the persistent macOS-replay `ECONNREFUSED` documented in
-[MDI2_DPDU_API_PROTOCOL_AUG2026.md](MDI2_DPDU_API_PROTOCOL_AUG2026.md) §11-§12 is not a
+[MDI2_DPDU_API_PROTOCOL_AUG2026.md](MDI2_DPDU_API_PROTOCOL_AUG2026.md) §11 is not a
 vehicle-presence issue — it is the missing per-installation credential handed to the Manager over
-loopback (Finding 3). Mechanics of that credential exchange live in that doc's §12; not restated
+loopback (Finding 3). Mechanics of that credential exchange live in that doc's §11.5; not restated
 here.
 
 ### Finding 3 — Loopback Manager IPC is per-cycle, two independent protocols
 - Binary protocol on `<LOOPBACK_IP>:8125` — opcode pairs `0x7f2/0x7f5` (identification),
   `0x8bf/0x8c0` (capability), `0x8d1/0x8d2` (device pairing with the 28-byte credential). Mechanics
-  owned by [MDI2_DPDU_API_PROTOCOL_AUG2026.md](MDI2_DPDU_API_PROTOCOL_AUG2026.md) §12; this
+  owned by [MDI2_DPDU_API_PROTOCOL_AUG2026.md](MDI2_DPDU_API_PROTOCOL_AUG2026.md) §11.5; this
   capture's contribution is behavioral, not structural: `DPS+SPS.pcapng` shows it **re-invoked at
   every one of the 18 dance cycles**, each time staging a ~16.7KB blob — not once at session start
   as earlier assumed.

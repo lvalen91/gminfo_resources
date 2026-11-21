@@ -60,6 +60,7 @@ HIGH RISK:
 
 MEDIUM RISK:
 4. IOMMU disabled (requires physical access)
+   [OPEN CONFLICT 2026-11-21: see note under the §8 table; platform-level VT-d state unresolved.]
 5. ADB TCP 5555 configured but NOT listening
 6. VIP boot failure bypass (3 consecutive failures disables checks)
 
@@ -112,6 +113,12 @@ EEPROM (M24C64) Security-Relevant Regions:
 | 0x0A80-0AFF | ADB BYPASS FLAGS (BACKUP)  | NO             |
 | 0x05C0-05D1 | VIN                        | YES (not enforced at boot) |
 | 0x16E0      | Primary CRC                | N/A            |
+
+[Corrected 2026-11-21: the two ranges above are marker/data/marker frames (e.g. 0x0440/0x0441/0x0442
+for the primary record); the byte that actually carries the ADB-bypass state is the DATA byte, not
+the first (marker) byte of each frame -- 0x0441 for the primary frame, 0x0A81 for the backup frame.
+The marker bytes at 0x0440/0x0A80 vary by firmware/unit and are not the security-relevant address.
+See platform/eeprom_i2c_security.md and research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §2.]
 
 ================================================================================
 3. BOOT CHAIN & GHS HYPERVISOR
@@ -316,6 +323,12 @@ BYPASSED STATE:
   Result: VIP returns 0xFF seed (32 bytes of 0xFF)
   ADB accessible with standard platform-tools
 
+[Corrected 2026-11-21: the frames above are marker/data/marker triples starting at 0x0440 (primary)
+and 0x0A80 (backup). The byte that actually holds the secured/bypass state is the middle DATA byte
+of each triple -- 0x0441 for the primary flag, 0x0A81 for the backup flag -- not the marker byte at
+0x0440/0x0A80 itself. See platform/eeprom_i2c_security.md and
+research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §2.]
+
 6.2 MEC COUNTER BEHAVIOR
 ------------------------
 MEC (Manufacturing Enable Counter) affects hypervisor timeout:
@@ -419,6 +432,24 @@ See platform/boot_chain.md §GSI/DSU Status.
 | 3x boot failure bypass       | N/A    | 5.0    | Disables validation       |
 +------------------------------+--------+--------+---------------------------+
 
+[OPEN CONFLICT 2026-11-21 -- IOMMU row above (rating "disabled", CVSS 5.5) is retained
+ unchanged and is NOT resolved by this note. Conflicting source: research/
+ HARDWARE_HYPERVISOR_ATTACK_VECTORS.md, "IOMMU/VT-d" section (approx. lines 368-376), which
+ distinguishes two different things:
+ - Guest Linux kernel cmdline: CONFIG_INTEL_IOMMU=y is compiled in
+   (CONFIG_INTEL_IOMMU_DEFAULT_ON not set) and the guest cmdline carries intel_iommu=off
+   [FW]. That token governs the GUEST KERNEL's own use of the IOMMU only.
+ - Hypervisor / platform-level VT-d (GHS INTEGRITY): whether GHS itself leaves platform
+   VT-d disabled, such that a device could DMA into hypervisor memory, is "NOT established"
+   (never captured; the wire->host DMA conclusion is unsupported as measured). GHS may
+   still enforce SMMU/VT-d guest isolation (US Patent 12,423,197, GHS INTEGRITY SMMU/GVM
+   model).
+ Open question: this table's "IOMMU disabled" evidence is the guest-kernel flag; whether the
+ "disabled" rating and the 5.5 score hold at the platform/hypervisor level is unresolved.
+ The same caveat applies to §10 recommendation 4 (remove intel_iommu=off), which addresses
+ the guest-kernel setting only and does not by itself establish a change in platform VT-d
+ state. Also applies to Executive Summary item 4.]
+
 ================================================================================
 9. DOWNGRADE PROTECTION
 ================================================================================
@@ -461,6 +492,10 @@ HIGH PRIORITY:
 
 MEDIUM PRIORITY:
 4. Enable IOMMU (remove intel_iommu=off from cmdline)
+   [OPEN CONFLICT 2026-11-21: see the note under the §8 table -- the cmdline flag is the
+    guest kernel's setting, distinct from hypervisor-level platform VT-d, whose state is
+    NOT established per research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md. Recommendation
+    retained unchanged.]
 5. Review dontaudit rules hiding security violations
 6. Audit 3x boot failure bypass behavior
 7. Review MEC counter security implications

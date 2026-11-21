@@ -1,4 +1,4 @@
-# VIP MCU, VIP-SoC IPC and GHS INTEGRITY Hypervisor
+# VIP-SoC IPC & GHS Hypervisor
 
 Scope: the dual-processor architecture of the GM Info 3.7 (gminfo37) radio, the Renesas RH850 VIP MCU and its PLC/calibration data, the VIP-SoC IPC link and channel map, and the GHS INTEGRITY Type-1 hypervisor (binary, `/dev/ghs`, GHS-Android connection map, VP crash decode).
 Boot ordering and GHS init tasks live in [boot_chain.md](boot_chain.md); component specs in [hardware_specs.md](hardware_specs.md).
@@ -264,7 +264,7 @@ Inter-process channels between GHS tasks and Android. GHS task inventory and ini
 | Audio | `ConnToChimes` | Chime audio task |
 | Audio | `ConnToDirana` | Dirana tuner/DSP |
 | VIP MCU | `ConnToVIP` | Primary VIP communication |
-| VIP MCU | `ConnToVip_Lifecycle` | Lifecycle/shutdown coordination |
+| VIP MCU | `ConnToVip_Lifecycle_API` | Lifecycle/shutdown coordination |
 | TEE | `ConnToTEE_Keymaster` | Hardware keymaster operations |
 | TEE | `ConnToTEE_Storage` | Secure storage (RPMB) |
 | TEE | `ConnToTEE_Router` | TEE message routing |

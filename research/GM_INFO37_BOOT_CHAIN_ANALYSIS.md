@@ -1,4 +1,4 @@
-# GM Info 3.7 (A11 Module) Boot Chain Analysis
+# Boot Chain Analysis
 
 **Module:** A11 CSM (Central Stack Module) | **Vehicle:** 2024/2025 Chevrolet Silverado 2500 HD
 (T1XX platform) | **Firmware:** Y181 primary analysis, Y175/Y177 compared where it matters.
@@ -163,12 +163,12 @@ VIP_BOOT Sequence:
 | **IPC Version** | 4.1.0 | — |
 | **HwVariant** | 56 | — |
 
-**History:** an earlier pass of this table carried a row labeled "Version (Y177)" = `2B.174.4.1`
-(build `24Mar22-0256`). That string is from a UART capture (`enumeration/VIP_log_2B.174.4.1_10JUL24.txt`)
-predating even Y175's own VIP_APP (`2B.175.1.5`, build `24Apr23-2202`, part 85759599); Y177's actual
-VIP_APP (part 86283151) builds `25Feb28-0330` and has no confirmed version string in this repo
-(`VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §1 lists it as `—`). Corrected 2026-11-12: do not read
-`2B.174.4.1` as any Y177 value; the row above replaces it with the directly-read Y181B values.
+**Correction 2026-11-12:** an earlier version of this table listed "Version (Y177)" = `2B.174.4.1`
+(build `24Mar22-0256`). That string comes from a UART capture (`enumeration/VIP_log_2B.174.4.1_10JUL24.txt`)
+that predates Y175's own VIP_APP (`2B.175.1.5`, build `24Apr23-2202`, part 85759599). It is not a Y177
+value. Y177's VIP_APP (part 86283151) builds `25Feb28-0330` and has no confirmed version string in this
+repo (`VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §1 lists it as `—`). The row above replaces it with the
+directly-read Y181B values.
 
 ### 4.3 VIP Module Initialization Sequence
 
@@ -236,9 +236,9 @@ SOC_HOSTOS (GHS) and SOC_ABL are byte-identical (MD5-matched) between the Y177 a
 packages — only VIP_APP differs build-to-build, and that difference is the 15-18 aligned bytes above,
 not a stub. No stock build runs permissive: a previously reported live-permissive Y177 unit was a
 false finding/misread — both CSMs sampled only ever ran stock packages (`research/security/KERNEL_CVE_ANALYSIS.txt`
-Appendix E.8). This retraction is stated once here; every other place in this corpus that touched the
-"Y177 stub"/permissive-Y177 claim (§10.1, §10.2, §11.2, Appendix D.1/D.4 below) now just points back
-to this section instead of restating it.
+Appendix E.8). This retraction is stated here only; every other place that touched the "Y177 stub" /
+permissive-Y177 claim (§10.1, §10.2, §11.2, Appendix D.1/D.4) points back to this section instead of
+restating it.
 
 **What this function gates:** see the resolved VIP-vs-SoC ADB-gate question in
 [Open Conflicts](#open-conflicts) — summary: this is a `$27`/seed-access validator, not the ADB gate
@@ -328,17 +328,17 @@ Chain clarification: Intel Slim Bootloader hands off to SOC_ABL (kernelflinger),
 INTEGRITY. GHS's own VMM1 task — not ABL directly — then performs AVB and launches the Android guest
 VM (§7-§8 below).
 
-**Correction (2026-11-20, updated later same day):** two-step history. First pass found the earlier
-"Verify GHS signature (cannot be bypassed)" line unsupported — AVB does not cover `ghs_isys`, the IPK
+**Correction (2026-11-20, updated later the same day):** two-step history. A first pass found the earlier
+"Verify GHS signature (cannot be bypassed)" line unsupported: AVB does not cover `ghs_isys`, the IPK
 header holds a 32-bit checksum (`0x5fffc6f3`) not a signature, and no stored GHS hash was found in ABL
-tables / IFWI / searched eMMC. **A later re-analysis the same day corrected *that* correction:** the
+tables / IFWI / searched eMMC. **A later re-analysis the same day corrected that correction itself (the retraction was wrong):** the
 GHS image **does** carry an appended RSA-2048/SHA-256/PKCS#1-v1.5 signature in its own tail (sig @
-`0xe3cc00`, modulus @ `0xe3cd00`, exp 65537) over `image[0:0xe3cb98]` — the first sweep missed it
+`0xe3cc00`, modulus @ `0xe3cd00`, exp 65537) over `image[0:0xe3cb98]`. The first pass missed it
 because it searched sibling partitions, not the image's `0x98`-byte tail. The signing OEM "OS Kernel"
 key (fp `e99d2f48…`) is embedded in the **Boot-Guard-authenticated SPI OBB/ELK** (@ `0x114000`) and
-hashed in the **CSE FTPR Key Manifest** (@ `0x60354`), **not** in the mutable eMMC ABL — so the IPK
-checksum and Gate-1 self-integrity are integrity layers *beneath* a real OBB-rooted signature. The
-trust chain is **closed**, and enforcement is **empirically demonstrated**: a one-byte sig-corrupt A/B
+hashed in the **CSE FTPR Key Manifest** (@ `0x60354`), **not** in the mutable eMMC ABL. The IPK
+checksum and Gate-1 self-integrity are therefore integrity layers *beneath* a real OBB-rooted signature.
+The trust chain is **closed**, and enforcement is **empirically demonstrated**: a one-byte sig-corrupt A/B
 boot test boots AAOS from the stock image but is rejected to fastboot when a single signature byte is
 flipped (`scratchpad/ias/runA_capture.txt` / `runB_capture.txt`; two blind observers concurred). Still
 outstanding only: locating the verify instruction (upstream/uncaptured CSE-BootGuard-OBB) and disassembly
@@ -1009,7 +1009,7 @@ The shared function bytes `7f 00 88 07 e3 ff …` appear at `0xb67ce` in Y181 bu
 Y177; the leading `ff 30 00 52` in Y177 is the tail of the *preceding* function, not a return stub
 (§4.5).
 
-Also note, for the record: SOC_HOSTOS (85098662) and SOC_ABL (85738845) are MD5-identical between
+Hashes: SOC_HOSTOS (85098662) and SOC_ABL (85738845) are MD5-identical between
 the Y177 and Y181 update packages; only VIP_APP (86283151 vs 86331656) differs. SHA-256:
 Y181/85098662 (SOC_HOSTOS/GHS) `317ae85ccf759476755411e66593dde9f879a43732cd342b4e101e4026535ed3`;
 Y181/85738845 (SOC_ABL) `77b866c6492aa0e8fd2aab8d986182bdef597820a63e0d688a06a12a67f4aed8`;
@@ -1017,14 +1017,12 @@ Y181/86331656 (VIP_APP) `dbdbb9da3dc14f93e37b94c0e1c5a42921c46fc6e89911159872a6e
 MD5 trio proving GHS/ABL identity Y177<->Y181, VIP_APP differing: `ded73e3f9026fc8f802bd7485837fc45`
 (85098662, both builds, identical), `61efd392e75660c3eafa92b01be8ed7b` (85738845, both builds,
 identical), and VIP_APP `680b0e61aa6c39a28badbd73e5356af2` (Y177/86283151) vs
-`e47928d9f409834083abc9a068ce65e0` (Y181/86331656, different). This doc's own designated
-raw-evidence companion, `BOOT_CHAIN_ANALYSIS.txt`, does not actually carry this hash table
-despite Appendix D's pointer above claiming it does — kept here instead until that gap is
-closed. This confirms the build-to-build difference is confined to VIP_APP — it does **not**
-mean "the security difference
-between Y177 and Y181 is entirely in the VIP firmware" in the sense of a disabled check; per §4.5,
-there is no VIP-side security difference between these builds beyond the 15-18 recompiled-source
-bytes.
+`e47928d9f409834083abc9a068ce65e0` (Y181/86331656, different). The companion
+`BOOT_CHAIN_ANALYSIS.txt` does not carry this hash table despite the pointer above, so it is kept
+here only until that file picks it up (until that gap is closed). The build-to-build difference is
+confined to VIP_APP, but this does **not** support the claim "the security difference between Y177
+and Y181 is entirely in the VIP firmware" in the sense of a disabled check: per §4.5, there is no
+VIP-side security difference between these builds beyond the 15-18 recompiled-source bytes.
 
 ---
 

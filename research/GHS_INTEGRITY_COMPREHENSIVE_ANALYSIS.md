@@ -1,4 +1,4 @@
-# GHS INTEGRITY Hypervisor — Comprehensive Analysis
+# GHS INTEGRITY Hypervisor
 
 **Binary:** SOC_HOSTOS (85098662), INTEGRITY IoT 2020.18.19, Core 23739 / Modules 11500,
 GM Version MY22-026, target Intel Apollo Lake (gm-i35). Build path

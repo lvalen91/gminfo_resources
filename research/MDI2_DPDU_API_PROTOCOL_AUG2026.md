@@ -1,4 +1,4 @@
-# MDI2 D-PDU API Protocol — Full Reconstruction from Real DPS Captures
+# MDI2 D-PDU API Protocol
 
 **Scope:** The Bosch GM MDI2's D-PDU (ISO 22900-2) wire protocol tunnelled on TCP/10123 —
 frame format, two-socket session topology, the mid-opcode table, per-operation bring-up
@@ -71,13 +71,11 @@ wrong path" — both are legitimate GM transports. The raw-DoIP session itself (
 responder behavior, `.70` ownership question) is out of scope for this doc; see
 `AUG24_SESSION_FULL_PCAP_TIMELINE.md` finding #1, which carries that as its own open item.
 
-> History: the original text here, and §9's closing paragraph, stated "do not continue
-> investing in the raw-DoIP path" / "mdi2_doip_query.py is chasing a dead end" as a flat
-> conclusion. That conclusion directly contradicted this section's own correction (both
-> transports are real) and has been dropped in this pass rather than carried forward
-> contradicting itself. `mdi2_doip_query.py`'s approach needs the same session-control fix
-> suspected at the time (retry `10 03` through NRC `0x21`, etc.), not abandonment — but that
-> investigation belongs to the raw-DoIP doc, not here.
+> History: earlier text here and in §9 concluded "do not continue investing in the raw-DoIP
+> path" / "mdi2_doip_query.py is chasing a dead end". That conclusion contradicts the correction
+> above (both transports are real) and is withdrawn. `mdi2_doip_query.py` needs the
+> session-control fix suspected at the time (retry `10 03` through NRC `0x21`, etc.); that
+> investigation belongs to the raw-DoIP doc.
 
 ## 1. Wire framing
 
@@ -275,7 +273,21 @@ vehicle is GMLAN-only; the legacy probe is DPS being thorough, not a required st
    Seed request: `27 01` → seed response `67 01 <seed bytes>`. History (corrected 2026-09-10):
    RH850 VIP `$27` handler disasm (`FUN_000b67d0`) confirms the seed structure is a **16-byte
    fixed ECUID + random challenge**, not the pre-2026-09-10 "31-byte seed / 12-byte key" figure
-   (that older figure was a byte-offset misread of an earlier capture).
+   (that older figure, as applied to *this* non-degenerate ECUID+challenge seed, was a
+   byte-offset misread of an earlier capture).
+
+   **Clarifying note (2026-11-21):** the "31-byte seed / 12-byte key" figure appears in two
+   distinct contexts that must not be conflated. (a) The misread described above concerns the
+   **non-degenerate per-request seed** documented in this subsection (fixed ECUID + random
+   challenge, per the RH850 disasm). (b) §11.4 reports a **degenerate all-`0xFF` seed /
+   12-byte zero key** exchange (`27 01`/`27 02` → `67 02`) as a live bench result; the full
+   exchange (`27 01` → `67 01` + 31 bytes of `0xFF`; `27 02` + 12 zero bytes → `67 02`) is
+   documented in `diagnostics/diagnosticsd_security_access.md` (L80-81, 132, 163-164) as a
+   distinct bypass-state response. (b) is not a misread. The two are different seeds that
+   share the same byte counts (31 / 12). The disputed point in the
+   Open conflict immediately below concerns only the non-degenerate seed's total length
+   (31 vs 32 bytes), not the degenerate all-`0xFF` seed, whose length (31 bytes) is not in
+   dispute.
 
    **Open conflict — see §Open Conflicts #1 below:** the exact total seed length is disputed
    between a 32-byte reading (16-byte ECUID `004B41DC…14AC` + 16-byte random, attributed to a
@@ -662,6 +674,15 @@ not that SPS used it here.) The SPS calibration capture independently shows `11 
 `51 01` (event frame 29532) after security access and programming operations — not a
 standalone-reset capture.
 
+**Clarifying note (2026-11-21):** the "all-FF seed, 12-byte zero key" exchange in this bench
+sequence is the **degenerate bypass-state seed** — a real, directly observed live-bench result,
+also documented in `diagnostics/diagnosticsd_security_access.md` (level-1 seed/key exchange:
+`27 01` → `67 01` + 31 bytes of `0xFF`, then `27 02` + 12 zero bytes → `67 02`). It is **not**
+the same seed as the non-degenerate, per-request ECUID+challenge seed discussed in §6.3, whose
+disputed total length (31 vs 32 bytes, tracked in Open Conflicts #1) is a separate, still-open
+question about the non-degenerate seed. §6.3's "misread" note refers only to that non-degenerate
+seed and does not apply to, or call into question, the all-`0xFF` bypass result reported here.
+
 ### 11.5 Local loopback Manager IPC (127.0.0.1:8125) — ident service and the WiFi-credential finding
 
 While investigating a frame gap (7516-7730) in §11.1's capture, this pcapng turned out to also
@@ -687,20 +708,19 @@ IPC/RPC service exposed by the Windows MDI2 Manager background process, that DPS
   `3.0.14`, serial-like `370A0A00`) — `ax9u_dlink` appears to be a gadget-side internal driver
   codename.
 
-**What the 28-byte value actually is (resolved 2026-08-25, traced end-to-end in Ghidra
-pseudocode):** the 8125 loopback server is hosted by `gm_mdi_ident.exe`, dispatched in
-`CClientConnectionMgr::OnDataReceived`. The `0x8d1` branch's own log string identifies it
-explicitly as `"SID_WIFI_CREDENTIALS_SEND"`, deserializing a `CWifiCredentials_Send` object and
-routing to `CIdentWifi::SetWifiCredentials` (log format `"%s ssid = %s serial_number = %s ...
-version = %s"`), which builds a Windows WLAN profile (`CreateProfile`, auth `"AES-CCMP"`). The
-sender side, `bvtx_vci_rt_j.dll` `CDeviceMgr::SetConfigItems`, pulls the pair from config items
-literally named `"SSID"` and `"Passphrase"` (config IDs `0x12`/`0x13`). **So: the "SN:module:fw"
-string is the VCI's own WiFi SSID, and the 28-byte hex value is its WPA passphrase** — config
-data for pairing to the MDI2's own WiFi access point, unrelated to TCP/10123 authorization. It is
-a device config item (`VtxRtGetConfigItems`/`SetConfigItems`, opcodes `0x7e3`/`0x7e4`), only
-format-validated (`ifm::ValidateWifiConfig`: hex length 26/10 = WEP, 8-64 chars = WPA-PSK) — not
-generated or looked up from any registry/DPAPI/backend store, confirming it is not derivable from
-the network capture alone, but for an unrelated reason than first suspected.
+**What the 28-byte value actually is (resolved 2026-08-25):** owned by
+`MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md` (MML) §2, which traces it end-to-end in Ghidra
+pseudocode (`gm_mdi_ident.exe`'s `CClientConnectionMgr::OnDataReceived` `0x8d1` branch /
+`SID_WIFI_CREDENTIALS_SEND` / `CWifiCredentials_Send` / `CIdentWifi::SetWifiCredentials` /
+`bvtx_vci_rt_j.dll` `CDeviceMgr::SetConfigItems`) to the conclusion that the 28-byte value is
+the VCI's own WiFi access-point WPA passphrase, unrelated to TCP/10123 authorization. See MML
+§2 for the full derivation. Details from this doc's own capture that MML §2 does not state
+(MML §2 already states that the passphrase is only format-validated, never generated or looked
+up from a registry/DPAPI/backend store): the `"SN:module:fw"` string (the
+`BSH:<SERIAL>:28:<fw>:08` form captured in this doc) is the VCI's own WiFi SSID and the 28-byte
+hex value is its WPA passphrase; the lengths accepted by that validation (`ifm::ValidateWifiConfig`) are hex 26/10 chars = WEP,
+8-64 chars = WPA-PSK; and, as an inference from the format-only validation, the value is not
+derivable from the network capture alone — a different reason than first suspected.
 
 **This rules out** the original working theory (that this credential gates TCP/10123). With it
 ruled out, and content/timing/source-IP/TCP-options/L2-MAC-identity/device-freshness all also

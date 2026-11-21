@@ -1,4 +1,4 @@
-# GM Infotainment Automotive Audio Architecture
+# Automotive Audio Architecture
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -22,7 +22,7 @@
 
 ## Android Automotive Audio Overview
 
-This system implements the Android Automotive OS (AAOS) multi-zone audio architecture, providing dedicated audio buses for different audio contexts. This enables sophisticated audio mixing and ducking managed by an external DSP/amplifier.
+This system implements the Android Automotive OS (AAOS) multi-zone audio architecture, with dedicated audio buses per audio context. Mixing and ducking are managed by an external DSP/amplifier.
 
 ---
 

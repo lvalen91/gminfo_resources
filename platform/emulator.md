@@ -1,10 +1,10 @@
-# Y181 Silverado gminfo37 AAOS in the Android emulator
+# Y181 in the Android Emulator
 
 The real Y181 GM `system`/`product` (Android 12 / SDK 32, `W231E-Y181.3.2`) **boots to a working,
 theme-matched Silverado home screen in the x86_64 Android emulator** (goldfish/ranchu), cold-boot
-reproducible. Done 2026-09-26 on an Intel Mac Pro (x86_64/HVF).
+reproducible. Built 2026-09-26 on an Intel Mac Pro (x86_64/HVF).
 
-**The full build tree, scripts, screenshots and blow-by-blow are in the `/Volumes` research tree, not
+**The full build tree, scripts, screenshots and detailed logs are in the `/Volumes` research tree, not
 here** (large binaries): `GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/` — `README.md` (the recipe),
 `hy/` (rebuild.sh/boot.sh/mkdisk.py + `sys_add`/`vendor_add` cmds + the HIDL VHAL-proxy + powermode
 stand-in), `relay/` (`status.md` BOOT/THEME board, `SUMMARY.md`, screenshots incl. `y181_themed_06.png`
@@ -15,7 +15,7 @@ method + the CT5-vs-Y181 delta table: `GM_research/aaos/gm_aaos/EMULATOR_PLAYBOO
 GM `system`/`product` **as-is** on Google's **android-32** goldfish kernel + vendor + vbmeta +
 system_dlkm, packed into an LP `super` (`mkdisk.py`; Y181 is static A/B, no super) [qualified 2026-11-12: this describes the emulator disk layout only; the live Y181.3.2 radio's update engine reads `/dev/block/by-name/super` and sets `ro.boot.dynamic_partitions=true` — see `boot_chain.md` partition-layout note]. GM's real vendor
 firmware (Intel/GHS) can't boot on **goldfish/ranchu specifically** — that backend is virtio-mmio and
-the wrong machine type (see Kernel characterization + portability below) — so it's a source only here. Blockers solved,
+the wrong machine type (see Kernel characterization + portability below) — so it is used as a file source only. Blockers and their fixes,
 in boot order:
 Google `vbmeta_dis`; **swap GM `/system` VINTF manifest for Google's** (GM declared HIDL keymaster@3.0 +
 an A/B `IBootControl` goldfish can't serve — the bootloop cause); Google userdebug `init`;
@@ -28,9 +28,9 @@ shipped `CalSets.db` (HIDL @1.0, x86_64, no stand-in needed); dummy **`vlan5`@19
 
 ## Kernel characterization + portability (2026-09-27)
 
-Extracted and analyzed the real Y181B (gminfo37 CSM) boot image from the firmware update package,
+Source: the real Y181B (gminfo37 CSM) boot image extracted from the firmware update package,
 cross-checked byte-identical against the live device's own `.config`. Key facts, refining the "can't
-boot on goldfish" framing above:
+boot on goldfish" statement above:
 
 - **`CONFIG_PARAVIRT` is NOT set.** `CONFIG_HYPERVISOR_GUEST=y` only enables optional detection — no
   `KVM_GUEST`/`XEN`/`HYPERV`/`PVH`/`JAILHOUSE_GUEST`. Core MMU/timekeeping/IRQ/scheduling is bare-metal
@@ -45,26 +45,25 @@ boot on goldfish" framing above:
   `VIRTIO_BALLOON`. Absence of `VIRTIO_MMIO` means this kernel is **incompatible with the
   goldfish/ranchu AVD backend** by construction, independent of GHS. `CONFIG_E1000`/`E1000E=y` and
   `DRM_BOCHS=y` (alongside `DRM_I915=y`) are both compiled in.
-- **MILESTONE — CONFIRMED FULL BOOT TO HOME SCREEN (2026-09-27, supersedes the earlier "reaches
+- **Real-kernel full boot to home screen (2026-09-27, supersedes the earlier "reaches
   second-stage init, blocked on SELinux/vold-failed" interim status):** the real GM Y181B kernel (ACK
-  4.19.305 x86_64, not goldfish) now boots **autonomously** (no manual intervention) to a fully
+  4.19.305 x86_64, not goldfish) boots **autonomously** (no manual intervention) to a fully
   rendered, themed AAOS home screen on plain `qemu-system-x86_64` (q35, `-accel hvf`, virtio-blk-pci,
   e1000e), isolated from the goldfish AVD (separate process, port 5560 vs 5558, workdir
   `~/gm_emu/realk/`), in ~4 minutes cold boot. Reproduced twice (a manual-assisted first pass, then a
-  clean hands-off autoboot) with matching screencaps at different timestamps, confirming
-  reproducibility. Verified live via qemu screendump + guest shell, not build-only. **This build boots
+  hands-off autoboot) with matching screencaps at different timestamps. Verified live via qemu
+  screendump + guest shell. **This build boots
   under `androidboot.selinux=permissive enforcing=0`** (confirmed live: `ps` on the running qemu process
   + the boot's own `serial.log` kernel-cmdline line) — the "SELinux ENFORCING" fidelity-table row and the
   Un-stub roadmap's enforcing-mode achievement below apply to the **goldfish hybrid only**; enforcing has
   not yet been ported to this real-kernel build. GHS is confirmed a
   *service-layer* blocker (specific vendor daemons/HALs stay dead without it), not a *boot-layer* one.
-  All four previously-inferred risk points are directly confirmed: GHS/i915/IPU4 graceful degrade (no
+  All four previously-inferred risk points are confirmed: GHS/i915/IPU4 graceful degrade (no
   panic; `CONFIG_GHS_*` probes fail cleanly, e.g. repeated `Unable to open file: /dev/ghs/emmc-health`;
   `CONFIG_PARAVIRT` confirmed unset at runtime — bare-metal VT-x boot), AVB verity-off path works,
   boot-control (`androidboot.slot_suffix=_a`+`slotselect`) resolves partitions correctly with no GHS VMM
   bootctrl, and TSC/timebase needs no override (`tsc: Refined TSC clocksource calibration: 2693.33 MHz`
-  → `Switched to clocksource tsc`). Two assumptions from the original plan were proven wrong and
-  corrected: the extracted ACPI SSDT (`ssdt_android.aml`) loads into ACPI fine but does **not** work as
+  → `Switched to clocksource tsc`). Two assumptions from the original plan were wrong: the extracted ACPI SSDT (`ssdt_android.aml`) loads into ACPI fine but does **not** work as
   a DT-fstab source (`fs_mgr`'s `ReadFstabFromDt()` fails — its nested node layout doesn't match this
   platform's flat `_DSD` properties); the actual working fix is patching the ramdisk's plain-text
   first-stage fstab (`first_stage_ramdisk/fstab.full_gminfo37_gb`) directly, dropping `logical`/`avb`
@@ -72,33 +71,31 @@ boot on goldfish" framing above:
   vold exists; other partitions keep their plain `/dev/block/by-name/...` path unchanged) at the PCI-scoped
   `/dev/block/pci/pci0000:00/0000:00:1c.0/by-name/<partition>`
   path with `slotselect` — the flat `/dev/block/by-name/...` path is never created by first-stage init
-  on this kernel. New hardware-fidelity fact: vendor `file_contexts` labels `ttyS0` as
+  on this kernel. Hardware-fidelity fact: vendor `file_contexts` labels `ttyS0` as
   `bluetooth_serial_device` and `ttyS1` as `ipc_serial_device` (confirming ttyS1 as the real VIP/libipc
   channel by SELinux label, not just convention) — the console must be on `ttyS2`+ (`serial_device`) or
   SELinux denies the write; `ttyS1` is reserved for IPCServer's real VIP serial link
   (`/vendor/etc/ipc4.cfg`) and must not be repurposed. The SELinux-enforcing/`vold-failed` reboot loop
-  that previously stopped the boot in second stage is now resolved as part of reaching the home screen
-  (see fixes below); **kernel/vendor-ABI portability is now empirically proven at full-boot fidelity,
-  not just theoretical**. Artifacts (`run.sh`, `mkstatic.py`, `patch_cpio.py`, `ssdt_noavb.aml`/`.dsl`,
+  that previously stopped the boot in second stage is resolved as part of reaching the home screen
+  (see fixes below); **kernel/vendor-ABI
+  portability is demonstrated at full-boot fidelity**. Artifacts (`run.sh`, `mkstatic.py`, `patch_cpio.py`, `ssdt_noavb.aml`/`.dsl`,
   `fstab.patched`, `serial.log`) preserved to
   `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/realk/`;
   full working tree (incl. the 6GB `gm.img`, not copied off) remains on the Mac Pro at
   `~/gm_emu/realk/`. Hardware keymaster/attestation/RPMB (Trusty+GHS) and real Harman AVB audio remain
-  hard blockers either way, same as today's stubs. See `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`
+  hard blockers either way, as with the current stubs. See `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`
   Appendix G for the full per-dependency portability table.
 
 ### VHAL — native, no shim needed (real-kernel build)
 
-The major fidelity win over the goldfish hybrid: on the real-kernel build, VHAL **registers natively**,
-with **no `libipc_shim` needed at all**. The real IPCServer (the userspace VIP-link daemon) runs and
+On the real-kernel build, VHAL **registers natively** with **no `libipc_shim`**. The real IPCServer (the userspace VIP-link daemon) runs and
 sets `vendor.modules.ipcserver.ready`; `android.hardware.automotive.vehicle@2.0-service-gm` starts for
 real and appears in `lshal` as `IVehicle/default`. CarService has 34 real clients subscribed to
 standard properties (gear, speed, parking brake, etc.), and the driving-state service correctly derives
-PARKED from those real property values. This is a genuine architectural improvement over the goldfish
-hybrid, which needs `libipc_shim` (a Unix-socket stand-in, see the Un-stub roadmap above) for the same
-VHAL binary — porting that shim here would have been a regression, since the real IPCServer link already
-works natively. **Caveat:** raw property value reads via `cmd car_service get-property-value` are
-refused on this user build, so this wasn't independently spot-read beyond CarService's own internal
+PARKED from those real property values. The goldfish hybrid, by contrast, needs `libipc_shim` (a
+Unix-socket stand-in, see the Un-stub roadmap below) for the same VHAL binary. The shim is not ported
+here because the real IPCServer link already works natively. **Caveat:** raw property value reads via `cmd car_service get-property-value` are
+refused on this user build, so values were not spot-read beyond CarService's own internal
 state.
 
 ### Graphics stack — software rendering (first pass; later superseded by virgl GPU acceleration)
@@ -114,9 +111,8 @@ on the W6900X): SurfaceFlinger reports `virgl, OpenGL ES 3.0 Mesa 20.3.4` at 240
 gone. SwiftShader (now `realk-swfb`) remains the software fallback. See `~/gm_emu/realk/README.md`
 and `~/gm_emu/gpu_research/`.)**
 
-The original software-rendering bring-up was a genuinely hard problem, solved from first principles
-under `~/gm_emu/realk/gfx/` with the NDK + AOSP
-VNDK v32 headers/libs (matching `ro.vndk.version=32`). **Root cause:** GM's stock vendor stack
+The original software-rendering bring-up was built from scratch under `~/gm_emu/realk/gfx/` with the
+NDK + AOSP VNDK v32 headers/libs (matching `ro.vndk.version=32`). **Root cause:** GM's stock vendor stack
 (hwcomposer, Mesa, minigbm) is Intel-GPU-only with no software fallback; Android 12's
 separate-allocator-process model breaks GM's gralloc (its buffers carry a memory address from the
 allocating process, which doesn't survive being allocated in a different process); the kernel's
@@ -168,7 +164,7 @@ the full kernel rebuild — see the note above). Solution:
 
 ### Visual/calibration parity gap vs the goldfish hybrid — next step
 
-Both builds were booted this session for comparison. The real-kernel home screen shows "Guest" (not
+Comparison of both builds (booted for the comparison). The real-kernel home screen shows "Guest" (not
 "Driver"), a RED accent line (see brand/cal namespace note above), NO CardView analog-clock widget
 panel, a stock/generic AAOS tile set (Audio/Maps/Phone/Google Assistant/Play Store/Android
 Auto/Apple CarPlay/Climate) rather than the goldfish hybrid's curated Silverado-specific set
@@ -176,24 +172,23 @@ Auto/Apple CarPlay/Climate) rather than the goldfish hybrid's curated Silverado-
 shows `--` instead of a live value. Root cause for ALL of these: the extensive RPO/`CalSets.db`
 calibration-matching and GAS-tile-hiding work already done on the goldfish hybrid (see "Matching the
 real Silverado UI" and "Fidelity" sections above) has **not yet been re-applied to this real-kernel
-image**. This is a well-scoped, mechanical follow-up (re-edit `CalSets.db`, port the tile-hiding
-launcher-component-disable technique, port an equivalent VHAL temperature feeder), not a new research
-problem — the next concrete fidelity-parity step for the real-kernel build.
+image**. Remaining work to reach parity (no new research needed): re-edit `CalSets.db`, port the tile-hiding
+launcher-component-disable technique, and port an equivalent VHAL temperature feeder.
 
 ### Logcat comparative analysis (2026-09-27, both instances live at the same point in time)
 
 **Goldfish hybrid:** only 2 FATAL/tombstone/ANR hits in the whole buffer; the "denied" noise present is
-almost entirely artifacts of manual test commands run during this session (ipcshim/adbd/logcat
-permission checks triggered by hand), not organic system misbehavior. Zero native process crashes.
+almost entirely artifacts of manual test commands (ipcshim/adbd/logcat
+permission checks triggered by hand), not system misbehavior. Zero native process crashes.
 
-**Real-kernel build (same boot session as the home-screen milestone above):** noisier, for an
-explicable reason — real vendor daemons running for the first time against no backing hardware/VIP.
+**Real-kernel build (same boot session as the real-kernel home-screen boot above):** noisier, because
+real vendor daemons run against no backing hardware/VIP.
 Findings, ranked by volume:
 
-- **`CarAppSignal` (9,901 hits, by far the largest single tag) is a FALSE ALARM, not a defect** — it's
-  `CarPropertyManager` throwing its normal, expected `PropertyNotAvailableException` ("Car is not
-  connected!") while a UI component polls a vehicle property before VHAL/CarService fully stabilizes.
-  Noisy but benign; do not report as a bug in future passes over this log.
+- **`CarAppSignal` (9,901 hits, the largest single tag) is benign, not a defect** — it is
+  `CarPropertyManager` throwing its expected `PropertyNotAvailableException` ("Car is not
+  connected!") while a UI component polls a vehicle property before VHAL/CarService stabilizes.
+  Not a bug; exclude from future passes over this log.
 - **`TunerCommon`** (~17K combined E+W) — the AM/FM tuner's GPIO driver (`CPosixGpio[460]::getState()`)
   spinning against a nonexistent `/sys/class/gpio/gpio460`, its Dirana3 watchdog logging "unexpected
   GPIO state" continuously. Expected — no real tuner hardware.
@@ -202,20 +197,19 @@ Findings, ranked by volume:
   window). Expected — no real Ethernet switch.
 - **`GMVHAL.POWER`** (~2,358 combined E+W) — "Remote Alarm service is not ready" / `getAlarms`
   transaction failed / `doCancelMaxSuspendAlarm` retry every 1000ms. This is the EXACT SAME issue the
-  goldfish hybrid hit before being fixed by the `libpal_tod.so` RTC stub (see "RUN power state blocked
-  by an RTC dependency — fixed" above) — that fix has **not yet been ported** to the real-kernel build.
-  A known, already-solved problem waiting to be reapplied, not a new one.
+  goldfish hybrid had, fixed there by the `libpal_tod.so` RTC stub (see "RUN power state blocked
+  by an RTC dependency — fixed" below) — that fix has **not yet been ported** to the real-kernel build.
 - **`pal_calibrations`** — "Timeout is expired in IPC Calibrations channel, repeat waiting" — same root
   cause as the IPCServer issue below (no VIP peer).
 - **`HarmanAudioControl.Plugin`/`pulseaudio`** — connection failures ("hacs connection was not created
   successfully"), consistent with the audio stack being only partially wired on this build so far.
 - **IPCServer itself** logs `Uframe timer expired` / `Sending Uframe RESET` repeatedly — this IS the
-  ~100%-CPU-spin-seeking-the-missing-VIP issue already flagged as an open item by the boot work; the
-  logcat confirms it's a continuous retry/reset loop, not a one-off.
-- **"38 native crash/tombstone events per boot" — TRIAGED AND FIXED (2026-09-27).** The earlier
-  reading of these as 38 genuine crashes was wrong. The tombstones, read directly (32-slot
+  ~100%-CPU spin seeking the missing VIP, an open item from the boot work; the
+  logcat shows a continuous retry/reset loop, not a one-off.
+- **"38 native crash/tombstone events per boot" — triaged and fixed (2026-09-27).** The earlier
+  reading of these as 38 genuine crashes was wrong. The tombstones (32-slot
   `/data/tombstones` ring via the root shell, plus 212 DropBox `SYSTEM_TOMBSTONE` entries), show that
-  a clean cold boot has **only one real native crash class, repeated 6-7 times**. The rest are
+  a clean cold boot has **one real native crash class, repeated 6-7 times**. The rest are
   replayed old crashes. Measured on a clean overlay cold boot: 43 `GMCRASHLOG: CRASH` events = 32
   replays (all logged before the first real crash) + 6 real Bluetooth aborts, each logged twice
   (`TOMBSTONE` + `JAVA_TOMBSTONE`).
@@ -275,7 +269,7 @@ software/UI/RE emulator, not a functional truck.
 
 | Layer | Real radio | Emulator |
 |---|---|---|
-| SoC/kernel/vendor | Intel Apollo Lake + GM vendor firmware | Google goldfish android-32 kernel/vendor (real Y181B kernel (4.19.305) **confirmed booting autonomously to a full themed AAOS home screen** on plain qemu-system-x86_64/q35 in a separate isolated process, ~4min cold boot, reproduced twice — see Kernel characterization + the MILESTONE/VHAL/graphics subsections above) |
+| SoC/kernel/vendor | Intel Apollo Lake + GM vendor firmware | Google goldfish android-32 kernel/vendor (real Y181B kernel (4.19.305) **confirmed booting autonomously to a full themed AAOS home screen** on plain qemu-system-x86_64/q35 in a separate isolated process, ~4min cold boot, reproduced twice — see Kernel characterization + the real-kernel boot/VHAL/graphics subsections above) |
 | Hypervisor/boot | VIP RH850 → CSE → ABL → **GHS INTEGRITY** → guest | none — Android on QEMU |
 | VHAL | GM `@2.0-service-gm` on the **live CAN bus** | **GM's real `@2.0-service-gm`** via the libipc shim (540 configs, 486 GM; 141 props shared w/ the real radio) — no live bus behind it; **frame injection into the shim now drives a subset live** (temp/speed/ignition/GPS — see Un-stub roadmap) |
 | Powermode/RTC/location | real GM daemons on the VCU | **GM's real `plmanager`/`rtcd`/`gmlocation`** run via libipc shim |
@@ -284,7 +278,7 @@ software/UI/RE emulator, not a functional truck.
 | Display/audio | FALD + touch + cluster/HUD; Bose/AVB | GPU-accelerated as of 2026-10-01 — goldfish Metal via ANGLE (2.46 ms/frame), real-kernel **virgl** (ANGLE→Metal on the W6900X, GLES 3.0, Maps ~24 fps), SwiftShader kept as fallback; one display; goldfish `audio@6.0` (real is `@5.0-harman` on AVB — must stay stubbed) |
 | Security | locked, AVB+SELinux **enforcing**, no root | AVB-off, **SELinux ENFORCING** (matches the radio's posture; 0–2 stock-AOSP MLS denials/boot vs 0 on the radio), root adb (deliberate — enables RE) |
 
-**Achieved (2026-09-26, FID-01→16 + RPO-01→03):** GM's real vendor daemons (VHAL/powermode/rtc/location/
+**Status (2026-09-26, FID-01→16 + RPO-01→03):** GM's real vendor daemons (VHAL/powermode/rtc/location/
 calibrations) run in their proper GM SELinux domains with zero daemon denials, under **SELinux enforcing**,
 RPO-matched to a 2024 Silverado 2500HD LTZ (Trailering 4th card, LTZ trim). Stable reproducible cold boot
 (`hy/fid/verify.sh`); the Java VHAL/powermode stubs are retired. **Still faked/absent** (no vehicle bus):
@@ -331,8 +325,8 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   `setHighRateCallback`=tx2, callback `INavsensCallback::gnssLocationCB(GNSSLocation, GNSSUTCTime)`=tx1 —
   and the `GNSSLocation` struct layout (`mLatitude` @0x00, `mLongitude` @0x08, both double, struct size
   0x78/120 bytes; an initial reversed-offset guess corrupted latitude and was corrected). Implemented a Java
-  `app_process` HIDL service (`Navsens.java`, mirroring the CT5 emulator's `LocD.java`) — no native
-  C++ HIDL build tree available on this Mac, so this is a practical Java substitute — streaming
+  `app_process` HIDL service (`Navsens.java`, mirroring the CT5 emulator's `LocD.java`; Java substitute
+  because no native C++ HIDL build tree is available on this Mac) streaming
   `gnssLocationCB` at 1Hz. **Measured (live device):** `lshal` shows `INavsens/default` registered;
   gmlocation logs `connectNavsens` → `Connection to navsens HAL succeeded`; the injected fix (Central
   Park) is received and cached by gmlocation's own `NavsensCallback::gnssLocationCB` handler. Cold-boot
@@ -350,7 +344,7 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/navsens/`;
   live on the Mac Pro at `~/gm_emu/hy/navsens/`, wired into `~/gm_emu/hy/emu_integration/scenario.sh`.
   **`vehicleaudiocontrol`
-  → still absent, next cheap net-new add.** Both are calserviced-HIDL clients with no `/dev/ipc` dep (verify vehicleaudiocontrol's
+  → still absent; next low-effort addition.** Both are calserviced-HIDL clients with no `/dev/ipc` dep (verify vehicleaudiocontrol's
   import table before adding).
 - **`calserviced` → already GM-real** (libipc only for the override path).
 - **Audio HAL → stays stubbed permanently.** Real = `vendor.hardware.audio@5.0-harman-custom-service` on a real
@@ -362,7 +356,7 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   headless SSH: the Mac Pro has no hardware audio input (a BlackHole 2ch virtual loopback was installed to give
   it one), and macOS mic-privacy (TCC) denies mic to SSH-launched processes and can't be granted over SSH.
   Closing it needs a GUI/Screen-Sharing console session on the Mac Pro to grant the emulator mic permission
-  (same as how CT5's mic was closed) — not an emulator defect.
+  (as was done for CT5's mic). Not an emulator defect.
 - **Memory approximation; touch parity.** Emulator RAM is configured as 6144M;
   this is not measured guest-memory-map parity. **Corrected 2026-11-12:** the
   Y181B recovery export exposes **5743.55859375 MiB E820 usable**, with an early
@@ -392,7 +386,7 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   `tod_pal_*` symbols; source `hy/ipc/src/libpal_tod_shim.c`) that fires rtcd's ready callback with 1;
   bind-mounted over `/vendor/lib64/libpal_tod.so`, rtcd restarted. Result: `onVehiclePowerMode: Off(0)→Run(2)`,
   RTC errors zero. Durable via `scenario.sh` (see Durability below).
-- **SELinux enforcing → ACHIEVED [DONE].** Real GM domains `gm_vehicle_hal`/`plmanager`/`rtcd`/`gmlocation`/
+- **SELinux enforcing → enabled [DONE].** Real GM domains `gm_vehicle_hal`/`plmanager`/`rtcd`/`gmlocation`/
   `calserviced` derived from `vendor_sepolicy.cil` (v**32.0**; `file_contexts` from `emu/hy/sepol/gm_vend/`), glue
   domains for the shim; init recompiles CIL each boot. **6 consecutive `-wipe-data` cold boots all `Enforcing`,
   boot_completed, 0 GM-daemon denials**; the only enforced denials are 0–2/boot of the same **stock-AOSP MLS

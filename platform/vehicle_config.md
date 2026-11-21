@@ -1,4 +1,4 @@
-# Vehicle Configuration: Donor Vehicle, RPO to Calibration Map, CalSets.db, Props
+# Vehicle Configuration
 
 Scope: identity and option set of the truck the bench IOK radio came from; the RPO -> calibration/prop mapping; CalSets.db facts; system properties, `hw.conf`, vehicle ID; Android services/VHAL list; behaviour when the radio is removed; CalDef/VIP-calibration and UDS tables.
 Used to set emulator calibrations to this truck's real feature set (see [`emulator.md`](emulator.md)).
@@ -135,7 +135,7 @@ Kernel `4.19.305-240125T145315Z-gf1edde901aa7` x86_64, `ro.build.version.securit
 
 Source: `recovery/last_log*` line `Value: 0xB1020260  Variant: 177 Global: 0 Region: 0 Project: 2 HD: 0 AMP: 1 SXM: 1 DAB: 0 GPS: 0 ...` and `HW variant is 0xB1020260` [read]. Consistent with the donor truck's U2K (SiriusXM) and UQA (branded amp) RPOs [inferred]. Bit layout (nibble-to-field) is taken from the decoder's printout, not reverse-engineered.
 
-**[ONLINE RESEARCH 2026-11-21] No public data found for `persist.vendor.hw.variant` or the value `0xB1020260`.** Searches covering "Harman hw.variant 0xB1020260", "persist.vendor.hw.variant automotive", and "Samsung Harman infotainment hardware variant bitmask" returned no indexed documentation. The decoder output in the recovery log (above) is the only available decode of this value and its field layout is from Harman/GM internal tooling.
+**[ONLINE RESEARCH 2026-11-21] No public documentation found for `persist.vendor.hw.variant` or the value `0xB1020260`** (searches: "Harman hw.variant 0xB1020260", "persist.vendor.hw.variant automotive", "Samsung Harman infotainment hardware variant bitmask"). The recovery-log decoder output above is the only available decode; its field layout comes from Harman/GM internal tooling.
 
 ### GHS-dependent vs Android-dependent vehicle functions
 - **GHS-dependent (work without Android, at hypervisor/VIP level):** turn-signal chimes, door chimes, seatbelt chimes, reverse backup camera, 360 surround view.

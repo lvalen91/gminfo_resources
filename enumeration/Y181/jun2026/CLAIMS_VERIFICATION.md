@@ -1,4 +1,4 @@
-# Live ADB Claim Verification — Y181 (Jun 2026 datapoint)
+# Y181 Claim Verification
 
 **Device:** gminfo37, fingerprint `gm/full_gminfo37_gb/gminfo37:12/W231E-Y181.3.2-SIHM22B-499.3/231`
 **Build date:** Tue Jul 22 2025 (same Y181.3.2 firmware as the `apr2026` dump — this is a fresh *runtime* snapshot, not new firmware).
@@ -33,7 +33,7 @@
 | Item | Prior status | Live result |
 |---|---|---|
 | GPU "HD 505 / Mesa 21.1.5" | unverifiable, no GL dump | **Confirmed** — `Mesa Intel(R) HD Graphics 505 (APL 3), OpenGL ES 3.2 Mesa 21.1.5 (git-4bdd81676b)` + git hash |
-| Touch controller I²C **0x4B** | unverifiable, no address grid | **Confirmed** — `/sys/bus/i2c/devices/7-004b` bound; bonus addrs on bus 7: `0x0c`, `0x12`, `0x28` |
+| Touch controller I²C **0x4B** | unverifiable, no address grid | **Confirmed** — `/sys/bus/i2c/devices/7-004b` bound; additional addrs on bus 7: `0x0c`, `0x12`, `0x28` |
 | Virtualized guest (GHS hypervisor) | inferred from RE | **Confirmed live** — guest block device is `vda` (virtio-blk), no `mmcblk*`; storage is behind the hypervisor |
 
 ## C. DISCREPANCIES — live device REFUTES current repo text (review needed)
@@ -67,4 +67,4 @@
 
 ## F. Vulkan — RESOLVED (was 1.0.64, is 1.1.0)
 
-The raw value `4198400` appears in **both** the repo dump and live `vkjson`. It decodes to `0x401000` = `VK_MAKE_VERSION(1,1,0)` = **Vulkan 1.1.0**. The repo's "1.0.64" label was a decode slip (1.0.64 = `4194368` = `0x400040`; the doc even mis-wrote `4198400 = 0x400040`). Corrected in `video/README.md`, `video/hardware_rendering.md`, `analysis/platform_faq.md`, and `VERIFICATION.md`. Runtime usage still nil (GLES 3.2 backend only).
+The raw value `4198400` appears in **both** the repo dump and live `vkjson`. It decodes to `0x401000` = `VK_MAKE_VERSION(1,1,0)` = **Vulkan 1.1.0**. The repo's "1.0.64" label was a decode slip (1.0.64 = `4194368` = `0x400040`; the doc mis-wrote `4198400 = 0x400040`). Corrected in `video/README.md`, `video/hardware_rendering.md`, `analysis/platform_faq.md`, and `VERIFICATION.md`. Runtime usage still nil (GLES 3.2 backend only).

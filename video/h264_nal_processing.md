@@ -1,4 +1,4 @@
-# GM AAOS H.264 NAL Unit Processing
+# H.264 NAL Processing
 
 **Device:** GM Info 3.7 (gminfo37)
 **Decoder:** CINEMO NVDEC Software Decoder (libNmeVideoSW.so)

@@ -119,7 +119,7 @@ historical MEC readings and unresolved registration behavior are maintained in
 | [`platform/vip_ipc_ghs.md`](platform/vip_ipc_ghs.md) | RH850 VIP MCU, VIP-SoC IPC channel map, GHS INTEGRITY hypervisor, `/dev/ghs` |
 | [`platform/partitions_storage.md`](platform/partitions_storage.md) | eMMC/GPT map, `super`/dynamic partitions (measured), first-stage mounts |
 | [`platform/elk_recovery.md`](platform/elk_recovery.md) | ELK/kernelflinger, recovery/fastbootd, Boot Guard/TXE forensics, native-Linux probe bring-up |
-| [`platform/eeprom_i2c_security.md`](platform/eeprom_i2c_security.md) | EEPROM memory map and security flags, I2C-bus permission table, local hardware attack surface |
+| [`platform/eeprom_i2c_security.md`](platform/eeprom_i2c_security.md) | Pointer into `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (EEPROM memory map, security flags, I2C-bus permissions, local hardware attack surface) |
 | [`platform/avb_audio_transport.md`](platform/avb_audio_transport.md) | gPTP, AVTP AAF streams on VLAN 2, usage-to-bus mapping, firmware audio stack |
 | [`platform/can_bench_experiments.md`](platform/can_bench_experiments.md) | CAN bench log: calibration writes, ADB-enable and keep-alive campaign, boot/door/wake behaviour |
 | [`platform/gmsystemui_app_gating.md`](platform/gmsystemui_app_gating.md) | GMSystemUI WhiteList/predicates, CarPlay vs AA asymmetry, display-calibration gate |
@@ -134,7 +134,7 @@ historical MEC readings and unresolved registration behavior are maintained in
 | [`enumeration/Y175/Y175_VIP.log`](enumeration/Y175/Y175_VIP.log) | VIP UART boot log (IPC timing, ProtoKey, SBAT) |
 | [`research/README.md`](research/README.md) | Top-level index of the full GM AAOS research corpus |
 | [`eeprom/EEPROM_Analysis_Report.md`](eeprom/EEPROM_Analysis_Report.md) | Full 8 KB EEPROM map: UI flags, checksums, calibration, factory-reset triggers |
-| [`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`](eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md) | 10 undocumented flag candidates, CalGroup marker rotation, VIP 0xb67d0 RE |
+| [`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`](eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md) | Retired (2026-11-21): pointer to `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` and `eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`; raw data in ELA §13 |
 | [`research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md`](research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md) | Three-way VIP security-fn diff (Y175/Y177/Y181): full ~906B in all builds, no stub |
 | [`research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) | GHS INTEGRITY hypervisor, AB0 rollback, VMM analysis |
 | [`research/GHS_FILE_MAP_85098662.md`](research/GHS_FILE_MAP_85098662.md) | 100% edge-to-edge byte map of GHS SOC_HOSTOS `85098662` (14,929,956 B, 0 gaps): confirms GHS's USB role is mediated xHCI/xDCI passthrough only (no `dabridge`/role-switch/gadget logic), supplies the guest `OTGD` ACPI surface, and the only unread bytes are a 768 B RSA key+signature tail (no hidden/compressed code) |

@@ -1,4 +1,4 @@
-# Reading note: terminology in this directory
+# Terminology Guide
 
 This tree is automotive engineering and service reference material for a vehicle the owner
 lawfully owns and works on (GM infotainment / body-control / diagnostics, owner's bench

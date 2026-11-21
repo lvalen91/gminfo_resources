@@ -1,4 +1,4 @@
-# EEPROM Layout & Security-Flag Audit — ST M24C64 Config EEPROM
+# EEPROM Layout Audit
 
 **Platform:** GM IOK/Harman INFO3.7-3.8 CSM. ST Microelectronics M24C64 (64-Kbit/8KB, I2C, TSSOP8,
 typical address `0x50`), read by the Renesas RH850/F1K VIP MCU (`R7F7015873AFP`). VIP firmware
@@ -32,10 +32,14 @@ descriptor-table structure the firmware uses.
   that doc is "how to test it").
 - Platform's `../platform/eeprom_i2c_security.md` is meant to keep only a one-line pointer to this
   doc for the deep RE/attack-surface content — the forensic depth here is research-only, not
-  platform-owner material. **Known discrepancy:** as of this pass, `eeprom_i2c_security.md:25`
-  still carries the substantive SBI-reset mechanism (the `FUN_ram_000c6564` bulk-restore finding,
-  §2 above) rather than a pointer back here; that platform-tree file is outside this reorg's edit
-  scope, so the duplication is flagged, not fixed, in this pass.
+  platform-owner material. **Fixed 2026-11-21:** the prior pass had left `eeprom_i2c_security.md`
+  carrying the substantive SBI-reset mechanism (the `FUN_ram_000c6564` bulk-restore finding, §2
+  above) and a full prose duplicate of the EEPROM memory map / I2C / GPIO / serial content instead
+  of a pointer back here. That file is now trimmed to a short pointer plus its own live `[C]`
+  capture citations; every fact it previously carried that was not already present here has been
+  folded into this doc (§2, §5.1, §5.2, §5.4, §7, §8, §8.1) — see those sections and this doc's
+  History (§12, 2026-11-21 entry) for what moved where. The duplication this note used to flag is
+  resolved.
 
 ## Evidence legend
 `[C]` confirmed (disassembly + CAN/empirical corroboration, or byte-exact match to an external
@@ -106,6 +110,21 @@ table (full account in §12 History, item 2026-10-15):**
   (an independent, VIP-$27-validator-side effect, not consumed by the ADB chain) `[C]`.
 - **Not proven:** that flipping the ADB SBI also opens the *calibration* `$27` SecurityAccess gate.
   They share the VIP/EEPROM anchor layer but no single flag has been shown to govern both — see §11.
+- **Marker-agnostic check, additional evidence (absorbed from platform doc, 2026-11-21):** an
+  ADB-enabled dump shows **both** `0x0440` and `0x0A80` (the marker bytes) flipped to
+  `5A FF 5A FF` alongside the data-byte flips. There are **zero code references to the literal
+  address `0x0A80`** in either VIP binary — the security check reads only the data byte
+  (`0x0A81`), marker-agnostic. This corroborates, rather than weakens, the "locate by offset, not
+  marker" conclusion above: the marker's co-occurring flip is an artifact of how the bulk
+  restore/write path touches the whole marker/data/marker record, not a separate hardcoded check
+  on the marker address `[I]` (inferred; the platform source gave no code evidence for this mechanism).
+- **Live Android security posture (`[C]` live-Y175 2026-10-05, absorbed from platform doc
+  2026-11-21):** on the unit captured, `ro.secure=1`, `ro.adb.secure=1`, `ro.debuggable=0`, and the
+  live adb shell is the normal uid 2000 (`u:r:shell:s0`) — i.e. this specific unit was captured in
+  **secured** operation (adb via the standard, certificate-gated path), not the SBI-bypass
+  (`is_secure_mode=1`, no-cert) path described above. The EEPROM/SBI bypass mechanism itself
+  remains established independently per the rest of this section; this note only characterizes
+  the posture of the one unit this particular capture pass examined.
 
 ## 3. VIP read/dispatch pipeline (CalGroup) — what static RE did and didn't find
 
@@ -198,9 +217,14 @@ in `vip_app.bin`. The value only changes via a **bulk restore-to-ROM-defaults** 
 behavior: a CRC/validity failure on the SBI CalGroup triggers a factory-default restore into the
 RAM shadow, which the CAL layer then persists back to EEPROM `[C]`. One gap remains unresolved:
 the precise trigger condition (power-on vs. a specific session/RoutineControl transition) — the
-re-init handler is reached via an unresolved computed jump `[U]`. (Platform's
-`../platform/eeprom_i2c_security.md` carries this mechanism too; this doc, not that one, is the
-canonical home — the two should not drift.)
+re-init handler is reached via an unresolved computed jump `[U]`. (This is the canonical home for
+this mechanism; `../platform/eeprom_i2c_security.md` no longer carries a prose duplicate — fixed
+2026-11-21, see §12 History.)
+
+- A previously-circulated claim that a specific calibration file (`85783460`) targets and resets
+  the SBI cells is **REFUTED** (2026-08): those bytes live inside a gzip-compressed CalOvride XML
+  stream, not an EEPROM address:value table. SBI values change only via the bulk
+  restore-to-ROM-defaults routine above, not a targeted cal payload.
 
 **Candidate SBI-carrying DIDs (read-attempt result, not a confirmed mapping):** four DIDs were
 probed for SBI content and all four failed in a read-only GCI session: `F0F4` ->
@@ -241,6 +265,7 @@ here, not struck through — see §12 History for what was dropped and why.
 | Address | Field | Evidence |
 |---|---|---|
 | 0x0000 | Boot complete flag, `0x69` marker + `0x01` data | `[I]` |
+| 0x0001 | Boot state byte (absorbed from platform doc, 2026-11-21): `0x00`=virgin, `0x01`=normal, `0xFF`=corrupted | `[U]` — unsourced in the originating doc, not independently byte-matched here |
 | 0x0020 | Secondary boot flag, `0x69` marker | `[I]` |
 | 0x0060-0x0397 | 822-byte region a firmware descriptor says is all-zero; actually reads a deterministic 9-bit-period "walking-zero" bit pattern | `[U]` — read-glitch vs. an actual EEPROM cell/row fault undetermined; re-dump on physical hardware recommended if this unit is accessible |
 | 0x03A0-0x03B1 | ECU-ID, 16 bytes, `0x69`-framed | `[C]` byte-exact vs SPSVCS.LOG `ECUID`, confirmed in two independent SPS sessions |
@@ -252,6 +277,10 @@ here, not struck through — see §12 History for what was dropped and why.
 | 0x0460-0x0465 | HW part number (`ssecuhn`), BE u32 `85086705` | `[C]` byte-exact vs SPSVCS.LOG `ssecuhn` — **not** "Radio/Audio Settings" as earlier docs guessed |
 | 0x0480 | A second part-number-shaped BE u32 (`84999439`) | `[U]` — not found in any available source log |
 | 0x04A0, 0x04C0 | ~~"IPC Security Config #1/#2"~~ — **retracted, not security flags** | `[C]` retraction: `[IPC_S]` is the IPC *serial-transport* HDLC log tag ("IFRAME Rx", "HDLC: CRC Failed"), not "IPC Security"; the cited 17/11 firmware xref counts do not reproduce (actual instruction-level refs: 2-3) — grep/byte-pattern noise, not semantic xrefs. Ordinary calibration-group bytes. |
+
+**0x0400-0x045F as a whole (absorbed from platform doc, 2026-11-21):** this range is the
+security-configuration region and is deliberately outside CRC protection — modifications within it
+are not detected by the (already not-boot-enforced, §8) CRC mechanism `[I]`.
 
 ### 5.3 Device identification / manufacturing (0x0500-0x06FF, plus 0x14A0)
 | Address | Field | Evidence |
@@ -269,7 +298,7 @@ here, not struck through — see §12 History for what was dropped and why.
 | Address | Field | Evidence |
 |---|---|---|
 | 0x0A00 | Structure base address — **not a flag** | `[C]` retraction of an earlier "871 xref" claim (fabricated/non-reproducible) |
-| **0x0A81** (markers 0x0A80/0x0A82) | **Backup SBI data byte** — 0xFF=bypass/0x00=locked | `[C]` — see §2 |
+| **0x0A81** (markers 0x0A80/0x0A82) | **Backup SBI data byte** — 0xFF=bypass/0x00=locked. Sample full-record values (absorbed from platform doc, 2026-11-21): stock/uninitialized = `FF FF FF`; ADB-bypass = `5A FF 5A FF`; post-Y181-reflash (re-locked) = `F0 00 F0` | `[C]` — see §2 |
 | 0x0A40, 0x0AC0, 0x0BE0 | ~~"Feature enable" / "late-region flag (danger zone)"~~ — **retracted** | `[C]` retraction: all three cells read all-`0xFF` (unwritten) in *both* stock and ADB-enabled dumps — no stored data at all, and the cited 28/14/24 xref counts do not reproduce. Not OTP, not a lock, not a flag. |
 | 0x0AA0, 0x0AE5 | Candidate trim/model byte pair (channel (b), §9) — HC=`0xF0`, LTZ=`0xC3`, stock=`0x69` | `[U]` unconfirmed bench hypothesis; not a clean verbatim 1/16 GMTrim-enum decode, possibly obfuscated. Weak independent corroboration: a separate stock-vs-ADB-enabled diff recorded `0x0AA0: 69 00 xx → C3 00 xx` ("frame type change") in a different dump pair — consistent with a non-security, unit-varying byte at this offset, not confirmation of the trim hypothesis. |
 | 0x0B00 | Feature structure base — **not a flag** | `[C]` retraction of an earlier "311 xref" claim |
@@ -312,6 +341,11 @@ and never individually tested: `0x0B80` (frame `0xF0`), `0x0BC0` (frame `0x69`),
 `0x69`) — "unknown feature" guesses with no code or empirical confirmation `[U]`. Not prioritized;
 most of this region's higher-confidence candidates from the same era (`0x04A0`/`0x04C0`/`0x0A40`/
 `0x0BE0`) are the ones retracted in §5.2/§5.4 above.
+
+Additional untested offsets, retired from `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` (folded in
+2026-11-21): `0x0040` ("Hardware revision marker"), `0x0C00` ("Unknown, ACTIVE in sample dump"),
+`0x1A00` ("Tertiary Security" — bypass value never specified, locked value `[M] 00 [M]`) — same
+status: no code or empirical confirmation `[U]`.
 
 ## 6. Checksums & integrity fields (0x16E0-0x1FFF)
 
@@ -389,6 +423,12 @@ The VIP_APP firmware carries a 183-entry, 12-byte-stride descriptor table at `0x
   research describes a 2-byte block-ID-first header. Tested against all 183 entries here: every
   `rel_addr` has high 16 bits `0x0000` — a flat address with no embedded block ID. Does not transfer to
   this unit.
+- **Candidate marker-byte "type" mapping (absorbed from platform doc, 2026-11-21):** a per-byte
+  type taxonomy was proposed for the four observed marker values — `0x5A`=Security, `0x69`=
+  Configuration, `0xF0`=Data, `0xC3`=Calibration. This is **unsourced/untested** in the originating
+  doc `[U]`; it is not confirmed against code and should not be treated as more than a naming
+  convention someone applied to the observed marker quartet. §2 records that marker values are not a fixed signature (they vary by unit and CalGroup). It is consistent with, but adds no
+  independent confirmation to, the marker-framing quartet finding below.
 - **SBI `0x00`/`0xFF` polarity is a cross-platform RH850 convention, not Harman-specific** — matches
   the Nissan Leaf RH850 Virgin status byte (RAM `0xFEDE0C03`, same `0x00`=locked/`0xFF`=bypass)
   documented in CVE-2025-32058 (Black Hat Asia 2025). The INC-protocol port map (base `0xc700`,
@@ -403,12 +443,22 @@ The VIP_APP firmware carries a 183-entry, 12-byte-stride descriptor table at `0x
 
 | Device | Permissions | Owner | Access |
 |---|---|---|---|
-| `/dev/i2c-0` | `crw-rw-rw-` | root:root | **WORLD READABLE/WRITABLE** |
-| `/dev/i2c-1` | `crw-rw-rw-` | root:root | **WORLD READABLE/WRITABLE** |
-| `/dev/i2c-2` | `crw-rw-rw-` | system | system access |
-| `/dev/i2c-3` | `crw-rw-rw-` | audioserver | audio access |
-| `/dev/i2c-4/5/6/8/9/10` | `crw-------` | root | root only |
-| `/dev/i2c-7` | `crw-rw----` | system | system access |
+| `/dev/i2c-0` | `crw-rw-rw-` | root:root | **WORLD READABLE/WRITABLE**; general purpose; candidate bus for the EEPROM (M24C64 at `0x50`) — **unconfirmed**, see the open question below `[U]` |
+| `/dev/i2c-1` | `crw-rw-rw-` | root:root | **WORLD READABLE/WRITABLE**; general purpose, ELMOS antenna controller |
+| `/dev/i2c-2` | `crw-rw-rw-` | system:system | system access; system bus |
+| `/dev/i2c-3` | `crw-rw-rw-` | audioserver:audioserver | audio access; TDF8532 codec control |
+| `/dev/i2c-4/5/6/8/9/10` | `crw-------` | root | root only; reserved |
+| `/dev/i2c-7` | `crw-rw----` | system | system access; Atmel maXTouch (`0x4B`) touchscreen |
+
+**SELinux labels and live confirmation (absorbed from platform doc, `[C]` live-Y175 2026-10-05,
+`dev_listing.txt`):** `i2c-0` `u:object_r:saturnhd_device:s0`; `i2c-1/2` `i2c_device`; `i2c-3`
+`dirana3_device`; `i2c-7` `display_panel` (**not** `i2c_device`, correcting some prior copies'
+implication). All of `i2c-0/1/2/3` confirmed mode `0666`; `i2c-4/5/6/8/9/10` confirmed
+`crw-------` root; `i2c-7` confirmed `crw-rw---- system`. **Additional device:** a faceplate
+controller at `0x12` sits on `i2c-7`, the same bus as the touchscreen; no GYRO/ACCEL sensors are
+present on this platform.
+
+**Live-capture limits:** the EEPROM-at-`0x50` contents, CRC-not-enforced, and SBI-flag claims in this document remain **UNVERIFIABLE-FROM-LIVE** — the originating disk-only audit did not (and must not) i2c-probe the live device. The `[C]` live-Y175 evidence in this document covers only device-node modes/labels, Android properties/shell context, and world-writable-node enumeration — not EEPROM contents or the VIP/MEC chain.
 
 **Open question, never closed:** which bus (if either world-accessible one) connects to the M24C64,
 and at what I2C address (candidate `0x50-0x57`) — raised independently by `VIP_CONTROL_ANALYSIS.txt`
@@ -448,6 +498,47 @@ mapping-the-structure goal, not a single-byte-flag goal.
 
 **Physical reference:** chip is located near the VIP MCU on the PCB; a Pomona-clip-class programmer
 (e.g. XGecu) is sufficient for offline read/write without a logic-analyzer tap.
+
+### 8.1 GPIO, serial, and kernel attack-surface findings (absorbed from platform doc, 2026-11-21)
+
+This subsection folds in the platform-tree doc's GPIO/serial/kernel findings for the DAC-level
+local hardware attack surface (I2C/GPIO/serial), which this doc previously did not cover. All
+builds examined (Y175/Y177/Y181) run SELinux **enforcing** — an earlier "Y177 permissive" premise
+is retracted; the DAC-level (file-mode) exposures below exist on all builds regardless of SELinux
+mode, which instead constrains which SELinux *domains* may reach them.
+
+**GPIO (MCU reset/boot-mode control, `gpio458/460/464/466`):** originally claimed world-writable,
+letting any user-space process force the VIP MCU into reset/bootloader mode. **REFUTED on
+captured evidence** (`[C]` live-Y175 2026-10-05): the GPIO char devices `/dev/gpiochip0-3` are
+`crw-------` root (0600) — root-only, not world-writable. The `gpio458/459/460/463/464/466`
+entries under `/sys/class/gpio/` are themselves **symlinks** (`lrwxrwxrwx`), and symlink mode bits
+are always `0777` with no access meaning. `world_writable.txt` enumerates exactly two
+world-writable nodes on the live unit — both stock memcg `cgroup.event_control` — and no GPIO
+path. Direct capture closed the remaining gap: `ls /sys/class/gpio/gpio{458,460,464,466}/` returns
+`Permission denied` to shell (uid 2000), and `export`/`unexport` read back as `?` (root-only) — the
+value/direction nodes are not stat-able, let alone writable, by a non-root process. A non-root
+process cannot toggle these pins; second-agent concurrence obtained 2026-10-05 (14-flip ledger).
+
+**IPC/Serial:**
+- `/dev/ttyS1` (1 Mbps, HDLC v16, 20 IPC channels to the VIP MCU — channel-count/speed detail
+  itself `[U]`/unverifiable-from-live): owner `root:root`, SELinux `ipc_serial_device` confirmed,
+  but mode is **`crw-------` (0600, root-only)** `[C]` live-Y175 2026-10-05 — **not**
+  world-accessible as an earlier pass had documented; the IPC link to the VIP is DAC-closed.
+- `/dev/ttyACM1`: `crw-rw-rw-` (0666, world-rw) confirmed, owner root, but SELinux label is
+  **`sxm_device`** (SiriusXM tuner serial) `[C]` live-Y175 2026-10-05 — an earlier "Debug UART"
+  label for this node is **REFUTED**. No `/dev/ttyACM0` is present on this unit.
+
+**Kernel exploitation surface (pointer only — owned by `../platform/security.md`'s Key CVEs
+section, not restated here):** unpatched-kernel exposure (CVE-2024-53104, -36971, -53150, -53197)
+tracks the build's kernel version/patch level, not SELinux mode; SELinux enforcing on all builds
+means MAC containment (neverallow rules) applies equally regardless of build. CAP_BPF plus SELinux
+domain restrictions apply to the BPF verifier bypass (CVE-2023-2163) on all builds.
+`CONFIG_SECURITY_YAMA` is not set, so ptrace scope is unrestricted at the YAMA layer on all builds;
+SELinux domain rules still apply on top of that.
+
+**Persistence:** EEPROM SBI state persistence is already covered in §2 (bulk restore-to-ROM-defaults
+path can re-lock the cells after re-validation) and `0x0B41`'s non-debug-mode disposition is
+covered in §5.4 — not restated here.
 
 ## 9. Trim/theme calibration channel (channel b) — SoC side, code-verified
 
@@ -565,7 +656,7 @@ states what changed and why; it replaces roughly a dozen repeated parenthetical 
 of being fixed once.
 
 - **2026-08-17** — Original audit assembled from 4 sources; heavy speculative "security flag" taxonomy
-  (0x0440/0x0A80 as fixed ADB addresses, 0x04A0/0x04C0/0x0A40/0x0BE0 as additional "security flags"
+  (0x0440/0x0A80 as fixed ADB addresses, 0x04A0/0x04C0/0x0A40/0x0BE0/0x1A00 as additional "security flags"
   with firmware xref counts).
 - **2026-08-25** — Code audit falsifies most of that taxonomy: xref counts (871/311/17/11/28/24) do not
   reproduce (actual instruction-level refs: 2-3); `[IPC_S]` is a serial-transport log tag, not "IPC
@@ -607,6 +698,18 @@ of being fixed once.
 - **2026-11-14** — Live T1 Ethernet SecurityAccess correction for the calibration `$27` gate lands in
   `../diagnostics/diagnosticsd_security_access.md`; this doc's §11 updated to point there instead of
   carrying the (now-superseded) NRC `0x10`/invalid-tester-ID reading.
+- **2026-11-21** — Resolved the duplication this doc had flagged (§0 "Known discrepancy"):
+  `../platform/eeprom_i2c_security.md` is trimmed to a short pointer plus its own live `[C]`
+  capture citations (SELinux device-node labels, Android security posture). Every fact it
+  previously carried that was not already present here was folded in: the `0x0441`/`0x0A81`
+  address-identity error that platform copy still carried (`0x0A80` cited as the backup SBI data
+  byte, rather than its marker) is not propagated here — this doc's own Finding A (2026-10-15,
+  above) already stated the corrected `0x0A81` identity and remains authoritative. New material
+  absorbed: the `0x0001` boot-state byte guess (§5.1), the `0x0400-0x045F` CRC-exclusion framing
+  (§5.2), backup-SBI sample record values across stock/bypass/post-reflash states (§5.4), the
+  marker-byte "type" naming convention (§7), SELinux device-node labels and the faceplate
+  controller/no-GYRO note for the I2C table (§8), and a new §8.1 covering GPIO, serial
+  (`ttyS1`/`ttyACM1`), and kernel-exploitation findings that this doc did not previously carry.
 
 **Dropped/out-of-scope corrections noted for completeness (not applied here):**
 `EEPROM_MAPPING_FABLE_REPORT.md` findings B, C, D, F, H all name defects in documents outside this
@@ -619,6 +722,130 @@ both-bytes-must-match mechanism had zero code references and that the real stora
 empirical dump-diff work (2026-08-26, §2 above) and the owner's reproducible bench recipe superseded:
 both data bytes genuinely matter on Y181. Noted here only as a historical dead end, not carried forward
 as live doubt.
+
+## 13. Historical appendix: retired `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` (folded in 2026-11-21)
+
+`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` (Jan-Feb 2026, "10 undocumented flags" framing) is
+retired to a thin pointer at that path. Its live conclusions are already carried above (§2, §5.2,
+§5.4, §5.8) and in `eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`. This section preserves the
+raw data from that file that has no other home in this corpus or in
+`VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`: the marker-rotation raw tables (§13.1), a few
+RE subroutine addresses from the VIP `$27`/ICUSB chain not otherwise recorded here (§13.2), and a
+compact correction/provenance trail (§13.3).
+
+### 13.1 Marker-rotation raw data (Feb 2026, Y181 USB reflash of identical firmware PN `86331656`)
+
+Observed marker-byte samples per address, across three dump states (stock pre-reflash /
+post-Y181-reflash / ADB_enabled) — copied verbatim from the retired file. The retired file summarized the effect as marker/framing bytes changed at 31+ addresses while all data values stayed identical:
+
+| Address | Stock (pre-reflash) | Post-Y181 Reflash | ADB_enabled |
+|---------|--------------------|--------------------|-------------|
+| 0x0440 | `0xC3` | `0x69` | `0x5A` |
+| 0x0A80 | `0xFF` (empty) | `0xF0` | `0x5A` |
+| 0x0B40 | `0x69` | `0x5A` | `0x69` |
+| 0x1A00 | `0x69` | `0x69` | — |
+
+Marker Transition Map — old-marker → new-marker pairs observed across the same reflash, with
+occurrence counts and affected regions (table copied verbatim, including the retired file's own
+column-count mismatch between header and data rows):
+
+| Old Marker | New Marker | Count | Affected Regions |
+|-----------|-----------|-------|-----------------|
+| `0xC3` → `0x69` | 4 | Primary SBI, display/color calibration |
+| `0x5A` → `0xF0` | 8 | VIN, display settings, brightness, volume, VIN suffix |
+| `0x69` → `0x5A` | 3 | Secondary serial, debug mode, touch version |
+| `0xF0` → `0x5A` | 4+ | Unknown toggle, all audio tables (0x1040-0x1280) |
+| `0x69` → `0xC3` | 1 | Feature toggle (0x0BC0) |
+| `0x69` → `0xF0` | 1 | CRC #1 (0x16E0) |
+
+Not a consistent permutation — individual addresses map to different new markers.
+
+Unchanged markers across the same reflash: boot/init flags `0x0000`/`0x0020`/`0x0040` (always
+`0x69`); security configs `0x0400`/`0x0420` (always `0x69`); HW part number / unidentified
+`0x0460`/`0x0480` (always `0xF0`); device ID strings `0x0500-0x05A0` (always `0xF0`); tertiary
+security `0x1A00` (always `0x69`); secure boot hash `0x1F60` (always `0x69`).
+
+CRC version-counter raw samples (stock vs. post-reflash; the upper-word step `0x0013→0x0104` is
+already stated generically in §6 above — these are the specific per-block byte values behind it):
+
+| CRC | Stock | Post-Reflash | Delta |
+|-----|-------|-------------|-------|
+| CRC #1 (0x16E0) | `00 0013 1531` | `00 0104 9F67` | Upper: 0x0013→0x0104 |
+| CRC #2 (0x19E0) | `00 0013 0DB5` | `00 0104 17F8` | Upper: 0x0013→0x0104 |
+| Data CRC (0x1B40) | `00 0013 189D` | `00 0104 A314` | Upper: 0x0013→0x0104 |
+
+USB update package manifest (Y181, no SPS calibration files present):
+
+| File | Module | Size | Identical to Previous Y181 |
+|------|--------|------|---------------------------|
+| 86331656 | VIP_APP | 1.84 MB | Yes (byte-for-byte) |
+| 85056831 | VIP_BOOT | 1.84 MB | Yes (byte-for-byte) |
+| 86331654 | SOC_SYSTEM | 1.45 GB | — |
+| 86331636 | SOC_PRODUCT | 1.32 GB | — |
+| 86331650 | SOC_VENDOR | 145 MB | — |
+| 86331652 | SOC_BOOT | 64 MB | — |
+| 85098662 | SOC_HOSTOS | 14 MB | — |
+| + 8 more | GPS, Tuner, SXM, etc. | — | — |
+
+**CRC-block sample, 2026-10-15 clean-room triple-pass on `dump.bin` (a `26_HC_A11` session dump)** — raw 5-byte blocks: `00 00 58 96 98` (`0x16E0`), `00 00 57 F2 74` (`0x19E0`), `00 00 58 9B AD` (`0x1B40`). Upper words (stored bytes `58 00`/`57 00`/`58 00`, LE u16 = `0x0058`/`0x0057`/`0x0058`) cluster tightly with ±1 drift, matching the `[00][upper version word][lower hash/CRC word]` structure in §6. An earlier single-dump pass that read the whole payload as one monotonic ~5.8M counter is superseded by this structural reading.
+
+### 13.2 VIP `$27`/ICUSB subroutine addresses (raw RE detail, not found in this corpus or in
+`VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md` during this retirement pass)
+
+- `0xb6652`: level-range mapping/validation, called from the `$27` validator at `0xb67d0`.
+- `0xaee28`: slot/state clear, called from the same validator.
+- `0xb6680`: feature-state check — loads RAM `0x71e0`, compares against `3`.
+- `0xb6690`: debug-state check — loads RAM `0x71ed`, checks if zero.
+- ICUSB enable logic in VIP_APP at `0x9ce22`: loads RAM `0x714f`, compares to `1`, and on match
+  calls ICUSB init at `0x97d78`. RAM `0x714f` is described as holding the processed ICUSB-enable
+  state fed by the primary SBI plus the `0xb67d0` validation result.
+
+These addresses are carried here without independent re-verification in this pass — ELA's §1
+deliberately defers VIP `$27`-validator subroutine detail to `VIP_FIRMWARE_Y177_Y181_COMPARISON.md`/
+`VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` rather than restating it, but this specific ICUSB-chain detail
+was not found in either of those during this pass, so it is preserved here rather than dropped.
+
+### 13.3 Correction / provenance trail (what the retired file claimed vs. what replaced it)
+
+- **"10 undocumented security flags"** (`0x04A0`, `0x04C0`, `0x0A40`, `0x0A60`, `0x0AC0`, `0x0B20`,
+  `0x0BE0`, plus `0x0A20` ("System State Timer Configuration", "126 refs", MEDIUM; inferred from proximity to `[SS_SWC]`/`[GYROACCL]` debug strings; listed "do not modify — may affect power states"), plus "base addresses" `0x0A00`/`0x0B00`), ranked by "N firmware refs" string-proximity
+  counts → **refuted (Aug-Sep 2026)**: the ref counts (as claimed in the retired file: `0x04A0`=17, `0x04C0`=11, `0x0A20`=126, `0x0A40`=28, `0x0A60`=15, `0x0AC0`=14, `0x0B20`=7, `0x0BE0`=24; the file's diagram also labeled `0x0B60` "Security counter", `0x0AE0` "Additional security" and `0x0BA0` "Feature enable #2" as "documented") do not reproduce and were never real code
+  cross-references. A real Ghidra pass found zero genuine code reference for `0x04A0`/`0x0A40`/
+  `0x0BE0`/`0x0A60`/`0x0AC0`/`0x0B20`, and all read `0xFF` (unwritten) in both stock and
+  ADB-enabled dumps. `0x04C0` alone is touched by a real handler (CalGroup `0x44`,
+  `FUN_ram_00091f82`), but the cell itself is still empty. `0x0A00`/`0x0B00` are structure-base
+  addresses, not flags. See §5.2/§5.4 above and `VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md` §2-5/§9.
+- **Calibration files `85783460`/`87846384`** claimed to carry an "encrypted EEPROM reset payload"
+  → **retracted 2026-09-10**: a full byte-level decode showed ordinary `calserviced` CalOvride XML
+  overrides with zero EEPROM/SBI/security references. See §3 above.
+- **Y177 VIP `$27` validator at `0xb67d0`** claimed to be a stub (a removed security check) →
+  **refuted 2026-08-25** (three-way VIP_APP diff): the full ~906-byte validator is present,
+  byte-identical, in Y175/Y177/Y181 alike. See §1 and §12's 2026-08-26 entry above.
+- **RAM `0x3e06`** claimed to be "the processed EEPROM SBI value" → **corrected**: it is a generic
+  "security module initialized" readiness flag, not the SBI data byte itself. See §2 above.
+- **`0x0B41` "Debug Mode"** claimed to toggle a developer/debug mode, on a single-value (`0x01`)
+  test → **closed as behaviorally inert, 2026-10-15**, after a full-range operator test
+  (`0x00`/`0x01`/`0xFF`, no observed effect); the "Debug Mode" name is unconfirmed. See §5.4 above.
+- **"Zero literal marker patterns in firmware"**, claimed as proof markers are pure
+  runtime-generated noise → **corrected 2026-08-17**: a hex scan of the shipped `86331656` found
+  `69 00 69` ×3 and `C3 00 C3` ×4 (only `5A FF 5A` = 0); the broader runtime-generation conclusion
+  still holds on other evidence, but "zero literal patterns" is false.
+- **VIP PN `86331656`** bound to md5 hash `c381ed1c507d6ac6381c315fe94d9114` → **unverified,
+  2026-08-17**: does not match the actual shipped-package md5 (`e47928d9f409834083abc9a068ce65e0`);
+  the marker-rotation observation itself (bytes changed, data identical) is unaffected.
+- **CRC algorithm for `0x16E0`/`0x19E0`/`0x1B40`**, claimed reproducible as CRC-16/CCITT-FALSE of
+  the version word alone, "independently reproduced by brute-force across 5 images" → **retracted
+  2026-10-15**: the same version word (`0x0058`) maps to different stored hashes at `0x16E0` vs
+  `0x1B40`, ruling that out; only `0x1DC0` is confirmed CRC-16/CCITT-FALSE. See §6 above.
+- **"N firmware refs" self-disagreement**, noted at time of retirement: the retired file quoted
+  different counts for the same two addresses in its own §2.2 vs §10.2 (`0x0A00` = 871 vs 854;
+  `0x0B00` = 311 vs 305) — kept here only as evidence the counts were never a stable, reproducible
+  measurement.
+- **`0x04A0`/`0x04C0`** framed as "IPC Security Configuration" based on proximity to `[IPC_S]` debug
+  strings → **retracted**: those strings are an ordinary HDLC serial-transport log tag ("IFRAME
+  Rx", "UART read failed"), confirmed to live in a different part of the binary with no code link
+  to the CalGroup handlers that actually touch `0x04A0`/`0x04C0`. See
+  `VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md` §3-4.
 
 ## Open conflicts
 

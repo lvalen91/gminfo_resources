@@ -1,4 +1,4 @@
-# GM CAN / UDS Reference — 2024 Silverado ICE (Y175 Platform)
+# GM CAN / UDS Reference
 
 > **Sources:**
 > - DBC files (`gm_global_a_powertrain/chassis/lowspeed.dbc`) — from [comma.ai/opendbc](https://github.com/commaai/opendbc) (MIT License); byte-identical to repo master as of 2026-11
@@ -9,6 +9,8 @@
 >
 > **Coverage:** A11 infotainment (Y175/Y181B) Ethernet UDS endpoint + Global A powertrain/chassis CAN buses.  
 > Values confirmed live on the T1 endpoint are marked **[live]**; spec-only entries **[spec]**; CAN-capture only **[CAN]**.
+>
+> **Maintenance note:** The `diagnosticsd` content in this file (principally §1, §3, §4, §6, §8, §9, §11, and the diagnosticsd-related parts of §2, §5 and §10; the rest of §2, §5 and §10 draws on other sources) is a condensed restatement derived from the following `diagnostics/` documents: `ethernet_uds_diagnosticsd.md`, `diagnosticsd_protocol.md`, `diagnosticsd_security_access.md`, `diagnosticsd_dids_and_dtc.md`, `diagnosticsd_routines_and_recovery.md`, `diagnosticsd_network_topology.md`, `diagnosticsd_dos.md`. It is not generated from them and has no automatic sync; it must be updated manually whenever those documents change. On any discrepancy, the source documents are authoritative.
 
 ---
 
@@ -123,13 +125,13 @@ Seed shape: 31 bytes all `0xFF`.  Response shape: 12 bytes all `0x00`.
 
 | Level pair | Grant name | Known extra permissions |
 |------------|-----------|------------------------|
-| `01`/`02` | ETHERNET tier | Programming session gate, 2E F190/F198/F199, RID 021E/0200/0205 |
-| `03`/`04` | — | Programming session, RID 0200/0204/0205 |
-| `05`/`06` | — | Programming session, RID 0475 |
+| `01`/`02` | ETHERNET tier | Programming session gate, 2E F190/F198/F199/F0F4, RID 021E/0200/0205 |
+| `03`/`04` | — | Programming session, 2E F190/F198/F199, RID 0200/0204/0205 |
+| `05`/`06` | — | Programming session, 2E F190/F198/F199, RID 0475 |
 | `09`/`0A` | Engineering | 22 F0A7, 23 memory gate, 2E E010 |
-| `0B`/`0C` | — | 22 F0A7, 23 memory gate |
+| `0B`/`0C` | — | 22 F0A7, 23 memory gate, 2E F0F4 |
 | `0D`/`0E` | — | 22 F0A7, 2E E010 |
-| `11`/`12` | — | 2E F190/F198/F199 |
+| `11`/`12` | — | 2E F190/F198/F199/F0F4 |
 | `13`/`14` | — | 2E F190/F198/F199, RID 0200/0205 |
 | `15`/`16` | — | 2E F190/F198/F199 |
 | `5F`/`60` | — | Seed request → NRC 25 (path unresolved) |

@@ -1,4 +1,4 @@
-# Third-Party App Access to Intel APIs
+# Third-Party Access to Intel APIs
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -11,8 +11,8 @@
 
 | API | Third-Party Access | Method |
 |-----|-------------------|--------|
-| **Intel Media SDK (Video)** | **YES** (indirect) | Standard Android MediaCodec API |
-| **Intel IAS SmartX (Audio)** | **NO** | Below HAL barrier, not exposed |
+| **Intel Media SDK (Video)** | **YES** (indirect) | Standard Android MediaCodec API; the Intel Media SDK (MFX) is abstracted behind Android's codec framework |
+| **Intel IAS SmartX (Audio)** | **NO** | Below HAL barrier, not exposed; Intel IAS SmartX, Intel SST, and audio routing are not directly accessible, and apps are limited to the standard Android AudioTrack/AudioRecord APIs |
 
 ---
 
@@ -20,7 +20,7 @@
 
 ### Overview
 
-Third-party apps **CAN** use Intel hardware video codecs through the standard Android MediaCodec API. The Intel Media SDK (MFX) is abstracted behind Android's codec framework.
+Access is indirect, through MediaCodec (see Executive Summary).
 
 ### Architecture
 
@@ -207,7 +207,7 @@ encoder.start();
 
 ### Overview
 
-Third-party apps **CANNOT** directly access Intel IAS SmartX, Intel SST, or audio routing. They must use standard Android AudioTrack/AudioRecord APIs.
+No direct access (see Executive Summary).
 
 ### Architecture
 
@@ -400,7 +400,7 @@ AudioAttributes callAttrs = new AudioAttributes.Builder()
 
 | Aspect | Video (Intel Media SDK) | Audio (Intel IAS SmartX) |
 |--------|------------------------|-------------------------|
-| **Third-Party Access** | YES (via MediaCodec) | NO |
+| **Third-Party Access** | See Executive Summary | See Executive Summary |
 | **Direct API Access** | NO (abstracted) | NO |
 | **Hardware Acceleration** | YES (accessible) | YES (but transparent) |
 | **Can Select Specific HW** | YES (`createByCodecName`) | NO |
@@ -466,7 +466,7 @@ Third-party apps are sandboxed as `untrusted_app` and can only access:
 1. **Use Standard AudioTrack/AudioRecord** - Only option available
 2. **Set Proper AudioAttributes** - Critical for correct routing
 3. **Use 48000 Hz Sample Rate** - Native rate, no resampling
-4. **Don't Fight the System** - Accept AudioPolicy routing decisions
+4. **Accept AudioPolicy's routing decision; do not attempt to override it.**
 5. **Test on Actual Hardware** - Audio behavior varies by OEM
 
 ---

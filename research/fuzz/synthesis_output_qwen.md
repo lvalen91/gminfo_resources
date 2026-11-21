@@ -241,7 +241,7 @@ bypass success.
     Let's draft the response.
 ...done thinking.
 
-# Next Course of Action Synthesis
+# Synthesis Output
 
 **Trust Filter Compliance:** This synthesis prioritizes Track A (diagnostic
 (diagnosticsd/UDS) over Tracks B/C per **Rule 4**, as Track A findings deri

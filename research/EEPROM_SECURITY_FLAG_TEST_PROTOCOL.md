@@ -1,4 +1,4 @@
-# EEPROM Security-Flag Test Protocol — Bench-Test Methodology
+# EEPROM Security-Flag Test Protocol
 
 **Scope:** this doc owns bench-test *methodology* for probing CSM (`0x80`) EEPROM
 security/config flags and UDS `$27` SecurityAccess gating — the T0→T3 cost/risk ladder,

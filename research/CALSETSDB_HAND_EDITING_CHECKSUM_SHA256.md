@@ -1,4 +1,4 @@
-# CalSets.db hand-editing, checksum/SHA-256 and container-layout reverse engineering
+# CalSets.db Reverse Engineering
 
 **Target:** GM MY22/Y181 IVI (Intel Apollo Lake SoC, GHS INTEGRITY host + Android 12L guest),
 2024 Silverado head unit — the owner's own module.

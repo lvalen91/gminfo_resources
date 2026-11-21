@@ -1,4 +1,4 @@
-# Provenance / QA Audit — gminfo_resources
+# Provenance / QA Audit
 
 **Why this exists:** the owner flagged that prior AI research sessions may have written
 inferred or hallucinated findings into this repo as if they were fact. This ledger is the
@@ -120,7 +120,7 @@ name/section only, never restated).
 
 | # | claim | doc:location | verdict | evidence | note |
 |---|---|---|---|---|---|
-|44| ORIGINAL Dec-2025 spec block: GPU Intel HD 500 / 6GB RAM / Android 10-12 | EEPROM_Analysis_Report.md:29-35 | CONTRADICTED (self-corrected) | doc's own review block (37-41) retires it → HD 505 / 8GB / A12; cites teardown.md + VERIFICATION.md (not re-verified here) | corrected values not independently checked against teardown artifact in this pass |
+|44| ORIGINAL Dec-2025 spec block: GPU Intel HD 500 / 6GB RAM / Android 10-12 | EEPROM_Analysis_Report.md §System Specifications (IOK Platform), :71-77 | CONTRADICTED (self-corrected) | doc's own CORRECTION block (:79-84) retires it → HD 505 / 8GB / A12; cites teardown.md + VERIFICATION.md (not re-verified here) | corrected values not independently checked against teardown artifact in this pass |
 
 ---
 
@@ -192,7 +192,7 @@ Actions taken in response to this audit:
   provenance banner. IOMMU-off downgraded to an unverified research question; driver fixed to
   `igb_avb`; `.1` reframed as guest-client-reachable-but-not-on-wire.
 - **#7 zero-marker-patterns, #9 VIP PN hash** — `⚠CORRECTED` annotations added in
-  `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` (§13.4, §13.1). Claims retained with the refuting
+  `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` (now a pointer; content in `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §13.3). Claims retained with the refuting
   evidence noted, not deleted (preserves the trail).
 - **#19 downgrade block** — upgraded from UNSUPPORTED-as-measured to **OWNER-VERIFIED** via a
   detailed owner bench re-test recorded in `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` §2.4

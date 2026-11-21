@@ -1,4 +1,4 @@
-# Gordon Peak MRB & Project Celadon Intelligence Report
+# Gordon Peak & Project Celadon
 
 **Research Date:** 2026-06-29 (amended 2026-08-25, 2026-09-10, 2026-11-17)
 **Project:** GM Info 3.7 (gminfo37) Reverse Engineering — Y181 → Y177 Downgrade
@@ -20,9 +20,9 @@ GM's device tree was never published and is not obtainable through open channels
 **Project Celadon** is Intel's open-source Android-on-x86 reference stack. It ships as source repositories organized under the `projectceladon` GitHub org, with build manifests pinning component SHAs. **CiV** (Celadon-in-VM) is the virtualized variant that runs the Android guest inside ACRN hypervisor — structurally analogous to the GHS INTEGRITY + Linux + AAOS guest architecture on GM's unit, though the hypervisor differs.
 
 Key constraints for this research axis:
-- **Prebuilt images:** the `celadon-binary` repository and its releases API return HTTP 404 (reconfirmed 2026-11-17). No downloadable image validated for this GM board was found; current upstream instructions target newer NUC systems, not Gordon Peak. All usable artifacts require building from source. *History: the 2026-06-29 draft stated flatly "no prebuilt Celadon images are publicly available," reading the 404 as proof of non-existence; the 2026-11-17 pass corrected this — a 404 does not establish that Intel never released images, only that none is currently reachable.*
+- **Prebuilt images:** the `celadon-binary` repository and its releases API return HTTP 404 (reconfirmed 2026-11-17). No downloadable image validated for this GM board was found; current upstream instructions target newer NUC systems, not Gordon Peak. All usable artifacts require building from source. *History: the 2026-06-29 draft stated flatly "no prebuilt Celadon images are publicly available," reading the 404 as proof of non-existence. Corrected 2026-11-17: a 404 shows only that none is currently reachable, not that Intel never released images.*
 - The Gordon Peak BSP (Android BSP Getting Started guide, doc #567191; ABL Configuration guide, doc #572371; FSP MR5, doc #566285) is gated behind Intel CNDA + RDC access. There is no public route.
-- **GM's 4.19 kernel tree:** an Intel-derived 4.19.283 reference tree (upstream: [intel/linux-intel-lts](https://github.com/intel/linux-intel-lts)) exists locally and is a legitimate platform-enablement reference; it contains prior emulator patches and is **not** the exact GM BSP — the GM TI949 serializer module and GHS integration remain distinct vendor dependencies not covered by it. *History: the 2026-06-29 draft stated "GM's automotive Linux 4.19 kernel tree is NDA-gated... the 4.19 branch exists only on the live device," framing the public-source question as closed; the 2026-11-17 pass corrected this as too broad — Celadon's own lineage still skips 4.9→5.15 with no 4.19 branch, but a public Intel 4.19 reference tree exists outside Celadon proper.*
+- **GM's 4.19 kernel tree:** an Intel-derived 4.19.283 reference tree (upstream: [intel/linux-intel-lts](https://github.com/intel/linux-intel-lts)) exists locally and is a legitimate platform-enablement reference; it contains prior emulator patches and is **not** the exact GM BSP — the GM TI949 serializer module and GHS integration remain distinct vendor dependencies not covered by it. *History: the 2026-06-29 draft stated "GM's automotive Linux 4.19 kernel tree is NDA-gated... the 4.19 branch exists only on the live device," framing the public-source question as closed. Corrected 2026-11-17 as too broad: Celadon's own lineage still skips 4.9→5.15 with no 4.19 branch, but a public Intel 4.19 reference tree exists outside Celadon proper.*
 
 ---
 
@@ -59,7 +59,7 @@ The `CIV_01.22.03.32_A12` manifest is an Android 12-era reference candidate. Its
 
 ## kernelflinger (celadon/s/mr0/apollo) — Highest-Value Asset
 
-`kernelflinger` is Intel's EFI bootloader for Android-on-x86. The `celadon/s/mr0/apollo` branch is the direct Gordon Peak / Apollo Lake variant for Android 12. It is the single highest-value public artifact for this research because it exposes the full boot chain in source form.
+`kernelflinger` is Intel's EFI bootloader for Android-on-x86. The `celadon/s/mr0/apollo` branch is the direct Gordon Peak / Apollo Lake variant for Android 12. It is the highest-value public artifact for this research because it exposes the full boot chain in source form.
 
 ### kf4abl.c — ABL Integration Layer
 

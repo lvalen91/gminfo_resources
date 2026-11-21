@@ -1,4 +1,4 @@
-# GHS File Map — SOC_HOSTOS `85098662`
+# GHS File Map `85098662`
 
 ## Scope
 Byte-level address-space map of the GHS INTEGRITY `SOC_HOSTOS` monolith (file `85098662`,
@@ -119,11 +119,11 @@ the Android guest as a **mediated (para-virtual) passthrough**:
   Android-side; see `USB_ADB_SESSION_FINDINGS_2026-10-10.md` for that side of the boundary.
 
 ## Opaque-byte accounting (the honest residue)
-Of 14,929,956 B, the **only** bytes whose content could not be read are **768 B**: the 256 B Android
-key (0xE3CCB0) + the 512 B signature (0xE3CE20) at the tail. Everything else is traced — including the
+Of 14,929,956 B, the only bytes whose content could not be read are **768 B**: the 256 B Android
+key (0xE3CCB0) + the 512 B signature (0xE3CE20) at the tail. Everything else is traced, including the
 TEE "high-entropy" blocks (standard AES T-tables + SHA constants) and all co-processor firmware
-(identified by magic/header). The earlier "~13 KB opaque" estimate conflated the TEE crypto tables
-(identified) with the tail; the true opaque payload is 768 B.
+(identified by magic/header). Correction: the earlier "~13 KB opaque" estimate counted the TEE crypto tables
+(identified) with the tail; the opaque payload is 768 B.
 
 ## One-line structure summary
 GHS INTEGRITY monolith = **x86-64 microkernel** (incl. a full host-side USB/xHCI stack) + **~20

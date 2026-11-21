@@ -1,4 +1,4 @@
-# diagnosticsd — Protocol, Wire Format & Service Tables
+# diagnosticsd Protocol
 
 > Part of the [`diagnosticsd` Ethernet UDS bridge](ethernet_uds_diagnosticsd.md) doc set (port 49156).
 

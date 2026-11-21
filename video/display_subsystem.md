@@ -1,4 +1,4 @@
-# GM Infotainment Display Subsystem Specifications
+# Display Subsystem Specifications
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -288,10 +288,9 @@ for read-only probing — no files were written on the radio outside `/tmp`):**
    hardware.** **Decoded against the public DS90UB949-Q1 datasheet (2026-11-17):**
    `0xCD` = `1100 1101` is `FPD3_LINK_RDY=1, FPD3_TX_STS=1 (locked), FPD3_PORT_STS=00
    (dual mode), TMDS_VALID=1, HDMI_PLL_LOCK=1, NO_HDMI_CLK=0 (clock present),
-   FREQ_STABLE=1`. In plain terms: the serializer reports a fully locked FPD-Link
-   III connection, actively receiving and locked to valid, stable HDMI from the
-   SoC's GPU. This is a real, complete link-up condition, not just a bit pattern
-   match.
+   FREQ_STABLE=1`. This is a complete link-up condition (not just a bit-pattern
+   match): the serializer reports a locked FPD-Link III connection, actively
+   receiving and locked to valid, stable HDMI from the SoC's GPU.
 6. Applied the remaining stock steps not yet covered above: the errata-#3
    read-modify-write on `0x5B` (clearing bit 5; it was already clear), the
    `set_mode_ctrl` sequence (read `0x5B`, read deserializer `0x1C` → `0x3B`,
@@ -339,10 +338,9 @@ This is a genuine, non-repeating Atmel maXTouch Information Block: Family ID
 `0xA4`, Variant ID `0x3E`, Version `0x10`, Build `0xAA`, Matrix X-size `0x21`
 (33), Matrix Y-size `0x40` (64), Object Table Element count `0x28` (40 objects).
 The earlier flat `0x01` reading was an artifact of using 8-bit addressing against
-a 16-bit-addressed device, not a fault, not an idle/no-touch state, and not a
-missing bootloader handshake. **The flat reading was never evidence the chip was
-non-functional** — it was the wrong protocol. No write was sent to the touch
-controller.
+a 16-bit-addressed device (the wrong protocol): not a fault, not an idle/no-touch
+state, not a missing bootloader handshake, and not evidence the chip was
+non-functional. No write was sent to the touch controller.
 
 **Touch confirmed live and working 2026-11-17 (VERIFIED, physical touch test).**
 The full 40-entry object table was read (`0x0007`, 240 bytes) and parsed per the
@@ -397,9 +395,9 @@ sensible per-finger message. The genuine touch-slot messages were IDs
 | `0x3f` | 2394 | 782 |
 
 These X values cluster near the panel's native 2400-pixel width and Y stays
-within its 960-pixel height — numerically consistent with real on-panel
-coordinates, not garbage, which is independent supporting evidence the decode
-is substantially correct.
+within its 960-pixel height, numerically consistent with real on-panel
+coordinates; this is independent supporting evidence the decode is substantially
+correct.
 
 **Open discrepancy, not resolved in this pass:** the status byte's `DETECT` bit
 (bit 7) reads clear on all four touch-slot messages above, which does not match

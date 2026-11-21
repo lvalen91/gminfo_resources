@@ -1,4 +1,4 @@
-# ELK, Recovery and Native-Linux Probe Bring-up
+# ELK and Recovery
 
 **Scope:** alternative boot targets of the GM Info 3.7 (gminfo37, Apollo Lake A3960) radio: Intel ELK (kernelflinger) and its automatic selection, ELK lock state / Boot Guard / TXE forensic depth, Android recovery and recovery-fastbootd, the "return to dealer" recovery path, and the native-Linux RAM-boot probe images (`4.19.283-*`, `7.3.5-probe-stable02`) with their hardware-coverage, T1 Ethernet, Wi-Fi and eMMC-readback results.
 **Not here:** normal boot phases / AVB flow / BCB structs ([boot_chain.md](boot_chain.md)), partition map ([partitions_storage.md](partitions_storage.md)), update engine and the normal-AAOS `gm_usb_*` flag semantics ([ota_update_stack.md](ota_update_stack.md)). The recovery USB trigger-file table is in §5 here.

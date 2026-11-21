@@ -149,8 +149,8 @@ user 10 can neither write user 0's nor its own user's copy. Only the system can 
 
 ### Why native projection and USB storage still work (the dead-end is NARROW)
 
-A natural objection: if every USB attach hits `deviceAttachedForFixedHandler` → `NameNotFoundException`,
-why do wired CarPlay, wired Android Auto, and USB storage all work normally? Because the dead-end kills
+If every USB attach hits `deviceAttachedForFixedHandler` → `NameNotFoundException`,
+why do wired CarPlay, wired Android Auto, and USB storage all work normally? The dead-end kills
 **only one sub-flow** — launching a default-handler app and issuing an *implicit permission grant to an
 untrusted third-party app*, for a **host-mode device**. Everything else routes around it. Confirmed from
 this build's decompiled `UsbHostManager` / `UsbUserPermissionManager` (SDK 32):
@@ -181,8 +181,7 @@ So the ONLY thing that dead-ends is a **sideloaded, untrusted third-party app cl
 vendor device that has no kernel driver and no privileged system claimant** — i.e. *exactly and only*
 the CCPA/OCBM case (`0x1314:0x2d00`). This is also **why GM never noticed the bug**: everything GM ships
 is privileged and routes around the broken handler; only third-party host-device claimants are
-collateral damage. It presents as "my app is prompted forever" while the rest of the port works
-flawlessly.
+collateral damage. It presents as "my app is prompted forever" while the rest of the port works.
 
 **App-side manifest** (`AndroidManifest.xml` lines 38–40; rationale comment at line 33):
 ```xml
@@ -562,8 +561,6 @@ Representative meminfo (20260505_222110, active streaming session — verified v
 
 ---
 
----
-
 ## 16. Display geometry: windowed mode vs. immersive
 
 The 2024 Silverado ICE display is **2400×960 physical**. The screen is divided into four regions by GM's SystemUI (nomenclature taken directly from the decompiled GM code — see Section 19). These boundaries were measured pixel-for-pixel from a true 1:1 2400×960 device screenshot (`carlink_native/screenshots/gminfo/gminfo_homescreen.png` and `AA_small.png`).
@@ -608,7 +605,7 @@ From the app's own `[WINDOW]` log line (POTATO logcat `20260211/logcat_20260211_
 - `Usable 2211×842` — bounds minus the two **window insets** the WindowManager reports: `T:118` (Status Bar) and `L:189` (App Dock). `2400 − 189 = 2211`, `960 − 118 = 842`.
 - `R:0` — **the CardView is NOT reported as a window inset.** It is composited on the right by GMSystemUI independently of the app's window. So the app's window spans 2211 wide even when the CardView occupies the rightmost 793 px.
 
-This is the crux: the **App Dock** (190 px, left) IS a real WindowManager inset; the **CardView** (793 px, right) is NOT. In AUTO resolution mode the app measures the visually-unobstructed region and fits its `SurfaceView` to **1417 (≈1416) wide** to avoid drawing under the CardView, even though its window technically extends to 2211.
+The **App Dock** (190 px, left) IS a real WindowManager inset; the **CardView** (793 px, right) is NOT. In AUTO resolution mode the app measures the visually-unobstructed region and fits its `SurfaceView` to **1417 (≈1416) wide** to avoid drawing under the CardView, even though its window technically extends to 2211.
 
 ### The three real states
 
@@ -625,7 +622,7 @@ The clearest single-session walk through these states is `20260420/logcat_202604
 ```
 The CardView is full-height below the Status Bar (`cardViewHeight = 842 = 960 − 118`). Its **793 px width** is the screenshot-measured value (`2400 − 190 dock − 1417 content`); confirming the exact width constant in the decompiled `CardView_InitManager` source is in progress.
 
-> Correction history: earlier drafts mislabeled this geometry twice — first as "1416×960 with a ~984 px right panel," then as a "189 px left nav rail." Both wrong. Verified from the 1:1 screenshot: the **189 px left inset is the App Dock**; the **CardView is 793 px on the right** and is **not** a window inset; the restricted windowed content area is **1417×842**; and `2211×842` is the CardView-collapsed (not restricted) state.
+> Correction: earlier drafts mislabeled this geometry twice — first as "1416×960 with a ~984 px right panel," then as a "189 px left nav rail." Both wrong. Verified from the 1:1 screenshot: the **189 px left inset is the App Dock**; the **CardView is 793 px on the right** and is **not** a window inset; the restricted windowed content area is **1417×842**; and `2211×842` is the CardView-collapsed (not restricted) state.
 
 ### How each app type reaches full width
 
@@ -963,7 +960,7 @@ on boot
 ```
 This fires `usb_otg_switch.sh h` via property trigger. Host at boot means the XDCI `SPPS` method sources VBUS (this powers the in-vehicle receptacle hubs). The Mac's VBUS on a bench cable is a held-ready prerequisite, not a trigger; both sides sourcing ~5 V while nothing enumerates is benign (low-energy coexistence, not a short), and `SPPS` drops the radio's port power when the role flips to device [owner-confirmed + electrical].
 
-### Software-controllable role switch (previously unknown)
+### Software-controllable role switch
 
 The USB port can be switched to ADB/device mode **entirely via software**. From `init.bxtp_gm.rc`:
 ```

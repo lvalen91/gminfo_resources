@@ -1,4 +1,4 @@
-# GM Info 3.7 Memory Pressure Analysis
+# Memory Pressure Analysis
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -55,12 +55,12 @@
 
 ## Debloat Analysis (CarLink Streaming vs Factory)
 
-- Factory idle: HOTTER and HIGHER CPU load than debloated during CarPlay streaming
+- Factory idle: hotter and higher CPU load than debloated during CarPlay streaming
 - 36 packages removed: 34% fewer packages, 36% fewer services
 - Memory: debloated 3.1GB free at boot vs factory 2.5GB
 - Google Services: ~443MB acting as LMK cushion
-- CarLink memory: 76.6MB idle, 127.2MB peak, 38.6MB post-trim; NEVER killed by LMK
-- Factory: 8 ALSA underruns, 4 Davey! events (worst 225s!); debloated: 0 underruns, 0 Davey!
+- CarLink memory: 76.6MB idle, 127.2MB peak, 38.6MB post-trim; never killed by LMK
+- Factory: 8 ALSA underruns, 4 Davey! events (worst 225s); debloated: 0 underruns, 0 Davey!
 
 ## Streaming Session Resource Profile
 

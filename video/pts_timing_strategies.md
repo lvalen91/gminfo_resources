@@ -60,7 +60,7 @@ if (sourcePts != null && sourcePts >= 0) {
 codec.queueInputBuffer(index, 0, dataSize, pts, 0);
 ```
 
-### Frame Drop Detection (Bonus Feature)
+### Frame Drop Detection (Optional)
 
 ```java
 private static final int FRAME_DROP_THRESHOLD_MS = 50;
@@ -146,7 +146,7 @@ public void reset() {
 | **Frame drop detection** | PTS gaps reveal when frames were lost in transit. A 50ms gap at 30fps indicates ~1-2 missed frames. |
 | **Intelligent error recovery** | Large PTS gaps (>500ms) can automatically trigger IDR frame requests, improving recovery time after packet loss. |
 | **FPS-independent operation** | Works correctly regardless of actual frame rate - handles 24fps, 30fps, 60fps, or variable frame rate without configuration. |
-| **Superior diagnostics** | PTS discontinuities in logs help identify USB transfer issues, adapter problems, WiFi interference, or encoder stalls. |
+| **Diagnostics** | PTS discontinuities in logs help identify USB transfer issues, adapter problems, WiFi interference, or encoder stalls. |
 | **Handles variable bitrate** | Source may send frames at varying intervals (scene complexity). Source PTS maintains correct timing. |
 
 #### Cons
@@ -205,7 +205,7 @@ public void reset() {
 
 ## Hybrid Approach (Recommended)
 
-The optimal implementation uses **Source PTS with Synthetic Fallback**:
+Recommended: **Source PTS with Synthetic Fallback**:
 
 ```java
 // Primary: Use source PTS when available

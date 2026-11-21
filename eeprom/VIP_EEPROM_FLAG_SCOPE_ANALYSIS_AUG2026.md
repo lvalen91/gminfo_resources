@@ -1,4 +1,4 @@
-# VIP EEPROM Flag Scope Analysis — Aug 2026
+# VIP EEPROM Flag Scope
 
 **Date:** 2026-08-24
 **Binary analyzed:** `vip_app.bin` (VIP_APP, GM part 86331656, Y181), Ghidra project
@@ -35,10 +35,10 @@ result, not a guess: it comes from an exhaustive scan of every instruction's imm
 in both binaries, cross-checked against a second, independent discovery path (every literal
 argument ever passed to the one proven EEPROM-cell accessor function, 1,050 distinct calls).**
 
-**On the operator's core question — does flipping `0x0441`/`0x0A81` open doors beyond ADB — this
+**On the core question — does flipping `0x0441`/`0x0A81` open doors beyond ADB — this
 pass did not find evidence that it does, but it also could not fully close the question, because
 the caller of the SBI's own field-group handler (what actually *consumes* the SBI data byte) is
-reached only via an indirect call this static pass did not resolve. See §6 for the honest gap.**
+reached only via an indirect call this static pass did not resolve. See §6 for the unresolved gap.**
 
 ---
 
@@ -130,10 +130,10 @@ generic "dispatch CalGroup N" routine via a jump/pointer table keyed by the same
 ID seen passed to `FUN_ram_000c8f10`, e.g. `0x3b` here), the actual caller — and therefore the
 code that reads the packed buffer back out and decides what to do with the SBI data byte
 (presumably the PROTOKEY/seed logic) — was **not reached by this static pass**. This is the
-single biggest unresolved link in the whole investigation: I can show the SBI's storage is
-structurally isolated from other CalGroups at the accessor level, but I could not trace forward
-from "the buffer FUN_ram_00091938 fills" to "the function(s) that consume it," so I cannot
-directly confirm or rule out a second consumer of that same buffer.
+single biggest unresolved link in the whole investigation: the SBI's storage is shown to be
+structurally isolated from other CalGroups at the accessor level, but tracing forward from "the
+buffer FUN_ram_00091938 fills" to "the function(s) that consume it" was not achieved, so a second
+consumer of that same buffer can neither be confirmed nor ruled out directly.
 
 > **UPDATE (2026-08-25, `VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md`):** the "unresolved indirect
 > call" here was a Ghidra auto-analysis gap, not a real indirect call. `FUN_ram_00091938` is
@@ -181,14 +181,14 @@ Findings `[C]`:
   evidence `0x04C0` is a distinct, independently-administered flag/CalGroup from the SBI, not an
   alias or shared structure.
 - Like the SBI handler, this function also has **zero statically-resolved callers** — same gap.
-  I cannot say what `0x04C0` gates. The corpus's "near `[IPC_S]` strings" framing for this
-  address looks unrelated to what I actually found: the `[IPC_S]` strings (HDLC/serial IPC
-  transport logging — dozens of them, all confirmed present) live in a completely different part
-  of the binary (`ram:0001adfe`–`0001be06`) from the CalGroup `0x44` handler (`ram:00091f82`);
-  I found no code link between them. Given the prior provenance audit already flagged the
-  `[IPC_S]`-proximity "ref count" claims for this region as UNSUPPORTED, I'd treat the semantic
-  link to `[IPC_S]` as unconfirmed/likely coincidental string-address proximity, not a functional
-  one.
+  What `0x04C0` gates is not established by this pass. The corpus's "near `[IPC_S]` strings"
+  framing for this address appears unrelated to what was actually found: the `[IPC_S]` strings
+  (HDLC/serial IPC transport logging — dozens of them, all confirmed present) live in a
+  completely different part of the binary (`ram:0001adfe`–`0001be06`) from the CalGroup `0x44`
+  handler (`ram:00091f82`); no code link between them was found. Given the prior provenance
+  audit already flagged the `[IPC_S]`-proximity "ref count" claims for this region as
+  UNSUPPORTED, the semantic link to `[IPC_S]` should be treated as unconfirmed/likely coincidental
+  string-address proximity, not a functional one.
 
 **Verdict for `0x04C0`: real and confirmed distinct from SBI `[C]`; what it controls: unknown
 `[O]`.**
@@ -217,7 +217,7 @@ type/ID/length fields) — it is a **message/service dispatcher unrelated to EEP
 address `0x04A0`. One traced caller, `FUN_ram_000755a8`, builds a 14-byte local record containing
 bytes `0x80`/`0x81` (not `0xA80`/`0xA81` — different, smaller values, most likely a 16-bit UDS
 DID or similar), which is circumstantially close to "0xA80/0xA81" in digits but is not those
-EEPROM addresses; I flag this explicitly because it would be an easy false lead to repeat.
+EEPROM addresses; this is flagged explicitly because it would be an easy false lead to repeat.
 
 **Verdict for `0x04A0`: no genuine EEPROM-offset reference found anywhere in `vip_app.bin`; the
 one candidate hit is a false positive from an unrelated struct-relative addressing mode `[C]`.**
@@ -308,13 +308,13 @@ hardcoded ADB-only seed. This is consistent with (and independently corroborates
 strings level) the corpus's separate claim that VIP/Ethernet/Notification SecurityAccess tiers
 share a `$27` seed/key mechanism.
 
-**What I could not do:** trace this to actual code. `getReferencesTo()` on each of these string
+**Not resolved:** tracing this to actual code. `getReferencesTo()` on each of these string
 addresses returned **zero** cross-references, and a fallback scan of every instruction's resolved
-operand references also found zero. This is not itself suspicious — the one function I *could*
-fully trace end-to-end (`FUN_ram_000ecb08`/`FUN_ram_000ecb30`, §7 below) shows this firmware's
+operand references also found zero. This is not itself suspicious — the one function traced fully
+end-to-end (`FUN_ram_000ecb08`/`FUN_ram_000ecb30`, §7 below) shows this firmware's
 logger is **ID-indexed, not string-pointer-indexed** (`thunk_FUN_ram_000f2406(0xd8, ...)` — a
 small integer, not the string's address, is what's passed at the call site; the string is looked
-up later from that integer ID in a separate table I did not reverse). That means pivoting from
+up later from that integer ID in a separate table not reversed in this pass). That means pivoting from
 these PROTOKEY/Seed strings to their call sites requires reversing that log-ID table, which this
 pass did not do. **So: the "multiple seed slots" finding is real and directly evidenced at the
 strings level, but I have no decompiled code linking the SBI CalGroup (`0x3b`) to the seed-cache
@@ -343,7 +343,7 @@ uint FUN_000ecd84(undefined4 param_1)
 }
 ```
 
-I found the **exact same pattern**, same constant `0xd8`, at a second address in the current
+The **exact same pattern** was found, same constant `0xd8`, at a second address in the current
 `vip_app.bin` build (`FUN_ram_000ecb08`), and its paired counterpart using constant `0xd9`
 (`FUN_ram_000ecb30`), called as an acquire/release pair around a critical section:
 
@@ -377,9 +377,9 @@ reused across unrelated subsystems (confirmed used by audio-amp-mute logic here)
 part of a seed/PROTOKEY/security validation chain by itself `[C]`.** Its prior appearance next
 to a supposed "VIP security validation chain" in the corpus is best explained by it simply being
 a common utility function that many things call, including — plausibly, but *unconfirmed here* —
-security code elsewhere. I did not find, and did not have budget to find, the actual PROTOKEY/
-seed function(s) that call it. I did **not** attempt to re-derive or verify `0xb67d0`/`0xb6652`/
-`0xaee28`; per the provenance audit's own finding, treat those as still unverified — nothing in
+security code elsewhere. The actual PROTOKEY/seed function(s) that call it were not found, and the search
+was not attempted beyond this pass's budget. No re-derivation or verification of `0xb67d0`/`0xb6652`/`0xaee28` was attempted here;
+per the provenance audit's own finding, treat those as still unverified — nothing in
 this pass changes that.
 
 ---
@@ -413,13 +413,12 @@ different addressing/compilation that this scan handles less well.**
 
 ---
 
-## 10. Answer to the operator's core question
+## 10. Answer to the core question
 
 **Is the SBI bypass ADB-only, or does it open other doors?**
 
 This pass did **not find evidence that it opens other doors**, but it also could **not fully
-rule that out**, and the reasons are specific and worth stating plainly rather than rounding to
-"probably fine":
+rule that out**. The reasons are specific; the result should not be rounded to "probably fine":
 
 - The Primary SBI's own storage is structurally **isolated** at the CalGroup/accessor level —
   no other CalGroup shares cells `0x43a–0x447`, and no other code in the binary references
@@ -440,7 +439,7 @@ rule that out**, and the reasons are specific and worth stating plainly rather t
   for the fourth (`0x04C0`) is real but administratively separate from the SBI's CalGroup, with
   its actual function unknown.
 
-**Practical recommendation for the operator:** the dispatcher question is closed. The remaining
+**Practical recommendation:** the dispatcher question is closed. The remaining
 high-value work is semantic dataflow from the `0x04C0` group scratch buffer, plus passive I2C
 observation across normal, diagnostic, and calibration modes. Do not infer a privilege function
 from its structural similarity to the SBI group.

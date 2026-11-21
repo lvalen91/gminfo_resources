@@ -39,8 +39,8 @@
    "f": "Ethernet switch/PHY (DoIP)",
    "c": "connectivity",
    "cf": "observed",
-   "x": 77.5,
-   "y": 22.24,
+   "x": 78.31,
+   "y": 22.58,
    "w": 7.75,
    "h": 7.34
   },
@@ -50,8 +50,8 @@
    "f": "wireless",
    "c": "connectivity",
    "cf": "observed",
-   "x": 2.61,
-   "y": 52.39,
+   "x": 2.94,
+   "y": 53.59,
    "w": 22.8,
    "h": 18.63
   },
@@ -61,8 +61,8 @@
    "f": "RF front-end",
    "c": "connectivity",
    "cf": "observed",
-   "x": 85.59,
-   "y": 68.71,
+   "x": 86.23,
+   "y": 69.37,
    "w": 13.02,
    "h": 13.43
   },
@@ -74,7 +74,7 @@
    "cf": "observed",
    "x": 1.41,
    "y": 15.52,
-   "w": 18.0,
+   "w": 18,
    "h": 19.61
   },
   {
@@ -85,8 +85,8 @@
    "cf": "observed",
    "x": 48.78,
    "y": 0.57,
-   "w": 10.0,
-   "h": 9.0
+   "w": 10,
+   "h": 9
   },
   {
    "n": "X8 USB2.0 connector",
@@ -140,8 +140,8 @@
    "cf": "observed",
    "x": 1.09,
    "y": 4.34,
-   "w": 18.0,
-   "h": 9.0
+   "w": 18,
+   "h": 9
   },
   {
    "n": "u.FL (upper-R)",
@@ -171,8 +171,8 @@
    "f": "power in",
    "c": "connector",
    "cf": "observed",
-   "x": 54.61,
-   "y": 90.72,
+   "x": 55.37,
+   "y": 93,
    "w": 13.05,
    "h": 4.75
   },
@@ -182,10 +182,10 @@
    "f": "bulk cap",
    "c": "power",
    "cf": "observed",
-   "x": 42.0,
-   "y": 34.0,
-   "w": 7.0,
-   "h": 14.0
+   "x": 42,
+   "y": 34,
+   "w": 7,
+   "h": 14
   },
   {
    "n": "4R7 inductor",
@@ -204,8 +204,8 @@
    "f": "",
    "c": "power",
    "cf": "observed",
-   "x": 59.3,
-   "y": 39.17,
+   "x": 59.84,
+   "y": 39.63,
    "w": 4.19,
    "h": 4.02
   },
@@ -215,10 +215,10 @@
    "f": "",
    "c": "power",
    "cf": "observed",
-   "x": 66.86,
-   "y": 19.66,
-   "w": 3.28,
-   "h": 3.67
+   "x": 67.88,
+   "y": 20.05,
+   "w": 2.5,
+   "h": 3.71
   },
   {
    "n": "pkUY 470µF 25V",
@@ -226,10 +226,10 @@
    "f": "bulk cap",
    "c": "power",
    "cf": "observed",
-   "x": 18.03,
-   "y": 77.19,
-   "w": 5.81,
-   "h": 6.74
+   "x": 17.74,
+   "y": 78.89,
+   "w": 6.41,
+   "h": 5.51
   },
   {
    "n": "470µF 25V (BL)",
@@ -237,8 +237,8 @@
    "f": "bulk cap",
    "c": "power",
    "cf": "observed",
-   "x": 7.79,
-   "y": 90.72,
+   "x": 7.65,
+   "y": 92.15,
    "w": 5.84,
    "h": 5.82
   },
@@ -259,8 +259,8 @@
    "f": "SoC VR",
    "c": "power",
    "cf": "observed",
-   "x": 65.9,
-   "y": 81.52,
+   "x": 66.46,
+   "y": 83.06,
    "w": 5.45,
    "h": 2.78
   },
@@ -270,8 +270,8 @@
    "f": "",
    "c": "logic",
    "cf": "inferred",
-   "x": 50.29,
-   "y": 30.69,
+   "x": 50.67,
+   "y": 31.32,
    "w": 5.28,
    "h": 5.56
   },
@@ -281,8 +281,8 @@
    "f": "",
    "c": "logic",
    "cf": "inferred",
-   "x": 79.3,
-   "y": 45.84,
+   "x": 79.92,
+   "y": 46.63,
    "w": 5.46,
    "h": 5.5
   },
@@ -292,10 +292,10 @@
    "f": "Apollo Lake IFWI/TXE boot flash (Boot Guard v2)",
    "c": "logic",
    "cf": "observed",
-   "x": 84.29,
-   "y": 83.37,
+   "x": 85.22,
+   "y": 85.11,
    "w": 3.77,
-   "h": 5.45
+   "h": 5.04
   },
   {
    "n": "X6",
@@ -314,10 +314,10 @@
    "f": "BCM89551 switch firmware (confirmed, partial dump)",
    "c": "logic",
    "cf": "observed",
-   "x": 85.89,
-   "y": 32.14,
-   "w": 2.95,
-   "h": 3.05
+   "x": 86.79,
+   "y": 32.59,
+   "w": 2.46,
+   "h": 3.21
   },
   {
    "n": "Mount hole · TL",
@@ -358,8 +358,8 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 1.09,
-   "y": 95.0,
+   "x": 0.8,
+   "y": 96.36,
    "w": 3.56,
    "h": 3.29
   },
@@ -369,8 +369,8 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 50.46,
-   "y": 94.5,
+   "x": 50.91,
+   "y": 96.09,
    "w": 2.19,
    "h": 2.77
   },
@@ -380,8 +380,8 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 76.42,
-   "y": 94.62,
+   "x": 76.9,
+   "y": 96.31,
    "w": 3.47,
    "h": 3.5
   }
@@ -393,32 +393,32 @@
    "f": "Vehicle Interface Processor",
    "c": "compute",
    "cf": "observed",
-   "x": 10.0,
-   "y": 40.0,
-   "w": 15.0,
-   "h": 17.0
+   "x": 10,
+   "y": 42.61,
+   "w": 13.87,
+   "h": 14.39
   },
   {
    "n": "eMMC / DRAM BGA",
-   "p": "Samsung KLMCG4JEUD · 64GB eMMC 5.1 · BGA-153",
+   "p": "Samsung KLMCG4JEUD-B04P · 64GB eMMC 5.1 · BGA-153",
    "f": "storage",
    "c": "memory",
    "cf": "observed",
-   "x": 16.0,
-   "y": 75.0,
-   "w": 11.0,
-   "h": 13.0
+   "x": 16.41,
+   "y": 78.21,
+   "w": 7.11,
+   "h": 7.93
   },
   {
-   "n": "TSOP flash",
-   "p": "white label",
-   "f": "boot/NOR or audio flash",
+   "n": "Audio Amplifier",
+   "p": "TAS6424L-Q1 27-W",
+   "f": "2-MHz Digital Input 4-Channel Automotive Class-D Audio Amplifier With Load-Dump Protection and I2C",
    "c": "memory",
    "cf": "observed",
-   "x": 56.0,
-   "y": 49.0,
-   "w": 13.0,
-   "h": 9.0
+   "x": 57.37,
+   "y": 53.33,
+   "w": 10.76,
+   "h": 5.19
   },
   {
    "n": "Filter shield (RF)",
@@ -426,10 +426,10 @@
    "f": "antenna cond.",
    "c": "connectivity",
    "cf": "observed",
-   "x": 78.0,
-   "y": 18.0,
-   "w": 19.0,
-   "h": 22.0
+   "x": 79.41,
+   "y": 15.44,
+   "w": 18.55,
+   "h": 20.03
   },
   {
    "n": "PJ2507 module",
@@ -437,32 +437,10 @@
    "f": "",
    "c": "logic",
    "cf": "inferred",
-   "x": 56.0,
-   "y": 29.0,
-   "w": 7.0,
-   "h": 8.0
-  },
-  {
-   "n": "QFN cluster",
-   "p": "",
-   "f": "",
-   "c": "logic",
-   "cf": "inferred",
-   "x": 60.0,
-   "y": 58.0,
-   "w": 22.0,
-   "h": 14.0
-  },
-  {
-   "n": "Power/inductor bank",
-   "p": "",
-   "f": "",
-   "c": "power",
-   "cf": "observed",
-   "x": 72.0,
-   "y": 62.0,
-   "w": 20.0,
-   "h": 12.0
+   "x": 58.19,
+   "y": 27.87,
+   "w": 6.17,
+   "h": 6.26
   },
   {
    "n": "221 inductor",
@@ -470,10 +448,10 @@
    "f": "",
    "c": "power",
    "cf": "observed",
-   "x": 75.0,
-   "y": 6.0,
-   "w": 5.0,
-   "h": 6.0
+   "x": 76.25,
+   "y": 7.1,
+   "w": 3.76,
+   "h": 3.7
   },
   {
    "n": "Gold RCA",
@@ -481,10 +459,10 @@
    "f": "antenna",
    "c": "connector",
    "cf": "observed",
-   "x": 3.0,
-   "y": 0.0,
-   "w": 8.0,
-   "h": 8.0
+   "x": 3,
+   "y": 0,
+   "w": 8,
+   "h": 8
   },
   {
    "n": "Sub-conn (green)",
@@ -492,10 +470,10 @@
    "f": "",
    "c": "connector",
    "cf": "observed",
-   "x": 12.0,
-   "y": 0.0,
-   "w": 16.0,
-   "h": 12.0
+   "x": 11.49,
+   "y": 0,
+   "w": 14.72,
+   "h": 10.66
   },
   {
    "n": "B2B connector (blk)",
@@ -503,10 +481,10 @@
    "f": "harness",
    "c": "connector",
    "cf": "observed",
-   "x": 27.0,
-   "y": 0.0,
-   "w": 11.0,
-   "h": 10.0
+   "x": 27.61,
+   "y": 0.14,
+   "w": 8.88,
+   "h": 12.55
   },
   {
    "n": "Connector 22283",
@@ -514,10 +492,10 @@
    "f": "harness",
    "c": "connector",
    "cf": "observed",
-   "x": 40.0,
-   "y": 0.0,
-   "w": 11.0,
-   "h": 10.0
+   "x": 40.59,
+   "y": 0,
+   "w": 9.5,
+   "h": 11.6
   },
   {
    "n": "Blue RCA",
@@ -525,10 +503,10 @@
    "f": "A/V",
    "c": "connector",
    "cf": "observed",
-   "x": 79.0,
-   "y": 0.0,
-   "w": 7.0,
-   "h": 9.0
+   "x": 79,
+   "y": 0,
+   "w": 7,
+   "h": 9
   },
   {
    "n": "Yellow RCA",
@@ -536,10 +514,10 @@
    "f": "A/V",
    "c": "connector",
    "cf": "observed",
-   "x": 87.0,
-   "y": 0.0,
-   "w": 7.0,
-   "h": 9.0
+   "x": 87,
+   "y": 0,
+   "w": 7,
+   "h": 9
   },
   {
    "n": "FFC / ribbon conn",
@@ -547,10 +525,10 @@
    "f": "flex cable",
    "c": "connector",
    "cf": "observed",
-   "x": 0.0,
-   "y": 49.0,
-   "w": 5.0,
-   "h": 13.0
+   "x": 0,
+   "y": 52.61,
+   "w": 4.42,
+   "h": 12.52
   },
   {
    "n": "Mount hole · TL",
@@ -558,10 +536,10 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 1.0,
-   "y": 16.0,
-   "w": 7.0,
-   "h": 8.0
+   "x": 1,
+   "y": 16,
+   "w": 7,
+   "h": 8
   },
   {
    "n": "Mount hole · TR",
@@ -569,10 +547,10 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 87.0,
-   "y": 16.0,
-   "w": 7.0,
-   "h": 8.0
+   "x": 94.91,
+   "y": 17.69,
+   "w": 2.67,
+   "h": 2.99
   },
   {
    "n": "Center standoff",
@@ -580,10 +558,10 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 43.0,
-   "y": 39.0,
-   "w": 7.0,
-   "h": 7.0
+   "x": 45.88,
+   "y": 41.25,
+   "w": 3.83,
+   "h": 4.05
   },
   {
    "n": "Mount hole · BC",
@@ -591,10 +569,10 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 18.0,
-   "y": 90.0,
-   "w": 8.0,
-   "h": 8.0
+   "x": 19.53,
+   "y": 95.46,
+   "w": 3.84,
+   "h": 3.69
   },
   {
    "n": "Mount hole · BR",
@@ -602,10 +580,131 @@
    "f": "datum",
    "c": "datum",
    "cf": "observed",
-   "x": 85.0,
-   "y": 92.0,
-   "w": 7.0,
-   "h": 7.0
+   "x": 95.44,
+   "y": 95.41,
+   "w": 3.01,
+   "h": 3.3
+  },
+  {
+   "n": "CAN Bus ransceiver",
+   "p": "NXP TJA1145T/FDJ",
+   "f": "CAN Interface IC High-speed CAN transceiver",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 37.65,
+   "y": 45.85,
+   "w": 2.42,
+   "h": 5.02
+  },
+  {
+   "n": "",
+   "p": "Nexperia  AVC16T245",
+   "f": "16-bit dual supply translating transceiver with configurable voltage translation",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 44.62,
+   "y": 73.38,
+   "w": 2.82,
+   "h": 5.91
+  },
+  {
+   "n": "Audio Component",
+   "p": "Texas Instrument IN1650A",
+   "f": "SoundPlus™ High Common-Mode Rejection Line Receivers",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 63.26,
+   "y": 37.13,
+   "w": 3.14,
+   "h": 3.46
+  },
+  {
+   "n": "Pos-AND-Gate",
+   "p": "Texas Instrument LVC08A ",
+   "f": "Quadruple 2-Input Positive-AND Gates",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 64.01,
+   "y": 61.9,
+   "w": 2.86,
+   "h": 2.87
+  },
+  {
+   "n": "UART Converter",
+   "p": "Microchip MCP2200 E/MQ",
+   "f": "USB 2.0 to UART Converter",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 67.78,
+   "y": 65.84,
+   "w": 2.75,
+   "h": 3.38
+  },
+  {
+   "n": "Storage IC",
+   "p": "ISSI IS25LP016",
+   "f": "Unknown storage.",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 80.03,
+   "y": 49.25,
+   "w": 2.9,
+   "h": 3.6
+  },
+  {
+   "n": "Onsemi, Broadcom",
+   "p": "47701 LMSW\nEither - Onsemi, Broadcom",
+   "f": "",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 74.51,
+   "y": 53.67,
+   "w": 2.49,
+   "h": 2.89
+  },
+  {
+   "n": "Hex Inverter",
+   "p": "Texas Instrument 4HCU04",
+   "f": "Hex Inverter",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 80.05,
+   "y": 58.91,
+   "w": 2.88,
+   "h": 3.18
+  },
+  {
+   "n": "Hex Con",
+   "p": "Texas Instrument LVCU04A",
+   "f": "Hex Converter",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 87.53,
+   "y": 59.16,
+   "w": 3.07,
+   "h": 2.85
+  },
+  {
+   "n": "Volt Reg",
+   "p": "Elmos Semiconductor\n52240B",
+   "f": "Dual Low Drop Out Voltage Regulator with Digital Diagnosis",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 88.62,
+   "y": 65.75,
+   "w": 3.06,
+   "h": 3.19
+  },
+  {
+   "n": "SBI EEPROM",
+   "p": "M24C64-RDW6TP",
+   "f": "VIP SBI Calibration EEPROM",
+   "c": "logic",
+   "cf": "inferred",
+   "x": 9.09,
+   "y": 36.8,
+   "w": 3.92,
+   "h": 1.66
   }
  ]
 }

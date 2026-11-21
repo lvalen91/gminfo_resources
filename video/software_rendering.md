@@ -1,4 +1,4 @@
-# GM Infotainment Software Rendering Specifications
+# Software Rendering Specifications
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)

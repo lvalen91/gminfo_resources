@@ -1,4 +1,4 @@
-# GM Info Research State Map — June 2026
+# Research State Map
 
 **Document date:** 2026-06-29
 **Prepared by:** Research session audit (Dec 2024 – Jun 2026)

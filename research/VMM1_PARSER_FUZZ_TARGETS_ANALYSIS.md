@@ -1,4 +1,4 @@
-# `.vmm1` (GHS Hypervisor) AVB/vbmeta Parser — Fuzz Targets + Confirmed Guard RE
+# `.vmm1` Parser Fuzz Targets
 
 **Scope.** AVB/vbmeta parser security for the gminfo37 GHS INTEGRITY hypervisor image
 (`85098662`, `SOC_HOSTOS`): TOCTOU/overflow fuzz targets against `.vmm1` (the AVB/libavb
@@ -337,10 +337,9 @@ first:
 
 ## 6. Confirmed guard-function RE: `elk_inner.elf` (absorbed from GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md)
 
-The tool-setup, Ghidra/PyGhidra install, and the `.vmm1`/`.ota_update.text`
-disassembly-methodology narrative behind this section lives as a dated history
-subsection in `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`; this section carries only the
-AVB-guard-verification result itself.
+See the dated history in [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#04-vmm1ota_update-re-tooling-history-aug-2026-session)
+for tool setup, Ghidra/PyGhidra installation, and the `.vmm1`/`.ota_update.text`
+disassembly method.
 
 ### 6.1 Wrong-binary finding: the real `libavb` almost certainly isn't in `.vmm1`
 
@@ -349,10 +348,9 @@ of the standard 24 `libavb` overflow-guard strings present at all (the two vbmet
 strings already cited in §0) — the rest of the standard guard-string set (`avb_safe_add`'s
 "Overflow when adding values.", `Descriptor size is not divisible by 8`, every
 `INVALID_*`/chain-partition/hashtree guard string) is simply absent from `.vmm1.rodata`.
-Both of the two strings that *are* present have **zero code-side cross-references**
-anywhere in the 14.9 MB firmware image — not inside `.vmm1.text`, not via a pointer table
-in `.vmm1.data`/`.vmm1.rodata`, not anywhere in the whole image, checked at both the
-8-byte and 4-byte-low-half level `[V]`.
+Both strings have **zero code-side cross-references** across the 14.9 MB firmware
+image, including `.vmm1.text` and pointer tables in `.vmm1.data`/`.vmm1.rodata`.
+The check covered full 8-byte values and their low 4 bytes `[V]`.
 
 `research/decompiled/elk_strings.txt`, extracted from a separate binary —
 `elk_inner.elf`, the "ELK"/kernelflinger component (per `INVENTORY.md`: *"Inner ELF:
@@ -371,13 +369,13 @@ classes themselves) still generalizes to whichever binary really runs this code,
 confirmation or refutation of any specific target now depends on `elk_inner.elf`, not
 `.vmm1`.
 
-**Provenance caveat:** `elk_inner.elf`'s source binary (`elk.bin`) is currently a broken
-symlink (`elk.bin -> /tmp/elk.bin`, target gone) — the same documented-but-not-persisted
-pattern seen elsewhere in this corpus. The full `objdump -d -M intel` disassembly
-(`elk.asm`, 287k lines) does still exist on disk and was the basis for the reconstruction
-used below (bytes parsed back into a flat buffer at `0x12800000`–`0x128dc285`, verified
-byte-for-byte against the listing before use). `elk_inner.elf` itself (and the partition
-it was carved from) cannot currently be re-extracted from scratch.
+**Provenance caveat:** The source symlink (`elk.bin -> /tmp/elk.bin`) is broken
+because its target is gone. This is the same documented-but-not-persisted
+pattern seen elsewhere in this corpus.
+The retained `objdump -d -M intel` listing (`elk.asm`, 287k lines) supplied the
+bytes for a flat buffer at `0x12800000`–`0x128dc285`. The reconstruction was
+verified byte-for-byte against that listing. Fresh extraction of `elk_inner.elf`
+and its containing partition remains unavailable.
 
 **Note on bitness, kept separate from the Open Conflict:** `elk_inner.elf` was
 reconstructed and decompiled as `x86:LE:32:default` — a plain 32-bit import, with no

@@ -1,4 +1,4 @@
-# AAOS Offensive Audit — Phase 1 (Sep 2026)
+# AAOS Offensive Audit
 
 **Device:** GM Info 3.7 (gminfo37), Y181
 **Method:** Static reverse engineering of decompiled Y181 system APKs (`DelayedWKSApp`,

@@ -1,4 +1,4 @@
-# Reported RSA-1024 candidate in GHS INTEGRITY Hypervisor
+# RSA-1024 Candidate — GHS Hypervisor
 
 **Classification:** Security Research Finding
 **Date:** 2026-06-29

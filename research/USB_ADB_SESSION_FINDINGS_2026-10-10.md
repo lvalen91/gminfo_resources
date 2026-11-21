@@ -1,4 +1,4 @@
-# gminfo37 (Silverado CSM) — USB hardware & ADB logic, from direct firmware analysis
+# USB Hardware & ADB Logic
 
 **Scope.** USB hardware (X8 connector, controllers), GHS passthrough, Android role-switch/gadget/
 DABridge logic, and the full ADB-exposure condition chain for the gminfo37 CSM. **What does NOT
@@ -98,11 +98,11 @@ same (it drives a real-backed xHCI/xDCI), but GHS sits in the register path.
 512 B RSA-4096-sized signature [FW 85098662 @0xE3CCB0 / 0xE3CE20; region D]. Every other
 high-entropy region (chime audio, camera-overlay BMPs, co-processor firmware blobs — full list and
 addresses in GFM) is identified data, not opaque code; none of it touches the USB controllers.
-*History: the original pass reported "no region hides USB logic... no decodable stream" as if
-negative evidence closed the question, and separately carried an "~13 KB opaque" figure that
-double-counted TEE blocks later identified (2026-11-17) as standard AES T-tables/SHA constants —
-both corrected in place here: absence of a decoded stream does not prove absence of unrecognized
-code, and the only genuinely unaccounted bytes are this 768 B key+signature tail.*
+*History: the original pass treated "no region hides USB logic... no decodable stream" as closing the
+question; absence of a decoded stream does not prove absence of unrecognized code. It also carried an
+"~13 KB opaque" figure that double-counted TEE blocks later identified (2026-11-17) as standard AES
+T-tables/SHA constants. Both are corrected here; the only genuinely unaccounted bytes are this 768 B
+key+signature tail.*
 
 **Meaning:** GHS does not decide host vs device and does not bridge ports. It exposes the XDCI to
 Android through the `OTGD` ACPI OpRegion (§4), and the role decision happens in the Android guest.
@@ -152,7 +152,7 @@ gadget D+ pull-up), and (b) **RULES OUT** hardware VBUS-sense auto-role (VBUS al
 is **not** the `brand=Android` GSI rule — that rule exists [FW init.full_gminfo37_gb.rc] but does not
 fire on a stock GM image; the bench is GM AAOS.
 
-Also resolved this session: the Android ACPIO partition (`86331630`) is only the `ANDR0001`
+Also resolved: the Android ACPIO partition (`86331630`) is only the `ANDR0001`
 fstab/vbmeta descriptor and carries no USB config — USB governance is entirely the GHS `IGS_DSDT`
 XDCI/`OTGD` path above, not this partition.
 
@@ -262,8 +262,8 @@ LIVE Y181 all_properties.txt:510; CONFIRMED ×1]. The bridged ports differ by bu
 ---
 
 ## 6.1 How ONE USB-2.0 link drives two daisy-chained hubs *and* exposes ADB at once
-This is the architectural crux. It splits into two independent facts — one is plain USB, the other is
-the dabridge trick — and they do not conflict because they happen on different logical entities.
+Two independent facts: one is plain USB, the other is dabridge. They do not conflict because they
+apply to different logical entities.
 
 **(a) The daisy chain is ordinary USB — the radio is the single host/root.**
 A single USB host port fans out through standard USB hubs; cascading a second hub onto a downstream
@@ -325,8 +325,8 @@ tree independently lists it [repo `research/GM_AAOS_SECURITY_RESEARCH_COMPENDIUM
 
 So the `dabridge` id_table (`0x0100–0x0105`) targets exactly the **Aptiv H2H bridge** (`0x0105`), not
 the Aptiv hub (`0x0132`) or DFU (`0x0120`) — two independent sources (kernel id_table + live enum)
-agree, and VID `0x2996` is Aptiv (the receptacle board vendor, "APTIV V10 E2 PD"). **Nuance kept
-honest:** the snapshot shows **2×** H2H bridges, so it confirms the *device* `dabridge` recognizes and
+agree, and VID `0x2996` is Aptiv (the receptacle board vendor, "APTIV V10 E2 PD"). **Caveat:**
+the snapshot shows **2×** H2H bridges, so it confirms the *device* `dabridge` recognizes and
 names the vendor, but it does **not** by itself prove the non-ADB receptacle *lacks* an H2H bridge —
 so "why only one receptacle" is narrowed to device-identity but not fully closed. [UNVERIFIED: whether
 the `13558185`/MCIP receptacle contains a `2996:0105` device or only a hub.]

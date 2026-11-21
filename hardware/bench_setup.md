@@ -322,12 +322,11 @@ timing, hardware-timestamp wrap, power-cycle segment selection, delayed/missing
 TX echoes, USB loss, bus-off, malformed frames, warning/overflow reporting,
 missing-adapter retries, and actual process SIGINT/SIGTERM cleanup using fake USB
 discovery, plus silent queue drain and reset-on-nonquiescent-drain behavior.
-Subsequently, the owner reported the radio up and running through the
-launcher with CANable GND on X5 pin 3, then cancelled the script and powered the
-radio off. This is an owner-reported working configuration, not an independent
-duration or power-mode measurement. Later isolated `529` testing sustained
-operation for over 12 hours and identified a conditional b1 bit 7 On/Off
-selector, plus `4DA` b7 bit 0 DriverDoorOpen for state-dependent shutdown;
+Owner-reported result: the radio ran through the launcher with CANable GND on
+X5 pin 3; the script was then cancelled and the radio powered off. This is not an independent duration or power-mode measurement.
+Later isolated `529` testing sustained operation for over 12 hours and identified a
+conditional b1 bit 7 On/Off selector, plus `4DA` b7 bit 0 DriverDoorOpen for
+state-dependent shutdown;
 see the [current CAN findings](../platform/can_bench_experiments.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
 Later observation with no application TX showed a timeout path through
 LocalInfotainment, HmiInactive and Sleep, then ADB disconnection and an explicit

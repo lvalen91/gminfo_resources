@@ -1,4 +1,4 @@
-# SOC_ABL (bootloader_a) — GHS load/verify decompilation
+# SOC_ABL Load/Verify Decompilation
 
 > **CORRECTION (2026-11-18, later pass):** The checksum finding below is for the **kernelflinger
 > ELF's `ipk.` handler** — the Android bootloader component, **NOT** the GHS loader. The actual

@@ -1,4 +1,4 @@
-# GM Info 3.7 Ethernet and Networking
+# Ethernet and Networking
 
 Scope: the radio's (gminfo37, Intel Apollo Lake, Android 12) network architecture: interfaces and addressing, the backbone Ethernet switch, VLAN 4/5 address maps, listening ports and network ADB, mDNS, WiFi/Bluetooth, and bench connectivity/time-sync findings.
 Also held here: USB identifiers/gadget, UART device table, physical Automotive-Ethernet bus map (X11/X84), GM cloud endpoints, CAN-bus gateway note (see the unnumbered sections after section 8).
@@ -193,7 +193,7 @@ Live also showed an established `192.168.1.100:9016 <-> 192.168.1.100:58814` loo
 - The working host setup uses a source-bound loopback relay on **19040** to the radio's 9040 listener, preserving an allowed VLAN-5 source identity. These are configured bench ports, not immutable factory service assignments. No firewall change was needed.
 - Canonical procedure: `BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` section 9.2 in the Y175 analysis/source_notes tree.
 - Host firewall rules, SoftAP exposure and risk ratings: [security.md](security.md) (network services section).
-- **Follow-up, 2026-11-15:** after the 2026-11-14 post-clear power cycle and MDI2 recovery (narrative: [vehicle_config.md](vehicle_config.md); [completed MDI2 recovery](../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14)), USB ADB and T1 ADB on radio TCP 9040 were subsequently operational; the final MEC value remains unverified. At the recovery checkpoint itself, ADB and final MEC had not been rechecked.
+- **Follow-up, 2026-11-15:** after the 2026-11-14 post-clear power cycle and MDI2 recovery (narrative: [vehicle_config.md](vehicle_config.md); [completed MDI2 recovery](../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14)), USB ADB and T1 ADB on radio TCP 9040 were operational. The final MEC value is unverified; ADB and MEC were not rechecked at the recovery checkpoint itself.
 
 ## 5. CarPlay mDNS fingerprint (2026-11-13)
 

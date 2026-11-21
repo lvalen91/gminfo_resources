@@ -43,9 +43,9 @@ Net: on CT5 the shim could still legally claim the authority, but it would only 
 > verification** before any of it is acted on. Two analysis agents partially **disagreed** (see the
 > open question). Treat every claim as a hypothesis to be tested, not a conclusion.
 
-Context: this came from asking whether a non-system 3rd-party app could reach the cluster by speaking
+Scope: whether a non-system 3rd-party app could reach the cluster by speaking
 GM's FSA/NFSA directly (bypassing the Car App Library), to avoid the foreground-flash bootstrap. The
-investigation suggests **no clean method exists**, and inverts the original premise.
+analysis suggests **no clean method exists**, and inverts the original premise.
 
 **Hypotheses (static-only, unverified):**
 - The `RemoteModuleHMI` FSA **server appears to be the Android `ClusterService`** (binds `192.168.118.1:9002`,
@@ -96,7 +96,7 @@ Verified via `/tmp/gm_extract/decomp/ct5/ClusterService/sources/com/gm/nfsa/Prot
 
 This means: whoever sends data to the cluster ECU tells it which sprite to draw. The ECU never receives a bitmap to display.
 
-### The host-side delta (the smoking gun)
+### The host-side delta
 
 **Silverado** at `/tmp/gm_extract/decomp/silv/VMSPlugin/sources/h/b.java:80-140` — the `b()` method that builds `ActiveRouteData` for the **imminent turn**:
 - Calls `activeRouteData2.setManeuverIcon(uri)` (URI only)
@@ -140,7 +140,7 @@ Early `revisions.txt` entries show the troubleshooting that led to the shim:
 - **[94]** Android Auto navigation icons. NAVI_IMAGE(201) data found, only AA provides navigation icons via adapter forwarding. Used for AA active navigation instead of app's internal vector graphics (designed for CarPlay).
 - **[95]** AA maneuver icon and Template Host fixes. Will not set maneuver to 'UNKNOWN', uses provided maneuver enum regardless. Uses provided IMAGE if available, falls back to vector graphic if not. Testing 'metheos' detection code to check if Template Host ContentProvider is available to claim.
 
-The shim approach was **correct for Silverado**. Without it, the orphaned `<TemplatesHostPkg>.ClusterIconContentProvider` authority went unresolved, the parallel URI-resolution channel had nothing to fetch, and the cluster widget showed road name + distance but no icon — exactly the symptom that drove revisions [71]-[95].
+The shim approach was **correct for Silverado**. Without it, the orphaned `<TemplatesHostPkg>.ClusterIconContentProvider` authority went unresolved, the parallel URI-resolution channel had nothing to fetch, and the cluster widget showed road name + distance but no icon — the symptom addressed by revisions [71]-[95].
 
 The shim approach is **futile on CT5** for changing the rendered icon. The CT5 cluster ECU draws its own GM-style glyph based on `setManeuverType()` regardless of whether a URI is also present. carlink-side adjustments cannot override the ECU's sprite choice without changes to the host-side code outside the 3P scope (specifically: prevent VMSPlugin's `setManeuverType()` call, which is in a system app).
 

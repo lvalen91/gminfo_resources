@@ -1,4 +1,4 @@
-# OTA & Module Programming Roles — Who Reflashes What (gminfo37 / A11)
+# OTA & Module Programming Roles
 
 Scope: which component of the A11 (gminfo37) programs which module (ProgrammingMaster / CGM / VIP); the DPS module-ID, signing and package inventory with measured sizes; CalDef evidence for the orchestration role; the SXM CAN-write attempt; evidence status.
 Not here: the on-radio OTA engine ([`ota_update_stack.md`](ota_update_stack.md)), Global B external write-up ([`external_references.md`](external_references.md)), security verdicts ([`security.md`](security.md)).
@@ -50,8 +50,7 @@ the CGM is `0x45`, but its role as executor is unproven.
 ### Programming machinery (summary)
 
 Two parallel inputs (GM Cloud, and USB / DPS-TIS2WEB) both feed `gm_update_engine`; only the
-cloud leg passes through telematics. Original diagram, restored verbatim from the pre-reorg
-document:
+cloud leg passes through telematics. Original diagram, restored verbatim from the pre-reorg document:
 
 ```
 GM Cloud (vtmpub.oboservices.mobi)                     ── or ──   USB / DPS-TIS2WEB
@@ -138,7 +137,7 @@ VIP_BOOT, ABL, tuner/GPS/SXM/eth-switch are byte-identical part numbers.
 
 **Conclusion:** "OTA that includes calibration of other modules" here = **the radio's own
 multi-processor stack** (Intel SoC + Android partitions + Renesas VIP + tuner/GPS/SXM/eth-switch) —
-a whole-ECU bundle the radio installs into itself. Genuinely foreign-ECU calibrations ship as
+a whole-ECU bundle the radio installs into itself. Foreign-ECU calibrations ship as
 separate GM packages, not in this bundle.
 
 ### Installed-module inventory on radio (18 modules)
@@ -337,7 +336,7 @@ unproven** (defined in CalDefs, not captured). Highest-value capture for closing
 
 ## Open conflicts
 
-1. **CAN `0x45` = CGM? — resolved, residual open.** Source `ota_programming_roles.md` L31-36 and L211 assert `0x45` **is** the CGM (GIS763 "Diagnostic Address of the CGM"); L304-306 said CAN `0x45` as CGM was "not established" per `vehicle_network.md` Join-points #3. The later text of `vehicle_network.md` (Join points note, L273-279) and `security.md` L893 both state `0x45` **is** the CGM per GIS-763 and narrow the open item #3 to whether this CAN node is the same *physical* module as the Ethernet-side telematics (`.107/.112`) / inter-VLAN router (`.102`). This doc adopts that: CAN `0x45` = CGM [C]; same-physical-node-as-Ethernet-faces = open; "CGM executes foreign reflash" = unverified. The L304-306 wording is dropped as stale.
+1. **CAN `0x45` = CGM? — resolved, residual open.** Source `ota_programming_roles.md` L31-36 and L211 assert `0x45` **is** the CGM (GIS763 "Diagnostic Address of the CGM"); L304-306 said CAN `0x45` as CGM was "not established" per `vehicle_network.md` Join-points #3. The later text of `vehicle_network.md` (Join points note, L273-279) and `security.md` L893 both state `0x45` **is** the CGM per GIS-763 and narrow open item #3 to whether this CAN node is the same *physical* module as the Ethernet-side telematics (`.107/.112`) / inter-VLAN router (`.102`). This doc adopts that: CAN `0x45` = CGM [C]; same-physical-node-as-Ethernet-faces = open; "CGM executes foreign reflash" = unverified. The L304-306 wording is dropped as stale.
 2. **SXM part number across package/installed.** Package table module 28 SXM = 85843750 (source L53, `firmware_versions.md` DPS list); Y175 package SXM = 84999468 / 824,608 B and Y181B package SXM = 86404694 / 2,237,910 B (size table, source L132); the live radio reports `TUNER_XM` 86404694 (DLS AC). 85843750 matches neither the Y175 nor Y181B measured package. Unreconciled.
 3. **Module 28/29/51 installed vs package.** Radio reports `GPS` part 0 and `TUNER_DIGITAL` part 0, vs package GPS 85121980 / TUNER 85155539 (source L156-158). Unreconciled.
 4. **Module naming.** Package-side `SOC_BOOT` = module 23 (86331652), radio-side `SOC_BOOT` = module 72 (85738845); radio calls 23 `SOC_ANDROID_BOOT`. Name collision, not a data conflict; use module IDs.

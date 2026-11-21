@@ -1,4 +1,4 @@
-# GM Infotainment Audio Subsystem Specifications
+# Audio Subsystem Specifications
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -151,8 +151,8 @@ Most buses use the default 384-frame HAL buffer (8ms @ 48kHz). Two buses use red
 
 ### Live per-bus gain & VolumeGroup table (Jun-2026 capture — authoritative)
 
-From `car_service.txt` (lines 419–513) + POTATO CarAudioService boot dump. These are the real
-per-bus defaults; the "+30 dB" figure above was an oversimplification. The **AudioContext** column
+From `car_service.txt` (lines 419–513) + POTATO CarAudioService boot dump. These are the
+per-bus defaults; the "+30 dB" figure above was an oversimplification (a uniform "+30 dB" does not apply). The **AudioContext** column
 shows that bus0 (VolumeGroup 5) carries more than MEDIA/GAME/UNKNOWN — it also carries EMERGENCY,
 SAFETY, VEHICLE_STATUS and ANNOUNCEMENT (migrated from automotive_audio.md):
 
@@ -176,7 +176,7 @@ CSM amplifier channels). OEM audio_policy_volumes curve points (from automotive_
 **Low-latency caveat (from platform_faq §5):** although the HAL exposes a FastMixer and "low-latency"
 192-frame buses, `AUDIO_OUTPUT_FLAG_FAST` is DENIED by AudioFlinger for third-party apps, so
 `PERFORMANCE_MODE_LOW_LATENCY` is unusable — GM AAOS uses `PERFORMANCE_MODE_NONE`. Mix period 8 ms;
-output latency ~24 ms. **ECNR HAL absent:** `vendor.gm.audio@1.0::IECNRControl` is genuinely missing
+output latency ~24 ms. **ECNR HAL absent:** `vendor.gm.audio@1.0::IECNRControl` is absent
 from the image (fails repeatedly at boot, expected — does not affect audio output).
 
 ### Harman SSE Configuration

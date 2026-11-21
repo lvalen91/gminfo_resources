@@ -1,4 +1,4 @@
-# gminfo37 — uid=2000 Shell Access, Binder Surface & Escalation Assessment
+# Shell Access Escalation
 
 **Device:** GM Info 3.7 (gminfo37), Y181 `W231E-Y181.3.2-SIHM22B-499.3`
 **Research Date:** June 2026
@@ -269,7 +269,7 @@ selected handlers likewise does not confer an arbitrary command shell.
 |----------|--------|--------|---------------------|
 | HIGH | Kernel exploit (4.19.305, KASLR ~0x0D000000) | In progress | Symbols known; need exact slide + exploit. SELinux Enforcing contains documented CVEs by policy. `perf_event_open`/`ptrace`/no-seccomp available |
 | HIGH | diagnosticsd UDS SecurityAccess (0x27) | New path | No OS-level peer gate (binary-confirmed). **CORRECTED 2026-09:** `ETHERNET`/`NOTIFICATION` tiers are checked in-process (`libuds`), not by `gm_protokey`; `VIP` tier is forwarded off-SoC to the VIP MCU (`ProxyOfExtComp`/`SockAdaptor`), gated by the SBI EEPROM byte. See [`diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) and [`platform/security.md`](../../platform/security.md#ethernet-uds-27-securityaccess--vip-side-forwarding-off-soc-2026-09) |
-| HIGH | diagnosticsd oversized-payload alloc | Potential | Confirm `malloc(PAYLOAD_LEN)`-before-check via Ghidra |
+| ~~HIGH~~ | diagnosticsd oversized-payload alloc | **[C] Resolved 2026-11-21 — Confirmed-clean** | diagnosticsd's body-read bound (`length ≤ 0x3fffff`) exactly matches its fixed 4 MB buffer; no malloc-before-bounds-check overflow. `readHeader` is attested in [`diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) (as `DiagnosticEthernetMonitor::readHeader`) and [`diagnostics/diagnosticsd_protocol.md`](../../diagnostics/diagnosticsd_protocol.md) (as `SockAdaptor::readHeader`). See [`AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md) NATIVE-1 (confirmed-clean negative result) |
 | MEDIUM | diagnosticsd source-IP admission / logical tester | Corrected 2026-11-14: firewall admission and UDS tester/session checks are separate. Old all-rejected probes used invalid tester `0x0FA0`; direct T1 F4 + extended session + 31-FF seed + 12-zero response yielded `67 02`. | See [validated T1 sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14); no root shell, partition write or calibration write established. |
 | MEDIUM | `IDiagnosticsInternalService` HIDL | Untested | Needs vendor SELinux domain (vndbinder) |
 | MEDIUM | GM Secure ADB fake `gmauthmanagerservice` socket | Theoretical | Feed MEC 1–255; still needs GM-signed policy to complete auth |

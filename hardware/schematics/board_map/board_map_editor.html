@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gminfo37 board map editor</title>
+<style>
+  :root{
+    --bg:#15181d; --panel:#1d2127; --panel2:#242a32; --line:#333c46;
+    --fg:#e7ecf2; --mut:#9aa6b2; --accent:#4ea3ff; --danger:#ff5d5d; --ok:#4fd37a;
+    --compute:#ff8a3d; --memory:#c06bff; --connectivity:#4ea3ff; --power:#ff5d5d;
+    --logic:#4fd37a; --connector:#ffd23d; --datum:#7f8c99;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--fg);font:13px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
+  button,select,input,textarea{font:inherit;color:inherit}
+  #app{display:flex;flex-direction:column;height:100vh}
+
+  /* toolbar */
+  #bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--line)}
+  #bar .grp{display:flex;align-items:center;gap:6px;padding:0 8px;border-right:1px solid var(--line)}
+  #bar .grp:last-child{border-right:0}
+  .btn{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .btn.on{background:var(--accent);border-color:var(--accent);color:#06101c;font-weight:600}
+  .btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .seg button{background:var(--panel2);border:0;border-right:1px solid var(--line);padding:5px 12px;cursor:pointer}
+  .seg button:last-child{border-right:0}
+  .seg button.on{background:var(--accent);color:#06101c;font-weight:600}
+  label.ck{display:flex;align-items:center;gap:5px;color:var(--mut);cursor:pointer;user-select:none}
+  .title{font-weight:700;letter-spacing:.3px;margin-right:4px}
+  .mut{color:var(--mut)}
+  #status{color:var(--mut);min-width:120px}
+  #status.dirty{color:var(--accent)}
+
+  /* main split */
+  #main{flex:1;display:flex;min-height:0}
+  #stage{flex:1;overflow:auto;position:relative;background:#0c0e11;padding:18px;display:flex;justify-content:center;align-items:flex-start}
+  #board{position:relative;max-width:100%;box-shadow:0 0 0 1px var(--line),0 10px 40px #0008;user-select:none}
+  #board img{display:block;width:100%;height:auto;pointer-events:none;-webkit-user-drag:none}
+  #overlay{position:absolute;inset:0}
+
+  .cmp{position:absolute;border:1.5px solid var(--c,#4ea3ff);background:color-mix(in srgb,var(--c,#4ea3ff) 14%,transparent);border-radius:3px;cursor:move}
+  .cmp.inferred{border-style:dashed}
+  .cmp .tag{position:absolute;left:0;top:-17px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    background:#000a;color:var(--c,#fff);padding:0 4px;border-radius:3px;font-size:10px;line-height:16px;pointer-events:none}
+  .cmp.sel{border-color:#fff;box-shadow:0 0 0 1px #000,0 0 10px #000c;z-index:50}
+  .cmp.sel .tag{color:#fff;background:#000c}
+  .hide-labels .cmp .tag{display:none}
+  .cmp .h{position:absolute;width:11px;height:11px;background:#fff;border:1px solid #000;border-radius:2px;display:none}
+  .cmp.sel .h{display:block}
+  .cmp .h.nw{left:-6px;top:-6px;cursor:nwse-resize}
+  .cmp .h.ne{right:-6px;top:-6px;cursor:nesw-resize}
+  .cmp .h.sw{left:-6px;bottom:-6px;cursor:nesw-resize}
+  .cmp .h.se{right:-6px;bottom:-6px;cursor:nwse-resize}
+  .cmp.dim{opacity:.18}
+  #board.adding{cursor:crosshair}
+
+  /* inspector */
+  #side{width:320px;flex:none;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column}
+  #side h2{margin:0;padding:10px 14px;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line)}
+  #form{padding:12px 14px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:10px}
+  #form.empty{color:var(--mut);justify-content:center;align-items:center;text-align:center}
+  .field{display:flex;flex-direction:column;gap:3px}
+  .field label{font-size:11px;color:var(--mut)}
+  .field input,.field select,.field textarea{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:6px 8px;width:100%}
+  .field textarea{resize:vertical;min-height:40px}
+  .row{display:flex;gap:8px}
+  .row .field{flex:1}
+  .swatchrow{display:flex;gap:4px;flex-wrap:wrap}
+  .cat-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--mut)}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  #legend{padding:8px 14px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 12px}
+  #sideActions{padding:10px 14px;border-top:1px solid var(--line);display:flex;gap:8px}
+  kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px}
+  #hint{position:absolute;left:12px;bottom:12px;background:#000b;border:1px solid var(--line);border-radius:6px;padding:6px 10px;color:var(--mut);font-size:11px;pointer-events:none}
+  .warn{color:var(--danger)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="bar">
+    <span class="title">gminfo37 · board map</span>
+    <div class="grp">
+      <div class="seg" id="sideSel">
+        <button data-side="top" class="on">Top (CPU)</button>
+        <button data-side="bottom">Bottom (VIP)</button>
+      </div>
+    </div>
+    <div class="grp">
+      <button class="btn" id="addBtn" title="Draw a box over an unidentified part">+ Add component</button>
+    </div>
+    <div class="grp">
+      <label class="ck"><input type="checkbox" id="lbls" checked> labels</label>
+      <label class="ck">img <input type="range" id="opac" min="0" max="100" value="100" style="width:80px"></label>
+      <label class="ck">box <input type="range" id="boxop" min="0" max="100" value="100" style="width:80px"></label>
+    </div>
+    <div class="grp">
+      <select id="catFilter"><option value="">all categories</option></select>
+    </div>
+    <div class="grp">
+      <button class="btn" id="importBtn">Import JSON…</button>
+      <input type="file" id="fileIn" accept="application/json,.json" hidden>
+      <button class="btn" id="exportBtn">⬇ Export board_map.json</button>
+    </div>
+    <div class="grp" style="flex:1;justify-content:flex-end;border-right:0">
+      <span id="status">loading…</span>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="stage">
+      <div id="board">
+        <img id="boardImg" alt="board">
+        <div id="overlay"></div>
+      </div>
+      <div id="hint"></div>
+    </div>
+
+    <div id="side">
+      <h2>Inspector</h2>
+      <div id="form" class="empty">Select a component to edit it,<br>or <b>+ Add component</b> to mark a new one.</div>
+      <div id="sideActions" style="display:none">
+        <button class="btn" id="dupBtn">Duplicate</button>
+        <button class="btn danger" id="delBtn" style="margin-left:auto">Delete</button>
+      </div>
+      <div id="legend"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS = ["compute","memory","connectivity","power","logic","connector","datum"];
+const CFS  = ["observed","inferred"];
+const IMG  = {top:"photos/Top_CPU-Side.png", bottom:"photos/Bottom_VIP-Side.png"};
+const FIELDS = ["n","p","f","c","cf","x","y","w","h"];
+
+let data = {top:[],bottom:[]};
+let side = "top";
+let sel = -1;           // index into data[side]
+let dirty = false;
+let catFilter = "";
+let adding = false;
+
+const $ = s=>document.querySelector(s);
+const overlay=$("#overlay"), board=$("#board"), img=$("#boardImg");
+
+function catColor(c){return getComputedStyle(document.documentElement).getPropertyValue('--'+c).trim()||'#4ea3ff';}
+function setDirty(d){dirty=d;const s=$("#status");s.textContent=d?"● unsaved — Export to save":"all changes exported";s.classList.toggle('dirty',d);}
+function clamp(v,a,b){return Math.min(b,Math.max(a,v));}
+function round(v){return Math.round(v*100)/100;}
+
+/* ---------- load ---------- */
+async function load(){
+  try{
+    const r = await fetch("board_map.json",{cache:"no-store"});
+    if(!r.ok) throw new Error(r.status);
+    data = normalize(await r.json());
+    $("#status").textContent="loaded board_map.json";
+    render();
+  }catch(e){
+    $("#status").innerHTML='<span class="warn">board_map.json not auto-loaded — use Import JSON…</span>';
+    $("#hint").innerHTML="fetch of local file blocked by browser. Click <b>Import JSON…</b> and pick <b>board_map.json</b>, "+
+      "or serve this folder: <kbd>python3 -m http.server</kbd>";
+    render();
+  }
+}
+function normalize(d){
+  const out={top:[],bottom:[]};
+  for(const s of ["top","bottom"]) (d[s]||[]).forEach(o=>out[s].push({
+    n:o.n||"", p:o.p||"", f:o.f||"", c:CATS.includes(o.c)?o.c:"logic",
+    cf:CFS.includes(o.cf)?o.cf:"inferred",
+    x:+o.x||0, y:+o.y||0, w:+o.w||2, h:+o.h||2
+  }));
+  return out;
+}
+
+/* ---------- render ---------- */
+function render(){
+  img.src = IMG[side];
+  overlay.innerHTML="";
+  const list = data[side];
+  const op = $("#boxop").value/100;
+  list.forEach((o,i)=>{
+    const el=document.createElement("div");
+    el.className="cmp "+o.cf+(i===sel?" sel":"")+((catFilter&&o.c!==catFilter)?" dim":"");
+    el.style.cssText=`--c:${catColor(o.c)};left:${o.x}%;top:${o.y}%;width:${o.w}%;height:${o.h}%;opacity:${op};`;
+    el.innerHTML=`<span class="tag">${o.n||"(unnamed)"}</span>`+
+      ["nw","ne","sw","se"].map(h=>`<span class="h ${h}" data-h="${h}"></span>`).join("");
+    el.dataset.i=i;
+    overlay.appendChild(el);
+  });
+  overlay.classList.toggle=overlay.classList.toggle; // noop
+  $("#overlay").classList.toggle;
+  document.querySelector("#board").classList.toggle("adding",adding);
+  overlayLabels();
+  buildForm();
+  renderLegend();
+}
+function overlayLabels(){ board.classList.toggle("hide-labels", !$("#lbls").checked); }
+
+function renderLegend(){
+  const counts={}; data[side].forEach(o=>counts[o.c]=(counts[o.c]||0)+1);
+  $("#legend").innerHTML = CATS.map(c=>`<span class="cat-pill"><span class="dot" style="background:${catColor(c)}"></span>${c} <span class="mut">${counts[c]||0}</span></span>`).join("")
+    + `<span class="cat-pill mut" style="margin-left:auto">${data[side].length} on this side</span>`;
+}
+
+/* ---------- inspector form ---------- */
+function buildForm(){
+  const f=$("#form");
+  if(sel<0||!data[side][sel]){f.className="empty";f.innerHTML="Select a component to edit it,<br>or <b>+ Add component</b> to mark a new one.";$("#sideActions").style.display="none";return;}
+  f.className=""; $("#sideActions").style.display="flex";
+  const o=data[side][sel];
+  f.innerHTML=`
+    <div class="field"><label>Name (n)</label><input id="f_n" value="${esc(o.n)}" placeholder="e.g. ST M24C64 EEPROM"></div>
+    <div class="field"><label>Part / markings (p)</label><textarea id="f_p" placeholder="PN, silkscreen, markings">${esc(o.p)}</textarea></div>
+    <div class="field"><label>Function (f)</label><input id="f_f" value="${esc(o.f)}" placeholder="what it does"></div>
+    <div class="row">
+      <div class="field"><label>Category (c)</label><select id="f_c">${CATS.map(c=>`<option ${c===o.c?"selected":""}>${c}</option>`).join("")}</select></div>
+      <div class="field"><label>Confidence (cf)</label><select id="f_cf">${CFS.map(c=>`<option ${c===o.cf?"selected":""}>${c}</option>`).join("")}</select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>x %</label><input id="f_x" type="number" step="0.1" value="${round(o.x)}"></div>
+      <div class="field"><label>y %</label><input id="f_y" type="number" step="0.1" value="${round(o.y)}"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>w %</label><input id="f_w" type="number" step="0.1" value="${round(o.w)}"></div>
+      <div class="field"><label>h %</label><input id="f_h" type="number" step="0.1" value="${round(o.h)}"></div>
+    </div>
+    <div class="mut" style="font-size:11px">Drag the box to move · corner handles to resize · arrow keys nudge (Shift = bigger) · <kbd>Del</kbd> deletes</div>
+  `;
+  f.querySelectorAll("input,select,textarea").forEach(inp=>{
+    inp.addEventListener("input",()=>{
+      const o=data[side][sel];
+      o.n=$("#f_n").value; o.p=$("#f_p").value; o.f=$("#f_f").value;
+      o.c=$("#f_c").value; o.cf=$("#f_cf").value;
+      o.x=+$("#f_x").value; o.y=+$("#f_y").value; o.w=+$("#f_w").value; o.h=+$("#f_h").value;
+      setDirty(true);
+      // light re-render of just the selected box
+      const el=overlay.querySelector(`.cmp[data-i="${sel}"]`);
+      if(el){el.style.cssText=`--c:${catColor(o.c)};left:${o.x}%;top:${o.y}%;width:${o.w}%;height:${o.h}%;opacity:${$("#boxop").value/100};`;
+        el.className="cmp "+o.cf+" sel";
+        el.querySelector(".tag").textContent=o.n||"(unnamed)";}
+      renderLegend();
+    });
+  });
+}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------- selection + drag/resize ---------- */
+function select(i){sel=i;render();}
+overlay.addEventListener("pointerdown",e=>{
+  if(adding) return;
+  const el=e.target.closest(".cmp"); if(!el) return;
+  const i=+el.dataset.i; if(i!==sel) select(i);
+  const handle=e.target.dataset.h;
+  const o=data[side][i], r=board.getBoundingClientRect();
+  const sx=e.clientX, sy=e.clientY, o0={...o};
+  el.setPointerCapture(e.pointerId);
+  const move=ev=>{
+    const dx=(ev.clientX-sx)/r.width*100, dy=(ev.clientY-sy)/r.height*100;
+    if(!handle){ o.x=clamp(o0.x+dx,0,100-o.w); o.y=clamp(o0.y+dy,0,100-o.h); }
+    else{
+      let x=o0.x,y=o0.y,w=o0.w,h=o0.h;
+      if(handle.includes("w")){x=o0.x+dx; w=o0.w-dx;}
+      if(handle.includes("n")){y=o0.y+dy; h=o0.h-dy;}
+      if(handle.includes("e")){w=o0.w+dx;}
+      if(handle.includes("s")){h=o0.h+dy;}
+      if(w<0.5){w=0.5;} if(h<0.5){h=0.5;}
+      o.x=clamp(x,0,99.5);o.y=clamp(y,0,99.5);o.w=clamp(w,0.5,100-o.x);o.h=clamp(h,0.5,100-o.y);
+    }
+    const E=overlay.querySelector(`.cmp[data-i="${i}"]`);
+    E.style.left=o.x+"%";E.style.top=o.y+"%";E.style.width=o.w+"%";E.style.height=o.h+"%";
+    syncNums(o);
+  };
+  const up=()=>{overlay.removeEventListener("pointermove",move);overlay.removeEventListener("pointerup",up);setDirty(true);};
+  overlay.addEventListener("pointermove",move);
+  overlay.addEventListener("pointerup",up);
+  e.preventDefault();
+});
+function syncNums(o){["x","y","w","h"].forEach(k=>{const el=$("#f_"+k);if(el)el.value=round(o[k]);});}
+
+/* ---------- add new component by drawing ---------- */
+board.addEventListener("pointerdown",e=>{
+  if(!adding) return;
+  const r=board.getBoundingClientRect();
+  const x0=(e.clientX-r.left)/r.width*100, y0=(e.clientY-r.top)/r.height*100;
+  const ghost=document.createElement("div");
+  ghost.className="cmp inferred sel";
+  ghost.style.cssText=`--c:${catColor('logic')};left:${x0}%;top:${y0}%;width:0;height:0`;
+  overlay.appendChild(ghost);
+  const move=ev=>{
+    const x1=(ev.clientX-r.left)/r.width*100, y1=(ev.clientY-r.top)/r.height*100;
+    ghost.style.left=Math.min(x0,x1)+"%";ghost.style.top=Math.min(y0,y1)+"%";
+    ghost.style.width=Math.abs(x1-x0)+"%";ghost.style.height=Math.abs(y1-y0)+"%";
+  };
+  const up=ev=>{
+    document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);
+    const x1=(ev.clientX-r.left)/r.width*100, y1=(ev.clientY-r.top)/r.height*100;
+    let w=Math.abs(x1-x0),h=Math.abs(y1-y0);
+    if(w<1&&h<1){w=4;h=4;} // click, not drag → default box
+    const o={n:"",p:"",f:"",c:"logic",cf:"inferred",
+      x:round(clamp(Math.min(x0,x1),0,100)),y:round(clamp(Math.min(y0,y1),0,100)),w:round(w),h:round(h)};
+    data[side].push(o); sel=data[side].length-1;
+    setAdding(false); setDirty(true); render();
+    setTimeout(()=>$("#f_n")&&$("#f_n").focus(),0);
+  };
+  document.addEventListener("pointermove",move);
+  document.addEventListener("pointerup",up);
+  e.preventDefault();
+});
+function setAdding(v){adding=v;$("#addBtn").classList.toggle("on",v);board.classList.toggle("adding",v);
+  $("#hint").innerHTML=v?"Drag a box over the unidentified part (or click for a default box). <kbd>Esc</kbd> cancels.":"";}
+
+/* ---------- toolbar wiring ---------- */
+$("#sideSel").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  [...e.currentTarget.children].forEach(c=>c.classList.toggle("on",c===b));
+  side=b.dataset.side; sel=-1; render();});
+$("#addBtn").addEventListener("click",()=>setAdding(!adding));
+$("#lbls").addEventListener("change",overlayLabels);
+$("#opac").addEventListener("input",e=>img.style.opacity=e.target.value/100);
+$("#boxop").addEventListener("input",render);
+$("#catFilter").addEventListener("change",e=>{catFilter=e.target.value;render();});
+$("#delBtn").addEventListener("click",delSel);
+$("#dupBtn").addEventListener("click",()=>{if(sel<0)return;const o={...data[side][sel]};o.x=clamp(o.x+2,0,95);o.y=clamp(o.y+2,0,95);o.n=o.n+" copy";data[side].push(o);sel=data[side].length-1;setDirty(true);render();});
+function delSel(){if(sel<0)return;data[side].splice(sel,1);sel=-1;setDirty(true);render();}
+
+CATS.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;$("#catFilter").appendChild(o);});
+
+/* keyboard */
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){if(adding)setAdding(false);else{sel=-1;render();}return;}
+  if(sel<0)return;
+  const tag=document.activeElement&&document.activeElement.tagName;
+  if(tag==="INPUT"||tag==="TEXTAREA"||tag==="SELECT")return;
+  const o=data[side][sel], step=e.shiftKey?1:0.2;
+  if(e.key==="Delete"||e.key==="Backspace"){delSel();e.preventDefault();return;}
+  let m=false;
+  if(e.key==="ArrowLeft"){o.x=clamp(o.x-step,0,100-o.w);m=true;}
+  if(e.key==="ArrowRight"){o.x=clamp(o.x+step,0,100-o.w);m=true;}
+  if(e.key==="ArrowUp"){o.y=clamp(o.y-step,0,100-o.h);m=true;}
+  if(e.key==="ArrowDown"){o.y=clamp(o.y+step,0,100-o.h);m=true;}
+  if(m){const E=overlay.querySelector(`.cmp[data-i="${sel}"]`);E.style.left=o.x+"%";E.style.top=o.y+"%";syncNums(o);setDirty(true);e.preventDefault();}
+});
+
+/* ---------- import / export ---------- */
+$("#importBtn").addEventListener("click",()=>$("#fileIn").click());
+$("#fileIn").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{data=normalize(JSON.parse(rd.result));sel=-1;setDirty(false);$("#status").textContent="imported "+f.name;$("#hint").innerHTML="";render();}
+    catch(err){alert("Bad JSON: "+err.message);}};
+  rd.readAsText(f);e.target.value="";
+});
+$("#exportBtn").addEventListener("click",()=>{
+  // stable key order, 2-dec rounding — minimal diff against board_map.json
+  const out={};
+  for(const s of ["top","bottom"]) out[s]=data[s].map(o=>({
+    n:o.n,p:o.p,f:o.f,c:o.c,cf:o.cf,x:round(o.x),y:round(o.y),w:round(o.w),h:round(o.h)}));
+  const txt=JSON.stringify(out,null,1)+"\n";
+  const blob=new Blob([txt],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="board_map.json";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  setDirty(false);
+});
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue="";}});
+
+load();
+</script>
+</body>
+</html>

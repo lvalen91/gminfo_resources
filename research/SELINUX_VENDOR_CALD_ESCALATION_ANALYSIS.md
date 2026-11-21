@@ -1,4 +1,4 @@
-# SELinux + DAC reachability audit: `calserviced` / `vendor_cald` (`.calovride` write path)
+# `vendor_cald` / `calserviced` Escalation Audit
 
 **Target:** GM MY22/Y181 IVI (Intel Apollo Lake SoC, GHS INTEGRITY host + Android 12L guest),
 2024 Silverado head unit — the owner's own module.
@@ -45,12 +45,11 @@ caller boundary toward an unprivileged invoker has not been fully traced — see
 [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
 for that open question. No calibration deployment via this path has been performed.
 
-> **History:** the original 2026-10-30 analysis stated an absolute "DENIED, no route" verdict.
-> The 2026-11-15 follow-up walked this back to the current framing — "no *established* route;
-> the updater's caller boundary is a separate, unresolved question" — after confirming a
-> legitimate privileged updater copier exists and recognizing that an RCE prerequisite is not a
-> complete model of every authorized import path. **The 2026-11-15 wording is the current
-> verdict; the earlier absolute "no route" framing is superseded, not restated as current.**
+> **History:** the 2026-10-30 analysis stated an absolute "DENIED, no route" verdict. On
+> 2026-11-15 it was revised to "no *established* route; the updater's caller boundary is a
+> separate, unresolved question," because a legitimate privileged updater copier exists and an
+> RCE prerequisite does not model every authorized import path. **The 2026-11-15 wording is the
+> current verdict; the absolute "no route" framing is superseded.**
 
 ## Terminology correction (load-bearing)
 

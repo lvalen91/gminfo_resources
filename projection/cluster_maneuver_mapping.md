@@ -1,4 +1,4 @@
-# Cluster Maneuver Mapping — iAP2 / Android Auto → GM Cluster Glyph
+# Cluster Maneuver Glyph Mapping
 
 **Scope:** GM Info 3.7 (gminfo37, AAOS 12) and GM VCU 1.0 / CIP (Bosch **VCUNH1**, AAOS 14).
 **Status:** firmware-verified 2026-06-06 (4-agent sweep of the CT5 `Radio-IVE-86384258-AAOS14-UQBM`
@@ -172,7 +172,7 @@ rich iAP2 data is therefore **gminfo3.7-only** (where the app composes/forwards 
   angle is available. **NOTE — no CT5 visible effect:** the HMIC/Altia atlas has no directional roundabout art
   (see §4), so CT5 still draws the generic roundabout glyph. The change is kept only because it is (a)
   semantically more correct, (b) gminfo3.7-neutral, and (c) future-proof for any GMModel/AAOS that ships the
-  directional art. It does **not** deliver the originally hoped-for CT5 roundabout improvement.
+  directional art. It does **not** deliver the originally hoped-for CT5 roundabout improvement (the CT5 roundabout glyph is not improved).
 - **Platform-gate (implemented 2026-06-06, the real win):** on VCUNH1, skip the dead bitmap compose
   (`ComposedIconStore`/`IconBitmapRenderer`) + the AA-bitmap shim — they're masked there. VCU detection:
   `Build` device `burmese` / product `burmese_orange` / `ro.build.id` prefix `VCU` (from CT5 build.prop;
@@ -183,14 +183,14 @@ rich iAP2 data is therefore **gminfo3.7-only** (where the app composes/forwards 
 > **2026-11-12 scope note (live Y181B boot logs):** the "App mapping" and "Current gap" items in this
 > document (`ManeuverMapper.kt`, the carlink app) belong to the `zeno.carlink` + CPC200 rig. The radio
 > currently on the bench runs `zeno.gmccpa` (CarPlay-only, OCBM box). Its logs show route-guidance *state*
-> (`routeGuidanceState=3 (was 0)`) reaching the app but no maneuver or `NavigationState` emission toward
-> `com.gm.vmsplugin`, so the table above is **not** confirmed as exercised by gm_ccpa; that is a log-absence
-> observation, not proof. [2026-11-12 correction: "no maneuver" was too strong. gm_ccpa's own NETPROBE
-> lines do carry maneuver data: `route_guidance: comp=42 state=NoRouteSet(0) maneuvers=18 current=13`,
+> (`routeGuidanceState=3 (was 0)`) reaching the app. gm_ccpa's own NETPROBE lines also carry maneuver data:
+> `route_guidance: comp=42 state=NoRouteSet(0) maneuvers=18 current=13`,
 > `route_guidance: maneuver burst count=19 idx=0..18`; 17 of 20 `route_guidance:` lines carry maneuvers (bursts counted;
-> merged `main` log). Maneuver data reaches the app; only emission toward the cluster VMSPlugin is unobserved, and
-> absence in INFO/DEBUG logs is not proof of absence.] The firmware-derived links (Templates Host -> VMSPlugin -> TurnType) are
-> unchanged. Same boot logs confirm `VMSClusterService` is bound by `CAR.CLUSTER` and that
+> merged `main` log). Maneuver data reaches the app; only emission toward the cluster VMSPlugin (`NavigationState` toward
+> `com.gm.vmsplugin`) is unobserved, so the table above is **not** confirmed as exercised by gm_ccpa; that is a
+> log-absence observation, not proof (absence in INFO/DEBUG logs is not proof of absence).
+> [2026-11-12 correction: an earlier version's "no maneuver" statement was too strong; maneuver data does reach the app.] The firmware-derived links
+> (Templates Host -> VMSPlugin -> TurnType) are unchanged. Same boot logs confirm `VMSClusterService` is bound by `CAR.CLUSTER` and that
 > `ClusterHalService` reports `navigationStateSupported=false`; see `cluster_navigation.md`.
 
 ## 6. Provenance

@@ -1,4 +1,4 @@
-# VIP Firmware Y175 / Y177 / Y181 Security Analysis (three-way)
+# VIP Firmware Y175 / Y177 / Y181 Comparison
 
 **Date:** 2026-01-05 · **Corrected:** 2026-08-25
 **Purpose:** Binary-diff of the Harman VIP (Renesas RH850) application across three GM builds,

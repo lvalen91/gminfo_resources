@@ -1,4 +1,4 @@
-# GM Info 3.7 Boot Chain
+# Boot Chain
 
 **Device:** GM Info 3.7 (gminfo37) | **Platform:** Intel Apollo Lake (Broxton) | **Android:** 12 (API 32) | **Research window:** Dec 2025 - Nov 2026 (the original header read "December 2025 - February 2026"; extended because the body carries dated Sep-Nov 2026 observations, consolidation 2026-11-18)
 
@@ -72,7 +72,7 @@ BSP_InitializeOnBootCpu
 
 ### Guest-kernel coupling to GHS (boot-relevant facts)
 
-Source: real Y181B (gminfo37 CSM) boot image extracted from the firmware package, cross-checked byte-identical against the live device `.config` ([C] 2026-09-27; `emulator.md` L29-88). Emulator-build results (QEMU home-screen milestone) are in [emulator.md](emulator.md); full per-dependency table: `../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` Appendix G. Full kernel-config evidence: [Appendix F, kernel configuration / GHS coupling (2026-09)](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-e-kernel-configuration--ghs-coupling); QEMU portability: [Appendix G](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-f-qemu-portability--dependency-classification).
+Source: real Y181B (gminfo37 CSM) boot image extracted from the firmware package, cross-checked byte-identical against the live device `.config` ([C] 2026-09-27; `emulator.md` L29-87). Emulator-build results (QEMU home-screen milestone) are in [emulator.md](emulator.md); full per-dependency table: `../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` Appendix G. Full kernel-config evidence: [Appendix F, kernel configuration / GHS coupling (2026-09)](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-e-kernel-configuration--ghs-coupling); QEMU portability: [Appendix G](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-f-qemu-portability--dependency-classification).
 
 - `CONFIG_PARAVIRT` is **not set**. `CONFIG_HYPERVISOR_GUEST=y` enables only optional detection (no `KVM_GUEST`/`XEN`/`HYPERV`/`PVH`/`JAILHOUSE_GUEST`). Core MMU/timekeeping/IRQ/scheduling is bare-metal x86_64 although the kernel runs as a GHS INTEGRITY guest.
 - GHS coupling is at the device-driver layer:
@@ -153,7 +153,9 @@ AVB is performed by GHS `VMM1_InitialTask`, not by Android:
                                    offset 0 = `41 56 42 30` = `AVB_MAGIC`, RSA2048/SHA256,
                                    flags=0x00000000 i.e. verification NOT disabled, zero
                                    GM-specific fields)
-4. Verify signing key            — RSA-2048 from .oemkeys ELF section in SOC_ABL
+4. Verify signing key            — RSA-2048 `current_android_key`, embedded in the GHS
+                                   image (not SOC_ABL `.oemkeys`; corrected 2026-11-21,
+                                   research/BOOT_TRUST_ANCHOR_AND_KEYS.md §5-6)
 5. Check rollback index          — GHS independent counter in misc
 6. Load boot partition           — verify hash against vbmeta descriptor
 7. Set kernel cmdline            — slot_suffix, verifiedbootstate,
@@ -163,7 +165,7 @@ AVB is performed by GHS `VMM1_InitialTask`, not by Android:
 
 ### Live runtime posture (end-state of the chain)
 
-**[C] Y175, 2026-10-05** — `W213E-Y175.5.2-SIHM22B-383.1`, capture `/tmp/radio_audit/20261005_232227/raw/`: `ro.boot.verifiedbootstate=green`, `ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`, `sys.oem_unlock_allowed=0`, `ro.oem_unlock_supported=` (empty), `ro.debuggable=0`, `ro.secure=1`, `ro.adb.secure=1`, `ro.build.type=user`, tags `release-keys`. vbmeta: `ro.boot.avb_version=1.2` / `ro.boot.vbmeta.avb_version=1.1`, `hash_alg=sha256`, `size=3328`, `digest=76b736eaf87d186de5f03f08176b67ae2cdcf91130b4350b328b0876c00bb585`. SELinux Enforcing at runtime (all 179 avc lines `permissive=0`). **Unverifiable from a shell uid 2000:** steps 1-6 internals (the `.oemkeys` RSA-2048 key, AVB0/vbmeta parse, CRC32 slot metadata, GHS rollback counter in `misc`). `verity.txt` captured only `green`/`1` and an empty `===VERITY` section, so runtime dm-verity state is not independently evidenced by that capture.
+**[C] Y175, 2026-10-05** — `W213E-Y175.5.2-SIHM22B-383.1`, capture `/tmp/radio_audit/20261005_232227/raw/`: `ro.boot.verifiedbootstate=green`, `ro.boot.flash.locked=1`, `ro.boot.vbmeta.device_state=locked`, `sys.oem_unlock_allowed=0`, `ro.oem_unlock_supported=` (empty), `ro.debuggable=0`, `ro.secure=1`, `ro.adb.secure=1`, `ro.build.type=user`, tags `release-keys`. vbmeta: `ro.boot.avb_version=1.2` / `ro.boot.vbmeta.avb_version=1.1`, `hash_alg=sha256`, `size=3328`, `digest=76b736eaf87d186de5f03f08176b67ae2cdcf91130b4350b328b0876c00bb585`. SELinux Enforcing at runtime (all 179 avc lines `permissive=0`). **Unverifiable from a shell uid 2000:** steps 1-6 internals (the GHS-embedded `current_android_key` RSA-2048 key (corrected 2026-11-21; previously cited as `.oemkeys`), AVB0/vbmeta parse, CRC32 slot metadata, GHS rollback counter in `misc`). `verity.txt` captured only `green`/`1` and an empty `===VERITY` section, so runtime dm-verity state is not independently evidenced by that capture.
 
 **[C] Y181B, 2026-11-12** (adb getprop, directly read) — `W231E-Y181.3.2-SIHM22B-499.3`, Android 12/SDK 32, patch `2025-06-05`, `ro.bootloader=2344`, `ro.boot.verifiedbootstate=green`, `ro.boot.vbmeta.device_state=locked`, `ro.boot.flash.locked=1`, `ro.boot.slot_suffix=_a`, `ro.boot.product.hardware.sku=gv221`, `ro.boot.vbmeta.avb_version=1.1`, `ro.boot.avb_version=1.2` (the "AVB 1.1" shorthand applies only to the vbmeta-side token), kernel `4.19.305-240125T145315Z-gf1edde901aa7`.
 
@@ -227,7 +229,7 @@ GHS contains a typo in its error string, `"metatdata"` (sic), when referring to 
 | 1 | VIP (RH850 firmware) | GM |
 | 2 | Intel ABL (SOC_ABL bootloader) | Intel / GM |
 | 3 | GHS INTEGRITY (hypervisor) | Green Hills / GM |
-| 4 | Android AVB (vbmeta keys, GSI keys q/r/s) | GM (RSA-2048 in `.oemkeys`) |
+| 4 | Android AVB (vbmeta keys, GSI keys q/r/s) | GM (RSA-2048 vbmeta key = GHS-embedded `current_android_key`, not `.oemkeys`; corrected 2026-11-21, [`../research/BOOT_TRUST_ANCHOR_AND_KEYS.md`](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md) §5-6) |
 
 ### Module signing status (package level)
 
@@ -346,7 +348,7 @@ Channels between GHS tasks and the Android guest (static RE of GHS strings).
 | Audio | `ConnToChimes` | Chime audio task |
 | Audio | `ConnToDirana` | Dirana tuner/DSP |
 | VIP | `ConnToVIP` | Primary VIP communication |
-| VIP | `ConnToVip_Lifecycle` | Lifecycle/shutdown coordination |
+| VIP | `ConnToVip_Lifecycle_API` | Lifecycle/shutdown coordination |
 | TEE | `ConnToTEE_Keymaster` | Hardware keymaster operations |
 | TEE | `ConnToTEE_Storage` | Secure storage (RPMB) |
 | TEE | `ConnToTEE_Router` | TEE message routing |
@@ -436,7 +438,7 @@ GSI (Generic System Image) and DSU (Dynamic System Updates) are **disabled by ap
 
 1. **SOC_ABL signed vs unsigned.** Module Signing table lists SOC_ABL as *Unsigned* (`boot_chain.md` L633) while the trust table calls it a "~6MB signed image" in Intel IPK format and the 85738845 IPK contains production-signed `oem.key` and `IBBP.man` manifests (`security.md` L58-59, L87-95). Possible reconciliation (not established): "unsigned" refers to the TSS package-level signature; the image carries its own Intel IFWI signing. Not resolved in source.
 2. **Super size / static-A/B** — `8.6GB` (source L335, L355) vs Y175 measured 18000 MiB (source L379-387); SSDT static-A/B reading (source L362-369) vs update-engine use of `super` (L371-377) vs refutation in QEMU 2026-09-27 and Y175 measurement 2026-11-17. Single conclusion owned by [partitions_storage.md](partitions_storage.md); real Y181B hardware resolution via the SSDT remains unconfirmed (source L398-400).
-3. **Owner of `ttyS1` / VIP HDLC.** Here (source L44-50) HDLC is terminated in the GHS-side `VIP_InitialTask` with the guest using a userspace `IPCServer` protocol via `ipc4.cfg`; `emulator.md` L69-71 and `hardware.md` L195, L204, L279 describe the guest's `/dev/ttyS1` (`ipc_serial_device`) as the HDLC link used by `IPCServer`; IAP L167-170 assigns guest UART0+UART3 to Android and repurposes UART1 for VIP IPC. Unreconciled; owner [vip_ipc_ghs.md](vip_ipc_ghs.md).
-4. **SELinux mode on cmdline vs runtime.** Retained Y181B cmdlines carry both `permissive` and later `enforcing` tokens; "later pair wins" is inferred [U]. `emulator.md` real-kernel build boots permissive by its own cmdline (`emulator.md` L48-88), while the goldfish hybrid enforces. Not a hardware contradiction; see [security.md](security.md) / [emulator.md](emulator.md).
+3. **Owner of `ttyS1` / VIP HDLC.** Here (source L44-50) HDLC is terminated in the GHS-side `VIP_InitialTask` with the guest using a userspace `IPCServer` protocol via `ipc4.cfg`; `emulator.md` L75-76 and `hardware.md` L195, L204, L279 describe the guest's `/dev/ttyS1` (`ipc_serial_device`) as the HDLC link used by `IPCServer`; IAP L167-170 assigns guest UART0+UART3 to Android and repurposes UART1 for VIP IPC. Unreconciled; owner [vip_ipc_ghs.md](vip_ipc_ghs.md).
+4. **SELinux mode on cmdline vs runtime.** Retained Y181B cmdlines carry both `permissive` and later `enforcing` tokens; "later pair wins" is inferred [U]. `emulator.md` real-kernel build boots permissive by its own cmdline (`emulator.md` L48-87), while the goldfish hybrid enforces. Not a hardware contradiction; see [security.md](security.md) / [emulator.md](emulator.md).
 5. **BCB `boot-see-dealer` (modes table) vs observed `boot-recovery` + `--show_return_to_dealer`** in retained recovery records of a see-dealer entry (source L492). Both kept; the table is from static RE, the latter from bench observation.
 6. **`ABL.secureboot=1` hit count**: 386 vs ~188 (archive) vs 376 (duplicate-export double count). Recount dated 2026-11-12 is the latest; kept as stated.

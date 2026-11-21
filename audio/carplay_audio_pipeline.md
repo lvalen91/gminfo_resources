@@ -1,4 +1,4 @@
-# GM AAOS CarPlay Audio Pipeline Technical Analysis
+# CarPlay Audio Pipeline
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)

@@ -1,4 +1,4 @@
-# GM Info 3.7 Firmware Versions
+# Firmware Versions
 
 Version and identity reference for gminfo37 (Intel Apollo Lake / Broxton, Android 12 / API 32): Y175 / Y177 / Y181(B) comparison, build strings and fingerprints, patch levels, kernels, component part numbers, slot and update history, naming scheme.
 Not here: module IDs and signing (see [ota_programming_roles.md](ota_programming_roles.md)), CalDef/UDS tables ([vehicle_config.md](vehicle_config.md)), security posture ([security.md](security.md)), boot flow ([boot_chain.md](boot_chain.md)).

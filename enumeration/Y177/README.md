@@ -1,4 +1,4 @@
-# Y177 (Y177.6.1 GAS) — SELinux / policy artifacts
+# Y177 (Y177.6.1 GAS) SELinux / Policy
 
 **Provenance:** extracted 2026-09-26 from the Y177 USB update package (NOT a live-device pull) —
 `firmware/update_packages/Y177/` blobs `86283152` (SOC_SYSTEM), `86283156.zip` (SOC_VENDOR),

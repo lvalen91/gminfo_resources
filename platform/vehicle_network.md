@@ -1,4 +1,4 @@
-# Vehicle Network Topology — 2024 Silverado 2500 HD LTZ (ICE, gminfo37 / A11 Radio)
+# Vehicle Network Topology
 
 Two-plane vehicle topology: ECU census, gateway/radio diagnostic IDs, Ethernet vlan4/vlan5 plane map,
 SecOC plane (external research), join points, resolved/open items. Topology only — message tables,
@@ -169,10 +169,10 @@ Backbone: 100BASE-T1 via on-board switch (host on port 5; gateway/telematics on 
 > `239.192.0.1`. A 25 s passive listen on `239.192.0.1:30490` and `:3000` and a 20 s listen on mDNS
 > `224.0.0.251:5353` **all returned 0 packets** (joins succeeded on vlan4/vlan5/eth0, no SELinux denial,
 > `sends:0`). **Cause:** the three in-vehicle automotive-ethernet links are unconnected on the bench, so no AE
-> peer ECU/switch is advertising — the HU is *ready* to participate but has no partners. SOME/IP-SD
-> `239.192.0.1:30490` therefore reflects the *firmware/in-vehicle* config, not a bench-active service. The
-> harness (`~/gm_bench_agent`, `untrusted_app`, listen-only) is validated and would map the real OfferService
-> graph **in-vehicle** or with the bench AE links bridged to the vehicle backbone. (A 3P `untrusted_app` CAN
+> peer ECU/switch is advertising — the HU is *ready* to participate but has no partners. SOME/IP-SD `239.192.0.1:30490` therefore reflects the *firmware/in-vehicle*
+> config, not a bench-active service. The listen-only harness (`~/gm_bench_agent`, `untrusted_app`) is
+> validated and would map the real OfferService graph **in-vehicle** or with the bench AE links bridged to the
+> vehicle backbone. (A 3P `untrusted_app` CAN
 > join these groups + `MulticastLock` with no root — only the privileged `/proc/net/igmp`/netlink reads are
 > SELinux-denied to it.)
 
@@ -193,8 +193,8 @@ Backbone: 100BASE-T1 via on-board switch (host on port 5; gateway/telematics on 
 Most vlan5 peers use `02:0x:00:00:0x:00` locally-administered MACs = hypervisor virtual NICs / co-resident GHS
 partitions bridged onto the physical backbone.
 
-**Identity evidence (History: 2026-10-06 correction).** An earlier version of this note claimed the Bosch device
-(real OUI) **and the RTOS partition** are unambiguously separate hardware. The RTOS-partition half is **wrong**.
+**Identity evidence (2026-10-06 correction).** An earlier version stated that the Bosch device
+(real OUI) **and the RTOS partition** are separate hardware. The RTOS-partition half is **wrong**.
 ARP evidence (`enumeration/Y181/*/raw/arp_table.txt`, `enumeration/Y181/jun2026/enumeration_report.txt:7477-7482`):
 the RTOS/diagnostic endpoint `172.16.4.107` carries MAC **`02:05:00:00:02:00`** — locally-administered (bit-1 set),
 i.e. a hypervisor virtual NIC, **not** real silicon — and that **same** virtual NIC is dual-homed as

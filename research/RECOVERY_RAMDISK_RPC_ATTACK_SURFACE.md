@@ -1,4 +1,4 @@
-# Recovery/OTA → GHS `ota_update` RPC Attack Surface Map
+# `ota_update` RPC Attack Surface
 
 **Scope:** RE map of the RPC protocol between the Android recovery-side updater and the
 GHS `ota_update` INTEGRITY partition — opcodes, parameter-validation gaps, error handling,
@@ -245,18 +245,14 @@ index** in `misc`/vda9 (confirmed to block Y181→Y177 live); **TSS/GPD Producti
 signature; **UDS SecurityAccess** on the VIP for ECU modules; and **SELinux** as the only runtime
 gate on `/dev/ghs/ota-isys` (DAC is world-rw).
 
-**Remaining gap, resolved:** this section originally stated flatly that disassembly of
-`.ota_update.text` (71 KB) and RE of `/system/lib64/libghs_lip.so` were still needed to build the
-opcode table and fuzz harness, then had a later note bolted on saying specific ELK/HECI branches
-had since been disassembled — self-contradictory as written. **History:** `.ota_update.text`
-*has* since been fully disassembled and decompiled (§2 above) — this is complete, not
-outstanding, and the opcode-table gap is not a missing-RE problem but a missing dispatch-table
-problem (see §2's "History" note: the negative result rules out `.text`/`.rodata` as the
-dispatch mechanism; `.ota_update.data`, 700 B, is unexamined). What is still genuinely
-outstanding is `libghs_lip.so` ioctl-dispatch RE, and any `.ota_update.data` table it might
-hold — the opcode space at §2.1/§2.5 remains `[U]` for that reason, not for lack of
-`.ota_update.text` coverage. GBUR is the canonical source for which binaries/paths are
-currently verified.
+**Remaining gap, resolved:** `.ota_update.text` has been fully disassembled and decompiled
+(§2 above) — this is complete, not outstanding. The opcode-table gap is a missing-dispatch-table
+problem, not a missing-RE problem (see §2's "History" note: the negative result rules out
+`.text`/`.rodata` as the dispatch mechanism; `.ota_update.data`, 700 B, is unexamined). What
+remains outstanding is `libghs_lip.so` ioctl-dispatch RE, and any `.ota_update.data` table it
+might hold — the opcode space at §2.1/§2.5 stays `[U]` for that reason, not for lack of
+`.ota_update.text` coverage. GBUR is the canonical source for which binaries/paths are currently
+verified.
 
 ---
 

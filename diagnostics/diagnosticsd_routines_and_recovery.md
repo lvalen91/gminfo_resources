@@ -1,4 +1,4 @@
-# diagnosticsd — RoutineControl Outcomes & Calibration-Clear/Recovery Incident
+# diagnosticsd — RoutineControl Outcomes
 
 > Part of the [`diagnosticsd` Ethernet UDS bridge](ethernet_uds_diagnosticsd.md) doc set (port 49156).
 
@@ -14,8 +14,8 @@ matched all fourteen LTZ identities and the supplied VIN, all module statuses00,
 and F0F1/F0F2=`0000`. Genuine HC has subsequently transferred all fourteen
 containers and completed F198/F199/039B/F190 finalization. HC mute restart
 reached calibration state2/HMI ready/Propulsion; all fourteen HC identities,
-the VIN and module/error statuses were verified afterward. The owner observed
-the distinct HC logo and then confirmed its moving welcome animation. A later
+the VIN and module/error statuses were verified afterward. The distinct HC
+logo and its moving welcome animation were owner-observed. A later
 modified slot0C test was rejected with `7F 36 72`; genuine slot0C was restored
 in the same session and HC restart/identity/status checks passed again. The owning
 [CAN campaign](../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16)
@@ -453,9 +453,9 @@ the pre-write VIN must be printable and equal the intended VIN.
 
 The transaction status string was `RESET_ACCEPTED_NOT_VERIFIED`. That string
 describes the transaction's reset acknowledgement; the enclosing live writer
-subsequently completed fresh post-reset VIN and metadata reads. The owner
-then observed the display working, startup completing and the radio operating
-normally. Metadata matching does not constitute full payload readback.
+subsequently completed fresh post-reset VIN and metadata reads. Display
+operation, startup completion and normal radio operation were also owner-observed.
+Metadata matching does not constitute full payload readback.
 
 #### RH850 UART confirmation and remaining messages
 

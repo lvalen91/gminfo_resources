@@ -1,4 +1,4 @@
-# CarPlay vs Android Auto Projection Comparison
+# CarPlay vs Android Auto
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -130,7 +130,7 @@ GM AAOS implements **fundamentally different architectures** for CarPlay and And
 - CPC200 adds 36-byte header to H.264 NAL units (20B video header + protocol framing)
 
 **Key Difference from Native CarPlay:**
-The CPC200 adapter terminates the AirPlay protocol entirely on the adapter itself. The head unit never sees AirPlay -- it receives raw H.264 via USB bulk transfers with a proprietary header. This means:
+The CPC200 adapter is a protocol bridge: it terminates AirPlay and iAP2 entirely on the adapter and presents a simple USB device to the head unit. The head unit never sees or speaks AirPlay -- it receives raw H.264 via USB bulk transfers with a proprietary header. This means:
 1. No CINEMO/NME framework involvement
 2. Hardware decode instead of software decode
 3. Full 2400x960 resolution instead of 1416x842 windowed
@@ -445,7 +445,7 @@ WiFi Wireless:
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Key Difference:** The CPC200 adapter decodes AAC to PCM on-device, so the head unit receives raw PCM and routes it directly through AudioFlinger without needing CINEMO's audio decode libraries.
+**Audio consequence of adapter-side AirPlay termination** (see "CarPlay Video (via CPC200-CCPA Adapter)"): the adapter decodes AAC to PCM on-device, so the head unit receives raw PCM and routes it directly through AudioFlinger without needing CINEMO's audio decode libraries.
 
 ### Android Auto Audio
 
@@ -524,7 +524,7 @@ Uses standard Bluetooth HFP SCD files (no Android Auto specific tuning)
 | **Audio** | PCM (adapter decodes AAC to PCM) |
 | **Service Discovery** | USB device enumeration |
 
-**Key Difference:** The CPC200 adapter is an intelligent protocol bridge -- it terminates AirPlay/iAP2 entirely and presents a simple USB device to the head unit. The head unit never speaks AirPlay.
+AirPlay/iAP2 termination on the adapter: see "Key Difference from Native CarPlay" under CarPlay Video (via CPC200-CCPA Adapter).
 
 ### Android Auto Protocol
 
@@ -743,29 +743,19 @@ mediaCodec.setCallback(new MediaCodec.Callback() {
 
 ---
 
-## Key Takeaways
+## Summary
 
-1. **Three Distinct Paths**: Native CarPlay (CINEMO/SW decode), CPC200 CarPlay (MediaCodec/HW decode), and Android Auto (MediaCodec/HW decode)
+Figures are in the Executive Summary and Performance Comparison tables above.
 
-   > 2026-11-12: now four paths: add gm_ccpa CarPlay via OCBM box (MediaCodec HW HEVC, `OMX.Intel.hw_vd.h265`, 2400x960; measured in the Y181B `main` log). The three-path statement predates it.
+- **Paths:** native CarPlay (CINEMO/NME, software decode), CPC200 CarPlay (MediaCodec, hardware decode), Android Auto (MediaCodec, hardware decode). Native CarPlay is the only path using software decode and the proprietary NME framework (~17.5 MB of libraries); CPC200 CarPlay and Android Auto use standard MediaCodec with Intel hardware decode. All three share AudioFlinger and the bus architecture.
 
-2. **Native CarPlay is the Outlier**: Only path that uses software decode and proprietary CINEMO/NME framework
+  > 2026-11-12: now four paths: add gm_ccpa CarPlay via OCBM box (MediaCodec HW HEVC, `OMX.Intel.hw_vd.h265`, 2400x960; measured in the Y181B `main` log). The three-path statement predates it.
+  >
+  > 2026-11-12: native CarPlay remains the software-decode outlier among the four paths (gm_ccpa also decodes in hardware); stated for the stock path only, with the earlier "why" being inference.
 
-   > 2026-11-12: still true among the four paths (gm_ccpa also decodes in hardware); stated for the stock path only, with the earlier "why" being inference.
-
-3. **CPC200 Matches Android Auto Architecture**: Both use standard Android MediaCodec with Intel hardware acceleration
-
-4. **CPC200 Gets Better Resolution**: Full 2400x960 native resolution vs native CarPlay's 1416x842 windowed
-
-5. **Same Audio Routing**: All three paths share AudioFlinger and the bus architecture
-
-6. **CarPlay Has More Libraries**: ~17.5 MB of NME libraries for native path vs standard AOSP for CPC200 and Android Auto
-
-7. **CarPlay Has Dedicated Audio Tuning**: SCD files for USB and WiFi telephony variants
-
-8. **CPC200 Trades Latency for Resolution**: ~248ms startup vs near-instant native, but gains fullscreen HW-decoded video
-
-9. **Android Auto Resolution Gap**: No explicit video/UI resolution configuration found for Android Auto in extracted partitions - may cause aspect ratio or touch mapping issues with the non-standard 2400x960 (2.5:1) display
+- **CPC200 trade-off:** ~248 ms first-packet-to-first-frame startup (versus near-instant native startup; no native startup figure is measured in this document), in exchange for fullscreen 2400x960 hardware-decoded video (native CarPlay: 1416x842 windowed).
+- **Audio tuning:** native CarPlay has dedicated SCD files for USB and WiFi telephony variants.
+- **Android Auto resolution gap:** no explicit video/UI resolution configuration was found in the extracted partitions; may cause aspect ratio or touch mapping issues with the non-standard 2400x960 (2.5:1) display. See Android Auto Resolution Configuration.
 
 ---
 

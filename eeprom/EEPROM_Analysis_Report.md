@@ -1,4 +1,4 @@
-# GM IOK Infotainment EEPROM Analysis Report
+# EEPROM Analysis Report
 
 **File Analyzed:** `ADB_enabled.bin`
 **File Size:** 8,192 bytes (8KB)
@@ -7,56 +7,68 @@
 
 ---
 
-## Executive Summary
+## Scope of this file (updated 2026-11-21)
 
-This EEPROM dump is from a **GM Infotainment 3 with Google Built-In** (RPO Code: **IOK**) system, specifically a **Harman INFO3.7-3.8 CSM** module. The binary contains vehicle identification, security configuration, display calibration tables, audio curves, and multiple feature flags. The ADB security bypass has been applied (both security flags set to 0xFF).
+This file is the GM IOK/Harman INFO3.7-3.8 EEPROM dump record for `ADB_enabled.bin`. The mechanism,
+marker-byte, SBI/ADB-bypass, AUTOSAR NvM descriptor, CRC-algorithm, and address-map analysis that used
+to be duplicated here now lives in `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` ("ELA") — see ELA
+for current, more rigorously verified versions of that material. What remains here, kept because ELA
+references these values but does not reproduce them, is:
+
+- the raw numeric calibration-table appendix (brightness/color LUT values, backlight-dimming LUT
+  values, UI-flag byte dump and per-offset breakdown, UI/display-timing raw values);
+- facts, addresses, and correction notes that are not currently stated in ELA at all (flagged
+  below as "not in ELA").
+
+Each section below is marked **[Pointer]** (content verified present in ELA — kept short, cite ELA
+section), or **[Kept]** (unique content, not in ELA, preserved in full/compact form).
+
+---
+
+## Executive Summary [Pointer]
+
+GM Infotainment 3 with Google Built-In (RPO **IOK**), Harman INFO3.7-3.8 CSM module. For platform
+identification, the SBI/ADB-bypass mechanism, and marker/CalGroup analysis, see ELA (header block and
+§2-§3). This dump has the ADB security bypass applied (both SBI data bytes set to `0xFF`).
 
 ---
 
 ## Hardware Identification
 
-| Field | Value | Address |
-|-------|-------|---------|
-| **VIN** | XXXXXXXXXXXXXXXXX | 0x5C0-0x5D1 |
-| **Vehicle** | 2024 Chevrolet Silverado 2500HD | Decoded from VIN |
-| **MTC traceability-code tail (corrected 2026-10-16; was "Part Number")** | <SN_REDACTED> | 0x500 |
-| **Serial Number** | 7310500000000X | 0x5A0 |
-| **Unit Serial** | <SN_REDACTED> | 0x680 |
-| **VIN-tail residual (corrected 2026-10-15; was "Firmware ID")** | XXXXXXXX A | 0x14A0 |
-| **Programming Date** | 20.02.2025 | 0x580 |
-| **Region Code** | 34 (ASCII '4' - North America) | 0x4E1 |
+Full address map for VIN, MTC, programming date, shop code, reprogram date, HW part numbers, and the
+VIN-tail residual field is in ELA §5.3 — **[Pointer]**.
 
-> **CORRECTED 2026-10-15 (clean-room triple-pass + cross-session SPS-log match, two independent
-> fable agents + an adversarial verification pass):** `0x14A0` is **not** a firmware ID. The field
-> mirrors whichever VIN was active the last time its NvM block was written; it lags behind the
-> primary VIN (`0x05C0`) after a re-VIN/reprogram event instead of updating immediately. Proven by
-> comparing two SPS sessions on the same physical module (same ECUID
-> `004B41DC0000160006104145610114AC`): the unit was moved from one vehicle's VIN to another, and
-> this field retained the *old* vehicle's last-8-characters instead of tracking the new VIN.
-> Firmware strings `cal_vin_relearn_en` / `Theftlocked` (present in VIP_APP) corroborate a
-> VIN-relearn/theft-lock retention mechanism rather than a firmware-version field. `eeprom/README.md`
-> already independently called this a "VIN-suffix mirror" — this correction refines that: it's not a
-> live mirror, it's a residual field that can go stale.
->
-> **STRESS-TESTED 2026-10-16** against a cross-tree research survey that initially rated this
-> UNVERIFIABLE (the counter-evidence dump checked turned out to be a *different* file than the one
-> this finding was built from — resolved by direct byte comparison). Three distinct real dumps now
-> show three different states at this address: `ADB_enabled.bin` (the LTZ unit itself) reads its
-> *own* current VIN tail (live, not stale — expected, since that unit was never re-VINed);
-> `/Users/zeno/Downloads/dump.bin` (the HC unit, analyzed above) reads the *previous* vehicle's VIN
-> tail (stale, as described); `Y181_ADB_enabled_HC.bin` (a third, separately-sourced HC dump) reads
-> all-zero (blank). **Do not treat "always retains the old VIN" as a guaranteed behavior** — the
-> field is evidently a separately-written NvM block that is not kept in lockstep with `0x05C0`, and
-> its exact state (live/stale/blank) depends on write history, not a fixed rule.
->
-> **CORRECTED 2026-10-16:** `0x0500` ("Part Number" above) is not a part number — it's the last 9
-> digits of a 16-digit Manufacturing Traceability Code (MTC), confirmed digit-for-digit against the
-> SPS tool's `mtc`/`infokey` log field. The full code assembles as
-> `0x04E1`(1 digit, "Line") + `0x0561`(1, "Shift") + `0x0541`(2, "Year") + `0x0521`(3, "Doy") +
-> `0x0501`(9, "Tn") — see `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.15/§2.5 for the full
-> derivation. The old "Part Number" label predates that finding and was never reconciled with it.
+- **[Kept — not in ELA]** Vehicle decoded from VIN: 2024 Chevrolet Silverado 2500HD. Programming date at `0x0580`: `20.02.2025` (ELA §5.3 lists the field without the sample value).
 
-### System Specifications (IOK Platform)
+**[Kept — not in ELA]** Two items from this file's own prior analysis are more granular than ELA's
+one-line entries for the same addresses and are preserved here:
+
+> **MTC digit derivation (not in ELA, which states only "0x0500 = MTC traceability-code tail, digit-
+> exact vs SPSVCS.LOG `mtc`/`infokey`" without the sub-field breakdown):** the full 16-digit
+> Manufacturing Traceability Code assembles as `0x04E1` (1 digit, "Line") + `0x0561` (1, "Shift") +
+> `0x0541` (2, "Year") + `0x0521` (3, "Doy") + `0x0501` (9, "Tn"); `0x0500` stores only the trailing
+> 9-digit "Tn" tail. The old "Part Number" label for `0x0500` and "Region Code" label for `0x04E1`
+> (ASCII `'4'`, decimal 34) predate this derivation and are superseded by it — `0x04E1` is the MTC
+> "Line" digit, not a region code.
+
+> **VIN-tail residual (`0x14A0`) chain-of-custody detail (not in ELA, which states only the one-line
+> "mirrors whichever VIN was active when its NvM block was last written; can go stale"):** three
+> distinct real dumps show three different states at this address — `ADB_enabled.bin` (this file's
+> subject, the LTZ unit) reads its own current VIN tail (live, never re-VINed); `/Users/zeno/Downloads/dump.bin`
+> (the HC unit) reads the *previous* vehicle's VIN tail (stale); `Y181_ADB_enabled_HC.bin` (a third,
+> separately-sourced HC dump) reads all-zero (blank). Do not treat "always retains the old VIN" as a
+> guaranteed behavior. Corroborating evidence: firmware strings `cal_vin_relearn_en` / `Theftlocked`
+> (present in VIP_APP) point to a VIN-relearn/theft-lock retention mechanism; same physical module
+> ECUID `004B41DC0000160006104145610114AC` confirmed across the compared SPS sessions.
+
+> **Unit Serial, `0x0680` (0x680) — unreconciled with ELA:** this file reads `0x0680` as "Unit Serial"
+> (`<SN_REDACTED>`). ELA §5.3 instead reads `0x0680-0x0689` as the shop/dealer code (UDS DID `F198`,
+> `shopcode` = `9999988888`, a 10-char truncation of the logged 11-digit value) `[C]`. The two
+> readings are not reconciled against each other here — **[Kept, flagged conflict]**.
+
+---
+
+### System Specifications (IOK Platform) [Kept — not in ELA]
 - **CPU:** Intel Atom A3960
 - **GPU:** Intel HD 500
 - **RAM:** 6 GB
@@ -64,125 +76,73 @@ This EEPROM dump is from a **GM Infotainment 3 with Google Built-In** (RPO Code:
 - **OS:** Android Automotive 10-12
 - **Display:** 13.4" HD Touchscreen
 
-> CORRECTION (added during review; original values above left for archival fidelity): the
-> Dec-2025 spec block is stale. Ground truth — GPU = Intel **HD 505** (not 500); RAM = **8 GB
-> LPDDR4** physical, GHS grants the guest 7830 MiB, kernel `MemTotal` 5530 MiB / 5.40 GiB (not 6 GB); OS = **Android Automotive 12
-> (API 32)** (not "10-12"); Storage = 64 GB **Samsung KLMCG4JEUD** eMMC; Display = 2400×960
-> **Chimei Innolux DD134IA-01B**. See `hardware/teardown.md` and `VERIFICATION.md`.
+> **CORRECTION (added during review; original values above left for archival fidelity; not covered by
+> ELA, which does not discuss hardware specs):** the Dec-2025 spec block is stale. Ground truth — GPU
+> = Intel **HD 505** (not 500); RAM = **8 GB LPDDR4** physical, GHS grants the guest 7830 MiB, kernel
+> `MemTotal` 5530 MiB / 5.40 GiB (not 6 GB); OS = **Android Automotive 12 (API 32)** (not "10-12");
+> Storage = 64 GB **Samsung KLMCG4JEUD** eMMC; Display = 2400×960 **Chimei Innolux DD134IA-01B**. See
+> `hardware/teardown.md` and `VERIFICATION.md`.
 >
-> EEPROM doc set (all retained, complementary): this report = full 8 KB map + calibration/UI
-> tables; `eeprom/README.md` = the hands-on flip procedure (minipro/XGecu); `eeprom/EEPROM_
-> UNDOCUMENTED_FLAGS_ANALYSIS.md` = undocumented-flag RE + CalGroup marker rotation + 0xb67d0;
-> `hardware/teardown.md` §EEPROM = consolidated headlines + extra structured-region readings.
-> Unresolved interpretation conflicts with teardown.md (same bytes, different meaning, not
-> settleable from bytes alone): **0x1A80** (here "config CRC" vs teardown "MEC NVM value"),
-> **0x1B60** (here "block CRC" vs teardown "reflash/programming counters" — the latter aligns
-> with the UNDOCUMENTED_FLAGS §13.7 CRC-version-counter finding), **0x05A0** (here "Serial
-> Number" vs teardown "Calibration file ID"; the bytes are the `7310500000000X` CVPPS value).
-> These remain UNVERIFIED — do not treat either reading as confirmed.
+> **EEPROM doc set (updated 2026-11-21):** this report = raw 8 KB calibration/UI-flag numeric
+> appendix only, plus facts not carried elsewhere (mechanism and address-map narrative now lives in
+> `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`); `eeprom/README.md` = the hands-on flip procedure
+> (minipro/XGecu); `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` = retired pointer (its raw data and correction
+> trail are in ELA §13); `hardware/teardown.md` §EEPROM = consolidated headlines + extra
+> structured-region readings.
+
+**[Pointer — in ELA §6/§5.3]** Interpretation conflicts between this report and `teardown.md` (same
+bytes, different meaning, not settled from bytes alone) are tracked in ELA: **0x1A80** ("config CRC"
+vs. "MEC NVM value"), **0x1B60/0x1B80** ("block CRC" vs. "reflash/programming counters"), **0x05A0**
+("Serial Number" vs. "Calibration file ID"). See ELA §6 and §5.3 for current status (still UNVERIFIED
+either way).
 
 ---
 
-## Memory Map Overview
+## Memory Map Overview [Pointer, with exceptions kept]
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│ 0x0000-0x005F │ Header & Boot Flags                           │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0060-0x0397 │ Reserved/Scratch (zeroed - 824 bytes)         │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0398-0x03BF │ Module Identification Codes                   │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0400-0x045F │ Security Configuration & Flags                │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0460-0x0465 │ HW Part Number (ssecuhn, confirmed 2026-10-15)│
-├────────────────────────────────────────────────────────────────┤
-│ 0x0466-0x04FF │ Unidentified (not Radio/Audio; 0x0480 holds a second part-number-shaped value) │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0500-0x05FF │ String Data (VIN, Serial, Date, Part#)        │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0600-0x07FF │ Additional Configuration                      │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0800-0x0A7F │ Reserved (0xFF padding)                       │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0A80-0x0AFF │ Backup Security Flags                         │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0B00-0x0DFF │ Feature Flags & Runtime Config                │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0E00-0x0EBF │ Display/UI Settings                           │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0EC0-0x0EFF │ Calibration Block A                           │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0F00-0x0F3F │ Brightness Lookup Table                       │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0F40-0x0F7F │ Color/Display Calibration                     │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0F80-0x0FDF │ Secondary Brightness Table                    │
-├────────────────────────────────────────────────────────────────┤
-│ 0x0FE0-0x103F │ Backlight Dimming Curve (was mislabeled "Audio Volume Curve")                            │
-├────────────────────────────────────────────────────────────────┤
-│ 0x1040-0x109F │ Backlight Dimming Tables (was mislabeled "Audio Fade/Balance")                     │
-├────────────────────────────────────────────────────────────────┤
-│ 0x10A0-0x12DF │ Backlight Dimming Calibration (was mislabeled "Audio EQ/DSP")                      │
-├────────────────────────────────────────────────────────────────┤
-│ 0x12E0-0x13FF │ Device Capabilities & Communication           │
-├────────────────────────────────────────────────────────────────┤
-│ 0x1400-0x15FF │ Runtime Data & Additional Flags               │
-├────────────────────────────────────────────────────────────────┤
-│ 0x1600-0x1FFF │ Checksums, CRCs, Reserved                     │
-└────────────────────────────────────────────────────────────────┘
-```
+The full per-range address map (0x0000-0x1FFF) is in ELA §5.1-§5.8. Two items from the original
+box-diagram are **not** currently in ELA and are kept:
+
+- **[Kept — not in ELA]** `0x12E0-0x13FF` ("Device Capabilities & Communication") and `0x1400-0x15FF`
+  ("Runtime Data & Additional Flags") are not individually covered in ELA's §5 tables.
+- **[Kept — not in ELA]** Original box-diagram labels with no individual ELA entry: `0x0398-0x03BF` Module Identification Codes (ELA §5.1 covers the narrower `0x03A0-0x03B1`), `0x0600-0x07FF` Additional Configuration, `0x0800-0x0A7F` Reserved (`0xFF` padding), `0x0EC0-0x0EFF` Calibration Block A. These are original labels; see ELA §5.4 (`0x0A00` is a structure base inside the `0x0800-0x0A7F` "Reserved" span) and §5.6 (`0x0EC0-0x0F7F` display calibration tables) for the more precise per-field entries.
+- **[Kept — conflicts with ELA]** `0x0060-0x0397`: this report previously labeled the range
+  "Reserved/Scratch (zeroed - 824 bytes)". ELA §5.1 instead reports an **822**-byte region that
+  "actually reads a deterministic 9-bit-period 'walking-zero' bit pattern" `[U]`, not flat zero, and
+  flags it as possibly a read glitch vs. an actual EEPROM cell/row fault — unresolved. The byte-count
+  and zeroed-vs-pattern discrepancy between the two readings is not reconciled here.
 
 ---
 
-## Framing Protocol
+## Framing Protocol [Pointer — superseded by ELA §2]
 
-The EEPROM uses a proprietary framing protocol with four distinct marker bytes:
+**Corrected 2026-11-21, per ELA §2:** marker bytes are **not** a fixed per-category signature as the
+table below originally implied — they vary by firmware/unit and are CalGroup-assigned at runtime; only
+the data byte at offset+1 is validated. Locate fields by **offset**, not by marker value. The legend is
+kept below for reference to the frame-byte values actually observed in this dump, with that caveat:
 
-| Frame Byte | Purpose | Description |
-|------------|---------|-------------|
-| **0x5A** | Security/VIN | VIN storage, security flags, high-importance data |
-| **0x69** | Configuration | System config registers, feature flags |
-| **0xF0** | Data/Strings | ASCII strings, lookup tables, calibration data |
-| **0xC3** | Calibration | Color tables, advanced calibration blocks |
+| Frame Byte | Observed in this dump at | Caveat |
+|------------|---------------------------|--------|
+| **0x5A** | Security/VIN region framing | not a dedicated "security" marker — see ELA §2 |
+| **0x69** | Config-region framing | not a dedicated "config" marker |
+| **0xF0** | String/table-region framing | not a dedicated "data" marker |
+| **0xC3** | Calibration-block framing | not a dedicated "calibration" marker |
 
-### Structure Format
-```
-[FRAME_BYTE] [DATA...] [FRAME_BYTE]
-```
-
-Example: `5A FF 5A` = Security flag with value 0xFF
+Structure: `[FRAME_BYTE] [DATA...] [FRAME_BYTE]`, e.g. `5A FF 5A` = a data byte of `0xFF` framed by
+`0x5A` markers.
 
 ---
 
-## Security Flags (ADB Bypass)
+## Security Flags (ADB Bypass) [Pointer — full mechanism in ELA §2]
 
-### Primary Security Flag
-| Address | Raw Data | Value | Status |
-|---------|----------|-------|--------|
-| **0x0440** | `5A FF 5A FF` | 0xFF | **DISABLED** (ADB Enabled) |
+Both SBI data bytes (`0x0441` primary, `0x0A81` backup) read `0xFF` (bypass) in this dump. See ELA §2
+for the settled marker/data-byte identity, polarity, the confirmed owner-reproducible bench recipe, and
+the SoC-side MEC chain this feeds into.
 
-### Backup Security Flag
-| Address | Raw Data | Value | Status |
-|---------|----------|-------|--------|
-| **0x0A80** | `5A FF 5A FF` | 0xFF | **DISABLED** (ADB Enabled) |
-
-### Security States
-- `0x00` = Security ENABLED (ADB requires GM Secure Client authentication)
-- `0xFF` = Security DISABLED (ADB accessible without authentication)
-
-**CORRECTED 2026-09-26 (primary evidence: 7-dump byte compare + RH850 disasm + adb-auth binary +
-ecu80_READ CAN capture):** the framing **marker** shown above (`5A`) is **not static per address** —
-across 7 real dumps the 0x0440 marker was `C3` (stock/debugging) or `5A` (ADB-enabled) and 0x0A80 was
-`FF`/`69`/`5A`/`F0`. Only the **data byte at offset+1** (0x0441/0x0A81) carries the lock state (the
-`0x00`/`0xFF` above). Clearing SBI does not enable ADB *directly*: VIP reads SBI → transmits MEC via
-DID `0xF1A0` → SoC `gm_adb_auth_init` sets `is_secure_mode` (the guest-side gate). The `$27` all-FF
-seed is a **separate** CAN/UDS-only effect, not the ADB path. Canonical marker/mechanism detail:
-`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.10-0.14. (This file duplicates that report; prefer it.)
-
-**Note:** Both locations must be modified for the bypass to work. **Corrected 2026-11-12 (see
-`eeprom/README.md`):** OTA updates resetting these to 0x00 is owner-reported, not universal — a
-2026-11-10 stock calibration write retained ADB access. The actual reset trigger is unidentified.
+**[Kept — not in ELA]** OTA-reset behavior: Android OTA updates have been owner-reported to reset the
+SBI data bytes to `0x00` (re-enabling ADB authentication) — **corrected 2026-11-12: not universal** (a
+2026-11-10 stock calibration write retained ADB access); the actual reset trigger is unidentified. See
+`eeprom/README.md`. This specific OTA-reset-not-universal finding is not currently stated in ELA.
 
 ---
 
@@ -190,25 +150,24 @@ seed is a **separate** CAN/UDS-only effect, not the ADB path. Canonical marker/m
 
 ### Identified Toggle Flags
 
+`0x0000`, `0x0020` (boot flags), `0x0440`/`0x0A80` (SBI, see above), `0x0B40`/`0x0B41` (CalGroup `0xA3`
+member, not a debug flag), `0x0B80`, `0x0BC0`, `0x1500` are covered in ELA §5.1/§5.4/§5.8 — **[Pointer]**.
+
+**[Kept — not in ELA]** The following toggle-flag addresses from this file's original survey are not
+individually listed in ELA:
+
 | Address | Frame | Current Value | Status | Suspected Purpose |
 |---------|-------|---------------|--------|-------------------|
-| 0x0000 | 0x69 | 0x01 | ON | Boot/Init completed flag |
-| 0x0020 | 0x69 | 0x00 | OFF | Unknown feature toggle |
-| 0x0440 | 0x5A | 0xFF | DISABLED | **ADB Security #1** |
-| 0x0A80 | 0x5A | 0xFF | DISABLED | **ADB Security #2** |
-| 0x0B40 | 0x69 | 0x00 | OFF | Developer/Debug mode? |
-| 0x0B80 | 0xF0 | 0x00 | OFF | Unknown feature |
 | 0x0BA0 | 0xF0 | 0x00 | OFF | Unknown feature |
-| 0x0BC0 | 0x69 | 0x00 | OFF | Unknown feature |
 | **0x0C00** | 0xF0 | **0x01** | **ON** | Unknown (ACTIVE) |
-| 0x1500 | 0x69 | 0x00 | OFF | Unknown feature |
 | 0x15C0 | 0xF0 | 0x00 | OFF | Unknown feature |
 | 0x1A00 | 0xC3 | 0x00 | OFF | Calibration flag |
 | 0x1AC0 | 0xF0 | 0x00 | OFF | Unknown feature |
 
-### UI Flags Block (0x0E80-0x0EAF)
+All five are untested guesses with no code or empirical confirmation, consistent with ELA §5.8's
+treatment of the sibling addresses it does list.
 
-This 0x5A-framed block contains UI configuration flags controlling display behavior, input methods, and visual effects.
+### UI Flags Block (0x0E80-0x0EAF) [Kept — raw byte dump + per-offset breakdown not in ELA]
 
 ```
 0xE80: 5a 03 01 01 01 01 01 00 00 2c 01 00 00 01 00 00 ...
@@ -216,7 +175,9 @@ This 0x5A-framed block contains UI configuration flags controlling display behav
      Frame                   Data                   Frame
 ```
 
-#### Individual Flag Analysis
+ELA §5.5 reproduces this same raw hex sample and lists untested bit-guesses only for offsets
+`0xE82-0xE88`. The full per-offset table, the `0xE89` feature-mask bit breakdown, and the offsets ELA
+omits (`0xE81`, `0xE89`, `0xE8A`, `0xE8D`) are kept here as they are not reproduced in ELA:
 
 | Offset | Hex | Binary | Status | Likely Purpose |
 |--------|-----|--------|--------|----------------|
@@ -232,7 +193,10 @@ This 0x5A-framed block contains UI configuration flags controlling display behav
 | **0xE8A** | 0x01 | 00000001 | ON | Input mode / gesture control |
 | **0xE8D** | 0x01 | 00000001 | ON | Unknown toggle |
 
-#### Feature Mask Byte (0xE89 = 0x2C)
+All entries `[I]`/`[U]` (untested bit-guesses), consistent with ELA's own confidence tagging for the
+offsets it does carry.
+
+#### Feature Mask Byte (0xE89 = 0x2C) [Kept — not in ELA]
 
 ```
 Bit:  7  6  5  4  3  2  1  0
@@ -243,7 +207,7 @@ Bit:  7  6  5  4  3  2  1  0
             └────────── Bit 5: ENABLED
 ```
 
-#### UI Flag Experiments
+#### UI Flag Experiments [Kept — not in ELA; untested suggestions]
 
 **Low risk (toggle existing features OFF):**
 | Address | Current | Change To | Expected Effect |
@@ -264,7 +228,7 @@ Bit:  7  6  5  4  3  2  1  0
 |---------|---------|-----------|-----------------|
 | 0xE81 | 0x03 | 0x07/0x0F | May unlock additional display modes |
 
-#### Accessing UI Settings via Software
+#### Accessing UI Settings via Software [Kept — not in ELA]
 
 Some settings may be accessible without EEPROM modification:
 1. **Hidden Diagnostic Menu**: Press `CONFIG + TONE` for 6 seconds
@@ -273,7 +237,10 @@ Some settings may be accessible without EEPROM modification:
 
 ---
 
-## Display Calibration Tables
+## Display Calibration Tables [Kept — raw LUT values not reproduced in ELA]
+
+ELA §5.6 identifies these ranges ("Brightness LUT (11-point)", "Color/ambient calibration") but does
+not reproduce the numeric values. Preserved here as the primary numeric appendix content:
 
 ### Brightness Levels (0x0F00)
 11-point lookup table for display brightness:
@@ -317,10 +284,14 @@ Ambient light response color temperature adjustment:
 
 ---
 
-## Backlight/Display-Dimming Calibration Tables (corrected 2026-10-15; previously mislabeled "Audio Calibration Tables")
+## Backlight/Display-Dimming Calibration Tables [Kept — raw LUT values not reproduced in ELA]
+
+Corrected 2026-10-15; **was** mislabeled "Audio Calibration Tables" in every prior pass. ELA §5.7
+confirms these ranges are backlight-dimming (byte-matched *in shape* against VIP_APP firmware LUT
+defaults at `0xf8414-0xf8500`) but does not reproduce the raw table values — kept here:
 
 ### Dimming curve (0x0FE0, was "Volume Curve")
-Non-linear volume response curve:
+Non-linear dimming response curve:
 
 | Level | Raw Value | Interpretation |
 |-------|-----------|----------------|
@@ -337,7 +308,7 @@ Non-linear volume response curve:
 | 10 | 13107 | Max |
 
 ### Dimming curve (0x1160, was "Audio EQ/DSP Bands")
-Frequency response calibration:
+Frequency-response-shaped calibration:
 
 | Band | Value | Approximate Frequency |
 |------|-------|----------------------|
@@ -354,13 +325,19 @@ Frequency response calibration:
 | 10 | 32768 | Max |
 
 ### Dimming curve (0x1100, was "Fade/Balance Steps")
-22-point linear fade curve for speaker balance.
+22-point linear curve (channel 4 of the backlight-dimming LUT set).
 
 ---
 
-## UI/Display Settings (0x0E00-0x0E7F)
+## UI/Display Settings (0x0E00-0x0E7F) [Kept — raw values not reproduced in ELA]
 
-This block contains timing values, thresholds, and display parameters. All values are 16-bit little-endian.
+ELA §5.5 describes this as a single ~34-field struct and confirms only the **last 7** fields against
+named VIP_APP firmware constants (`cal_str_min_temp_threshold`, `soc_min_threshold_1-3`,
+`max_suspend_time_1-3` @ `0xf8126-0xf8141`) — i.e. at least partly power/thermal/suspend-timer
+calibration, not purely display/UI. **The other 27 fields below, including every raw value, remain
+unconfirmed `[I]` per ELA, and `cal_startup_delay_wait_timeout_msec` was specifically tested and found
+wrong** — treat the "Setting" labels as unverified guesses; only the raw byte values and addresses are
+solid. All values are 16-bit little-endian.
 
 ### Timing & Threshold Settings
 
@@ -395,7 +372,7 @@ This block contains timing values, thresholds, and display parameters. All value
 | 0xE49 | 30 | Popup timeout | Seconds until auto-dismiss |
 | 0xE4D | 10 | Button repeat | Count before repeat |
 
-### Modifiable Timing Values
+### Modifiable Timing Values [Kept — not in ELA]
 
 These can be adjusted to change UI behavior:
 
@@ -411,54 +388,40 @@ These can be adjusted to change UI behavior:
 
 ## Checksums and Data Integrity
 
+Full structure/algorithm analysis (the `[00][version][hash]` block structure, the split CRC verdict,
+the `0x9896`/`0xAD9B` refutation evidence, the confirmed `0x1DC0` CRC-16/CCITT-FALSE match) is in
+ELA §6 — **[Pointer]**. **[Kept — raw sample values for 0x16E0/0x19E0/0x1B40 not given in ELA, which
+lists "—" for these]:**
+
 | Address | Name | Value | Purpose |
 |---------|------|-------|---------|
-| 0x16E0 | Primary CRC | 0xE2890000 | Main EEPROM CRC |
-| 0x19E0 | Secondary CRC | 0xF1890000 | Backup CRC |
-| 0x1A80 | Config CRC | 0x00000107 | Configuration block CRC |
-| 0x1B40 | Data CRC | 0x128A0000 | Data section CRC |
-| 0x1B60 | Block CRC #1 | 0x00000001 | Block validation |
-| 0x1B80 | Block CRC #2 | 0x00000001 | Block validation |
+| 0x16E0 | Primary integrity block | 0xE2890000 | See ELA §6 for structure |
+| 0x19E0 | Secondary integrity block | 0xF1890000 | See ELA §6 for structure |
+| 0x1A80 | Config CRC | 0x00000107 | ELA §6 — unresolved vs. teardown's MEC NVM reading |
+| 0x1B40 | Third integrity block | 0x128A0000 | See ELA §6 for structure |
+| 0x1B60 | Block CRC #1 | 0x00000001 | ELA §6 — unresolved vs. teardown's counter reading |
+| 0x1B80 | Block CRC #2 | 0x00000001 | ELA §6 — unresolved vs. teardown's counter reading |
 
-> **REFINED 2026-10-15:** per `EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §13.7's stock-vs-post-reflash
-> diff plus a 2026-10-15 clean-room cross-check, 0x16E0/0x19E0/0x1B40 decode as
-> `[00][2-byte version/generation word][2-byte hash/CRC word]`, not one flat 32-bit CRC — the three
-> blocks' version words cluster tightly (not exact lockstep — ±1 drift observed) across reflashes/dumps.
-> Treat the single hex values above as one sample, not a fixed constant.
->
-> **ALGORITHM UNVERIFIED (corrected 2026-10-15):** the 2-byte hash/CRC word in 0x16E0/0x19E0/0x1B40
-> has NOT been verified by byte-match. Binary cross-check disproves the simplest hypothesis: 0x16E0
-> and 0x1B40 share version word `0x5800` but their stored hash bytes differ (`0x9896` vs `0xAD9B`),
-> so the hash/CRC is NOT simply CRC of the version word alone. Coverage range and exact algorithm
-> remain UNKNOWN. Do not rely on earlier "confirmed" language — it was wrong.
->
-> **This separate integrity-block structure (integrity word at a different address from its payload)
-> is NOT defined by AUTOSAR NvM** (which appends CRC to the same slot), nor by the Fee/Ea SWSs.
-> Origin undetermined.
->
-> **0x1DC0 — ONLY CONFIRMED BYTE-MATCH:** CRC-16/CCITT-FALSE (poly `0x1021`, init `0xFFFF`, no
-> reflect, no output XOR) confirmed by byte-match across 5 images. Stored `0xBFD4` = computed
-> `0xBFD4`. This is the sole block where the algorithm and coverage are proven. See
-> `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §2.6/§0.15 and References below.
-
-**Warning:** The algorithm covering 0x16E0/0x19E0/0x1B40 is unknown — do not attempt to recalculate
-those fields. For 0x1DC0 the algorithm is confirmed (CRC-16/CCITT-FALSE — see above); modifying
-data it covers without recalculating may cause boot failures or factory reset behavior.
+**Warning (per ELA §6):** the algorithm covering 0x16E0/0x19E0/0x1B40 is unknown — do not attempt to
+recalculate those fields. `0x1DC0`'s algorithm is confirmed (CRC-16/CCITT-FALSE); modifying data it
+covers without recalculating may cause boot failures or factory-reset behavior.
 
 ---
 
 ## Potential Modification Candidates
 
 ### High-Confidence Toggles
-These follow the documented ADB flag pattern and are likely safe to experiment with:
 
 | Address | Current | Try | Expected Effect |
 |---------|---------|-----|-----------------|
 | 0x0020 | 0x00 | 0xFF | Enable unknown feature #1 |
-| 0x0B40 | 0x00 | 0xFF | **Corrected 2026-11-12:** operator-tested across the full value range (`0x00`/`0x01`/`0xFF`) with no observed effect — see `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §"0x0B41". Not a useful candidate for further testing. |
+| 0x0B40 | 0x00 | 0xFF | **Corrected 2026-11-12:** operator-tested across the full value range (`0x00`/`0x01`/`0xFF`) with no observed effect — see ELA §5.4 (`0x0B40`/`0x0B41`; originally in the now-retired `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` §"0x0B41"). Not a useful candidate for further testing. |
 | 0x0B80 | 0x00 | 0xFF | Unknown feature |
 | 0x0BC0 | 0x00 | 0xFF | Unknown feature |
 | 0x1500 | 0x00 | 0xFF | Unknown feature |
+
+**[Kept — not in ELA]** The `0x0B40` tested-no-effect finding (sourced from
+`EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`, now retired into ELA §5.4/§13) is preserved as-is above.
 
 ### Calibration Adjustments
 These tables can be modified to change display/audio behavior:
@@ -471,9 +434,11 @@ These tables can be modified to change display/audio behavior:
 
 ---
 
-## Factory Reset / Data Clear Triggers (UNVERIFIED)
+## Factory Reset / Data Clear Triggers (UNVERIFIED) [Kept — not in ELA]
 
 > **DISCLAIMER:** The following analysis is based on reverse engineering patterns common to automotive EEPROMs and has **NOT been verified** on actual hardware. These are educated guesses based on byte patterns and industry conventions. **Test at your own risk** and always maintain a backup of your original EEPROM.
+
+None of this section's addresses or hypotheses are currently discussed in ELA; preserved in full.
 
 ### Boot State Flag (Most Likely Reset Trigger)
 
@@ -511,6 +476,10 @@ Corrupting checksums may force the system into recovery or factory reset:
 |---------|---------|-----------|-----------------|
 | 0x5C1-0x5D1 | VIN ASCII | All 0x00 | VIN reprogram mode, possible theft-lock |
 
+> **Note:** ELA §8 reports that setting the VIN field to all `0xFF` booted into AAOS normally with no
+> observable change — see ELA §8 for that empirical result, which bears on (but does not directly
+> test) the all-`0x00` clearing hypothesis above.
+
 ### Data Valid Flag (Speculative)
 
 | Address | Current | Change To | Expected Effect |
@@ -542,36 +511,19 @@ Corrupting checksums may force the system into recovery or factory reset:
 
 ## Warnings and Considerations
 
-1. **OTA Updates**: Android OTA updates have been owner-reported to reset security flags to
-   0x00, re-enabling ADB authentication requirements — **corrected 2026-11-12: not universal**
-   (a 2026-11-10 stock calibration write retained ADB); the actual reset trigger is unidentified
-   (see `eeprom/README.md`).
+1. **[Kept — not in ELA] OTA Updates**: Android OTA updates have been owner-reported to reset security
+   flags to 0x00, re-enabling ADB authentication requirements — **corrected 2026-11-12: not
+   universal** (a 2026-11-10 stock calibration write retained ADB); the actual reset trigger is
+   unidentified (see `eeprom/README.md`).
 
-2. **Checksum Validation**: Some modifications may require CRC recalculation to prevent boot issues.
+2. **[Pointer — ELA §8] Checksum Validation**: ELA §8 empirically confirms CRC is not boot-time
+   enforced for at least the VIN region; do not assume other fields are safe to corrupt without
+   recalculation.
 
-3. **Redundancy**: Settings are duplicated in two distinct ways — the mechanisms differ and must not be conflated:
-
-   - **0x0400/0x0420 — single AUTOSAR `NVM_BLOCK_REDUNDANT` entry (`NvMNvBlockNum=2`).** Both addresses are managed automatically by the AUTOSAR NvM layer (it keeps them in sync and falls back to the backup on read failure). **Do NOT patch both addresses manually** — write only the primary; NvM propagates the copy. Both currently contain `1900e4a4`.
-
-   - **0x0440/0x0A80 — two separate descriptor entries in different CalGroups (SBI primary / SBI backup).** These are an application-level mirror, not an AUTOSAR REDUNDANT block. They are NOT managed as a pair by NvM. **Update both independently** when modifying SBI data; failing to update both leaves mismatched copies.
-
-   > **AUTOSAR NvM mapping (added 2026-10-15).** The config region is defined by a firmware block-descriptor
-   > table of 12-byte entries `[u32 LE rel_addr][u16 LE payload_len][u8 type_byte][u8 copies][u32 0]`.
-   > Correlation with AUTOSAR_SWS_NVRAMManager R22-11 (Chapter 10, ECUC): `rel_addr` is a flat address
-   > (implementation-specific, not spec-stated: NvM spec defines NvMNvBlockBaseNumber range 1..65534 but not how the descriptor encodes it; role of `NvMNvBlockBaseNumber`; all 183 entries have high word `0x0000`, so the Melching
-   > `[u16 block_id][u16 offset]` hypothesis is REFUTED); `payload_len`→`NvMNvBlockLength`;
-   > `type_byte`=`0x01` in every entry — a **vendor constant** (format version / valid flag), **not** an AUTOSAR
-   > field (AUTOSAR assigns no numeric values to `NvMBlockManagementType`, ECUC_NvM_00062 — it is a symbolic
-   > `EcucEnumerationParamDef`; an earlier revision's "SINGLE=0, REDUNDANT=1, DATASET=2" packing was wrong);
-   > `copies`→`NvMNvBlockNum` (ECUC_NvM_00480), the **actual management-type discriminator**: `1`=NATIVE,
-   > `2`=REDUNDANT, `1..255`=DATASET; trailing `u32 0` unassigned. **AUTOSAR defines no C struct layout for the
-   > descriptor table** — the 12-byte format is a Harman/BSP vendor artifact whose size happens to match CC-RH
-   > natural packing of `(u32,u16,u8,u8,u32)` (Renesas R20UT2846EJ CC-RH ABI). Entries with `copies=02`
-   > (e.g. **0x0400/0x0420**) are `NVM_BLOCK_REDUNDANT, NvMNvBlockNum=2` — the standard AUTOSAR redundancy
-   > *behaviour* (both copies kept in sync, backup used on read failure); the descriptor *encoding* is
-   > vendor-specific. The `[M][payload][M]` marker framing around records is a Fee/Ea-layer or Harman concept,
-   > not AUTOSAR NvM (which defines only an optional Static Block ID header and an appended CRC). Full
-   > mapping and correction history: `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0.16.
+3. **[Pointer — ELA §7] Redundancy**: the AUTOSAR NvM `copies`-field analysis, the 12-byte
+   block-descriptor table, the `0x0400/0x0420` REDUNDANT-pair finding, and the distinction from the
+   `0x0440/0x0A80` SBI application-level mirror pair are all in ELA §7 in more detail than this file
+   previously carried — see ELA §7 rather than this file for that analysis. **[Kept — not in ELA]** Both `0x0400` and `0x0420` currently contain `1900e4a4`.
 
 4. **Factory Reset Risk**: Invalid EEPROM data may trigger a factory reset or brick the module.
 
@@ -587,18 +539,17 @@ Corrupting checksums may force the system into recovery or factory reset:
 
 ## References
 
+**[Pointer — ELA's own "External sources / references"]** AUTOSAR_SWS_NVRAMManager, AUTOSAR_SWS_CRCLibrary,
+Renesas AN R01AN2296EJ, Renesas R20UT2846EJ, CVE-2025-32058/Black Hat Asia 2025, and the Willem Melching
+DEF CON 30 Toyota-header research are all cited with the same detail in ELA's references section — see
+there rather than duplicating.
+
+**[Kept — not in ELA]**
+
 ### Technical Documentation
 - [ST M24C64 Datasheet](https://www.st.com/resource/en/datasheet/m24c64-f.pdf)
 - [NHTSA TSB - IOK Radio Software Y175](https://static.nhtsa.gov/odi/tsbs/2025/MC-11014087-0001.pdf)
 - [Chevrolet Infotainment Support](https://www.chevrolet.com/support/vehicle/entertainment/displays-radio/infotainment)
-
-### Standards & Cross-Platform Sources
-- **AUTOSAR_SWS_NVRAMManager R22-11**, Chapter 10 (ECUC) — `NvMBlockManagementType` (ECUC_NvM_00062, symbolic only) and `NvMNvBlockNum` (ECUC_NvM_00480, REDUNDANT discriminator). No C struct layout for the descriptor table is specified.
-- **AUTOSAR_SWS_CRCLibrary** — `Crc_CalculateCRC16()` (CRC-16/CCITT-FALSE, poly `0x1021`, init `0xFFFF`).
-- **Renesas AN R01AN2296EJ** — RH850 Flash Self-Programming Library, flash-block CRC-16 verification.
-- **Renesas R20UT2846EJ (CC-RH ABI)** — struct packing for the 12-byte descriptor entry.
-- **CVE-2025-32058 / Black Hat Asia 2025** — Nissan Leaf RH850 Virgin status byte (`0x00`=locked/`0xFF`=bypass), INC-protocol port map.
-- **Willem Melching, DEF CON 30 Automotive Village (2022)** — Toyota EPS RH850 NvM block-ID-first header hypothesis (REFUTED for this unit: all 183 `rel_addr` high words are `0x0000`).
 
 ### Community Research
 - [XDA Forums - GM Google Built-In Tinkering](https://xdaforums.com/t/general-motors-google-built-in-tinkering.4668105/)
@@ -612,4 +563,6 @@ Corrupting checksums may force the system into recovery or factory reset:
 
 ---
 
-*Report generated from reverse engineering analysis of GM IOK EEPROM dump.*
+*Report generated from reverse engineering analysis of GM IOK EEPROM dump. Mechanism/marker/address-map
+narrative now owned by `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`; this file retains the raw
+numeric calibration appendix and facts not currently carried there.*

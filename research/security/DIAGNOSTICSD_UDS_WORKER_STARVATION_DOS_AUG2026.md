@@ -1,4 +1,4 @@
-# `diagnosticsd` UDS-over-TCP Worker-Starvation DoS (port 49156)
+# `diagnosticsd` Worker-Starvation DoS
 
 **Device:** GM Info 3.7 (gminfo37), Y181 `W231E-Y181.3.2-SIHM22B-499.3`
 **Component:** `/vendor/bin/diagnosticsd` (root daemon, HIDL service host)

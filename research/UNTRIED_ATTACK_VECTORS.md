@@ -1,4 +1,4 @@
-# Untried Attack Vectors — gminfo37 Y181→Y177 Downgrade (Status Tracker)
+# Untried Attack Vectors: Y181→Y177 Downgrade
 
 **Scope:** status tracker for the Y181→Y177 downgrade attack-vector catalog (17 ranked vectors,
 dependency graph, execution order). What does NOT live here: live T1 UDS/SecurityAccess bench

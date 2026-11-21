@@ -1,4 +1,4 @@
-# GM Infotainment Audio Effects Specifications
+# Audio Effects Specifications
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -9,7 +9,7 @@
 
 ## Audio Effects Overview
 
-The GM infotainment system includes a comprehensive set of audio effects for preprocessing (microphone input) and post-processing (speaker output). Notable is the Harman audio preprocessing library customized for GM.
+The GM infotainment system includes audio effects for preprocessing (microphone input) and post-processing (speaker output), including a Harman audio preprocessing library customized for GM.
 
 ---
 

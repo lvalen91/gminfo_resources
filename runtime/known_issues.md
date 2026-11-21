@@ -1,4 +1,4 @@
-# GM Info 3.7 Known Issues
+# Known Issues
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -31,7 +31,7 @@ Per-file range: 111-662. The previously reported "462" was from a single file (l
 
 ## Audio Issues
 
-- **ECNR HAL:** `vendor.gm.audio@1.0::IECNRControl` fails 8 times per boot in rapid succession (~100ms intervals). Each attempt cycle: VAC -> hwservicemanager -> "not registered" -> "unable to set property" -> "not installed". The service is genuinely missing from the system image — not a timing issue.
+- **ECNR HAL:** `vendor.gm.audio@1.0::IECNRControl` fails 8 times per boot in rapid succession (~100ms intervals). Each attempt cycle: VAC -> hwservicemanager -> "not registered" -> "unable to set property" -> "not installed". The service is missing from the system image; this is not a timing issue.
 - **Volume table:** XML load failure (volume control handled externally by amp/DSP)
 - **Audio underruns:** 1,710 CARLINK_AUDIO [AUDIO_UNDERRUN] events across 16 files + 20 PulseAudio ALSA buffer underruns across 8 files. Per-session range: 2-456 underruns. Mostly during Siri transitions.
 - Factory: 8 ALSA underruns, 4 Davey! events; debloated: 0 of each

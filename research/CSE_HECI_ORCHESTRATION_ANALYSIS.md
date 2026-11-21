@@ -1,4 +1,4 @@
-# CSE / HECI Command Protocol of the GHS `ota_update` Partition
+# CSE / HECI `ota_update` Partition
 
 **Scope:** HECI/MKHI command-protocol reverse-engineering for the GHS INTEGRITY `ota_update`
 partition on gminfo37/A3960 (Apollo Lake, Intel CSE/TXE) — bus-message transport, the 4 CSE

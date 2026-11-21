@@ -1,4 +1,4 @@
-# GM Info 3.7 Partitions and Storage
+# Partitions and Storage
 
 **Scope:** eMMC device and GPT layout, the 26-partition map, dynamic partitions (`super`/LP metadata), first-stage mount and fstab mechanisms, and mounted-filesystem sizes.
 **Out of scope:** boot phases, A/B and BCB structs, AVB flow ([boot_chain.md](boot_chain.md)); ELK/Probe native-Linux bring-up ([elk_recovery.md](elk_recovery.md)); update-engine and package flow ([ota_update_stack.md](ota_update_stack.md)).

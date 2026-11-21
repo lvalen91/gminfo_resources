@@ -1,4 +1,4 @@
-# CVE and Attack Surface Analysis — GM Info 3.7 (gminfo37)
+# CVE and Attack Surface Analysis
 **Date:** 2026-06-29  
 **Scope:** 68 CVEs analyzed, 33 key findings, 37 novel attack vectors  
 **Analyst note:** Android 12 (API 32), kernel 4.19.305 (compiled 2024-01-25, rebuilt 2025-07-22), **SPL 2025-06-05** (confirmed: `ro.build.version.security_patch` from Jun 2026 live enumeration). CVE advisories assuming Android 10 or GKI 5.4/5.10 are inapplicable; flagged inline.
@@ -37,6 +37,15 @@ Ranked by: (a) version-confirmed applicability to 4.19.283/4.19.305 + Android 12
 - **Delivery:** Physical USB-A port. Crafted device with malformed `bNumConfigurations` / short `bLength` clock descriptor.
 - **Impact:** Kernel code execution → disable SELinux enforcement and dm-verity in kernel memory → write path to misc/vda9 without eMMC chip-off.
 - **Pairing:** CVE-2024-53150 (OOB read, KASLR defeat) + CVE-2024-53197 (OOB write, control flow). Best candidate because version-independent across both kernel targets.
+
+> **Open Conflict (2026-11-21) — USB reachability.** This Tier 1 entry lists
+> physical USB-A delivery for CVE-2024-53197 and CVE-2024-53150.
+> [Appendix C.3/C.6](KERNEL_CVE_ANALYSIS.txt) records that
+> `vendor_sepolicy.cil` limits `usb_device` access to privileged domains.
+> [Platform security](../../platform/security.md#key-cves) also records
+> restricted USB driver access under enforcing SELinux. Does the privileged-domain
+> requirement apply to the kernel path invoked by physical USB-A attachment in
+> this entry? The cited sources leave that question open.
 
 #### CVE-2024-53104 — USB Video Class OOB Write
 - **Patch status:** Android Feb 2025 bulletin. `CONFIG_USB_VIDEO_CLASS=y` confirmed in kernel_config.txt. Kernel compiled Jan 2024; CVE disclosed late 2024 → **patch not in this kernel build. VULNERABLE.**
@@ -104,18 +113,43 @@ GHS verifies vbmeta with `.mr_r_mod_android_key` (NOBITS) — delivered via Inte
 | Layer | Key | Replaceable? | Status |
 |---|---|---|---|
 | Intel CSE/TXE ROM root | Silicon-fused RSA-3072 | No | Only breakable via CVE-2019-0090 / 2021-0146 / SA-00086 |
-| Boot Guard OEM KM hash | OEM RSA, hash in TXE FPF | Until `-closemnf` then permanent | **UNKNOWN** — FPF closure unconfirmed |
+| Boot Guard OEM KM hash | OEM RSA, hash in TXE FPF | Permanent after `-closemnf` | **[C] FUSED on tested Y175** — enrolled OEM KM hash remains unverified |
 | BPM / SMIP signing | OEM RSA (BPMGEN2/MEU) | OEM-generated | **UNKNOWN** — possibly Intel BXT sample keys |
 | HLOS AVB root | GM RSA (extracted modulus) | Build-time | **CONFIRMED GM-specific** |
 | GHS HOSTOS / VIP_APP | GM TSS | Build-time | GM-controlled, private key not extractable |
 
-### Critical Unknown: Boot Guard FPF Closure
+### Boot Guard FPF Closure — Confirmed on Y175
 
-`bxt_dbg_priv_key.pem` (Binarly "Intel OEM Platform Key / Orange Unlock" for Broxton/Apollo Lake) leaked via the MSI breach and an AAEON public GitHub repo. **If GM never generated its own BPM/SMIP keys and never closed FPF with a GM KM hash**, this key could sign a BPM/SMIP that passes Boot Guard, granting Orange debug unlock (JTAG over USB DCI) — rendering the GHS rollback counter irrelevant.
+**[C] FUSED (committed), live 2026-11-17.** Two independent measurements on the
+Y175 bench unit agree. `HFSTS6` bit 30 (`fpf_committed`) was `1`, and an MKHI
+`READ_FILE` query of `/fpf/intel/SocCfgLock` over `/dev/mei0` returned `1`.
+Manufacturing Mode was closed (`HFSTS1` bit 4 = `0`).
+See [hardware live-verification results](../HARDWARE_HYPERVISOR_ATTACK_VECTORS.md#spi-flash-ifwi--extraction-and-analysis)
+and the [SOC_ABL / Boot Guard record](../GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary).
 
-Yellow flag: SOC_BOOT (id 23) and SOC_ABL (id 72) are **UNSIGNED in the GM package** (MASTER_REFERENCE §3.1). Intel claims "CSE validates ABL internally," but this only holds under an enforcing Boot Guard profile with a GM-fused KM hash.
+`bxt_dbg_priv_key.pem` (Binarly "Intel OEM Platform Key / Orange Unlock" for
+Broxton/Apollo Lake) leaked via the MSI breach and an AAEON public GitHub repo.
+The uncommitted-FPF premise of the earlier BPM/SMIP key hypothesis built on this
+leak is refuted for this unit (FPF confirmed fused, see above).
 
-**Resolution:** Dump 8MB IS25WP064A IFWI SPI flash offline; run MEInfo/TXEInfo to read: Manufacturing-Mode bit, OEM Public Key Hash, Keybox provisioned status.
+Separately, DCI/JTAG availability is its own mechanism, gated by `HDCIEN`/
+`IA32_DEBUG_INTERFACE` MSR state, not by Boot Guard FPF (see [DCI section](../HARDWARE_HYPERVISOR_ATTACK_VECTORS.md#intel-dci-direct-connect-interface--usb3-jtag)).
+That source does not establish the leaked key as a DCI-enabling mechanism, but
+it does document CVE-2021-0146 ("Red Unlock") achieving full DCI JTAG via
+voltage fault injection with no other preconditions, after which a hardware
+breakpoint on the GHS CRC32 comparison lets the counter value be patched before
+the comparison completes — rollback counter modification independent of FPF
+state. Production builds ship with `HDCIEN=0`/MSR locked by default `[U]`, not
+independently confirmed on this unit. The enrolled OEM KM hash, Keybox provisioning status, and
+reject-versus-measure behavior remain unverified. The earlier proposal to dump
+the 8MB IS25WP064A IFWI SPI flash and use MEInfo/TXEInfo is superseded for the FPF
+closure question.
+
+SOC_BOOT (id 23) and SOC_ABL (id 72) are **UNSIGNED in the GM package**
+(MASTER_REFERENCE §3.1). Intel's statement that "CSE validates ABL internally"
+depends on an enforcing Boot Guard profile with a GM-fused KM hash. Package
+signing status alone does not establish the enrolled OEM KM hash or the active
+Boot Guard enforcement profile.
 
 ---
 
@@ -155,7 +189,12 @@ ranked list. There is no known stock path to permissive SELinux at all: Y175/Y17
   31-FF/12-zero exchange returned `67 02` over direct T1. This is application
   SecurityAccess, not root or a programming-write grant. See the
   [owning diagnostic sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
-- **(b)** `readHeader()` may `malloc(PAYLOAD_LEN)` before bounds-checking — heap corruption in uid=0, ALL caps, no-seccomp, no-NoNewPrivs daemon. Confirm in Ghidra before exploiting.
+- **(b) [C] Resolved 2026-11-21 — CONFIRMED-CLEAN.** The `readHeader()` body-read bound
+  (`length ≤ 0x3fffff`) fits the fixed 4 MB receive buffer. The proposed
+  `malloc(PAYLOAD_LEN)`-before-bounds-check overflow is closed for this path.
+  The daemon runs with uid=0, ALL caps, no-seccomp, and no-NoNewPrivs.
+  See [NATIVE-1](AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md#native-1--native-parser-memory-safety-audit-mostly-clean-negative-result-worth-recording)
+  and the [2026-11-21 status entry](SHELL_ACCESS_ESCALATION_Jun2026.md#4-consolidated-escalation-gate-inventory).
 
 ### NEW-6 — Reported RSA-1024 Private-Key Candidate in ghs_integrity.elf (Offset 12924442, UNVALIDATED)
 - **Status:** [Corrected 2026-11-12] Not an established finding — the owning doc
@@ -337,6 +376,8 @@ All Android Security Bulletin CVEs with disclosure/patch date on or before 2025-
 
 **Fastest path to literal Y177 downgrade:** NEW-2 (exploit CRC-warning-only behavior in misc/AB0), enabled by a misc-write primitive from NEW-3, NEW-5, or dealer mode.
 
-**TXE/Boot-Guard CVE cluster** (Tier 5 + Section 2 FPF unknown) defeats rollback at cryptographic root — run in parallel as the hardware-phase track.
+**TXE/Boot Guard:** Tier 5 lists the TXE CVEs. Section 2 records confirmed FPF
+commitment on the tested Y175 and the open OEM key and enforcement-profile questions.
+Keep assessment of the TXE/Boot Guard CVE cluster as a parallel hardware-phase track.
 
 **Cheapest next step:** NEW-4 gm_protokey probes (15 min, uid=2000, zero hardware). May collapse the entire problem stack.

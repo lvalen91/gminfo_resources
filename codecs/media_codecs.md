@@ -1,4 +1,4 @@
-# GM Infotainment System Media Codec Specifications
+# Media Codec Specifications
 
 **Device Platform:** Intel-based Android Automotive
 **Research Date:** December 7, 2025

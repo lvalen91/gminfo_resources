@@ -1,4 +1,4 @@
-# GM Infotainment Hardware Rendering Specifications
+# Hardware Rendering Specifications
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -50,8 +50,8 @@ vainfo --display drm --device /dev/dri/renderD128
 ```
 
 Wrappers invoke `/opt/graphics/run` with isolated driver and loader paths.
-An initial Vulkan test failed because libvulkan.so.1 is dynamically loaded and
-was missed by the first dependency pass; adding it fixed enumeration. VA-API
+An initial Vulkan test failed because libvulkan.so.1 is dynamically loaded and was
+missed by the first dependency pass; adding it fixed enumeration. VA-API
 profile reporting must not be presented as an accelerated video-stream test.
 
 Probe07 packages the verified runtime, console/panel fixes and diagnostic tools.

@@ -1,4 +1,4 @@
-# GM AAOS Platform Analysis: Debloated vs Factory Reset
+# Debloated vs Factory Reset
 
 ## Study Parameters
 

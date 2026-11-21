@@ -1,4 +1,4 @@
-# MDI2 Raw UDS/J2534 Bypass — Sending Arbitrary Diagnostic Commands Outside DPS
+# MDI2 Raw UDS/J2534 Bypass
 
 **Date:** 2026-08-17
 **Context:** The owner has a legitimate Bosch GM MDI2 + GM DPS tools, but needs to send raw UDS services (e.g. `$27` SecurityAccess, `$34/$36/$37` calibration transfer) for bench testing, outside the constrained SPS/DPS workflow.
@@ -304,13 +304,13 @@ python3 mdi2_seed_test.py
 > all-FF, since this module is SBI-flipped), preserved the vehicle's own VIN, waited for pending
 > responses, and handled errors (see the two live-caught bugs noted above and in the client
 > README). It did not replay a stale captured key.
-> On 2026-11-07 the owner confirmed the radio display was on with engine and accessory mode off;
-> a subsequent reset attempt received extended-session and level-1 security acknowledgements,
-> followed by `51 01` for `11 01`. An earlier direct reset in the active session returned
-> `7F 11 7F`; the successful attempt changed the diagnostic session and completed security
-> access. The observed power and display state is the owner's test prerequisite, but this
-> observation alone does not establish which condition caused the difference or prove that it
-> is sufficient for calibration programming.
+> On 2026-11-07, radio display confirmed on (owner-observed) with engine and accessory mode off; a subsequent
+> reset attempt received extended-session and level-1 security acknowledgements, followed by
+> `51 01` for `11 01`. An earlier direct reset in the active session returned `7F 11 7F`; the
+> successful attempt changed the diagnostic session and completed security access. The owner-observed
+> power and display state was this test's prerequisite, but this observation alone does not
+> establish which condition caused the difference or prove that it is sufficient for calibration
+> programming.
 > Capture detail: after F0F0 the SPS client destroyed its tester-present CLL and disconnected
 > and destroyed the radio CLL, then created new radio and tester-present CLLs before the second
 > security exchange and finalization. The simulator now requires a finalization-reconnection
@@ -437,7 +437,7 @@ This is not an accepted custom-calibration deployment recipe.
 
 ---
 
-## 5. Bench Test Checklist for Your `SCREEN_RESOLUTION` Goal
+## 5. Bench Test Checklist for `SCREEN_RESOLUTION`
 
 - [ ] **MDI2 DoIP connectivity:** ping the MDI2's Ethernet IP, verify `DoIPClient()` connects to 13400.
 - [ ] **Seed test:** run the Python script above, confirm seed is all-0xFF (if SBI is flipped).
@@ -448,7 +448,7 @@ This is not an accepted custom-calibration deployment recipe.
 
 ---
 
-## 6. Open-Source UDS Libraries (Already in Your Research Tree)
+## 6. Open-Source UDS Libraries
 
 From `OPENSOURCE_ECU_RESET_ANALYSIS.md`:
 
@@ -612,7 +612,7 @@ the power-mode DID `F085` through its current diagnostic interface and checks it
 ECU `0x80`, performs its security helper, then calls an `ISerUdsExp2` virtual method at offset
 `0x44` with arguments `(1, 0x0247, buffer, 0)`. This suggested a start-routine call with no
 option bytes; the subsequent live test below confirms the radio accepted `31 01 02 47` and
-the owner confirmed the reset. The virtual method itself was not independently named. A live
+the reset was owner-confirmed. The virtual method itself was not independently named. A live
 read on ECU `0x40` returned `62 F0 85 00`, so the observed data byte did not satisfy this code's
 `02` check. No data-wipe request was sent during that initial read.
 
@@ -621,8 +621,8 @@ read on ECU `0x40` returned `62 F0 85 00`, so the observed data byte did not sat
 (`67 02`, using the observed all-FF seed). One `31 01 02 47` request returned
 `7F 31 78` (pending), then `71 01 02 47` (positive start-routine response). This confirms
 that the candidate is implemented and accepted under these conditions. The radio restarted,
-displayed wipe activity, booted AAOS, and the owner confirmed its user data was wiped and it was
-in the default post-reset state. No calibration transfer was performed.
+displayed wipe activity, and booted AAOS. Owner-confirmed: user data wiped; radio in default
+post-reset state. No calibration transfer was performed.
 
 **Direct CAN bench retest, 2026-11-17:** After restoring the full stock LTZ
 set, direct CAN with the captured bench harness accepted extended session and
@@ -653,8 +653,8 @@ values, not a general claim that any arbitrary frame is authenticated.
 
 With mode2 held, extended session1003 and level1 SecurityAccess succeeded.
 A single `31 01 02 47` then returned **`71 01 02 47`**. Live Android logs reported
-`restoreCustomizationDefaults success: true`; ADB disconnected, and the owner
-observed the factory reset occurring. This confirms direct-CAN reset initiation
+`restoreCustomizationDefaults success: true`; ADB disconnected, and the factory
+reset was owner-observed occurring. This confirms direct-CAN reset initiation
 on the isolated bench, without MDI2, a BCM, T1 diagnostics, calibration clears or
 VIP RAM writes. Final post-reset setup/completion remains separately observable.
 The original20D payload was restored after reset initiation; RAM gate readback
@@ -678,8 +678,8 @@ before the wipe was `F1`; no causal interpretation is established. A routine-res
 have not been established as wipe-progress indicators; neither the zero values nor the rejected
 results query establishes completion or failure of the wipe.
 
-**Post-wipe ADB and power-mode checks:** The owner confirmed a factory-default radio state and
-manually re-enabled developer options and USB debugging. The Mac then obtained an authorized
+**Post-wipe ADB and power-mode checks:** Factory-default radio state owner-confirmed; developer
+options and USB debugging manually re-enabled by the owner. The Mac then obtained an authorized
 ADB shell (`uid=2000`); it remained available after Service Mode was turned off. This confirms
 access for the existing host after this wipe, not whether EEPROM SBI bytes or the GM certificate
 policy changed. `F1A0` read `F1` before the wipe, `F0` during and after boot, and `EF` after
@@ -757,10 +757,10 @@ authenticated root `adb`.
 
 ## Summary
 
-**Your MDI2 is NOT locked to DPS.** You can send raw `$27` SecurityAccess commands via:
+The MDI2 is not locked to DPS. Raw `$27` SecurityAccess commands can be sent via:
 1. **The MDI2 D-PDU API on TCP/10123** (the transport DPS itself uses for UDS; see
    `MDI2_DPDU_API_PROTOCOL_AUG2026.md`) — **not** the J2534 `PassThru*Msgs` read/write API, which
    this stack never uses for diagnostic payload.
 2. **DoIP + Python `udsoncan`** (any OS, open-source, recommended)
 
-The bench test for your `SCREEN_RESOLUTION` goal is now **entirely within your existing hardware and open-source tools**. No new adapters needed.
+The `SCREEN_RESOLUTION` bench test requires no hardware beyond the existing MDI2 and open-source tools.

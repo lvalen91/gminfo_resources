@@ -1,4 +1,4 @@
-# AVB Audio Transport (gPTP / AVTP AAF / VLAN 2)
+# AVB Audio Transport
 
 Scope: the radio-to-amplifier audio path: gPTP, IEEE 1722 AVTP AAF streams and TSCF control on VLAN 2, the
 AAOS usage-to-bus-to-wire-position mapping, the firmware audio stack (AVB StreamHandler, early AVB audio, local

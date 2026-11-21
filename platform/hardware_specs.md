@@ -1,4 +1,4 @@
-# GM Info 3.7 (gminfo37) Hardware Specifications
+# Hardware Specifications
 
 Component spec sheet for the gminfo37 head unit: SoC, GPU, RAM, storage, display panel, input, audio/codec hardware, USB, thermal, power, UART console map, I2C bus topology, and Intel A3960 datasheet facts.
 Excludes VIP/IPC/GHS (see [vip_ipc_ghs.md](vip_ipc_ghs.md)), boot flow, networking and native-Linux probe logs (pointers below). Merges the former `gminfo3.7_tech_specs.md` (retired to archive) and the datasheet section of `intel_apl_external_resources.md`.

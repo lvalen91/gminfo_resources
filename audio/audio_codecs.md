@@ -1,4 +1,4 @@
-# GM Infotainment Audio Codec Specifications
+# Audio Codec Specifications
 
 **Device:** GM Info 3.7 (gminfo37)
 **Platform:** Intel Apollo Lake (Broxton)
@@ -67,7 +67,7 @@ All audio codecs on this device are software-based (CPU). There are no hardware 
 | Sample Rates | 8000, 12000, 16000, 24000, 48000 Hz |
 | Bitrate Range | 6 - 510 Kbps |
 
-**Note:** Opus is excellent for voice and music at low bitrates.
+**Note:** Opus is designed for voice and music at low bitrates.
 
 ---
 
