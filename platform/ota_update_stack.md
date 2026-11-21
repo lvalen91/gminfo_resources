@@ -51,6 +51,12 @@ not traced here); 51-53 no arguments; 54 and 55
 `--show_return_to_dealer` (see the GHS recovery analysis). Recovery's own clock reads 2010/2011
 outside entry 49, so only the reason strings carry the dates.
 
+`recovery/boot_cycle_counter` file bytes: `0x37` (ASCII `7`) in the first export, `0x38`
+(ASCII `8`) in the second. The in-log "Boot cycle counter" shows **54** (first export) and
+**55** (second export). The 47-unit gap between the file value and the in-log counter is
+unexplained and is flagged as UNKNOWN in the 2026-11-12 forensic cache; do not equate the
+one-byte file counter with the in-log runtime counter.
+
 The first archive preserves a concrete multi-reboot update sequence in
 `update_cache/recovery/last_log.10`, `.9` and `.8`:
 
@@ -175,7 +181,7 @@ reached but no caller-permission check guards it.
 > pinning; whether a rogue vlan5 node can spoof `.102` at L2/L3 to feed a
 > subscribed listener (should one exist on another build/config) is an open
 > bench item. See
-> [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#update--rollback--influence-verdicts-network-peer-over-ethernet-resolved-2026-09).
+> [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only).
 
 > **[U] INSTALLRUNNER trace (2026-09) — closes the code-execution question for the local IPC path.**
 > Refines (does not contradict) the "no network→install path" verdict above. `IUpdateService.install()`
@@ -410,6 +416,14 @@ not reachable via `service call`. Methods:
 
 - USB install from `/mnt/media_rw/4FE0-161D/85759595.mnf` → `SIHM22B-00383.01` (corrected 2026-11-12 from `857595955.mnf`; both `enumeration/Y181/apr2026/raw/gm_update_service.txt:33` and the `/cache` `UpdateDB` read `85759595.mnf`)
 - OTA cache installs of SIHM22B-00499.02, .03, SIHM22B-00526
+  - **[HIGH INTEREST — G8]** SIHM22B-00526 = `85874101.mnf`. Static analysis of this
+    manifest (2026-11-12 forensic cache) reveals its embedded Edify script contains
+    `format("f2fs","EMMC","/dev/block/vda26","0","/data")` — a command that would
+    format the `/data` partition. `UpdateResults` rows 8 and 14 show Result=0 for this
+    manifest (both dated 2025, payloads absent from the cached export). **Whether the
+    script ran on this unit is NOT provable from the cached data** (2025 payloads and
+    logs are absent). Do not assert the partition was formatted based solely on the
+    presence of the script.
 - OTA `GM Update N25-250552` (campaignId `pV7JR1D0EfCc7u7uCvix7Qcmp`) → Result=5
   (**meaning undefined** — corrected 2026-11-12: the only `UpdateResults.Result` value any log names is `0` = `RESULT_SUCCESS`;
   the `/cache` export also has `Result` 1, 2 and 5 rows with no defining string, so "declined/failed" is a guess)

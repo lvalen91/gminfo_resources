@@ -18,9 +18,11 @@ log holds load-bearing UNIQUE captures (VIP UART IDs, PROTOKEY seeds, the board 
 map, sepolicy MD5s, the partition->vda map, reflash history, media/PTT control) AND several
 hypotheses since RESOLVED/REFUTED. Do NOT trust the following as current:
   - "EEPROM 0x0B40/0x0B41 controls debug/SELinux mode" (L51, 88-97, 193-198, 266-272,
-    336-345, 479-485, 746-751, 1285-1287, 1810-1813, 2354): WRONG. SELinux is kernel-cmdline
-    enforced (Y181 Enforcing); 0x0B41->0x01 is part of the verified ADB-UNLOCK set, NOT a
-    SELinux control. (This doc's own section 15.1, L813-836, already self-corrects it.)
+    336-345, 479-485, 746-751, 1285-1287, 1810-1813, 2354): WRONG. SELinux is forced Enforcing by
+    init despite the permissive cmdline token (Y181 Enforcing); 0x0B41 is NOT part of the verified
+    ADB-unlock set and NOT a SELinux control (corrected 2026-11-20): the minimal/sufficient recipe
+    is 0x0441->0xFF + 0x0A81->0xFF only, and 0x0B41 showed no observed ADB/SELinux effect. (This
+    doc's own section 15.1, L813-836, already self-corrects the SELinux half.)
   - "Y177 downgrade possible / known working path" (L50, 110, 183-191, 219, 274-282,
     347-349, 968-972, 1805-1808): WRONG. BLOCKED by the GHS rollback counter (misc / vda9);
     tested FAILED.

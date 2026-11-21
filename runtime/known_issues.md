@@ -153,7 +153,7 @@ session). Other post-reboot bench observations include ADB becoming unavailable
 until a Developer Options toggle/USB reconnect, and the clock resetting. Correction
 2026-11-17: this does not establish that adb_enabled itself is cleared at boot;
 pre-toggle readback was unavailable. After toggling, adb_enabled=1 and
-persist.sys.usb.config=adb were observed. The [ADB persistence inspection](../research/USB_ADB_SESSION_FINDINGS_2026-10-10.md#bench-adb-persistence-inspection--2026-11-17)
+persist.sys.usb.config=adb were observed. The [ADB persistence inspection](../research/USB_ADB_SESSION_FINDINGS_2026-10-10.md#41-bench-adb-persistence-inspection-addendum-2026-11-17)
 records the unresolved setting-versus-USB-startup distinction. The workstation-sync
 hook corrects time on next ADB use. Wired/loopback/binder testing over ADB is
 unaffected by the SoftAP state.

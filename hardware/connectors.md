@@ -8,7 +8,7 @@ headers.
 **Source basis:** physical rear-panel photo of a test unit + three GM service wiring diagrams
 (*Sound Systems – Low Level*, *Sound Systems – Mid/High Level W/ Amplifier*, *Computer Data
 Lines*), cross-referenced to [`teardown.md`](teardown.md) and
-[`platform/networking.md`](../platform/networking.md).
+[`platform/ethernet_networking.md`](../platform/ethernet_networking.md).
 Compiled 2026-07-01.
 
 > **Confidence key:** **[C]** confirmed against schematic circuit names/numbers or teardown
@@ -76,7 +76,7 @@ occupied cavities.)
 | **X8** | 13545174 | by cable | **12-Way M 2.0 HSAL-2 (BK)** | USB serial data → console USB receptacle(s) |
 | **X9** | 33340320 | by cable | 1-Way F Coax **(OG)** | Video Processing Module coax video (cameras) |
 | **X10** | 33340317 | by cable | 1-Way F Coax **(BG)** | Wi-Fi antenna |
-| **X11** | 35068239 | 13529935 | 12-Way F 050 CTS **(BK)** | **As-wired on this vehicle — fully populated (all 6 occupied pins wired, unlike sparse X5/X6):** Ethernet Bus 2 ± (p3/4, 4758 YE / 4757 BU → K56 gateway), **Ethernet Bus 6 ± (p8/9, 7215 YE / 7214 GN → Bose amp)**, Ethernet Bus 4 ± (p11/12, 7211 BN / 7210 GY → K73 comm). p1-2/5-7/10 not occupied *per harness inspection — but see 2026-11-13 note below for p1-2*. **GM documents the A11 as a 5-bus radio (Buses 2/4/5/6/14 — [`platform/networking.md`](../platform/networking.md) §Physical Automotive-Ethernet bus map); this vehicle's RPO list has no rear-seat video or HUD, so Buses 5/14 read as "not optioned," not "A11 doesn't support them."** **Harness-side mate 13529935 = Delphi/Aptiv drawing 33283033** ("TAXI ASM CONN 12 F CTS 050", 12-way female CTS-050, male-plug shell / female sockets, CPA) — datasheet: [`datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf`](datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf) |
+| **X11** | 35068239 | 13529935 | 12-Way F 050 CTS **(BK)** | **As-wired on this vehicle — fully populated (all 6 occupied pins wired, unlike sparse X5/X6):** Ethernet Bus 2 ± (p3/4, 4758 YE / 4757 BU → K56 gateway), **Ethernet Bus 6 ± (p8/9, 7215 YE / 7214 GN → Bose amp)**, Ethernet Bus 4 ± (p11/12, 7211 BN / 7210 GY → K73 comm). p1-2/5-7/10 not occupied *per harness inspection — but see 2026-11-13 note below for p1-2*. **GM documents the A11 as a 5-bus radio (Buses 2/4/5/6/14 — [`platform/ethernet_networking.md`](../platform/ethernet_networking.md#physical-automotive-ethernet-bus-map) §Physical Automotive-Ethernet bus map); this vehicle's RPO list has no rear-seat video or HUD, so Buses 5/14 read as "not optioned," not "A11 doesn't support them."** **Harness-side mate 13529935 = Delphi/Aptiv drawing 33283033** ("TAXI ASM CONN 12 F CTS 050", 12-way female CTS-050, male-plug shell / female sockets, CPA) — datasheet: [`datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf`](datasheets/Delphi_33283033_TAXI_12way_F_CTS050_A11-X11_mate.pdf) |
 
 > **[2026-11-13] p1-2 "not occupied" is now unsettled, [?] — bench finding, not yet reconciled
 > with the harness-inspection claim above.** A second T1-converter tap landed live on X11 p1/2
@@ -210,7 +210,7 @@ The large multi-bay Stac64 housings carry the vehicle harness. Circuit names/num
 ## Audio Architecture — Bose (Mid/High W/ Amplifier)
 
 This unit's truck has the **Bose amplifier**, so it follows the *Mid/High W/ Amplifier* diagram.
-The amp is a **networked AVB endpoint, not analog-driven** ([`platform/networking.md`](../platform/networking.md),
+The amp is a **networked AVB endpoint, not analog-driven** ([`platform/avb_audio_transport.md`](../platform/avb_audio_transport.md),
 `research/GM_REMOTE_ACCESS_ANALYSIS.txt`):
 
 ```
@@ -218,7 +218,7 @@ SAF7751 tuner/DSP → A3960 SoC → Intel I210 GbE → Eth switch (BCM89551 or 8
    → (Automotive-Ethernet AVB pair, in the Stac64 harness) → Bose amp @ 192.168.1.103 (TDF8532) → speakers
 ```
 
-**[2026-11-13]** Shipped Marvell port-speed settings and the unresolved numbering mapping: [`networking.md` §Shipped switch speeds](../platform/networking.md#shipped-switch-speeds--c-2026-11-13).
+**[2026-11-13]** Shipped Marvell port-speed settings and the unresolved numbering mapping: [`ethernet_networking.md` §Shipped switch speeds](../platform/ethernet_networking.md#23-shipped-switch-speeds-c-2026-11-13).
 
 - Amp presence is calibrated: **`External Amp = Present`, `AMPCAL=3`** (`research/session_logs/security_assessment_20DEC25.txt`).
 - VIP boot order includes **`AMP_MGR_SWC`** (Audio Amplifier Manager).
@@ -252,7 +252,7 @@ BK/WH)**.
 > buses") is a separate, lower-bandwidth **control-plane** link — amp control/serial data, not
 > audio itself. They are two different physical connectors (X11 vs. X6) and two different
 > circuit families; losing one does not take down the other. This distinction already existed
-> piecemeal (this table, [`../platform/networking.md`](../platform/networking.md) §Physical
+> piecemeal (this table, [`../platform/ethernet_networking.md`](../platform/ethernet_networking.md#physical-automotive-ethernet-bus-map) §Physical
 > Automotive-Ethernet bus map, [`../audio/automotive_audio.md`](../audio/automotive_audio.md)
 > §Physical Amplifier & Speaker Output) but had not been stated together until now; those are
 > pointers back here, not restatements.
@@ -758,7 +758,7 @@ different connectors between harness variants** — treat this as indicative onl
   markings (Intel Atom A3960, BCM89551, DS90UB954-Q1 `AVG3 G4`, Harman P/N 3765210 / EC-Index 20).
 - [`hardware/teardown.md`](teardown.md) — internal silicon (FPD-Link serializer/deserializer,
   I210, BCM89551, TDF8532, SAF7751).
-- [`platform/networking.md`](../platform/networking.md) — AVB audio endpoint, internal networks.
+- [`platform/ethernet_networking.md`](../platform/ethernet_networking.md) — AVB audio endpoint, internal networks.
 - `research/GM_REMOTE_ACCESS_ANALYSIS.txt` — `192.168.1.103 AMP_ETH`.
 - `research/session_logs/security_assessment_20DEC25.txt` — `External Amp: Present, AMPCAL=3`.
 

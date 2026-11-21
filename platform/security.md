@@ -117,7 +117,11 @@ This section keeps only the security verdict.
 - **[C] live-Y181B 2026-11-12:** same end-state — `verifiedbootstate=green`,
   `vbmeta.device_state=locked`, `flash.locked=1`, `ro.boot.slot_suffix=_a`,
   `ro.boot.product.hardware.sku=gv221`, `ro.bootloader=2344`. Kernel
-  `4.19.305-240125T145315Z`.
+  `4.19.305-240125T145315Z`. AVB version pair: `ro.boot.avb_version=1.2` /
+  `ro.boot.vbmeta.avb_version=1.1` (READ from gmlogger props; not present in
+  update/ tree) — same 1.2/1.1 split seen on Y175; the vbmeta header itself
+  is libavb version 1.1 / avbtool 1.2.0 (byte-confirmed, `BOOT_TRUST_ANCHOR_
+  AND_KEYS.md` §4), so this is avbtool-version vs format-version, not an error.
 
 **Rollback protection (security framing; full mechanism in `boot_chain.md`):** GHS maintains
 its own rollback counter in `misc`, independent of Android's AVB rollback index (both Y177
@@ -619,7 +623,7 @@ only trigger (`USBUpdateSource$1.onUSBMounted`) requires physical USB media and 
 only on non-`user` builds — the tested Y175 is `user`; Y181's notifier and other entry points
 remain to be independently verified. Full trace:
 [`ota_update_stack.md`](ota_update_stack.md), [`ota_programming_roles.md`](ota_programming_roles.md#caldef-evidence-for-the-orchestration-role),
-and [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#update--rollback--influence-verdicts-network-peer-over-ethernet-resolved-2026-09).
+and [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only).
 
 ### gmsystemui capability gating — locked-radio verdict
 

@@ -81,7 +81,7 @@ Y181B recovery export instead records `SCREEN_RESOLUTION = 4` (`SIZE_2400_BY_960
 
 > **History:** corrected 2026-11-12. No accepted custom write or transition from the older
 > snapshot is inferred — the two DBs are independent captures. See the
-> [vehicle baseline](../platform/vehicle_config.md#y181b-exported-calibration-baseline-2026-11-12).
+> [vehicle baseline](../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12).
 
 `[C]` What lives in the older DB row is a bare SQLite integer, not a BLOB. Verified directly:
 
@@ -197,7 +197,7 @@ private header as ordinary TCP `34` parameters.
 
 > **History:** clarified 2026-11-16, correcting an earlier draft that conflated this header with
 > the public UDS path. The full stock-LTZ CAN5 rewrite that uses this pipeline is owned by
-> [`../platform/can_network.md`](../platform/can_network.md#full-stock-ltz-rewrite-through-canable-2026-11-16).
+> [`../platform/can_bench_experiments.md`](../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16).
 
 `[C]` native parser offsets (mapping through the CAN-side bridge to public UDS still needs an
 independent trace; this is **not** the stock CSM container header, §2):
@@ -452,7 +452,7 @@ modification. The archive omits the actual `.cmod` files and is not a complete e
 backup.
 
 > **History:** schema correction, 2026-11-14. See the
-> [owning calibration baseline](../platform/vehicle_config.md#y181b-exported-calibration-baseline-2026-11-12)
+> [owning calibration baseline](../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12)
 > for the exported row counts this correction is based on.
 
 The cell is a native integer; no package checksum/digest is stored around each DB cell. Direct DB

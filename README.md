@@ -27,7 +27,7 @@ gminfo_resources/
 ├── diagnostics/       DPS session logs, CAN bus traces, Ethernet UDS (diagnosticsd :49156)
 │   └── dps/           A11 Radio (ECU 0x80) DPS 4.56 logs
 ├── research/          Deep-dive analysis docs, decompiled artifacts, scripts, reports
-│   ├── MASTER_REFERENCE.md, INVENTORY.md, 30 docs/research + Y177/Y181 VIP/GHS analyses
+│   ├── README.md (topic index), INVENTORY.md, research topic docs + Y177/Y181 VIP/GHS analyses
 │   ├── security/      Security-specific CVE and threat analyses
 │   ├── fuzz/          VMM1/OTA parser fuzz bundles and synthesis outputs
 │   ├── type4_radio_info/  Type-4 radio SPAT/calibration build kit

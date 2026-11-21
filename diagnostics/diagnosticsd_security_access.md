@@ -6,7 +6,7 @@
 the nine known seed profiles01/03/05/09/0B/0D/11/13/15 on direct CAN5/F1 and
 T1. These are the known profiles tested, not proof of every possible OEM
 security level or increasing numeric privilege. The
-[CAN campaign](../platform/can_network.md#expanded-validation-campaign--2026-11-16)
+[CAN campaign](../platform/can_bench_experiments.md#expanded-validation-campaign--2026-11-16)
 owns the session/power-mode matrices and subsequent genuine LTZ/HC writes.
 Historical level01-only scopes below describe their original tests.
 
@@ -18,7 +18,7 @@ was not established by that grant. Additional CAN03/05 trials reproduced PEC0015
 rejected021E before download. A later custom SXM write succeeded using separate
 CAN613/614 temporary VIP RAM writes, after which the owner confirmed SXM removal.
 The RAM words were restored. This does not make any grant a signature bypass;
-the owner confirmed retention after a10.505-second supply-off cycle with clean CAN status. See the [verification record](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#header-signature-rejection-confirmed--2026-11-16).
+the owner confirmed retention after a10.505-second supply-off cycle with clean CAN status. See the [verification record](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed).
 
 ---
 
@@ -49,7 +49,7 @@ semantic effect or successful write is established. No E010 write was sent.
 It must not be described as an ADB/debug-enable or ELK boot control.
 
 The separate CAN613/614 memory/development interface has its own
-[command inventory](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#development-interface-command-inventory--2026-11-17).
+[command inventory](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-development-interface-xcp-style-command-inventory).
 
 **F000/8180 distinction,2026-11-17:** Engineering09 alone returned7F3133 for
 `31 01 F000 8180 03`. Profile0D satisfied that routine's DCM security mask,
@@ -127,7 +127,7 @@ VLAN interfaces were removed; no packet-capture file was created.
 
 The powered CANable, connected directly to the radio's CAN5 pair at 500 kbit/s
 with the harness MCU absent, exchanged ISO-TP using request ID `0x14DA80F2`
-and actual response ID `0x14DAF280`. TesterPresent returned `7E 00` and
+and actual response ID `0x145AF280`. TesterPresent returned `7E 00` and
 extended-session entry returned `50 03 00 64 01 F4`. Level-1 seed request
 `27 01` returned a 31-byte all-FF seed; the documented response was accepted
 with **`67 02`**. This is a fresh physical CAN5 result, independent of T1 and
@@ -144,7 +144,7 @@ This validates only the observed level-1 grant on direct CAN5. It does not
 grant other security profiles or programming access, validate the ADB routine,
 or identify the firmware component performing the comparison. No disable,
 ECU reset, download, EEPROM write or calibration change was requested.
-The [CAN reference](../platform/can_network.md#direct-can5-adb-enable-diagnostics--2026-11-15)
+The [CAN reference](../platform/can_bench_experiments.md#direct-can5-adb-enable-diagnostics--2026-11-15)
 owns the complete physical-path and candidate-test comparison.
 
 ---

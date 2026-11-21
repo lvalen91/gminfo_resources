@@ -416,4 +416,4 @@ describe all current module identities. Default session was restored afterward.
 The archive contains 982 nonzero OverRiden rows and records 14 applied .cmod
 paths, but omits the actual .cmod files. It is not a complete recovery backup
 for erasing overrides. This archive assessment preceded the later explicitly requested clear. See the
-[owning calibration baseline](../platform/vehicle_config.md#y181b-exported-calibration-baseline-2026-11-12).
+[owning calibration baseline](../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12).

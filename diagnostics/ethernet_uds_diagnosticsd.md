@@ -13,7 +13,7 @@ live forwarding path to a separate RTOS diagnostic endpoint remains unproven
 [`diagnostics/dps/`](dps/) (ECU 0x80, DPS 4.56) and from the FSA service layer
 ([`platform/fsa_protocol.md`](../platform/fsa_protocol.md)). The `gm_diagnosticsd`
 SELinux domain and its UDS SID list are summarized in
-[`platform/security.md`](../platform/security.md#can--uds-diagnostic-services);
+[`platform/security.md`](../platform/security.md#can--uds-diagnostic-services--pointer-only);
 this doc adds the live Ethernet wire format and trust model.
 
 **2026-10-30, Y175:** A shell running as UID 1000 in `system_app` connected to
@@ -63,7 +63,7 @@ Links must target those files; fragments on this index do not automatically redi
   logged seed-buffer checksums match Adler-32; this does not recover UDS seed/key math.
 - [Audio follow-up](diagnosticsd_routines_and_recovery.md#audio-usage-follow-up-2026-11-15):
   all 16 public usages mapped to live PCM positions; five system usages refused focus.
-  The complete wire reference stays in [networking.md](../platform/networking.md#vlan-2-audio-transport-reference).
+  The complete wire reference stays in [avb_audio_transport.md](../platform/avb_audio_transport.md#4-vlan-stream-inventory-and-packet-layout).
 
 ---
 
@@ -128,7 +128,7 @@ scan-tool (**GDS2**) *data-parameter* lists for A11 Radio / T3 Amp / K9 BCM — 
 Rx/Tx fail counters + IPs, MEC, ANC/mic levels, battery-sensor stream, etc. — are catalogued in
 [`../enumeration/README.md`](../enumeration/README.md) §Vehicle module inventory, and the
 diagnostics/programming CAN bus is **CAN6 (5 Mbit/s)** per
-[`../platform/networking.md`](../platform/networking.md).
+[`../platform/ethernet_networking.md`](../platform/ethernet_networking.md#can-bus).
 
 > **Tester-ID note:** `0x14DA80F1`/`0x145AF180` is the **generic OBD tester (F1)** pair used by the
 > DPS bench read logs (confirmed: GM_research/diagnostics/gm_dps/DPS_All_Module_Read/.../GCI_*.txt).

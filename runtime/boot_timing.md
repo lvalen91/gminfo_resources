@@ -347,7 +347,7 @@ input was released as soon as reset was detected. No extra guard-message
 mutation, calibration clear or diagnostic ECUReset was used. This supersedes
 the earlier static-only boundary for this specific input and current bench
 state; the configured initializer/tick derivation remains unrecovered.
-See the [CAN campaign](../platform/can_network.md#expanded-validation-campaign--2026-11-16).
+See the [CAN campaign](../platform/can_bench_experiments.md#expanded-validation-campaign--2026-11-16).
 
 The exact GHS shutdown/restart boundary was not observed. Distinct VIP and
 SoC reset domains and `plmanager` coordination prevent assuming that every

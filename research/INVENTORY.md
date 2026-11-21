@@ -18,7 +18,8 @@ Carved/decompressed firmware from OTA modules
 
 | File | Source | Description |
 |------|--------|-------------|
-| `ghs_integrity.elf` | Y181/85098662 | GHS INTEGRITY hypervisor (14.93MB ELF, stripped, x86, contains current_android_key at offset 0xe3ca34) |
+<!-- corrected 2026-11-21: "stripped" and "x86" were both wrong per GHS_FILE_MAP_85098662.md and GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md -->
+| `ghs_integrity.elf` | Y181/85098662 | GHS INTEGRITY hypervisor (14.93 MB; ELF32/EM_386 container but **x86-64 code** — disassemble as `x86:LE:64`, not i386; **not stripped**: 18,035 kernel-AS symbols in section 66, server address spaces have no symbols; `current_android_key` name string at ELF offset 0xe3ca20, 256 B key at 0xe3ca34) |
 | `elk.bin` | extracted from SOC_ABL OBBP partition | Intel kernelflinger-07.02 with Harman ipk wrapper (1.06MB). **Correction (2026-09-10):** this is a `fastboot`-class Intel Kernelflinger bootloader with AVB active, **not** a Linux shell/USB-rootfs environment — that trait belongs to the GWMv2 sibling platform only (GitHub issue #1, @DymOK93), not to GM. |
 | `elk_inner.elf` | elk.bin offset 0x22C | Inner ELF: kernelflinger + libavb + BoringSSL + .oemkeys RSA-4096 |
 | `vip_boot.bin` | Y181/85056831 stripped | Renesas RH850 VIP bootloader (1.93MB, contains Harman SBAT pubkey @ 0x29f1) |
@@ -51,6 +52,7 @@ Ghidra/r2 decompilation outputs
 | `vmm1_all.c` | 140 vmm1 functions decompiled (UNUSABLE due to Green Hills toolchain — no string refs) |
 | `vmm1_decomp.txt` | Initial VMM1 analysis report |
 | `ghs_analysis.txt` | GHS section/function inventory |
+| `ghs_isys_a_secinfo_region_map_Y175.txt` | Y175 GHS (`ghs_isys_a`) `.secinfo` region table: all **190** regions with vaddr/len/type and per-region Gate-1 self-integrity method (CRC32 / CRC32+SHA1 / none). Interpretation + coverage breakdown: [BOOT_TRUST_ANCHOR_AND_KEYS.md §9](BOOT_TRUST_ANCHOR_AND_KEYS.md#9-ghs-self-integrity-gate-1-and-tamper-analysis) |
 | `vip_inspect.txt` | VIP_APP existing Ghidra project inspection |
 | `elk_strings.txt` | All printable strings from elk_inner.elf |
 | `elk.asm` | Full objdump -d -M intel of elk_inner.elf (287k lines) |
@@ -60,8 +62,9 @@ All Ghidra reverse-engineering projects
 
 | Project | Target |
 |---------|--------|
-| `ghs_proj/` | GHS hypervisor (initial 64-bit attempt — wrong arch) |
-| `ghs32/` | GHS hypervisor (correct 32-bit i386) |
+<!-- corrected 2026-11-21: GHS code is x86-64 in an ELF32 container (corrected 2026-08-26 per COMPREHENSIVE_ANALYSIS); ghs_proj and ghs32 descriptions were both misleading -->
+| `ghs_proj/` | GHS hypervisor (initial pass — tried pure x86-64 ELF; ELF32 container confused Ghidra) |
+| `ghs32/` | GHS hypervisor (second pass — ELF32 loaded as i386, **also wrong**: real code is x86-64; use `x86:LE:64:default` language; image base 0x00200000; superseded by the 9,424-function `x86:LE:64` project in GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) |
 | `sa015bcr_proj/` | sa015bcr.dll Security Access level 0x15 |
 | `ivcspsa_proj/` | ivcspsa.dll GlobalB cloud client |
 | `vip_boot_proj/` | VIP_BOOT (Renesas RH850 — use the `RH850:LE:32` SLEIGH module; V850 was only an approximation) |
@@ -128,7 +131,7 @@ Per the corpus's "contested topics: pointer, not copy" rule, each is now a one-l
   live-tested ELK-trigger fact.
 
 ## Definitive blockers for software-only trust replacement
-- ISSI SPI replacement won't bypass AVB (`current_android_key` hardcoded in GHS, BG-locked) —
+- ISSI SPI replacement won't bypass AVB (`current_android_key` hardcoded in GHS — **confirmed 2026-11-20**: embedded in the GHS IPK payload, ghs_isys_a name @`0xe3ca7c`/modulus @`0xe3ca90`, byte-identical to the active vbmeta key; see [BOOT_TRUST_ANCHOR_AND_KEYS.md §6](BOOT_TRUST_ANCHOR_AND_KEYS.md#6-current_android_key--the-trust-anchor-embedded-in-the-ghs-image)). **UPDATED 2026-11-20:** GHS-image authentication **is** demonstrated — the GHS IPK carries an appended RSA-2048/SHA-256 signature (sig @`0xe3cc00`) over `image[0:0xe3cb98]`, and the signing OEM "OS Kernel" key is rooted in the Boot-Guard-covered SPI OBB/ELK (@`0x114000`) + CSE Key Manifest (@`0x60354`), **not** in mutable eMMC. A `ghs_isys` write that passes the recomputable Gate-1 self-integrity (§9) still fails this OBB-rooted signature — so the key/verifier **cannot** be silently altered without the OEM private key or an OBB verify-routine bug. Enforcement is **empirically demonstrated** — a one-byte sig-corrupt A/B boot test boots AAOS from stock but is rejected to fastboot when a single signature byte is flipped. What is still open is only *locating* the verify instruction (upstream/uncaptured CSE-BootGuard-OBB) —
   see `research/session_logs/RESEARCH_STATE_MAP_JUN2026.md:201`.
 - All trust roots sit in BG-locked binaries (Harman/Intel/GM HSM keys required).
 - Modifying any partition triggers a downstream signature/hash check.

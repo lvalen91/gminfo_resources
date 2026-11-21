@@ -50,7 +50,7 @@ before `sendResponse`.
     thread count are unchanged after the test (no crash observed).
   - **Reachability:** exploitable from the unprivileged Android shell
     (uid=2000) over loopback, and — per the firewall rules in
-    [`platform/networking.md`](../platform/networking.md) — from any
+    [`platform/vehicle_network.md`](../platform/vehicle_network.md#reachable-services-and-host-firewall-topology-summary-findings-securitymd) — from any
     partition permitted to reach `:49156` (172.16.4.107 RTOS, 172.16.4.112
     CGM) without any UDS session/SecurityAccess state, since the block
     happens before frame parsing ever completes.

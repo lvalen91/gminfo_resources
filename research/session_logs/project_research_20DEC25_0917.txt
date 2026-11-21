@@ -15,14 +15,16 @@ hypotheses here were later RESOLVED/REFUTED. Do NOT trust the following as curre
   - "EEPROM 0x0B40/0x0B41 controls SELinux/debug mode" (L256, 341-346, 544, 571-576, 633):
     WRONG. SELinux mode is set OS-side by init -- a `user` build forces enforcing regardless of the
     cmdline (both Y181 and Y177 boot a *permissive* cmdline yet run enforcing; see bullet above),
-    NOT by EEPROM. 0x0B41->0x01 is part of the VERIFIED EEPROM ADB-UNLOCK set (alongside
-    0x0441/0x0A81/0x1A01->0xFF); its independent function (debug / verbose logging) is a
-    hypothesis, not SELinux control.
+    NOT by EEPROM. 0x0B41 is NOT part of the ADB-unlock set (corrected 2026-11-20): the verified
+    minimal/sufficient recipe is 0x0441->0xFF and 0x0A81->0xFF only. 0x1A01 is not an established
+    SBI mirror, and 0x0B41 was tested across 0x00/0x01/0xFF with no observed ADB/SELinux effect;
+    its independent function (debug / verbose logging) is an unconfirmed hypothesis, not SELinux
+    control.
   - "Y177 downgrade may be possible" (L347-356, 438-451, 638): WRONG. Y181->Y177 is BLOCKED
     by the GHS hypervisor rollback counter (misc / vda9); tested FAILED.
   - "RAM: 6GB DDR3L" (L55-56): WRONG. 8GB LPDDR4 (4x Micron MT53E512M32D2DS-053), ~5.66GB
     kernel-visible.
-For current verified facts see VERIFICATION.md and research/MASTER_REFERENCE.md.
+For current verified facts see VERIFICATION.md and research/README.md (topic index; MASTER_REFERENCE.md retired/folded there).
 --------------------------------------------------------------------------------
 
 TABLE OF CONTENTS

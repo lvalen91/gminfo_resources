@@ -421,7 +421,7 @@ with unchanged XML/digest/length was rejected, and the original SXM edit returne
 PEC0015 before stock recovery. The matching VIP header-verification failure
 branch sets0015 and its first-block caller returns NRC72 before SoC calibration
 init. A separate validated-SBA-ticket exception exists in code but has not been
-activated. See the [confirmed verification record](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#header-signature-rejection-confirmed--2026-11-16).
+activated. See the [confirmed verification record](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed).
 This is not an accepted custom-calibration deployment recipe.
 
 ---
@@ -513,7 +513,7 @@ required external 12 V supply. The historical MDI2-labelled results below must
 not be used as proof that the current physical CAN5 path was exercised; their
 transport attribution requires verification against the original records.
 Direct powered-CANable/CAN5 results are now recorded in
-[the CAN reference](../platform/can_network.md#direct-can5-adb-enable-diagnostics--2026-11-15),
+[the CAN reference](../platform/can_bench_experiments.md#direct-can5-adb-enable-diagnostics--2026-11-15),
 separately from the confirmed T1 trials.
 
 **Fresh direct-CAN5 follow-up, 2026-11-15:** the powered CANable received real

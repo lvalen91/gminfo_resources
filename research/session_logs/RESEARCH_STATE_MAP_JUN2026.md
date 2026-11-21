@@ -30,7 +30,7 @@
 Y181 to Y177 downgrade attempted via USB/DPS. **FIELD-TESTED AND BLOCKED.** GHS rejected with `"rollback index is too old."` A/B fallback returned to Y181. Y177 via USB is a confirmed dead end.
 
 ### Dec 20 2025
-Y181 first full enumeration (W231E-Y181.3.2-SIHM22B-499.3, build 231, kernel 4.19.305, bootloader 2344, slot _a). Bulk of security assessment produced (security_assessment_20DEC25.txt v2.4). Two fastboot attempts made this session: both returned "No fastboot device detected" — Intel ABL has no standard fastboot USB interface. **CRITICAL MISTAKE documented:** the user had previously updated from Y177 to Y181 voluntarily, losing the permissive SELinux environment.
+Y181 first full enumeration (W231E-Y181.3.2-SIHM22B-499.3, build 231, kernel 4.19.305, bootloader 2344, slot _a). Bulk of security assessment produced (security_assessment_20DEC25.txt v2.4). Two fastboot attempts made this session: both returned "No fastboot device detected" — Intel ABL has no standard fastboot USB interface. **CRITICAL MISTAKE documented:** the user had previously updated from Y177 to Y181 voluntarily, losing the permissive SELinux environment. *[CORRECTION 2026-08-25/2026-11-12: "losing the permissive SELinux environment" is wrong. Y177 never ran permissive at runtime. All stock builds (Y175/Y177/Y181) carry a byte-identical init that forces enforcing regardless of cmdline token; the "Y177 permissive" belief was based on a fixed-address VIP disassembly misread. See VIP_FIRMWARE_Y177_Y181_COMPARISON.md §2 and security/KERNEL_CVE_ANALYSIS.txt Appendix E.8.]*
 
 ### Jan 17 2026
 Y175 baseline enumeration (W213E-Y175.5.2-SIHM22B-383.1, kernel 4.19.283, bootloader 2121-1, SELinux already Enforcing on this build). /dev/ttyACM1 had a live timestamp — accessed this session. Y175 VIP UART log captured (VIP version 2B.175.1.5).
@@ -47,7 +47,7 @@ Verification and reconciliation pass. Live ADB (serial <ADB_SERIAL>), boot slot 
 
 ### Working
 
-- **EEPROM SBI bypass:** Bytes 0x0441→0xFF, 0x0A81→0xFF, 0x1A01→0xFF, 0x0B41→0x01. Raw markers at 0x0440→`5A FF 5A`, 0x0A80→`5A FF 5A`. Yields ADB shell uid=2000, NOT root. OTA resets flags; must be re-applied after any update.
+- **EEPROM SBI bypass:** Bytes 0x0441→0xFF, 0x0A81→0xFF (**corrected 2026-11-20:** this pair is the minimal and sufficient edit; 0x1A01 is not an established SBI mirror and 0x0B41 was tested across 0x00/0x01/0xFF with no observed ADB/SELinux effect — see [`../../platform/eeprom_i2c_security.md`](../../platform/eeprom_i2c_security.md)). Raw markers at 0x0440→`5A FF 5A`, 0x0A80→`5A FF 5A`. Yields ADB shell uid=2000, NOT root. OTA resets flags; must be re-applied after any update.
 - **EEPROM CRC corruption test:** VIN bytes 0x05C0–0x5D1 wiped to all-0xFF; module booted normally. **CRC NOT enforced at boot** confirmed.
 - **Y181→Y181 reinstall:** Succeeds.
 - **DPS 4.56 diagnostic sessions:** UDS $27 SecurityAccess, $22 ReadDataByIdentifier (many DIDs), $31 RoutineControl on ECU 0x80.
@@ -92,7 +92,7 @@ Verification and reconciliation pass. Live ADB (serial <ADB_SERIAL>), boot slot 
 - **ELK trigger functions in GHS binary:** BootELKSendAblUserCommand (0x0087452a), BootELKWaitForRespSent, ConnToOTA_BootELK, ConnToLifecycle_BootELK. ELK bypasses misc/BCB entirely — goes HECI→CSE→ABL with target OBBPELK.
 - VIP J6_CDD has `"Diag Elk Reboot Req"` string but exact SID/DID is unknown.
 - **Build path:** `/home/mal/gm_release/MY22-026/final/iot/cust-build_sb/gm-i35/rel/gm_i35_my22_gb/gm-i35-kernel`
-- **Android signing key** (.mr_r_mod_android_key, 0x02201000–0x02201fff, 4KB NOBITS): NOT present in the file; delivered at runtime from Intel CSE via multiboot.
+- **Android signing key** (.mr_r_mod_android_key, 0x02201000–0x02201fff, 4KB NOBITS): NOT present in the file; delivered at runtime from Intel CSE via multiboot. *[CORRECTION 2026-11-20: this is wrong. Byte analysis (BOOT_TRUST_ANCHOR_AND_KEYS.md §6/§13) shows the key bytes ARE embedded in the GHS IPK payload at name @ 0xe3ca7c, modulus @ 0xe3ca90 — the NOBITS .mr_r_mod_android_key section is only the runtime map destination, not the key's storage. The key is NOT sourced from Intel CSE. The module's origin is the GHS image itself.]*
 - **Keymaster log string:** `"VMM reported green boot state but device is not locked. Treating as unverified boot"` (offset 0x00eecdd8).
 - **RSA-1024 private-key candidate** (unvalidated) reported in ghs_integrity.elf at decimal byte offset 12924442 (609 bytes, sha1=78d9a50f). *[Corrected 2026-11-12: this Jun-2026 entry stated the finding as a confirmed recovered private key. The owning doc,
   `research/security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md` (corrected 2026-11-11), establishes that parsing/validation never
@@ -120,6 +120,7 @@ jmp [lp]      ; return to caller
 **Y181 full implementation (906 bytes):** Loads EEPROM→RAM mapping (0x0440→RAM 0x3e06), compares against expected value 1, calls validation subroutines at 0xecd84, 0xb6652, 0xaee28. On mismatch, returns error → VIP sends "normal mode" → SELinux stays enforcing.
 
 Y177's permissive SELinux is not a boot cmdline artifact. It derives from VIP returning bypass state via `SERIAL_IPC_PROTO_KEY_CHANNEL`, which only occurs when the security function at 0xb67d0 is the stub. The EEPROM bypass achieves ADB access but does not replicate this VIP signaling path.
+> **CORRECTION 2026-08-25 (extends the banner above):** This paragraph is doubly wrong and is retracted. (1) The "Y177 stub" does not exist — Y177 carries the full ~906-byte validator at the correct address 0xb67d4. (2) Y177 does not run permissive SELinux at runtime — no stock build does. There is no "permissive SELinux VIP signaling path" to replicate. The VIP function gates ADB/seed auth only; SELinux mode is decided by ramdisk/init (ALLOW_PERMISSIVE_SELINUX=0, byte-identical across builds). Retained for archival evidence of the original (wrong) reasoning.
 
 ### Confirmed Open Ports
 
@@ -198,7 +199,7 @@ GHS partitions not mounted in Android: ghs_isys_a/b, ghs_storage, ghs_abl_update
 | Boot Guard v2 / IFWI / custom OS | OTP antifuses burned at factory. |
 | AES-CMAC master key extraction | Inside TXE Sealed Storage; hardware-fuse-derived. |
 | GSI/DSU boot | *[CORRECTED 2026-09-03: not a dontaudit policy block. Disabled by removal of `com.android.dynsystem` + locked verified boot. `gsid` daemon retained with full policy. See `platform/boot_chain.md` §GSI/DSU Status.]* |
-| ISSI SPI flash as AVB bypass | current_android_key hardcoded at GHS offset 0xe3ca34; BG-locked. |
+| ISSI SPI flash as AVB bypass | current_android_key hardcoded in GHS (**confirmed 2026-11-20**: ghs_isys_a name @0xe3ca7c / modulus @0xe3ca90, byte-identical to the active vbmeta key). **"BG-locked" NOT established** — GHS-image authentication undemonstrated and Gate-1 self-integrity recomputable; see BOOT_TRUST_ANCHOR_AND_KEYS.md §6/§8/§9. |
 | vmm1 GHS decompilation | 140 functions decompiled but unusable — Green Hills toolchain, no string cross-references. |
 | Kernel CVE exploitation on Y181 | SELinux enforcing blocks all candidates reviewed. |
 | DPS direct EEPROM write | No UDS service maps to EEPROM security addresses. |

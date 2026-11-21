@@ -463,7 +463,8 @@ security:
     -> GHS INTEGRITY hypervisor
       - ELF section `.mr_r_mod_android_key` (NOBITS, empty in file; symbols
         __ghsbegin_mr_r_mod_android_key / __ghsend_mr_r_mod_android_key;
-        key loaded from bootloader modules at runtime)
+        key bytes embedded in the GHS IPK payload, mapped here at runtime —
+        corrected 2026-11-20, see §8.2 note and BOOT_TRUST_ANCHOR_AND_KEYS.md §6)
       - Error strings: "Android signing key boot module not found",
         "Signing key modulus mismatch", "Signing key exponent mismatch",
         "vbmeta signing key does not match known valid key"
@@ -476,8 +477,13 @@ security:
 1. SOC Bootloader (85738845, Intel IPK format) — CSE key-management structures,
    `ipk.` header.
 2. GHS binary `.mr_r_mod_android_key` section — NOBITS, size 0x1000, virtual
-   address 0x02201000; key loaded at runtime from bootloader modules; symbol
-   names present, key data NOT in the binary.
+   address 0x02201000; symbol names present, key data NOT in the ELF sections.
+   CORRECTION (2026-11-20): the "loaded from bootloader modules at runtime" phrasing
+   understated the source. The key BYTES are embedded in the GHS IPK payload itself
+   (ghs_isys_a: name @0xe3ca7c, 256-B modulus @0xe3ca90, byte-identical to the active
+   vbmeta key); the NOBITS section is only the runtime MAP DESTINATION. GHS does receive
+   it as a Multiboot module, but that module's origin is the GHS image, NOT an external
+   loader/eMMC partition/CSE protected state. Owner: BOOT_TRUST_ANCHOR_AND_KEYS.md §6.
 3. Trusty TEE Keymaster — Android keystore (application keys), not the boot-
    verification key.
 

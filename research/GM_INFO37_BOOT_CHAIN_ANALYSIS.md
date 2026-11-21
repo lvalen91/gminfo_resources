@@ -319,14 +319,31 @@ SOC_ABL is kernelflinger ("ELK"). Lock-state backend, Boot Guard/FPF fuse status
 ABL Execution:
 ├── Secure Boot validation against hardware root of trust
 ├── Load GHS INTEGRITY from eMMC partition
-├── Verify GHS signature (cannot be bypassed)
+├── (GHS-image RSA-2048/SHA-256 signature verified against OBB-rooted OEM key — enforcement measured by 1-byte sig-corrupt boot test; see correction)
 ├── Configure kernel command line
 └── Transfer control to GHS kernel
 ```
 
-Chain clarification: Intel Slim Bootloader hands off to SOC_ABL (kernelflinger), which loads and
-verifies GHS INTEGRITY. GHS's own VMM1 task — not ABL directly — then performs AVB and launches the
-Android guest VM (§7-§8 below).
+Chain clarification: Intel Slim Bootloader hands off to SOC_ABL (kernelflinger), which loads GHS
+INTEGRITY. GHS's own VMM1 task — not ABL directly — then performs AVB and launches the Android guest
+VM (§7-§8 below).
+
+**Correction (2026-11-20, updated later same day):** two-step history. First pass found the earlier
+"Verify GHS signature (cannot be bypassed)" line unsupported — AVB does not cover `ghs_isys`, the IPK
+header holds a 32-bit checksum (`0x5fffc6f3`) not a signature, and no stored GHS hash was found in ABL
+tables / IFWI / searched eMMC. **A later re-analysis the same day corrected *that* correction:** the
+GHS image **does** carry an appended RSA-2048/SHA-256/PKCS#1-v1.5 signature in its own tail (sig @
+`0xe3cc00`, modulus @ `0xe3cd00`, exp 65537) over `image[0:0xe3cb98]` — the first sweep missed it
+because it searched sibling partitions, not the image's `0x98`-byte tail. The signing OEM "OS Kernel"
+key (fp `e99d2f48…`) is embedded in the **Boot-Guard-authenticated SPI OBB/ELK** (@ `0x114000`) and
+hashed in the **CSE FTPR Key Manifest** (@ `0x60354`), **not** in the mutable eMMC ABL — so the IPK
+checksum and Gate-1 self-integrity are integrity layers *beneath* a real OBB-rooted signature. The
+trust chain is **closed**, and enforcement is **empirically demonstrated**: a one-byte sig-corrupt A/B
+boot test boots AAOS from the stock image but is rejected to fastboot when a single signature byte is
+flipped (`scratchpad/ias/runA_capture.txt` / `runB_capture.txt`; two blind observers concurred). Still
+outstanding only: locating the verify instruction (upstream/uncaptured CSE-BootGuard-OBB) and disassembly
+of the OBB verify routine.
+Owner: [BOOT_TRUST_ANCHOR_AND_KEYS.md §8](BOOT_TRUST_ANCHOR_AND_KEYS.md#8-ghs-image-authentication-is-the-verifier-itself-verified).
 
 ### 5.3 ABL Boot Parameters
 

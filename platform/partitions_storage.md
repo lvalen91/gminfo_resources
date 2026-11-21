@@ -51,29 +51,29 @@ GHS exposes an `emmc-health` interface (`/dev/ghs/emmc-health`; absent in the em
 
 ## 3. Partition map
 
-26 partitions with A/B redundancy, exposed to the Android guest as virtio block devices `vda1`-`vda26` (guest view; native Linux sees the same GPT on `mmcblk*`). The Y175 GPT read (2026-11-17) confirms the count (26) and that p13 is `super`; the per-row descriptions below are carried from the original boot-chain analysis and were not each re-read from a GPT.
+26 partitions with A/B redundancy, exposed to the Android guest as virtio block devices `vda1`-`vda26` (guest view; native Linux sees the same GPT on `mmcblk*`). **Byte offsets and sizes below are from a GPT parse of the full Y175 user-area image (63,996,690,432 B / 60 GiB; 2026-11-20);** the row descriptions were carried from the original boot-chain analysis. The parse independently corroborates §4.1: `super` offset `0x16a00000` = 379,584,512 B matches the measured `super` byte offset.
 
-| Device | Partition | Description |
-|--------|-----------|-------------|
-| vda1/2 | ghs_isys_a/b | GHS hypervisor image |
-| vda3 | ghs_storage | GHS persistent storage |
-| vda4 | ghs_abl_update | ABL update staging area |
-| vda5/6 | bootloader_a/b | Intel ABL bootloader |
-| vda7/8 | boot_a/b | Android kernel + ramdisk |
-| vda9 | misc | GHS rollback counter, BCB, A/B metadata (A/B metadata at offset `0x800`, BCB at `0x000`; structs in [boot_chain.md](boot_chain.md)) |
-| vda10/11 | vbmeta_a/b | AVB verification metadata |
-| vda12 | metadata | ext4, Android metadata |
-| vda13 | super | dynamic partitions (system, vendor, product via dm-verity); **18000 MiB on Y175 [V]**, Y181B size unmeasured (section 4) |
-| vda14/15 | acpi_a/b | ACPI tables |
-| vda16/17 | acpio_a/b | ACPI overlay tables (Android `ANDR0001` fstab/vbmeta descriptor SSDT; section 5) |
-| vda18/19 | cert_a/b | Certificate store |
-| vda20 | persistent | FRP (Factory Reset Protection) |
-| vda21 | teedata | TEE persistent data (Trusty) |
-| vda22 | config | ext4 -> `/mnt/vendor/oem_config` |
-| vda23 | calibration | ext4 -> `/mnt/vendor/calibration` |
-| vda24 | ghs_log | GHS log storage |
-| vda25 | update_cache | ext4, OTA staging |
-| vda26 | data | f2fs ~39GB, user data (file-based encryption) |
+| Device | Partition | Offset | Size | Description |
+|--------|-----------|--------|------|-------------|
+| vda1/2 | ghs_isys_a/b | a `0x100000` · b `0x4100000` | 64 MiB | GHS hypervisor image (SOC_HOSTOS 85098662) |
+| vda3 | ghs_storage | `0x8100000` | 16 MiB | GHS persistent storage |
+| vda4 | ghs_abl_update | `0x9100000` | 8 MiB | CSE+ABL SPI reflash capsule (top 6 MiB of IFWI; **not a runtime stage** — [BOOT_TRUST_ANCHOR_AND_KEYS.md §3](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update)) |
+| vda5/6 | bootloader_a/b | a `0x9900000` · b `0xb700000` | 30 MiB | Intel ABL bootloader (kernelflinger, SOC_ABL 85738845) |
+| vda7/8 | boot_a/b | a `0xd500000` · b `0x11500000` | 64 MiB | Android kernel + ramdisk (AVB-hash) |
+| vda9 | misc | `0x15500000` | 1 MiB | GHS rollback counter, BCB, A/B metadata (A/B metadata at offset `0x800`, BCB at `0x000`; structs in [boot_chain.md](boot_chain.md)) |
+| vda10/11 | vbmeta_a/b | a `0x15600000` · b `0x15800000` | 2 MiB | AVB verification metadata (signed by `current_android_key`) |
+| vda12 | metadata | `0x15a00000` | 16 MiB | ext4, Android metadata (FBE encryption keys) |
+| vda13 | super | `0x16a00000` | 18000 MiB | dynamic partitions (system, vendor, product via dm-verity); **18000 MiB on Y175 [V]**, Y181B size unmeasured (section 4) |
+| vda14/15 | acpi_a/b | a `0x47ba00000` · b `0x47bc00000` | 2 MiB | ACPI tables |
+| vda16/17 | acpio_a/b | a `0x47be00000` · b `0x47c000000` | 2 MiB | ACPI overlay tables (AVB-hash; Android `ANDR0001` fstab/vbmeta descriptor SSDT; section 5) |
+| vda18/19 | cert_a/b | a `0x47c200000` · b `0x47c400000` | 2 MiB | Certificate store (**empty** on this image) |
+| vda20 | persistent | `0x47c600000` | 1 MiB | FRP (Factory Reset Protection) / AVB persistent props |
+| vda21 | teedata | `0x47c700000` | 32 MiB | TEE persistent data (Trusty) |
+| vda22 | config | `0x47e700000` | 8 MiB | ext4 -> `/mnt/vendor/oem_config` |
+| vda23 | calibration | `0x47ef00000` | 16 MiB | ext4 -> `/mnt/vendor/calibration` |
+| vda24 | ghs_log | `0x47ff00000` | 640 MiB | GHS log storage |
+| vda25 | update_cache | `0x4a7f00000` | 2 GiB | ext4, OTA staging (GM `.mnf`/`.smd` packages) |
+| vda26 | data | `0x524f00000` | 39960 MiB | f2fs ~39 GB, user data (file-based encryption) |
 
 Critical partitions (subset of the rows above): `ghs_isys_a/b`, `boot_a/b`, `vbmeta_a/b`, `misc` (GHS rollback counter, BCB), `super`, `data` (~39GB f2fs).
 
@@ -84,6 +84,8 @@ Notes:
 - `data` on Y175 per fastbootd `getvar` is `0x9C1800000` = 39960 MiB [V]; the Y177 snapshot lists `data_partition` 39936 (section 6) [C, consistent within ~0.1%].
 - Fastbootd `getvar all` on Y175 also disclosed sizes for `boot`/`vbmeta`/`bootloader_{a,b}`, `misc` and `metadata` (security.md L772-776); the individual values are not recorded in the platform docs.
 - `update_cache` is the mount behind `/update_cache/...` paths (update staging, `recovery/command`, `calibrations` symlink, `bootup_log`, `update/moduleinfo`). Several docs read exports "from `/cache`"; whether `/cache` is the same filesystem is not stated (Open conflicts).
+- Hardware areas outside the user GPT (Y175 image, 2026-11-20): the eMMC HW boot partitions `boot0`/`boot1` (2× 32 MiB) are **empty** (all-zero, unused); **RPMB** (~4 MiB, replay-protected) was **not captured** (0-byte stub) — the one authenticated/replay-protected store remains unexamined (relevant to the GHS-image-authentication question, [BOOT_TRUST_ANCHOR_AND_KEYS.md §8](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md#8-ghs-image-authentication-is-the-verifier-itself-verified)).
+- `cert_a/b` are present in the GPT but **empty** on this image.
 
 ---
 

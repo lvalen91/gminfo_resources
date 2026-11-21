@@ -139,7 +139,7 @@ absent listener at that checkpoint, not a permanent prohibition. No firewall
 rule change, root shell, diagnostic unlock or privileged app conversion was
 needed for the successful ADB connection.
 
-Use the [networking reference](../platform/networking.md#listening-ports) and
+Use the [networking reference](../platform/ethernet_networking.md#4-listening-ports-and-network-adb) and
 the established `BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` §9.2 procedure
 in the Y175 analysis/source_notes tree. Preserve the allowed source binding;
 selecting port 9040 alone is insufficient. This adds an Android shell

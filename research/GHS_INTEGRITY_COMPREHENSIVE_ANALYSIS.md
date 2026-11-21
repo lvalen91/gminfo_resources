@@ -136,14 +136,14 @@ GHS image partitions (source: `partitions.txt`):
 | `ghs_isys_a` | vda1 | GHS INTEGRITY image (A) |
 | `ghs_isys_b` | vda2 | GHS INTEGRITY image (B) |
 | `ghs_storage` | vda3 | GHS persistent storage |
-| `ghs_abl_update` | vda4 | GHS ABL update staging |
+| `ghs_abl_update` | vda4 | CSE+ABL SPI reflash capsule, not a runtime stage ([BOOT_TRUST_ANCHOR_AND_KEYS.md §3](BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update)) |
 | `ghs_log` | vda24 | GHS logging |
 
 `ghs_storage` (vda3) is also where the Y175 `remote_display` task writes `EARLY_CALS`: it reads the
 active screen-resolution calibration, compares it against the live EDID, and updates `EARLY_CALS`
 in `ghs_storage` when they differ *(folded from retired `SCREEN_RESOLUTION_END_TO_END_WORKFLOW.md`'s
 2026-11-17 display-path-trace footnote)*. GHS brightness ownership and the actual LTZ/HC curves are
-owned by [`../video/display_subsystem.md`](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17),
+owned by [`../video/display_subsystem.md`](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17-extended-2026-11-17),
 not restated here.
 
 ---
@@ -180,6 +180,8 @@ not restated here.
 
 ## 4. GHS Tasks (Processes)
 
+<!-- corrected 2026-11-21: this table was a string-based inventory from early analysis; §7A.1 (boottable-derived, 2026-10-10) names 19 server address spaces. The 5 entries below marked [added 2026-11-21] were absent from the original string pass. -->
+
 | Task | Purpose |
 |------|---------|
 | `VMM1_InitialTask` | Android Virtual Machine Manager |
@@ -196,6 +198,11 @@ not restated here.
 | `Calibrations_InitialTask` | Calibration data |
 | `TEE_Keymaster` | Trusted keymaster |
 | `TEE_HW_Crypto` | Hardware crypto |
+| `TEE_Gatekeeper` | Gatekeeper server [added 2026-11-21; `.tee_gatekeeper` section confirmed GHS_FILE_MAP_85098662.md; §7A.1 boottable] |
+| `TEE_Router` | TEE router — fans tipc to TEE_* servers (`TEEAtt` is a VMM1 connection here, not a separate AS; see §7A.4) [added 2026-11-21] |
+| `TEE_Storage` | Secure storage server [added 2026-11-21; §7A.1 boottable] |
+| `Audit` | Security audit log server (.audit section, GHS_FILE_MAP; §7A.1) [added 2026-11-21] |
+| `EMMC` | eMMC mux server (.emmc_mux section; GHS mediates eMMC to guest; §7A.1) [added 2026-11-21] |
 
 ---
 
@@ -996,6 +1003,10 @@ named rows in §3. See Open Conflicts §1-2.
 ---
 
 ## Appendix B: Key Memory Regions
+
+Full per-region map (Y175 `ghs_isys_a`, all 190 `.secinfo` regions with vaddr/len/type and Gate-1
+self-integrity method) → [`decompiled/ghs_isys_a_secinfo_region_map_Y175.txt`](decompiled/ghs_isys_a_secinfo_region_map_Y175.txt);
+interpretation in [BOOT_TRUST_ANCHOR_AND_KEYS.md §9](BOOT_TRUST_ANCHOR_AND_KEYS.md#9-ghs-self-integrity-gate-1-and-tamper-analysis).
 
 ```
 .tee_keymaster.text/data/rodata

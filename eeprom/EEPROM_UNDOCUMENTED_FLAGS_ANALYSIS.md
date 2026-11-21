@@ -402,7 +402,7 @@ CAN `$27` path and the ICUSB/PROTOKEY path (same engine, not separate code). See
 
 8. **Bypass procedure is marker-agnostic**
    - Read EEPROM → identify current markers → change only data bytes
-   - `0x0441`=`0xFF`, `0x0A81`=`0xFF`, `0x0B41`=`0x01`
+   - `0x0441`=`0xFF`, `0x0A81`=`0xFF` (minimal/sufficient; `0x0B41`=`0x01` **removed — superseded by point 9**, behaviorally inert and not required)
    - Preserves whatever markers CalGroup assigned
 
 9. **0x0B41 "Debug Mode" write produced no observable effect — now tested across full value

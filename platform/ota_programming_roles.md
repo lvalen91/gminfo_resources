@@ -7,7 +7,7 @@ Evidence tags: **[V]** verified on this unit (live RE, port scan, on-radio file 
 
 Related: [`ota_update_stack.md`](ota_update_stack.md) · [`firmware_versions.md`](firmware_versions.md) · [`fsa_protocol.md`](fsa_protocol.md) · [`vehicle_network.md`](vehicle_network.md) · [`vehicle_config.md`](vehicle_config.md) · [`ethernet_networking.md`](ethernet_networking.md) · [`security.md`](security.md) · [`external_references.md`](external_references.md) · [`can_bench_experiments.md`](can_bench_experiments.md)
 
-Sources: [`../research/UPDATE_PROCESS_ANALYSIS.txt`](../research/UPDATE_PROCESS_ANALYSIS.txt),
+Sources: [`../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md),
 [`../research/VIP_CONTROL_ANALYSIS.txt`](../research/VIP_CONTROL_ANALYSIS.txt),
 [`../research/GM_REMOTE_ACCESS_ANALYSIS.txt`](../research/GM_REMOTE_ACCESS_ANALYSIS.txt),
 [`../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md); the
@@ -283,7 +283,7 @@ Master service class ships unused. Detail (single copy): [`fsa_protocol.md`](fsa
 hardware-enforced GHS rollback counter — are not reproduced here. Net result relevant to the
 roles question: no confirmed unauthenticated-Ethernet-peer path to triggering a reflash on this
 build. See [`security.md`](security.md) and [`ota_update_stack.md`](ota_update_stack.md); research:
-[`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#update--rollback--influence-verdicts-network-peer-over-ethernet-resolved-2026-09),
+[`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only),
 [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
 
 ## GM dealer service programming (SPS2) — official procedure

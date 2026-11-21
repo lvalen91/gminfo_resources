@@ -251,7 +251,7 @@ firmware image, not GHS** — see "Brightness curve location" above.
 
 The earlier CAN trial changing slot08 from 4 to 2 was accepted but produced
 visible tearing; stock restoration restored normal output. See the
-[trial evidence](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280768-can-trial--2026-11-17).
+[trial evidence](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17).
 That proves a behavioral effect, not successful operation at the alternate timing.
 
 ### Native Linux result and live link bring-up — superseded 2026-11-17
@@ -539,7 +539,7 @@ The readiness-corrected image is also25,653,248 bytes, SHA256
 It replaces the local probe06 artifact; the currently running kernel came
 from the initial hash above. The broad live hardware inventory was
 performed on probe05 and is owned by
-[hardware coverage](../platform/hardware.md#native-ram-linux-hardware-coverage--2026-11-17).
+[hardware coverage](../platform/elk_recovery.md#35-hardware-coverage-probe05-inventory-stable02-notes).
 
 
 ### Probe07 graphics runtime — prepared 2026-11-17

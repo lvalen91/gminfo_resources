@@ -63,7 +63,7 @@ Cluster · T1 Accessory AC/DC Power · T3 Audio Amplifier · T22 Wireless Access
 **Bus assignments (sample, from *Data Link References*):** K56 gateway learns the CAN
 module-address list (loss → DTC U1977 / U3000-42); CAN1 500 kbit/s classical … **CAN6 5 Mbit/s =
 diagnostics/programming**, CAN7 = assembly-plant programming only. Ethernet is point-to-point off
-the A11/K56 switches — see [`../platform/networking.md`](../platform/networking.md) §Physical
+the A11/K56 switches — see [`../platform/ethernet_networking.md`](../platform/ethernet_networking.md#physical-automotive-ethernet-bus-map) §Physical
 Automotive-Ethernet bus map (Bus 6 = A11↔T3 Bose amp).
 
 **Scan-tool (GDS2) data parameters worth noting** (ALLDATA *Scan Tool Information*):

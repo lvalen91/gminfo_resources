@@ -282,7 +282,7 @@ not analog speaker wire. The head unit (A11 Radio) drives **no speakers directly
 
 - **Transport:** radio → **Ethernet Bus 6 (circuits 7215/7214)** → T3 amp (T3 X3 p1/2). Amp
   control/discovery = **AUTOSAR CAN 5** (4985/4984). gPTP grandmaster = the IHU (see
-  [`../platform/networking.md`](../platform/networking.md) §Ethernet AVB). These are T3's two
+  [`../platform/avb_audio_transport.md`](../platform/avb_audio_transport.md) §Ethernet AVB). These are T3's two
   separate links to the radio (audio data-plane vs. control-plane) — summary paragraph:
   [`../hardware/connectors.md`](../hardware/connectors.md) §Audio Architecture — Bose.
 - **Amp drives all speakers:** subwoofer, L/R front midrange, front center, LF/RF/LR/RR — plus an

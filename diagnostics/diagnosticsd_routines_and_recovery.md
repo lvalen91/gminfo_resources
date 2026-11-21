@@ -18,7 +18,7 @@ the VIN and module/error statuses were verified afterward. The owner observed
 the distinct HC logo and then confirmed its moving welcome animation. A later
 modified slot0C test was rejected with `7F 36 72`; genuine slot0C was restored
 in the same session and HC restart/identity/status checks passed again. The owning
-[CAN campaign](../platform/can_network.md#full-stock-ltz-rewrite-through-canable-2026-11-16)
+[CAN campaign](../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16)
 records preparation, transport differences, NoVIN recovery and remaining limits.
 Historical failed T1 attempts below are not a current claim that MDI2 is required.
 No `0249`, `FF00`, or substitute calibration clear was used in this campaign.
@@ -681,7 +681,7 @@ stream carried six-position 48 kHz / 16-bit big-endian PCM, with player
 audio in positions 1/2. Decoded waveform comparisons exceeded 0.9999 in
 aligned reference windows. macOS-playable WAVs and audio-only raw PCM were
 created; no network identifiers or packet files were retained. See the
-[owning audio extraction record](../platform/networking.md#live-avtp-player-audio-recovery-2026-11-15).
+[owning audio extraction record](../platform/avb_audio_transport.md#3-live-avtp-player-audio-recovery-2026-11-15).
 
 See the [main-client recovery notes](../mdi2_client/docs/CALIBRATION_WRITE.md#cleared-a11-recovery-2026-11-14)
 for the unchanged CLI limits. Raw UART data and private adapter/vehicle
@@ -727,7 +727,7 @@ remain unresolved. A 48 kHz transport does not establish Bose maximum rate.
 
 The complete usage-ID/bus mapping, stream inventory, raw header layout,
 synthetic PCM sample and replacement-endpoint limitations are maintained in
-one [VLAN 2 reference](../platform/networking.md#vlan-2-audio-transport-reference).
+one [VLAN 2 reference](../platform/avb_audio_transport.md#4-vlan-stream-inventory-and-packet-layout).
 These audio findings do not change diagnosticsd authorization, establish
 GHS ownership of the first packets, or demonstrate amplifier playback.
 

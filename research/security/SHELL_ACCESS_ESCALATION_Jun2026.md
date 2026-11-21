@@ -98,7 +98,7 @@ Probed via `adb shell service call`.
 - **RDMSADBHandler** (Binder #66): `ADB_Disable` (Tx1) attempts USB
   peripheral→host role reversal via `/sys/bus/usb/drivers/dabridge/bridgeport` —
   **blocked by the GM V10 E2 PD hub**, ADB recovers; `ADB_Enable` (Tx2) writes
-  `1-6.3`. See USB H2H bridge in [`platform/networking.md`](../../platform/networking.md#usb-identifiers).
+  `1-6.3`. See USB H2H bridge in [`platform/ethernet_networking.md`](../../platform/ethernet_networking.md#usb-identifiers-and-gadget).
 
 ### Filesystem (uid=2000)
 
@@ -175,7 +175,7 @@ is measurable.
 ## 3. GM Secure ADB Architecture
 
 Current unit has standard ADB via the SBI EEPROM bypass (`0x0441=0xFF`,
-`0x0A81=0xFF`; see [`platform/security.md`](../../platform/security.md#eeprom-security)
+`0x0A81=0xFF`; see [`platform/security.md`](../../platform/security.md#eeprom-security--pointer-only)
 and [`eeprom/README.md`](../../eeprom/README.md)). This section documents what
 `adbd` does when SBI is **locked** (`0x00`).
 

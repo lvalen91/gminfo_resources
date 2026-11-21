@@ -508,7 +508,9 @@ Uses standard Bluetooth HFP SCD files (no Android Auto specific tuning)
 - `media_projection` - Screen mirroring
 - `companiondevice` - Device pairing
 - `android.car.usb.handler` - USB handling
-  > 2026-11-12 correction: on the Y181B bench radio the package named `android.car.usb.handler` is gm_ccpa (`zeno.gmccpa`, uid 1010123, CarPlay-only), not an Android Auto USB component; the Android Auto attribution here is from the earlier CPC200-rig era/stock naming and is not confirmed for this radio.
+  > 2026-11-12 correction: on the Y181B bench radio the package named `android.car.usb.handler` is gm_ccpa (`zeno.gmccpa`, uid 1010123, user 10), media label **"GM CCPA"**; its traffic is CarPlay (`_airplay`/`_carplay-ctrl`, iAP) — **not** an Android Auto USB component. The Android Auto attribution here is from the earlier CPC200-rig era/stock naming and is not confirmed for this radio.
+  >
+  > **CRITICAL — log label ambiguity (2026-11-12, forensic cache [READ]):** the log label **"Android Auto"** seen in Y181B gmlogger (`30_gmlogger`) belongs to **`GM GALMediaBrowserService`**, not an actual Android Auto session. Do not interpret that log label as evidence of a live or confirmed Android Auto projection session on this unit.
 
 **Security Certificates:**
 ```

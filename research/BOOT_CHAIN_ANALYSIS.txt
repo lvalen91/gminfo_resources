@@ -141,7 +141,7 @@ conflict this doc does not resolve; see "Open conflicts" item 1.
 |-----------------|--------|------------|----------------------------|
 | ghs_isys_a/b    | vda1/2 | Stage 2    | GHS INTEGRITY hypervisor   |
 | ghs_storage     | vda3   | Stage 2    | GHS persistent storage     |
-| ghs_abl_update  | vda4   | Stage 1    | ABL update staging         |
+| ghs_abl_update  | vda4   | reflash    | CSE+ABL SPI reflash capsule (NOT a runtime stage) [1] |
 | bootloader_a/b  | vda5/6 | Stage 1    | Intel ABL images           |
 | boot_a/b        | vda7/8 | Stage 3    | Android boot images        |
 | vbmeta_a/b      | vda10/11| Stage 3   | AVB verification metadata  |
@@ -334,7 +334,11 @@ CONFIG_HYPERVISOR_GUEST=y          # Running as hypervisor guest
 ------------------
 ghs_isys_a/b (vda1/2) - GHS INTEGRITY images (A/B)
 ghs_storage (vda3)    - GHS persistent storage
-ghs_abl_update (vda4) - ABL update staging
+ghs_abl_update (vda4) - CSE+ABL SPI reflash capsule, NOT a runtime boot stage [1]
+  [1] Correction 2026-11-20: byte-verified a firmware-reflash capsule for the top 6 MiB
+      of IFWI/SPI (0x200000..0x800000: $CPD, FTPR, $FPT, six RSA-2048 CSE/OEM manifests,
+      firmware-resident ABL ELF); IPK payload 0x600000, header CRC 0x3597d84c, no signature.
+      Owner: BOOT_TRUST_ANCHOR_AND_KEYS.md §3.
 ghs_log (vda24)       - GHS logging
 
 4.5 HYPERVISOR ROLE

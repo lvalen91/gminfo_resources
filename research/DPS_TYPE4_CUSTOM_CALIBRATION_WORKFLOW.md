@@ -136,7 +136,7 @@ container bytes returned **`7F 36 72`**. No custom transfer exit was sent. In th
 programming session, the genuine 1457-byte slot0C container negotiated successfully, both
 data blocks returned `76`, and exit returned `77`. Immediate readback matched all fourteen HC
 identities, all module statuses 00, and F0F1/F0F2 = `0000`. The
-[CAN campaign](../platform/can_network.md#full-stock-ltz-rewrite-through-canable-2026-11-16)
+[CAN campaign](../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16)
 owns the stock-write, VIN-learning, and recovery setup. This reproduced the earlier failure
 independently of the MDI2 tool; the old repacking script's claim that RSA is "UDS-inert" is
 contradicted on this tested path and must not be used as a programming assumption.

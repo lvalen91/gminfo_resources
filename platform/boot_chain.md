@@ -59,14 +59,20 @@ BSP_InitializeOnBootCpu
 - `TEE_Keymaster` — hardware-backed key generation/storage
 - `TEE_HW_Crypto` — hardware cryptographic operations
 - `TEE_Storage` — secure storage via RPMB (Replay Protected Memory Block)
+<!-- corrected 2026-11-21: GHS_FILE_MAP_85098662.md and boottable §7A.1 (2026-10-10) confirm two additional TEE server address spaces absent from earlier inventory -->
+- `TEE_Gatekeeper` — gatekeeper server (.tee_gatekeeper section confirmed in GHS_FILE_MAP_85098662.md; §7A.1 boottable-derived)
+- `TEE_Router` — fans tipc connections to TEE_* servers; `TEEAtt` is a VMM1-side connection to this server, not a separate AS (see GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md §7A.4)
 
 **Other**
 - `Calibrations_InitialTask` — vehicle calibration data
 - `Lines_InitialTask` — guideline/overlay rendering
+<!-- corrected 2026-11-21: two additional server address spaces confirmed by boottable §7A.1 -->
+- `Audit` — security audit log (.audit section; confirmed in GHS_FILE_MAP_85098662.md and §7A.1)
+- `EMMC` — eMMC mux server (.emmc_mux section; GHS keeps eMMC/SDHC, mediates to guest via this server)
 
 ### Guest-kernel coupling to GHS (boot-relevant facts)
 
-Source: real Y181B (gminfo37 CSM) boot image extracted from the firmware package, cross-checked byte-identical against the live device `.config` ([C] 2026-09-27; `emulator.md` L29-88). Emulator-build results (QEMU home-screen milestone) are in [emulator.md](emulator.md); full per-dependency table: `../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` Appendix G. Full kernel-config evidence: [Appendix F, kernel configuration / GHS coupling (2026-09)](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-f-kernel-configuration--ghs-coupling-2026-09); QEMU portability: [Appendix G](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-g-qemu-portability-assessment-2026-09).
+Source: real Y181B (gminfo37 CSM) boot image extracted from the firmware package, cross-checked byte-identical against the live device `.config` ([C] 2026-09-27; `emulator.md` L29-88). Emulator-build results (QEMU home-screen milestone) are in [emulator.md](emulator.md); full per-dependency table: `../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` Appendix G. Full kernel-config evidence: [Appendix F, kernel configuration / GHS coupling (2026-09)](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-e-kernel-configuration--ghs-coupling); QEMU portability: [Appendix G](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#appendix-f-qemu-portability--dependency-classification).
 
 - `CONFIG_PARAVIRT` is **not set**. `CONFIG_HYPERVISOR_GUEST=y` enables only optional detection (no `KVM_GUEST`/`XEN`/`HYPERV`/`PVH`/`JAILHOUSE_GUEST`). Core MMU/timekeeping/IRQ/scheduling is bare-metal x86_64 although the kernel runs as a GHS INTEGRITY guest.
 - GHS coupling is at the device-driver layer:
@@ -207,7 +213,7 @@ GHS contains a typo in its error string, `"metatdata"` (sic), when referring to 
 - Both Y177 and Y181 `vbmeta` images have `rollback_index=0`; the GHS counter is separate.
 - **Tested:** Y181 → Y177 downgrade FAILS (partitions are written successfully, GHS rejects at boot, A/B fallback reverts to the previous slot).
 - **Tested:** Y181 → Y181 reinstall SUCCEEDS (same version passes the rollback check).
-- `"version check disabled"` in the OTA manifest only affects the write phase; GHS enforcement at boot is independent. (No evidence refs recorded in the source for these tests.)
+- `"version check disabled"` in the OTA manifest only affects the write phase; GHS enforcement at boot is independent. (Y181→Y177 downgrade-fail and Y181 reinstall-pass: owner-verified 2026-08-17 bench re-test.)
 - OTA-side view of the same counter: [ota_update_stack.md](ota_update_stack.md).
 
 ---
@@ -238,7 +244,7 @@ Unsigned modules (including SOC_BOOT, SOC_VBMETA, SOC_ABL) are protected by the 
 |-------|-----------|-----------|---------|
 | 1 | Intel CSE | Hardware root of trust | OTP fuses, immutable, first code executed |
 | 2 | SOC_ABL (SoC Application Boot Loader) | Intel IPK format | ~6 MB signed image; `.oemkeys` holds the RSA-2048 public key for chain validation |
-| 3 | GHS INTEGRITY hypervisor | SHA-1 + CRC validation | `BSP_CRCCheck`, `BSP_SHA1Check` verify hypervisor and VM images before launch |
+| 3 | GHS INTEGRITY hypervisor | RSA-2048/SHA-256 (ABL→GHS); Gate-1 self-integrity (CRC32+SHA-1 internally) | GHS image carries an appended RSA-2048/SHA-256/PKCS#1-v1.5 signature (sig @ `0xe3cc00`); signing OEM "OS Kernel" key is embedded in the Boot-Guard-authenticated OBB/ELK (@ `0x114000`) and hashed in the CSE FTPR Key Manifest — chain closed, enforcement empirically demonstrated (1-byte sig-corrupt boot test: rejected to fastboot) `[C 2026-11-20]`. `BSP_CRCCheck`/`BSP_SHA1Check` are GHS's own Gate-1 self-integrity checks over its in-memory image, a distinct and subordinate layer. Owned: [`../research/BOOT_TRUST_ANCHOR_AND_KEYS.md`](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md) §8 |
 | 4 | AVB | RSA-2048 / SHA-256 | `vbmeta` signature verified by GHS VMM1 before Android kernel loads |
 | 5 | dm-verity | Runtime block integrity | Protects system, vendor, product; hash tree verified on read |
 

@@ -23,6 +23,7 @@ rewrite them — and ship byte-for-byte unchanged; see [Carried unchanged](#carr
 | [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) | **Canonical** boot/recovery/ELK owner: boot phases, special boot modes, recovery/fastbootd/ELK privilege boundaries, the live CAN-routine ELK entry, the SBI→MEC→ADB-cert bypass chain, A/B+BCB+trigger-file/USB-marker mechanics, dealer-recovery write paths, `85098662` module provenance |
 | [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) | GHS INTEGRITY hypervisor architecture: PCI driver table, task list, IPC ConnTo* map, VMM/VT-d/guest-memory functions, `.boottable` guest/VM config, `/dev/ghs/*` + SELinux labels, attack-surface catalog, privacy-capability assessment |
 | [GHS_FILE_MAP_85098662.md](GHS_FILE_MAP_85098662.md) | Byte-level address-space map of the SOC_HOSTOS (85098662) GHS monolith: container/ELF structure, offset→section→purpose table, USB-passthrough mechanism |
+| [BOOT_TRUST_ANCHOR_AND_KEYS.md](BOOT_TRUST_ANCHOR_AND_KEYS.md) | **Canonical** trust-anchor/verification-key owner: CSE/IFWI manifest keys, SOC_ABL `.oemkeys`, the active vbmeta key, the GHS-embedded `current_android_key` (incl. the second RSA-4096 key), AVB coverage, GHS-image authentication (**RSA-2048/SHA-256 sig rooted in Boot-Guard OBB — chain closed; enforcement measured via 1-byte sig-corrupt boot test, §8 2026-11-20**), GHS Gate-1 self-integrity + tamper, `ghs_abl_update` reflash capsule |
 | [GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt) | Y181→Y177 downgrade-block mechanism (GHS rollback counter vs vbmeta rollback index), OEM RSA pubkey extraction/signing-key feasibility |
 | [BOOT_CHAIN_ANALYSIS.txt](BOOT_CHAIN_ANALYSIS.txt) | Raw binary-forensic evidence layer: GM module headers, ABL/GHS/Android boot-image structure, CSE key list, SVN/lock-state strings, partition layout, cmdline, AVB verification strings |
 | [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md) | Architectural boot-chain walkthrough (VIP→CSE/ABL→GHS→AVB→AAOS), security-boundary table, QEMU-portability status |
@@ -74,6 +75,7 @@ rewrite them — and ship byte-for-byte unchanged; see [Carried unchanged](#carr
 | ELK/recovery/boot modes, SBI→MEC→ADB-cert bypass chain | GHS_BOOT_UPDATE_RECOVERY_ANALYSIS |
 | GHS hypervisor architecture, IPC, `/dev/ghs/*` | GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS |
 | GHS monolith byte offsets | GHS_FILE_MAP_85098662 |
+| Boot trust anchor, AVB/CSE keys, `current_android_key`, GHS-image authentication, Gate-1 tamper | BOOT_TRUST_ANCHOR_AND_KEYS |
 | Y181→Y177 downgrade block | GHS_DOWNGRADE_PROTECTION_ANALYSIS |
 | Raw boot-image binary evidence | BOOT_CHAIN_ANALYSIS |
 | Boot-chain architecture walkthrough | GM_INFO37_BOOT_CHAIN_ANALYSIS |

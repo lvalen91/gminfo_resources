@@ -54,7 +54,7 @@ Compare the logged route and a live media.audio_policy/media.audio_flinger
 dump with T1 AAF sample positions. Media was independently recovered from
 positions 1/2 of a six-position PCM payload before this app was created; that
 does not establish routing for the other usages. See the existing
-[AVTP audio findings](../../../platform/networking.md#live-avtp-player-audio-recovery-2026-11-15).
+[AVTP audio findings](../../../platform/avb_audio_transport.md#3-live-avtp-player-audio-recovery-2026-11-15).
 
 ## Bench validation 2026-11-15
 
@@ -83,7 +83,7 @@ left-only/right-only media isolated positions 1/2. All 16 produced audio.
 The two smaller streams stayed silent. All five system usage attempts were
 refused audio focus (`focus_result=0`), producing no signal. The complete
 usage/bus/position table and raw packet layout are maintained in the single
-[VLAN 2 reference](../../../platform/networking.md#vlan-2-audio-transport-reference).
+[VLAN 2 reference](../../../platform/avb_audio_transport.md#4-vlan-stream-inventory-and-packet-layout).
 Existing bus processing can change wire amplitude; the app's 5% signal
 setting is source amplitude, not a guarantee of equal output gain per bus.
 
@@ -103,7 +103,7 @@ Probe playback was explicitly stopped after this test.
 
 Later repeat measurements had silent AAF payloads even during their known
 media-probe windows, despite focus/AudioTrack route admission. They did not
-establish a diagnostic-tone speaker map; the [owning VLAN2 follow-up](../../../platform/networking.md#diagnostic-tone-correlation-follow-up-2026-11-15)
+establish a diagnostic-tone speaker map; the [owning VLAN2 follow-up](../../../platform/avb_audio_transport.md#6-diagnostic-tone-correlation-follow-up-2026-11-15)
 records those limits. Do not equate an accepted AudioTrack or a vendor
 Settings.Global tone readback with measured T1 output.
 

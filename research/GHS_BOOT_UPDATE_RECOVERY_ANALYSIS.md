@@ -154,7 +154,7 @@ The GHS logs are retained text logs, not a complete host-memory dump.
 Member-specific conclusions belong in §2.2.1 (startup), §2.3.7 (MEC),
 §4.5.4–§4.5.5 (capture), the [guest-memory inventory](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory),
 the [update-stack reference](../platform/ota_update_stack.md#y181b-recovery-export-evidence-2026-11-12),
-and the [vehicle calibration baseline](../platform/vehicle_config.md#y181b-exported-calibration-baseline-2026-11-12).
+and the [vehicle calibration baseline](../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12).
 
 **Recovery boot ledger across the retained `last_log` series (directly read from the second export, 2026-11-12):**
 
@@ -1375,7 +1375,7 @@ remain relevant; elapsed time alone does not prove each timer was armed.
 Stock-system tests already show VIP participating in shutdown policy: after
 replay stopped, PowerModeOff/LocalInfotainment occurred; a subsequent driver-door
 CAN event led to Requesting Shutdown, animation failsafe, Sleep, and finally
-SoC power level 0. See the [door/shutdown evidence](../platform/can_network.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
+SoC power level 0. See the [door/shutdown evidence](../platform/can_bench_experiments.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
 Those observations do not assign every step solely to VIP or AAOS. Native Probe
 surviving without the stock lifecycle handshake suggests a different active
 policy/state after ELK entry; that mechanism is not yet traced.
@@ -3254,7 +3254,7 @@ No backlight class device exposed a brightness reading. The stock panel helper
 was later attempted through the existing USB root shell on native i2c-10
 (PCI 00:17.3, matching the cleanroom display-controller path). Its first reset
 transaction returned `panel I2C transfer: Remote I/O error`, exit 1, before
-the brightness write. See the [display ownership trace](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17).
+the brightness write. See the [display ownership trace](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17-extended-2026-11-17).
 
 **Probe05 console follow-up (2026-11-17):** CAN ELK entry from the stock boot
 environment was acknowledged and USB 8087:09ef interface FF/42/03 confirmed.

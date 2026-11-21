@@ -56,21 +56,21 @@ cleanup. This is a temporary RAM condition, not a provisioned or
 cryptographically validated SBA ticket; no ticket NVM write, EEPROM edit, or
 flash patch is used. Full command-table inventory, address trace, and the
 VIP signed-header-rejection root cause (PEC `0015`, NRC `72`) are owned by the
-[custom calibration workflow doc](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#4-what-was-demonstrated).
+[custom calibration workflow doc](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#4-chronological-trial-log).
 
 **Results (all through this CAN613/614 mechanism unless noted):**
 
 | Date | Candidate | CAN5 transfer result | Owner-confirmed effect | Persistence tested | Record |
 |---|---|---|---|---|---|
-| 2026-11-16 | Slot0C, `SXM_Enabled` true→false | `76 01`/`76 02`/`77`, PEC `0000` | SXM option gone from AAOS Radio | One 10.505 s cold cycle: still disabled | [workflow §Successful custom SXM](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#successful-custom-sxm-calibration-through-can613614--2026-11-16) |
-| 2026-11-16 | Slot0C (1478 B), + CarPlay/Android Auto feature-enable false | `76 01`/`76 02`/`77`, PEC `0000` | Both projection entries gone from UI | Not cold-cycle tested | [workflow §CarPlay/AA](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#carplay-and-android-auto-custom-calibration-accepted--2026-11-16) |
-| 2026-11-16 | — (process-state check only) | n/a | SXM/CarPlay/AA packages and processes still present/running at default-enabled state — UI disappearance ≠ process shutdown | n/a | [workflow §process-state](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#process-state-verification-ui-disappearance-is-not-process-shutdown--2026-11-16) |
-| 2026-11-16 | Slot04/85045386, GMBrand3→0 | 13 positive transfer blocks, exit `77`, PEC `0000` | Theme changed; brand reads `GM_Brand_None` | Not cold-cycle tested | [theme trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#gmbrand-zero-can-trial--2026-11-16) |
-| 2026-11-17 | Full stock LTZ (slots 02–0F, 46,162 B) | All 14 downloads/blocks/exits accepted | Supersedes the custom slots above | n/a (restoration) | [workflow §full stock LTZ restoration](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#full-stock-ltz-restoration-after-feature-trials--2026-11-17) |
-| 2026-11-17 | Slot08, `SCREEN_RESOLUTION` 4→2 (1280×768) | Both blocks + exit accepted, PEC `0000` | Display tearing observed; stock slot08 restored, tearing gone | n/a | [display trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280768-can-trial--2026-11-17) |
-| 2026-11-17 | Google (slot04)/Navigation (slot02)/Recorder (slot04) visibility=false/true | All transfers + exits accepted, PEC `0000` | No UI effect: icons/processes remained; recorder entry never appeared | n/a | [follow-ups](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#google-visibility-and-recorder-follow-ups--2026-11-17) |
-| 2026-11-17 | Porch_View_Enabled=true, slot04 | Transfer + exit accepted, PEC `0000` | UI effect unverified; display-size gate (`SCREEN_RESOLUTION`) can make it ineffective | n/a | [porch-view trial](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#explicit-porch-view-enable-trial--2026-11-17) |
-| 2026-11-16 | Slot0C SXM edit reconstructed (1448/1455 B variants), profiles 01/03/05/09, **no** CAN613/614 RAM intervention | `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; immediate `F0F1=0015` | Rejected — signed-header verification failure, not a signature exemption | Genuine slot0C restored each time (`76 01`/`76 02`/`77`) | [header-signature rejection](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#header-signature-rejection-confirmed--2026-11-16), [additional profiles](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#additional-can-profiles-and-sxm-candidate--2026-11-16) |
+| 2026-11-16 | Slot0C, `SXM_Enabled` true→false | `76 01`/`76 02`/`77`, PEC `0000` | SXM option gone from AAOS Radio | One 10.505 s cold cycle: still disabled | [workflow §Successful custom SXM](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-successful-custom-sxm-calibration-through-can613614) |
+| 2026-11-16 | Slot0C (1478 B), + CarPlay/Android Auto feature-enable false | `76 01`/`76 02`/`77`, PEC `0000` | Both projection entries gone from UI | Not cold-cycle tested | [workflow §CarPlay/AA](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-carplay-and-android-auto-custom-calibration-accepted) |
+| 2026-11-16 | — (process-state check only) | n/a | SXM/CarPlay/AA packages and processes still present/running at default-enabled state — UI disappearance ≠ process shutdown | n/a | [workflow §process-state](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-process-state-verification--ui-disappearance-is-not-process-shutdown) |
+| 2026-11-16 | Slot04/85045386, GMBrand3→0 | 13 positive transfer blocks, exit `77`, PEC `0000` | Theme changed; brand reads `GM_Brand_None` | Not cold-cycle tested | [theme trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-themeui-inventory-and-gmbrandscreen_resolution-live-trials) |
+| 2026-11-17 | Full stock LTZ (slots 02–0F, 46,162 B) | All 14 downloads/blocks/exits accepted | Supersedes the custom slots above | n/a (restoration) | [workflow §full stock LTZ restoration](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-full-stock-ltz-restoration-after-feature-trials) |
+| 2026-11-17 | Slot08, `SCREEN_RESOLUTION` 4→2 (1280×768) | Both blocks + exit accepted, PEC `0000` | Display tearing observed; stock slot08 restored, tearing gone | n/a | [display trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17) |
+| 2026-11-17 | Google (slot04)/Navigation (slot02)/Recorder (slot04) visibility=false/true | All transfers + exits accepted, PEC `0000` | No UI effect: icons/processes remained; recorder entry never appeared | n/a | [follow-ups](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-google-visibility-and-recorder-follow-ups) |
+| 2026-11-17 | Porch_View_Enabled=true, slot04 | Transfer + exit accepted, PEC `0000` | UI effect unverified; display-size gate (`SCREEN_RESOLUTION`) can make it ineffective | n/a | [porch-view trial](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-explicit-porch-view-enable-trial) |
+| 2026-11-16 | Slot0C SXM edit reconstructed (1448/1455 B variants), profiles 01/03/05/09, **no** CAN613/614 RAM intervention | `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; immediate `F0F1=0015` | Rejected — signed-header verification failure, not a signature exemption | Genuine slot0C restored each time (`76 01`/`76 02`/`77`) | [header-signature rejection](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed), [additional profiles](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-additional-can-security-profile-trials) |
 
 All candidate/digest/hash values, the Type4/payload distinction, and the
 exact signature-verification trace addresses are owned by the linked
@@ -275,7 +275,7 @@ at 8.419 s, completion ~14.943 s later, then request 3 and Propulsion at
 these inputs — not an exhaustive payload readback or a minimal recipe.
 
 **Modified-module follow-up (header-signature rejection):** owned by
-[workflow §header-signature rejection](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#header-signature-rejection-confirmed--2026-11-16)
+[workflow §header-signature rejection](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed)
 — the direct CAN5-side observations here (`7F 36 72` on first data block,
 genuine slot0C restored, PEC `0015`) match the research doc's trace and are
 not repeated.

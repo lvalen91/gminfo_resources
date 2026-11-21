@@ -322,7 +322,7 @@ hardware generation follows merely from DID41E2=09. Volume0 is named
 `volume_dB` at the service boundary; do not assume it means zero-percent
 amplitude. Current vehicleaudiocontrol contains generator and AmpProxy /
 IAmpControl / IDiagnostics paths; the final transport/generator location is
-not recovered here. The [VLAN2 reference](../platform/networking.md#diagnostic-tone-correlation-follow-up-2026-11-15)
+not recovered here. The [VLAN2 reference](../platform/avb_audio_transport.md#6-diagnostic-tone-correlation-follow-up-2026-11-15)
 owns the inconclusive wire experiments.
 
 **Per-user playback cleanup:** the stock `cmd media_session list-sessions`
@@ -564,7 +564,7 @@ The proven `0249` clear and package-programming surface do not establish a
 per-value UDS calibration setter. Stock packages are themselves override
 modules; their verified signatures remain relevant. A Y175 PAL
 `writeCalValueRequest` export was traced to a fixed-status response rather
-than a calibration update. The consolidated [override reachability analysis](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3d-uds-override-reachability-and-per-value-write-stub-2026-11-15)
+than a calibration update. The consolidated [override reachability analysis](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3d-uds-override-reachability-and-per-value-write-stub)
 owns the code addresses, local `.calovride` distinction and remaining gates.
 
 ## Source Structure, Symbols & HIDL

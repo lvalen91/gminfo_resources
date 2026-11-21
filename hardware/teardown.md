@@ -101,7 +101,7 @@ Three-processor design on a single PCB:
 | Ethernet Switch | Broadcom BCM89551B1BFBG (TN2224 P21, 395-34 P3 W) | BGA | Automotive BroadR-Reach Ethernet. **Board-variant IC**: this (MY22/DV) unit is Broadcom; MY23+ boards use Marvell 88Q5050 (`persist.vendor.harman.hardwareid` selects the driver) — same spec. **Updated 2026-11-12:** the *live Y181 bench radio* (`W231E-Y181.3.2-SIHM22B-499.3`) is the **Marvell** variant, not this Broadcom teardown unit: `ethmvlctrlmgr: vpdGetFwVersion: Marvell firmware version: 02_09_1003, config version: 234702AB` and `UpdateService-ModuleVersionUtil: getModuleVersion module=52, version=MVL88Q5050_globalB_234702AB_02_09_1003` (gmlogger `main.log`, 2026-11-12 13:05; part 85759612 per `platform/firmware_versions.md`). Two physical units, two switch ICs, one spec [read]. The `hardwareid` selector itself is *not* readable live: `getprop persist.vendor.harman.hardwareid` returns empty from the shell uid and `main.log` shows an avc denial reading that prop for `gm_update_engine`, so "hardwareid selects the driver" remains inferred [inferred] |
 | Ethernet FW Flash | ISSI IS25LP016D-JNLE | SOIC-8 | 2MB NOR — BCM89551 firmware (confirmed via partial dump; IC damaged during extraction) |
 | IFWI/TXE Boot Flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA (ball array) | 8MB NOR — confirmed IFWI/TXE boot flash per Intel Apollo Lake platform requirements. NOT dumped. |
-| Ethernet MAC | Intel WGI210CL (I210) rev A3 (2214ASP) | QFN-48 | GbE for AVB audio, 25MHz xtal; [shipped Marvell port-speed settings / numbering caveat](../platform/networking.md#shipped-switch-speeds--c-2026-11-13), 2026-11-13 |
+| Ethernet MAC | Intel WGI210CL (I210) rev A3 (2214ASP) | QFN-48 | GbE for AVB audio, 25MHz xtal; [shipped Marvell port-speed settings / numbering caveat](../platform/ethernet_networking.md#23-shipped-switch-speeds-c-2026-11-13), 2026-11-13 |
 | WiFi/BT | Shielded module (PN 4D+0847, EC-02 7A85H.G05) | Module | ~21.3 x 12.9 x 7.9mm |
 | USB-UART | Microchip MCP2200 | QFN | SXM-associated serial -> AAOS /dev/ttyACM1; native Linux /dev/ttyACM0, 12MHz xtal (function corrected2026-11-17 from SXeDL path and live policy) |
 | CAN Transceiver | NXP C26004 | TSSOP | HS-CAN interface |
@@ -260,25 +260,31 @@ All 4 DPS read sessions for Y181 returned identical results — fully determinis
 
 | Offset | Stock | Modified | Framing | Role |
 |--------|-------|----------|---------|------|
-| 0x0441 | 00 | FF | Variable (was F0) | Primary SBI flag |
-| 0x0A81 | 00 | FF | Variable (was C3) | Mirror |
-| 0x1A01 | 00 | FF | Variable (was F0) | Second mirror |
-| 0x0B41 | 00 | 01 | Variable (was 69) | Third location |
+| 0x0441 | 00 | FF | Variable (was F0) | Primary SBI flag — **required** |
+| 0x0A81 | 00 | FF | Variable (was C3) | Mirror — **required** |
+| 0x1A01 | 00 | FF | Variable (was F0) | ~~Second mirror~~ — **not an established SBI mirror** (correction 2026-11-20) |
+| 0x0B41 | 00 | 01 | Variable (was 69) | ~~Third location~~ — **not required; no observed ADB/SELinux effect** (correction 2026-11-20) |
 
+- **Correction (2026-11-20, aligns this table with the owner-corroborated 2026-11-11 recipe —
+  see [`../platform/eeprom_i2c_security.md`](../platform/eeprom_i2c_security.md) and
+  [`../VERIFICATION.md`](../VERIFICATION.md) "EEPROM unlock guide"):** the minimal and sufficient
+  Y181 ADB-enable edit is **`0x0441→FF` and `0x0A81→FF` only**. `0x1A01` is **not** an established
+  second SBI mirror, and `0x0B41` was tested across its full value range (`0x00`/`0x01`/`0xFF`) with
+  **no observed ADB/SELinux/UI/log effect** — neither byte is part of the enable recipe. The two
+  extra rows above are retained only to record what the earlier modified dump happened to contain.
 - Framing bytes change per recalibration/reload by VIP/SPS/DPS (NOT constants)
 - Locate by offset, not by framing pattern
 - OTA updates reset to 0x00 (re-locks ADB)
 - Effect: Disables authorized ADB client requirement (shell uid=2000, not root)
 - Last modifiable build: Y181 for RPO IOK
 
-#### 0x0B41 — Debug Mode Flag (Unverified Hypotheses)
+#### 0x0B41 — not a debug-mode or SBI-mirror control (settled 2026-11-20)
 
-`0x0B41 = 0x01` is listed as "debug enabled" in the EEPROM map. Its effect beyond its role as a third SBI mirror is **not directly verified**. Two unconfirmed hypotheses:
-
-1. **Unknown feature/access path unlock** — could enable engineering or factory features not exposed in normal operation.
-2. **Verbose debug logging → file archiving → resource saturation** — debug mode may force the VIP or SoC to write high-volume logs to storage, raising I/O, storage consumption, and possibly CPU pressure. If the radio archives logs aggressively in this mode, it could act as an observable side channel (what gets logged?) or introduce instability under sustained load.
-
-**Test approach:** Set `0x0B41 = 0x01` via XGecu, boot, monitor `/data/` and any `/mnt/vendor/` log paths for new files, watch `logcat` verbosity change, and check `df` over time for storage growth. Compare `dmesg` and `logcat` log levels to baseline (stock `0x0B41 = 0x00`). Low risk to test — swap EEPROM back if nothing useful surfaces.
+Earlier passes hypothesized `0x0B41 = 0x01` as a "debug enabled" flag or a third SBI mirror. Both
+framings are **superseded**: per [`../platform/eeprom_i2c_security.md`](../platform/eeprom_i2c_security.md),
+`0x0B41` was written at `0x00`, `0x01`, and `0xFF` and produced **no observed change** in ADB
+availability, SELinux mode, UI, or logging. It is a CalGroup byte, not an enable path — do not
+represent it as one.
 
 ### IFWI/TXE Boot Flash (IS25WP064A-JHLA3)
 
@@ -521,7 +527,7 @@ Despite the timing limitation, several scenarios could reach deeper:
 
 3. **SecurityAccess Levels** — The 4 levels (0x10-0x13) each persist an unlock bitmask via SecWriteNVM. What does each level gate? If one gates "allow SPS reprogramming," that's a path to writing arbitrary calibration data.
 
-4. **ghs_abl_update Partition** — Dedicated GHS ABL (Android BootLoader?) update partition. If the VIP can trigger an update cycle and the payload could be controlled...
+4. **ghs_abl_update Partition** — Firmware-reflash capsule partition (NOT a runtime boot stage `[S 2026-11-20]`): its 6 MiB IPK payload is byte-identical to the top 6 MiB of the IFWI/SPI flash (`0x200000..0x800000`) — the `$CPD`/FTPR/ABL-ELF updatable firmware block; the capsule is CRC-wrapped only. Named after ABL as its headline component; carries the whole updatable Intel firmware region, not just ABL. If the VIP can trigger an update cycle and the payload could be controlled, authentication depends on the updater and/or CSE/Boot Guard at next boot — not recoverable from the capsule alone. See [`../research/BOOT_TRUST_ANCHOR_AND_KEYS.md`](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md) §3.
 
 5. **MEC Counter** — Y181 bench unit showed MEC=207 in an earlier, undated DPS bench read (no repo source gives its date; `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` MEC table lists it as "Y181 (bench, BSOB)"; **227 as of 2026-11-12**, main.log RegistrationService MEC_counter — the counter changed between captures; later readings on the same bench radio were 241 on 2026-09-09 and 227 in the 2026-11-12 recovery export — the value is not fixed; see the MEC table in `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`). Y177 via gateway shows MEC=0. Behavior differs significantly between them. What happens at MEC=255 (overflow)?
 
@@ -531,7 +537,7 @@ Despite the timing limitation, several scenarios could reach deeper:
 
 | Step | Method | Goal |
 |------|--------|------|
-| 1 | Full EEPROM analysis vs VIP firmware | Map ALL VIP NVM read addresses beyond the 4 known SBI offsets |
+| 1 | Full EEPROM analysis vs VIP firmware | Map ALL VIP NVM read addresses beyond the 2 known SBI offsets (0x0441/0x0A81; see correction above) |
 | 2 | UDS service enumeration post-$27 unlock | After SecurityAccess (trivial with 0xFF seeds in bench mode), enumerate $2E (WriteDataByIdentifier), $31 (RoutineControl), $34/$36/$37 (RequestDownload/TransferData) |
 | 3 | IPC sniffing (normal boot vs SPS programming) | Capture HDLC traffic on the VIP↔SoC link during both scenarios |
 | 4 | Force VIP into programming session | $10 02 (DiagnosticSessionControl: Programming) or $10 03 (Extended), then $31 RoutineControl to trigger SoC-directed operations |
@@ -1120,8 +1126,9 @@ claim; both were retracted.
 Binary: 14.9MB, INTEGRITY IoT 2020.18.19, core 23739
 Build path: `/home/mal/gm_release/MY22-026/final/iot/rtos/`
 
-### GHS Tasks (14+)
-VMM1, Camera, Audio, GPU, Chimes, Dirana, DisplayI2C, VIP, Lifecycle, OTA, Lines, Calibrations, TEE_Keymaster, TEE_HW_Crypto
+<!-- corrected 2026-11-21: boottable-derived §7A.1 of GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md (2026-10-10) names 19 server address spaces; 5 were absent from earlier string-based inventory -->
+### GHS Tasks (19+ named server address spaces)
+VMM1, Camera, Audio, GPU, Chimes, Dirana, DisplayI2C, VIP, Lifecycle, OTA, Lines, Calibrations, TEE_Keymaster, TEE_HW_Crypto, **TEE_Gatekeeper**, **TEE_Router**, **TEE_Storage**, **Audit**, **EMMC** (eMMC mux). Last 5 absent from pre-boottable inventory; all confirmed in `.boottable` section and FILE_MAP (GHS_FILE_MAP_85098662.md). Full topology: GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md §7A.1.
 
 ### VMM Capabilities
 - `ReadGuestMemory`, `WriteGuestMemory`, `ReadGuestVirtualAddress`
@@ -1481,7 +1488,7 @@ misc partition layout (conceptual):
 **Boot path, corrected 2026-11-17:** SoC software can select ELK through HECI/CSE and reset. Native Probe has reproduced that operation. Entry after complete eMMC corruption/erasure, without any working SoC OS, remains unverified. `OBBP` and `ELK` are adjacent CPD directory names, not a decoded literal boot-target identifier.
 
 **Three trigger paths:**
-1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI/CSE selection → ELK. Updated 2026-11-15: compiled control selector `0x8180` and an E0 request helper are traced; exact CAN format/gates and live entry remain unverified. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI/CSE selection → ELK. **Confirmed live 2026-11-17:** a CAN routine-ID F000 / selector-8180 RAM-assisted request produced UART `Elk Reboot Response 0` and a controlled reset into ELK; USB identified `titan_gm_my22` at `8087:09EF` and the bootloader responded `kernelflinger-07.02-userdebug`. Candidate frame `31 01 F0 00 81 80 03`; callback chain `57BC8`→`4E08A`→`5C0C0`→`757D4`→`75794`→`7F642`. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 2. **GHS lifecycle state machine** — Last resort after shutdown fails. State progression: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand`. Triggers after repeated boot failure escalation.
 3. **OTA IPC** — `ConnToOTA_BootELK` / `ConnToLifecycle_BootELK` IPC within GHS task architecture.
 
@@ -1490,7 +1497,7 @@ misc partition layout (conceptual):
 | Property | Known | Evidence |
 |---|---|---|
 | Packaged component | CPD partition `OBBP`, entry `ELK` | Adjacent directory names; not a literal target selector |
-| Trigger (CAN) | VIP J6_CDD diagnostic channel | VIP firmware: "Diag Elk Reboot Req" |
+| Trigger (CAN) | VIP J6_CDD diagnostic channel; F000/8180 frame **confirmed live 2026-11-17** (`kernelflinger-07.02-userdebug`) | VIP firmware: "Diag Elk Reboot Req"; live observation |
 | Trigger (GHS) | Lifecycle state machine last-resort | State: BootELKSendAblUserCommand |
 | Trigger (OTA) | ConnToOTA_BootELK IPC | GHS OTA task can trigger it |
 | Boot mechanism | HECI → CSE → ABL (NOT BCB/misc) | Bypasses normal boot chain |
@@ -1501,9 +1508,9 @@ misc partition layout (conceptual):
 | SELinux | Unknown | Not Android, may not apply |
 | Network | Possibly | OTA connection suggests it |
 
-**Resolved (2026-09-10):** ELK is **not** a general-purpose Linux shell. It is the Intel Kernelflinger fastboot environment (ELK component; `flash`/`erase`/`getvar` + `oem set-storage`; strings `"USB storage is unsupported"`; libavb-linked with **AVB active**; unlock device-state-gated). So the "full Linux with shell access / no SELinux / direct block-device access" path is closed — there is no unrestricted rootfs shell here. It is still reachable via a CAN diagnostic command the VIP relays without crypto verification (see below), but what it reaches is a fastboot with AVB enforced, not an Android-stack bypass.
+**Resolved (2026-09-10):** ELK is **not** a general-purpose Linux shell. It is the Intel Kernelflinger fastboot environment (ELK component; `flash`/`erase`/`getvar` + `oem set-storage`; strings `"USB storage is unsupported"`; libavb-linked with **AVB active**; unlock device-state-gated). So the "full Linux with shell access / no SELinux / direct block-device access" path is **not provided by ELK itself** — what ELK reaches is a fastboot with AVB enforced, not an Android-stack bypass. **Distinguished (2026-11-17):** ELK's RAM `download`/`boot` command CAN load a custom kernel+initramfs into RAM and boot it; native Linux `7.3.5-probe-stable02` has been executed this way with a USB ACM shell and T1 root SSH. The RAM-booted image is not signed storage and does not establish persistent flash-write permission or disable normal GHS AVB checks. ELK entry via CAN F000/8180 was confirmed live 2026-11-17 (see trigger path 1 above).
 
-**Observed "return to dealer" incident:** The radio was caused to fail to boot by disabling system packages via `pm disable --user` for user 0 and user 10 from ADB shell. This entered the return-to-dealer screen. Recovery was done using a datawipe update package via USB (which resets `/data/` including `pm disable` state in `/data/system/`). **ADB/USB exposure was NOT checked during the return-to-dealer state.** This is the highest-priority test — the return-to-dealer screen may be ELK or a pre-Android state with relaxed security.
+**Observed "return to dealer" incident (reproduced 2026-11-12):** The radio was caused to fail to boot by deliberately removing `com.gm.homescreen` for users 0 and 10 from ADB shell (`pm disable --user`). After three failed boot attempts, automatic dealer/recovery entry was observed. Recovery was done using a datawipe update package via USB (which resets `/data/`). The USB export was obtained via the encoded recovery trigger-file marker; **ADB/USB exposure was NOT checked during the return-to-dealer state.** The return-to-dealer screen may be ELK or a pre-Android state with relaxed security — this remains the highest-priority open check. See [`platform/elk_recovery.md`](../platform/elk_recovery.md) §5 for full provenance.
 
 **Reproduction method:** From ADB shell, `pm disable --user 0 <critical-package>` persists in `/data/system/users/0/package-restrictions.xml` and survives reboot. GHS counts consecutive Android boot failures. After threshold (likely 3), escalates to return-to-dealer/ELK. Recovery: datawipe USB package clears `/data/`, re-enables packages.
 
@@ -1652,7 +1659,7 @@ Physically dump Samsung KLMCG4JEUD 64GB eMMC (BGA-153). Find misc partition. AB0
 
 VIP firmware has explicit ELK reboot support via J6_CDD. Boots via HECI → CSE → ABL/ELK selection, bypassing normal misc/BCB boot chain entirely. ELK is the Intel Kernelflinger fastboot (AVB active, "USB storage unsupported"), **not** a minimal Linux with direct block-device access — so it does not provide an unrestricted misc-write primitive; any write path is gated by fastboot's AVB/device-state checks.
 
-Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. Updated 2026-11-15: selector `0x8180` is traced statically; the Android T1 candidate was rejected by a missing IOCID handler. CAN validation remains pending; see [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. **Confirmed live 2026-11-17:** CAN F000/8180 RAM-assisted request produced ELK entry (`kernelflinger-07.02-userdebug`; see §ELK / trigger path 1). What ELK then reaches is fastboot with AVB enforced — it still cannot write `misc` without defeating lock/AVB. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
 **Option 3: Return-to-Dealer Screen → Check ADB/USB Exposure**
 

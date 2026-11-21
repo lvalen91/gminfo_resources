@@ -99,7 +99,7 @@ Acceptance: both USB and T1 return UID 2000, and their
 save those identifiers. ICMP ping is not the acceptance test: the shipped firewall
 can block it while a permitted TCP path works. The relay is a host runtime process,
 not a persistent service; port and transport availability must be rechecked after
-a radio restart. See [networking.md](../platform/networking.md#listening-ports).
+a radio restart. See [ethernet_networking.md](../platform/ethernet_networking.md#4-listening-ports-and-network-adb).
 
 ## UART baseline
 
@@ -328,12 +328,12 @@ radio off. This is an owner-reported working configuration, not an independent
 duration or power-mode measurement. Later isolated `529` testing sustained
 operation for over 12 hours and identified a conditional b1 bit 7 On/Off
 selector, plus `4DA` b7 bit 0 DriverDoorOpen for state-dependent shutdown;
-see the [current CAN findings](../platform/can_network.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
+see the [current CAN findings](../platform/can_bench_experiments.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
 Later observation with no application TX showed a timeout path through
 LocalInfotainment, HmiInactive and Sleep, then ADB disconnection and an explicit
 SoC power-level-0 report approximately 694 seconds after TX stopped. No Off payload
 was sent; this is a timeout shutdown, not a validated immediate Off command. See
-the [correlated shutdown timeline](../platform/can_network.md#shutdown-after-application-messages-cease).
-The later [single-cycle comparison](../platform/can_network.md#radio-only-single-cycle-result)
+the [correlated shutdown timeline](../platform/can_bench_experiments.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
+The later [single-cycle comparison](../platform/can_bench_experiments.md#radio-only-single-cycle-result)
 left the display off despite SoC-origin power-level reports and an HMI-ready UART
 event. UART readiness must not be treated as proof that AAOS or the display is on.
