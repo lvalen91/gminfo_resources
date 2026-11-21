@@ -441,6 +441,7 @@ tried and why each route failed, so the same dead ends are not re-run.
   arming message** — the device gets zero host→device packets until the 900x TCP connect itself.
   The dormancy was connection-pool/session exhaustion from rapid repeated test connects (§0, §4.10),
   not a missing activation step; this is the current, correct account.
+  Static corroboration `[S]`: the live install's `boschvci-v3.inf` binds the inbox Microsoft `rndismp6.sys` (VID `0x0ca0`, PID `0x1201`-`0x1222`, no custom Bosch `.sys`), and the RT and PDU-Vtx DLLs import none of winusb, setupapi or hid. The PID observed in the cold capture, `0x1301`, is outside that INF's listed range; the reason is not determined `[U]`. Source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/BVTX_VCI_RT_EVIDENCE_transport.txt` ("INF / USB IDENTITY").
 
 ---
 

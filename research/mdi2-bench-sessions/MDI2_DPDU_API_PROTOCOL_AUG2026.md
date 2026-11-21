@@ -44,6 +44,10 @@ degenerate all-`0xFF` SecurityAccess seed; all 26 other swept ECUs return varied
 This confirms the all-`0xFF` behavior is specific to this one ECU's own `$27` implementation,
 not a systemic transport or tooling artifact.
 
+`GM_DOIP_32.dll` selects the tester source address from the DoIP version byte the entity announces: version `2` gives `0x0EF5`, version `3` gives `0x0E80`, and any other version aborts routing activation. `[FW]` (disassembly of `fcn.1000e540`, `0x1000ea08`-`0x1000ea4c`; source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/GM_DOIP_32_ANALYSIS.md` §8). The live MDI2 bench uses `0x0EF5`.
+
+**Hazard (live capture session, 2026-08-24).** An independent DoIP client that connected over MDI2's RJ45 port with the same default tester source address (`0x0EF5`) evicted the concurrent USB-side session instead of being refused with the ISO 13400 "source address already registered on a different socket" response; the USB-side session then logged `Ethernet network is down` and timed out, which aborted a read-only module scan. The MDI2 therefore behaves as if it keys DoIP routing-activation sessions by tester source address rather than per physical interface `[I]` (distinct from the session-table exhaustion in §11.4). `[C]` for the incident (source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/DPS_MASTER_REFERENCE.md` §15.6). Do not run an independent DoIP client against an MDI2 that a DPS/SPS session may be using, even on the other interface, unless it uses a non-colliding source address.
+
 **`J2534Wrapper.dll` is not a thin pass-through.** It independently performs DoIP discovery
 (`DoIPSendDiscoveryRequest[Ex]`, a `CDHCPListener` class that listens for DHCP offers to learn
 the MDI2's IP), device enumeration, and management of `GM_MDI_Ident.exe` as a Windows service
@@ -450,6 +454,10 @@ the activation order:
 There is no read-back on teardown. A native client that wants to leave the MDI2 in the state DPS
 leaves it in should replay this reversed pair on shutdown.
 
+Named configuration items behind these IOCTLs (the IOCTL-to-item pairing is inferred `[I]`): `EthernetActPinNumber` (struct `+0`) and `EthernetSenseState` (`+4`) for the pin option in the PDU layer; `VTX_RT_CFG_ETHERNET_ENABLE` (with `_IP`, `_MASK`, `_GATEWAY_*`, `_DHCP_STATIC`, `_HW_ADDR`) and `VTX_RT_CFG_DOIP_NAT_MODE` in `BVTX-VCI-RT.dll`; and `VCI:has_ethernet`, `VCI:doip_nat_mode`, `MGR:has_doip_mac_addr_support`, `MGR:has_doip_ip_addr_support`, `MGR:has_doip_ip_netmask_support` in the ident service. Source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/BVTX_VCI_RT_EVIDENCE_transport.txt`, `GM_MDI_IDENT_EVIDENCE_protocol.txt` §6, `BVTX_VCI_PDU_EVIDENCE_transport.txt`.
+
+A static pass over `BVTX4J32.dll` found no anti-clone or device-authenticity check on this IOCTL path, only argument sanity checks `[I]`; any genuine-device validation would therefore sit lower: in the VTX runtime, the MDI2 firmware, or the ident service's encrypted module whitelist (`valid-module_*.bin`, source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/GM_MDI_IDENT_EVIDENCE_protocol.txt` §7). Source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/BVTX4J32_EVIDENCE_activation.txt`.
+
 ### 10.5 CAVEAT: the numeric IOCTL/ComParam IDs are MDF-assigned at runtime, not constants
 
 This is the most important operational caveat in this section. `CJ2534Server::Initialize`
@@ -512,6 +520,7 @@ Independently confirmed on the MDI2 side, matching the capture reconstruction:
 - Routing Activation request: 15 bytes (19 with the optional OEM-specific field).
 - Routing Activation response is validated as: source address `@+8`, entity address `@+10`,
   response code `@+12`.
+- Client side, `GM_DOIP_32.dll` treats response code `0x10` as success and waits at most 2000 ms for the response (log text "Timed out while waiting for routing activation response", return code 9). `[FW]` Source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/GM_DOIP_32_ANALYSIS.md` §8, §12.
 - Vehicle announcement / VIR response layout: VIN `@+8` (17 bytes), logical address `@+0x19`,
   EID `@+0x1b` (6 bytes), GID `@+0x21` (6 bytes).
 - Vehicle Identification Request sizes: 8 B (broadcast), 14 B (by EID), 25 B (by VIN).

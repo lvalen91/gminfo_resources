@@ -225,6 +225,7 @@ this mechanism; `../../platform/eeprom_i2c_security.md` no longer carries a pros
   the SBI cells is **REFUTED** (2026-08): those bytes live inside a gzip-compressed CalOvride XML
   stream, not an EEPROM address:value table. SBI values change only via the bulk
   restore-to-ROM-defaults routine above, not a targeted cal payload.
+  Content of `85783460`, consistent with that refutation: 34 `OverrideValue` entries (12 Boolean, 1 Integer, 21 `BinaryFile`). Their `CalID`s are opaque EMF/Rhapsody GUIDs, so descriptive names such as Bluetooth-profile names were inferred, not extracted; the 21 `.scd` files are telephony/hands-free echo-cancellation (SSE, Speech Signal Enhancement) tuning sets. `[X]` byte-level extraction, source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/A11_CALIBRATION_FILES_COMPLETE_ANALYSIS_AUG2026.md` §2.
 
 **Candidate SBI-carrying DIDs (read-attempt result, not a confirmed mapping):** four DIDs were
 probed for SBI content and all four failed in a read-only GCI session: `F0F4` ->

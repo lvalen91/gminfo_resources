@@ -30,6 +30,8 @@ separate T1 bench connection is additional to that harness. The exact T1 media
 converter make/model and current radio-end tap pins have not been established
 by this baseline. Do not infer the automotive bus number from host interface `en12`.
 
+`[X]` A separate Y175 Bus 2 bench (BUELEC 100/1000Base-T1-TX-L converter) found that the converter must be forced to 100M, because its 1000BASE-T1 mode does not interoperate with this 100BASE-T1-only link; the polarity-swap and tap details are in `../VERIFICATION.md` and `../platform/vehicle_network.md`. Host NIC: a plain gigabit USB NIC (RTL8153) on a native USB port worked; an RTL8156 2.5G adapter and an onboard Aquantia 10G port were reported flaky at 100M. This does not establish the converter, tap pins or NIC used by this baseline. Source: `/Volumes/stuff/misc/research/GM_research/carplay/gm_pi/docs/11_100BASE_T1_TAP.md` §0a.
+
 CAN 5 is the X6 p9/p10 pair, also called SER DATA 5; see
 [vehicle_network.md](../platform/vehicle_network.md#plane-1--can-from-the-dps-scan).
 Connect CAN H, CAN L and **CANable GND directly to radio X5 pin 3 (Signal GND)**.
