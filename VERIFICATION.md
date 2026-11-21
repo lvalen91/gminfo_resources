@@ -570,7 +570,7 @@ into `hardware/connectors.md`:
   byte-verified rows in "Corrected (applied)" above.)
 - ~~**Video codec tables:** annotate the c2.android.* SW video codecs as absent.~~ **WITHDRAWN** —
   live Jun-2026 confirms `c2.android.{avc,hevc,vp8,vp9}.decoder` ARE registered (+ `media_codecs_google_video.xml`).
-  The codec tables in `video/video_codecs.md`, `video/software_rendering.md`, `codecs/media_codecs.md`
+  The codec tables in `video/video_codecs.md`, `video/software_rendering.md`, `video/media_codecs.md`
   presenting them as available are **correct**; OMX.Intel HW and c2.android SW decoders coexist.
 - **`video/carplay_video_pipeline.md` / `cinemo_nme_framework.md`:** "NVIDIA NVDEC" SW decoder on
   an Intel platform is dubious → "Cinemo NME software H.264 decoder".

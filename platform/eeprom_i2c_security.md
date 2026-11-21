@@ -14,7 +14,7 @@ note (§0) and History §12 (2026-11-21 entry) for the full account of what move
 
 **Related:** [security.md](security.md) (Android security posture, ProtoKey/ADB auth, kernel
 mitigations, SELinux denials — owns the MEC/ADB-unlock *consequence* of the SBI flag),
-[hardware_specs.md](hardware_specs.md) (physical I2C adapter/controller enumeration, VIP MCU part
+[hardware_specs.md](../hardware/specs.md) (physical I2C adapter/controller enumeration, VIP MCU part
 number, UART/serial hardware), [ota_update_stack.md](ota_update_stack.md) (OTA signing). External:
 `../eeprom/` (EEPROM programming workflow/tooling — this doc does not duplicate or edit that
 directory) and [ELA](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md) (primary EEPROM research,

@@ -5,7 +5,7 @@
 
 **Evidence legend:** `[C]` confirmed live or from binary; `[read]` / `[inferred]` as marked; `[U]` unverified/unknown; `[X]` external source. Dates are `YYYY-MM-DD`. Per-claim tags and dates are authoritative over surrounding prose. The long-form evidence and build provenance live in `../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` (cited per section below).
 
-**Related:** [boot_chain.md](boot_chain.md) · [security.md](security.md) · [hardware_specs.md](hardware_specs.md) · [ethernet_networking.md](ethernet_networking.md) · [can_bench_experiments.md](can_bench_experiments.md) · [can_network.md](can_network.md) · [ota_update_stack.md](ota_update_stack.md) · [emulator.md](emulator.md)
+**Related:** [boot_chain.md](boot_chain.md) · [security.md](security.md) · [hardware_specs.md](../hardware/specs.md) · [ethernet_networking.md](ethernet_networking.md) · [can_bench_experiments.md](can_bench_experiments.md) · [can_network.md](can_network.md) · [ota_update_stack.md](ota_update_stack.md) · [emulator.md](emulator.md)
 
 ---
 
@@ -164,10 +164,10 @@ Embedded stock IPU firmware removed the firmware-request timeout. PID1 began at 
 
 ### 3.7 Peripheral notes
 - **USB topology (owner-confirmed 2026-11-17):** the only known externally connected radio USB port is wired to the host computer for ADB/USB shell. No user-attached USB peripheral accounts for MCP2200 `04d8:00df`; its xHCI-side CDC-ACM/HID enumeration is an internal radio device. The DWC3 device/gadget connection to the host is a separate USB role/path.
-- MCP2200 `04d8:00df` is an internal radio bridge associated with the SXM serial path (AAOS `ttyACM1`, `sxm_device`), native `ttyACM0`; no SXM traffic sent or captured. Full topology reasoning: [hardware_specs.md](hardware_specs.md) section 10 (USB), "MCP2200 topology".
+- MCP2200 `04d8:00df` is an internal radio bridge associated with the SXM serial path (AAOS `ttyACM1`, `sxm_device`), native `ttyACM0`; no SXM traffic sent or captured. Full topology reasoning: [hardware_specs.md](../hardware/specs.md) section 10 (USB), "MCP2200 topology".
 - Not established as operational by the native pass: Bluetooth, GNSS, AM/FM, SXM, external amplifiers, camera feeds, VIP-side peripherals. Product existence does not imply a directly enumerated Linux device.
-- Camera deserializer (TI DS90UB954, teardown board) vs SoC Intel IPU4: [hardware_specs.md](hardware_specs.md) section 7; population on the running bench board is separate from teardown evidence.
-- MFi diagnostic access (AAOS `/dev/i2c-2` 0x10; native bus 5 mapping did not acknowledge): [hardware_specs.md](hardware_specs.md) section 12.
+- Camera deserializer (TI DS90UB954, teardown board) vs SoC Intel IPU4: [hardware_specs.md](../hardware/specs.md) section 7; population on the running bench board is separate from teardown evidence.
+- MFi diagnostic access (AAOS `/dev/i2c-2` 0x10; native bus 5 mapping did not acknowledge): [hardware_specs.md](../hardware/specs.md) section 12.
 - Native GPU shader rendering, Vulkan device initialization and VA-API profile availability are verified separately: [hardware rendering](../video/hardware_rendering.md#native-linux-gpu-acceleration--verified-2026-11-17).
 
 ---
@@ -218,10 +218,10 @@ Disclosed by `getvar all`: A/B slots (`slot-count 2`, `current-slot:b`); dynamic
 
 - **C1: USB ID `8087:09EF`.** security.md L731 records ELK (`titan_gm_my22`, kernelflinger-07.02-userdebug) at `8087:09EF`; can_network.md L1623/L1632/L1663 record the same ID for AAOS ADB (interface FF/42/01). Not reconciled; may be a shared VID:PID with different interface class, or an error in one source. Android fastbootd is `8087:4EE0` (security.md L723).
 - **C2: eMMC block name.** `mmcblk2` vs `mmcblk1` across 7.3.5 boots (HW L48-49); ELK RAM boot reports `mmcblk1` (BC L110). Treated as per-boot enumeration order; always identify by PCI `00:1c.0`.
-- **C3: Display touch/reset numbering.** GPIO467 (reset, probe05 row; HW L76, L85) vs line 33 of the 78-line `INT3452:00` bank (stable02 helper, HW L54-56): the former is an older-kernel global mapping. Native display controller "native i2c-10" (HW L83) vs AAOS touch on i2c bus 7 @ 0x4B (HW L29/L168, owned by hardware_specs.md): bus numbering differs by kernel; no explicit reconciliation in source.
-- **C4: Camera.** ACPI ADV7481A/B declarations vs TI DS90UB954 on the teardown board: not reconciled; tracked in [hardware_specs.md](hardware_specs.md) Open conflicts item 5.
-- **C5: RAM.** Probe05 MemTotal 5,963,784 KiB (HW L74) vs historical MemTotal ~5530 MiB / Y181B E820 5743 MiB (HW L24; owned by hardware_specs.md). Different builds, not reconciled. (5,963,784 KiB = ~5824 MiB.)
-- **C6: CPU frequency.** probe05 intel_pstate 800-2400 MHz (HW L74) vs 800 MHz / 1.6 GHz / 2.0 GHz burst (HW L14) and 1881.6 MHz (HW L18); owned by hardware_specs.md.
+- **C3: Display touch/reset numbering.** GPIO467 (reset, probe05 row; HW L76, L85) vs line 33 of the 78-line `INT3452:00` bank (stable02 helper, HW L54-56): the former is an older-kernel global mapping. Native display controller "native i2c-10" (HW L83) vs AAOS touch on i2c bus 7 @ 0x4B (HW L29/L168, owned by ../hardware/specs.md): bus numbering differs by kernel; no explicit reconciliation in source.
+- **C4: Camera.** ACPI ADV7481A/B declarations vs TI DS90UB954 on the teardown board: not reconciled; tracked in [hardware_specs.md](../hardware/specs.md) Open conflicts item 5.
+- **C5: RAM.** Probe05 MemTotal 5,963,784 KiB (HW L74) vs historical MemTotal ~5530 MiB / Y181B E820 5743 MiB (HW L24; owned by ../hardware/specs.md). Different builds, not reconciled. (5,963,784 KiB = ~5824 MiB.)
+- **C6: CPU frequency.** probe05 intel_pstate 800-2400 MHz (HW L74) vs 800 MHz / 1.6 GHz / 2.0 GHz burst (HW L14) and 1881.6 MHz (HW L18); owned by ../hardware/specs.md.
 - **C7: Lock-state backend by revision.** `OEMLock` UEFI NV variable, not RPMB (SOC_ABL 85738845, 2026-10-08) vs physical RPMB or emulation in `teedata` (Y175 ELK, 2026-11-17). The later dated correction scopes the first to its revision; both retained, not a settled generalization.
 - **C8: ELK vs AAOS lock report.** ELK `unlocked:yes` while AAOS `locked/green` across a round trip (SEC L737-739); not reconciled, flagged by source as not establishing disabled verification. Android fastbootd separately reports `unlocked:no` (SEC L757).
 - **C9: Super size** from fastbootd `getvar` (0x465000000 = 18000 MiB) vs 8.6 GB in boot_chain partition table: owned by [partitions_storage.md](partitions_storage.md).

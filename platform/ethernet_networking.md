@@ -6,7 +6,7 @@ Out of scope (pointers only): AVB/gPTP/AAF audio transport, ELK RAM-Linux networ
 
 Evidence legend: `[C]` confirmed against a capture/artifact; `[?]` open or inference; `[read]` read from a dump rather than a live shell. "Y175" = bench radio build `W213E-Y175.5.2-SIHM22B-383.1` (live captures dated 2026-10-05/06); "Y181" = `W231E-Y181.3.2-SIHM22B-499.3`. Content dates run to 2026-11-17.
 
-Related: [hardware_specs.md](hardware_specs.md), [vehicle_network.md](vehicle_network.md), [avb_audio_transport.md](avb_audio_transport.md), [fsa_protocol.md](fsa_protocol.md), [elk_recovery.md](elk_recovery.md), [security.md](security.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vip_ipc_ghs.md](vip_ipc_ghs.md). Bench host-side VLAN/ADB setup baseline (owns the repeatable host configuration and acceptance checks): [../hardware/bench_setup.md](../hardware/bench_setup.md). This document owns the radio's network architecture.
+Related: [hardware_specs.md](../hardware/specs.md), [vehicle_network.md](vehicle_network.md), [avb_audio_transport.md](avb_audio_transport.md), [fsa_protocol.md](fsa_protocol.md), [elk_recovery.md](elk_recovery.md), [security.md](security.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vip_ipc_ghs.md](vip_ipc_ghs.md). Bench host-side VLAN/ADB setup baseline (owns the repeatable host configuration and acceptance checks): [../hardware/bench_setup.md](../hardware/bench_setup.md). This document owns the radio's network architecture.
 
 ---
 
@@ -38,7 +38,7 @@ The backbone switch IC is selected by `persist.vendor.harman.hardwareid`. Both v
 
 | Variant | hardwareid classes | Ethernet manager (init service) | Evidence |
 |---------|--------------------|----------------------------------|----------|
-| Broadcom BCM8953x / BCM89551 | ED / DV1 / DV2 / DV4 / DV6 / PV1 / MY22 (teardown unit) | `ethctrlmgr` | MY22/DV teardown unit; SPI NOR IS25LP016D (16 Mbit, SOIC8, week 43/2022) holds the switch firmware on this unit ([hardware_specs.md](hardware_specs.md), `../hardware/teardown.md`) |
+| Broadcom BCM8953x / BCM89551 | ED / DV1 / DV2 / DV4 / DV6 / PV1 / MY22 (teardown unit) | `ethctrlmgr` | MY22/DV teardown unit; SPI NOR IS25LP016D (16 Mbit, SOIC8, week 43/2022) holds the switch firmware on this unit ([hardware_specs.md](../hardware/specs.md), `../hardware/teardown.md`) |
 | Marvell 88Q5050 | MY23+ / MY24 | `ethmvlctrlmgr` | `ETH_SWITCH` fw part `85759612.AA` = `MVL88Q5050_globalB_234702AB_02_09_1003` (UpdateService module 52); live Y181 bench radio |
 
 - Live Y181 (2026-11-12, adb): `init.svc.ethmvlctrlmgr=running`, `init.svc.ethctrlmgr=stopped`, `ethmvlctrlmgr` process under uid `vendor_ethctrlmgr` [C]; `UpdateService-ModuleVersionUtil module=52` in `main.log` [read]. The manager selection agrees with the Marvell module string (inferred same board-variant; not a chip read). The updater's reported module identity does not by itself resolve physical-chip identity.
@@ -245,7 +245,7 @@ Scope: live Y175 Android 12, build increment 213; static checks against the matc
 
 ## 8. Related runtime discriminators
 
-- **DABridge USB port numbering (not a Y175/Y181 discriminator):** live Y175 (same exact build `W213E-Y175.5.2-SIHM22B-383.1`) reports `sys.dabridge.dev.portnum=1-6.3` / `host.portnum=1-6.0` (props.txt:482-483), the value previously attributed to Y181 only; the prior Y175 enum (`gm_enum_20260117_081801`, identical build) reported `1-12.3`/`1-12.0`. The value tracks which physical USB receptacle the DA bridge enumerated on, not firmware version. Y181 reference: `1-6.x`. USB detail: [hardware_specs.md](hardware_specs.md).
+- **DABridge USB port numbering (not a Y175/Y181 discriminator):** live Y175 (same exact build `W213E-Y175.5.2-SIHM22B-383.1`) reports `sys.dabridge.dev.portnum=1-6.3` / `host.portnum=1-6.0` (props.txt:482-483), the value previously attributed to Y181 only; the prior Y175 enum (`gm_enum_20260117_081801`, identical build) reported `1-12.3`/`1-12.0`. The value tracks which physical USB receptacle the DA bridge enumerated on, not firmware version. Y181 reference: `1-6.x`. USB detail: [hardware_specs.md](../hardware/specs.md).
 - Ethernet manager swap (`ethctrlmgr` vs `ethmvlctrlmgr`): section 2.1.
 
 ## USB Identifiers and Gadget
@@ -258,7 +258,7 @@ Scope: live Y175 Android 12, build increment 213; static checks against the matc
 | CPC200 adapter | 0x1314 | 0x1521 | manufacturer="Magic Communication Tec.", product="Auto Box" |
 | dabr_udc | - | - | USB device controller for gadget mode |
 
-VID `0x2996` (decimal 10646) = **Aptiv / Delphi Technologies**. The H2H bridge + PD hub + `RDMSADBHandler` Binder service (#66) form the ADB-over-H2H routing path; see [`../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md). The decimal Y177 snapshot (10646:261/306/288) and port-numbering note: [hardware_specs.md](hardware_specs.md) section 10; section 8 above for the DABridge port-numbering note.
+VID `0x2996` (decimal 10646) = **Aptiv / Delphi Technologies**. The H2H bridge + PD hub + `RDMSADBHandler` Binder service (#66) form the ADB-over-H2H routing path; see [`../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md). The decimal Y177 snapshot (10646:261/306/288) and port-numbering note: [hardware_specs.md](../hardware/specs.md) section 10; section 8 above for the DABridge port-numbering note.
 
 ### USB Gadget
 
@@ -354,7 +354,7 @@ The VIP MCU bridges CAN messages to the Intel SoC over the HDLC IPC link, transl
 | ELK RAM-Linux T1 and WiFi tests, probe kernels | [elk_recovery.md](elk_recovery.md) |
 | UDS/MDI2 over T1, SecurityAccess, ECUReset, DID sweep, recovery | `../diagnostics/diagnosticsd_security_access.md`, `diagnosticsd_protocol.md`, `diagnosticsd_dids_and_dtc.md`, `diagnosticsd_routines_and_recovery.md` |
 | IPC channels / HDLC link | [vip_ipc_ghs.md](vip_ipc_ghs.md) |
-| USB identifiers and gadget, UART table | held here (sections USB Identifiers and Gadget, UART Devices); other USB hardware detail [hardware_specs.md](hardware_specs.md) |
+| USB identifiers and gadget, UART table | held here (sections USB Identifiers and Gadget, UART Devices); other USB hardware detail [hardware_specs.md](../hardware/specs.md) |
 | FSA wire format, service catalog | [fsa_protocol.md](fsa_protocol.md) |
 | Host firewall, SoftAP exposure, listener risk | [security.md](security.md) |
 | Physical Ethernet bus map, X84/X11 | held here ([Physical Automotive-Ethernet bus map](#physical-automotive-ethernet-bus-map)); 5-row summary and VLAN-tag trunk findings in [vehicle_network.md](vehicle_network.md) |

@@ -5,7 +5,7 @@ Used to set emulator calibrations to this truck's real feature set (see [`emulat
 
 Evidence tags used: [V] verified on live radio/export, [read] read from a dump or live shell, [inferred], [VEH] measured on the vehicle, [FW] firmware-corroborated, [INF]/[GM] expected/not observed, [X] unknown/unverifiable.
 
-Related: [`emulator.md`](emulator.md), [`gmsystemui_app_gating.md`](gmsystemui_app_gating.md), [`firmware_versions.md`](firmware_versions.md), [`ota_programming_roles.md`](ota_programming_roles.md), [`vehicle_network.md`](vehicle_network.md), [`fsa_protocol.md`](fsa_protocol.md), [`hardware_specs.md`](hardware_specs.md), [`vip_ipc_ghs.md`](vip_ipc_ghs.md).
+Related: [`emulator.md`](emulator.md), [`gmsystemui_app_gating.md`](gmsystemui_app_gating.md), [`firmware_versions.md`](firmware_versions.md), [`ota_programming_roles.md`](ota_programming_roles.md), [`vehicle_network.md`](vehicle_network.md), [`fsa_protocol.md`](fsa_protocol.md), [`../hardware/specs.md`](../hardware/specs.md), [`vip_ipc_ghs.md`](vip_ipc_ghs.md).
 
 ## 1. Donor vehicle identity
 

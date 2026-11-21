@@ -25,7 +25,7 @@ artifact) / **CONTRADICTED** (an artifact refutes it).
 **Related:** `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (ELA), `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` (GSK),
 `platform/security.md`, `platform/ethernet_networking.md`, `platform/vehicle_config.md`,
 `CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`, `platform/ota_programming_roles.md`,
-`platform/hardware_specs.md`, `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` (carried unchanged — cited by
+`hardware/specs.md`, `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` (carried unchanged — cited by
 name/section only, never restated).
 
 ---
@@ -116,7 +116,7 @@ name/section only, never restated).
 
 ## CLUSTER 6 — Stale-spec / misc self-corrections
 
-> Owner of the underlying claims: `platform/hardware_specs.md`.
+> Owner of the underlying claims: `hardware/specs.md`.
 
 | # | claim | doc:location | verdict | evidence | note |
 |---|---|---|---|---|---|

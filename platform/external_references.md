@@ -3,10 +3,10 @@
 Index of public and third-party resources used by this research: Intel Apollo Lake (APL) / Celadon / bootloader sources for the Intel gminfo37 radio, the NDA-gated list, the surrealdev.com (Snipesy) bibliography for the Global B / Cadillac radio, and patents.
 Evidence tag used here: **[X]** = external, single-source, not verified against our own hardware. Untagged index entries are pointers to resources, not findings.
 
-Related: [qualcomm_cadillac_platform.md](qualcomm_cadillac_platform.md) (platform variant), [hardware_specs.md](hardware_specs.md) (Intel A3960 SoC/I-O datasheet facts), [boot_chain.md](boot_chain.md), [security.md](security.md), [ota_programming_roles.md](ota_programming_roles.md), [vehicle_network.md](vehicle_network.md), [vip_ipc_ghs.md](vip_ipc_ghs.md)
+Related: [qualcomm_cadillac_platform.md](qualcomm_cadillac_platform.md) (platform variant), [hardware_specs.md](../hardware/specs.md) (Intel A3960 SoC/I-O datasheet facts), [boot_chain.md](boot_chain.md), [security.md](security.md), [ota_programming_roles.md](ota_programming_roles.md), [vehicle_network.md](vehicle_network.md), [vip_ipc_ghs.md](vip_ipc_ghs.md)
 
 Target platform: Intel Atom x7-A3960 (Apollo Lake / Goldmont), Android 12 AAOS under GHS INTEGRITY IoT hypervisor. All clones are placed in `~/Downloads/github/` unless noted.
-The A3960 datasheet-confirmed SoC / platform I/O spec (formerly appended to the source of this index) lives in [hardware_specs.md](hardware_specs.md); it is not repeated here.
+The A3960 datasheet-confirmed SoC / platform I/O spec (formerly appended to the source of this index) lives in [hardware_specs.md](../hardware/specs.md); it is not repeated here.
 
 ## 1. Intel APL / Android reference sources
 
@@ -119,7 +119,7 @@ History: the SELinux row previously read "permissive (Y177) vs enforcing (Y181)"
 
 ## 2. surrealdev.com (Snipesy / Surreal Development) bibliography [X]
 
-Canonical bibliography for the *"Rooting the Cadillac"* series and related posts by **Snipesy / Surreal Development LLC**. All other docs that cite this site (`vehicle_network.md` Plane 1a and vlan502, section 3 below / `ota_programming_roles.md` Global-B provisioning, `hardware_specs.md` VIP sleep, `research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md` section 7) draw from these and should point here.
+Canonical bibliography for the *"Rooting the Cadillac"* series and related posts by **Snipesy / Surreal Development LLC**. All other docs that cite this site (`vehicle_network.md` Plane 1a and vlan502, section 3 below / `ota_programming_roles.md` Global-B provisioning, `../hardware/specs.md` VIP sleep, `research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md` section 7) draw from these and should point here.
 
 | Article | Published | License | URL |
 |---|---|---|---|
@@ -135,7 +135,7 @@ Canonical bibliography for the *"Rooting the Cadillac"* series and related posts
 
 ### 2.1 Rooting the Cadillac Part 1 - quoted/derived items used elsewhere [X]
 
-- **Low-power sleep.** Part 1 (Snipesy, 2026-08-15) reports the RH850 "VIP" powers itself down in deep sleep and wakes on a hardware signal direct from its **CAN phy**, letting the whole radio idle at **sub-milliamp** draw on the always-on 12 V feed. Consistent with this board's VIP role (power/CAN/early-boot); the sub-mA figure is the author's Cadillac measurement, **not independently confirmed on this A11 unit.** [X] Owner of the VIP-side description: [hardware_specs.md](hardware_specs.md) / [vip_ipc_ghs.md](vip_ipc_ghs.md).
+- **Low-power sleep.** Part 1 (Snipesy, 2026-08-15) reports the RH850 "VIP" powers itself down in deep sleep and wakes on a hardware signal direct from its **CAN phy**, letting the whole radio idle at **sub-milliamp** draw on the always-on 12 V feed. Consistent with this board's VIP role (power/CAN/early-boot); the sub-mA figure is the author's Cadillac measurement, **not independently confirmed on this A11 unit.** [X] Owner of the VIP-side description: [hardware_specs.md](../hardware/specs.md) / [vip_ipc_ghs.md](vip_ipc_ghs.md).
 - Platform, display, BOM and VIN-gate facts from Part 1: [qualcomm_cadillac_platform.md](qualcomm_cadillac_platform.md).
 - SecOC CAN authentication (Plane 1a) and VLAN-502 CAN-over-Ethernet mirror (Part 2 / same source): [vehicle_network.md](vehicle_network.md).
 

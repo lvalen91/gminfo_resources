@@ -421,4 +421,4 @@ Cross-checking the emulator's stubs against the running radio's dumps (`evidence
   would need a substantial synthetic external-component/VIP endpoint, not a quick stub.
 
 See also: [`security.md`](security.md) (SELinux enforcing on all builds), [`vehicle_network.md`](vehicle_network.md)
-(Info3.x/vlan5 addresses used for the FSA shim), [`hardware_specs.md`](hardware_specs.md) (the real 2400×960 panel).
+(Info3.x/vlan5 addresses used for the FSA shim), [`../hardware/specs.md`](../hardware/specs.md) (the real 2400×960 panel).

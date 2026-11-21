@@ -5,7 +5,7 @@
 
 **Evidence legend:** `[V]` read directly from hardware or a live radio; `[C]` cross-checked against a second source, or arithmetic derived from `[V]` values; `[U]` stated in a source without a measurement or inferred from static analysis.
 
-**Related:** [boot_chain.md](boot_chain.md) | [firmware_versions.md](firmware_versions.md) | [hardware_specs.md](hardware_specs.md) | [elk_recovery.md](elk_recovery.md) | [ota_update_stack.md](ota_update_stack.md) | [emulator.md](emulator.md) | [security.md](security.md) | [../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md)
+**Related:** [boot_chain.md](boot_chain.md) | [firmware_versions.md](firmware_versions.md) | [hardware_specs.md](../hardware/specs.md) | [elk_recovery.md](elk_recovery.md) | [ota_update_stack.md](ota_update_stack.md) | [emulator.md](emulator.md) | [security.md](security.md) | [../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md)
 
 ---
 

@@ -156,7 +156,7 @@ Backbone: 100BASE-T1 via on-board switch (host on port 5; gateway/telematics on 
 
 - **Switch IC is board-variant:** **Broadcom BCM89551** on MY22/DV boards, **Marvell 88Q5050** on MY23+ (selected
   per `persist.vendor.harman.hardwareid`; selector inferred — the prop is not shell-readable). Same port layout
-  and spec. Variant detail: [hardware_specs.md](hardware_specs.md), [ethernet_networking.md](ethernet_networking.md).
+  and spec. Variant detail: [hardware_specs.md](../hardware/specs.md), [ethernet_networking.md](ethernet_networking.md).
 - **Bench radio:** logged hardwareid `MY23DV1` per the `/cache` gmlogger props snapshots (2026-11-12). Live
   Y181 bench radio (2026-11-12) = **Marvell** (`ethmvlctrlmgr: Marvell firmware version: 02_09_1003, config
   version: 234702AB`, part 85759612).

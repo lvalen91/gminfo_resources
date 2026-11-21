@@ -6,7 +6,7 @@ Scope: boot phases from VIP power-on to AAOS, GHS init tasks and lifecycle, boot
 
 Evidence tags: **[V]** verified on hardware/live read, **[C]** confirmed (dated live/binary observation), **[U]** unverified/inferred, **[X]** external-sourced. Dates are the observation date.
 
-Related: [elk_recovery.md](elk_recovery.md), [partitions_storage.md](partitions_storage.md), [ota_update_stack.md](ota_update_stack.md), [ota_programming_roles.md](ota_programming_roles.md), [vip_ipc_ghs.md](vip_ipc_ghs.md), [security.md](security.md), [firmware_versions.md](firmware_versions.md), [hardware_specs.md](hardware_specs.md), [emulator.md](emulator.md), [qualcomm_cadillac_platform.md](qualcomm_cadillac_platform.md), [`../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), [`../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md).
+Related: [elk_recovery.md](elk_recovery.md), [partitions_storage.md](partitions_storage.md), [ota_update_stack.md](ota_update_stack.md), [ota_programming_roles.md](ota_programming_roles.md), [vip_ipc_ghs.md](vip_ipc_ghs.md), [security.md](security.md), [firmware_versions.md](firmware_versions.md), [hardware_specs.md](../hardware/specs.md), [emulator.md](emulator.md), [qualcomm_cadillac_platform.md](qualcomm_cadillac_platform.md), [`../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), [`../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md).
 
 ---
 
@@ -22,7 +22,7 @@ Related: [elk_recovery.md](elk_recovery.md), [partitions_storage.md](partitions_
 5. Android AVB — verified boot into AAOS
 ```
 
-Phase 2 detail (datasheet-side, [X] Intel 336256-004US as quoted in `intel_apl_external_resources.md` L173-176): Boot Guard + TXE/CSE (HECI) is the pre-GHS trust stage on the Intel compute-module side. It lives in the module's ISSI SPI-NOR IFWI, separate from the carrier eMMC that holds GHS + Android. The eMMC boot device is PCI `00:1c.0` (matches `androidboot.diskbus=1c.0`, see [Boot Configuration](#boot-configuration)). The HSUART assignment (UART1 GNSS repurposed by GM for VIP IPC, UART2 = Host OS Debug) is owned by [hardware_specs.md](hardware_specs.md).
+Phase 2 detail (datasheet-side, [X] Intel 336256-004US as quoted in `intel_apl_external_resources.md` L173-176): Boot Guard + TXE/CSE (HECI) is the pre-GHS trust stage on the Intel compute-module side. It lives in the module's ISSI SPI-NOR IFWI, separate from the carrier eMMC that holds GHS + Android. The eMMC boot device is PCI `00:1c.0` (matches `androidboot.diskbus=1c.0`, see [Boot Configuration](#boot-configuration)). The HSUART assignment (UART1 GNSS repurposed by GM for VIP IPC, UART2 = Host OS Debug) is owned by [hardware_specs.md](../hardware/specs.md).
 
 ### GHS Kernel Init Sequence (Phase 4 detail)
 

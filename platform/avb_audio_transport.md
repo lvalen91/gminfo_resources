@@ -4,7 +4,7 @@ Scope: the radio-to-amplifier audio path: gPTP, IEEE 1722 AVTP AAF streams and T
 AAOS usage-to-bus-to-wire-position mapping, the firmware audio stack (AVB StreamHandler, early AVB audio, local
 TDF8532 I2S alternative), and what a replacement endpoint still lacks.
 Not here: VLAN 4/5 tables, switch config, physical bus map ([ethernet_networking.md](ethernet_networking.md)); panel, touch, serdes
-display chain ([hardware_specs.md](hardware_specs.md), [pi_swap_feasibility.md](pi_swap_feasibility.md)).
+display chain ([hardware_specs.md](../hardware/specs.md), [pi_swap_feasibility.md](pi_swap_feasibility.md)).
 
 Evidence tags: **[confirmed-fw]** seen in extracted Y181B firmware; **[confirmed-vehicle]** owner's real radio-removal
 test; **[confirmed-service]** GM ALLDATA / prior repo docs; **[inferred]** / **[general]** platform knowledge, not
@@ -12,7 +12,7 @@ vehicle-specific. Measured wire results carry their capture date (2026-11-15 unl
 means policy/config text, not a measured playback.
 
 Related: [ethernet_networking.md](ethernet_networking.md), [vehicle_network.md](vehicle_network.md),
-[hardware_specs.md](hardware_specs.md), [pi_swap_feasibility.md](pi_swap_feasibility.md),
+[hardware_specs.md](../hardware/specs.md), [pi_swap_feasibility.md](pi_swap_feasibility.md),
 [vehicle_config.md](vehicle_config.md), [emulator.md](emulator.md), [fsa_protocol.md](fsa_protocol.md),
 [AAOS Audio Probe](../tools/bench/aaos_audio_probe/README.md),
 [UDS live-control reference](../diagnostics/diagnosticsd_protocol.md#live-bench-controls-2026-11-15).
@@ -223,9 +223,9 @@ blocks are Intel-SoC peripherals (Intel SST/SOF DSP, i915 display), not ARM/Qual
 
 **Two amp paths exist in firmware; this vehicle uses the Ethernet-AVB one.**
 
-- **Local path [confirmed-fw]:** Intel SST DSP to I2S/TDM to **NXP TDF8532** 4-ch class-D amplifier-codec. Driver `snd-soc-tdf8532.ko` (`sound/soc/codecs/tdf8532.c`, `alias=i2c:tdf8532`) + Intel machine driver `snd-soc-sst_bxt_tdf8532.ko`. Amp control is I2C: `init.audio.rc` chowns `/dev/i2c-3` to `audioserver` (matches [hardware_specs.md](hardware_specs.md): "i2c-3 = TDF8532 codec control").
+- **Local path [confirmed-fw]:** Intel SST DSP to I2S/TDM to **NXP TDF8532** 4-ch class-D amplifier-codec. Driver `snd-soc-tdf8532.ko` (`sound/soc/codecs/tdf8532.c`, `alias=i2c:tdf8532`) + Intel machine driver `snd-soc-sst_bxt_tdf8532.ko`. Amp control is I2C: `init.audio.rc` chowns `/dev/i2c-3` to `audioserver` (matches [hardware_specs.md](../hardware/specs.md): "i2c-3 = TDF8532 codec control").
 - **AVB path [confirmed-fw]:** a full automotive Ethernet AVB audio stack is present and gates audio bring-up:
-  - `vendor/lib/modules/igb_avb.ko`: Intel I210 GbE driver with AVB/TSN extensions (mainline `igb` is disabled per [hardware_specs.md](hardware_specs.md)).
+  - `vendor/lib/modules/igb_avb.ko`: Intel I210 GbE driver with AVB/TSN extensions (mainline `igb` is disabled per [hardware_specs.md](../hardware/specs.md)).
   - **AVB StreamHandler** service (COVESA/GENIVI-style, IEEE 1722/AVTP). `init.audio.rc` blocks on `init.svc.vendor.avbstreamhandler=running` and `vendor.avb.streamhandler.ready=true` before starting PulseAudio and the audio HAL.
   - `service vendor.earlyavbaudio /vendor/bin/early_audio_alsa_avb.sh`: **early-boot AVB audio**, i.e. audio over AVB before Android is fully up; likely carrier for safety-relevant early chimes [inferred].
   - Route/param configs select transport: default `persist.vendor.audio.audioConf = AudioParameterFramework-tdf8532-no-eavb.xml` (local I2S to TDF8532), with alternates `...-eavb-master-raw.xml`, `...-eavb-master.xml`, `...-eavb-slave.xml`, keyed on `persist.vendor.eavb.mode` and AVB profile names `MRB_Master_Audio` / `MRB_Slave_Audio` (IEEE 1722a compatibility flag `d6_1722a`). Same SST DSP, switchable output route.
@@ -250,7 +250,7 @@ or exclude additional speaker-specific streams in other vehicle modes.
 
 Pi-based replacement feasibility (TSN NIC, `linuxptp`, COVESA StreamHandler, TDF8532 not a Pi target, chime relay,
 analog fallback) and the panel/touch/serdes chain: [pi_swap_feasibility.md](pi_swap_feasibility.md); serdes/touch
-hardware: [hardware_specs.md](hardware_specs.md).
+hardware: [hardware_specs.md](../hardware/specs.md).
 
 ## 9. Emulator audio
 

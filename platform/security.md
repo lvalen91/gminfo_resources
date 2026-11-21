@@ -784,7 +784,7 @@ None identified that are both (a) a genuine two-source disagreement and (b) owne
 document's charter. Items on the master cross-doc conflict list (gateway `0x45`=CGM identity,
 super-partition size/static-A-B, FSA discovery port, `.107`/`.112` identity, IPC version,
 cal-group count, GPU boost clock) belong to `vehicle_network.md`/`boot_chain.md`/
-`firmware_versions.md`/`hardware_specs.md`/`gminfo3.7_tech_specs.md` charters, not security
+`firmware_versions.md`/`../hardware/specs.md`/`gminfo3.7_tech_specs.md` charters, not security
 posture, and are not restated here. The one apparent security-adjacent tension — "SELinux
 enforcing on all builds" (this doc) vs. the real-kernel emulator booting permissive
 (`emulator.md`) — is a scope difference (stock firmware vs. a deliberately-permissive emulator

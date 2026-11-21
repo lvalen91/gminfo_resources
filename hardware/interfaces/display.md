@@ -89,4 +89,4 @@ Camera(s) → coax (OG, X9) → FPD-Link III → TI DS90UB954-Q1 deserializer hu
 
 - ALLDATA IOK connector views (A11 X7, X9); GM Electrical Body Builder Manual (A22 X1/X2).
 - PCB photo: X7 silkscreen `LVDS`.
-- `video/display_subsystem.md`; `platform/hardware.md`.
+- `video/display_subsystem.md`; `hardware/specs.md`.

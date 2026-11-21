@@ -23,7 +23,7 @@ and walked its range directly; coverage is contiguous, 0 gaps, reaches EOF. The 
 `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` (boot/recovery/ELK), `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`
 (hypervisor architecture, PCI/IPC/task maps, `.boottable` guest config, attack surface),
 `USB_ADB_SESSION_FINDINGS_2026-10-10.md` (Android-side USB/ADB logic that consumes the
-passthrough mechanism documented here), `../../platform/vip_ipc_ghs.md`, `../../platform/hardware_specs.md`.
+passthrough mechanism documented here), `../../platform/vip_ipc_ghs.md`, `../../hardware/specs.md`.
 
 ## Module identity
 `…/Y181B/USB_Files/85098662`, **14,929,956 B (0x0–0xE3D024)**, sha256 `317ae85c…`.

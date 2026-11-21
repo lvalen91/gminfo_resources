@@ -10,18 +10,17 @@ Routing page for the whole repository. Paths are the current layout (restructure
 | [hardware/](hardware/) | Physical device: teardown, connectors, bench setup, interfaces, modules, datasheets, schematics and board map |
 | [eeprom/](eeprom/README.md) | EEPROM analysis docs, `bins/` (EEPROM dumps), `config_tool/` (editor; must stay next to `bins/`) |
 | [diagnostics/](diagnostics/) | UDS, diagnosticsd and CAN reference docs |
-| [audio/](audio/README.md), [video/](video/README.md), [projection/](projection/README.md), [runtime/](runtime/README.md), [codecs/](codecs/media_codecs.md), [analysis/](analysis/) | Subsystem and cross-cutting docs |
+| [audio/](audio/README.md), [video/](video/README.md), [projection/](projection/README.md), [runtime/](runtime/README.md), [analysis/](analysis/) | Subsystem and cross-cutting docs. Media codec specs: [video/media_codecs.md](video/media_codecs.md) (archival, see [video/video_codecs.md](video/video_codecs.md)) |
 | [research/](research/README.md) | Deep-dive research, grouped into `boot-update-recovery/`, `security/`, `eeprom-calibration/`, `mdi2-bench-sessions/`, `rights-and-roadmap/`, `provenance/` |
 | [evidence/](evidence/) | Raw captures and generated output: `enumeration/`, `decompiled/`, `ghidra-projects/` (gitignored), `reports/`, `session-logs/`, `dps-logs/`, `archives/`, `scratch/` |
 | [tools/](tools/) | Executable code: `mdi2_client/`, `enumeration/`, `analysis-scripts/`, `bench/` |
 | [reference/](reference/) | GM CalDef database (GIS-646) |
-| `enumeration/`, `mdi2_client/` | Stub READMEs only; the content moved to `evidence/enumeration/` and `tools/mdi2_client/` |
 
 ## Where does X live?
 
 | Question | Start here |
 |---|---|
-| What are the SoC, RAM, storage, display and UART map? | [platform/hardware_specs.md](platform/hardware_specs.md) |
+| What are the SoC, RAM, storage, display and UART map? | [hardware/specs.md](hardware/specs.md) |
 | What ports does the radio listen on? VLANs, switch, ADB over network | [platform/ethernet_networking.md](platform/ethernet_networking.md) |
 | Which CAN IDs were captured? | [platform/can_network.md](platform/can_network.md), [diagnostics/GM_CAN_UDS_REFERENCE.md](diagnostics/GM_CAN_UDS_REFERENCE.md) |
 | Vehicle network topology, ECU census, SecOC | [platform/vehicle_network.md](platform/vehicle_network.md) |

@@ -10,7 +10,7 @@ The **GM Info 3.7** (`gminfo37`) is the 2024 Chevrolet/GMC infotainment ECU buil
 
 | Component | Specification |
 |-----------|---------------|
-| CPU | Intel Atom x7-A3960, 4-core / 4-thread, base 0.8 / HFM 1.6 / **2.0 GHz burst** [Intel 336256 via `platform/gminfo3.7_tech_specs.md:27`; live `cpuinfo.txt` 4 cores, 2056 MHz] [CORRECTED 2026-10-10: was "2.4 GHz boost"], 14nm |
+| CPU | Intel Atom x7-A3960, 4-core / 4-thread, base 0.8 / HFM 1.6 / **2.0 GHz burst** [Intel 336256 via `hardware/specs.md:20`; live `cpuinfo.txt` 4 cores, 2056 MHz] [CORRECTED 2026-10-10: was "2.4 GHz boost"], 14nm |
 | ABI | `x86_64`, dalvik variant `silvermont` |
 | RAM | 8 GiB LPDDR4 physical; static GHS guest grant 7830 MiB; historical Android `MemTotal` near 5530 MiB (5.40 GiB / 5.80 GB decimal). Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; [map and unresolved grant difference](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory). |
 | Storage | 64 GB Samsung KLMCG4JEUD eMMC |
@@ -348,7 +348,7 @@ The two pathways are **mutually exclusive** — the adapter and native CarPlay c
 
 This is a documented structural Android framework limitation affecting all AAOS platforms. On gminfo37 it is particularly visible because the cluster music card is prominent.
 
-**Root cause** (confirmed from `documents/reference/gminfo/runtime/known_issues.md` and the POTATO corpus). carlink uses the Media3 `MediaLibraryService` API (`CarlinkMediaBrowserService` returns a single `MediaLibrarySession` from `onGetSession()`):
+**Root cause** (confirmed from `runtime/known_issues.md` and the POTATO corpus). carlink uses the Media3 `MediaLibraryService` API (`CarlinkMediaBrowserService` returns a single `MediaLibrarySession` from `onGetSession()`):
 1. A `MediaLibraryService` creates its `MediaLibrarySession` once and returns the same instance from `onGetSession()` for the entire Service-process lifetime — there is no API to hand out a fresh session token mid-lifetime.
 2. When carlink's session is invalidated (USB disconnect, force-stop, OS sleep), the singleton `CarlinkMediaBrowserService` is left holding a stale session. It cannot issue a fresh one from the same Service instance.
 3. `GMCarMediaService` → `ClusterService` stay bound to the old session. They receive no notification of a new session. The cluster card goes blank.
@@ -1042,7 +1042,7 @@ on property:sys.usb.ffs.ready=1 && property:sys.usb.config=adb
 | accessory / accessory,adb | `0x18d1` | `0x2d00` / `0x2d01` |
 | audio_source (+accessory/adb) | `0x18d1` | `0x2d02`–`0x2d05` |
 
-The identity lives on configfs gadget `g1`, so it is the same on `dwc3.0.auto` and `dabr_udc.0`. In-vehicle `lsusb` confirmation is [UNVERIFIED] (full-project searched 2026-10-10; `analysis/adb/` dumps are radio-side only, no host-side capture of the ADB gadget).
+The identity lives on configfs gadget `g1`, so it is the same on `dwc3.0.auto` and `dabr_udc.0`. In-vehicle `lsusb` confirmation is [UNVERIFIED] (full-project searched 2026-10-10; `evidence/enumeration/` dumps are radio-side only, no host-side capture of the ADB gadget).
 
 ### Recovery behavior
 

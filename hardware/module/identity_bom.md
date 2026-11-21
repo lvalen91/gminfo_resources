@@ -82,7 +82,7 @@ Notes:
 
 | Component | Part number | Package | Notes |
 |-----------|-------------|---------|-------|
-| CPU | Intel Atom x7-A3960 (J238G327 e1, SREKE, 72MS459202251) | BGA on SOM | 14 nm Goldmont, quad-core. Hypervisor-reported clock 1.88 GHz; datasheet LFM/HFM/burst 0.8/1.6/2.0 GHz (`platform/hardware.md`) |
+| CPU | Intel Atom x7-A3960 (J238G327 e1, SREKE, 72MS459202251) | BGA on SOM | 14 nm Goldmont, quad-core. Hypervisor-reported clock 1.88 GHz; datasheet LFM/HFM/burst 0.8/1.6/2.0 GHz (`hardware/specs.md`) |
 | RAM | 4× Micron MT53E512M32D2DS-053 (2TE77) | BGA on SOM | 8 GB LPDDR4, 2400 MT/s, dual-die 3733 Mbps |
 | eMMC | Samsung KLMCG4JEUD (SEC 228, B04P, NT24G0046) | BGA-153 | 64 GB, eMMC 5.1 |
 | IFWI/TXE boot flash | ISSI IS25WP064A-JHLA3 (P3B37364) | BGA | 8 MB NOR on CS0. Contains flash descriptor, TXE 3.0 firmware, UEFI, PMC firmware, microcode, SMIP, Boot Guard v2. Not dumped from this unit. |
@@ -125,15 +125,15 @@ Live Y181 radio (`W231E-Y181.3.2-SIHM22B-499.3`) carries the Marvell variant. Ev
 
 ## 5. Photo Cross-Check
 
-Index of photos: `photos/README.md`.
+Index of photos: `hardware/schematics/board_map/README.md` (the former `hardware/photos/README.md` is retired).
 
 | Item | Result |
 |------|--------|
-| A3960 compute module | Discrete sub-board carrying the SoC and all four LPDDR4 packages, with an adjacent shielded RF module (`photos/soc_a3960_ram_rf_module.jpeg`, `photos/soc_a3960_lpddr4_closeup.jpeg`). [C] |
-| Module label | Service P/N 3765210 and Harman P/N 91.UMAF2HG.GS6FAAG legible (`photos/module_label_region.jpeg`, `photos/module_label_closeup.jpeg`). OCR variant "91.LUMAF2HG…" is the same part number. [C] |
+| A3960 compute module | Discrete sub-board carrying the SoC and all four LPDDR4 packages, with an adjacent shielded RF module (`photos/soc_a3960_ram_rf_module.jpeg`, `photos/soc_a3960_lpddr4_closeup.jpeg`; these photo files are not preserved in this repository). [C] |
+| Module label | Service P/N 3765210 and Harman P/N 91.UMAF2HG.GS6FAAG legible (`photos/module_label_region.jpeg`, `photos/module_label_closeup.jpeg`; not preserved in this repository). OCR variant "91.LUMAF2HG…" is the same part number. [C] |
 | Second RF module | `7685H.G05` / `40488847`, see §4.2. [I] |
-| PCB fabricator | AT&S; consistent with `photos/carrier_top_overview.jpeg`, `photos/carrier_bottom_overview.jpeg`. [C] |
-| RH850, M24C64 | Legible close-ups: `photos/rh850_vip_region_on_board.png`, `photos/eeprom_m24c64_microscope.png`. [C] |
+| PCB fabricator | AT&S; consistent with `photos/carrier_top_overview.jpeg`, `photos/carrier_bottom_overview.jpeg` (not preserved in this repository; board-level photos now in `hardware/schematics/board_map/photos/`). [C] |
+| RH850, M24C64 | Legible close-ups: `hardware/schematics/board_map/photos/rh850_vip_region_on_board.png`, `hardware/schematics/board_map/photos/eeprom_m24c64_microscope.png`. [C] |
 | Ethernet switch, DS90UB954, TDF8532 | Lid text not legible in any photo. Identification is from board-level teardown and firmware/driver cross-reference. [I] |
 
 ## 6. Sources

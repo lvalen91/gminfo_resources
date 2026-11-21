@@ -1,19 +1,19 @@
 # Hardware Specifications
 
 Component spec sheet for the gminfo37 head unit: SoC, GPU, RAM, storage, display panel, input, audio/codec hardware, USB, thermal, power, UART console map, I2C bus topology, and Intel A3960 datasheet facts.
-Excludes VIP/IPC/GHS (see [vip_ipc_ghs.md](vip_ipc_ghs.md)), boot flow, networking and native-Linux probe logs (pointers below). Merges the former `gminfo3.7_tech_specs.md` (retired to archive) and the datasheet section of `intel_apl_external_resources.md`.
+Excludes VIP/IPC/GHS (see [vip_ipc_ghs.md](../platform/vip_ipc_ghs.md)), boot flow, networking and native-Linux probe logs (pointers below). Merges the former `gminfo3.7_tech_specs.md` (retired to archive) and the datasheet section of `intel_apl_external_resources.md`.
 
 **Device:** GM Info 3.7 (gminfo37) | **Platform:** Intel Apollo Lake (Broxton) | **Android:** 12 (API 32) | **Research:** Dec 2025 - Nov 2026
 
 **Evidence legend:** `[C]` / `[C live]` live-captured; `[read]` read from artifact; `[inferred]`; `[X]` external; `[UNVERIFIED]` no supporting artifact found; `[Intel 336256]` Intel Atom E3900/A3900 Datasheet Addendum 336256-004US (local copy: [`../hardware/datasheets/Intel_336256_Atom_E3900_A3900_datasheet_addendum_rev004.pdf`](../hardware/datasheets/Intel_336256_Atom_E3900_A3900_datasheet_addendum_rev004.pdf); full register map in the main E3900 datasheet 334819); "teardown-verified" / "owner-confirmed" as stated.
 
-**Related:** [vip_ipc_ghs.md](vip_ipc_ghs.md), [boot_chain.md](boot_chain.md), [partitions_storage.md](partitions_storage.md), [elk_recovery.md](elk_recovery.md), [firmware_versions.md](firmware_versions.md), [ethernet_networking.md](ethernet_networking.md), [avb_audio_transport.md](avb_audio_transport.md), [eeprom_i2c_security.md](eeprom_i2c_security.md), [vehicle_config.md](vehicle_config.md), [security.md](security.md), [external_references.md](external_references.md); [../hardware/teardown.md](../hardware/teardown.md), [../hardware/connectors.md](../hardware/connectors.md), [../video/display_subsystem.md](../video/display_subsystem.md).
+**Related:** [vip_ipc_ghs.md](../platform/vip_ipc_ghs.md), [boot_chain.md](../platform/boot_chain.md), [partitions_storage.md](../platform/partitions_storage.md), [elk_recovery.md](../platform/elk_recovery.md), [firmware_versions.md](../platform/firmware_versions.md), [ethernet_networking.md](../platform/ethernet_networking.md), [avb_audio_transport.md](../platform/avb_audio_transport.md), [eeprom_i2c_security.md](../platform/eeprom_i2c_security.md), [vehicle_config.md](../platform/vehicle_config.md), [security.md](../platform/security.md), [external_references.md](../platform/external_references.md); [../hardware/teardown.md](../hardware/teardown.md), [../hardware/connectors.md](../hardware/connectors.md), [../video/display_subsystem.md](../video/display_subsystem.md).
 
 ---
 
 ## 1. Component summary
 
-Platform-wide values; Y177 = snapshot build W231E-Y177.6.1, Y181B = W231E-Y181.3.2 (see [firmware_versions.md](firmware_versions.md)).
+Platform-wide values; Y177 = snapshot build W231E-Y177.6.1, Y181B = W231E-Y181.3.2 (see [firmware_versions.md](../platform/firmware_versions.md)).
 
 | Component | Spec |
 |---|---|
@@ -34,15 +34,15 @@ Platform-wide values; Y177 = snapshot build W231E-Y177.6.1, Y181B = W231E-Y181.3
 | Display | Chimei Innolux DD134IA-01B, 2400x960 @ 60 Hz, ~13.4" (section 6) |
 | Touchscreen | Atmel maXTouch, I2C bus 7 @ 0x4B (section 8) |
 | Kernel | Linux 4.19.305 LTS (Y181) / 4.19.283 (Y175) |
-| VIP MCU | Renesas RH850/F1K (R7F7015873AFP; trace TM52176): power, CAN, early boot, EEPROM. Details: [vip_ipc_ghs.md](vip_ipc_ghs.md) |
-| Hypervisor | GHS INTEGRITY IoT 2020.18.19 MY22-026 (Type-1 bare-metal). Details: [vip_ipc_ghs.md](vip_ipc_ghs.md) |
+| VIP MCU | Renesas RH850/F1K (R7F7015873AFP; trace TM52176): power, CAN, early boot, EEPROM. Details: [vip_ipc_ghs.md](../platform/vip_ipc_ghs.md) |
+| Hypervisor | GHS INTEGRITY IoT 2020.18.19 MY22-026 (Type-1 bare-metal). Details: [vip_ipc_ghs.md](../platform/vip_ipc_ghs.md) |
 | WiFi | Broadcom BCM (802.11a/b/g/n/ac, 2.4 + 5 GHz, hotspot supported), driver `dhd`; native Linux enumerates BCM4359 14e4:43ef |
 | Bluetooth | 5.0; profiles HFP, A2DP, AVRCP, PBAP, MAP, HID; name `myChevrolet` |
-| Ethernet | Intel **I210** GbE, 1 Gbps, gPTP master, feeding the on-board automotive-Ethernet switch. **Board-variant switch IC:** Broadcom BCM89551 on the MY22/DV teardown unit, **Marvell 88Q5050 on the live Y181 bench radio** (part 85759612, `MVL88Q5050_globalB_234702AB_02_09_1003`; `ethmvlctrlmgr` / `UpdateService-ModuleVersionUtil module=52` in `main.log`, 2026-11-12 [read]). Same spec, not a contradiction. Only `I210` appears in artifacts; the `WGI210CL rev A3` variant marking is prose-only; "I211" was an unverified near-twin reading (see `hardware/teardown.md`). Kernel uses a custom `igb_avb` driver; mainline `igb`/`CONFIG_IGB` is disabled per the Jun-2026 capture. eth0 MAC `02:04:00:00:01:00`, VLANs vlan4 172.16.4.100 and vlan5 192.168.1.100 (Y177 snapshot). Switch speeds / numbering: [ethernet_networking.md](ethernet_networking.md). |
+| Ethernet | Intel **I210** GbE, 1 Gbps, gPTP master, feeding the on-board automotive-Ethernet switch. **Board-variant switch IC:** Broadcom BCM89551 on the MY22/DV teardown unit, **Marvell 88Q5050 on the live Y181 bench radio** (part 85759612, `MVL88Q5050_globalB_234702AB_02_09_1003`; `ethmvlctrlmgr` / `UpdateService-ModuleVersionUtil module=52` in `main.log`, 2026-11-12 [read]). Same spec, not a contradiction. Only `I210` appears in artifacts; the `WGI210CL rev A3` variant marking is prose-only; "I211" was an unverified near-twin reading (see `hardware/teardown.md`). Kernel uses a custom `igb_avb` driver; mainline `igb`/`CONFIG_IGB` is disabled per the Jun-2026 capture. eth0 MAC `02:04:00:00:01:00`, VLANs vlan4 172.16.4.100 and vlan5 192.168.1.100 (Y177 snapshot). Switch speeds / numbering: [ethernet_networking.md](../platform/ethernet_networking.md). |
 | Audio HAL | Harman HarmanAudioControl: HAL interface `android.hardware.audio@5.0`, provided by service instance `vendor.hardware.audio@5.0-harman-custom-service` (confirmed: `aaos/gm_aaos/2024_Silverado_ICE/analysis/adb/Y181/.../processes.txt`); Dirana3 amplifier plugin, speakerNum=4, micNum=0. ("Titan" is the SoC platform codename, not the HAL name.) |
-| Audio transport | Ethernet AVB to NXP TDF8532 codec -> external amplifier (CSM). See [avb_audio_transport.md](avb_audio_transport.md). |
+| Audio transport | Ethernet AVB to NXP TDF8532 codec -> external amplifier (CSM). See [avb_audio_transport.md](../platform/avb_audio_transport.md). |
 | GPS | u-blox receiver, GPS+DR fusion, UART to GENIVI pipeline |
-| EEPROM | ST M24C64, 8 KB, I2C. See [eeprom_i2c_security.md](eeprom_i2c_security.md). |
+| EEPROM | ST M24C64, 8 KB, I2C. See [eeprom_i2c_security.md](../platform/eeprom_i2c_security.md). |
 
 ---
 
@@ -76,7 +76,7 @@ Y177 snapshot cpu keys (cpufreq-observed): freq_base 800, freq_lfm 800, freq_hfm
 - **Spectre mitigations:** `ibrs`, `ibpb`, `stibp`, `ssbd`
 - **Known CPU bugs:** `spectre_v1`, `spectre_v2`, `spec_store_bypass`
 
-Native-Linux observation (different context): `intel_pstate` performance governor with 800-2400 MHz limits is driver-reported, not a sustained-load measurement (Probe05; see [elk_recovery.md](elk_recovery.md)).
+Native-Linux observation (different context): `intel_pstate` performance governor with 800-2400 MHz limits is driver-reported, not a sustained-load measurement (Probe05; see [elk_recovery.md](../platform/elk_recovery.md)).
 
 ---
 
@@ -103,8 +103,8 @@ Y177 snapshot (MiB): `total: 5530` `available: 3584` `utilization: 56%` `ram_mod
 
 - **eMMC:** 64 GB Samsung KLMCG4JEUD; boot device at PCI `00:1c.0` per guest cmdline. In native Linux the node name changes between `mmcblk2` and `mmcblk1` across boots, so identify the physical device before using a path. Native Probe05: 124,993,536 user sectors, 26 partitions, boot0/boot1 each 65,280 sectors and read-only. First-4096-byte SHA256 `f9285861c75b06d2d3838ef0638f4ab90eb3e85cadec25c3f68e67e7aedfe0ac` matched the verified saved dump (not a second whole-device verification). RPMB was not retried.
 - **SPI NOR:** see section 1 (IS25LP016D 2 MB switch firmware; IS25WP064A 8 MB IFWI/TXE boot flash).
-- **Boot Guard / IFWI:** Boot Guard + TXE/CSE (HECI) sit on the Intel compute-module side, the pre-GHS trust stage, stored in the module's ISSI SPI-NOR IFWI (separate from the carrier eMMC holding GHS + Android). See [boot_chain.md](boot_chain.md).
-- **Y177 snapshot partition usage (MiB):** total 65536, available 40960; data 39936 (used 4300, avail 35636); system 2969 (used 2785, avail 184); vendor 438 (used 428, avail 1; flagged `vendor_100_percent_full`); product 2458 (used 2274, avail 184). Partition map and Y175/Y181 reconciliation: [partitions_storage.md](partitions_storage.md).
+- **Boot Guard / IFWI:** Boot Guard + TXE/CSE (HECI) sit on the Intel compute-module side, the pre-GHS trust stage, stored in the module's ISSI SPI-NOR IFWI (separate from the carrier eMMC holding GHS + Android). See [boot_chain.md](../platform/boot_chain.md).
+- **Y177 snapshot partition usage (MiB):** total 65536, available 40960; data 39936 (used 4300, avail 35636); system 2969 (used 2785, avail 184); vendor 438 (used 428, avail 1; flagged `vendor_100_percent_full`); product 2458 (used 2274, avail 184). Partition map and Y175/Y181 reconciliation: [partitions_storage.md](../platform/partitions_storage.md).
 
 ---
 
@@ -148,7 +148,7 @@ Also decode flags: HEVC 8/10-bit, VP9, VC1 true. Gen9 HD505 has NO AV1 hardware 
 - **GM CarPlay windowed area:** 1416x842 (after subtracting bars), rendered at 30 fps.
 - Y177 touch_dimensions [2400, 960].
 
-Gating of display behaviour by SystemUI: [gmsystemui_app_gating.md](gmsystemui_app_gating.md).
+Gating of display behaviour by SystemUI: [gmsystemui_app_gating.md](../platform/gmsystemui_app_gating.md).
 
 ---
 
@@ -156,7 +156,7 @@ Gating of display behaviour by SystemUI: [gmsystemui_app_gating.md](gmsystemui_a
 
 - The SoC capture engine is **Intel IPU4** (PCI 8086:5a88). The external camera deserializer documented on the teardown board is **TI DS90UB954** (FPD-Link III -> CSI-2); see [camera connector evidence](../hardware/connectors.md) and [TI documentation](https://www.ti.com/product/DS90UB954-Q1). Exact population and wiring on the running bench board remain separate from teardown evidence.
 - ACPI `ADV7481A/B` entries are unbound declarations, not proof those chips are populated.
-- IPU firmware `ipu4_cpd_b0.bin` missing in native Probe05 caused a -110 fallback failure (not proof of an absent camera); the IPU drives the RVC path. CSI D-PHY 1.1 camera inputs are datasheet-confirmed. Native results: [elk_recovery.md](elk_recovery.md).
+- IPU firmware `ipu4_cpd_b0.bin` missing in native Probe05 caused a -110 fallback failure (not proof of an absent camera); the IPU drives the RVC path. CSI D-PHY 1.1 camera inputs are datasheet-confirmed. Native results: [elk_recovery.md](../platform/elk_recovery.md).
 
 ---
 
@@ -183,7 +183,7 @@ Gating of display behaviour by SystemUI: [gmsystemui_app_gating.md](gmsystemui_a
 | Outputs / inputs | speaker, bluetooth, usb, line_out / microphone, bluetooth, line_in |
 | Transport | Ethernet AVB -> NXP TDF8532 -> external amplifier (CSM) |
 
-Native Linux 7.3.5: HDA/SST-class 8086:5a98 enumerated without a bound PCI driver; ALSA reports no soundcards; codec/DSP/board routing unresolved. Kernel `HDA_CORE=m`. Audio path and AVB: [avb_audio_transport.md](avb_audio_transport.md).
+Native Linux 7.3.5: HDA/SST-class 8086:5a98 enumerated without a bound PCI driver; ALSA reports no soundcards; codec/DSP/board routing unresolved. Kernel `HDA_CORE=m`. Audio path and AVB: [avb_audio_transport.md](../platform/avb_audio_transport.md).
 
 ---
 
@@ -216,7 +216,7 @@ Datasheet ground truth [Intel 336256]: **4 HSUART (LPSS) controllers**, automoti
 | UART1 | Discrete GNSS | Repurposed by GM for the **VIP IPC** (HDLC) instead of GNSS |
 | UART2 | Host OS Debug | Guest `console=ttyS2` |
 
-Native Linux enumerated four 16550A UARTs with zero recorded TX/RX in the pass; VIP/other endpoint assignment not proven by enumeration. Physical UART tables: `hardware/teardown.md` and [ethernet_networking.md](ethernet_networking.md). VIP link details: [vip_ipc_ghs.md](vip_ipc_ghs.md).
+Native Linux enumerated four 16550A UARTs with zero recorded TX/RX in the pass; VIP/other endpoint assignment not proven by enumeration. Physical UART tables: `hardware/teardown.md` and [ethernet_networking.md](../platform/ethernet_networking.md). VIP link details: [vip_ipc_ghs.md](../platform/vip_ipc_ghs.md).
 
 ---
 
@@ -234,7 +234,7 @@ AAOS guest view:
 | i2c-7 | crw-rw---- | system | Atmel maXTouch (0x4B) touchscreen |
 | i2c-8 to i2c-10 | crw------- | root | Reserved |
 
-**Additional devices:** faceplate controller at 0x12 (bus 7). Security note (i2c-0/i2c-1 world-writable): [eeprom_i2c_security.md](eeprom_i2c_security.md).
+**Additional devices:** faceplate controller at 0x12 (bus 7). Security note (i2c-0/i2c-1 world-writable): [eeprom_i2c_security.md](../platform/eeprom_i2c_security.md).
 
 **Native Linux view (numbers differ by kernel):** eight DesignWare adapters, three i915 GMBUS adapters and an I801 SMBus; the active display controller is PCI `00:17.3`, reported as `native i2c-10` (AAOS numbers the touch bus 7). The native panel helper selects the physical controller via `/sys/bus/i2c/devices` and retains a GPIO-v2 request for line 33 of the verified 78-line `INT3452:00` bank; global GPIO467 is an older-kernel mapping, not a portable number (Probe05 showed reset GPIO467 high). Other physical slave population not determined by enumeration. Platform I2C (LPSS) is I2C0-7 per datasheet. The AAOS table above is the Android-guest numbering.
 
@@ -249,7 +249,7 @@ AAOS guest view:
 - **MIPI-DSI** display ports + **CSI D-PHY 1.1** camera inputs.
 - **Security:** Boot Guard + TXE/CSE (HECI), see section 4.
 - **Native GPIO/PWM:** four INT3452 banks (43/47/77/78 lines), pwmchip0; controller availability does not establish every board signal's role. Other PCI functions seen: AHCI 8086:5ae3, three communications functions 8086:5a9a/5a9c/5a9e, 8086:5aa2 unbound (not necessarily faults).
-- **Native Linux hardware coverage / probe logs:** [elk_recovery.md](elk_recovery.md).
+- **Native Linux hardware coverage / probe logs:** [elk_recovery.md](../platform/elk_recovery.md).
 
 ---
 
@@ -302,13 +302,13 @@ Single-sample keys from the Y177 tech_specs snapshot, kept for completeness; the
 
 ## 16. Pointers (content owned elsewhere)
 
-- Dual-processor architecture, VIP MCU, PLC timers, calibration values, IPC protocol, GHS binary / `/dev/ghs` / camera bypass: [vip_ipc_ghs.md](vip_ipc_ghs.md)
-- Native 7.3.5 probe05/06 inventory, stable02 results: [elk_recovery.md](elk_recovery.md)
-- System properties, hw.conf decode, vehicle ID: [vehicle_config.md](vehicle_config.md)
-- Y177/Y181B build strings, fingerprints, patch levels (e.g. Y181B `W231E-Y181.3.2-SIHM22B-499.3`, security patch 2025-06-05, kernel `4.19.305-240125T145315Z-gf1edde901aa7`, bootloader 2344, SKU gv221): [firmware_versions.md](firmware_versions.md)
-- SELinux / verified-boot posture (Y177 `androidboot.selinux=permissive` is the cmdline arg, not runtime; stock Y177 runs Enforcing): [security.md](security.md)
-- Android services, VHAL (156 registered), car service: [vehicle_config.md](vehicle_config.md)
-- Kernel 4.19 config extraction from live device and Intel/Celadon resource index: [external_references.md](external_references.md)
+- Dual-processor architecture, VIP MCU, PLC timers, calibration values, IPC protocol, GHS binary / `/dev/ghs` / camera bypass: [vip_ipc_ghs.md](../platform/vip_ipc_ghs.md)
+- Native 7.3.5 probe05/06 inventory, stable02 results: [elk_recovery.md](../platform/elk_recovery.md)
+- System properties, hw.conf decode, vehicle ID: [vehicle_config.md](../platform/vehicle_config.md)
+- Y177/Y181B build strings, fingerprints, patch levels (e.g. Y181B `W231E-Y181.3.2-SIHM22B-499.3`, security patch 2025-06-05, kernel `4.19.305-240125T145315Z-gf1edde901aa7`, bootloader 2344, SKU gv221): [firmware_versions.md](../platform/firmware_versions.md)
+- SELinux / verified-boot posture (Y177 `androidboot.selinux=permissive` is the cmdline arg, not runtime; stock Y177 runs Enforcing): [security.md](../platform/security.md)
+- Android services, VHAL (156 registered), car service: [vehicle_config.md](../platform/vehicle_config.md)
+- Kernel 4.19 config extraction from live device and Intel/Celadon resource index: [external_references.md](../platform/external_references.md)
 
 ---
 
@@ -323,5 +323,5 @@ Single-sample keys from the Y177 tech_specs snapshot, kept for completeness; the
 4. **I2C numbering:** AAOS touch on i2c-7 @ 0x4B (`hardware.md:29,168`) vs native "native i2c-10" display controller (`hardware.md:83`) and MFi AAOS `/dev/i2c-2` vs native bus 5 (`hardware.md:120-121`). Numbering differs by kernel; no per-bus mapping established.
 5. **Camera hardware:** ACPI ADV7481A/B declarations (`hardware.md:81`) vs TI DS90UB954 deserializer on the teardown board (`hardware.md:114`). Not reconciled.
 6. **Kernel version:** 4.19.305 (Y181) vs 4.19.283 (Y175) (`hardware.md:31`); `intel_apl_external_resources.md:128` filename uses 4.19.305. Different builds, listed for completeness.
-7. **IPC version scheme** (HW L195/L204 "v16" vs L273 "4.1.0") belongs to [vip_ipc_ghs.md](vip_ipc_ghs.md); not stated here.
-8. **Y177 vs Y181B security patch** (2025-02-05 `gminfo3.7_tech_specs.md:16` vs 2025-06-05 `:5`): different builds, retained in [firmware_versions.md](firmware_versions.md).
+7. **IPC version scheme** (HW L195/L204 "v16" vs L273 "4.1.0") belongs to [vip_ipc_ghs.md](../platform/vip_ipc_ghs.md); not stated here.
+8. **Y177 vs Y181B security patch** (2025-02-05 `gminfo3.7_tech_specs.md:16` vs 2025-06-05 `:5`): different builds, retained in [firmware_versions.md](../platform/firmware_versions.md).

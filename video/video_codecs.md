@@ -494,7 +494,7 @@ This document provides detailed specifications for all video codecs available on
 
 ---
 
-## Hardware Encoder Performance (benchmarks — consolidated from codecs/media_codecs.md)
+## Hardware Encoder Performance (benchmarks — consolidated from media_codecs.md)
 
 Measured frame rates for the Intel hardware encoders:
 

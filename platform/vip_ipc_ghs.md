@@ -1,11 +1,11 @@
 # VIP-SoC IPC & GHS Hypervisor
 
 Scope: the dual-processor architecture of the GM Info 3.7 (gminfo37) radio, the Renesas RH850 VIP MCU and its PLC/calibration data, the VIP-SoC IPC link and channel map, and the GHS INTEGRITY Type-1 hypervisor (binary, `/dev/ghs`, GHS-Android connection map, VP crash decode).
-Boot ordering and GHS init tasks live in [boot_chain.md](boot_chain.md); component specs in [hardware_specs.md](hardware_specs.md).
+Boot ordering and GHS init tasks live in [boot_chain.md](boot_chain.md); component specs in [hardware_specs.md](../hardware/specs.md).
 
 Evidence tags (as used in the sources): [C] live-confirmed on a running unit, [FW] firmware/static extraction, [INF] inferred, [X] external source, [UNVERIFIED] not established. "UNVERIFIABLE-FROM-LIVE" = not observable from a locked Y175 user shell.
 
-Related: [boot_chain.md](boot_chain.md), [hardware_specs.md](hardware_specs.md), [security.md](security.md), [fsa_protocol.md](fsa_protocol.md), [ethernet_networking.md](ethernet_networking.md), [can_network.md](can_network.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vehicle_config.md](vehicle_config.md), [emulator.md](emulator.md), [eeprom_i2c_security.md](eeprom_i2c_security.md), [../hardware/teardown.md](../hardware/teardown.md) (owns the IPC Channel Map), [../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
+Related: [boot_chain.md](boot_chain.md), [hardware_specs.md](../hardware/specs.md), [security.md](security.md), [fsa_protocol.md](fsa_protocol.md), [ethernet_networking.md](ethernet_networking.md), [can_network.md](can_network.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vehicle_config.md](vehicle_config.md), [emulator.md](emulator.md), [eeprom_i2c_security.md](eeprom_i2c_security.md), [../hardware/teardown.md](../hardware/teardown.md) (owns the IPC Channel Map), [../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
 
 ---
 
@@ -199,7 +199,7 @@ Android-side channel 3 = vehicle signals (`/dev/ipc/ipc3`), see 3.3.
 - The GM VHAL (`android.hardware.automotive.vehicle@2.0-service-gm`, runs as user `vehicle_network`) opens **`/dev/ipc/ipc3`** = lchannel index 3, gid `vehicle_network`: the vehicle-signal channel. The Android guest sees only cooked signals over channel 3; the far end of `/dev/ttyS1` owns the physical CAN. Far-end "VIP MCU" identity is prior project analysis, [INF]/[GM] for this build. [FW for guest half]
 - `/vendor/bin/ghs_set_is_virt.sh`: `is_virt=true` iff `/dev/ghs` exists.
 - The guest has no CAN interface at all (no CAN driver modules, no CAN netdev, no CAN symbols in the vehicle stack; kernel `CONFIG_CAN=y` is built in but inert). Full evidence: [pi_swap_feasibility.md](pi_swap_feasibility.md) (vehicle_network.md L359-384). `gmvt` is GM Voice, not a vehicle transport.
-- Device nodes/SELinux (live Y175 2026-10-05, dev_listing.txt): `/dev/ttyS1` owner `root:root`, label `ipc_serial_device`, mode `crw-------` (0600, root-only), so the IPC link to the VIP is DAC-closed (1 Mbps/HDLC-v16/20-channel detail UNVERIFIABLE-FROM-LIVE). `ttyS0` = bluetooth, `ttyS2` = `serial_device`/guest console (`console=ttyS2`), `ttyS3` = `display_panel_device`; `/dev/ttyACM1` is `crw-rw-rw-` with label `sxm_device` (SiriusXM tuner serial, MCP2200 hardware identity; "Debug UART" was refuted). Full UART table: [hardware_specs.md](hardware_specs.md).
+- Device nodes/SELinux (live Y175 2026-10-05, dev_listing.txt): `/dev/ttyS1` owner `root:root`, label `ipc_serial_device`, mode `crw-------` (0600, root-only), so the IPC link to the VIP is DAC-closed (1 Mbps/HDLC-v16/20-channel detail UNVERIFIABLE-FROM-LIVE). `ttyS0` = bluetooth, `ttyS2` = `serial_device`/guest console (`console=ttyS2`), `ttyS3` = `display_panel_device`; `/dev/ttyACM1` is `crw-rw-rw-` with label `sxm_device` (SiriusXM tuner serial, MCP2200 hardware identity; "Debug UART" was refuted). Full UART table: [hardware_specs.md](../hardware/specs.md).
 - SELinux domains: `gm_vnd_IPCServer` runs as **root** (PID 386 live Y175), handles HDLC on `/dev/ttyS1`; `gm_vehicle_hal` runs as `vehicle_network` (PID 792), not root. Domain table: [security.md](security.md).
 - `ttyS1` is reserved for IPCServer's real VIP serial link in the emulator and must not be repurposed (emulator.md L76-79). Emulator behaviour (no VIP peer -> IPCServer `Uframe timer expired` / `Sending Uframe RESET` loop; `pal_calibrations` "Timeout is expired in IPC Calibrations channel"; ipc3 frame injection wire format) is owned by [emulator.md](emulator.md) and [vehicle_config.md](vehicle_config.md).
 - Real-radio `/dev/ipc/*` nodes also exist on the Y181.3.2 reference VM (e.g. `ipc10`-`ipc15` `srw-rw---- system`, `ctrlif_s` `vehicle_network`) even though `/dev/ghs` does not (security.md L533); different interface family from `/dev/ghs/*`.
@@ -221,7 +221,7 @@ During that test, changing the bench's CAN `284` candidate from value 2 to 4 and
 - VMM uses Intel VT-x with 64-bit EPT for the Android guest.
 - Build path: `/home/mal/gm_release/MY22-026/final/iot/rtos/`.
 - Rollback is enforced by a GHS rollback counter in `misc` (Y181 -> Y177 blocked); see [boot_chain.md](boot_chain.md).
-- Memory grant (static guest grant 7830 MiB, E820 etc.) is a hardware/memory topic: [hardware_specs.md](hardware_specs.md), [../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
+- Memory grant (static guest grant 7830 MiB, E820 etc.) is a hardware/memory topic: [hardware_specs.md](../hardware/specs.md), [../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
 
 ### 4.2 USB mediation [FW 85098662 `.vmm1`/`.boottable`/`IGS_DSDT`; 2026-10-10]
 

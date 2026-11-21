@@ -42,8 +42,8 @@ gminfo_resources/
 │   ├── enumeration/   gm_aaos_enum.sh, quick_security_check.sh
 │   └── mdi2_client/   Native macOS MDI2 diagnostic client (Python package, tests, docs; separate project)
 ├── reference/         GM official CalDef GIS-646 database (215 .caldef/.enumdef, schema)
-├── audio/  video/  projection/  runtime/  codecs/  analysis/   Android-side subsystem docs
-├── enumeration/, mdi2_client/   Stub READMEs pointing at evidence/enumeration/ and tools/mdi2_client/
+├── audio/  video/  projection/  runtime/  analysis/   Android-side subsystem docs
+│   └── video/media_codecs.md   Archival media-codec spec sheet; see video/video_codecs.md
 └── PATH_MAP.md        Old path to new path for every moved file (2026-11-21 restructure)
 ```
 
@@ -115,7 +115,7 @@ historical MEC readings and unresolved registration behavior are maintained in
 | [`platform/fsa_protocol.md`](platform/fsa_protocol.md) | GM FSA/NFSA protocol: wire format (magic `0x5AA5`), service catalog, protobuf defs, live service sessions (RemoteModuleHMI/NAM/DeviceInfo/DisplaysCoordination) |
 | [`platform/ota_update_stack.md`](platform/ota_update_stack.md) | UpdateService Binder map, SWU state machine, Y181 package format/signing (TSS/GPD CA), OTA engine, USB install path |
 | [`platform/README.md`](platform/README.md) | Index of every platform doc, reading order, evidence-tag legend, "where does X live" table |
-| [`platform/hardware_specs.md`](platform/hardware_specs.md) | SoC/GPU/RAM/storage/display/audio/USB/thermal specs, UART console map, I2C topology, Intel A3960 datasheet facts |
+| [`hardware/specs.md`](hardware/specs.md) | SoC/GPU/RAM/storage/display/audio/USB/thermal specs, UART console map, I2C topology, Intel A3960 datasheet facts |
 | [`platform/vip_ipc_ghs.md`](platform/vip_ipc_ghs.md) | RH850 VIP MCU, VIP-SoC IPC channel map, GHS INTEGRITY hypervisor, `/dev/ghs` |
 | [`platform/partitions_storage.md`](platform/partitions_storage.md) | eMMC/GPT map, `super`/dynamic partitions (measured), first-stage mounts |
 | [`platform/elk_recovery.md`](platform/elk_recovery.md) | ELK/kernelflinger, recovery/fastbootd, Boot Guard/TXE forensics, native-Linux probe bring-up |

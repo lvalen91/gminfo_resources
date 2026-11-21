@@ -2,6 +2,15 @@
 
 Generated from the move manifest; every moved file is listed in the second table. File names did not change, so a citation by bare filename (for example `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md section 5.2`) is still valid; only the folder part moved.
 
+## Follow-on moves (same day, after the main restructure)
+
+| Old | New | Reason |
+|---|---|---|
+| `platform/hardware_specs.md` | `hardware/specs.md` | Was a hardware-spec document mis-sorted into `platform/`, duplicating the purpose of the `hardware/` folder. |
+| `codecs/media_codecs.md` | `video/media_codecs.md` | The file is itself an archival/superseded document (its own banner names `video/video_codecs.md` as successor); no reason for it to anchor its own top-level folder. |
+| `mdi2_client/` (stub README only) | removed | Held nothing but a one-line "moved to `tools/mdi2_client/`" pointer created during the main restructure; redundant with this file and `INDEX.md`. |
+| `enumeration/` (stub README only) | removed | Same as above; pointer to `evidence/enumeration/` and `tools/enumeration/` now lives only here and in `INDEX.md`. |
+
 ## Directory-level moves
 
 | Old | New |
