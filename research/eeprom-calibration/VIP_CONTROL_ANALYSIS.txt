@@ -1,7 +1,7 @@
 ================================================================================
 GM AAOS VIP CONTROL AND EEPROM MODIFICATION ANALYSIS -- VIP CONTROL SCOPE OVERVIEW
 ================================================================================
-Document Version: 2.0 (consolidated; supersedes research/VIP_CONTROL_ANALYSIS.txt v1.1,
+Document Version: 2.0 (consolidated; supersedes research/eeprom-calibration/VIP_CONTROL_ANALYSIS.txt v1.1,
                    2025-12-28, with its 2026-08-25/2026-09-10/2026-11-12 correction
                    notes folded into the claims they correct, not kept as a separate
                    addendum block)
@@ -19,13 +19,13 @@ SCOPE -- what does NOT live here (pointer only, never restated):
     semantics -> GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md (GSK) -- the canonical
     seed/signature owner.
   - VIP `cal_*` boot-log calibration-value table (30+ keys) -> CALDEF_VIP_CALIBRATION_ANALYSIS.txt (CVC).
-  - VIP-SoC SPI-IPC channel table, Power Level Control (PLC) timers -> ../platform/vip_ipc_ghs.md.
+  - VIP-SoC SPI-IPC channel table, Power Level Control (PLC) timers -> ../../platform/vip_ipc_ghs.md.
   - ELK/reboot trigger (SERIAL_IPC_CONTROL_CHANNEL "Channel-7", RID=0xFF01,
     VIP `FUN_000641c2`@0x64208) -> GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md (GBUR), the
     live-tested owner of this fact (also stated, pointer-only, by HHA/GPC/INV).
-  - IS25LP016 SPI-NOR flash identification -> ../platform/hardware_specs.md.
+  - IS25LP016 SPI-NOR flash identification -> ../../platform/hardware_specs.md.
   - OTA/SPS EEPROM-restore behavior -> ELA (EEPROM-state side) /
-    ../platform/ota_programming_roles.md (update-engine side).
+    ../../platform/ota_programming_roles.md (update-engine side).
   - Harman-checksum/VIP_APP validator-size dispute -> ANSWERED by
     VIP_FIRMWARE_Y177_Y181_COMPARISON.md (VFC, carried unchanged) -- cited, not restated.
 
@@ -33,8 +33,8 @@ Evidence tags: [V]=verified/tested, [C]=confirmed in logs/dumps, [U]=untested/su
 [inferred]=not directly observed.
 
 Related: ELA, GSK, CVC, GBUR, HHA, GPC, CHO, UAV, GDP, VFC (carried unchanged),
-../platform/vip_ipc_ghs.md, ../platform/hardware_specs.md, ../platform/ota_programming_roles.md,
-../platform/security.md.
+../../platform/vip_ipc_ghs.md, ../../platform/hardware_specs.md, ../../platform/ota_programming_roles.md,
+../../platform/security.md.
 
 ================================================================================
 1. EXECUTIVE SUMMARY
@@ -57,9 +57,9 @@ KEY FINDINGS OWNED BY THIS DOC:
 KEY FINDINGS POINTERED OUT (owned elsewhere, not restated here):
   [6] VIP controls ADB via seed response (0xFF = bypass, real ECUID = secured) -> GSK.
   [7] 30+ calibration values read from EEPROM control system behavior -> CVC.
-  [8] IS25LP016 SPI flash (2MB) identified on board, secondary storage -> ../platform/hardware_specs.md.
+  [8] IS25LP016 SPI flash (2MB) identified on board, secondary storage -> ../../platform/hardware_specs.md.
   [9] OTA/SPS updates can restore EEPROM values (resets security flags) -> ELA /
-      ../platform/ota_programming_roles.md.
+      ../../platform/ota_programming_roles.md.
 
 ================================================================================
 2. CRC PROTECTION ANALYSIS
@@ -190,7 +190,7 @@ Even with world-accessible device nodes, SELinux may block access.
 
 CORRECTED 2026-08-25: no stock build runs SELinux permissive (identical
 enforcing init across builds; ../security/KERNEL_CVE_ANALYSIS.txt Appendix E.8,
-also consolidated at ../platform/security.md). I2C access is SELinux-gated on
+also consolidated at ../../platform/security.md). I2C access is SELinux-gated on
 ALL stock builds including Y177 and Y181 -- the original v1.1 text's
 "permissive mode" escape hatch for this bypass does not exist on stock
 firmware. From a stock shell, `i2cdetect` is SELinux-blocked on all builds
@@ -222,7 +222,7 @@ WRITE/FLASH OPERATIONS [C]:
     signature -- see Section 6.
     (Module 72 naming -- "SOC_ABL" here vs "SOC_BOOT" per live-radio
     moduleinfo -- is PLAN.md Open Conflict #2, owned by GM_INFO37_BOOT_CHAIN_ANALYSIS.md
-    and ../platform/ota_programming_roles.md's Open Conflicts; not re-litigated here.)
+    and ../../platform/ota_programming_roles.md's Open Conflicts; not re-litigated here.)
   - Create SPAT archives for programming.
   - Attempt version downgrades (version check disabled at the DPS layer).
   - Clear/modify calibration data via DID writes; execute routine controls
@@ -261,10 +261,10 @@ DPS/TIS2WEB --> MDI2 (J2534) --> GMLAN/LS-CAN --> Gateway (0x45)
 ```
 The critical limitation: DPS commands reach the EEPROM only via VIP over UDS,
 and VIP firmware does not expose EEPROM write commands over that path. (SPI-IPC
-channel detail: ../platform/vip_ipc_ghs.md. MDI2 wire-protocol detail: MDP.)
+channel detail: ../../platform/vip_ipc_ghs.md. MDI2 wire-protocol detail: MDP.)
 
 Two PLC timer values and two Key IPC Messages are not carried by
-../platform/vip_ipc_ghs.md's table despite that doc being this section's
+../../platform/vip_ipc_ghs.md's table despite that doc being this section's
 pointer target, so they are kept here: PLC timers Tx PN Deactivation Timeout
 = 300 ms and Emergency Unmount Timeout = 100 ms; Key IPC Messages
 IPC_ID_RequestStartup (power up) and IPC_ID_NotifyAlarmStatus (wake timer).
@@ -326,7 +326,7 @@ binary diff; cited here, not restated.
   - Y177 downgrade test, original goal "restore SELinux permissive mode" --
     CORRECTED 2026-08-25: unattainable on stock firmware (no stock build runs
     permissive; ../security/KERNEL_CVE_ANALYSIS.txt Appendix E.8 /
-    ../platform/security.md). This refuted goal and its status tracking is
+    ../../platform/security.md). This refuted goal and its status tracking is
     shared with UNTRIED_ATTACK_VECTORS.md (UAV, the status-tracker owner) and
     GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (GDP, the downgrade-mechanism owner)
     -- pointer only, not restated.

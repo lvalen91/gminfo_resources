@@ -11,7 +11,7 @@ record, not the crypto or protocol reference.
 trace (Ghidra function/address level) and the SBA-ticket NVM-storage trace — all owned by
 [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
 ("GSK" below), pointer only. CAN bus-level session/profile mechanics and the stock-rewrite/
-VIN-learning campaign are owned by `../platform/can_network.md`. The byte-level checksum/
+VIN-learning campaign are owned by `../../platform/can_network.md`. The byte-level checksum/
 hash/container-format mechanics for specific calibration edits (GMBrand, screen resolution,
 the standalone XML loader) are owned by
 [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md)
@@ -22,7 +22,7 @@ of this doc; nothing from it is restated here.
 
 **Related:** GSK (central reference for signature/seed/key/certificate evidence), CHS
 (checksum/container-edit mechanics), `calibration_glossary.md` (the 404-key catalog),
-`../platform/can_network.md` (CAN campaign/bus mechanics), `../mdi2_client/README.md`
+`../../platform/can_network.md` (CAN campaign/bus mechanics), `../../tools/mdi2_client/README.md`
 (MDI2 client evidence).
 
 ## Current state and correction history
@@ -114,7 +114,7 @@ The documented 2026-11-10 stock LTZ write used the SBI-dependent all-FF seed and
 zero response, transferred all 14 containers, finalized, reset, and passed metadata readback.
 That demonstrates the stock programming sequence under that security state, not arbitrary
 payload acceptance or a real-seed CMAC implementation. See the
-[client's current evidence](../mdi2_client/README.md).
+[client's current evidence](../../tools/mdi2_client/README.md).
 
 The same day's modified-package attempts were rejected with `7F 36 72` after the payload
 digest was recomputed; an earlier stale-digest edit failed at transfer exit. NRC `0x72` is not
@@ -136,7 +136,7 @@ container bytes returned **`7F 36 72`**. No custom transfer exit was sent. In th
 programming session, the genuine 1457-byte slot0C container negotiated successfully, both
 data blocks returned `76`, and exit returned `77`. Immediate readback matched all fourteen HC
 identities, all module statuses 00, and F0F1/F0F2 = `0000`. The
-[CAN campaign](../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16)
+[CAN campaign](../../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16)
 owns the stock-write, VIN-learning, and recovery setup. This reproduced the earlier failure
 independently of the MDI2 tool; the old repacking script's claim that RSA is "UDS-inert" is
 contradicted on this tested path and must not be used as a programming assumption.

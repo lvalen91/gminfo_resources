@@ -10,7 +10,7 @@ real code references and read `0xFF` (unwritten) in both stock and ADB-enabled d
 hypotheses are likewise superseded.
 
 **Live conclusions now live in:**
-- [`research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
+- [`research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
   §2 (the SBI/ADB-bypass mechanism, settled), §5.2/§5.4 (security-region address table, including
   the retracted candidates), §5.8 (remaining untested offsets), §12 (History)
 - [`VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`](VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md) — the
@@ -21,6 +21,6 @@ samples, CRC version-counter samples, USB update-package manifest), a handful of
 subroutine addresses with no other home in this corpus, and the full correction/provenance trail
 (what this file originally claimed vs. what replaced each claim, with dates and sources) are
 preserved in
-[`research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §13](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md#13-historical-appendix-retired-eeprom_undocumented_flags_analysismd-folded-in-2026-11-21).
+[`research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §13](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md#13-historical-appendix-retired-eeprom_undocumented_flags_analysismd-folded-in-2026-11-21).
 
 Do not cite this file for live conclusions about EEPROM security flags; cite the two docs above.

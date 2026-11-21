@@ -4,7 +4,7 @@
 > - DBC files (`gm_global_a_powertrain/chassis/lowspeed.dbc`) — from [comma.ai/opendbc](https://github.com/commaai/opendbc) (MIT License); byte-identical to repo master as of 2026-11
 > - `GateKeeperESP_services.h` — © 2018 Surreal Development LLC, GPL-3.0; author Justin Hoogestraat ([surrealdev.com](https://surrealdev.com))
 > - `diagnosticsd` live sweep, protocol, security, routines docs — gminfo_resources `diagnostics/` (this repo)
-> - `ecu_map.json`, `did_map.json` — gminfo_resources `mdi2_client/` (this repo)
+> - `ecu_map.json`, `did_map.json` — gminfo_resources `tools/mdi2_client/` (this repo)
 > - GMW8762 v3 message rate/ID confirmation — partial PDF via [miataturbo.net community mirror](https://www.miataturbo.net)
 >
 > **Coverage:** A11 infotainment (Y175/Y181B) Ethernet UDS endpoint + Global A powertrain/chassis CAN buses.  
@@ -417,7 +417,7 @@ Note: IDs are 29-bit extended CAN format (hex values in the ~0x10xxxxxx range).
 
 ---
 
-## 7d. T1XX ECU Diagnostic Address Map (from `mdi2_client/mdi2/data/ecu_map.json`)
+## 7d. T1XX ECU Diagnostic Address Map (from `tools/mdi2_client/mdi2/data/ecu_map.json`)
 
 Tester address: `0xF1`. Request pattern: `0x14DAxxF1` (xx = ECU addr). Response varies by ECU.
 

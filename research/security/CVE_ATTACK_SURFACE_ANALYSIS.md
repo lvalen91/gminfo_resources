@@ -124,8 +124,8 @@ GHS verifies vbmeta with `.mr_r_mod_android_key` (NOBITS) — delivered via Inte
 Y175 bench unit agree. `HFSTS6` bit 30 (`fpf_committed`) was `1`, and an MKHI
 `READ_FILE` query of `/fpf/intel/SocCfgLock` over `/dev/mei0` returned `1`.
 Manufacturing Mode was closed (`HFSTS1` bit 4 = `0`).
-See [hardware live-verification results](../HARDWARE_HYPERVISOR_ATTACK_VECTORS.md#spi-flash-ifwi--extraction-and-analysis)
-and the [SOC_ABL / Boot Guard record](../GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary).
+See [hardware live-verification results](HARDWARE_HYPERVISOR_ATTACK_VECTORS.md#spi-flash-ifwi--extraction-and-analysis)
+and the [SOC_ABL / Boot Guard record](../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary).
 
 `bxt_dbg_priv_key.pem` (Binarly "Intel OEM Platform Key / Orange Unlock" for
 Broxton/Apollo Lake) leaked via the MSI breach and an AAEON public GitHub repo.
@@ -133,7 +133,7 @@ The uncommitted-FPF premise of the earlier BPM/SMIP key hypothesis built on this
 leak is refuted for this unit (FPF confirmed fused, see above).
 
 Separately, DCI/JTAG availability is its own mechanism, gated by `HDCIEN`/
-`IA32_DEBUG_INTERFACE` MSR state, not by Boot Guard FPF (see [DCI section](../HARDWARE_HYPERVISOR_ATTACK_VECTORS.md#intel-dci-direct-connect-interface--usb3-jtag)).
+`IA32_DEBUG_INTERFACE` MSR state, not by Boot Guard FPF (see [DCI section](HARDWARE_HYPERVISOR_ATTACK_VECTORS.md#intel-dci-direct-connect-interface--usb3-jtag)).
 That source does not establish the leaked key as a DCI-enabling mechanism, but
 it does document CVE-2021-0146 ("Red Unlock") achieving full DCI JTAG via
 voltage fault injection with no other preconditions, after which a hardware
@@ -254,7 +254,7 @@ adb shell "gzip -dc /proc/config.gz" > gm_kernel.config
 grep -E "CONFIG_SND_USB_AUDIO|CONFIG_USB_VIDEO_CLASS|CONFIG_USB_GADGET" gm_kernel.config
 
 # 7. Build ghs_probe (NDK r25+, 2–4 h)
-# See research/tools/ghs_probe/CMakeLists.txt
+# See tools/bench/ghs_probe/CMakeLists.txt
 
 # 8. Acquire Renesas E10A-USB for RH850 JTAG (NEW-1)
 # Concurrently: dump 8MB IS25WP064A SPI flash for Boot Guard FPF audit (Section 2)
@@ -266,7 +266,7 @@ grep -E "CONFIG_SND_USB_AUDIO|CONFIG_USB_VIDEO_CLASS|CONFIG_USB_GADGET" gm_kerne
 
 ## Section 6 — Non-Applicable CVEs (Confirmed Dead on Y181)
 
-Cross-referenced against confirmed kernel config (`enumeration/Y181/jun2026/raw/kernel_config.txt`), kernel version 4.19.305, and SPL 2025-06-05.
+Cross-referenced against confirmed kernel config (`evidence/enumeration/Y181/jun2026/raw/kernel_config.txt`), kernel version 4.19.305, and SPL 2025-06-05.
 
 ### 6.1 — `CONFIG_NF_TABLES is not set`
 

@@ -346,7 +346,7 @@ INTEGRITY native service partitions.
 Current status: DAC is `rw-rw-rw-` on all nodes, but SELinux blocks access from the shell
 domain. The nodes are reachable from any context with a less restrictive domain.
 
-`[S]` **ghs_probe.c:** the probe tool is written (`research/tools/ghs_probe/`) but never built.
+`[S]` **ghs_probe.c:** the probe tool is written (`tools/bench/ghs_probe/`) but never built.
 Build with NDK r25+, deploy as APK with `android.hardware.type.automotive` permission.
 
 `[U]` **Known ioctl values are guesses** (`_IOR('g', 0x01-0x02, int)`) — need GHS LIP kernel

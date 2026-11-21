@@ -35,7 +35,7 @@ claims. A skeptical provenance audit graded them. OBEY THESE RULES:
 
 Derived from binary artifacts only: extracted strings, section boundaries, the AVB
 CVE-pattern audit script, and the standard AOSP `libavb` structure layout. **No full
-disassembly was used** — the Ghidra decompile (`research/decompiled/vmm1_all.c`) is
+disassembly was used** — the Ghidra decompile (`evidence/decompiled/vmm1_all.c`) is
 register-level noise; the load-bearing evidence is the string table and the known
 `libavb` reference layout the strings pin the code to.
 
@@ -43,18 +43,18 @@ register-level noise; the load-bearing evidence is the string table and the know
 
 **The parser is AOSP `libavb`, statically compiled into a 32-bit x86 ELF.**
 Evidence:
-- `research/scripts/avb_audit.py` enumerates the exact `libavb` error strings and
+- `tools/analysis-scripts/avb_audit.py` enumerates the exact `libavb` error strings and
   CVE-class markers the researcher hunted: `avb_safe_add` ("Overflow when adding
   values"), `avb_descriptor_foreach` ("Descriptor size is not divisible by 8"),
   "Descriptor payload size overflow", "Overflow while computing size of boot image",
   chain-partition `rollback_index_location` validation, etc.
-- Confirmed vbmeta strings in `research/decompiled/vmm1_decomp.txt`:
+- Confirmed vbmeta strings in `evidence/decompiled/vmm1_decomp.txt`:
   `VMM: vbmeta bad header: descriptors outside data block`,
   `VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu`.
-- `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` + `BOOT_CHAIN_ANALYSIS.txt`: magic
+- `research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` + `BOOT_CHAIN_ANALYSIS.txt`: magic
   `AVB0`, version 1.1, RSA-4096/SHA-256, boot-image header field offsets, A/B misc
   layout.
-- `research/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:243,386,701`: 32-bit x86,
+- `research/boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:243,386,701`: 32-bit x86,
   statically linked; `rollback_index` field at header offset **0x70** — this exactly
   matches the standard `AvbVBMetaImageHeader`, so the *whole* header layout below is
   known-good ground truth, not a guess.
@@ -286,7 +286,7 @@ first:
    into **Unicorn** (or qiling), map a fake stack + a scratch buffer holding the mutated
    vbmeta, and call the string-anchored parse functions by address. Use the
    `avb_audit.py` string→function map (rerun it under PyGhidra — the archived run failed
-   only because Ghidra lacked PyGhidra, see `research/reports/avb_audit.out:50`) to get
+   only because Ghidra lacked PyGhidra, see `evidence/reports/avb_audit.out:50`) to get
    the exact entry points for `avb_vbmeta_image_verify` / descriptor walk / boot-image
    validate, then fuzz register/memory inputs. This catches the port-specific 32-bit
    truncation bugs the upstream build won't have.
@@ -304,7 +304,7 @@ first:
    and the walk/boot consumes the second value, the TOCTOU is structurally present.
    Full confirmation needs the misc-partition write race on a real/emulated GHS boot.
 
-**Immediate next step:** rerun `research/scripts/avb_audit.py` under a PyGhidra-enabled
+**Immediate next step:** rerun `tools/analysis-scripts/avb_audit.py` under a PyGhidra-enabled
 Ghidra to recover the real entry points and the in-place-vs-copy behavior around the
 descriptor walk — that single fact decides whether the TOCTOU windows (T1–T3) are
 exploitable or merely theoretical, and it is obtainable statically.
@@ -312,13 +312,13 @@ exploitable or merely theoretical, and it is obtainable statically.
 ---
 
 ## Appendix — source artifacts
-- `research/decompiled/vmm1_decomp.txt` — vbmeta/rollback error strings + `%lu` format.
-- `research/scripts/avb_audit.py` — libavb CVE-pattern marker list (confirms libavb + which overflow strings are present).
-- `research/reports/avb_audit.out` — archived run (failed: no PyGhidra) — rerun needed.
-- `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md:490-570` — A/B misc struct, vbmeta flow, boot-image header.
-- `research/BOOT_CHAIN_ANALYSIS.txt:423-443` — Android boot image field offsets.
-- `research/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:160-390,664-701` — rollback mechanism, misc CRC-only, 32-bit x86, rollback_index@0x70.
-- `research/decompiled/vmm1_all.c` — 32-bit CONCAT44 dword-pair arithmetic idiom; `0x200` (×512) literals at lines 4558/4574.
+- `evidence/decompiled/vmm1_decomp.txt` — vbmeta/rollback error strings + `%lu` format.
+- `tools/analysis-scripts/avb_audit.py` — libavb CVE-pattern marker list (confirms libavb + which overflow strings are present).
+- `evidence/reports/avb_audit.out` — archived run (failed: no PyGhidra) — rerun needed.
+- `research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md:490-570` — A/B misc struct, vbmeta flow, boot-image header.
+- `research/boot-update-recovery/BOOT_CHAIN_ANALYSIS.txt:423-443` — Android boot image field offsets.
+- `research/boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:160-390,664-701` — rollback mechanism, misc CRC-only, 32-bit x86, rollback_index@0x70.
+- `evidence/decompiled/vmm1_all.c` — 32-bit CONCAT44 dword-pair arithmetic idiom; `0x200` (×512) literals at lines 4558/4574.
 
 </artifact>
 

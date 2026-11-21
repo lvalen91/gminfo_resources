@@ -12,7 +12,7 @@ The **GM Info 3.7** (`gminfo37`) is the 2024 Chevrolet/GMC infotainment ECU buil
 |-----------|---------------|
 | CPU | Intel Atom x7-A3960, 4-core / 4-thread, base 0.8 / HFM 1.6 / **2.0 GHz burst** [Intel 336256 via `platform/gminfo3.7_tech_specs.md:27`; live `cpuinfo.txt` 4 cores, 2056 MHz] [CORRECTED 2026-10-10: was "2.4 GHz boost"], 14nm |
 | ABI | `x86_64`, dalvik variant `silvermont` |
-| RAM | 8 GiB LPDDR4 physical; static GHS guest grant 7830 MiB; historical Android `MemTotal` near 5530 MiB (5.40 GiB / 5.80 GB decimal). Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; [map and unresolved grant difference](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory). |
+| RAM | 8 GiB LPDDR4 physical; static GHS guest grant 7830 MiB; historical Android `MemTotal` near 5530 MiB (5.40 GiB / 5.80 GB decimal). Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; [map and unresolved grant difference](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory). |
 | Storage | 64 GB Samsung KLMCG4JEUD eMMC |
 | GPU | Intel HD 505 (Gen9, 18 EUs); Mesa 21.1.5 GLES 3.2 |
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, ~13.4", `lcd_density=200` |

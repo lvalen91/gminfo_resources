@@ -5,7 +5,7 @@ run Aggressive Instruction Finder + normal analysis on those blocks, report new 
 import sys, time
 import pyghidra
 
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"
+PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
 PROJ_NAME = "hostos_x86"
 
 pyghidra.start(verbose=False)

@@ -251,7 +251,7 @@ firmware image, not GHS** — see "Brightness curve location" above.
 
 The earlier CAN trial changing slot08 from 4 to 2 was accepted but produced
 visible tearing; stock restoration restored normal output. See the
-[trial evidence](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17).
+[trial evidence](../research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17).
 That proves a behavioral effect, not successful operation at the alternate timing.
 
 ### Native Linux result and live link bring-up — superseded 2026-11-17

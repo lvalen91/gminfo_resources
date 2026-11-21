@@ -8,12 +8,12 @@ dates below. It does **not** own emulator internals, FSA wire format, UDS/diagno
 OTA/rollback verdicts — those are restated here only as far as needed to keep the work plan
 readable; follow the pointers for the facts themselves.
 
-**Related:** [`../platform/emulator.md`](../platform/emulator.md) ·
-[`../platform/fsa_protocol.md`](../platform/fsa_protocol.md) ·
-[`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md) ·
-[`../platform/ota_update_stack.md`](../platform/ota_update_stack.md) ·
-[`../platform/ethernet_networking.md`](../platform/ethernet_networking.md) ·
-[`../platform/vehicle_network.md`](../platform/vehicle_network.md) ·
+**Related:** [`../../platform/emulator.md`](../../platform/emulator.md) ·
+[`../../platform/fsa_protocol.md`](../../platform/fsa_protocol.md) ·
+[`../../diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) ·
+[`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md) ·
+[`../../platform/ethernet_networking.md`](../../platform/ethernet_networking.md) ·
+[`../../platform/vehicle_network.md`](../../platform/vehicle_network.md) ·
 [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md) (GSK) ·
 [`GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](GM_INFO37_BOOT_CHAIN_ANALYSIS.md) (GIB)
 
@@ -23,7 +23,7 @@ readable; follow the pointers for the facts themselves.
   temp SSH password — never store it); `sudo` is passwordless there. SSH **ControlMaster**
   multiplexing required (the IPS flags repeated handshakes). Work tree `~/gm_emu`; AVD `y181gm` on
   port **5558**; `adb -s emulator-5558`. Full build/fidelity detail:
-  [`../platform/emulator.md`](../platform/emulator.md) — do not restate here.
+  [`../../platform/emulator.md`](../../platform/emulator.md) — do not restate here.
 - **Real-radio diagnostic logs (ground truth):** `~/Desktop/New folder/` — GM J2534/D-PDU/RT API +
   `dps_readx80` DoIP sessions. **RAW: contain real VIN + `$27` seed/key + SPS creds — NEVER commit**
   (see Redaction below). Redacted analyses: `.../emu/y181_ref/diag/{doip_uds_surface.md,
@@ -34,21 +34,21 @@ readable; follow the pointers for the facts themselves.
 ## Where the facts live now (pointers only)
 
 - **Emulator build/fidelity state** (VHAL frame-injection write path, navsens HIDL stub, DR-fusion
-  gate, audio/TCC blocker, real-kernel boot status) → [`../platform/emulator.md`](../platform/emulator.md)
+  gate, audio/TCC blocker, real-kernel boot status) → [`../../platform/emulator.md`](../../platform/emulator.md)
   and, for the full real-kernel boot-chain walkthrough, [GIB](GM_INFO37_BOOT_CHAIN_ANALYSIS.md).
 - **Physical AE link map** (Ethernet-2/4/6 → K56/K73/T3, vlan4/vlan5 CIDRs, the AVB link, the
   `192.168.171.0/24` tester-subnet-vs-radio-link correction) →
-  [`../platform/ethernet_networking.md`](../platform/ethernet_networking.md) (IPs/VLANs/ports) and
-  [`../platform/vehicle_network.md`](../platform/vehicle_network.md) (ECU/gateway census).
+  [`../../platform/ethernet_networking.md`](../../platform/ethernet_networking.md) (IPs/VLANs/ports) and
+  [`../../platform/vehicle_network.md`](../../platform/vehicle_network.md) (ECU/gateway census).
 - **FSA protocol** (20-byte header + protobuf(nano), opType/service/instance tables, port map, the
   two parser bugs, the UDP/multicast AIOOBE + connectionless-injection findings) →
-  [`../platform/fsa_protocol.md`](../platform/fsa_protocol.md).
+  [`../../platform/fsa_protocol.md`](../../platform/fsa_protocol.md).
 - **Link-2 diagnostic surface / UDS** (8-byte GM UDS header vs DoIP, NRC 0x10, vndbinder-bypass gap) →
-  [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md); seed/key
+  [`../../diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md); seed/key
   byte-length and signature detail → [GSK](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 - **Update/rollback/influence verdicts** (manifest signing gate, GHS hardware-enforced rollback,
-  no-network-install conclusion) → [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md)
-  and [`../platform/ota_programming_roles.md`](../platform/ota_programming_roles.md).
+  no-network-install conclusion) → [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md)
+  and [`../../platform/ota_programming_roles.md`](../../platform/ota_programming_roles.md).
 
 Two corrections below are reproduced in full rather than pointered, because at the time of this
 pass neither correction was confirmed to have landed in the owner doc it summarizes (see ledger —
@@ -65,7 +65,7 @@ multicast, never `ClusterViewManager`. The correct routing: REQUEST/REQUESTRESPO
 712 CLIENTFOCUS (moves cluster focus), 700/714 asset state, 707/708/710/711/713/715 widget data,
 720/721 activity indicator. Any anonymous vlan5 peer can drive the instrument cluster (pending
 each method's protobuf field validation, not yet examined). Full FSA wire format and the two
-parser bugs: [`fsa_protocol.md`](../platform/fsa_protocol.md).
+parser bugs: [`fsa_protocol.md`](../../platform/fsa_protocol.md).
 
 ### Correction: `ProxyOfExtComp` attribution withdrawn (Link-2)
 
@@ -78,7 +78,7 @@ fresh radio `0x80` reconstruction shows 31-byte normal seeds (16-byte fixed ID +
 suffix), 12-byte responses, and `67 02`. `DPS+SPS.pcapng` programs amplifier `0x81`, not the
 radio; its radio observations are DID reads and seed-only probes. An SPS host error banner does
 not establish why the ECU returned an all-FF seed. Full detail and the SBI/ADB-cert distinctions:
-[`ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md) and
+[`ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) and
 [GSK](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 *(Note: the 31-byte seed figure above is cited elsewhere as disputed against an earlier 32-byte
@@ -126,7 +126,7 @@ The emulator is real GM software on substituted hardware with no real bus and no
 DoS, logic) transfer to the radio. The **fabric** (switch/VLAN segmentation, other ECUs, gPTP,
 the documented no-MACsec/L2-L3-auth) and **crypto/TEE** still need real-bench validation
 regardless of which kernel the emulator runs — both are hardware-bound (full hard-blocker list:
-[`emulator.md`](../platform/emulator.md)). The real-kernel boot (see `emulator.md`/GIB) now
+[`emulator.md`](../../platform/emulator.md)). The real-kernel boot (see `emulator.md`/GIB) now
 partially answers the boot-chain question — treat as still-open only the pieces that boot doesn't
 cover (AVB/GHS trust anchors, the VIP MCU itself). Permissive-vs-enforcing and goldfish-vendor
 differences can alter some paths — confirm promising hits on hardware.
@@ -150,7 +150,7 @@ Conflicts section; this doc does not attempt to settle it.
   withdrawal) were folded inline in the *source* `AE_RESEARCH_HANDOFF.md` at the time of this
   pass. This tracker doc may currently be **the only place both corrections are recorded** —
   neither was confirmed, during this writing pass, to have also landed in
-  `platform/fsa_protocol.md` (cluster-injection) or `../diagnostics/ethernet_uds_diagnosticsd.md`
+  `platform/fsa_protocol.md` (cluster-injection) or `../../diagnostics/ethernet_uds_diagnosticsd.md`
   (`ProxyOfExtComp`), both of which this doc names as the authoritative owners of that content.
   Planner: verify both owner docs carry the corrected claim, not the pre-correction one, before
   treating this doc's copies as merely redundant.

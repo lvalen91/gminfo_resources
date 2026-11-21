@@ -1,7 +1,7 @@
 """Native D-PDU-API-over-TCP client for the Bosch GM MDI2 (port 10123).
 
 Implements the resource-0x2A ("MDI-managed ISO-TP/UDS") bring-up and DID reads
-described in research/MDI2_DPDU_API_PROTOCOL_AUG2026.md §4, on macOS, with zero
+described in research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md §4, on macOS, with zero
 GM Windows software.
 
 Wire framing (LITTLE-ENDIAN — note this differs from the big-endian 900x/9052

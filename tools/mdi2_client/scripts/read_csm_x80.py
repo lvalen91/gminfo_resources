@@ -11,7 +11,7 @@ CSM diag 0x80 -> target 0x0C80. Overridable with --target.
 
 Reads do NOT need 10 03 / 27 first as long as a functional TesterPresent (3E 80)
 is kept alive — doipclient does this automatically once activated.
-(See ../research/MDI2_DPDU_API_PROTOCOL_AUG2026.md §6 and platform/vehicle_network.md.)
+(See ../../research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md §6 and platform/vehicle_network.md.)
 
 Usage:
   ./.venv/bin/python read_csm_x80.py                 # full SBI-style readout of 0x80

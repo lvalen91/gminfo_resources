@@ -22,7 +22,7 @@ gates, a feasibility table, and the current verdict.
   [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](CALDEF_VIP_CALIBRATION_ANALYSIS.txt).
 - The updater's own package-provenance/install-IPC narrative (DevCaloverrideInstaller discovery
   rules, APK provenance) → owned by
-  [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15).
+  [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15).
   This doc only states the SELinux/DAC consequence (a privileged writer does not relax shell's
   own permissions) and defers the caller-boundary question itself to that doc.
 - The Android-framework `gm.permission.*_DIAGNOSTIC_CALIBRATION_DATA` Binder permission gate is a
@@ -42,7 +42,7 @@ locked shell.
 `untrusted_app` or adb `shell` under every inspected identity and build. The caveat is scope,
 not strength: a legitimate privileged updater path (DevCaloverrideInstaller) exists and its
 caller boundary toward an unprivileged invoker has not been fully traced — see
-[`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
+[`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
 for that open question. No calibration deployment via this path has been performed.
 
 > **History:** the 2026-10-30 analysis stated an absolute "DENIED, no route" verdict. On
@@ -95,7 +95,7 @@ from the filesystem/hwbinder path analyzed below) resolves on live Y175 as:
 `dangerous` is not auto-granted, which only reinforces the sealed verdict — but it is a distinct
 gate from the `.calovride`/`calserviced` surface analyzed here, not restated further.
 
-Source of truth: `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (compiled CIL,
+Source of truth: `evidence/enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (compiled CIL,
 neverallows retained). Cross-checked against `apr2026` and base `Y181` CILs — identical results.
 
 ## Live re-verification trail
@@ -246,7 +246,7 @@ fail CTS/`checkpolicy`. hwbinder-to-app is a hard AOSP neverallow.
   DevCaloverrideInstaller that copies into the protected destination. Current Y175 USB discovery
   selects that package type only on non-user builds; invoking the normal install IPC has not been
   shown to register arbitrary shell-supplied files. See
-  [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
+  [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
   for current-APK provenance, discovery/installer separation, and the open native boundaries —
   not restated here. **This does not relax shell DAC/MAC permissions.**
 - **Via system services:** a supported privileged importer and an exploitable confused deputy are
@@ -275,13 +275,13 @@ items in `PROVENANCE_AUDIT_AUG2026.md`/README.md's cross-doc Open Conflicts do n
 `calserviced`/`vendor_cald` reachability.)
 
 ### Evidence files
-- `enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (policy; apr2026 + base Y181 concur)
-- `enumeration/Y181/jun2026/raw/processes.txt` (`vendor_cald` uid runs `calserviced`)
-- `enumeration/Y181/jun2026/raw/current_user.txt` (adb `shell` uid/groups/context)
-- `enumeration/Y181/jun2026/raw/selinux_status.txt` (Enforcing)
-- `enumeration/Y181/jun2026/raw/all_properties.txt` (locked bootloader, AVB green)
-- `enumeration/Y181/jun2026/raw/{fstab,mounts}.txt` (`/mnt/vendor/calibration` mount)
-- `research/PROVENANCE_AUDIT_AUG2026.md` #36–38 (backdoor + `770 vendor_cald system` provenance)
+- `evidence/enumeration/Y181/jun2026/pulled_files/vendor_sepolicy.cil` (policy; apr2026 + base Y181 concur)
+- `evidence/enumeration/Y181/jun2026/raw/processes.txt` (`vendor_cald` uid runs `calserviced`)
+- `evidence/enumeration/Y181/jun2026/raw/current_user.txt` (adb `shell` uid/groups/context)
+- `evidence/enumeration/Y181/jun2026/raw/selinux_status.txt` (Enforcing)
+- `evidence/enumeration/Y181/jun2026/raw/all_properties.txt` (locked bootloader, AVB green)
+- `evidence/enumeration/Y181/jun2026/raw/{fstab,mounts}.txt` (`/mnt/vendor/calibration` mount)
+- `research/provenance/PROVENANCE_AUDIT_AUG2026.md` #36–38 (backdoor + `770 vendor_cald system` provenance)
 - `research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` L98–117 (backdoor description)
 
 ## Related
@@ -292,7 +292,7 @@ items in `PROVENANCE_AUDIT_AUG2026.md`/README.md's cross-doc Open Conflicts do n
   this filesystem/hwbinder surface.
 - [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](CALDEF_VIP_CALIBRATION_ANALYSIS.txt) — CalDef/VIP
   calibration record structure.
-- [`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15) —
+- [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15) —
   updater caller-boundary / DevCaloverrideInstaller provenance (owner of the §(c) open question).
-- [`../platform/security.md`](../platform/security.md) — general SELinux/FBE posture by firmware
+- [`../../platform/security.md`](../../platform/security.md) — general SELinux/FBE posture by firmware
   build; this doc is the research-tier deep dive on one specific daemon/path.

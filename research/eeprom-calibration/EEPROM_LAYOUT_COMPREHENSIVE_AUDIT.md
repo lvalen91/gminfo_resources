@@ -16,9 +16,9 @@ descriptor-table structure the firmware uses.
   `is_secure_mode`, MEC per-unit readings, root/registration limits) →
   [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 - The live T1/Ethernet SecurityAccess (`$27`) correction for the calibration gate →
-  [`../diagnostics/diagnosticsd_security_access.md`](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
+  [`../../diagnostics/diagnosticsd_security_access.md`](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 - `SIGNATURE_BYPASS_TICKET` / `SECURE_UNLOCK_LEVEL` / dev-signed VIP firmware installs: kept in
-  §10.1 below — `../platform/ota_update_stack.md` / `../platform/ota_programming_roles.md` do
+  §10.1 below — `../../platform/ota_update_stack.md` / `../../platform/ota_programming_roles.md` do
   not currently carry this level of detail, despite being the more natural OTA-topic owners.
 - CalGroup/CalDef calibration-value catalogs and the VIP boot-log calibration-index table →
   `CALDEF_VIP_CALIBRATION_ANALYSIS.txt`.
@@ -30,7 +30,7 @@ descriptor-table structure the firmware uses.
 - Step-by-step bench test tiers/procedure (Tier 0-3), backup/rollback, the 5 live UDS/DID test
   recipes → `EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md` (methodology only; this doc is "which byte,"
   that doc is "how to test it").
-- Platform's `../platform/eeprom_i2c_security.md` is meant to keep only a one-line pointer to this
+- Platform's `../../platform/eeprom_i2c_security.md` is meant to keep only a one-line pointer to this
   doc for the deep RE/attack-surface content — the forensic depth here is research-only, not
   platform-owner material. **Fixed 2026-11-21:** the prior pass had left `eeprom_i2c_security.md`
   carrying the substantive SBI-reset mechanism (the `FUN_ram_000c6564` bulk-restore finding, §2
@@ -50,8 +50,8 @@ overrides an earlier tag on the same claim.
 
 **Related:** `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`, `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`,
 `VIP_CONTROL_ANALYSIS.txt`, `CALDEF_VIP_CALIBRATION_ANALYSIS.txt`, `EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md`,
-`HARDWARE_HYPERVISOR_ATTACK_VECTORS.md`, `../platform/eeprom_i2c_security.md`,
-`../diagnostics/diagnosticsd_security_access.md`.
+`HARDWARE_HYPERVISOR_ATTACK_VECTORS.md`, `../../platform/eeprom_i2c_security.md`,
+`../../diagnostics/diagnosticsd_security_access.md`.
 
 ---
 
@@ -218,7 +218,7 @@ behavior: a CRC/validity failure on the SBI CalGroup triggers a factory-default 
 RAM shadow, which the CAL layer then persists back to EEPROM `[C]`. One gap remains unresolved:
 the precise trigger condition (power-on vs. a specific session/RoutineControl transition) — the
 re-init handler is reached via an unresolved computed jump `[U]`. (This is the canonical home for
-this mechanism; `../platform/eeprom_i2c_security.md` no longer carries a prose duplicate — fixed
+this mechanism; `../../platform/eeprom_i2c_security.md` no longer carries a prose duplicate — fixed
 2026-11-21, see §12 History.)
 
 - A previously-circulated claim that a specific calibration file (`85783460`) targets and resets
@@ -528,7 +528,7 @@ process cannot toggle these pins; second-agent concurrence obtained 2026-10-05 (
   **`sxm_device`** (SiriusXM tuner serial) `[C]` live-Y175 2026-10-05 — an earlier "Debug UART"
   label for this node is **REFUTED**. No `/dev/ttyACM0` is present on this unit.
 
-**Kernel exploitation surface (pointer only — owned by `../platform/security.md`'s Key CVEs
+**Kernel exploitation surface (pointer only — owned by `../../platform/security.md`'s Key CVEs
 section, not restated here):** unpatched-kernel exposure (CVE-2024-53104, -36971, -53150, -53197)
 tracks the build's kernel version/patch level, not SELinux mode; SELinux enforcing on all builds
 means MAC containment (neverallow rules) applies equally regardless of build. CAP_BPF plus SELinux
@@ -593,7 +593,7 @@ undermined by the string-table gap).
 ### 10.1 `SIGNATURE_BYPASS_TICKET` / `SECURE_UNLOCK_LEVEL` reflash-security primitives
 
 This detail was previously pointered to GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7 and
-`../platform/ota_update_stack.md`/`ota_programming_roles.md`; neither target carries it, so it
+`../../platform/ota_update_stack.md`/`ota_programming_roles.md`; neither target carries it, so it
 is kept here.
 
 `SIGNATURE_BYPASS_TICKET` (DID CUSTOM 18, CAN) is issued by the VIP via `VIPRequestManager` and
@@ -638,7 +638,7 @@ established:
   cannot be the answer.
 - The live-T1 Ethernet correction for this specific gate (31-byte all-FF seed, 12-zero-byte response
   accepted with `67 02`) is owned by
-  [`../diagnostics/diagnosticsd_security_access.md`](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14) —
+  [`../../diagnostics/diagnosticsd_security_access.md`](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14) —
   do not restate it here.
 - In-band path if proven: if either world-writable I2C bus (§8) reaches the M24C64, an ADB shell
   (obtained via the §2 SBI flip) could probe for a separate calibration-gate flag without a hardware
@@ -696,10 +696,10 @@ of being fixed once.
   were patched in place at the time, then re-collapsed into §2's single clean statement in this
   revision.
 - **2026-11-14** — Live T1 Ethernet SecurityAccess correction for the calibration `$27` gate lands in
-  `../diagnostics/diagnosticsd_security_access.md`; this doc's §11 updated to point there instead of
+  `../../diagnostics/diagnosticsd_security_access.md`; this doc's §11 updated to point there instead of
   carrying the (now-superseded) NRC `0x10`/invalid-tester-ID reading.
 - **2026-11-21** — Resolved the duplication this doc had flagged (§0 "Known discrepancy"):
-  `../platform/eeprom_i2c_security.md` is trimmed to a short pointer plus its own live `[C]`
+  `../../platform/eeprom_i2c_security.md` is trimmed to a short pointer plus its own live `[C]`
   capture citations (SELinux device-node labels, Android security posture). Every fact it
   previously carried that was not already present here was folded in: the `0x0441`/`0x0A81`
   address-identity error that platform copy still carried (`0x0A80` cited as the backup SBI data

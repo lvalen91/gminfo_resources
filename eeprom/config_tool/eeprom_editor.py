@@ -5,7 +5,7 @@ GM IOK (Info 3.7/3.8 CSM) EEPROM Editor — ST M24C64 (8 KB) dumps.
 A zero-dependency, single-file local web UI for inspecting and editing
 GM Harman infotainment EEPROM flash dumps. Built from the research in
 EEPROM_Analysis_Report.md, EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md and
-research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md (§0.15 = the 2026-10-15
+research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md (§0.15 = the 2026-10-15
 clean-room triple-pass that added the ECU-ID / HW-part-number / F198 / F199 /
 0x1DC0 fields below and corrected 0x14A0 + 0x0680).
 
@@ -87,7 +87,7 @@ SECURITY_FLAGS = [
              "+ guest RE, EEPROM_LAYOUT §0.10/§0.14). The SBI is ALSO broader than ADB -- "
              "captured bench traffic already shows a "
              "plain CAN UDS $27 request to ECU 0x80 (VIP) returns the same degenerate "
-             "all-0xFF seed with this flipped (diagnostics/dps/A11_CSM_x80.Txt). The "
+             "all-0xFF seed with this flipped (evidence/dps-logs/A11_CSM_x80.Txt). The "
              "VIP's seed/key logic is one shared function servicing >=18 security "
              "levels (FUN_ram_000b67d0 @ 0xb67d0, verified). Calibration-programming "
              "impact specifically is a strong hypothesis, not yet confirmed -- see "

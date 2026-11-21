@@ -104,7 +104,7 @@ Later cleared-A11 recovery on the same date had a distinct discovery result:
 the unprivileged venv saw no beacon even after correcting the RNDIS mask to
 /24, while the same venv under `sudo -n` resolved the beacon and received a
 real 9052 control reply. That identity was retained for recovery. After an owner MDI2 power-cycle, the diagnostic tunnel opened;
-session-table exhaustion was not proven. See the [completed recovery](../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).
+session-table exhaustion was not proven. See the [completed recovery](../../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).
 This does not establish a general requirement to run the client as root.
 
 ## 6. 9052 unresponsive (session-table exhaustion)

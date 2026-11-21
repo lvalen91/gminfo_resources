@@ -93,7 +93,7 @@ Native-Linux observation (different context): `intel_pstate` performance governo
 | Native Linux 7.3.5 Probe05 `MemTotal` | 5,963,784 KiB (~5,766,976 KiB available), no swap | native probe |
 | Swap / commit | Historical `SwapTotal=0`, `Committed_AS` ~76 GB virtual (`committed_oversubscription: 88800`, unexplained in source) | |
 
-The reason the E820 total differs from the static grant, and normal-AAOS map parity, are unresolved; the old 5780 MiB / RAM4-cap explanation is unconfirmed. The old "604 MB reserved" / "6 GB to guest" figures are unsourced; "5.66 GB" is a unit slip. Canonical measured map: [../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
+The reason the E820 total differs from the static grant, and normal-AAOS map parity, are unresolved; the old 5780 MiB / RAM4-cap explanation is unconfirmed. The old "604 MB reserved" / "6 GB to guest" figures are unsourced; "5.66 GB" is a unit slip. Canonical measured map: [../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
 
 Y177 snapshot (MiB): `total: 5530` `available: 3584` `utilization: 56%` `ram_model: LPDDR4_shared` `swap: 0`.
 

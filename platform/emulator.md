@@ -83,7 +83,7 @@ boot on goldfish" statement above:
   `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/realk/`;
   full working tree (incl. the 6GB `gm.img`, not copied off) remains on the Mac Pro at
   `~/gm_emu/realk/`. Hardware keymaster/attestation/RPMB (Trusty+GHS) and real Harman AVB audio remain
-  hard blockers either way, as with the current stubs. See `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`
+  hard blockers either way, as with the current stubs. See `research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`
   Appendix G for the full per-dependency portability table.
 
 ### VHAL — native, no shim needed (real-kernel build)
@@ -290,7 +290,7 @@ real Bose/AVB audio. Climate/Cameras/Trailering tiles render but don't control/f
 need a paired phone; **Carlink** (aftermarket) isn't in the stock image.
 
 ## Un-stub roadmap — using GM's real files (verified vs the real-radio ADB dumps)
-Cross-checking the emulator's stubs against the running radio's dumps (`enumeration/Y181/raw/*`,
+Cross-checking the emulator's stubs against the running radio's dumps (`evidence/enumeration/Y181/raw/*`,
 `analysis/adb/Y181/*`) and the GM images. Full reports: `/Volumes/.../2024_Silverado_ICE/emu/y181_ref/unstub/`.
 
 - **VHAL `@2.0-service-gm` → GM's real one now runs [DONE].** `libipc.so` (ipcLib 3.0) is a **Unix-socket
@@ -362,7 +362,7 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   Y181B recovery export exposes **5743.55859375 MiB E820 usable**, with an early
   Linux denominator of 5877304K, distinct from historical radio `MemTotal`
   near 5530 MiB. The 5780 MiB/RAM4-cap hypothesis is not the measured map;
-  [source and remaining limits](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
+  [source and remaining limits](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
   No emulator RAM change or runtime parity test is established by this documentation update.
   Zram swap remains disabled in the documented recipe (radio `SwapTotal=0`).
   Touch stays 2400×960@200.
@@ -404,7 +404,7 @@ Cross-checking the emulator's stubs against the running radio's dumps (`enumerat
   `172.16.4.100 ↔ 172.16.4.107` on **vlan4**). FSA `9002`/`9010` LISTEN on vlan5, client dials `9016`/`.112:9018`.
   Un-stub via synthetic peers: **vlan5** `.106` Visteon IPC dialing the CSM's `9002`, `.102` telematics, `.112`
   CGM_OTA; **vlan4** `.107` RTOS diag bridge. **FSA protocol solved + proven unauthenticated live** (GET/SUBSCRIBE
-  round-trips on `9002` from an anonymous peer; full spec in [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md)).
+  round-trips on `9002` from an anonymous peer; full spec in [`../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md`](../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md)).
   AE avenues: cluster-injection via REQUEST/REQUESTRESPONSE opType 641/674 fktId ≥700 (**corrected
   2026-09, was misattributed to EVENT 1032** — see `fsa_protocol.md`); the two FSA parser bugs (int32 `payloadLength` RAM-DoS,
   reject-path framing desync); `:49156` UDS-bridge DoS/fuzz; NAM EAP-AKA; SOME/IP-SD fuzz; `IDiagnosticsInternalService`

@@ -30,7 +30,7 @@ Path: `…/2024_Silverado_ICE/firmware/update_packages/Y181B/USB_Files/`.
 | SOC_VENDOR | `86331650` | `bff351f9…` | zip → ext4 `/vendor` (466,915,328 B) | `debugfs` dumps |
 | SOC_BOOT | `86331652` | `792f66f0…` | Android bootimg → kernel 4.19.305 | `unpack_bootimg`, lz4, r2 |
 | SOC_HOSTOS | `85098662` | `317ae85c…` | GHS INTEGRITY OS+hypervisor (one ELF) | ELF/symtab parse, r2 |
-| (live) Y175/Y181 | — | — | `all_properties.txt` property dumps | repo `enumeration/` |
+| (live) Y175/Y181 | — | — | `all_properties.txt` property dumps | repo `evidence/enumeration/` |
 
 Kernel identity: `Linux version 4.19.305-240125T145315Z-gf1edde901aa7 … Tue Jul 22 07:52:16 EDT 2025`
 [FW 86331652 vmlinux @0x15ffff0 banner; CONFIRMED ×1]. Boot cmdline sets

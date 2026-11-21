@@ -297,7 +297,7 @@ History: originally ranked HIGH priority on the theory that "version check
 confirmed disabled" at write time would let an inactive-slot Y177 image boot,
 unlocking further exploration. Corrected 2026-08-25 and reconfirmed on live
 test: stock Y177 boots SELinux-enforcing, so even a successful downgrade
-would not grant permissive access (security/KERNEL_CVE_ANALYSIS.txt Appendix
+would not grant permissive access (../security/KERNEL_CVE_ANALYSIS.txt Appendix
 E.8). Separately, the "version check disabled" flag affects only the
 inactive-slot WRITE phase — the GHS hypervisor's independent rollback counter
 (in `misc`/vda9, not vbmeta) blocks the downgrade at boot regardless, and this

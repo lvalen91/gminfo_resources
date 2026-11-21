@@ -305,4 +305,4 @@ with the repo's standing Research Status (signing/rollback is the root gate; see
   surface reachable from the shell
 - [`diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md)
   — UDS-over-TCP trust model
-- Source: live `enumeration/Y181/jun2026/` capture; Y181 firmware extraction
+- Source: live `evidence/enumeration/Y181/jun2026/` capture; Y181 firmware extraction

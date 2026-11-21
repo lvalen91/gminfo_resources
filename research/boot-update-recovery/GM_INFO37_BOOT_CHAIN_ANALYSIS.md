@@ -164,7 +164,7 @@ VIP_BOOT Sequence:
 | **HwVariant** | 56 | — |
 
 **Correction 2026-11-12:** an earlier version of this table listed "Version (Y177)" = `2B.174.4.1`
-(build `24Mar22-0256`). That string comes from a UART capture (`enumeration/VIP_log_2B.174.4.1_10JUL24.txt`)
+(build `24Mar22-0256`). That string comes from a UART capture (`evidence/enumeration/VIP_log_2B.174.4.1_10JUL24.txt`)
 that predates Y175's own VIP_APP (`2B.175.1.5`, build `24Apr23-2202`, part 85759599). It is not a Y177
 value. Y177's VIP_APP (part 86283151) builds `25Feb28-0330` and has no confirmed version string in this
 repo (`VIP_FIRMWARE_Y177_Y181_COMPARISON.md` §1 lists it as `—`). The row above replaces it with the
@@ -1068,7 +1068,7 @@ live state, the native-VHAL/no-shim-needed finding, and the software-rendering g
 replaced the originally-anticipated drm_hwcomposer retargeting. Not restated here.
 
 The one table `platform/emulator.md` itself points back into this doc for (its own text: "see
-`research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` Appendix G for the full per-dependency portability
+`research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` Appendix G for the full per-dependency portability
 table") is kept below as the sole surviving unique content of the former Appendix G:
 
 ### F.1 Per-Dependency Classification

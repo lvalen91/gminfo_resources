@@ -14,7 +14,7 @@ means policy/config text, not a measured playback.
 Related: [ethernet_networking.md](ethernet_networking.md), [vehicle_network.md](vehicle_network.md),
 [hardware_specs.md](hardware_specs.md), [pi_swap_feasibility.md](pi_swap_feasibility.md),
 [vehicle_config.md](vehicle_config.md), [emulator.md](emulator.md), [fsa_protocol.md](fsa_protocol.md),
-[AAOS Audio Probe](../research/tools/aaos_audio_probe/README.md),
+[AAOS Audio Probe](../tools/bench/aaos_audio_probe/README.md),
 [UDS live-control reference](../diagnostics/diagnosticsd_protocol.md#live-bench-controls-2026-11-15).
 
 ## 1. Summary and inventory
@@ -150,7 +150,7 @@ ordinary LIN frames traverse this link.
 
 ## 5. Public AAOS usage to AVTP mapping (2026-11-15)
 
-The lightweight [AAOS Audio Probe](../research/tools/aaos_audio_probe/README.md) exercised **all 16 public Android 12
+The lightweight [AAOS Audio Probe](../tools/bench/aaos_audio_probe/README.md) exercised **all 16 public Android 12
 usage IDs**, including UNKNOWN and the four deprecated notification variants. Each two-second probe received focus;
 requested/effective usage IDs remained equal in the retained log observations. Live decoding inspected all three AAF
 streams. Positions below are one-based within the **768-byte stream**, not physical speaker labels.

@@ -280,7 +280,7 @@ def verify_elk(usb, backend, timeout):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--tools', type=Path, default=Path.home() /
-                        'Downloads/github/gminfo_resources/research/tools')
+                        'Downloads/github/gminfo_resources/tools/bench')
     parser.add_argument('--profile', type=Path, default=Path.home() /
                         '.local/share/gminfo-bench/harness-profile.json')
     args = parser.parse_args()

@@ -28,7 +28,7 @@ traces for findings summarized below).
 
 ## History: the August 2026 retraction
 
-> **CORRECTED 2026-08-26 — authoritative sources: `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`
+> **CORRECTED 2026-08-26 — authoritative sources: `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`
 > §0 and `research/security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8.**
 > - **No stock build runs SELinux permissive.** Y175/Y177/Y181 share a byte-identical `init`
 >   that forces enforcing (`ALLOW_PERMISSIVE_SELINUX=0`); every earlier "Y177 permissive" /
@@ -89,7 +89,7 @@ token, it is not a reliable measurement of effective enforcement:
   read-only `ro.boot.selinux` property, and later denials explicitly carry `permissive=0`.
   The same capture records **`GM Secure ADB disabled on user build, MEC=227`** — a
   certificate-gate result, separate from SELinux enforcement/UID-0/AVB-unlock state; see
-  [MEC readings](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#target-readings-root-gate-and-registration-limits-2026-11-12).
+  [MEC readings](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#target-readings-root-gate-and-registration-limits-2026-11-12).
 
 Per-build scope note: the Y175/Y177/Y181 columns above are independently CONFIRMED only on
 the unit actually captured each time (live radio = Y175 on 2026-10-05, Y181.3.2 reference on
@@ -107,7 +107,7 @@ hypervisor → AVB → dm-verity), the AVB 8-step verification flow, the A/B met
 C structs, the GHS-side rollback counter, and the 4-level signing hierarchy are owned by
 [`boot_chain.md`](boot_chain.md#avb-verification); OEMLock/TXE/Boot Guard forensic detail and
 the ELK/kernelflinger recovery narrative are owned by [`elk_recovery.md`](elk_recovery.md)
-and [`../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
+and [`../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
 This section keeps only the security verdict.
 
 **Locked-radio runtime posture, confirmed on two separate live units:**
@@ -157,7 +157,7 @@ predated the unlock attempt, are both unverified; no partition write was validat
 state queries. RAM-only custom-kernel Linux boots (USB serial/NCM, public-key SSH, native
 eMMC reads matched by independent SHA-256) are confirmed readback-only — a RAM-booted image
 carries a green verified-boot cmdline value by construction, so that value alone does not
-authenticate the image. See the [ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
+authenticate the image. See the [ELK analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
 and [`boot_chain.md`](boot_chain.md).
 
 **GSI/DSU — corrected verdict (full policy/firmware-image detail in
@@ -227,7 +227,7 @@ in [`firmware_versions.md`](firmware_versions.md)).
 
 The certificate range checks, secured/bypass behavior, Boolean inversion and historical
 diagnostic readings are maintained in
-[the consolidated MEC/ADB source](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+[the consolidated MEC/ADB source](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 EEPROM programming workflow: [the EEPROM guide](../eeprom/README.md) and
 [`eeprom_i2c_security.md`](eeprom_i2c_security.md).
 
@@ -301,21 +301,21 @@ would need a substantial synthetic external-component/VIP endpoint, not a quick 
   wipe to this exact routine still needs the corresponding Android log/recovery record.
   Full code-address trace, jump-table recovery method, and UART correlation:
   [`diagnostics/diagnosticsd_routines_and_recovery.md`](../diagnostics/diagnosticsd_routines_and_recovery.md#uart-correlation-with-the-bcm-replacement-code-path-2026-11-14)
-  and [`research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
+  and [`research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
 
 ### MEC (Manufacturer Enable Counter)
 
 The authentication chain, range checks, signed-byte conversion, historical readings, Boolean
 inversion, root/registration limits and distinction from failed-boot counters are maintained
-in [the consolidated MEC source](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+in [the consolidated MEC source](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 EEPROM layout and VIP code: [`eeprom_i2c_security.md`](eeprom_i2c_security.md) and
-[the EEPROM audit](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md).
+[the EEPROM audit](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md).
 
 **`F1A0=FF` caveat (restored from the original vehicle_network.md; corrected 2026-11-11):** a returned MEC
 `F1A0=FF` lies in the 1–255 range that bypasses the SoC's GM ADB client-certificate requirement; it is not
 enforced-secure mode. The SPS host-authorization error does not prove the cause of an all-FF ECU seed. The
 EEPROM/ADB, UDS, ProtoKey and signing gates must remain separate. Evidence guide:
-[`../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+[`../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 ---
 
@@ -636,7 +636,7 @@ only trigger (`USBUpdateSource$1.onUSBMounted`) requires physical USB media and 
 only on non-`user` builds — the tested Y175 is `user`; Y181's notifier and other entry points
 remain to be independently verified. Full trace:
 [`ota_update_stack.md`](ota_update_stack.md), [`ota_programming_roles.md`](ota_programming_roles.md#caldef-evidence-for-the-orchestration-role),
-and [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only).
+and [`../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md`](../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only).
 
 ### gmsystemui capability gating — locked-radio verdict
 
@@ -731,7 +731,7 @@ process-keyed. See [`../hardware/connectors.md`] for the ADB/USB physical side.
 The `$10/$22/$27/$2E/$31/$34/$36/$37` UDS service-ID table and the CSM (`0x80`)/CGM (`0x45`)
 CAN address assignments are in [`vehicle_config.md`](vehicle_config.md#uds-diagnostic-services-used-by-dps) (table) and
 [`vehicle_network.md`](vehicle_network.md) (addressing); these services are
-reachable both over CAN/DPS (`../diagnostics/dps/`) and over Ethernet via the root
+reachable both over CAN/DPS (`../evidence/dps-logs/`) and over Ethernet via the root
 `diagnosticsd` on `:49156` (GM Ethernet diag address `0x0084`, 8-byte header) described above.
 **[C] live-Y175 2026-10-05: UNVERIFIABLE-FROM-LIVE** — the UDS service IDs, seed/key, and CAN addresses are
 off-SoC (CAN/DoIP) and were not (and must not be) probed in a DISK-ONLY shell capture. Only the Ethernet
@@ -794,6 +794,6 @@ build), not a disagreement about the same object; both statements stand as scope
 
 ## GHS INTEGRITY CVEs and public security research [ONLINE RESEARCH 2026-11-21]
 
-Five CVEs are publicly assigned against GHS INTEGRITY RTOS (all 2019, all INTEGRITY RTOS 5.0.4, all in Interpeak networking components — CVE-2019-7711 through CVE-2019-7715). No CVE exists for GHS INTEGRITY IoT or any automotive INTEGRITY variant. No published conference paper, security advisory, or independent adversarial security evaluation for GHS INTEGRITY IoT was located. Full CVE table and analysis: [`../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` §6](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#known-cves-and-public-security-research-online-research-2026-11-21).
+Five CVEs are publicly assigned against GHS INTEGRITY RTOS (all 2019, all INTEGRITY RTOS 5.0.4, all in Interpeak networking components — CVE-2019-7711 through CVE-2019-7715). No CVE exists for GHS INTEGRITY IoT or any automotive INTEGRITY variant. No published conference paper, security advisory, or independent adversarial security evaluation for GHS INTEGRITY IoT was located. Full CVE table and analysis: [`../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` §6](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#known-cves-and-public-security-research-online-research-2026-11-21).
 
-Implications for this platform: the publicly known GHS INTEGRITY bugs target Interpeak stack components that may or may not be present in this automotive build. The GHS hypervisor isolation layer (kernel, VMM, address space boundaries) has no public independent adversarial security evaluation. The attack surfaces cataloged in `research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md §11` (IPC channels, A/B metadata, Keymaster IPC, `/dev/ghs/snapshot-dbg`) remain unexercised in public research as of this date.
+Implications for this platform: the publicly known GHS INTEGRITY bugs target Interpeak stack components that may or may not be present in this automotive build. The GHS hypervisor isolation layer (kernel, VMM, address space boundaries) has no public independent adversarial security evaluation. The attack surfaces cataloged in `research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md §11` (IPC channels, A/B metadata, Keymaster IPC, `/dev/ghs/snapshot-dbg`) remain unexercised in public research as of this date.

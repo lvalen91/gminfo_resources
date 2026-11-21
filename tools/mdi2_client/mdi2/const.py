@@ -1,5 +1,5 @@
 """Established MDI2 protocol constants (from the RE in
-gminfo_resources/research/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md)."""
+gminfo_resources/research/mdi2-bench-sessions/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md)."""
 
 # --- network ---
 DEVICE_IP_DEFAULT = "192.168.171.2"      # MDI2 on the direct link

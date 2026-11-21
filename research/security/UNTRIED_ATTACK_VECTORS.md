@@ -2,7 +2,7 @@
 
 **Scope:** status tracker for the Y181→Y177 downgrade attack-vector catalog (17 ranked vectors,
 dependency graph, execution order). What does NOT live here: live T1 UDS/SecurityAccess bench
-status (owned by `../diagnostics/`, see pointer below), EEPROM mechanism detail (owned by
+status (owned by `../../diagnostics/`, see pointer below), EEPROM mechanism detail (owned by
 `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`), the Y175/Y177/Y181 firmware-diff evidence itself (owned
 by `VIP_FIRMWARE_Y177_Y181_COMPARISON.md`, carried unchanged — cited by name/section only).
 
@@ -11,8 +11,8 @@ Evidence tags `[C]` confirmed live / `[V]` verified / `[FW]`/`[S]` static firmwa
 
 **Related:** `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` (ELK trigger, live-tested), `VIP_FIRMWARE_Y177_Y181_COMPARISON.md`
 (carried unchanged — the Y177-stub refutation), `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`,
-`../diagnostics/diagnosticsd_security_access.md`, `../diagnostics/diagnosticsd_routines_and_recovery.md`,
-`../diagnostics/diagnosticsd_protocol.md`.
+`../../diagnostics/diagnosticsd_security_access.md`, `../../diagnostics/diagnosticsd_routines_and_recovery.md`,
+`../../diagnostics/diagnosticsd_protocol.md`.
 
 ---
 
@@ -64,8 +64,8 @@ boot failures, or try generic root recipes.
 > status block (original source lines ~46-113: SID22 DID coverage audit, IOCID inventory/live
 > control table, ABFT routine0475, `IECUUpdate.copyFile`, Type2 package registration, FSA
 > RemoteModuleHMI) is live bench-status tracking for the diagnostics tree, not an untried-vector
-> catalog entry. It already cites and belongs under `../diagnostics/diagnosticsd_routines_and_recovery.md`
-> (diagnostic control coverage audit) and `../diagnostics/diagnosticsd_protocol.md` (IOCID
+> catalog entry. It already cites and belongs under `../../diagnostics/diagnosticsd_routines_and_recovery.md`
+> (diagnostic control coverage audit) and `../../diagnostics/diagnosticsd_protocol.md` (IOCID
 > inventory / live bench controls). **This reorg has no authority to edit the diagnostics tree** —
 > flagging for the user/planner to move that block there; it is not folded into this doc.
 
@@ -165,7 +165,7 @@ rule — this doc does not restate it).
 The GWM `FDF0` writes and candidate GM `2F 81 80 03` were attempted through Android `diagnosticsd`,
 with level-1 SecurityAccess. All returned NRC 31; Android logged missing DID/IOCID handler classes
 and did not reboot. This is not a CAN-side rejection. See the live results at
-`../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15`.
+`../../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15`.
 
 **Next:** validate the selector through the direct CAN adapter when delivered, trace the
 descriptor/session/security/mode gates, and observe the control response and actual boot
@@ -180,16 +180,16 @@ it.
 
 **Status:** WRITTEN, NEVER BUILT
 **Location:**
-- `research/tools/ghs_probe/ghs_probe.c`
-- `research/tools/ghs_probe/CMakeLists.txt`
-- `research/tools/ghs_probe/AndroidManifest.xml`
+- `tools/bench/ghs_probe/ghs_probe.c`
+- `tools/bench/ghs_probe/CMakeLists.txt`
+- `tools/bench/ghs_probe/AndroidManifest.xml`
 
-(Path kept as-is; `research/tools/` is an excluded subdirectory not opened in this reorg pass.)
+(Path kept as-is; `tools/bench/` is an excluded subdirectory not opened in this reorg pass.)
 
 **Build procedure:**
 ```bash
 # Requires Android NDK r25+
-cd research/tools/ghs_probe
+cd tools/bench/ghs_probe
 mkdir build && cd build
 cmake .. \
   -DANDROID_ABI=x86_64 \
@@ -235,7 +235,7 @@ reads `/proc/cmdline` directly or via a property API.
 diagnosticsd UDS chain. `$27` for `ETHERNET`/`NOTIFICATION` tiers is checked in-process by
 `diagnosticsd`'s own `libuds`; the `VIP` tier is forwarded off-SoC to the VIP MCU via
 `ProxyOfExtComp`/`SockAdaptor`, gated by the SBI EEPROM byte there — see
-`../diagnostics/ethernet_uds_diagnosticsd.md`. Opening the `diagnosticsd` code path (vector #9) is
+`../../diagnostics/ethernet_uds_diagnosticsd.md`. Opening the `diagnosticsd` code path (vector #9) is
 a separate, unrelated escalation; a `gm_protokey` bypass does not grant it. What remains open here
 is only the boot-time proto-key/disk-encryption (DATA_LOCKED) gate itself, not UDS access.
 
@@ -262,7 +262,7 @@ adb logcat | grep -i "protokey\|TOFU\|provision\|PAL"
 **History:** originally framed as a lever that could get update packages signed and accepted by
 the GHS update path. **Corrected 2026-09-27:** this would NOT unlock UDS `SecurityAccess ($27)` —
 that gate is unrelated to `gm_protokey`/the PAL trust chain (same correction as vector #6; see
-`../diagnostics/ethernet_uds_diagnosticsd.md`). The update-path-signing question itself remains
+`../../diagnostics/ethernet_uds_diagnosticsd.md`). The update-path-signing question itself remains
 open, but is decoupled from the original UDS-escalation framing.
 
 ---
@@ -319,7 +319,7 @@ The old FA/F1/F0 source values and unvalidated-target claim were not the accepte
 tester F4, target `0x0084` and the eight-byte `>HHI` header; the old `>HHIH` example incorrectly
 inserted two extra bytes. Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
 `27 02` plus 12 zero bytes returned `67 02`. Default session was restored. See the owning record:
-`../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14`.
+`../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14`.
 No arbitrary-key, calibration-write, Android-root, or GHS-shell result follows from this grant.
 
 ---

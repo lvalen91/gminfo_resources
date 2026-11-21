@@ -23,7 +23,7 @@ See `platform/external_references.md` for the full kernelflinger path list, whic
 (roles not carried there — kept here): `libkernelflinger/protocol/MkhiMsgs.h` (MKHI header +
 group/command opcodes), `libheci/hecisupport.c` + `include/hecisupport.h` (HECI transaction
 flow, EOP example), `libkernelflinger/protocol/BootloaderSeedProtocol.h` (ATTKB/seed
-structures), and `kf4abl.c`. See also the `research/decompiled/ghs_str.txt`
+structures), and `kf4abl.c`. See also the `evidence/decompiled/ghs_str.txt`
 (lines 38092–38148) / `ghs_analysis.txt` (lines 302–333, 696, 264/267, 5384/5412) ranges this
 doc's RE is built on. Architecture/reachability context: GORDON_PEAK_CELADON_INTELLIGENCE.md,
 GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, HARDWARE_HYPERVISOR_ATTACK_VECTORS.md.
@@ -347,7 +347,7 @@ corruption; it does **not** yield arbitrary firmware flashing, which stays behin
   diff against Intel Slim Bootloader / ABL BUP HECI client sources.
 - **Reverse `/system/lib64/libghs_lip.so`** to get the real `ota-isys` ioctl/RPC dispatch table
   (unblocks fuzz target #1 and the reachability question).
-- **Build `ghs_probe`** (`research/tools/ghs_probe/`, NDK r25+) and deploy in an automotive-permitted
+- **Build `ghs_probe`** (`tools/bench/ghs_probe/`, NDK r25+) and deploy in an automotive-permitted
   domain to enumerate the `ota-isys` verb space empirically.
 - **Confirm ATTKB `%d` vs `%ld` size types** in the disassembly — signed/width confusion is the
   highest-probability memory-safety bug from the string evidence.

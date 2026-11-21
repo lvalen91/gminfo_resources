@@ -118,7 +118,7 @@ EEPROM (M24C64) Security-Relevant Regions:
 for the primary record); the byte that actually carries the ADB-bypass state is the DATA byte, not
 the first (marker) byte of each frame -- 0x0441 for the primary frame, 0x0A81 for the backup frame.
 The marker bytes at 0x0440/0x0A80 vary by firmware/unit and are not the security-relevant address.
-See platform/eeprom_i2c_security.md and research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §2.]
+See platform/eeprom_i2c_security.md and research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §2.]
 
 ================================================================================
 3. BOOT CHAIN & GHS HYPERVISOR
@@ -262,7 +262,7 @@ build):
    "internal"/not wire-exposed for those five specifically, but this has not been re-verified on this
    document's own Y181 build. See platform/fsa_protocol.md Security Notes and
    source_notes/T1_RADIO_NETWORK_STRUCTURE.txt (external bench corpus, not in this repo -- see
-   research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md [S108]) for the full allowlist table.]
+   research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md [S108]) for the full allowlist table.]
 
 ADB TCP 5555: Configured in init.rc but NOT actively listening.
 
@@ -327,7 +327,7 @@ BYPASSED STATE:
 and 0x0A80 (backup). The byte that actually holds the secured/bypass state is the middle DATA byte
 of each triple -- 0x0441 for the primary flag, 0x0A81 for the backup flag -- not the marker byte at
 0x0440/0x0A80 itself. See platform/eeprom_i2c_security.md and
-research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §2.]
+research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md §2.]
 
 6.2 MEC COUNTER BEHAVIOR
 ------------------------
@@ -494,7 +494,7 @@ MEDIUM PRIORITY:
 4. Enable IOMMU (remove intel_iommu=off from cmdline)
    [OPEN CONFLICT 2026-11-21: see the note under the §8 table -- the cmdline flag is the
     guest kernel's setting, distinct from hypervisor-level platform VT-d, whose state is
-    NOT established per research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md. Recommendation
+    NOT established per research/security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md. Recommendation
     retained unchanged.]
 5. Review dontaudit rules hiding security violations
 6. Audit 3x boot failure bypass behavior

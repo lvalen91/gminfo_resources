@@ -56,7 +56,7 @@ established per module.
 (`PEC000A`) and a module1C calibration-header-gate probe (`PEC000F`) — its header parser
 accepts calibration IDs `02`–`0F` only — and the mounted Y175 `swu_update_sxm` export returns
 `0B` without a write call. Other bootloader/internal routes remain unresolved. Owner doc for
-this fact: [`platform/ota_programming_roles.md#sxm-stock-file-can-attempt--2026-11-17`](../platform/ota_programming_roles.md#sxm-stock-file-can-attempt--2026-11-17).
+this fact: [`platform/ota_programming_roles.md#sxm-stock-file-can-attempt--2026-11-17`](../../platform/ota_programming_roles.md#sxm-stock-file-can-attempt--2026-11-17).
 
 ---
 
@@ -123,7 +123,7 @@ recovery updater actually invokes; they descend into the ota-isys path). From th
 **2.5 `/dev/ghs/ota-isys` ioctl numbers are UNKNOWN [U].** The repo's own probe notes the ioctls
 are *guesses* (`_IOR('g', 0x01-0x02, int)`) and require RE of the GHS LIP kernel module
 `/system/lib64/libghs_lip.so` to recover the real dispatch table
-(`research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md:182`). This is the single biggest gap to closing
+(`research/security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md:182`). This is the single biggest gap to closing
 the opcode map.
 
 ---
@@ -185,7 +185,7 @@ rejection is confirmed real: `VMM: ERROR: rollback index is too old: %lu in imag
 
 **Two coupled state machines.**
 - **Android SWU:** `mIdle → mDownloadAvailable → mUpdateAvailable → mSecureUnlock → mProgramming
-  → mPostProgramming → mUpdateComplete` (owner: [`platform/ota_update_stack.md`](../platform/ota_update_stack.md), state-table detail there). `mSecureUnlock`
+  → mPostProgramming → mUpdateComplete` (owner: [`platform/ota_update_stack.md`](../../platform/ota_update_stack.md), state-table detail there). `mSecureUnlock`
   = UDS SecurityAccess ($27) challenge.
 - **GHS boot verify:** `CheckRecoveryMode → read A/B metadata → AVB (vbmeta→boot) → rollback index
   → run guest`.
@@ -266,17 +266,17 @@ point — do not touch this doc's content and are not repeated here.)
 
 ## Appendix — evidence file paths
 
-- `research/decompiled/ghs_str.txt` — OTA/HECI rodata strings (`:38092-38146`), section path
+- `evidence/decompiled/ghs_str.txt` — OTA/HECI rodata strings (`:38092-38146`), section path
   (`:45605`), IPC connection names (`:45939-46075`), `.ota_update.*` sections (`:46261-46262`),
   `ota-isys` (`:44239`), `attkb_magic_file` (`:40679`).
-- `research/decompiled/ghs_analysis.txt` — `.ota_update.*` section boundaries (`:37-69`),
+- `evidence/decompiled/ghs_analysis.txt` — `.ota_update.*` section boundaries (`:37-69`),
   `BootELKSendAblUserCommand`/`WaitForRespSent` (`:291-292`), `OtaUpdateToHeciIod`/`BootArgsIod`
   (`:695-696`).
 - [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) — OTA flow (§3.3), A/B metadata layout + CRC32
   weakness (§3.1), attack-surface table (§6), USB trigger-file truth (§4.5).
 - `research/UPDATE_PROCESS_ANALYSIS.txt` — `gmext.*` manifest verbs (§4.1), raw-image confirmation,
   live downgrade test + rollback-index string (§6).
-- [`platform/ota_update_stack.md`](../platform/ota_update_stack.md) — SWU state machine, package signing tiers, USB flags.
-- [`platform/ota_programming_roles.md`](../platform/ota_programming_roles.md) — engine chain (`gm_update_engine → rb_ua → VIP RH850`), SXM-attempt history.
-- `research/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` — ota-isys node, ioctl-guess note, rollback path.
+- [`platform/ota_update_stack.md`](../../platform/ota_update_stack.md) — SWU state machine, package signing tiers, USB flags.
+- [`platform/ota_programming_roles.md`](../../platform/ota_programming_roles.md) — engine chain (`gm_update_engine → rb_ua → VIP RH850`), SXM-attempt history.
+- `research/security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` — ota-isys node, ioctl-guess note, rollback path.
 - `research/security/CVE_ATTACK_SURFACE_ANALYSIS.md` — ELK/HECI (#4) and ota-isys (#6) status.

@@ -13,7 +13,7 @@
 verified i915 framebuffer/console output with automatic panel initialization,
 but the Mesa/Vulkan/VA acceleration workloads below were not repeated on 7.3.5.
 Do not transfer Probe06 acceleration or codec results to stable02 solely because
-its panel works. See [stable02 evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+its panel works. See [stable02 evidence](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
 
 This section describes native probe06 Linux, independent of the historical AAOS
 capabilities below. Kernel i915 is bound to PCI8086:5a84 and exposes card0 plus

@@ -1,12 +1,12 @@
 # MDI2 Protocol Reference
 
 Scope: what an operator needs to know about the wire behaviour of the Bosch GM MDI2 as spoken by
-`mdi2_client/mdi2/`. Derivation, evidence and the investigation trail live in the research docs and
+`tools/mdi2_client/mdi2/`. Derivation, evidence and the investigation trail live in the research docs and
 are linked, not repeated:
 
-- Management/log-pull stack and key derivation: `research/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md`
+- Management/log-pull stack and key derivation: `research/mdi2-bench-sessions/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md`
   (§0 current state, §4.19 key, §4.20 app layer, §4.22/§4.26 live client)
-- D-PDU tunnel (TCP/10123): `research/MDI2_DPDU_API_PROTOCOL_AUG2026.md` (§1 framing, §4 bring-up, §11 re-arm)
+- D-PDU tunnel (TCP/10123): `research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md` (§1 framing, §4 bring-up, §11 re-arm)
 - Port roles and troubleshooting: `MDI2_ACCESS_AND_TOOL_GUIDE.txt` §7-§8 (operator guide, outside this repo)
 
 Constants are in `mdi2/const.py`. Serials, keys and VINs are never recorded in docs; use placeholders.

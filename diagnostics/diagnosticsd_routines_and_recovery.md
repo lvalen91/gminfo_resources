@@ -316,7 +316,7 @@ The temporary diagnostic forward was removed; working USB/T1 ADB remained.
 **Remaining open:** a build-specific diagnostic route that reaches the real
 ADB-enable operation, its payload/gates, and a successful offline-to-online
 ADB transition. Earlier CAN-side domain attempts are recorded in the
-[MDI2 routine reference](../research/MDI2_RAW_UDS_BYPASS_GUIDE.md#7-gm-adb-escape-hatch-via-31-routinecontrol-2026-09-10);
+[MDI2 routine reference](../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md#7-gm-adb-escape-hatch-via-31-routinecontrol-2026-09-10);
 further direct-CAN testing is pending the owner's USB CAN adapter.
 
 ### Owner power-cycle after clear: NoCalibration fault (2026-11-14)
@@ -544,7 +544,7 @@ recovery boot counters 47/48 used
 `--wipe_data --reason=bcm_replacement`. That establishes a historical
 BCM-replacement wipe path in this software, not the cause of the present
 move-triggered wipes. See the
-[recovery boot ledger](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
+[recovery boot ledger](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
 `cal_vin_relearn_en = 1` also appears in all supplied UART captures, but an
 enabled relearn calibration is not evidence that relearning or wiping ran.
 
@@ -669,7 +669,7 @@ packet. The detailed timing and clock limitations are maintained in the
 [existing boot-timing record](../runtime/boot_timing.md#synchronized-rh850-uart-and-ethernet-power-on-measurement-2026-11-14).
 No raw capture files were written.
 
-The subsequent [GHS code analysis](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#ethernet-initialization-and-guest-ownership-code-trace-2026-11-14)
+The subsequent [GHS code analysis](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#ethernet-initialization-and-guest-ownership-code-trace-2026-11-14)
 located PCI Ethernet passthrough registration, generic Intel NIC reset/link/
 ring setup and the `GmEth` resource granted to Android Guest1. It did not
 identify the producer of the first VLAN-2 AVTP frames or establish that an
@@ -683,7 +683,7 @@ aligned reference windows. macOS-playable WAVs and audio-only raw PCM were
 created; no network identifiers or packet files were retained. See the
 [owning audio extraction record](../platform/avb_audio_transport.md#3-live-avtp-player-audio-recovery-2026-11-15).
 
-See the [main-client recovery notes](../mdi2_client/docs/CALIBRATION_WRITE.md#cleared-a11-recovery-2026-11-14)
+See the [main-client recovery notes](../tools/mdi2_client/docs/CALIBRATION_WRITE.md#cleared-a11-recovery-2026-11-14)
 for the unchanged CLI limits. Raw UART data and private adapter/vehicle
 identifiers are not copied into this repository.
 
@@ -700,7 +700,7 @@ algorithm, a secret key, or an accepted diagnostic response calculation.
 The BCM ProtoKey input, its diagnostic checksum and a UDS SecurityAccess
 challenge are separate objects. The available UART observations do not
 recover the protected seed/key math. See the existing
-[seed/key and calibration signatures reference](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
+[seed/key and calibration signatures reference](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
 for the separately traced DPS/backend CMAC path.
 
 #### Audio usage follow-up 2026-11-15
@@ -773,7 +773,7 @@ owner is awaiting a USB CAN adapter after unreliable MDI2/CAN communication.
 CAN-side testing was pending at this checkpoint. The2026-11-17 follow-up below
 records two rejected direct-CAN candidates.
 
-The [owning firmware analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
+The [owning firmware analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
 records the matched cleanroom APK, corrected VIP payload load map and compiled
 selector-8180 → one-byte E0 control request. That compiled branch narrows the
 next CAN test; it is not a verified universal boot-target command.

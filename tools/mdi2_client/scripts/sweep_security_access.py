@@ -37,7 +37,7 @@ CLIENT_LOGICAL = 0x0EF5    # tester source address DPS uses
 
 # NOTE ON TARGET ADDRESS: read_csm_x80.py's CSM_TARGET default (0x0C80, derived
 # from a "0x0C00 | diag_addr" hypothesis) is documented there as unverified.
-# A real captured DPS session (research/MDI2_DPDU_API_PROTOCOL_AUG2026.md §6,
+# A real captured DPS session (research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md §6,
 # live-confirmed) shows ECU 0x80 physically answers as target 0x0A80, response
 # source 0x2580. Default here to the live-confirmed value; override with
 # --target if this unit differs.

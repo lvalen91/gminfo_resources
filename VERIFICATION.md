@@ -16,7 +16,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 > still takes about 63 seconds; touch binding and audio/camera remain incomplete.
 > No flash write was performed. Image hashes, source provenance, inherited
 > builder changes, runtime corrections and limits are in the
-> [stable02 record](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17). Older build-specific results below remain historical.
+> [stable02 record](research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17). Older build-specific results below remain historical.
 
 > **Earlier native Probe/ELK update, 2026-11-17:** compact Probe08 booted on hardware;
 > native MEI/CSE selector-2 plus reset entered ELK, and ELK RAM-booted Probe.
@@ -25,10 +25,10 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 > compact packaging resolved the observed boot failure. Cold-power CAN entry
 > succeeded only after stock software was already running. Independent
 > blank-eMMC emergency entry and a full restore remain unverified. See the
-> [owning technical record and current process state](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#cold-power-recovery-test-and-current-development-state--2026-11-17).
+> [owning technical record and current process state](research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#cold-power-recovery-test-and-current-development-state--2026-11-17).
 
 > **Y181B recovery-export update, 2026-11-12:** both external ZIPs are identified
-> in [capture provenance and comparison](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12).
+> in [capture provenance and comparison](research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12).
 > They establish an exercised encoded log-capture marker, missing homescreen
 > evidence for users 0/10, recovery-mode/argument distinctions, enforced AVC
 > records despite a permissive boot property, and MEC=227 with Secure-ADB
@@ -40,10 +40,10 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 > Android/calibration observation. Historical captures below keep their
 > original build/scope; no new live ADB or emulator run is implied.
 
-> **Jun-2026 live update:** a fresh capture against the running radio (`enumeration/Y181/jun2026/`,
+> **Jun-2026 live update:** a fresh capture against the running radio (`evidence/enumeration/Y181/jun2026/`,
 > same Y181.3.2 firmware) reinforced 16 claims, closed 3 "unverifiable" gaps (GPU, touch 0x4B, virtio guest),
 > and **withdrew two earlier corrections** (c2.android codecs, networking) — see those rows below and
-> `enumeration/Y181/jun2026/CLAIMS_VERIFICATION.md`.
+> `evidence/enumeration/Y181/jun2026/CLAIMS_VERIFICATION.md`.
 
 > **[C] live-Y175 2026-10-05 update:** a fresh disk-only capture against a running **Y175** radio
 > (`W213E-Y175.5.2-SIHM22B-383.1`, Android 12/API 32, patch 2024-05-05, kernel 4.19.283 x86_64,
@@ -301,7 +301,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   this unit (per `[E]`). `fw_update_slota`/`fw_update_slotb` init services are **unset** — not
 >   present on this Y175 build at all (possibly Y181-only). `cmd_fw_update_vendor` confirmed present
 >   as a symlink to `abl-user-cmd_vendor`; `fw_update.sh` itself `Permission denied`.
-> - **`research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`** serial device labels — **CONFIRMED exactly**:
+> - **`research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`** serial device labels — **CONFIRMED exactly**:
 >   `ttyS0` → `bluetooth_serial_device` (`crw-rw---- bluetooth:bluetooth`), `ttyS1` →
 >   `ipc_serial_device` (`crw------- root:root`, static since boot), `ttyS2` → `serial_device`
 >   (`crw------- root:root`, static since boot). `ttyS0`'s mtime is today, unlike the other two's
@@ -313,7 +313,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   `ro.boot.dynamic_partitions=true` — **CONFIRMED set**, alongside `ro.boot.slot_suffix=_b` —
 >   consistent with `boot_chain.md`'s own correction that this prop exists but the real partition
 >   layout underneath is static A/B, not actually dynamic/`super`.
-> - **`research/session_logs/RESEARCH_STATE_MAP_JUN2026.md`** — GHS partitions (`ghs_isys`,
+> - **`evidence/session-logs/RESEARCH_STATE_MAP_JUN2026.md`** — GHS partitions (`ghs_isys`,
 >   `teedata`, `cert_*`) **CONFIRMED not mounted** in Android (`mount` grep empty). Trusty-via-ACPI
 >   claim **CONFIRMED**: `kworker/0:2-trusty-timer-wq` and `kworker/u8:5-trusty-check-wq` kernel
 >   threads are both present and running, despite `/tos`/`/multiboot` being commented out of fstab —
@@ -430,7 +430,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 
 > **[I] live-Y175 2026-11-02 Bus 2 direct T1 tap, bench-confirmed, 2-plus-source agreement
 > (`T1_RADIO_core.txt` + `T1_RADIO_NETWORK_STRUCTURE.txt` (external bench corpus, not in this
-> repo; full paths recorded in `research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`
+> repo; full paths recorded in `research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`
 > [S108]/[S110]) + the dated breakthrough note, all
 > transcribed into `Y175_LIVE_RADIO_T1_SECURITY_ASSESSMENT_2026-11-02.md`):**
 >
@@ -461,7 +461,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   source addresses and capture window, not proof the allow-list cannot be bypassed from an
 >   authorized/compromised peer. Docs updated: `platform/vehicle_network.md`,
 >   `diagnostics/ethernet_uds_diagnosticsd.md`, `research/MASTER_REFERENCE.md`,
->   `research/GM_REMOTE_ACCESS_ANALYSIS.txt`.
+>   `research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt`.
 
 Bottom line: the bulk of the repo verified **CONFIRMED**. The errors found are listed below;
 the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was out of scope
@@ -471,7 +471,7 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 
 | Area | Was | Now (verified) |
 |------|-----|----------------|
-| RAM type/capacity | "6 GB DDR3L" (8 docs) | **8 GiB LPDDR4** physical; static GHS guest grant 7830 MiB (+34 MiB RO IPU window); historical Android `MemTotal` near 5530 MiB. Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; grant-to-visible cause unresolved. [Map and limits](research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
+| RAM type/capacity | "6 GB DDR3L" (8 docs) | **8 GiB LPDDR4** physical; static GHS guest grant 7830 MiB (+34 MiB RO IPU window); historical Android `MemTotal` near 5530 MiB. Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; grant-to-visible cause unresolved. [Map and limits](research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
 | eMMC model | KLMBG2JETD-B041 (32 GB part #) | **KLMCG4JEUD** (64 GB, teardown-verified) |
 | Display maker | Chunghwa | **Chimei Innolux** (PnP `CMN`) |
 | Audio output buses | "14" / "12+" (README + 4 audio docs) | **8** CarAudioService buses (bus0–bus7), confirmed in `car_service.txt`; bus8–bus13 are Harman-HAL-internal graph nodes, not CarAudioService buses |
@@ -554,7 +554,7 @@ into `hardware/connectors.md`:
   (`intel_xhci_usb_sw` + `dabridge dabr_udc.0`, reaching the XDCI via the GHS-supplied `OTGD` ACPI OpRegion), not a receptacle ID/CC function — CC is host-side only; the radio cannot sense it. The role is entered by the Developer-Options USB-debugging toggle (VBUS-sense ruled out) and applied via `OTGD`/`SPPS` port-power. Only the physical
   root-port→console-Type-C mapping remains open.
 
-**Resolved by live Jun-2026 ADB capture** (`enumeration/Y181/jun2026/`):
+**Resolved by live Jun-2026 ADB capture** (`evidence/enumeration/Y181/jun2026/`):
 - GPU **"HD 505 / Mesa 21.1.5"** → CONFIRMED via `SurfaceFlinger` GLES dump:
   `Mesa Intel(R) HD Graphics 505 (APL 3), OpenGL ES 3.2 Mesa 21.1.5 (git-4bdd81676b)`.
 - Touch controller **I²C 0x4B** → CONFIRMED: `/sys/bus/i2c/devices/7-004b` bound (bus 7 also exposes 0x0c/0x12/0x28).

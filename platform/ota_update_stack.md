@@ -16,7 +16,7 @@ for the signing/SELinux gate context see [`platform/security.md`](security.md).
 
 ## Y181B recovery export evidence (2026-11-12)
 
-Source: both [recovery USB archives](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12).
+Source: both [recovery USB archives](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12).
 Their entire `update/` trees are byte-identical. Exported `UpdateDB` has
 15 `UpdateResults` rows, no `Packages` rows and `ReflashCounter=11`.
 The stored `ProgrammingStatus` names manifest `86405527`, version
@@ -107,7 +107,7 @@ state and production certificate configuration, not a new OS flash in this test.
 `vbmeta_a` operation: `UpdateDummy`, opening the partition **for reading**,
 and completion with Error 0. `Security: none` describes this Redbend agent
 configuration; it does not negate the surrounding GM package verifier or AVB.
-This supports the [dealer wipe package analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#421-dealer-data-wipe-package-and-formatter-verified-2026-11-12),
+This supports the [dealer wipe package analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#421-dealer-data-wipe-package-and-formatter-verified-2026-11-12),
 not a claim that this dummy stage installed a replacement vbmeta image.
 
 ## UpdateService Binder Interface
@@ -202,7 +202,7 @@ reached but no caller-permission check guards it.
 > pinning; whether a rogue vlan5 node can spoof `.102` at L2/L3 to feed a
 > subscribed listener (should one exist on another build/config) is an open
 > bench item. See
-> [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only).
+> [`../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md`](../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only).
 
 > **[U] INSTALLRUNNER trace (2026-09) — closes the code-execution question for the local IPC path.**
 > Refines (does not contradict) the "no network→install path" verdict above. `IUpdateService.install()`
@@ -435,7 +435,7 @@ not reachable via `service call`. Methods:
 
 ### Update History (Tx 3, live) — 10 entries, notable
 
-- USB install from `/mnt/media_rw/4FE0-161D/85759595.mnf` → `SIHM22B-00383.01` (corrected 2026-11-12 from `857595955.mnf`; both `enumeration/Y181/apr2026/raw/gm_update_service.txt:33` and the `/cache` `UpdateDB` read `85759595.mnf`)
+- USB install from `/mnt/media_rw/4FE0-161D/85759595.mnf` → `SIHM22B-00383.01` (corrected 2026-11-12 from `857595955.mnf`; both `evidence/enumeration/Y181/apr2026/raw/gm_update_service.txt:33` and the `/cache` `UpdateDB` read `85759595.mnf`)
 - OTA cache installs of SIHM22B-00499.02, .03, SIHM22B-00526
   - **[HIGH INTEREST — G8]** SIHM22B-00526 = `85874101.mnf`. Static analysis of this
     manifest (2026-11-12 forensic cache) reveals its embedded Edify script contains
@@ -487,7 +487,7 @@ mIdleState → mDownloadAvailableState → mUpdateAvailableState → mSecureUnlo
 ```
 Current device state: **IdleState**. **SecureUnlock** = a UDS SecurityAccess
 seed-key challenge before ECU programming — see ProtoKey in
-[MEC/ADB evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) and the seed/key
+[MEC/ADB evidence](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) and the seed/key
 tiers in [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md).
 
 ---
@@ -767,7 +767,7 @@ Manifest filenames may carry a trailing format digit, e.g.
 
 These normal-AAOS flags are separate from recovery's two encoded markers,
 its internal argument file, and fastbootd entry.
-[Recovery scanner, log capture and options](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#4-trigger-files-and-reboot-mechanisms).
+[Recovery scanner, log capture and options](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#4-trigger-files-and-reboot-mechanisms).
 
 The existing signature-chain analysis remains applicable: package/module
 acceptance is a separate gate. Neither a USB flag nor the dealer package's
@@ -777,7 +777,7 @@ acceptance is a separate gate. Neither a USB flag nor the dealer package's
 
 The package script, fingerprints, Red Bend/vbmeta limits, formatter disassembly
 and package-acceptance boundary are maintained in
-[the consolidated source §4.2.1](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#421-dealer-data-wipe-package-and-formatter-verified-2026-11-12).
+[the consolidated source §4.2.1](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#421-dealer-data-wipe-package-and-formatter-verified-2026-11-12).
 This document owns the normal-AAOS update stack and Binder interface.
 
 
@@ -793,5 +793,5 @@ This document owns the normal-AAOS update stack and Binder interface.
   — UDS SecurityAccess (SecureUnlock) channel
 - [`research/security/SHELL_ACCESS_ESCALATION_Jun2026.md`](../research/security/SHELL_ACCESS_ESCALATION_Jun2026.md)
   — full uid=2000 Binder access map and escalation gates
-- Source: `enumeration/Y181/apr2026/raw/gm_update_service.txt` (dumpsys);
+- Source: `evidence/enumeration/Y181/apr2026/raw/gm_update_service.txt` (dumpsys);
   Y181 firmware package analysis

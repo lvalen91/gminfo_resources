@@ -3,8 +3,8 @@
 **Scope:** directory manifest of derived/extracted artifacts from the gminfo37 (2024 Silverado
 ICE) reverse-engineering project (replaces volatile `/tmp` storage), plus the external-tooling
 clone/PDF appendix. **Not here:** trust-chain/boot-chain analysis (→ GM_INFO37_BOOT_CHAIN_ANALYSIS.md,
-`../platform/vip_ipc_ghs.md`), key-offset/EEPROM detail (→ EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
-bypass-technique analysis (→ `../platform/security.md`), or the VIP/ELK trigger finding
+`../../platform/vip_ipc_ghs.md`), key-offset/EEPROM detail (→ EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
+bypass-technique analysis (→ `../../platform/security.md`), or the VIP/ELK trigger finding
 (→ GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) — those sections restated other docs and are pointers
 only, see "Analytical sections" below.
 
@@ -42,7 +42,7 @@ All cryptographic keys extracted from various artifacts
 | `ghs_pubkey_*.pem` (4 files) | ghs_integrity.elf @ 14607467/489/153/175 | RSA-1024 SPKI | AOSP Android Software Attestation Root + Intermediate (PUBLIC keys, private halves in AOSP source) |
 | `KEY1.pem`, `KEY2.pem`, `.der` | Same as above (alt extraction) | RSA-1024 | Same keys, alternate format |
 
-## decompiled/ — 17MB
+## ../../evidence/decompiled/ — 17MB
 Ghidra/r2 decompilation outputs
 
 | File | Description |
@@ -86,7 +86,7 @@ Complete extraction of GM DPS v4.56.0000 installer
 | `dps_install/` | Original installer hierarchy |
 | `dps_rar/` | RAR variant of installer |
 
-## scripts/ — 72KB
+## ../../tools/analysis-scripts/ — 72KB
 Custom analysis scripts created during research
 
 | Script | Purpose |
@@ -101,7 +101,7 @@ Custom analysis scripts created during research
 | `forensic.py` | Trust artifact forensics |
 | `crypto_scan.py` | Crypto material discovery |
 
-## reports/ — 576KB
+## ../../evidence/reports/ — 576KB
 All analysis reports and logs
 
 | File | Description |
@@ -120,19 +120,19 @@ Four analytical sections that restated findings owned elsewhere were replaced wi
 
 - **Trust chain** (immutable software-only boot/signing chain, Intel CSE → rot.key → oem.key →
   IBBL/ELK → GHS → current_android_key/VMM1) → see GM_INFO37_BOOT_CHAIN_ANALYSIS.md and
-  `../platform/vip_ipc_ghs.md`.
+  `../../platform/vip_ipc_ghs.md`.
 - **Key locations** (cert/key offset table: GM CSM root, Harman OEM key, ELK AVB anchor,
   vbmeta verifier, AOSP attestation chain, GM signature kernel subsystem) →
   see EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md.
 - **Bypass paths** (EEPROM byte flip, cmdline bootreason=warm, `.validation` delete,
-  `gm_protokey_recovery_prop`, `/data/gmprotokey/trigger/`) → see `../platform/security.md`.
+  `gm_protokey_recovery_prop`, `/data/gmprotokey/trigger/`) → see `../../platform/security.md`.
 - **VIP/ELK findings** (Channel-7 serial-IPC ELK/reboot trigger, RID=0xFF01/sub 0x01,
   `FUN_000641c2`@0x64208) → see GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, which owns the
   live-tested ELK-trigger fact.
 
 ## Definitive blockers for software-only trust replacement
 - ISSI SPI replacement won't bypass AVB (`current_android_key` hardcoded in GHS — **confirmed 2026-11-20**: embedded in the GHS IPK payload, ghs_isys_a name @`0xe3ca7c`/modulus @`0xe3ca90`, byte-identical to the active vbmeta key; see [BOOT_TRUST_ANCHOR_AND_KEYS.md §6](BOOT_TRUST_ANCHOR_AND_KEYS.md#6-current_android_key--the-trust-anchor-embedded-in-the-ghs-image)). **UPDATED 2026-11-20:** GHS-image authentication **is** demonstrated — the GHS IPK carries an appended RSA-2048/SHA-256 signature (sig @`0xe3cc00`) over `image[0:0xe3cb98]`, and the signing OEM "OS Kernel" key is rooted in the Boot-Guard-covered SPI OBB/ELK (@`0x114000`) + CSE Key Manifest (@`0x60354`), **not** in mutable eMMC. A `ghs_isys` write that passes the recomputable Gate-1 self-integrity (§9) still fails this OBB-rooted signature — so the key/verifier **cannot** be silently altered without the OEM private key or an OBB verify-routine bug. Enforcement is **empirically demonstrated** — a one-byte sig-corrupt A/B boot test boots AAOS from stock but is rejected to fastboot when a single signature byte is flipped. What is still open is only *locating* the verify instruction (upstream/uncaptured CSE-BootGuard-OBB) —
-  see `research/session_logs/RESEARCH_STATE_MAP_JUN2026.md:201`.
+  see `evidence/session-logs/RESEARCH_STATE_MAP_JUN2026.md:201`.
 - All trust roots sit in BG-locked binaries (Harman/Intel/GM HSM keys required).
 - Modifying any partition triggers a downstream signature/hash check.
 - A software-only path requires either HSM key compromise or a parse-bug exploit chain
@@ -164,8 +164,8 @@ Location: ~/Downloads/github/
 
 ---
 
-**Related:** GM_INFO37_BOOT_CHAIN_ANALYSIS.md, `../platform/vip_ipc_ghs.md`,
-EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md, `../platform/security.md`,
+**Related:** GM_INFO37_BOOT_CHAIN_ANALYSIS.md, `../../platform/vip_ipc_ghs.md`,
+EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md, `../../platform/security.md`,
 GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md.
 
 Last updated: 2026-09-10

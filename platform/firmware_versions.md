@@ -11,7 +11,7 @@ Coverage: Y175 column [C] live 2026-10-05; Y181B [C] live adb + recovery export 
 Related: [boot_chain.md](boot_chain.md), [security.md](security.md), [ota_update_stack.md](ota_update_stack.md), [ota_programming_roles.md](ota_programming_roles.md), [vehicle_config.md](vehicle_config.md), [ethernet_networking.md](ethernet_networking.md), [hardware_specs.md](hardware_specs.md), [vip_ipc_ghs.md](vip_ipc_ghs.md), [partitions_storage.md](partitions_storage.md).
 
 History (this doc):
-- 2026-08-26: Y177 "SELinux permissive" and "VIP security fn stubbed (4B)" claims retracted (no stock build runs permissive; the VIP validator is the full ~906 B function in every build); the "Y177 is a security regression" conclusion is retracted. SOC_HOSTOS is x86-64, not 32-bit. Basis: `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` section 0, `research/security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8; three-way VIP byte diff 2026-08-25 (see [security.md](security.md), VIP security function section).
+- 2026-08-26: Y177 "SELinux permissive" and "VIP security fn stubbed (4B)" claims retracted (no stock build runs permissive; the VIP validator is the full ~906 B function in every build); the "Y177 is a security regression" conclusion is retracted. SOC_HOSTOS is x86-64, not 32-bit. Basis: `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` section 0, `research/security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8; three-way VIP byte diff 2026-08-25 (see [security.md](security.md), VIP security function section).
 - 2026-10-05: live Y175 radio confirmed the whole Y175 column; DABridge port row refuted as a Y175/Y181 discriminator.
 - 2026-11-12: Y181B live identity, update/slot history folded in; USB `86405527` row id 29 and update-engine slot sequence corrected into the history below.
 
@@ -51,7 +51,7 @@ Notes:
 
 ## Y181B runtime/export identity (2026-11-12)
 
-The bench radio is identified by the operator as **Y181B**. Both [recovery exports](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12) retain the same `update/moduleinfo` and `recovery/props.log`. The version text alone does not distinguish Y181 from Y181B; preserve package/module identities and capture provenance rather than renaming every Y181 artifact B.
+The bench radio is identified by the operator as **Y181B**. Both [recovery exports](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12) retain the same `update/moduleinfo` and `recovery/props.log`. The version text alone does not distinguish Y181 from Y181B; preserve package/module identities and capture provenance rather than renaming every Y181 artifact B.
 
 | Exported component | Part number / version |
 |---|---|
@@ -113,13 +113,13 @@ The Y177 snapshot lists manufacturer `Harman_Samsung` and vehicles `Chevrolet_GM
 | Field | Y175 | Y177 [S] | Y181 / Y181B |
 |---|---|---|---|
 | VIP_APP part number (module 1) | not recorded | 86283151 | 86331656 |
-| VIP_APP version / build | `2B.175.1.5`, build 24Apr23-2202 (`enumeration/Y175/Y175_VIP.log:6-7`, cited in [security.md](security.md)) | build 25Feb28-0330 | `2B.B5.01.01`, build 25Jun19-2209 |
+| VIP_APP version / build | `2B.175.1.5`, build 24Apr23-2202 (`evidence/enumeration/Y175/Y175_VIP.log:6-7`, cited in [security.md](security.md)) | build 25Feb28-0330 | `2B.B5.01.01`, build 25Jun19-2209 |
 | VIP_BOOT (module 71) | not recorded | 85056831 | 85056831 (IDENTICAL) |
 | SOC_HOSTOS (module 21) | not recorded | 85098662 | 85098662 (IDENTICAL) |
 | SOC_ABL (module 72) | not recorded | 85738845 | 85738845 (IDENTICAL) |
 
 - VIP_BOOT, SOC_HOSTOS and SOC_ABL are identical between Y177 and Y181. Y177's SOC_ABL part equals Y181's (version 2344), so Y177's bootloader is probably 2344 [I]; it was never read.
-- An older VIP_APP, `2B.174.4.1` (build 24Mar22-0256), appears in the July 2024 UART capture `enumeration/VIP_log_2B.174.4.1_10JUL24.txt` (cited in [security.md](security.md)); it predates the Y175 radio's own `2B.175.1.5`.
+- An older VIP_APP, `2B.174.4.1` (build 24Mar22-0256), appears in the July 2024 UART capture `evidence/enumeration/VIP_log_2B.174.4.1_10JUL24.txt` (cited in [security.md](security.md)); it predates the Y175 radio's own `2B.175.1.5`.
 - GHS INTEGRITY hypervisor: identical in Y177 and Y181. Version `INTEGRITY IoT 2020.18.19 MY22-026`; SOC_HOSTOS is a 14.9 MB statically linked GHS INTEGRITY ELF, **x86-64** (corrected 2026-08-26: the ELF header claims EM_386/32-bit but the code is x86-64: `movabs`/REX, `crt_x64.86`); build path `/home/mal/gm_release/MY22-026/final/iot/rtos/`. Hypervisor behaviour: [vip_ipc_ghs.md](vip_ipc_ghs.md).
 
 ## 5. Update and slot history (Y181B, directly read 2026-11-12)

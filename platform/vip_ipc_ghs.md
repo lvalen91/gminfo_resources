@@ -5,7 +5,7 @@ Boot ordering and GHS init tasks live in [boot_chain.md](boot_chain.md); compone
 
 Evidence tags (as used in the sources): [C] live-confirmed on a running unit, [FW] firmware/static extraction, [INF] inferred, [X] external source, [UNVERIFIED] not established. "UNVERIFIABLE-FROM-LIVE" = not observable from a locked Y175 user shell.
 
-Related: [boot_chain.md](boot_chain.md), [hardware_specs.md](hardware_specs.md), [security.md](security.md), [fsa_protocol.md](fsa_protocol.md), [ethernet_networking.md](ethernet_networking.md), [can_network.md](can_network.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vehicle_config.md](vehicle_config.md), [emulator.md](emulator.md), [eeprom_i2c_security.md](eeprom_i2c_security.md), [../hardware/teardown.md](../hardware/teardown.md) (owns the IPC Channel Map), [../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
+Related: [boot_chain.md](boot_chain.md), [hardware_specs.md](hardware_specs.md), [security.md](security.md), [fsa_protocol.md](fsa_protocol.md), [ethernet_networking.md](ethernet_networking.md), [can_network.md](can_network.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vehicle_config.md](vehicle_config.md), [emulator.md](emulator.md), [eeprom_i2c_security.md](eeprom_i2c_security.md), [../hardware/teardown.md](../hardware/teardown.md) (owns the IPC Channel Map), [../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
 
 ---
 
@@ -81,7 +81,7 @@ Power/lifecycle independence of AAOS (updated 2026-11-17, from vehicle_network.m
 Summary only; the full security analysis is chartered to [security.md](security.md) and EEPROM/MEC to [eeprom_i2c_security.md](eeprom_i2c_security.md). Version/part tables: [firmware_versions.md](firmware_versions.md).
 
 - VIP_APP part numbers/builds: Y177 86283151 (build 25Feb28-0330); Y181 86331656 (build 25Jun19-2209, live Y181 bench radio VIP_APP module 1 version `2B.B5.01.01`). VIP_BOOT 85056831, SOC_HOSTOS 85098662 and SOC_ABL 85738845 are identical across Y177/Y181 (firmware_versions.md L136-146).
-- Y175 radio's own VIP_APP is `2B.175.1.5` (build 24Apr23-2202, `enumeration/Y175/Y175_VIP.log:6-7`). The July 2024 UART capture `enumeration/VIP_log_2B.174.4.1_10JUL24.txt` is `2B.174.4.1` (Build 24Mar22-0256), an older VIP_APP.
+- Y175 radio's own VIP_APP is `2B.175.1.5` (build 24Apr23-2202, `evidence/enumeration/Y175/Y175_VIP.log:6-7`). The July 2024 UART capture `evidence/enumeration/VIP_log_2B.174.4.1_10JUL24.txt` is `2B.174.4.1` (Build 24Mar22-0256), an older VIP_APP.
 - VIP security-function **address** `0x000b67d0` (not a firmware version): full ~906-byte validator present in ALL builds (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0); the earlier "Y177 4-byte stub" was a fixed-address misread. Corrected 2026-08-26 (three-way byte diff 2026-08-25). Called subroutines `0x000b6652`, `0x000aee28`; callers `0x000b6b06` (primary), `0x000b6e82` (secondary/fallback). `0x000ecd84` is a generic RTOS mutex primitive (285 call sites), not part of a validation chain. RAM `0x3e06` is a generic "security module initialized" readiness flag, not an EEPROM SBI value.
 - Y177 vs Y181 VIP firmware differs by 549,518 bytes (28.4% of the image); this is unrelated VIP change, not a security re-enablement. The hypervisor layer is unchanged between them.
 - The validator belongs to the ADB/MEC certificate path: SoC-side `gm_adb_auth_init` / `is_secure_mode` is driven by EEPROM SBI -> VIP MEC response on DID `F1A0`; it does not set SELinux mode.
@@ -89,7 +89,7 @@ Summary only; the full security analysis is chartered to [security.md](security.
   > **[ONLINE RESEARCH 2026-11-21] PROTOKEY / ProtoKey — no official GM documentation found.**
   > No GM service publication, TSB, or NHTSA filing uses the name "PROTOKEY." The only public
   > reference is third-party reverse-engineering (GitHub `lvalen91/gminfo_resources`,
-  > `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`), which describes: PROTOKEY is the VIP's
+  > `research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`), which describes: PROTOKEY is the VIP's
   > **security key management module**, initialized after SBAT in the VIP module sequence; in
   > normal mode (SBI=0x00) the VIP requests a seed from the BCM over **GMLAN**, validates a
   > seed/key exchange, and transmits the result to the SoC via IPC channel
@@ -221,7 +221,7 @@ During that test, changing the bench's CAN `284` candidate from value 2 to 4 and
 - VMM uses Intel VT-x with 64-bit EPT for the Android guest.
 - Build path: `/home/mal/gm_release/MY22-026/final/iot/rtos/`.
 - Rollback is enforced by a GHS rollback counter in `misc` (Y181 -> Y177 blocked); see [boot_chain.md](boot_chain.md).
-- Memory grant (static guest grant 7830 MiB, E820 etc.) is a hardware/memory topic: [hardware_specs.md](hardware_specs.md), [../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
+- Memory grant (static guest grant 7830 MiB, E820 etc.) is a hardware/memory topic: [hardware_specs.md](hardware_specs.md), [../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory).
 
 ### 4.2 USB mediation [FW 85098662 `.vmm1`/`.boottable`/`IGS_DSDT`; 2026-10-10]
 
@@ -283,7 +283,7 @@ Raw response payload (63 bytes):
 
 Decoded `ReadECUResetInfo_status`: field 1 `eCUResetInfo` { 2 timestamp `"1970-01-01 00:03:19"` (epoch+199 s, clock unset at crash); 3 reason **`"VP Failure ID: 007, Error ID: 0x0C03"`** }; field 2 = `1`.
 
-Interpretation: "VP" = **Virtual Processor** in the GHS INTEGRITY hypervisor. The Visteon IPC logs GHS partition (VP) crashes; VP 007 failed with `0x0C03`. This confirms the IPC partition has visibility into hypervisor VP failure events. Open: correlate VP 007 with a partition name (`/dev/hvc*`, `/vendor/etc/init/*.rc`); decode `0x0C03` (likely an INTEGRITY kernel error code). See [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
+Interpretation: "VP" = **Virtual Processor** in the GHS INTEGRITY hypervisor. The Visteon IPC logs GHS partition (VP) crashes; VP 007 failed with `0x0C03`. This confirms the IPC partition has visibility into hypervisor VP failure events. Open: correlate VP 007 with a partition name (`/dev/hvc*`, `/vendor/etc/init/*.rc`); decode `0x0C03` (likely an INTEGRITY kernel error code). See [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
 
 > **0x0C03 error code — online research note [ONLINE RESEARCH 2026-11-21]:** No public mapping found. Web searches across GHS product documentation, Common Criteria security targets (INTEGRITY-178B), academic literature, and public CVE databases found no published INTEGRITY kernel/VP error code table. GHS error code documentation is gated behind the customer support portal and is not publicly indexed. The only public hit for "0x0C03" is a Linux Bluetooth HCI command opcode (unrelated). The code remains undecoded. If a GHS INTEGRITY SDK or MULTI debugger session becomes available, the INTEGRITY kernel reference manual (`INTEGRITY_kernel_ref.pdf` or equivalent) would be the authoritative source for VP/AddressSpace error codes.
 

@@ -13,8 +13,8 @@ Confidence tags: **[C]** confirmed · **[I]** inferred.
 The test vehicle (RPO UQA) uses the *Mid/High W/ Amplifier* configuration. The radio outputs no
 speaker-level signals. The amplifier is a networked AVB endpoint.
 
-- Amplifier address `192.168.1.103` (`AMP_ETH`; `research/GM_REMOTE_ACCESS_ANALYSIS.txt`).
-- Calibration: `External Amp = Present`, `AMPCAL=3` (`research/session_logs/security_assessment_20DEC25.txt`).
+- Amplifier address `192.168.1.103` (`AMP_ETH`; `research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt`).
+- Calibration: `External Amp = Present`, `AMPCAL=3` (`evidence/session-logs/security_assessment_20DEC25.txt`).
 - VIP boot order includes `AMP_MGR_SWC` (Audio Amplifier Manager).
 - Speaker ± pairs terminate at the amplifier connectors (T3), not the radio. [C]
 
@@ -78,4 +78,4 @@ are not wired on the UQA truck. Per-pin circuit numbers: [`connectors.md`](conne
 
 - ALLDATA *Audio Amplifier Power, Ground and Serial Data (UQA)*; *Speakers (UQA)* vs *Speakers
   (U95-UQF)*; T3 connector end views.
-- `research/GM_REMOTE_ACCESS_ANALYSIS.txt`; `research/session_logs/security_assessment_20DEC25.txt`.
+- `research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt`; `evidence/session-logs/security_assessment_20DEC25.txt`.

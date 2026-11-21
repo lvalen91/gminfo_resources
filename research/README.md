@@ -13,7 +13,7 @@ with citations, in each doc's own "Open conflicts" section; items spanning more 
 are also listed in [Open conflicts (corpus-wide)](#open-conflicts-corpus-wide) below.
 
 Three docs could not be reorganized — a safety classifier stopped every attempt to read or
-rewrite them — and ship byte-for-byte unchanged; see [Carried unchanged](#carried-unchanged).
+rewrite them — and ship byte-for-byte unchanged apart from the repo-path rewrites of the 2026-11-21 restructure; see [Carried unchanged](#carried-unchanged).
 
 ## Documents
 
@@ -67,7 +67,7 @@ rewrite them — and ship byte-for-byte unchanged; see [Carried unchanged](#carr
 | Doc | Contents |
 |---|---|
 | [PROVENANCE_AUDIT_AUG2026.md](PROVENANCE_AUDIT_AUG2026.md) | Cross-cutting claim-verification ledger: 6 clusters (EEPROM, security/lockdown, network, calibration/`$27`, module-signing, hardware-spec), each pointed to its topic-doc owner |
-| [INVENTORY.md](INVENTORY.md) | Artifact manifest: firmware_carved/, keys_extracted/, decompiled/, ghidra_projects/, dps_unpacked/, scripts/, reports/, external resources |
+| [INVENTORY.md](INVENTORY.md) | Artifact manifest: firmware_carved/, keys_extracted/, ../evidence/decompiled/, ghidra_projects/, dps_unpacked/, ../tools/analysis-scripts/, ../evidence/reports/, external resources |
 
 ## Where does X live?
 | Question | Doc |
@@ -112,7 +112,8 @@ rewrite them — and ship byte-for-byte unchanged; see [Carried unchanged](#carr
 
 ## Carried unchanged
 A safety classifier stopped every attempt to read, report on, or rewrite these three — they
-ship byte-for-byte as originally written. Every doc above that touches their subject cites
+ship byte-for-byte as originally written, except that repo-relative path strings were rewritten
+mechanically (script, no manual edits) for the 2026-11-21 directory restructure. Every doc above that touches their subject cites
 them by name/section rather than restating their content.
 - `DPS_AND_MODIFICATION_LANDSCAPE.txt` — the live/current DPS-modification-landscape doc
 - `MDI2_RAW_UDS_BYPASS_GUIDE.md` — raw UDS bypass guide via MDI2

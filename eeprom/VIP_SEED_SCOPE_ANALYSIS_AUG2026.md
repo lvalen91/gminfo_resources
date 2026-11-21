@@ -197,7 +197,7 @@ Key facts this establishes:
   header-stripped forensic count gives 7114 total for the invalid-seed lines (`viplog.log` 2245 +
   `viplog.log.rot` 4869; `[1]`=3556, `[2]`=3558) against 10 `Seed %d taken from GMLAN` lines (10 in
   `viplog.log`, 0 in `.rot`). Both counting methods are retained here rather than reconciled to a
-  single number; see `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` ~§3 (near line 479) for the
+  single number; see `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` ~§3 (near line 479) for the
   fuller breakdown.
 
 ## 4. Captured target behavior (corrected 2026-11-11)
@@ -206,7 +206,7 @@ Fresh reconstruction of `SPS_radioCal_and_OS_UpdateCHeck.pcapng` identifies two 
 level-1 exchanges on **radio ECU `0x80`**: **31-byte normal seed → 12-byte response →
 `67 02`**. The fixed 16-byte prefix matches the radio's DID `F0F3`; the remaining 15 bytes
 vary. Seed/key/identity values are deliberately omitted here. See
-[the capture timeline](../research/AUG24_SESSION_FULL_PCAP_TIMELINE.md).
+[the capture timeline](../research/mdi2-bench-sessions/AUG24_SESSION_FULL_PCAP_TIMELINE.md).
 
 `DPS+SPS.pcapng` instead programs **amplifier ECU `0x81`** (three containers); radio `0x80`
 has DID reads and seed-only DoIP probes there. Do not turn other-ECU observations into
@@ -216,7 +216,7 @@ The target's separately bench-reported degenerate state is **31 all-FF seed byte
 The client sends **12 zero bytes**, receives `67 02`, and completed a 14-container
 **stock signed** LTZ calibration write on 2026-11-10 with post-reset readback and ADB retained.
 This establishes this exact response in that state, not acceptance of any arbitrary key.
-[Bench report and code](../mdi2_client/README.md).
+[Bench report and code](../tools/mdi2_client/README.md).
 
 ## 5. Security boundaries
 
@@ -228,7 +228,7 @@ ADB opens through **VIP MEC reporting → SoC `gm_adb_auth_init` / `is_secure_mo
 MEC 1–255 bypasses the GM client certificate requirement; zero, query failure, and
 out-of-range values fail closed. The all-FF UDS seed is not consumed to open ADB.
 ProtoKey's status-plus-16-byte-key IPC and the Signature Bypass Ticket are separate
-mechanisms. See [EEPROM audit §0.10–0.14](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md).
+mechanisms. See [EEPROM audit §0.10–0.14](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md).
 
 The parameterized validator and internal 19-bit mask described above do not establish
 which wire subfunctions map to each internal slot. They do not prove arbitrary calibration
@@ -260,7 +260,7 @@ All 14 examined CSM calibration containers have independently verified RSA signa
 That establishes signed package format; it does not isolate the active UDS verifier or
 prove that a particular edited-transfer NRC was caused by signature rejection.
 Current evidence, scope and source links:
-[GM seed/key and calibration signatures](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+[GM seed/key and calibration signatures](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 ## 8. UPDATE (2026-09-10): Community/expert corroboration from CameraLoops.ru — Global-B key is server-issued, not crackable client-side; and a scope-check on the "GM Seed Key Generator" tool
 
@@ -279,7 +279,7 @@ describing a server-issued Global-B workflow, not proving the exact gminfo37 res
   DPS software, it has to come from GM's own backend (a "legit DPS account", consistent
   with the `IECS.dll` mTLS key-provisioning-server mechanism), and pirated/cracked DPS
   installs (the MHH-Auto-style licensing cracks documented in
-  `research/DPS_AND_MODIFICATION_LANDSCAPE.txt`) do not bypass this. Troy states he
+  `research/eeprom-calibration/DPS_AND_MODIFICATION_LANDSCAPE.txt`) do not bypass this. Troy states he
   personally "doesn't know much about Global-B" beyond this — not a source of algorithm
   detail, just confirms the shape of the problem.
 - **The referenced deeper thread, `forums/topic/1311-gm-dps-certificate-to-global-b/`

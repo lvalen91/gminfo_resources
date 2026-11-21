@@ -10,7 +10,7 @@ This documents the **Ethernet** diagnostic channel: the root daemon
 Diagnostics (UDS / ISO 14229) into Android diagnostic handlers. A complete
 live forwarding path to a separate RTOS diagnostic endpoint remains unproven
 (corrected scope, 2026-11-15). This is distinct from the **CAN/DPS** diagnostic path captured in
-[`diagnostics/dps/`](dps/) (ECU 0x80, DPS 4.56) and from the FSA service layer
+[`evidence/dps-logs/`](../evidence/dps-logs/) (ECU 0x80, DPS 4.56) and from the FSA service layer
 ([`platform/fsa_protocol.md`](../platform/fsa_protocol.md)). The `gm_diagnosticsd`
 SELinux domain and its UDS SID list are summarized in
 [`platform/security.md`](../platform/security.md#can--uds-diagnostic-services--pointer-only);
@@ -117,16 +117,16 @@ Links must target those files; fragments on this index do not automatically redi
     by missing Android handlers on the tested Ethernet route; CAN acceptance,
     outer gates and actual ELK entry remain open. See the
     [live test](diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15)
-    and [firmware trace](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+    and [firmware trace](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
 ## GM service-data note (ALLDATA)
 
 GM's ALLDATA for this vehicle publishes **no UDS/GMLAN diagnostic addresses** — the "Code"
 column (A11, T3, K9…) is the RPO/schematic designator, not a bus address. So request/response
-IDs like `0x14DA80F1` come from **captured bus traffic** (`dps/`), not GM docs. The dealer-side
+IDs like `0x14DA80F1` come from **captured bus traffic** (`../evidence/dps-logs/`), not GM docs. The dealer-side
 scan-tool (**GDS2**) *data-parameter* lists for A11 Radio / T3 Amp / K9 BCM — Ethernet per-port
 Rx/Tx fail counters + IPs, MEC, ANC/mic levels, battery-sensor stream, etc. — are catalogued in
-[`../enumeration/README.md`](../enumeration/README.md) §Vehicle module inventory, and the
+[`../evidence/enumeration/README.md`](../evidence/enumeration/README.md) §Vehicle module inventory, and the
 diagnostics/programming CAN bus is **CAN6 (5 Mbit/s)** per
 [`../platform/ethernet_networking.md`](../platform/ethernet_networking.md#can-bus).
 

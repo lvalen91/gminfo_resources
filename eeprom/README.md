@@ -54,7 +54,7 @@ were not required and produced no observed ADB/SELinux effect.
 
 Separate effects must remain separate:
 
-- **ADB:** [Certificate and privilege behavior](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) is maintained in the consolidated source.
+- **ADB:** [Certificate and privilege behavior](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) is maintained in the consolidated source.
 - **UDS SecurityAccess:** the tested radio returns 31 all-FF seed bytes, and the client
   sends exactly 12 zero bytes and receives `67 02`. Arbitrary-key acceptance is unproven.
 - **Programming:** on 2026-11-10 the client wrote 14 stock GM-signed radio calibration
@@ -64,9 +64,9 @@ Separate effects must remain separate:
 - **ProtoKey and Signature Bypass Tickets:** these are separate mechanisms from the
   UDS seed and the EEPROM SBI; do not use the shared terminology as proof of a shared gate.
 
-See [the EEPROM audit](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
-[the client bench report](../mdi2_client/README.md), and
-[the central evidence guide](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+See [the EEPROM audit](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md),
+[the client bench report](../tools/mdi2_client/README.md), and
+[the central evidence guide](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 The candidate cells `0x04A0`, `0x04C0`, `0x0A40`, and `0x0BE0` are unwritten in the compared
 dumps; their existence is not a demonstrated calibration-unlock lever. Actual Android
 `SCREEN_RESOLUTION` is a `CalSets.db` value, not a proven EEPROM display-width field.

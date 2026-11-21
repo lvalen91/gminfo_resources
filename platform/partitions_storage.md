@@ -5,7 +5,7 @@
 
 **Evidence legend:** `[V]` read directly from hardware or a live radio; `[C]` cross-checked against a second source, or arithmetic derived from `[V]` values; `[U]` stated in a source without a measurement or inferred from static analysis.
 
-**Related:** [boot_chain.md](boot_chain.md) | [firmware_versions.md](firmware_versions.md) | [hardware_specs.md](hardware_specs.md) | [elk_recovery.md](elk_recovery.md) | [ota_update_stack.md](ota_update_stack.md) | [emulator.md](emulator.md) | [security.md](security.md) | [../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md)
+**Related:** [boot_chain.md](boot_chain.md) | [firmware_versions.md](firmware_versions.md) | [hardware_specs.md](hardware_specs.md) | [elk_recovery.md](elk_recovery.md) | [ota_update_stack.md](ota_update_stack.md) | [emulator.md](emulator.md) | [security.md](security.md) | [../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md)
 
 ---
 
@@ -57,7 +57,7 @@ GHS exposes an `emmc-health` interface (`/dev/ghs/emmc-health`; absent in the em
 |--------|-----------|--------|------|-------------|
 | vda1/2 | ghs_isys_a/b | a `0x100000` · b `0x4100000` | 64 MiB | GHS hypervisor image (SOC_HOSTOS 85098662) |
 | vda3 | ghs_storage | `0x8100000` | 16 MiB | GHS persistent storage |
-| vda4 | ghs_abl_update | `0x9100000` | 8 MiB | CSE+ABL SPI reflash capsule (top 6 MiB of IFWI; **not a runtime stage** — [BOOT_TRUST_ANCHOR_AND_KEYS.md §3](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update)) |
+| vda4 | ghs_abl_update | `0x9100000` | 8 MiB | CSE+ABL SPI reflash capsule (top 6 MiB of IFWI; **not a runtime stage** — [BOOT_TRUST_ANCHOR_AND_KEYS.md §3](../research/boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update)) |
 | vda5/6 | bootloader_a/b | a `0x9900000` · b `0xb700000` | 30 MiB | Intel ABL bootloader (kernelflinger, SOC_ABL 85738845) |
 | vda7/8 | boot_a/b | a `0xd500000` · b `0x11500000` | 64 MiB | Android kernel + ramdisk (AVB-hash) |
 | vda9 | misc | `0x15500000` | 1 MiB | GHS rollback counter, BCB, A/B metadata (A/B metadata at offset `0x800`, BCB at `0x000`; structs in [boot_chain.md](boot_chain.md)) |
@@ -84,7 +84,7 @@ Notes:
 - `data` on Y175 per fastbootd `getvar` is `0x9C1800000` = 39960 MiB [V]; the Y177 snapshot lists `data_partition` 39936 (section 6) [C, consistent within ~0.1%].
 - Fastbootd `getvar all` on Y175 also disclosed sizes for `boot`/`vbmeta`/`bootloader_{a,b}`, `misc` and `metadata` (security.md L772-776); the individual values are not recorded in the platform docs.
 - `update_cache` is the mount behind `/update_cache/...` paths (update staging, `recovery/command`, `calibrations` symlink, `bootup_log`, `update/moduleinfo`). Several docs read exports "from `/cache`"; whether `/cache` is the same filesystem is not stated (Open conflicts).
-- Hardware areas outside the user GPT (Y175 image, 2026-11-20): the eMMC HW boot partitions `boot0`/`boot1` (2× 32 MiB) are **empty** (all-zero, unused); **RPMB** (~4 MiB, replay-protected) was **not captured** (0-byte stub) — the one authenticated/replay-protected store remains unexamined (relevant to the GHS-image-authentication question, [BOOT_TRUST_ANCHOR_AND_KEYS.md §8](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md#8-ghs-image-authentication-is-the-verifier-itself-verified)).
+- Hardware areas outside the user GPT (Y175 image, 2026-11-20): the eMMC HW boot partitions `boot0`/`boot1` (2× 32 MiB) are **empty** (all-zero, unused); **RPMB** (~4 MiB, replay-protected) was **not captured** (0-byte stub) — the one authenticated/replay-protected store remains unexamined (relevant to the GHS-image-authentication question, [BOOT_TRUST_ANCHOR_AND_KEYS.md §8](../research/boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md#8-ghs-image-authentication-is-the-verifier-itself-verified)).
 - `cert_a/b` are present in the GPT but **empty** on this image.
 
 ---

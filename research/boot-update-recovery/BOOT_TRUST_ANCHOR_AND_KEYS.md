@@ -18,7 +18,7 @@ across Y177/Y181 (`firmware_versions.md`), so Y181 key facts are treated as buil
 **This doc does NOT own (pointers):**
 - Downgrade/anti-rollback mechanism, OEM-key-extraction feasibility → [GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt)
 - libavb/`.vmm1` parser RE, AVB-guard fuzz targets → [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)
-- ELK/kernelflinger as a recovery/fastboot environment, lock state, Boot Guard/FPF → [`../platform/elk_recovery.md`](../platform/elk_recovery.md), [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md)
+- ELK/kernelflinger as a recovery/fastboot environment, lock state, Boot Guard/FPF → [`../../platform/elk_recovery.md`](../../platform/elk_recovery.md), [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md)
 - GHS hypervisor architecture, `/dev/ghs/*`, VMR grant table → [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md)
 - Full boot-phase walkthrough (VIP→CSE→ABL→GHS→AVB→AAOS) → [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md)
 - GHS-image tamper as a ranked attack vector → [HARDWARE_HYPERVISOR_ATTACK_VECTORS.md](HARDWARE_HYPERVISOR_ATTACK_VECTORS.md) (mechanism owned here, §9)
@@ -41,7 +41,7 @@ across Y177/Y181 (`firmware_versions.md`), so Y181 key facts are treated as buil
 
 ## 2. CSE / IFWI manifest keys (Y175)
 
-CSE region identity (`research/decompiled/ifwi_Y175/README.md`): CSE **TXE gen 3**, chipset **APL
+CSE region identity (`evidence/decompiled/ifwi_Y175/README.md`): CSE **TXE gen 3**, chipset **APL
 stepping B**, version **3.1.95.3140** (signed 2023-07-06), SVNs **TCB 3 / ARB 7 / VCN 112**; all
 partition RSA signatures + module hashes **VALID**.
 
@@ -84,7 +84,7 @@ little-endian moduli. All **RSA-2048, exponent 65537**, **bare public keys** (no
   capsule is CRC-wrapped only — whether a reflash is authenticated depends on the updater and/or
   CSE/Boot Guard at next boot, not recoverable from this dump.
 - `[C]` ELK/ABL is a fastboot-class bootloader with AVB active, **not** a Linux shell (corrected
-  2026-09-10; owned by `../platform/elk_recovery.md`).
+  2026-09-10; owned by `../../platform/elk_recovery.md`).
 
 ## 4. GHS AVB verification (what GHS checks on Android)
 
@@ -273,7 +273,7 @@ the on-flash image and the loaded RAM copy:
 - Covered regions = the **`.secinfo` section** (@ vaddr `0x244000`), a linked list of **190** named
   descriptors (e.g. `.romstart` @ `0x200000`) each giving `{address, length}` and a method; the
   verify routine walks it (head @ vaddr `0x244168`). Per-region SHA-1 digest pointer is at descriptor
-  `+0x28`. Full per-region table: [`../research/decompiled/ghs_isys_a_secinfo_region_map_Y175.txt`](decompiled/ghs_isys_a_secinfo_region_map_Y175.txt).
+  `+0x28`. Full per-region table: [`../../evidence/decompiled/ghs_isys_a_secinfo_region_map_Y175.txt`](../../evidence/decompiled/ghs_isys_a_secinfo_region_map_Y175.txt).
 - `[S]` **Coverage breakdown (190 regions):** 52 CRC32 + 24 CRC32+SHA1 = **76 regions file-checked**;
   **89 NOBITS/runtime** (RAM-only, no file bytes to check on flash); **25** zero-length markers. The
   stronger CRC32+SHA1 covers `.rsyscall`, the pristine `.rom.*` per-task data copies, `.boottable`,
@@ -381,11 +381,11 @@ stock→AAOS, one flipped signature byte→rejected to fastboot).
 ## Provenance / sources
 
 - Y175 IFWI (8 MiB reconstructed, SPI window `0xFF800000`) + full eMMC user-area dump; CSE unpack in
-  `research/decompiled/ifwi_Y175/`. GHS Gate-1 / key-object / AVB-coverage byte analysis: 2026-11-20.
+  `evidence/decompiled/ifwi_Y175/`. GHS Gate-1 / key-object / AVB-coverage byte analysis: 2026-11-20.
 - GHS `85098662`, SOC Bootloader `85738845` (Y181): `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt`,
   `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`, `BOOT_CHAIN_ANALYSIS.txt`, `INVENTORY.md`.
 - Live Guest exposure (`AndroidKeyVMR`, 256-B RSA-2048): `USB_ADB_SESSION_FINDINGS_2026-10-10.md`.
-- GHS string table: `research/decompiled/ghs_str.txt`. Boot-phase context: `GM_INFO37_BOOT_CHAIN_ANALYSIS.md`.
+- GHS string table: `evidence/decompiled/ghs_str.txt`. Boot-phase context: `GM_INFO37_BOOT_CHAIN_ANALYSIS.md`.
 
 *Created 2026-11-20; revised 2026-11-20 with byte-verified GHS key-object, AVB-coverage, GHS-image
 authentication, and Gate-1 tamper findings. Consolidates trust-anchor/key facts previously scattered

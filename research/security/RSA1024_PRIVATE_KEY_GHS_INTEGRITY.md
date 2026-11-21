@@ -3,7 +3,7 @@
 **Classification:** Security Research Finding
 **Date:** 2026-06-29
 **Evidence status:** unvalidated scan candidate; security impact not established
-**Status (corrected 2026-11-11):** private-key parsing, source location, function and signer relationship remain unverified. This is not a recovered calibration-signing key. See the [central reference](../GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+**Status (corrected 2026-11-11):** private-key parsing, source location, function and signer relationship remain unverified. This is not a recovered calibration-signing key. See the [central reference](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 ---
 

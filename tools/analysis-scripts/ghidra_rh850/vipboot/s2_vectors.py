@@ -1,7 +1,7 @@
 import pyghidra
 
 BIN = "/Volumes/stuff/misc/research/GM_research/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y175/extracted/85056831"
-PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"
+PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
 PROJ_NAME = "vipboot_rh850"
 
 with pyghidra.open_program(

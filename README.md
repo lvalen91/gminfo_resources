@@ -6,7 +6,7 @@ Canonical reference for the **GM Info 3.7** (`gminfo37`) infotainment system —
 **Research builds:** Y175 (Jun 2024) · Y177 (Mar 2025) · Y181 (Jul 2025, baseline)
 
 The consolidated Y181B investigation is maintained in
-[research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
+[research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md).
 Use [the research index](research/README.md) to find topic owners.
 
 ---
@@ -20,7 +20,7 @@ gminfo_resources/
 ├── eeprom/            EEPROM mod guide, analysis reports, undocumented flags, .bin dumps
 │   ├── bins/          EEPROM binary dumps (Y181 ADB-enabled: HC + LTZ)
 │   └── config_tool/   eeprom_editor.py + firmware_re/ (115 decompiled VIP_APP functions)
-├── enumeration/       ADB + fastboot enumeration by firmware build
+├── evidence/enumeration/       ADB + fastboot enumeration by firmware build
 │   ├── scripts/       gm_aaos_enum.sh, quick_security_check.sh
 │   ├── Y175/          Jan 2026 enum, VIP UART log, SELinux policy
 │   └── Y181/          Dec 2025 enum + Apr 2026 (apr2026/) + Jun 2026 (jun2026/), fastboot enums
@@ -44,7 +44,7 @@ gminfo_resources/
 ├── projection/        CarPlay vs Android Auto, cluster nav, CPC200 integration
 ├── runtime/           Boot timing, memory pressure, known issues
 ├── analysis/          Debloat comparison, third-party API access, platform FAQ
-└── mdi2_client/       Native macOS MDI2 diagnostic client (Python tooling, separate project)
+└── tools/mdi2_client/       Native macOS MDI2 diagnostic client (Python tooling, separate project)
 ```
 
 ---
@@ -66,7 +66,7 @@ and separates bench observations from public in-vehicle signal definitions.
 | ECU address | `0x80` (A11 Radio) |
 | Manufacturer | Harman/Samsung |
 | CPU | Intel Atom x7-A3960, 4-core, 0.8–2.4 GHz, 14nm Goldmont |
-| RAM | 8 GiB LPDDR4 physical; static GHS guest grant 7830 MiB (+34 MiB RO IPU window); historical Android `MemTotal` near 5530 MiB. Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; grant-to-visible cause unresolved. [Map and limits](research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
+| RAM | 8 GiB LPDDR4 physical; static GHS guest grant 7830 MiB (+34 MiB RO IPU window); historical Android `MemTotal` near 5530 MiB. Y181B recovery E820 usable **5743.55859375 MiB**, measured 2026-11-12; grant-to-visible cause unresolved. [Map and limits](research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory) |
 | Storage | 64 GB Samsung eMMC (KLMCG4JEUD, BGA-153) |
 | Display | Chimei Innolux DD134IA-01B, 2400×960 @ 60 Hz, density 200 |
 | GPU | Intel HD Graphics 505 (Gen9, 18 EUs), Mesa 21.1.5, GLES 3.2 |
@@ -92,7 +92,7 @@ All three stock builds boot SELinux **Enforcing** and carry the **full ~906-byte
 The programmer workflow and supported edit scope are maintained in
 [the EEPROM guide](eeprom/README.md). Certificate authentication, root gates,
 historical MEC readings and unresolved registration behavior are maintained in
-[the consolidated MEC section](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+[the consolidated MEC section](research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 
 
 ---
@@ -119,7 +119,7 @@ historical MEC readings and unresolved registration behavior are maintained in
 | [`platform/vip_ipc_ghs.md`](platform/vip_ipc_ghs.md) | RH850 VIP MCU, VIP-SoC IPC channel map, GHS INTEGRITY hypervisor, `/dev/ghs` |
 | [`platform/partitions_storage.md`](platform/partitions_storage.md) | eMMC/GPT map, `super`/dynamic partitions (measured), first-stage mounts |
 | [`platform/elk_recovery.md`](platform/elk_recovery.md) | ELK/kernelflinger, recovery/fastbootd, Boot Guard/TXE forensics, native-Linux probe bring-up |
-| [`platform/eeprom_i2c_security.md`](platform/eeprom_i2c_security.md) | Pointer into `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (EEPROM memory map, security flags, I2C-bus permissions, local hardware attack surface) |
+| [`platform/eeprom_i2c_security.md`](platform/eeprom_i2c_security.md) | Pointer into `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (EEPROM memory map, security flags, I2C-bus permissions, local hardware attack surface) |
 | [`platform/avb_audio_transport.md`](platform/avb_audio_transport.md) | gPTP, AVTP AAF streams on VLAN 2, usage-to-bus mapping, firmware audio stack |
 | [`platform/can_bench_experiments.md`](platform/can_bench_experiments.md) | CAN bench log: calibration writes, ADB-enable and keep-alive campaign, boot/door/wake behaviour |
 | [`platform/gmsystemui_app_gating.md`](platform/gmsystemui_app_gating.md) | GMSystemUI WhiteList/predicates, CarPlay vs AA asymmetry, display-calibration gate |
@@ -130,17 +130,17 @@ historical MEC readings and unresolved registration behavior are maintained in
 | [`analysis/platform_faq.md`](analysis/platform_faq.md) | Evidence-backed FAQ (APK decompilation, logcat, ADB) |
 | [`projection/cpc200_integration.md`](projection/cpc200_integration.md) | CPC200-CCPA wireless adapter integration |
 | [`video/cinemo_nme_framework.md`](video/cinemo_nme_framework.md) | CINEMO/NME CarPlay framework architecture |
-| [`enumeration/Y181/`](enumeration/Y181/) | Full ADB enumeration dump, SELinux policy, logcat |
-| [`enumeration/Y175/Y175_VIP.log`](enumeration/Y175/Y175_VIP.log) | VIP UART boot log (IPC timing, ProtoKey, SBAT) |
+| [`evidence/enumeration/Y181/`](evidence/enumeration/Y181/) | Full ADB enumeration dump, SELinux policy, logcat |
+| [`evidence/enumeration/Y175/Y175_VIP.log`](evidence/enumeration/Y175/Y175_VIP.log) | VIP UART boot log (IPC timing, ProtoKey, SBAT) |
 | [`research/README.md`](research/README.md) | Top-level index of the full GM AAOS research corpus |
 | [`eeprom/EEPROM_Analysis_Report.md`](eeprom/EEPROM_Analysis_Report.md) | Full 8 KB EEPROM map: UI flags, checksums, calibration, factory-reset triggers |
-| [`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`](eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md) | Retired (2026-11-21): pointer to `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` and `eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`; raw data in ELA §13 |
-| [`research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md`](research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md) | Three-way VIP security-fn diff (Y175/Y177/Y181): full ~906B in all builds, no stub |
-| [`research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) | GHS INTEGRITY hypervisor, AB0 rollback, VMM analysis |
-| [`research/GHS_FILE_MAP_85098662.md`](research/GHS_FILE_MAP_85098662.md) | 100% edge-to-edge byte map of GHS SOC_HOSTOS `85098662` (14,929,956 B, 0 gaps): confirms GHS's USB role is mediated xHCI/xDCI passthrough only (no `dabridge`/role-switch/gadget logic), supplies the guest `OTGD` ACPI surface, and the only unread bytes are a 768 B RSA key+signature tail (no hidden/compressed code) |
-| [`research/USB_ADB_SESSION_FINDINGS_2026-10-10.md`](research/USB_ADB_SESSION_FINDINGS_2026-10-10.md) | Firmware-verified breakdown of the radio's USB hardware & ADB logic: 4-wire X8 (no CC/ID to radio), software role-switch via `OTGD`/`SPPS` ACPI, dev-options USB-debugging toggle as the ADB trigger, two UDC paths (dabridge virtual `dabr_udc.0` in-vehicle / raw `dwc3.0.auto` bench), Aptiv H2H bridge `2996:0105`, software-defined gadget VID/PID |
-| [`enumeration/Y181/apr2026/vulnerability_assessment.txt`](enumeration/Y181/apr2026/vulnerability_assessment.txt) | Apr 2026 CVE/threat assessment (DNSpooq, SOME/IP, SELinux) |
-| [`diagnostics/dps/`](diagnostics/dps/) | DPS 4.56 session logs for A11 Radio (ECU 0x80): SBI/seed-key, ECU map, Y177 update |
+| [`eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`](eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md) | Retired (2026-11-21): pointer to `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` and `eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md`; raw data in ELA §13 |
+| [`research/boot-update-recovery/VIP_FIRMWARE_Y177_Y181_COMPARISON.md`](research/boot-update-recovery/VIP_FIRMWARE_Y177_Y181_COMPARISON.md) | Three-way VIP security-fn diff (Y175/Y177/Y181): full ~906B in all builds, no stub |
+| [`research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) | GHS INTEGRITY hypervisor, AB0 rollback, VMM analysis |
+| [`research/boot-update-recovery/GHS_FILE_MAP_85098662.md`](research/boot-update-recovery/GHS_FILE_MAP_85098662.md) | 100% edge-to-edge byte map of GHS SOC_HOSTOS `85098662` (14,929,956 B, 0 gaps): confirms GHS's USB role is mediated xHCI/xDCI passthrough only (no `dabridge`/role-switch/gadget logic), supplies the guest `OTGD` ACPI surface, and the only unread bytes are a 768 B RSA key+signature tail (no hidden/compressed code) |
+| [`research/mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md`](research/mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md) | Firmware-verified breakdown of the radio's USB hardware & ADB logic: 4-wire X8 (no CC/ID to radio), software role-switch via `OTGD`/`SPPS` ACPI, dev-options USB-debugging toggle as the ADB trigger, two UDC paths (dabridge virtual `dabr_udc.0` in-vehicle / raw `dwc3.0.auto` bench), Aptiv H2H bridge `2996:0105`, software-defined gadget VID/PID |
+| [`evidence/enumeration/Y181/apr2026/vulnerability_assessment.txt`](evidence/enumeration/Y181/apr2026/vulnerability_assessment.txt) | Apr 2026 CVE/threat assessment (DNSpooq, SOME/IP, SELinux) |
+| [`evidence/dps-logs/`](evidence/dps-logs/) | DPS 4.56 session logs for A11 Radio (ECU 0x80): SBI/seed-key, ECU map, Y177 update |
 | [`reference/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/`](reference/) | GM official CalDef database (215 caldef/enumdef + XSD schema) |
 
 ---
@@ -164,7 +164,7 @@ ELK recovery path independent of working GHS/AAOS/Probe or eMMC software.
   Touch binding, auxiliary MMC errors, audio/camera support and Wi-Fi startup
   delay remain open; no eMMC/SPI write was needed for these RAM boots.
 - Exact image hash, tests, failures, retained tools and open work are maintained
-  in the [current stable02 record](research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+  in the [current stable02 record](research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
 
 **Historical target:** Y181→Y177 downgrade; GHS/AVB rollback remained a separate
 constraint. The earlier permissive-SELinux/stubbed-VIP motivation was refuted.
@@ -189,9 +189,9 @@ See [`hardware/teardown.md`](hardware/teardown.md) §Ranked Research Vectors and
 
 ## Data Sources
 
-- ADB enumeration: Y175 (Jan 2026), Y181 (Apr 2026) — [`enumeration/`](enumeration/)
+- ADB enumeration: Y175 (Jan 2026), Y181 (Apr 2026) — [`evidence/enumeration/`](evidence/enumeration/)
 - EEPROM dumps: Y181 stock + modified — [`eeprom/`](eeprom/)
-- VIP UART log: Y175 boot — [`enumeration/Y175/Y175_VIP.log`](enumeration/Y175/Y175_VIP.log)
+- VIP UART log: Y175 boot — [`evidence/enumeration/Y175/Y175_VIP.log`](evidence/enumeration/Y175/Y175_VIP.log)
 - Hardware photos: IC close-up, board overview, XGecu programmer — [`hardware/`](hardware/)
 - Binary analysis: VIP firmware 86331656 (9 Ghidra passes, RH850:LE:32), GHS HOSTOS 85098662, plmanager, gm_update_engine, ELK (kernelflinger-07.02)
 - Logcat: 3.7 GB across 29 files (Feb 2026)

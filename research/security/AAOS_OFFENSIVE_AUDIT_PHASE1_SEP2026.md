@@ -96,8 +96,8 @@ Chain: `untrusted_app` → SELinux `service_manager find` **granted** on `gm_aut
 `removeAccount` / `getGuestAccountToken`.
 
 **[C] Corrected (2026-09-27) — sepolicy citation provenance:** the `product_sepolicy.cil:586` grant is
-confirmed present in **Y177's** pulled sepolicy (`enumeration/Y177/pulled_files/product_sepolicy.cil`).
-Y181's own pulled sepolicy (`enumeration/Y181/{,jun2026/,apr2026/}pulled_files/`) never included a
+confirmed present in **Y177's** pulled sepolicy (`evidence/enumeration/Y177/pulled_files/product_sepolicy.cil`).
+Y181's own pulled sepolicy (`evidence/enumeration/Y181/{,jun2026/,apr2026/}pulled_files/`) never included a
 product-partition file, and grepping all Y181 pulls for "authtoken" returns zero hits. GM likely reuses
 this component/policy across Y177→Y181, but that transferability is **inferred, not independently
 confirmed on Y181** — the "confirmed under SELinux Enforcing" framing below should be read as confirmed
@@ -504,7 +504,7 @@ Practical gate: Tier B needs a privileged/preinstalled app (platform-signed or `
   correction, cluster-injection surface, both TCP parser bugs, both new UDP findings
 - [`../../platform/vehicle_network.md`](../../platform/vehicle_network.md),
   [`../../platform/emulator.md`](../../platform/emulator.md),
-  [`AE_RESEARCH_HANDOFF.md`](../AE_RESEARCH_HANDOFF.md) — propagated opType correction
+  [`AE_RESEARCH_HANDOFF.md`](../mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md) — propagated opType correction
 - [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md),
   [`../../platform/ota_programming_roles.md`](../../platform/ota_programming_roles.md) — full
   INSTALLRUNNER verdict

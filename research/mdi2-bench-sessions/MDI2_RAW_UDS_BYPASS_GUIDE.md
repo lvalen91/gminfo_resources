@@ -177,7 +177,7 @@ python3 mdi2_seed_test.py
 ## 3. Calibration Write Flow (After `$27` Bypass)
 
 > **Implementation correction 2026-11-07:** the current live adapter and gated CLI are in
-> `mdi2_client/mdi2/live_calibration.py` and `live_programming_transport.py`; simulator-only
+> `tools/mdi2_client/mdi2/live_calibration.py` and `live_programming_transport.py`; simulator-only
 > status notes below describe earlier stages. A nested wire-header bug in the live one-shot
 > sender has been fixed and covered by a capture-byte regression. The earlier `0x2830`
 > rejection does not prove a power-mode or resource-lock cause. The live preflight now permits
@@ -226,7 +226,7 @@ python3 mdi2_seed_test.py
 > inner CalOvride XML. For example, slot 04's 14,208-byte cache file becomes a 15,284-byte CSM
 > container, which is exactly the captured transfer payload. No captured file required editing
 > the inner XML. This byte comparison does not establish any signature verification algorithm.
-> `mdi2_client/mdi2/calibration_payloads.py` now validates the 14 cached CSM/XML containers and
+> `tools/mdi2_client/mdi2/calibration_payloads.py` now validates the 14 cached CSM/XML containers and
 > builds the transfer requests offline. Its complete 47-request output was checked byte-for-byte
 > against the historical LTZ capture. `mdi2/calibration_transaction.py` implements an experimental
 > transaction against an injected simulated transport, with response and failure handling, a
@@ -253,7 +253,7 @@ python3 mdi2_seed_test.py
 > handling are required before a live write.
 > **Satisfied live 2026-11-10:** these preconditions were met for the live LTZ write —
 > key/accessory OFF (BCM `F085`=0x00), battery alone at ~12.3-12.7 V, matching ECU/profile
-> identity, and the documented state sequence; see `mdi2_client/README.md` and
+> identity, and the documented state sequence; see `tools/mdi2_client/README.md` and
 > `SPS_RECAL_UDS_SEQUENCE_AUG2026.md` [**file not found in repo, 2026-11-12**] for the executed
 > sequence and outcome.
 > An independent offline inspection of the SPS calibration capture found BCM response
@@ -476,13 +476,13 @@ with no working ADB transport, returned `7F 31 31`; no ADB connection appeared.
 The cleanroom APK's RID dispatcher and absent `RID0332Handler` provide a
 static explanation for the Android route. Exact live results, unchanged MEC
 guards and the distinction from the local RDMS ADB Binder service are
-maintained in the [owning diagnostic record](../diagnostics/diagnosticsd_routines_and_recovery.md#post-reboot-direct-t1-adb-enable-trial-2026-11-15).
+maintained in the [owning diagnostic record](../../diagnostics/diagnosticsd_routines_and_recovery.md#post-reboot-direct-t1-adb-enable-trial-2026-11-15).
 This does not turn the prior CAN failures into proof of a missing VIP routine.
 
 
 **Source:** Snipesy / Surreal Development, "The ABCs of Global B", 2026-06-16, **CC0 1.0**
 (`https://surrealdev.com/the-abcs-of-global-b/`; canonical bibliography:
-[`../platform/qualcomm_cadillac_platform.md`](../platform/qualcomm_cadillac_platform.md) → Sources).
+[`../../platform/qualcomm_cadillac_platform.md`](../../platform/qualcomm_cadillac_platform.md) → Sources).
 Describes a UDS `RoutineControl` request claimed to toggle Android ADB, distinct from the
 `$27`/SBI seed bypass above. The author proposes **UDS over DoIP or CAN** and interprets it as
 an escape hatch for bench or in-vehicle testing, while stating the SDGM or radio blocks it.
@@ -513,7 +513,7 @@ required external 12 V supply. The historical MDI2-labelled results below must
 not be used as proof that the current physical CAN5 path was exercised; their
 transport attribution requires verification against the original records.
 Direct powered-CANable/CAN5 results are now recorded in
-[the CAN reference](../platform/can_bench_experiments.md#direct-can5-adb-enable-diagnostics--2026-11-15),
+[the CAN reference](../../platform/can_bench_experiments.md#direct-can5-adb-enable-diagnostics--2026-11-15),
 separately from the confirmed T1 trials.
 
 **Fresh direct-CAN5 follow-up, 2026-11-15:** the powered CANable received real
@@ -522,7 +522,7 @@ ISO-TP responses from radio `0x80`, then obtained level-1 SecurityAccess with
 and after the grant in extended session. Default session was restored and
 ADB remained disconnected. This independently establishes the negative result
 for the tested direct CAN5 contexts; see the CAN reference linked above and
-[the SecurityAccess validation](../diagnostics/diagnosticsd_security_access.md#live-direct-can5-securityaccess-validation-2026-11-15).
+[the SecurityAccess validation](../../diagnostics/diagnosticsd_security_access.md#live-direct-can5-securityaccess-validation-2026-11-15).
 
 **Historical CAN report, 2026-11-07:** With the radio rebooted and USB debugging reported off,
 native Python through the MDI2 addressed ECU 0x80. Extended session `10 03` returned `50 03`;
@@ -580,7 +580,7 @@ of each ADB candidate to the RH850. Programming session remained blocked
 by its authenticated state gate, and security profile `5F` had no grant.
 This rejects the reported layout across the tested domains, values and
 contexts on this build; it does not exclude another payload or controller.
-See [full trial](../diagnostics/diagnosticsd_routines_and_recovery.md#full-adb-over-uds-candidate-trial-after-calibration-clear).
+See [full trial](../../diagnostics/diagnosticsd_routines_and_recovery.md#full-adb-over-uds-candidate-trial-after-calibration-clear).
 
 **Target and local ADB path:** The source does not publish a target ECU address, CAN IDs, a
 successful exchange, or a domain value. The complete domain sweep targeted the A11 radio's
@@ -703,7 +703,7 @@ reported rejection on the Android diagnostics path, not a test of ECU 0x80 via M
 it does not establish routine support, the correct domain, or the reason for rejection.
 **Correction 2026-11-14:** the old blanket T1 rejections used an invalid
 logical tester. F4 plus extended session now completes level-1 SecurityAccess
-(31-FF seed, 12-zero response, `67 02`); see [validated T1 sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). The complete candidate was subsequently tested as described below.
+(31-FF seed, 12-zero response, `67 02`); see [validated T1 sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). The complete candidate was subsequently tested as described below.
 
 **What this does and does not prove:**
 - It identifies a **candidate external UDS `RoutineControl` request** for a privileged action.
@@ -717,7 +717,7 @@ logical tester. F4 plus extended session now completes level-1 SecurityAccess
 - Note the broader authentication model this sits inside: Global-B `$27` SecurityAccess is
   ultimately authenticated against **GM's SDGM/Azure back office via SPS2/3 credentials** for
   the tiers that matter (calibration/programming) — but see
-  [`../platform/ota_programming_roles.md`](../platform/ota_programming_roles.md) § Global B
+  [`../../platform/ota_programming_roles.md`](../../platform/ota_programming_roles.md) § Global B
   provisioning for the canonical model *and its caveat* that this repo's own DPS captures show
   `$27` as a **per-ECU** exchange, so the "against the SDGM" framing is Cadillac-specific/
   unconfirmed here; GM has deliberately left some diagnostic

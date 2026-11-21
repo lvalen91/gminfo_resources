@@ -4,7 +4,7 @@ still-undefined bytes of exec blocks (all task .text sections + kernel/.text/.t_
 then re-run analysis so it sweeps the dark code."""
 import time
 import pyghidra
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"
+PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
 PROJ_NAME = "hostos_x86"
 pyghidra.start(verbose=False)
 from ghidra.base.project import GhidraProject

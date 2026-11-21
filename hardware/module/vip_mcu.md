@@ -121,7 +121,7 @@ No register write was performed to resolve this.
 stock GHS `VipUART`/`SerialDev1` binding, with a live 1 Mbps CRC-valid reset/acknowledgment,
 channel-flow-control and channel-3 exchange. It is not a shell, debugger, or established
 ROM-programmer session. See the
-[native transport analysis](../../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#native-probe-to-vip-transport-and-elk-prerequisites--2026-11-17)
+[native transport analysis](../../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#native-probe-to-vip-transport-and-elk-prerequisites--2026-11-17)
 for the transport trace. The Linux root shell belongs to the Intel SoC and confers no direct
 RH850 CPU privilege. The exact VIP-side RLIN channel/pin for this IPC wire is **[?]** not
 established; the SoC's `ttyS1` numbering must not be equated with RH850 RLIN1 or the separate
@@ -383,7 +383,7 @@ body state; their source is **[?]** not identified here.
   `0x640E4`, `0x63E6E`, `0x63B3C`, `0x5C506`, `0x62F30`, `0xE1362`, `0x637E4`, `0x89DFC`,
   `0x65398`, `0x643A0`, `0x74F5C`, `0x75538`, `0x63E94`, `0x64060`, `0x8D04C`, `0x8D04A`;
   load-map offset `0x27A7A`.
-- [`../../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#native-probe-to-vip-transport-and-elk-prerequisites--2026-11-17)
+- [`../../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`](../../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#native-probe-to-vip-transport-and-elk-prerequisites--2026-11-17)
   (native Probe-to-VIP transport trace).
 - [`../../diagnostics/diagnosticsd_dids_and_dtc.md`](../../diagnostics/diagnosticsd_dids_and_dtc.md#rh850-uart-correlation-with-direct-t1-did-reads-2026-11-14).
 - [`../../diagnostics/diagnosticsd_routines_and_recovery.md`](../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).

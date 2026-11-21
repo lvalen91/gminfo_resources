@@ -58,7 +58,7 @@ The real radio publishes `persist.sys.cal.brand=GM_Brand_Chevrolet` + `persist.s
 ## 3. CalSets.db
 
 ### Y181B exported baseline (2026-11-12)
-The [recovery export](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12) contains `update_cache/bootup_log/vendor/CalSets.db`: **2574** `AllCalSets` rows, 982 with nonzero `OverRiden`. This describes the retained exported database, not a query of the running calibration HAL. The second ZIP has a byte-identical database.
+The [recovery export](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#02-y181b-recovery-usb-capture-verified-2026-11-12) contains `update_cache/bootup_log/vendor/CalSets.db`: **2574** `AllCalSets` rows, 982 with nonzero `OverRiden`. This describes the retained exported database, not a query of the running calibration HAL. The second ZIP has a byte-identical database.
 
 **Verified 2026-11-12 (`sqlite3` on the exported file):**
 - 2574 rows / 982 nonzero `OverRiden` re-counted exactly; `PRAGMA user_version` = **70008**.

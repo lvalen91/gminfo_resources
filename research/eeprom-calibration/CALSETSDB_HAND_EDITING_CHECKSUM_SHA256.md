@@ -19,7 +19,7 @@ message header and `calserviced` override-package (`.calovride`) container forma
   full custom-calibration trial/supersession log (SXM-disable, clear-all/recovery, stock LTZ
   restoration) → owned by
   [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md) and the
-  `../diagnostics/` tree (`diagnosticsd_security_access.md`,
+  `../../diagnostics/` tree (`diagnosticsd_security_access.md`,
   `diagnosticsd_routines_and_recovery.md`). This doc cites those trials only where they bear
   directly on a CalSets.db/checksum fact, and keeps the GMBrand and `SCREEN_RESOLUTION` CAN
   trials here per this doc's own charter (they are the live demonstrations of the DB/container
@@ -27,10 +27,10 @@ message header and `calserviced` override-package (`.calovride`) container forma
 - Signature/seed-key/SecurityAccess conclusions (RSA-2048 verification detail, CMAC, SBI gating) →
   owned by [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 - Vehicle calibration baseline (2,574-row Y181B export) → owned by
-  `../platform/vehicle_config.md`.
+  `../../platform/vehicle_config.md`.
 - Updater/`DevCaloverrideInstaller`/USB MediaStore deployment mechanics → owned by
-  `../platform/ota_update_stack.md`.
-- Full stock-LTZ CAN5 rewrite bench result → owned by `../platform/can_network.md`.
+  `../../platform/ota_update_stack.md`.
+- Full stock-LTZ CAN5 rewrite bench result → owned by `../../platform/can_network.md`.
 
 Evidence tags: `[C]` confirmed from a binary/DB, `[I]` inferred, `[O]` open/needs a known-good
 capture to pin.
@@ -81,7 +81,7 @@ Y181B recovery export instead records `SCREEN_RESOLUTION = 4` (`SIZE_2400_BY_960
 
 > **History:** corrected 2026-11-12. No accepted custom write or transition from the older
 > snapshot is inferred — the two DBs are independent captures. See the
-> [vehicle baseline](../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12).
+> [vehicle baseline](../../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12).
 
 `[C]` What lives in the older DB row is a bare SQLite integer, not a BLOB. Verified directly:
 
@@ -184,8 +184,8 @@ elsewhere, or that a modified signed container will be accepted.
 ```
 `readHeader` / `Error when receiving header, expected: %d, actual: %d` frame the PDU. The target
 address and T1 SecurityAccess sequence are owned by
-`../diagnostics/diagnosticsd_security_access.md`
-([live correction, 2026-11-14](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14));
+`../../diagnostics/diagnosticsd_security_access.md`
+([live correction, 2026-11-14](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14));
 this does not establish container-write acceptance and is not restated here.
 
 ### 3b. Calibration message parse header (`createCalibrationRequest`, `fcn.0002fde0`)
@@ -197,7 +197,7 @@ private header as ordinary TCP `34` parameters.
 
 > **History:** clarified 2026-11-16, correcting an earlier draft that conflated this header with
 > the public UDS path. The full stock-LTZ CAN5 rewrite that uses this pipeline is owned by
-> [`../platform/can_bench_experiments.md`](../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16).
+> [`../../platform/can_bench_experiments.md`](../../platform/can_bench_experiments.md#full-genuine-ltzhc-rewrite-through-canable--2026-11-16).
 
 `[C]` native parser offsets (mapping through the CAN-side bridge to public UDS still needs an
 independent trace; this is **not** the stock CSM container header, §2):
@@ -258,7 +258,7 @@ suffix (§3e). This local development mechanism must not be equated with UDS pro
 presumed shell-writable — **the SELinux/DAC reachability question for this write path is owned by
 [`SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`](SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md)**, not
 restated here. The destructive clear and recovery outcome referenced above is owned by
-`../diagnostics/diagnosticsd_routines_and_recovery.md` (§6 below has the full pointer). A future
+`../../diagnostics/diagnosticsd_routines_and_recovery.md` (§6 below has the full pointer). A future
 override-write claim must identify an implemented setter/loader, its actual authorization, and a
 recoverable value — renaming a modified signed package is not such a path.
 
@@ -417,7 +417,7 @@ stayed `GM_Brand_Chevrolet`. A follow-on authorized USB MediaStore deployment wr
 byte-exactly to FAT32 as `a11brand.calovride`; no calibration-discovery/install event was
 demonstrated. Full updater/installer mechanics (`DevCaloverrideInstaller`, build-type gating, the
 HIDL raw-file copier, ABFT0475) are owned by
-[`../platform/ota_update_stack.md`](../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
+[`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15)
 and are not restated here.
 
 **Reboot scope.** A persistent theme change may require a consumer process restart or Android
@@ -452,7 +452,7 @@ modification. The archive omits the actual `.cmod` files and is not a complete e
 backup.
 
 > **History:** schema correction, 2026-11-14. See the
-> [owning calibration baseline](../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12)
+> [owning calibration baseline](../../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12)
 > for the exported row counts this correction is based on.
 
 The cell is a native integer; no package checksum/digest is stored around each DB cell. Direct DB
@@ -544,9 +544,9 @@ MDI2 client then restored the pinned stock LTZ package (requiring a one-time in-
 exception and VIN restoration from the owner's supplied value); all 14 slots and VIN matched
 post-reset readback, and later UART boots reached HMI-ready with calibration state `2`. Full
 clear/fault/recovery narrative and anchors:
-[clear](../diagnostics/diagnosticsd_routines_and_recovery.md#final-calibration-clear-completed-mec-preserved),
-[fault](../diagnostics/diagnosticsd_routines_and_recovery.md#owner-power-cycle-after-clear-nocalibration-fault-2026-11-14),
-[recovery](../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).
+[clear](../../diagnostics/diagnosticsd_routines_and_recovery.md#final-calibration-clear-completed-mec-preserved),
+[fault](../../diagnostics/diagnosticsd_routines_and_recovery.md#owner-power-cycle-after-clear-nocalibration-fault-2026-11-14),
+[recovery](../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14).
 
 > **History:** per the later [full stock LTZ rewrite](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-full-stock-ltz-restoration-after-feature-trials),
 > this and the Brand-0/other custom trials were superseded 2026-11-17 — their observations remain
@@ -596,5 +596,5 @@ and was not re-added here; the programmed set is again all stock LTZ.
 - DB facts: queried live from `scratchpad/diagx/calibrations__CalSets.db`.
 - `$27`/VIP/EEPROM anchoring and the two write paths: cross-referenced in
   `research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` and
-  `research/CALDEF_VIP_CALIBRATION_ANALYSIS.txt` (both retired/folded elsewhere per the reorg plan;
+  `research/eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt` (both retired/folded elsewhere per the reorg plan;
   not independently re-verified by this doc).

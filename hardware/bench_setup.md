@@ -11,7 +11,7 @@ rather than stock AAOS/ADB. The active bench experiment uses the previously
 verified minimal CAN `0x529` keepalive, not the listen-only acceptance-test
 configuration below. Wiring and adapter identity remain baseline facts; do not
 interpret the older access-mode table as the current process state. See the
-[current build/boot record](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+[current build/boot record](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
 
 ## Hardware and wiring
 
@@ -248,9 +248,9 @@ another toggle rather than retrying a non-idempotent action automatically.
 The [CAN message reference](../platform/can_network.md) owns the captured-ID
 dictionary, harness isolation evidence, and external signal-definition candidates.
 
-The [CAN bench emulator tool](../research/tools/can_bench_emulator.py) can inspect
+The [CAN bench emulator tool](../tools/bench/can_bench_emulator.py) can inspect
 an isolated-harness JSONL capture and replay its fixed cyclic pattern. The
-[terminal launcher](../research/tools/run_can_bench.sh) runs continuously until
+[terminal launcher](../tools/bench/run_can_bench.sh) runs continuously until
 Ctrl-C and reports errors without terminating on hardware faults. It deliberately
 enables normal CAN transmission and requires exclusive ownership of the CANable.
 `inspect` uses no USB access.
@@ -275,7 +275,7 @@ the later ACK-controlled repetition and power-state tests.
 Launch from the repository root:
 
 ```sh
-./research/tools/run_can_bench.sh
+./tools/bench/run_can_bench.sh
 ```
 
 The installed runtime is `~/.local/share/gminfo-bench/venv`. The compact local
@@ -286,7 +286,7 @@ a **320.270-ms cycle**, anchored at `0x145`. Source code embeds no captured payl
 or private device identifiers. To regenerate the profile from an isolated capture:
 
 ```sh
-~/.local/share/gminfo-bench/venv/bin/python research/tools/can_bench_emulator.py export-profile --capture /path/to/harness-only.jsonl
+~/.local/share/gminfo-bench/venv/bin/python tools/bench/can_bench_emulator.py export-profile --capture /path/to/harness-only.jsonl
 ```
 
 If rebuilding the local environment, use `uv venv ~/.local/share/gminfo-bench/venv`

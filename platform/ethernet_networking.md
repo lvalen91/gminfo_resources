@@ -161,7 +161,7 @@ Firewall view of VLAN 5 sources (Y181 ruleset): `.102/.104/.106/.109/.112` to `1
 
 ### 4.1 Radio listeners
 
-Y175 live [C] 2026-10-05 (`net_sockets.txt`), cross-checked against Y181 `enumeration/Y181/jun2026/`. The listener set varies with projection-session state; an earlier apr2026 snapshot (only 9002/9016 @ .1; 9010 outbound; 7000 gone; DNS on .102) is **withdrawn**.
+Y175 live [C] 2026-10-05 (`net_sockets.txt`), cross-checked against Y181 `evidence/enumeration/Y181/jun2026/`. The listener set varies with projection-session state; an earlier apr2026 snapshot (only 9002/9016 @ .1; 9010 outbound; 7000 gone; DNS on .102) is **withdrawn**.
 
 | Bind address (live) | Port | Proto | uid | Service |
 |---------------------|------|-------|-----|---------|
@@ -210,7 +210,7 @@ Live also showed an established `192.168.1.100:9016 <-> 192.168.1.100:58814` loo
 
 - `model=myChevrolet` matches `net.hostname=myChevrolet` (section 1). Placeholders denote the captured TXT `deviceid` and `pi` UUID, redacted to avoid echoing them into pushed material.
 - `pi` was a persistent, stable per-device identifier, unchanged between observed announcements; stability across resets or reprovisioning is not established.
-- **[?] Unexplained deviceid/wlan0 discrepancy:** the advertised deviceid closely resembles the documented `wlan0` MAC, but its final octet is `a0` versus `9e` in the [existing wlan0 capture](../enumeration/Y175/raw/network_interfaces.txt) (also `persist.sys.wifi.mac_addr` in the companion properties capture). Not identical; the interface relationship is unverified, neither established as the same interface nor dismissed as a typo.
+- **[?] Unexplained deviceid/wlan0 discrepancy:** the advertised deviceid closely resembles the documented `wlan0` MAC, but its final octet is `a0` versus `9e` in the [existing wlan0 capture](../evidence/enumeration/Y175/raw/network_interfaces.txt) (also `persist.sys.wifi.mac_addr` in the companion properties capture). Not identical; the interface relationship is unverified, neither established as the same interface nor dismissed as a typo.
 - **Separate post-factory-reset capture, 2026-11-14:** `radio-en12-20261114.pcapng` contains CarPlay-control queries but no mDNS responses or SRV advertisements. Android-12 DHCP Discover traffic is also present. Its `_adb*` service names are queries from the other source, not radio ADB advertisements. These do not supersede the advertised-fingerprint above; they describe a different, partial boot capture. See the [capture analysis](../diagnostics/diagnosticsd_routines_and_recovery.md#partial-post-factory-reset-ethernet-capture-2026-11-14).
 
 ## 6. WiFi and Bluetooth
@@ -335,7 +335,7 @@ Telematics (CGM module) is a separate vehicle node. The historical cloud endpoin
 | Service | Details |
 |---------|---------|
 | Power mode | State machine: Run, Accessory, Crank, Off, managed by VIP MCU ([vip_ipc_ghs.md](vip_ipc_ghs.md)) |
-| Calibration / diagnostic authentication | **Separate mechanisms:** stock calibration containers use RSA-2048/SHA-256 signatures; DPS SecurityAccess has a backend-assisted CMAC path. Reusable server-key provisioning is unproven. See [seed/key and calibration signature reference](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md). Corrected 2026-11-15. |
+| Calibration / diagnostic authentication | **Separate mechanisms:** stock calibration containers use RSA-2048/SHA-256 signatures; DPS SecurityAccess has a backend-assisted CMAC path. Reusable server-key provisioning is unproven. See [seed/key and calibration signature reference](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md). Corrected 2026-11-15. |
 | IPC | 20 channels (1-20) on /dev/ttyS1, HDLC protocol v16, 1 Mbps line rate ([vip_ipc_ghs.md](vip_ipc_ghs.md)) |
 
 ## CAN Bus
@@ -359,7 +359,7 @@ The VIP MCU bridges CAN messages to the Intel SoC over the HDLC IPC link, transl
 | Host firewall, SoftAP exposure, listener risk | [security.md](security.md) |
 | Physical Ethernet bus map, X84/X11 | held here ([Physical Automotive-Ethernet bus map](#physical-automotive-ethernet-bus-map)); 5-row summary and VLAN-tag trunk findings in [vehicle_network.md](vehicle_network.md) |
 | Update libraries (`libpal_swupdate_ecu/hostos`, `vendor.gm.swupdate@1.0`) | [ota_update_stack.md](ota_update_stack.md) |
-| Calibration / diagnostic authentication | row held here (GM Cloud Endpoints and Service Architecture); detail `../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| Calibration / diagnostic authentication | row held here (GM Cloud Endpoints and Service Architecture); detail `../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
 
 ## Open conflicts
 

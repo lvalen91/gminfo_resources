@@ -134,7 +134,7 @@ claim (physical switch port enumeration, not VLAN/bus identity) that this bus-2 
 finding does not confirm or refute -- left as-is pending its own verification (Open
 Conflicts, below). Full tap methodology: platform/ethernet_networking.md and
 platform/avb_audio_transport.md (VLAN 2 / AVTP detail); bench provenance in the research
-tree's session_logs/ (not resolved by this reorg per the writer brief).
+tree's ../../evidence/session-logs/ (not resolved by this reorg per the writer brief).
 
 ================================================================================
                  SECTION 2: REMOTE ACCESS COMPONENTS

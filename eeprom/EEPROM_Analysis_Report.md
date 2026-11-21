@@ -11,7 +11,7 @@
 
 This file is the GM IOK/Harman INFO3.7-3.8 EEPROM dump record for `ADB_enabled.bin`. The mechanism,
 marker-byte, SBI/ADB-bypass, AUTOSAR NvM descriptor, CRC-algorithm, and address-map analysis that used
-to be duplicated here now lives in `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` ("ELA") — see ELA
+to be duplicated here now lives in `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` ("ELA") — see ELA
 for current, more rigorously verified versions of that material. What remains here, kept because ELA
 references these values but does not reproduce them, is:
 
@@ -85,7 +85,7 @@ one-line entries for the same addresses and are preserved here:
 >
 > **EEPROM doc set (updated 2026-11-21):** this report = raw 8 KB calibration/UI-flag numeric
 > appendix only, plus facts not carried elsewhere (mechanism and address-map narrative now lives in
-> `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`); `eeprom/README.md` = the hands-on flip procedure
+> `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`); `eeprom/README.md` = the hands-on flip procedure
 > (minipro/XGecu); `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md` = retired pointer (its raw data and correction
 > trail are in ELA §13); `hardware/teardown.md` §EEPROM = consolidated headlines + extra
 > structured-region readings.
@@ -564,5 +564,5 @@ there rather than duplicating.
 ---
 
 *Report generated from reverse engineering analysis of GM IOK EEPROM dump. Mechanism/marker/address-map
-narrative now owned by `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`; this file retains the raw
+narrative now owned by `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`; this file retains the raw
 numeric calibration appendix and facts not currently carried there.*

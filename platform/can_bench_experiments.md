@@ -14,11 +14,11 @@ owns topology/diagnostic transport; [bench setup](../hardware/bench_setup.md)
 owns wiring/adapter configuration/physical power control.
 
 **Related:** [CAN network](can_network.md) (dictionary) ·
-[DPS Type4 custom calibration workflow](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md)
+[DPS Type4 custom calibration workflow](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md)
 (owns calibration-trial narrative) ·
-[CalSetsDB hand-editing/checksum](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) ·
-[GHS boot/update/recovery analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) ·
-[MDI2 raw UDS bypass guide](../research/MDI2_RAW_UDS_BYPASS_GUIDE.md) ·
+[CalSetsDB hand-editing/checksum](../research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) ·
+[GHS boot/update/recovery analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) ·
+[MDI2 raw UDS bypass guide](../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md) ·
 [diagnosticsd routines and recovery](../diagnostics/diagnosticsd_routines_and_recovery.md) ·
 [diagnosticsd security access](../diagnostics/diagnosticsd_security_access.md) ·
 [OTA update stack](ota_update_stack.md)
@@ -56,21 +56,21 @@ cleanup. This is a temporary RAM condition, not a provisioned or
 cryptographically validated SBA ticket; no ticket NVM write, EEPROM edit, or
 flash patch is used. Full command-table inventory, address trace, and the
 VIP signed-header-rejection root cause (PEC `0015`, NRC `72`) are owned by the
-[custom calibration workflow doc](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#4-chronological-trial-log).
+[custom calibration workflow doc](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#4-chronological-trial-log).
 
 **Results (all through this CAN613/614 mechanism unless noted):**
 
 | Date | Candidate | CAN5 transfer result | Owner-confirmed effect | Persistence tested | Record |
 |---|---|---|---|---|---|
-| 2026-11-16 | Slot0C, `SXM_Enabled` true→false | `76 01`/`76 02`/`77`, PEC `0000` | SXM option gone from AAOS Radio | One 10.505 s cold cycle: still disabled | [workflow §Successful custom SXM](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-successful-custom-sxm-calibration-through-can613614) |
-| 2026-11-16 | Slot0C (1478 B), + CarPlay/Android Auto feature-enable false | `76 01`/`76 02`/`77`, PEC `0000` | Both projection entries gone from UI | Not cold-cycle tested | [workflow §CarPlay/AA](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-carplay-and-android-auto-custom-calibration-accepted) |
-| 2026-11-16 | — (process-state check only) | n/a | SXM/CarPlay/AA packages and processes still present/running at default-enabled state — UI disappearance ≠ process shutdown | n/a | [workflow §process-state](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-process-state-verification--ui-disappearance-is-not-process-shutdown) |
-| 2026-11-16 | Slot04/85045386, GMBrand3→0 | 13 positive transfer blocks, exit `77`, PEC `0000` | Theme changed; brand reads `GM_Brand_None` | Not cold-cycle tested | [theme trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-themeui-inventory-and-gmbrandscreen_resolution-live-trials) |
-| 2026-11-17 | Full stock LTZ (slots 02–0F, 46,162 B) | All 14 downloads/blocks/exits accepted | Supersedes the custom slots above | n/a (restoration) | [workflow §full stock LTZ restoration](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-full-stock-ltz-restoration-after-feature-trials) |
-| 2026-11-17 | Slot08, `SCREEN_RESOLUTION` 4→2 (1280×768) | Both blocks + exit accepted, PEC `0000` | Display tearing observed; stock slot08 restored, tearing gone | n/a | [display trial](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17) |
-| 2026-11-17 | Google (slot04)/Navigation (slot02)/Recorder (slot04) visibility=false/true | All transfers + exits accepted, PEC `0000` | No UI effect: icons/processes remained; recorder entry never appeared | n/a | [follow-ups](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-google-visibility-and-recorder-follow-ups) |
-| 2026-11-17 | Porch_View_Enabled=true, slot04 | Transfer + exit accepted, PEC `0000` | UI effect unverified; display-size gate (`SCREEN_RESOLUTION`) can make it ineffective | n/a | [porch-view trial](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-explicit-porch-view-enable-trial) |
-| 2026-11-16 | Slot0C SXM edit reconstructed (1448/1455 B variants), profiles 01/03/05/09, **no** CAN613/614 RAM intervention | `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; immediate `F0F1=0015` | Rejected — signed-header verification failure, not a signature exemption | Genuine slot0C restored each time (`76 01`/`76 02`/`77`) | [header-signature rejection](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed), [additional profiles](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-additional-can-security-profile-trials) |
+| 2026-11-16 | Slot0C, `SXM_Enabled` true→false | `76 01`/`76 02`/`77`, PEC `0000` | SXM option gone from AAOS Radio | One 10.505 s cold cycle: still disabled | [workflow §Successful custom SXM](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-successful-custom-sxm-calibration-through-can613614) |
+| 2026-11-16 | Slot0C (1478 B), + CarPlay/Android Auto feature-enable false | `76 01`/`76 02`/`77`, PEC `0000` | Both projection entries gone from UI | Not cold-cycle tested | [workflow §CarPlay/AA](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-carplay-and-android-auto-custom-calibration-accepted) |
+| 2026-11-16 | — (process-state check only) | n/a | SXM/CarPlay/AA packages and processes still present/running at default-enabled state — UI disappearance ≠ process shutdown | n/a | [workflow §process-state](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-process-state-verification--ui-disappearance-is-not-process-shutdown) |
+| 2026-11-16 | Slot04/85045386, GMBrand3→0 | 13 positive transfer blocks, exit `77`, PEC `0000` | Theme changed; brand reads `GM_Brand_None` | Not cold-cycle tested | [theme trial](../research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3e-standalone-xml-loader-themeui-inventory-and-gmbrandscreen_resolution-live-trials) |
+| 2026-11-17 | Full stock LTZ (slots 02–0F, 46,162 B) | All 14 downloads/blocks/exits accepted | Supersedes the custom slots above | n/a (restoration) | [workflow §full stock LTZ restoration](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-full-stock-ltz-restoration-after-feature-trials) |
+| 2026-11-17 | Slot08, `SCREEN_RESOLUTION` 4→2 (1280×768) | Both blocks + exit accepted, PEC `0000` | Display tearing observed; stock slot08 restored, tearing gone | n/a | [display trial](../research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#screen_resolution-1280x768-can-trial--2026-11-17) |
+| 2026-11-17 | Google (slot04)/Navigation (slot02)/Recorder (slot04) visibility=false/true | All transfers + exits accepted, PEC `0000` | No UI effect: icons/processes remained; recorder entry never appeared | n/a | [follow-ups](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-google-visibility-and-recorder-follow-ups) |
+| 2026-11-17 | Porch_View_Enabled=true, slot04 | Transfer + exit accepted, PEC `0000` | UI effect unverified; display-size gate (`SCREEN_RESOLUTION`) can make it ineffective | n/a | [porch-view trial](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-explicit-porch-view-enable-trial) |
+| 2026-11-16 | Slot0C SXM edit reconstructed (1448/1455 B variants), profiles 01/03/05/09, **no** CAN613/614 RAM intervention | `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; immediate `F0F1=0015` | Rejected — signed-header verification failure, not a signature exemption | Genuine slot0C restored each time (`76 01`/`76 02`/`77`) | [header-signature rejection](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed), [additional profiles](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-additional-can-security-profile-trials) |
 
 All candidate/digest/hash values, the Type4/payload distinction, and the
 exact signature-verification trace addresses are owned by the linked
@@ -275,7 +275,7 @@ at 8.419 s, completion ~14.943 s later, then request 3 and Propulsion at
 these inputs — not an exhaustive payload readback or a minimal recipe.
 
 **Modified-module follow-up (header-signature rejection):** owned by
-[workflow §header-signature rejection](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed)
+[workflow §header-signature rejection](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed)
 — the direct CAN5-side observations here (`7F 36 72` on first data block,
 genuine slot0C restored, PEC `0015`) match the research doc's trace and are
 not repeated.
@@ -297,7 +297,7 @@ customization restoration, ADB disconnected, owner observed the factory
 reset occurring. Original `20D` restored afterward; no RAM writes or
 calibration clears used. **Evidence:** B capture + UART; owner observation.
 Final post-reset setup/completion is distinct from confirmed reset
-initiation. See [reset evidence](../research/MDI2_RAW_UDS_BYPASS_GUIDE.md).
+initiation. See [reset evidence](../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md).
 
 **Goal (ELK control):** find a CAN-reachable ELK/boot-mode control selector.
 
@@ -314,7 +314,7 @@ directly selects the ELK callback — the internal `8180` descriptor is not a
 registered CAN identifier, so changing security/power state cannot repair
 this lookup failure. Other proprietary/internal entry points remain
 unestablished. **Evidence:** B capture; static firmware trace. See the
-[ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+[ELK analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
 ## IPC animation-status sweep and startup path — 2026-11-16
 
@@ -909,7 +909,7 @@ this rejects the reported layout only in the tested default/extended/
 level-1-granted contexts; other security levels, payloads, or OEM ADB
 mechanisms remain untested on CAN5. See
 [SecurityAccess validation](../diagnostics/diagnosticsd_security_access.md#live-direct-can5-securityaccess-validation-2026-11-15)
-and [MDI2 raw UDS bypass guide](../research/MDI2_RAW_UDS_BYPASS_GUIDE.md).
+and [MDI2 raw UDS bypass guide](../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md).
 
 ## Open conflicts
 

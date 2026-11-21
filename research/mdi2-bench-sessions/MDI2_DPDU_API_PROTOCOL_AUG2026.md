@@ -15,7 +15,7 @@ stack (GM_MDI_Ident.exe, Blowfish-ECB session JSON, log-pull) — see
 `MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md` (MML).
 
 **Date:** 2026-08-24, corrected in place through 2026-11-14 (see History lines throughout).
-Operator summary lives outside this tree at `mdi2_client/docs/PROTOCOL.md`.
+Operator summary lives outside this tree at `tools/mdi2_client/docs/PROTOCOL.md`.
 **Bench context:** MDI2 over direct USB RNDIS to radio ECU 0x80, never on a vehicle OBD2 port
 (confirmed 2026-11-14; some capture-derived prose below still describes the original vehicle
 capture, not the current bench — flagged inline where it matters).
@@ -140,7 +140,7 @@ request goes out correctly.
 > suffix is required — omitting it gives `7F 31 13`); radio `27 01` seed on this path is a
 > **null 31×`0xFF`**, and the ID/SBI DIDs read with no SecurityAccess unlock. Full bench log:
 > `~/Desktop/MDI2_DPDU_DoIP_x80_bench_report.md` (outside this tree). Replay engine:
-> `mdi2_client/mdi2/dpdu_replay.py` supersedes the earlier guess-based `mdi2/dpdu.py`
+> `tools/mdi2_client/mdi2/dpdu_replay.py` supersedes the earlier guess-based `mdi2/dpdu.py`
 > (unverified builders — recommended for deletion).
 
 ## 4. Per-operation bring-up sequence (gold-standard reconstruction, from stream 317 — a full
@@ -626,7 +626,7 @@ event sockets and obtained a channel id. A resource-0x2A link to radio ECU 0x80 
 confirmation and ECU response `62 F1 A0 F2`; this validates native Python CAN transmit/receive
 for this read, but does not validate the ADB routine or identify its domain byte.
 
-This is reconstructed field-by-field in the live native client (`mdi2_client/mdi2/`,
+This is reconstructed field-by-field in the live native client (`tools/mdi2_client/mdi2/`,
 `live_calibration.rearm_dpdu_tunnel`): `session_open` on 9052 (`master=True`) returns
 `{"session": <id>, "port": 9011}`; then on **9050** send three polls (`2e08000001000000`) and
 the START message (`30080000…APP_NAME…PDU…COMMAND…START` + session id as trailing LE u32). This
@@ -739,7 +739,7 @@ attempts during the same debugging session.
 > topology question itself remains open; it is `AUG24_SESSION_FULL_PCAP_TIMELINE.md`'s open item
 > (finding #1), not this doc's.
 
-### 11.6 Native in-package live client — further findings (2026-11-07, `mdi2_client/mdi2/`)
+### 11.6 Native in-package live client — further findings (2026-11-07, `tools/mdi2_client/mdi2/`)
 
 Established on this bench's MDI2 (serial-derived Blowfish key, radio ECU 0x80, tester byte F1),
 beyond the `PDU START` mechanism in §11.3:

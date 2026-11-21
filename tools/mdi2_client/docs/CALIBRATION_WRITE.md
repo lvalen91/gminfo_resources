@@ -75,7 +75,7 @@ include it in routine instructions.
 
 ## Cleared A11 recovery 2026-11-14
 
-The complete [A11 recovery record](../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14)
+The complete [A11 recovery record](../../../diagnostics/diagnosticsd_routines_and_recovery.md#successful-mdi2-ltz-recovery-after-calibration-clear-2026-11-14)
 owns the failure history, workarounds and UART boot evidence. Differences from
 the normal CLI flow:
 

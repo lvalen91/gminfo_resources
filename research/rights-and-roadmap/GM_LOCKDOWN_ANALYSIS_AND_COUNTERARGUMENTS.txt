@@ -9,7 +9,7 @@ AOSP_REPLACEMENT_RESEARCH.txt). This doc owns: the user-rights argument, the
 10(+1) anticipated-GM-counter-argument rebuttal set, and the legal/regulatory
 analysis. It does NOT own: lockdown mechanism details (AVB/dm-verity/locked
 bootloader/SELinux/GHS/TSS-signing architecture -- see
-../platform/boot_chain.md), the telemetry endpoint/data-collection inventory
+../../platform/boot_chain.md), the telemetry endpoint/data-collection inventory
 or GHS backup-camera technical behavior (see GM_REMOTE_ACCESS_ANALYSIS.txt),
 or the VIP/CAN gateway architecture (see VIP_CONTROL_ANALYSIS.txt). Those
 topics are cited here by pointer, not restated.
@@ -17,7 +17,7 @@ topics are cited here by pointer, not restated.
 RELATED: GM_REMOTE_ACCESS_ANALYSIS.txt (telematics/remote-start technical
 substantiation, telemetry endpoints, GHS camera mechanism), AOSP_REPLACEMENT_
 RESEARCH.txt section 4 (AVB/dm-verity/locked-bootloader/GHS mechanism
-detail), ../platform/boot_chain.md (boot-chain/AVB/bootloader-lock
+detail), ../../platform/boot_chain.md (boot-chain/AVB/bootloader-lock
 architecture), VIP_CONTROL_ANALYSIS.txt (VIP/CAN gateway technical reality).
 
 ================================================================================
@@ -93,7 +93,7 @@ Boot), dm-verity, a locked bootloader with no fastboot unlock, SELinux
 Enforcing, the GHS hypervisor (which runs below Android and continues
 operating through an Android reboot), and TSS signing (only GM-signed
 firmware accepted). The mechanism-by-mechanism architecture, including how
-each is implemented and verified, is owned by ../platform/boot_chain.md and
+each is implemented and verified, is owned by ../../platform/boot_chain.md and
 AOSP_REPLACEMENT_RESEARCH.txt section 4 -- not restated here.
 
 Also not user-disable-able: security-event telemetry, GM Connection Service,
@@ -578,7 +578,7 @@ Basis: Static firmware analysis, legal research, technical architecture
 review. No firmware/code citation backs any individual technical claim in
 this doc directly -- technical claims here (GHS camera behavior, VIP
 gateway role, telemetry endpoint) are substantiated in GM_REMOTE_ACCESS_
-ANALYSIS.txt, VIP_CONTROL_ANALYSIS.txt, and ../platform/boot_chain.md; this
+ANALYSIS.txt, VIP_CONTROL_ANALYSIS.txt, and ../../platform/boot_chain.md; this
 doc should be read as the rights/legal argument built on top of those
 findings, not as an independent technical source.
 

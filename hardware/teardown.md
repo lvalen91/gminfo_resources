@@ -64,7 +64,7 @@ Classic A/B (NOT virtual A/B — no COW snapshots). `ro.build.ab_update=true`, `
 
 ### Ghidra Analysis (9 passes, VIP firmware 86331656)
 
-Binary: 1.9MB, Renesas RH850 — disassemble with the **RH850:LE:32** SLEIGH module. (The earlier V850:LE:32 pass reported here, 6,251 functions, was only an approximation; it is superseded by fresh RH850 projects — an RH850 disassembly of 86331656 yields substantially more functions than the abandoned ~6,251-function V850 pass (RH850 counts run ~10,350–12,939 across passes; see `research/MASTER_REFERENCE.md` and `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, not INVENTORY.md). The crypto findings below are from the superseded V850 pass but its conclusions — VIP is a transparent relay, no crypto — hold.)
+Binary: 1.9MB, Renesas RH850 — disassemble with the **RH850:LE:32** SLEIGH module. (The earlier V850:LE:32 pass reported here, 6,251 functions, was only an approximation; it is superseded by fresh RH850 projects — an RH850 disassembly of 86331656 yields substantially more functions than the abandoned ~6,251-function V850 pass (RH850 counts run ~10,350–12,939 across passes; see `research/MASTER_REFERENCE.md` and `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, not INVENTORY.md). The crypto findings below are from the superseded V850 pass but its conclusions — VIP is a transparent relay, no crypto — hold.)
 
 **The VIP contains ZERO cryptographic operations:**
 
@@ -224,7 +224,7 @@ Corrected 2026-11-17 from the mapped-firmware audit:
 5. The readback establishes accessible firmware contents, not recovery of
    private signing keys or hardware-derived secrets.
 
-See the [expanded audit](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#expanded-readback-audit-and-coverage--2026-11-17).
+See the [expanded audit](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#expanded-readback-audit-and-coverage--2026-11-17).
 
 > **[C] 2026-10-08 (avbtool/binary, SOC_ABL 85738845 — CONFIRMED-FROM-BINARY/F1, F2, F4):**
 > The real OFFLINE unlock target is **not** the Boot Guard chain itself but the device
@@ -233,7 +233,7 @@ See the [expanded audit](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#expand
 > `read_device_state_efi()`. The ordinary successful read derives state from
 > `OEMLock` bit 0. Correction 2026-11-12: a complete account must also include
 > the gated missing-state/provisioning fallbacks in the same getter;
-> see `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3.2. `USE_TPM` was NOT compiled in — this is
+> see `research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` §2.3.2. `USE_TPM` was NOT compiled in — this is
 > explicitly NOT fTPM/TPM2-backed and NOT RPMB. Boot Guard's Boot Policy (`BPM.met`)
 > hashes cover IBBL/IBB/OBB *code* only — **not** the UEFI NVRAM varstore — so the
 > `OEMLock` bit sits outside the Boot Guard hash chain entirely. The open question
@@ -358,7 +358,7 @@ The VIP reads EEPROM at boot, sends state to the SoC via HDLC IPC, and the SoC *
 | Boot slot selection | A/B partition management | Could influence which slot boots? |
 | gm_update_engine interaction | OTA update state | Could trigger recovery/update mode? |
 | VIN relearn / calibration | Factory provisioning state | Could signal "factory virgin" state? |
-| Manufacturer Enable Counter | [Reading inventory](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) | Generation and reset side effects remain unresolved |
+| Manufacturer Enable Counter | [Reading inventory](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration) | Generation and reset side effects remain unresolved |
 
 #### Timing Limitation
 
@@ -383,9 +383,9 @@ Despite the timing limitation, several scenarios could reach deeper:
 
 3. **SecurityAccess Levels** — The 4 levels (0x10-0x13) each persist an unlock bitmask via SecWriteNVM. What does each level gate? If one gates "allow SPS reprogramming," that's a path to writing arbitrary calibration data.
 
-4. **ghs_abl_update Partition** — Firmware-reflash capsule partition (NOT a runtime boot stage `[S 2026-11-20]`): its 6 MiB IPK payload is byte-identical to the top 6 MiB of the IFWI/SPI flash (`0x200000..0x800000`) — the `$CPD`/FTPR/ABL-ELF updatable firmware block; the capsule is CRC-wrapped only. Named after ABL as its headline component; carries the whole updatable Intel firmware region, not just ABL. If the VIP can trigger an update cycle and the payload could be controlled, authentication depends on the updater and/or CSE/Boot Guard at next boot — not recoverable from the capsule alone. See [`../research/BOOT_TRUST_ANCHOR_AND_KEYS.md`](../research/BOOT_TRUST_ANCHOR_AND_KEYS.md) §3.
+4. **ghs_abl_update Partition** — Firmware-reflash capsule partition (NOT a runtime boot stage `[S 2026-11-20]`): its 6 MiB IPK payload is byte-identical to the top 6 MiB of the IFWI/SPI flash (`0x200000..0x800000`) — the `$CPD`/FTPR/ABL-ELF updatable firmware block; the capsule is CRC-wrapped only. Named after ABL as its headline component; carries the whole updatable Intel firmware region, not just ABL. If the VIP can trigger an update cycle and the payload could be controlled, authentication depends on the updater and/or CSE/Boot Guard at next boot — not recoverable from the capsule alone. See [`../research/boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md`](../research/boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md) §3.
 
-5. **MEC Counter** — Y181 bench unit showed MEC=207 in an earlier, undated DPS bench read (no repo source gives its date; `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` MEC table lists it as "Y181 (bench, BSOB)"; **227 as of 2026-11-12**, main.log RegistrationService MEC_counter — the counter changed between captures; later readings on the same bench radio were 241 on 2026-09-09 and 227 in the 2026-11-12 recovery export — the value is not fixed; see the MEC table in `research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`). Y177 via gateway shows MEC=0. Behavior differs significantly between them. What happens at MEC=255 (overflow)?
+5. **MEC Counter** — Y181 bench unit showed MEC=207 in an earlier, undated DPS bench read (no repo source gives its date; `research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` MEC table lists it as "Y181 (bench, BSOB)"; **227 as of 2026-11-12**, main.log RegistrationService MEC_counter — the counter changed between captures; later readings on the same bench radio were 241 on 2026-09-09 and 227 in the 2026-11-12 recovery export — the value is not fixed; see the MEC table in `research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`). Y177 via gateway shows MEC=0. Behavior differs significantly between them. What happens at MEC=255 (overflow)?
 
 6. **SPS Programming Flow** — GM SPS sends CAN → VIP → SoC to reprogram modules. The VIP is a transparent relay with no crypto. Capturing and replaying this sequence could reveal the authorized reprogramming path.
 
@@ -515,7 +515,7 @@ Two mechanisms were conflated here. **VIP** logs three startup/SoC-only reset
 failures and suppresses reset timers. **GHS lifecycle** separately increments its
 Android failed-boot counter and compares it with 3 at task address `0x200E2D`;
 >=3 takes the see-dealer branch. Verified against original Y181B SPS bytes on
-2026-11-12; see [code and provenance](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12).
+2026-11-12; see [code and provenance](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12).
 
 ### GHS Device Interfaces (from ADB)
 `/dev/ghs/{textlog, audit, snapshot-dbg, ipc, cal, camera, chime, tee-att, emmc-health, ota-isys, gpu-dbg}`
@@ -690,7 +690,7 @@ SbaTicketValidation validation failed: 0x0
 ### Boot Reason Record (BRR)
 `RstRsn=0x33, SoCReqType=0, RetRsn=0, UnqBtCnt=4066, RstFctr=0x201`
 
-**Corrected 2026-11-17:** `SoCReqType` is recorded by reset/shutdown handlers and reported as boot-reason metadata. Zero was observed during normal boot, but no consumer has been traced that uses this field to select recovery or Intel ELK. Nonzero values are not a demonstrated boot-target injection mechanism. See the [cold-entry selector trace](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#cold-entry-selector-trace--2026-11-17).
+**Corrected 2026-11-17:** `SoCReqType` is recorded by reset/shutdown handlers and reported as boot-reason metadata. Zero was observed during normal boot, but no consumer has been traced that uses this field to select recovery or Intel ELK. Nonzero values are not a demonstrated boot-target injection mechanism. See the [cold-entry selector trace](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#cold-entry-selector-trace--2026-11-17).
 
 ---
 
@@ -707,7 +707,7 @@ Three-phase sequence during boot:
 
 Reading contexts, source distinctions and counter/registration limits are
 maintained in
-[the consolidated MEC source](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+[the consolidated MEC source](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 
 
 ---
@@ -795,7 +795,7 @@ misc partition layout (conceptual):
 **Boot path, corrected 2026-11-17:** SoC software can select ELK through HECI/CSE and reset. Native Probe has reproduced that operation. Entry after complete eMMC corruption/erasure, without any working SoC OS, remains unverified. `OBBP` and `ELK` are adjacent CPD directory names, not a decoded literal boot-target identifier.
 
 **Three trigger paths:**
-1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI/CSE selection → ELK. **Confirmed live 2026-11-17:** a CAN routine-ID F000 / selector-8180 RAM-assisted request produced UART `Elk Reboot Response 0` and a controlled reset into ELK; USB identified `titan_gm_my22` at `8087:09EF` and the bootloader responded `kernelflinger-07.02-userdebug`. Candidate frame `31 01 F0 00 81 80 03`; callback chain `57BC8`→`4E08A`→`5C0C0`→`757D4`→`75794`→`7F642`. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+1. **CAN diagnostic** — VIP J6_CDD module: `"[J6_CDD] Control Chan: Diag Elk Reboot Req"` → VIP forwards to GHS lifecycle → HECI/CSE selection → ELK. **Confirmed live 2026-11-17:** a CAN routine-ID F000 / selector-8180 RAM-assisted request produced UART `Elk Reboot Response 0` and a controlled reset into ELK; USB identified `titan_gm_my22` at `8087:09EF` and the bootloader responded `kernelflinger-07.02-userdebug`. Candidate frame `31 01 F0 00 81 80 03`; callback chain `57BC8`→`4E08A`→`5C0C0`→`757D4`→`75794`→`7F642`. See [the owning ELK analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 2. **GHS lifecycle state machine** — Last resort after shutdown fails. State progression: `BootELKWaitForRespSent` → `BootELKSendAblUserCommand`. Triggers after repeated boot failure escalation.
 3. **OTA IPC** — `ConnToOTA_BootELK` / `ConnToLifecycle_BootELK` IPC within GHS task architecture.
 
@@ -966,7 +966,7 @@ Physically dump Samsung KLMCG4JEUD 64GB eMMC (BGA-153). Find misc partition. AB0
 
 VIP firmware has explicit ELK reboot support via J6_CDD. Boots via HECI → CSE → ABL/ELK selection, bypassing normal misc/BCB boot chain entirely. ELK is the Intel Kernelflinger fastboot (AVB active, "USB storage unsupported"), **not** a minimal Linux with direct block-device access — so it does not provide an unrestricted misc-write primitive; any write path is gated by fastboot's AVB/device-state checks.
 
-Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. **Confirmed live 2026-11-17:** CAN F000/8180 RAM-assisted request produced ELK entry (`kernelflinger-07.02-userdebug`; see §ELK / trigger path 1). What ELK then reaches is fastboot with AVB enforced — it still cannot write `misc` without defeating lock/AVB. See [the owning ELK analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+Trigger: CAN bus diagnostic request to VIP (ECU 0x80) → J6_CDD forwards to GHS lifecycle → HECI to ABL. **Confirmed live 2026-11-17:** CAN F000/8180 RAM-assisted request produced ELK entry (`kernelflinger-07.02-userdebug`; see §ELK / trigger path 1). What ELK then reaches is fastboot with AVB enforced — it still cannot write `misc` without defeating lock/AVB. See [the owning ELK analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
 **Option 3: Return-to-Dealer Screen → Check ADB/USB Exposure**
 

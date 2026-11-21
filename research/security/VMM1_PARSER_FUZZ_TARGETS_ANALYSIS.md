@@ -8,7 +8,7 @@ engineering that located and verified three of libavb's integrity checks inside 
 recovery architecture and the Ghidra/PyGhidra tool-setup narrative behind this RE (see
 [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), which absorbed
 that session log as a dated history subsection); general AVB/A-B/BCB boot-chain flow beyond
-what's needed as fuzz-target ground truth (`../platform/boot_chain.md`,
+what's needed as fuzz-target ground truth (`../../platform/boot_chain.md`,
 [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md),
 [BOOT_CHAIN_ANALYSIS.txt](BOOT_CHAIN_ANALYSIS.txt)); rollback-counter/downgrade policy
 ([GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt)); GHS
@@ -31,12 +31,12 @@ GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (rollback_index@0x70, misc CRC-only, RSA-2
 
 **The `.vmm1` section strings match AOSP `libavb`, statically compiled into a 32-bit x86
 ELF container** `[FW]`. Evidence:
-- `research/scripts/avb_audit.py` enumerates the exact `libavb` error strings and
+- `tools/analysis-scripts/avb_audit.py` enumerates the exact `libavb` error strings and
   CVE-class markers originally hunted for: `avb_safe_add` ("Overflow when adding
   values"), `avb_descriptor_foreach` ("Descriptor size is not divisible by 8"),
   "Descriptor payload size overflow", "Overflow while computing size of boot image",
   chain-partition `rollback_index_location` validation, etc.
-- Confirmed vbmeta strings in `research/decompiled/vmm1_decomp.txt`:
+- Confirmed vbmeta strings in `evidence/decompiled/vmm1_decomp.txt`:
   `VMM: vbmeta bad header: descriptors outside data block`,
   `VMM: ERROR: rollback index is too old: %lu in image, but stored is %lu`.
 - `GM_INFO37_BOOT_CHAIN_ANALYSIS.md` + `BOOT_CHAIN_ANALYSIS.txt`: magic `AVB0`, version 1.1,
@@ -352,7 +352,7 @@ Both strings have **zero code-side cross-references** across the 14.9 MB firmwar
 image, including `.vmm1.text` and pointer tables in `.vmm1.data`/`.vmm1.rodata`.
 The check covered full 8-byte values and their low 4 bytes `[V]`.
 
-`research/decompiled/elk_strings.txt`, extracted from a separate binary —
+`evidence/decompiled/elk_strings.txt`, extracted from a separate binary —
 `elk_inner.elf`, the "ELK"/kernelflinger component (per `INVENTORY.md`: *"Inner ELF:
 kernelflinger + libavb + BoringSSL + .oemkeys RSA-4096"*) — contains the **full** guard
 string set, including the exact `avb_safe_add` string `"Overflow when adding values."`
@@ -568,13 +568,13 @@ resolved.
 
 ## Appendix — source artifacts
 
-- `research/decompiled/vmm1_decomp.txt` — vbmeta/rollback error strings + `%lu` format.
-- `research/scripts/avb_audit.py` — libavb CVE-pattern marker list (confirms libavb + which overflow strings are present).
-- `research/reports/avb_audit.out` — archived run (failed: no PyGhidra originally; later rerun via PyGhidra against the real loaded `.vmm1` program produced zero xrefs, see §6.1).
-- `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md:490-570` — A/B misc struct, vbmeta flow, boot-image header.
-- `research/BOOT_CHAIN_ANALYSIS.txt:423-443` — Android boot image field offsets.
-- `research/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:160-390,664-701` — rollback mechanism, misc CRC-only, 32-bit x86 container class, rollback_index@0x70.
-- `research/decompiled/vmm1_all.c` — 32-bit CONCAT44 dword-pair arithmetic idiom; `0x200` (×512) literals at lines 4558/4574.
-- `research/decompiled/elk_strings.txt` — the full `libavb` guard-string set found in `elk_inner.elf`, not `.vmm1` (§6.1).
+- `evidence/decompiled/vmm1_decomp.txt` — vbmeta/rollback error strings + `%lu` format.
+- `tools/analysis-scripts/avb_audit.py` — libavb CVE-pattern marker list (confirms libavb + which overflow strings are present).
+- `evidence/reports/avb_audit.out` — archived run (failed: no PyGhidra originally; later rerun via PyGhidra against the real loaded `.vmm1` program produced zero xrefs, see §6.1).
+- `research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md:490-570` — A/B misc struct, vbmeta flow, boot-image header.
+- `research/boot-update-recovery/BOOT_CHAIN_ANALYSIS.txt:423-443` — Android boot image field offsets.
+- `research/boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt:160-390,664-701` — rollback mechanism, misc CRC-only, 32-bit x86 container class, rollback_index@0x70.
+- `evidence/decompiled/vmm1_all.c` — 32-bit CONCAT44 dword-pair arithmetic idiom; `0x200` (×512) literals at lines 4558/4574.
+- `evidence/decompiled/elk_strings.txt` — the full `libavb` guard-string set found in `elk_inner.elf`, not `.vmm1` (§6.1).
 - `elk.asm` — the 287k-line `objdump -d -M intel` disassembly of `elk_inner.elf`, the only remaining copy of that binary's content (source `elk.bin` is a broken symlink); basis for the §6 reconstruction and decompilation.
 - `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md` — retired; its tool-setup/status narrative is absorbed into `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` as a dated history subsection, its AVB-guard-verification findings are absorbed into this doc's §6.

@@ -4,7 +4,7 @@ Pointer-only doc, trimmed 2026-11-21. The EEPROM memory map, the Seed-Bypass-Ind
 mechanism — primary SBI data byte `0x0441`, **backup SBI data byte `0x0A81`** (not `0x0A80`,
 which is a marker byte, not the data byte) — the VIP CalGroup RE findings, the I2C bus table, and
 the GPIO/serial/kernel local hardware attack surface are all owned by
-[`../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
+[`../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
 (ELA) — read that doc for all of the above, not this one.
 
 This doc previously carried a full prose duplicate of that content, including the `0x0A80` data-byte
@@ -17,7 +17,7 @@ mitigations, SELinux denials — owns the MEC/ADB-unlock *consequence* of the SB
 [hardware_specs.md](hardware_specs.md) (physical I2C adapter/controller enumeration, VIP MCU part
 number, UART/serial hardware), [ota_update_stack.md](ota_update_stack.md) (OTA signing). External:
 `../eeprom/` (EEPROM programming workflow/tooling — this doc does not duplicate or edit that
-directory) and [ELA](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md) (primary EEPROM research,
+directory) and [ELA](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md) (primary EEPROM research,
 authoritative for everything not reproduced here — which, after this trim, is everything).
 
 ## Platform-specific live captures
@@ -29,7 +29,7 @@ left as a second prose copy.
 - `[C]` live-Y175 2026-10-05 (`dev_listing.txt`): SELinux-enforcing device-node labels for
   `i2c-0..3`/`i2c-7` (`saturnhd_device`, `i2c_device`, `dirana3_device`, `display_panel`), and the
   GPIO (`/dev/gpiochip0-3` root-only) and serial (`ttyS1` root-only, `ttyACM1` `sxm_device`)
-  permission/label confirmations — see [ELA §8](../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
+  permission/label confirmations — see [ELA §8](../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
   and ELA §8.1.
 - `[C]` live-Y175 2026-10-05: Android security posture on the captured unit — `ro.secure=1`,
   `ro.adb.secure=1`, `ro.debuggable=0`, adb shell as normal uid 2000 (`u:r:shell:s0`); the unit was

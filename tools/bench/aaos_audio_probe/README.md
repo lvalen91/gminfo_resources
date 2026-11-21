@@ -28,8 +28,8 @@ AAOS_BUILD_TOOLS, AAOS_ANDROID_JAR, AAOS_JAVA_HOME and AAOS_DEBUG_KEYSTORE.
 The existing keystore is used in place and never copied into this project.
 
 ```sh
-~/.Codex/bin/bt bash research/tools/aaos_audio_probe/build.sh
-adb -s <ADB_TARGET> install -r research/tools/aaos_audio_probe/build/aaos-audio-probe.apk
+~/.Codex/bin/bt bash tools/bench/aaos_audio_probe/build.sh
+adb -s <ADB_TARGET> install -r tools/bench/aaos_audio_probe/build/aaos-audio-probe.apk
 adb -s <ADB_TARGET> shell am start -n org.gminfo.audioprobe/.MainActivity
 ```
 

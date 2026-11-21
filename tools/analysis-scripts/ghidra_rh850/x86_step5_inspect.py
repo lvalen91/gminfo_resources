@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Inspect functions/coverage gaps in calibrations.text and vip_server.text."""
 import pyghidra
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"
+PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
 PROJ_NAME = "hostos_x86"
 pyghidra.start(verbose=False)
 from ghidra.base.project import GhidraProject

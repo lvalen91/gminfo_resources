@@ -259,7 +259,7 @@ artifacts.
 trust tiers were not demonstrated, and the associated sample had the wrong
 header size. Direct T1 tester F4, extended session, 31 all-FF seed bytes and
 a 12-zero-byte response now produced `67 02`; default session was restored.
-See the [owning diagnostic reference](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
+See the [owning diagnostic reference](../../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 This is not proof of arbitrary keys, calibration writes or a root shell.
 
 ### 2. Track A — Vector #1: Dealer Screen Trigger & SELinux State Probe

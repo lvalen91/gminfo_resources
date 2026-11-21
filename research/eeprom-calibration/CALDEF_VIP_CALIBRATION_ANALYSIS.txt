@@ -238,7 +238,7 @@ Diagnostic DTC codes defined in GIS643_DiagnosticCalDef_GlobalA.caldef and
 GIS641_DiagnosticCalDef_GlobalB.caldef (e.g. B124F_44 "Security Access not
 Activated", B1964_00 "USB D(+) Serial Data General Failure", U1961_92
 "Security Peripheral Performance") restate UDS/DTC facts already owned by the
-diagnostics tree — not reproduced here; see `../diagnostics/`.
+diagnostics tree — not reproduced here; see `../../diagnostics/`.
 
 ================================================================================
 4. VIP-SIDE CALIBRATIONS (FIRMWARE)

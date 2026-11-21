@@ -17,11 +17,11 @@ confirmed on this A11 unit. Sources disagree on several node labels; both values
 [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md) ·
 [`../hardware/connectors.md`](../hardware/connectors.md)
 
-Primary sources: the `A11_CSM_x80` DPS log ([`../diagnostics/dps/A11_CSM_x80.Txt`](../diagnostics/dps/A11_CSM_x80.Txt)),
-the Y181 ADB enumeration ([`../enumeration/Y181/`](../enumeration/Y181/)),
-[`../research/GM_REMOTE_ACCESS_ANALYSIS.txt`](../research/GM_REMOTE_ACCESS_ANALYSIS.txt),
-[`../research/VIP_CONTROL_ANALYSIS.txt`](../research/VIP_CONTROL_ANALYSIS.txt),
-[`../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md),
+Primary sources: the `A11_CSM_x80` DPS log ([`../evidence/dps-logs/A11_CSM_x80.Txt`](../evidence/dps-logs/A11_CSM_x80.Txt)),
+the Y181 ADB enumeration ([`../evidence/enumeration/Y181/`](../evidence/enumeration/Y181/)),
+[`../research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt`](../research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt),
+[`../research/eeprom-calibration/VIP_CONTROL_ANALYSIS.txt`](../research/eeprom-calibration/VIP_CONTROL_ANALYSIS.txt),
+[`../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md),
 the FSA notes ([fsa_protocol.md](fsa_protocol.md)) and the ethernet-UDS notes
 ([`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md)).
 Originally consolidated 2026-07-01; content current through 2026-11-17.
@@ -42,12 +42,12 @@ Radio is dual-homed: **ECU `0x80` on CAN** and **`192.168.1.100` on Ethernet**.
 ## Plane 1 — CAN (from the DPS scan)
 
 DPS 4.56 over **LS-CAN through the central gateway**; **24 ECUs** enumerated
-([`../diagnostics/dps/A11_CSM_x80.Txt`](../diagnostics/dps/A11_CSM_x80.Txt)). VIN present — redact when sharing.
+([`../evidence/dps-logs/A11_CSM_x80.Txt`](../evidence/dps-logs/A11_CSM_x80.Txt)). VIN present — redact when sharing.
 
 - **Central gateway = ECU `0x45`** — wake-up + ECUID reads route through it; response uses the physical
   `14DAF245` pattern, unlike every other module's `14xAF2xx`. [C]
 - **Radio = ECU `0x80`** — ECUID `004B41DC…14AC` (matches EEPROM/teardown); LS-CAN via the gateway with tester
-  ID **F2**: ReqCANId `0x14DA80F2` / RspCANId `0x145AF280` (confirmed: `diagnostics/dps/A11_CSM_x80.Txt:160` —
+  ID **F2**: ReqCANId `0x14DA80F2` / RspCANId `0x145AF280` (confirmed: `evidence/dps-logs/A11_CSM_x80.Txt:160` —
   every ECU in the scan uses F2; F1 is the generic OBD tester address, not seen here). [C]
 - **Segmented buses** behind `0x45`: HS-CAN + LS-CAN + AUTOSAR "SER DATA 5" (seen on the connector harness,
   see [`../hardware/connectors.md`](../hardware/connectors.md)). [C]
@@ -59,7 +59,7 @@ DPS 4.56 over **LS-CAN through the central gateway**; **24 ECUs** enumerated
   distinct bench-only role by the OPU Wiring Tester + Emulator (same connectors.md section).
 - **Diagnostic addressing summary** (CAN address ↔ module): **CSM** (Center Stack Module = the radio/head unit)
   `0x80`; **CGM** (Central Gateway Module) `0x45`. The two UDS paths to the radio are CAN/DPS
-  ([`../diagnostics/dps/`](../diagnostics/dps/)) and Ethernet/TCP via root `diagnosticsd` on port 49156
+  ([`../evidence/dps-logs/`](../evidence/dps-logs/)) and Ethernet/TCP via root `diagnosticsd` on port 49156
   (GM Ethernet diag address `0x0084`, 8-byte header); trust tiers and seed/key behaviour are in
   [security.md](security.md) and [`../diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md). The UDS service-ID table is in [vehicle_config.md](vehicle_config.md#uds-diagnostic-services-used-by-dps).
 - **VIN arbitration IDs `0x712`, `0x75F`, `0x49B`** are **[X] Cadillac captures** (Qualcomm radio VIN gate;
@@ -86,7 +86,7 @@ UDS, ProtoKey and signing gates must remain separate. A returned MEC `F1A0=FF` l
 bypasses the SoC's GM ADB client-certificate requirement; it is not enforced-secure mode, and the SPS
 host-authorization error does not prove the cause of an all-FF ECU seed. Details and MEC `F1A0` semantics:
 [security.md](security.md#mec-manufacturer-enable-counter);
-central evidence guide: [`../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+central evidence guide: [`../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 ---
 
@@ -195,7 +195,7 @@ partitions bridged onto the physical backbone.
 
 **Identity evidence (2026-10-06 correction).** An earlier version stated that the Bosch device
 (real OUI) **and the RTOS partition** are separate hardware. The RTOS-partition half is **wrong**.
-ARP evidence (`enumeration/Y181/*/raw/arp_table.txt`, `enumeration/Y181/jun2026/enumeration_report.txt:7477-7482`):
+ARP evidence (`evidence/enumeration/Y181/*/raw/arp_table.txt`, `evidence/enumeration/Y181/jun2026/enumeration_report.txt:7477-7482`):
 the RTOS/diagnostic endpoint `172.16.4.107` carries MAC **`02:05:00:00:02:00`** — locally-administered (bit-1 set),
 i.e. a hypervisor virtual NIC, **not** real silicon — and that **same** virtual NIC is dual-homed as
 `192.168.1.112` on vlan5 (`arp_table.txt` confirms identical MAC): a single co-resident GHS partition bridged onto
@@ -286,7 +286,7 @@ variant and its local-launch prerequisite are recorded in [security.md](security
   9005 OnStarFunctions, 9010 DeviceInformation, 9011 ProgrammingMaster (confirmed **dead code**: compiled in,
   never instantiated or bound), 9012/9018 RemoteReflash(UI), 9016 NAM, 9020 DisplaysCoordination. Framing
   confirmed on the wire (live unauthenticated GET/SUBSCRIBE round-trips with the real cluster service on `9002` **in the emulator**; jadx RE of ClusterService/DeviceInformationService). No authentication of any kind
-  (see [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md)). Header fields, opTypes,
+  (see [`../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md`](../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md)). Header fields, opTypes,
   serviceIds, parser bugs and the cluster-injection surface: [fsa_protocol.md](fsa_protocol.md). [C]
 - **SOME/IP-SD** present (UDP 30490 / 239.192.0.1). [C]
 - **`:49156`** — confirmed root `diagnosticsd`, a **custom 8-byte GM-header UDS bridge, NOT DoIP** (SRC/TGT addr +

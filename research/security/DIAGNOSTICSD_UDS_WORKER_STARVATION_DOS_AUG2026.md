@@ -163,7 +163,7 @@ network position for this report.
   `:49156`.
 - `platform/security.md#can--uds-diagnostic-services` — SELinux domain
   (`gm_diagnosticsd`) and UDS SID reference.
-- `research/UNTRIED_ATTACK_VECTORS.md` #9/#10 — earlier (2026-06-29)
+- `research/security/UNTRIED_ATTACK_VECTORS.md` #9/#10 — earlier (2026-06-29)
   hypotheses (malloc-before-check heap exhaustion; source-address
   trust-tier spoofing) that this and the underlying doc's testing
   superseded with a negative result for both, and surfaced this DoS in their

@@ -23,9 +23,9 @@ Bosch/Windows activation is needed; macOS generic RNDIS is sufficient.
 - `read-all` (SocketCAN/ISO-TP), `security` and `key` are offline/bench helpers, not MDI2 access.
   `read-all` has never run against a live bus.
 
-Protocol detail: `../research/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md`,
-`../research/MDI2_DPDU_API_PROTOCOL_AUG2026.md`,
-`../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`.
+Protocol detail: `../../research/mdi2-bench-sessions/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md`,
+`../../research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md`,
+`../../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`.
 
 ## Quickstart
 

@@ -12,16 +12,16 @@ this stack's own Blowfish layer (`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`).
 reasoned but untested, `[U]` unverified/open. Dated per-claim notes override surrounding prose.
 
 **Related:** `MDI2_DPDU_API_PROTOCOL_AUG2026.md` (D-PDU/10123 path, §2 correction below applies
-there too), `AUG24_SESSION_FULL_PCAP_TIMELINE.md` (capture provenance), `mdi2_client/` (this repo —
+there too), `AUG24_SESSION_FULL_PCAP_TIMELINE.md` (capture provenance), `tools/mdi2_client/` (this repo —
 the native macOS implementation this doc documents), `gm_dps/docs/GM_MDI_IDENT_EVIDENCE_protocol.txt`
-and `mdi2_client/docs/PROTOCOL.md` (operator-facing duplicates of §0/§4 below).
+and `tools/mdi2_client/docs/PROTOCOL.md` (operator-facing duplicates of §0/§4 below).
 
 ---
 
 ## 0. Current state — authoritative summary
 
 **Status: SOLVED, live-validated end to end `[C]`.** A native macOS MDI2 client
-(`mdi2_client/`, pkg `mdi2`, deps pycryptodome + construct) pulls device logs over USB with no
+(`tools/mdi2_client/`, pkg `mdi2`, deps pycryptodome + construct) pulls device logs over USB with no
 Windows, repeatably. Final facts, each reconstructed from the investigation trail in §1-§4 and the
 condensed appendix (§5) — read those sections only for the RE evidence behind a given line, not for
 a live-current claim:
@@ -266,7 +266,7 @@ reading called this a 106-byte payload; corrected 2026-11-12: 106 is the **UDP l
 including the 8-byte header, so the real payload is 98 bytes — first u32 `0x62`, then `0x86d`,
 serial as LE u32 at payload offset 9. A shorter 41-byte-payload/49-byte-UDP-length variant also
 appears in the same captures — not a contradiction of the 98-byte reading, just a second observed
-beacon size; `mdi2_client/mdi2/const.py`'s "observed 41-byte beacon" comment refers to that
+beacon size; `tools/mdi2_client/mdi2/const.py`'s "observed 41-byte beacon" comment refers to that
 variant. That 41-byte variant's payload carries `module_type 0x1c = MDI_2` inline, not just the
 serial.)* A client can passively discover the device and confirm liveness by joining
 `225.1.1.1:8194` — no handshake, no auth required. This beacon is the idle keepalive/"watchdog"

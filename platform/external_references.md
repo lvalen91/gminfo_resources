@@ -119,7 +119,7 @@ History: the SELinux row previously read "permissive (Y177) vs enforcing (Y181)"
 
 ## 2. surrealdev.com (Snipesy / Surreal Development) bibliography [X]
 
-Canonical bibliography for the *"Rooting the Cadillac"* series and related posts by **Snipesy / Surreal Development LLC**. All other docs that cite this site (`vehicle_network.md` Plane 1a and vlan502, section 3 below / `ota_programming_roles.md` Global-B provisioning, `hardware_specs.md` VIP sleep, `research/MDI2_RAW_UDS_BYPASS_GUIDE.md` section 7) draw from these and should point here.
+Canonical bibliography for the *"Rooting the Cadillac"* series and related posts by **Snipesy / Surreal Development LLC**. All other docs that cite this site (`vehicle_network.md` Plane 1a and vlan502, section 3 below / `ota_programming_roles.md` Global-B provisioning, `hardware_specs.md` VIP sleep, `research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md` section 7) draw from these and should point here.
 
 | Article | Published | License | URL |
 |---|---|---|---|

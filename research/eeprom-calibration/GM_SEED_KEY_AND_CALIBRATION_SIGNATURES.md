@@ -15,13 +15,13 @@ implementation, emulator behavior and live-security results are explicitly exclu
 evidence for this platform.
 
 **Does NOT live here** (pointer only, never restated): EEPROM byte-level map and
-SBI/marker-byte mechanism → `../eeprom/` / `eeprom_i2c_security.md`; VIP control-scope,
+SBI/marker-byte mechanism → `../../eeprom/` / `eeprom_i2c_security.md`; VIP control-scope,
 CRC boundaries, I2C-access table → `VIP_CONTROL_ANALYSIS.txt`; CalDef record structure
 and VIP calibration-index tables → `CALDEF_VIP_CALIBRATION_ANALYSIS.txt`; the live
 CAN613/614 custom-calibration-write bench record → `DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`;
 CalSets.db checksum/container RE → `CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`;
 SELinux/CIL write-path reachability → `SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`;
-general SELinux/FBE/CVE/ADB security posture → `../platform/security.md`; raw UDS
+general SELinux/FBE/CVE/ADB security posture → `../../platform/security.md`; raw UDS
 bypass mechanics over MDI2 → `MDI2_RAW_UDS_BYPASS_GUIDE.md` (carried unchanged, cite
 only).
 
@@ -253,7 +253,7 @@ six OEM dispatch branches and the Layer-1/Layer-2 selector architecture around t
 Live Y175, using Y181B static address-check analysis: logical tester F4, target 0x0084,
 custom TCP framing, extended session `10 03`, then `27 01` yielded 31 all-FF bytes;
 `27 02` plus 12 zero bytes yielded `67 02`. Default session was restored. See the
-[validated T1 sequence](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
+[validated T1 sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 Earlier NRC `0x10` tests used invalid tester `0x0FA0`. This matches the degenerate MDI2
 exchange at the UDS level, but does not prove the exact OBD/gateway/A11 forwarding
 chain, arbitrary keys, calibration-write authorization, signature bypass, or root. No
@@ -264,13 +264,13 @@ programming write was attempted.
 | Evidence | Fact and limit | Sources |
 |---|---|---|
 | Degenerate B+ code | Requires 31×FF seed → 12-zero response → `67 02`. A reported 31B submitted key → `7F 27 13` incorrect length. Not arbitrary content/length/level. | `LIVE_DPS_CAPTURE_ECU80_AUG2026.md` |
-| EEPROM B | Minimal data edits `0x0441`/`0x0A81` = FF; framing/markers unchanged. Earlier stock reportedly already has the latter FF; Y181 needs the pair. Successful minimal edit reported without CRC recomputation. Old four-byte recipe/`0x0B41`/marker-gate claims not established as extra gates. Byte-level detail and the marker-vs-data correction owned by `eeprom_i2c_security.md`/`../eeprom/` — not restated here. | `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, `../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md` |
-| VIP S/M | Shared parameterized subsystem; 19-bit accumulation (2–20) ≠ 19 EEPROM flags, universal wire-level behavior, or a direct slot/subfunction map. Full body across Y175/Y177/Y181 refutes the Y177 four-byte-stub theory; 906B size does not identify all wire inputs/secret sourcing. | `../eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`, `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` |
-| ADB S/M | Separate MEC → SoC secure-mode/cert gate: 1–255 reads as bypass; zero/invalid/query failure reads as retained. `persist.gm.adb.secure=1` forces enforcement. UDS seed ≠ ADB auth message. **This row's "1–255 = bypass" reading is one side of the unresolved MEC-semantics question — see [Open Conflicts](#open-conflicts) item 1.** | `../eeprom/EEPROM_Analysis_Report.md` |
+| EEPROM B | Minimal data edits `0x0441`/`0x0A81` = FF; framing/markers unchanged. Earlier stock reportedly already has the latter FF; Y181 needs the pair. Successful minimal edit reported without CRC recomputation. Old four-byte recipe/`0x0B41`/marker-gate claims not established as extra gates. Byte-level detail and the marker-vs-data correction owned by `eeprom_i2c_security.md`/`../../eeprom/` — not restated here. | `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, `../../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md` |
+| VIP S/M | Shared parameterized subsystem; 19-bit accumulation (2–20) ≠ 19 EEPROM flags, universal wire-level behavior, or a direct slot/subfunction map. Full body across Y175/Y177/Y181 refutes the Y177 four-byte-stub theory; 906B size does not identify all wire inputs/secret sourcing. | `../../eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md`, `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` |
+| ADB S/M | Separate MEC → SoC secure-mode/cert gate: 1–255 reads as bypass; zero/invalid/query failure reads as retained. `persist.gm.adb.secure=1` forces enforcement. UDS seed ≠ ADB auth message. **This row's "1–255 = bypass" reading is one side of the unresolved MEC-semantics question — see [Open Conflicts](#open-conflicts) item 1.** | `../../eeprom/EEPROM_Analysis_Report.md` |
 | ProtoKey S | 1B request; 17B response = status + 16B key. Full IPC chain traced below in [§5 ProtoKey](#5-protokey--gm_protokey--libpal_securityso-ipc-chain). No key-content crypto found anywhere in the chain; upstream VIP-side producer not thereby characterized. Lifecycle states ≠ UDS levels. | `ANDROID_SIDE_PROTOKEY_TRACE_AUG2026.md` (absorbed, see §5) |
 | SBAT manual | Rev 1.12 p17: ECU Bypass Ticket for GMLAN/GMUDS; selected deviceID + binary SBAT from the GM Cyber ticket server, independently of DPS. Target eligibility, disabled checks, lifetime, vehicle binding, and edited-cal acceptance unknown. SBAT bypass indicator values cited by one DPS source: `$4444` = bypass inactive (production), `$0080` = bypass active (authorized) `[U]` — unconfirmed against this doc's own live evidence, kept here only as a cited value pair, not a verified gate reading. | `DPS_User_Guide.pdf#page=17` |
 | Other manual functions | p27 Vehicle Key Provisioning = vehicle/gateway message-auth keys; p32 Theft Deterrent Security Code = a separate legacy 4B code; pp34–37 CLI `BYPASS_TKT`/server-results support ≠ ticket/secret recovery. | `DPS_User_Guide.pdf` |
-| Development/ticket M | `AllowDevSignedVIP`, development-signed `VIP_APP`/`VIP_BOOT`, and the Signature Bypass Ticket ≠ universal unsigned-cal acceptance. Service names/Android enum IDs/EEPROM SBI are not an interchangeable control mapping. | `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, `../platform/ota_update_stack.md` |
+| Development/ticket M | `AllowDevSignedVIP`, development-signed `VIP_APP`/`VIP_BOOT`, and the Signature Bypass Ticket ≠ universal unsigned-cal acceptance. Service names/Android enum IDs/EEPROM SBI are not an interchangeable control mapping. | `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, `../../platform/ota_update_stack.md` |
 
 ## 5. ProtoKey — `gm_protokey` ↔ `libpal_security.so` IPC chain
 
@@ -370,13 +370,13 @@ unconditionally.
 
 This does not by itself prove the EEPROM/SBI bypass forces `status = 1` from the VIP
 (that mechanism is VIP-side, in the still-unresolved `FUN_ram_000b67d0` seed/key state
-machine — see `../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md`), but it does prove
+machine — see `../../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md`), but it does prove
 that **if** the VIP can be made to report success for a degenerate/non-genuine key
 (exactly what the SBI-driven CAN `$27` seed evidence in §3/§4 above already suggests),
 **there is no independent SoC-side check that would catch or reject it.** The Android
 side is a pure length/status gate with no cryptographic verification of its own.
 
-> **Correction to `../platform/security.md`:** that doc's historical "`gm_protokey`
+> **Correction to `../../platform/security.md`:** that doc's historical "`gm_protokey`
 > detects bypass → SELinux PERMISSIVE" framing is doubly wrong per this trace: (1) no
 > state string in the binary encodes a bypass/permissive outcome at all — the four
 > states are lifecycle-only (`initializing`/`data_locked`/`warm_reboot`/`stopped`); (2)
@@ -412,7 +412,7 @@ the bypass consumer; class names `GMAdbAuth.java`, `GMAdbPolicy.java`,
 `GMOcspCheckFrequencyHandler.java`, `ClientCertificateRevokedReceiver.java`; mechanism is
 AES-encrypted policy + VIN/CSM-ID match + X.509 chain + OCSP revocation check) belongs
 with a USB-ADB/dealer-cert-auth doc
-(`USB_ADB_SESSION_FINDINGS_2026-10-10.md` or `../platform/security.md`), not here; this
+(`USB_ADB_SESSION_FINDINGS_2026-10-10.md` or `../../platform/security.md`), not here; this
 is a real, as-yet-unplaced gap this consolidation pass could not close (no target doc in
 `/tmp/research_reorg/new/` charters this content), flagged for a future pass. Its own §5
 (a correction to `MASTER_REFERENCE.md`'s Y175/Y177/Y181 permissive-behavior table)
@@ -626,7 +626,7 @@ pending; not a validated, observed RSA-2048 cal-signer recovery.
 - Older compendia: physical secret storage remains a hypothesis; an encrypted-EEPROM
   reset-payload interpretation is rejected (see `eeprom_i2c_security.md`); a
   bridge-symbol forwarding attribution is retracted (see
-  `../diagnostics/ethernet_uds_diagnosticsd.md`); owner downgrade retests refine the
+  `../../diagnostics/ethernet_uds_diagnosticsd.md`); owner downgrade retests refine the
   observed rejection stage without proving the exact rollback-counter layout (see
   `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt`). Indexed sources are not blanket
   endorsements.
@@ -672,10 +672,10 @@ pending; not a validated, observed RSA-2048 cal-signer recovery.
 
 ## Related
 
-- `../eeprom/README.md`, `../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md`,
-  `../eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` — EEPROM SBI mechanism (byte-level map
+- `../../eeprom/README.md`, `../../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md`,
+  `../../eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md` — EEPROM SBI mechanism (byte-level map
   owner).
-- `eeprom_i2c_security.md` (`../platform/`) — EEPROM map/I2C permission owner.
+- `eeprom_i2c_security.md` (`../../platform/`) — EEPROM map/I2C permission owner.
 - `VIP_CONTROL_ANALYSIS.txt` — VIP control-scope/CRC/I2C-access owner.
 - `CALDEF_VIP_CALIBRATION_ANALYSIS.txt` — CalDef/VIP calibration-index table owner.
 - `DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md` — live CAN613/614 custom-write bench-record
@@ -684,13 +684,13 @@ pending; not a validated, observed RSA-2048 cal-signer recovery.
 - `CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` — CalSets.db checksum/container RE owner.
 - `SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` — `calserviced`/vendor_cald SELinux
   reachability owner.
-- `../platform/security.md` — general SELinux/FBE/CVE/ADB posture owner; carries this
+- `../../platform/security.md` — general SELinux/FBE/CVE/ADB posture owner; carries this
   doc's ProtoKey correction as an outstanding propagation item (see §5 above and this
   doc's ledger).
-- `../platform/ota_update_stack.md`, `../platform/ota_programming_roles.md` — OTA
+- `../../platform/ota_update_stack.md`, `../../platform/ota_programming_roles.md` — OTA
   Binder/state-machine and module-role owners; this doc's §9 is signature/trust-specific,
   not restated there.
-- `../diagnostics/diagnosticsd_security_access.md` — live T1 SecurityAccess bench-test
+- `../../diagnostics/diagnosticsd_security_access.md` — live T1 SecurityAccess bench-test
   record owner (§3 above).
 - `MDI2_RAW_UDS_BYPASS_GUIDE.md`, `VIP_FIRMWARE_Y177_Y181_COMPARISON.md` — carried
   unchanged; cited by name/section only (§5, §Open conflicts above).
@@ -808,9 +808,9 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S10]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/multiple_intefaces_attempt1.pcapng>
 [S11]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/S84_ANALYSIS_LOG.md>
 [S12]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/S84.dll.UNRESOLVED_RESOLVED.md>
-[S13]: <../mdi2_client/mdi2/security_cmac.py>
+[S13]: <../../tools/mdi2_client/mdi2/security_cmac.py>
 [S14]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/DPS_MASTER_REFERENCE.md>
-[S15]: <../platform/vehicle_network.md>
+[S15]: <../../platform/vehicle_network.md>
 [S16]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/pseudocode/IECS.dll.pseudocode.txt>
 [S17]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/pseudocode/S84.dll.pseudocode.txt>
 [S18]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/HOOKING_AND_TESTING_GUIDE.md>
@@ -818,46 +818,46 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S20]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/dllsecurity.dll.annotations.md>
 [S21]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/TISVCSV4_ANALYSIS.md>
 [S22]: <TISVCSV4_MULTI_OEM_KEYSERVER_AUG2026.md> — retired; absorbed into this doc's §2.1 above.
-[S23]: <../mdi2_client/mdi2/calibration_transaction.py>
-[S24]: <../eeprom/README.md>
-[S25]: <../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md>
-[S26]: <../eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md>
+[S23]: <../../tools/mdi2_client/mdi2/calibration_transaction.py>
+[S24]: <../../eeprom/README.md>
+[S25]: <../../eeprom/VIP_SBI_WRITE_MECHANISM_TRACE_AUG2026.md>
+[S26]: <../../eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md>
 [S27]: <VIP_FIRMWARE_Y177_Y181_COMPARISON.md>
-[S28]: <../eeprom/EEPROM_Analysis_Report.md>
+[S28]: <../../eeprom/EEPROM_Analysis_Report.md>
 [S29]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/dps_extracted/DPS_User_Guide.pdf#page=17>
-[S30]: <../platform/ota_update_stack.md>
+[S30]: <../../platform/ota_update_stack.md>
 [S31]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181/86331654>
 [S32]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/hy/re/apks/com.gm.domain.server.delayed.apk>
 [S33]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/calibrations/A11_extracted/spsCacheInternal/decompressed/>
 [S34]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/A11_CALIBRATION_FILES_COMPLETE_ANALYSIS_AUG2026.md>
 [S35]: <CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md>
-[S36]: <../mdi2_client/README.md>
+[S36]: <../../tools/mdi2_client/README.md>
 [S37]: <DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md>
 [S38]: <SCREEN_RESOLUTION_END_TO_END_WORKFLOW.md> — retired; see its own pointer.
-[S39]: <../platform/security.md>
-[S40]: <security/SHELL_ACCESS_ESCALATION_Jun2026.md>
-[S41]: <security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md>
+[S39]: <../../platform/security.md>
+[S40]: <../security/SHELL_ACCESS_ESCALATION_Jun2026.md>
+[S41]: <../security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md>
 [S42]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181/86331665.smd>
 [S43]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181/86331663.mnf>
-[S44]: <../platform/ota_programming_roles.md>
+[S44]: <../../platform/ota_programming_roles.md>
 [S45]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181B/USB_Files/86405528.smd>
 [S46]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2026_CT5/Radio-IVE-86384258-AAOS14-UQBM/86384262.smd>
 [S47]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2026_Silverado_EV/firmware/470/86485092.smd>
-[S48]: <security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md>
+[S48]: <../security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md>
 [S49]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_ref/diag/real_did_values.md>
-[S50]: <../diagnostics/ethernet_uds_diagnosticsd.md>
+[S50]: <../../diagnostics/ethernet_uds_diagnosticsd.md>
 [S51]: <GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt>
-[S52]: <../README.md>
-[S53]: <../VERIFICATION.md>
-[S54]: <../analysis/platform_faq.md>
-[S55]: <../eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md>
-[S56]: <../eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md>
-[S57]: <../hardware/connectors.md>
+[S52]: <../../README.md>
+[S53]: <../../VERIFICATION.md>
+[S54]: <../../analysis/platform_faq.md>
+[S55]: <../../eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md>
+[S56]: <../../eeprom/VIP_EEPROM_FLAG_SCOPE_ANALYSIS_AUG2026.md>
+[S57]: <../../hardware/connectors.md>
 [S58]: <../hardware/photos/README.md>
-[S59]: <../hardware/teardown.md>
-[S60]: <../platform/boot_chain.md>
-[S61]: <../platform/emulator.md>
-[S62]: <../platform/firmware_versions.md>
+[S59]: <../../hardware/teardown.md>
+[S60]: <../../platform/boot_chain.md>
+[S61]: <../../platform/emulator.md>
+[S62]: <../../platform/firmware_versions.md>
 [S63]: <../platform/hardware.md>
 [S64]: <../platform/networking.md>
 [S65]: <AE_RESEARCH_HANDOFF.md>
@@ -891,10 +891,10 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S93]: <USB_ADB_SESSION_FINDINGS_2026-10-10.md>
 [S94]: <VIP_CONTROL_ANALYSIS.txt>
 [S95]: <canbus_reset/CANBUS_RESET_ANALYSIS.txt>
-[S96]: <reports/forensic_out.txt>
-[S97]: <security/CVE_ATTACK_SURFACE_ANALYSIS.md>
+[S96]: <../../evidence/reports/forensic_out.txt>
+[S97]: <../security/CVE_ATTACK_SURFACE_ANALYSIS.md>
 [S98]: <type4_radio_info/README.md>
-[S99]: <../runtime/known_issues.md>
+[S99]: <../../runtime/known_issues.md>
 [S100]: <BOOT_CHAIN_ANALYSIS.txt>
 [S101]: <GM_INFO37_BOOT_CHAIN_ANALYSIS.md>
 [S102]: <GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md>
@@ -972,8 +972,8 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S174]: </Volumes/stuff/misc/research/GM_research/carplay/gm_pi/gmtool/gm_security.py>
 [S175]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/scripts/gm_security.py>
 [S176]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/S84.dll.annotations.md>
-[S177]: <../mdi2_client/mdi2/captured_events.py>
-[S178]: <../mdi2_client/mdi2/capture_read_transport.py>
+[S177]: <../../tools/mdi2_client/mdi2/captured_events.py>
+[S178]: <../../tools/mdi2_client/mdi2/capture_read_transport.py>
 [S179]: <../mdi2_client/scratch_decode/radio_cal_decode.py>
 [S180]: </tmp/fwtriage/gm-y181-signing>
 [S181]: </tmp/gm_calibration_target_sources/Envelop.java>

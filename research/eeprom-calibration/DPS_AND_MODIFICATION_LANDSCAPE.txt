@@ -209,7 +209,7 @@ CORRECTIONS.txt; `ls -l /dev/i2c-*`, major 89):
 NOTE: the EEPROM (0x50) is NOT on i2c-0/1 (or any SoC bus) -- it is on the VIP MCU's i2c
 (see IMPORTANT note below). The world-rw DAC on i2c-0/1/2/3 is SELinux-blocked on ALL stock
 builds — CORRECTED 2026-08-25: there is no "Y177-permissive" window; stock Y177 boots enforcing
-identically to Y181 (see security/KERNEL_CVE_ANALYSIS.txt Appendix E.8), so SELinux blocks this
+identically to Y181 (see ../security/KERNEL_CVE_ANALYSIS.txt Appendix E.8), so SELinux blocks this
 DAC on Y177 too.
 
 APPLE MFi (native OEM CarPlay) -- OPEN QUESTION: No Apple-CP/MFi i2c device is bound on
@@ -601,7 +601,7 @@ and recognizing Type4 archives without the errors/crashes that are a FAQ on
 the CameraLoops "Private Vehicle Hacking Forum" DPS-support threads. Sourced
 from community setup threads there (topics 3229 "DPS install and setup" and
 3211 "DPS full options"), cross-checked against our own captured DPS session
-log (diagnostics/dps/*, module_dumps/10017909_canbus_reset/), which loads the
+log (evidence/dps-logs/*, module_dumps/10017909_canbus_reset/), which loads the
 identical stack described below.
 
 8.1 REQUIRED SOFTWARE STACK
@@ -630,7 +630,7 @@ post) — installing DPS alone is NOT sufficient:
   but are actually caused by the missing wrapper or launcher service,
   not a hardware or MDI2-firmware problem.
 
-  Corroboration: our own captured DPS session (diagnostics/dps/,
+  Corroboration: our own captured DPS session (evidence/dps-logs/,
   module_dumps/10017909_canbus_reset/A11_sps_datareset_log.Txt) shows
   this exact stack actually loaded at runtime:
     >> C:\Program Files (x86)\GM\J2534Wrapper\J2534Wrapper.dll v1.6.14.0
@@ -642,7 +642,7 @@ post) — installing DPS alone is NOT sufficient:
 8.2 TYPE4 APPLICATION NOT RECOGNIZED / "Missing type 4 application in VIT2!"
 ------------------------------------------------------------------------------
 Community-reported symptom (CameraLoops topic 3488): a Type4 archive
-(built the way research/type4_radio_info/ describes, or downloaded) is not
+(built the way research/eeprom-calibration/type4_radio_info/ describes, or downloaded) is not
 recognized -- the file list is empty, and clicking OK gives "Missing type
 4 application in VIT2!".
 
@@ -695,8 +695,8 @@ a given action is the recurring failure mode:
 
   (A) "Type 4 Application" button -- for a genuine UDS-driving PROGRAM
       (a .dll interpreter + .cfx workflow that itself issues UDS
-      services). This is what research/type4_radio_info/ and
-      research/canbus_reset/ (A11_ECU_Reset, RadioControllerInfo) are.
+      services). This is what research/eeprom-calibration/type4_radio_info/ and
+      research/eeprom-calibration/canbus_reset/ (A11_ECU_Reset, RadioControllerInfo) are.
 
   (B) The REGULAR programming flow -- for most everything else,
       including "Utility file" archives that merely trigger a stock GM
@@ -725,8 +725,8 @@ until they combined files from BOTH the spsCache folder AND the separate
 "Type4 folder" into one staging directory before zipping -- files from
 only one of the two locations produced the error. Cross-reference: the
 SPSToolBridge.LOG-driven Blob-ID method already documented in
-research/type4_radio_info/README.md SS4a and
-research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md SS2.1/SS4 is the
+research/eeprom-calibration/type4_radio_info/README.md SS4a and
+research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md SS2.1/SS4 is the
 authoritative version of this same "combine the right source files"
 step -- if a hand-built archive fails, re-derive it from SPSToolBridge.LOG
 blob IDs rather than guessing which cached files belong together.
@@ -748,7 +748,7 @@ archive file for module programming [The Quick Method]" (owner-purchased,
 saved locally). Screenshot-verified, exact click sequence. This is the
 general (non-Type4) calibration-archive path -- the same underlying
 DPS/SPAT mechanism referenced more abstractly in SS4a of
-research/type4_radio_info/README.md and research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md.
+research/eeprom-calibration/type4_radio_info/README.md and research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md.
 
   1. Whenever pulling calibration files from GM SPS for a module, SAVE A
      PERMANENT COPY of "SPSToolBridge.LOG" (found at

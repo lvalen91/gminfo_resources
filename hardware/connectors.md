@@ -54,7 +54,7 @@ resolved X7-vs-X8 (display-vs-USB) connector identity.
 Moved to [`interfaces/usb.md`](interfaces/usb.md) — the X8 connector and bench cable, the
 three console USB receptacles, the daisy-chain topology (ALLDATA *Auxiliary Inputs (D07)*), and
 the on-board USB-UART. The ADB role-switch mechanism narrative is intentionally not duplicated
-in the hardware docs; it remains in `research/USB_ADB_SESSION_FINDINGS_2026-10-10.md` and
+in the hardware docs; it remains in `research/mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md` and
 `analysis/platform_faq.md`.
 
 ---

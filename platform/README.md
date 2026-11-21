@@ -11,7 +11,7 @@ Evidence tags (`[C]` confirmed live, `[V]` verified, `[FW]`/`[S]` static firmwar
 |---|---|
 | [hardware_specs.md](hardware_specs.md) | SoC, GPU, RAM, storage, display panel, audio/codec, USB, thermal, power, UART console map, I2C topology, Intel A3960 datasheet facts |
 | [vip_ipc_ghs.md](vip_ipc_ghs.md) | RH850 VIP MCU, PLC/calibration data, VIP-SoC IPC channels, GHS INTEGRITY hypervisor, `/dev/ghs`, VP-crash decode |
-| [eeprom_i2c_security.md](eeprom_i2c_security.md) | Pointer to `research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (EEPROM map, I2C-bus permissions, attack surface) plus platform-specific live `[C]` capture citations |
+| [eeprom_i2c_security.md](eeprom_i2c_security.md) | Pointer to `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` (EEPROM map, I2C-bus permissions, attack surface) plus platform-specific live `[C]` capture citations |
 | [qualcomm_cadillac_platform.md](qualcomm_cadillac_platform.md) | Qualcomm SA8155P / QNX Cadillac radio vs this Intel unit (external, `[X]`) |
 
 ### Boot, storage, recovery

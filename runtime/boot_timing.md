@@ -16,11 +16,11 @@ firmware initialization occurs at about 62.9 seconds after kernel start, despite
 the regulatory database now loading without missing/invalid-database errors.
 Do not attribute that remaining Wi-Fi delay to the fixed regulatory-database
 issue, or mix it with historical Probe05 IPU timeout or AAOS startup timings.
-See [the stable02 evidence](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
+See [the stable02 evidence](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#linux-735-stable02--verified-2026-11-17).
 
 ## Y181B induced incomplete startup (2026-11-12)
 
-The [recovery-export experiment](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12)
+The [recovery-export experiment](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#221-y181b-failed-boot-threshold-verified-2026-11-12)
 was followed by removal of `com.gm.homescreen` (operator-observed; `deletePackageX` is logged for user 10
 only, see the attribution note below). Retained Android logs report
 the missing package for both users and `No home screen found`, even though
@@ -162,7 +162,7 @@ power-rail measurement was acquired in this observation.
 The early-chime explanation has independent architectural support: the native
 INTEGRITY image contains `Chimes_InitialTask`, `.chime_requester` code and
 **71 embedded PCM WAV chime assets**, alongside `.audio_server` DSP/stream
-control. See the [firmware map](../research/GHS_FILE_MAP_85098662.md) and
+control. See the [firmware map](../research/boot-update-recovery/GHS_FILE_MAP_85098662.md) and
 [native boot tasks](../platform/boot_chain.md). This places chime resources
 outside the AAOS guest and supports availability before Android UI readiness.
 It strengthens the GHS/native-audio hypothesis for the early AVB path, but
@@ -174,7 +174,7 @@ waveform or Bose-amplifier playback was correlated in this measurement.
 and Intel NIC setup routines, but also grants `GmEth` to Android Guest1
 through its passthrough path. No GHS AVTP producer was tied to the first
 captured frames. The early AAOS-kernel possibility therefore remains open;
-see the [addressed code findings](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#ethernet-initialization-and-guest-ownership-code-trace-2026-11-14).
+see the [addressed code findings](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#ethernet-initialization-and-guest-ownership-code-trace-2026-11-14).
 
 See the [A11 recovery and capture context](../diagnostics/diagnosticsd_routines_and_recovery.md#synchronized-power-on-follow-up-2026-11-14).
 The earlier partial capture below remains a separate observation.
@@ -220,7 +220,7 @@ screen-based results or validate the estimated pre-kernel phases.
 the **Android guest's own kernel uptime**, not necessarily physical SoC power-on or
 GHS INTEGRITY hypervisor uptime. Android was understood to run as a GHS-hosted partition
 ([partition evidence](../platform/vehicle_network.md),
-[boot-chain analysis](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md)). It remained unresolved
+[boot-chain analysis](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md)). It remained unresolved
 whether GHS/another partition initialized the Ethernet switch and started traffic before
 the Android guest kernel, or the guest's early kernel/driver initialization triggered it.
 The latter interpretation could be consistent with a near-power-on reference, but the

@@ -36,7 +36,7 @@ address `0xb67d0` across images whose code shifted by a few bytes between recomp
 
 **Stock Y177 does not run permissive at all.** Its `system/bin/init` is byte-identical to
 Y175's and Y181's and forces enforcing on a `user` build (`ALLOW_PERMISSIVE_SELINUX=0`), ignoring
-the `androidboot.selinux=permissive` cmdline (see `security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8); any past "permissive" observation was a false finding/misread (both CSMs only ever ran stock
+the `androidboot.selinux=permissive` cmdline (see `../security/KERNEL_CVE_ANALYSIS.txt` Appendix E.8); any past "permissive" observation was a false finding/misread (both CSMs only ever ran stock
 offline packages — a userdebug/modified image or `setenforce` is ruled out), at most a misattributed
 transient during EEPROM flag experimentation. SELinux mode is decided OS-side by init and is neither
 EEPROM- nor VIP-driven, so no EEPROM/VIP experiment can produce a permissive runtime. Independently,
@@ -384,7 +384,7 @@ with this: the VIP firmware is not where a SELinux-mode difference lives.
 
 - `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` — EEPROM map + the 0xb67d0 validator's real (ADB/seed) behavior
 - `VIP_CONTROL_ANALYSIS.txt` — broader EEPROM/board/DPS surface
-- `security/KERNEL_CVE_ANALYSIS.txt` (Appendix E.8) — why no stock build (incl. Y177) runs permissive: byte-identical enforcing init
+- `../security/KERNEL_CVE_ANALYSIS.txt` (Appendix E.8) — why no stock build (incl. Y177) runs permissive: byte-identical enforcing init
 - `../gm_aaos/2024_Silverado_ICE/analysis/Y175_OS_PARTITION_INVESTIGATION_AUG2026.md` — Y175 shipped SELinux/adb posture
 
 ---

@@ -5,9 +5,9 @@
 **Platform:** Intel Atom x7-A3960 (Apollo Lake), Android 12 AAOS, GHS INTEGRITY IoT 2020.18.19, Linux 4.19 (bench-observed 4.19.283, see History)
 **Classification:** Supporting Research / Open Source Intelligence
 
-**Scope:** Celadon/Gordon-Peak OSINT only — the public Apollo-Lake analog of this platform (clone/build commands, kernelflinger/libheci/avb/crashmode/BCB source findings, CNDA-gated-vs-found source tables, dead ends). Does **not** own: the ELK identity/trigger payload (→ [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), canonical, live-tested on the GM unit; catalog entry also at [HARDWARE_HYPERVISOR_ATTACK_VECTORS.md](HARDWARE_HYPERVISOR_ATTACK_VECTORS.md)); the SELinux-enforcing finding (→ `../platform/security.md`); GM-side boot-chain architecture (→ [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md), [BOOT_CHAIN_ANALYSIS.txt](BOOT_CHAIN_ANALYSIS.txt)). No NDA-gated materials were accessed or reproduced for this doc.
+**Scope:** Celadon/Gordon-Peak OSINT only — the public Apollo-Lake analog of this platform (clone/build commands, kernelflinger/libheci/avb/crashmode/BCB source findings, CNDA-gated-vs-found source tables, dead ends). Does **not** own: the ELK identity/trigger payload (→ [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), canonical, live-tested on the GM unit; catalog entry also at [HARDWARE_HYPERVISOR_ATTACK_VECTORS.md](HARDWARE_HYPERVISOR_ATTACK_VECTORS.md)); the SELinux-enforcing finding (→ `../../platform/security.md`); GM-side boot-chain architecture (→ [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md), [BOOT_CHAIN_ANALYSIS.txt](BOOT_CHAIN_ANALYSIS.txt)). No NDA-gated materials were accessed or reproduced for this doc.
 
-**Related:** GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, HARDWARE_HYPERVISOR_ATTACK_VECTORS.md, `../platform/security.md`, GM_INFO37_BOOT_CHAIN_ANALYSIS.md.
+**Related:** GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md, HARDWARE_HYPERVISOR_ATTACK_VECTORS.md, `../../platform/security.md`, GM_INFO37_BOOT_CHAIN_ANALYSIS.md.
 
 ---
 
@@ -121,7 +121,7 @@ Both directories represent the delta between upstream AOSP and Intel's automotiv
 
 ### aosp_diff/*/system/sepolicy/ — SELinux Policy Delta
 
-The SELinux policy patches within `aosp_diff/` were examined for the Y177 → Y181 downgrade analysis. The Y177-permissive-vs-enforcing finding and its correction are owned by `../platform/security.md` — not restated here. The surviving, undisputed content of this section is the **diff method**: Intel's `system/sepolicy` patches on the apollo branch show which rules Intel added for AAOS, and diffing the Celadon SELinux baseline against the Y177 policy identifies which rules were added or tightened between the two GM builds. That diff recipe remains useful for rule-delta analysis regardless of the enforcing/permissive question.
+The SELinux policy patches within `aosp_diff/` were examined for the Y177 → Y181 downgrade analysis. The Y177-permissive-vs-enforcing finding and its correction are owned by `../../platform/security.md` — not restated here. The surviving, undisputed content of this section is the **diff method**: Intel's `system/sepolicy` patches on the apollo branch show which rules Intel added for AAOS, and diffing the Celadon SELinux baseline against the Y177 policy identifies which rules were added or tightened between the two GM builds. That diff recipe remains useful for rule-delta analysis regardless of the enforcing/permissive question.
 
 ### device-intel-sepolicy
 
@@ -280,7 +280,7 @@ The historical [cel_apl configuration](https://github.com/projectceladon/device-
 |---|---|
 | misc partition / BCB layout | `kernelflinger.c` + `hardware-intel-bootctrl` HAL + offset 0x800; GM misc (vda9) magic "AB0" at 0x800, CRC32 poly 0xEDB88320 |
 | HECI/ABL/ELK trigger chain | `kf4abl.c` + `libheci` (celadon/s/mr0/apollo) + Slim Bootloader `Stage2BoardInitLib.c`; live-tested identity/trigger owned by GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md |
-| SELinux baseline vs Y177 policy | `device-intel-sepolicy` + `aosp_diff/*/system/sepolicy` on apollo branch, three-way diff against extracted Y177 policy; enforcing/permissive finding owned by `../platform/security.md` |
+| SELinux baseline vs Y177 policy | `device-intel-sepolicy` + `aosp_diff/*/system/sepolicy` on apollo branch, three-way diff against extracted Y177 policy; enforcing/permissive finding owned by `../../platform/security.md` |
 | AVB implementation | `kernelflinger` `libkernelflinger/` + `avb/` subtree on celadon/s/mr0/apollo |
 | Kernel 4.19 config | Pull from live device: `adb shell "gzip -dc /proc/config.gz"`; a public Intel LTS 4.19.283 reference tree also exists (see Overview) — not the exact GM BSP |
 | VT-x guest isolation model | US Patent 12,423,197 (GHS INTEGRITY SMMU/GVM) |
@@ -321,4 +321,4 @@ When building the A12 reference from `CIV_01.22.03.32_A12.xml`:
 
 ---
 
-*Document generated: 2026-06-29. Research conducted as open source intelligence (OSINT) using publicly available repositories, documentation, and patent filings. No NDA-gated materials were accessed or reproduced. Amended in place 2026-08-25 (SELinux enforcing finding, now pointered to `../platform/security.md`), 2026-09-10 (ELK identity/trigger, now pointered to GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), and 2026-11-17 (prebuilt-image and 4.19-source overstatements corrected in place, see Overview).*
+*Document generated: 2026-06-29. Research conducted as open source intelligence (OSINT) using publicly available repositories, documentation, and patent filings. No NDA-gated materials were accessed or reproduced. Amended in place 2026-08-25 (SELinux enforcing finding, now pointered to `../../platform/security.md`), 2026-09-10 (ELK identity/trigger, now pointered to GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), and 2026-11-17 (prebuilt-image and 4.19-source overstatements corrected in place, see Overview).*

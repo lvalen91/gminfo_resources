@@ -17,8 +17,8 @@ Evidence tags: `[C]` confirmed live, `[V]` verified, `[FW]`/`[S]` static firmwar
 **Related:** [`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`](EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
 (flag identity, canonical), [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
 (UDS `27`/`67` seed-key algorithm detail),
-[`../diagnostics/diagnosticsd_security_access.md`](../diagnostics/diagnosticsd_security_access.md)
-and [`../diagnostics/diagnosticsd_dids_and_dtc.md`](../diagnostics/diagnosticsd_dids_and_dtc.md)
+[`../../diagnostics/diagnosticsd_security_access.md`](../../diagnostics/diagnosticsd_security_access.md)
+and [`../../diagnostics/diagnosticsd_dids_and_dtc.md`](../../diagnostics/diagnosticsd_dids_and_dtc.md)
 (live T1 SecurityAccess/DID-sweep detail the UDS tests below defer to).
 
 ---
@@ -293,7 +293,7 @@ Conflicts sections, not restated here.
 The verified degenerate exchange has a **31-byte seed and a 12-byte submitted response**.
 A prior equal-length/all-FF-key recipe was incorrect and is not reproduced here. On direct
 T1 use logical tester F4, target `0x0084`, and the exact custom framing in the
-[owning diagnostic reference](../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
+[owning diagnostic reference](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 
 ```
 10 03                 -> 50 03 ...       extended session
@@ -316,7 +316,7 @@ real/non-degenerate seed.
 Each supported level may return `67 <sf> <seed>`. An all-FF seed alone does not prove a
 grant or establish its key format. A later 2026-11-14 T1 read sweep validated 09/0A and
 0B/0C using the 31-FF/12-zero format from Test 2; other higher levels remain untested. See
-the [read-sweep results](../diagnostics/diagnosticsd_dids_and_dtc.md#bounded-read-only-sweep-and-uart-reset-follow-up-2026-11-14).
+the [read-sweep results](../../diagnostics/diagnosticsd_dids_and_dtc.md#bounded-read-only-sweep-and-uart-reset-follow-up-2026-11-14).
 Do not extrapolate to every level or arbitrary key content. NRC `7F 27 12`
 subFunctionNotSupported = level absent.
 

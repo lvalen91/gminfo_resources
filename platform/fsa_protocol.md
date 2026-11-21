@@ -4,7 +4,7 @@
 **Platform:** Intel Apollo Lake (Broxton), Android 12 guest under GHS INTEGRITY
 **Research Date:** June 2026 (Y181 `W231E-Y181.3.2-SIHM22B-499.3`), with Y175 live-bench
 follow-ups through 2026-11-17
-**Data source:** live ADB shell (uid=2000), `enumeration/Y181/jun2026/` capture,
+**Data source:** live ADB shell (uid=2000), `evidence/enumeration/Y181/jun2026/` capture,
 `DelayedWKSApp.apk` decompilation, Y175 bench port scans and Bus-2 T1 tap captures
 
 **Scope:** FSA/NFSA wire format, service catalog (port/serviceId/partition mapping), per-service
@@ -524,12 +524,12 @@ not a VIP-side log pull).
   `~/gm_emu/ae/{fsaprobe,fsalisten4}` (raw-syscall `connect`/`accept4` to
   bypass the netd fwmark handshake, required because the emulator has no
   default data NIC). Full writeup:
-  [`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md).
+  [`../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md`](../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md).
 
   **History (corrected 2026-11-11, per the Y175_2026-11-02 external Bus 2 tap
   bench finding):** the emulator result above was captured on `gm_emu`, which
   runs the real FSA/Android binaries but has no default data NIC ("no real bus
-  and no real peers", `research/AE_RESEARCH_HANDOFF.md:184`) and so does not
+  and no real peers", `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md:184`) and so does not
   reproduce the physical radio's kernel-level `iptables` firewall. A live Y175
   bench tap (full 1–65535 scan from the external wire, 2026-11-02) found 9002
   and 9016 on the **real radio** are gated by a source-IP allowlist
@@ -547,7 +547,7 @@ not a VIP-side log pull).
   FSA-hosting ports/instances (vlan4, other partitions) carry the same gate is
   unverified; see `research/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt` and
   `T1_RADIO_NETWORK_STRUCTURE.txt` (external bench corpus, not in this repo;
-  path recorded in `research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md:382`)
+  path recorded in `research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md:382`)
   for the full allowlist table.
 
 ### [F-inject] Cluster-injection surface
@@ -561,7 +561,7 @@ widget data, `720`/`721` activity indicator. Any anonymous peer that can reach
 protobuf field validation (not yet examined per-method).
 
 **History (corrected 2026-09):** prior revisions of this doc (and of
-`vehicle_network.md`, `emulator.md`, `research/AE_RESEARCH_HANDOFF.md`) stated
+`vehicle_network.md`, `emulator.md`, `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md`) stated
 this surface fires via `EVENT`/`opType=1032`. That was wrong. Deobfuscated FSA
 service library RE (`com/gm/fsa/service/`, cross-checked against
 ClusterService's router `f/d.java`, `f/h.java`, `h/b.java`) shows `opType 1032`
@@ -688,4 +688,4 @@ section as the source finding.
   flashes what; Global-B HMI-only demotion behind the dead ProgrammingMaster
 - [`diagnostics/ethernet_uds_diagnosticsd.md`](../diagnostics/ethernet_uds_diagnosticsd.md)
   — the separate (non-FSA) UDS-over-TCP diagnostic channel on port 49156
-- Source data: `enumeration/Y181/jun2026/raw/{logcat,open_ports,binder_services}.txt`
+- Source data: `evidence/enumeration/Y181/jun2026/raw/{logcat,open_ports,binder_services}.txt`

@@ -52,8 +52,8 @@ capability) is explicitly capability inference, not measured behaviour — see i
 `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt`, `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`,
 `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, `USB_ADB_SESSION_FINDINGS_2026-10-10.md`,
 `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` (dual-owns the VIP-IPC/ELK-trigger catalog entry),
-`../platform/boot_chain.md`, `../platform/security.md`, `../platform/ethernet_networking.md`,
-`../video/display_subsystem.md`, `../runtime/boot_timing.md`.
+`../../platform/boot_chain.md`, `../../platform/security.md`, `../../platform/ethernet_networking.md`,
+`../../video/display_subsystem.md`, `../../runtime/boot_timing.md`.
 
 ---
 
@@ -145,7 +145,7 @@ GHS image partitions (source: `partitions.txt`):
 active screen-resolution calibration, compares it against the live EDID, and updates `EARLY_CALS`
 in `ghs_storage` when they differ *(folded from retired `SCREEN_RESOLUTION_END_TO_END_WORKFLOW.md`'s
 2026-11-17 display-path-trace footnote)*. GHS brightness ownership and the actual LTZ/HC curves are
-owned by [`../video/display_subsystem.md`](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17-extended-2026-11-17),
+owned by [`../../video/display_subsystem.md`](../../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17-extended-2026-11-17),
 not restated here.
 
 ---
@@ -364,7 +364,7 @@ Boot Security:
 (hit count ~188; an earlier reading of `386` did not reproduce) — it is a cmdline indicator, not a
 verified secure-boot *state*: the live property `getprop ro.boot.ABL.secureboot` reads empty. Treat
 every occurrence of "secure boot" below (including §12's) as this unverified cmdline token, not a
-confirmed enforcement state; see `../platform/boot_chain.md`.
+confirmed enforcement state; see `../../platform/boot_chain.md`.
 
 ---
 
@@ -572,18 +572,18 @@ power/reset/configuration sequence. The native chime/audio code and audio-DSP/SS
 real, but do not alone establish a GHS-to-Bose Ethernet packet call chain. `GmEth` being available
 to the Android guest means an early AAOS kernel network path also remains possible, before DHCP,
 CarPlay or HMI readiness. The kernel-side `igb_avb` observation is maintained in
-[`../platform/ethernet_networking.md`](../platform/ethernet_networking.md) (fixed from a stale
+[`../../platform/ethernet_networking.md`](../../platform/ethernet_networking.md) (fixed from a stale
 `../platform/hardware.md` link — that file was retired; see ledger).
 
 Do not treat a generic GHS `AVB`/verification reference as audio-network evidence: **Android
 Verified Boot** is a separate use of that acronym, traced through VMM1. The
-[synchronized power-on measurement](../runtime/boot_timing.md#synchronized-rh850-uart-and-ethernet-power-on-measurement-2026-11-14)
+[synchronized power-on measurement](../../runtime/boot_timing.md#synchronized-rh850-uart-and-ethernet-power-on-measurement-2026-11-14)
 establishes early traffic timing but not the initializing software owner.
 
 For the other investigation target, the explicit BCM-replacement wipe decision was located in
 Android `gm_protokey`, reached through security PAL IPC, rather than in a directly recovered GHS
 handler. See the
-[validated code path](../platform/security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
+[validated code path](../../platform/security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
 This was static analysis only: no device commands, firmware changes or runtime breakpoints were
 used. Temporary Ghidra inspection changes were rolled back; no speculative function name was
 saved.
@@ -1043,7 +1043,7 @@ named rows in §3. See Open Conflicts §1-2.
 ## Appendix B: Key Memory Regions
 
 Full per-region map (Y175 `ghs_isys_a`, all 190 `.secinfo` regions with vaddr/len/type and Gate-1
-self-integrity method) → [`decompiled/ghs_isys_a_secinfo_region_map_Y175.txt`](decompiled/ghs_isys_a_secinfo_region_map_Y175.txt);
+self-integrity method) → [`../../evidence/decompiled/ghs_isys_a_secinfo_region_map_Y175.txt`](../../evidence/decompiled/ghs_isys_a_secinfo_region_map_Y175.txt);
 interpretation in [BOOT_TRUST_ANCHOR_AND_KEYS.md §9](BOOT_TRUST_ANCHOR_AND_KEYS.md#9-ghs-self-integrity-gate-1-and-tamper-analysis).
 
 ```

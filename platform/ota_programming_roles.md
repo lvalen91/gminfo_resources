@@ -7,12 +7,12 @@ Evidence tags: **[V]** verified on this unit (live RE, port scan, on-radio file 
 
 Related: [`ota_update_stack.md`](ota_update_stack.md) · [`firmware_versions.md`](firmware_versions.md) · [`fsa_protocol.md`](fsa_protocol.md) · [`vehicle_network.md`](vehicle_network.md) · [`vehicle_config.md`](vehicle_config.md) · [`ethernet_networking.md`](ethernet_networking.md) · [`security.md`](security.md) · [`external_references.md`](external_references.md) · [`can_bench_experiments.md`](can_bench_experiments.md)
 
-Sources: [`../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md),
-[`../research/VIP_CONTROL_ANALYSIS.txt`](../research/VIP_CONTROL_ANALYSIS.txt),
-[`../research/GM_REMOTE_ACCESS_ANALYSIS.txt`](../research/GM_REMOTE_ACCESS_ANALYSIS.txt),
-[`../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md); the
+Sources: [`../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md`](../research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md),
+[`../research/eeprom-calibration/VIP_CONTROL_ANALYSIS.txt`](../research/eeprom-calibration/VIP_CONTROL_ANALYSIS.txt),
+[`../research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt`](../research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt),
+[`../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md); the
 GIS-646 CalDef database ([`../reference/`](../reference/)); the DPS logs
-([`../diagnostics/dps/`](../diagnostics/dps/)); the archived Y181 update package.
+([`../evidence/dps-logs/`](../evidence/dps-logs/)); the archived Y181 update package.
 
 ## Answer (reconciled)
 
@@ -71,7 +71,7 @@ The AAOS-side update state machine and components are in
 [`ota_update_stack.md`](ota_update_stack.md) (that doc does not carry this diagram).
 
 - **SecureUnlock** = UDS SecurityAccess (`$27`); the CSM program log
-  ([`../diagnostics/dps/A11_CSM.ProgramLog.Txt`](../diagnostics/dps/A11_CSM.ProgramLog.Txt))
+  ([`../evidence/dps-logs/A11_CSM.ProgramLog.Txt`](../evidence/dps-logs/A11_CSM.ProgramLog.Txt))
   drives it, the **VIP enforces** it (PROTOKEY / MEC / SBAT on the VIP); GM backend supplies the key.
 - The Android update stack (`gm_update_engine`, `rb_ua`, `libpal_swupdate_ecu.so`, `IECUUpdate`
   HAL, the GHS `OTA_InitialTask` + `/dev/ghs/ota-isys`) all live **on the radio**.
@@ -84,7 +84,7 @@ DPS (Data Protection Service):
 - Uses **AES-CMAC** for authentication.
 - **Server-based key provisioning** — keys are not stored locally in plaintext.
 - **Cannot write EEPROM directly** — EEPROM writes go through the VIP MCU's I2C interface.
-- **Calibration / diagnostic authentication are separate mechanisms:** stock calibration containers use RSA-2048/SHA-256 signatures; DPS SecurityAccess has a backend-assisted CMAC path. Reusable server-key provisioning is unproven (corrected 2026-11-15). See [seed/key and calibration signature reference](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+- **Calibration / diagnostic authentication are separate mechanisms:** stock calibration containers use RSA-2048/SHA-256 signatures; DPS SecurityAccess has a backend-assisted CMAC path. Reusable server-key provisioning is unproven (corrected 2026-11-15). See [seed/key and calibration signature reference](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 - Handles license verification and calibration integrity.
 
 UDS service table and the CalDef/VIP-calibration tables (security calibrations such as
@@ -282,7 +282,7 @@ Master service class ships unused. Detail (single copy): [`fsa_protocol.md`](fsa
 hardware-enforced GHS rollback counter — are not reproduced here. Net result relevant to the
 roles question: no confirmed unauthenticated-Ethernet-peer path to triggering a reflash on this
 build. See [`security.md`](security.md) and [`ota_update_stack.md`](ota_update_stack.md); research:
-[`../research/AE_RESEARCH_HANDOFF.md`](../research/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only),
+[`../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md`](../research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md#where-the-facts-live-now-pointers-only),
 [`../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md`](../research/security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md).
 
 ## GM dealer service programming (SPS2) — official procedure
@@ -300,7 +300,7 @@ Module References → Programming and Setup*):
   Failed-programming recovery = de-power the module ≥10 min (fuse/connector/battery) then retry.
 - **T3 Audio Amplifier — standard SPS**, no USB, no MEC: ignition OFF → SPS *T3 – Programming* →
   Clear DTCs.
-- **MDI 2 relevance:** the same dealer tool family the repo's `mdi2_client/` speaks to — the
+- **MDI 2 relevance:** the same dealer tool family the repo's `tools/mdi2_client/` speaks to — the
   USB-SPS/MEC detail explains why the radio's reflash path differs from a plain UDS `$34/$36` push
   and why MEC state matters after programming.
 

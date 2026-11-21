@@ -14,7 +14,7 @@ from pathlib import Path
 PROFILE_DIGEST = 'eb764b861bcd731f7a12f42ff298475d0a1738c4b6b9d8d6dddd90571d5c20a5'
 PROFILE_EVIDENCE = 'matches installed reference; original capture provenance unverified'
 BENCH_PYTHON = '~/.local/share/gminfo-bench/venv/bin/python'
-DEFAULT_TOOLS = Path.home() / 'Downloads/github/gminfo_resources/research/tools'
+DEFAULT_TOOLS = Path.home() / 'Downloads/github/gminfo_resources/tools/bench'
 DEFAULT_PROFILE = Path.home() / '.local/share/gminfo-bench/harness-profile.json'
 
 

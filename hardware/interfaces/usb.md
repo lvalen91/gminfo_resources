@@ -3,7 +3,7 @@
 Scope: X8 connector and cable, console USB receptacle wiring and topology.
 Related: [`connectors.md`](connectors.md), [`display.md`](display.md),
 [`../../analysis/platform_faq.md`](../../analysis/platform_faq.md) (§dabridge/UDC),
-[`../../research/USB_ADB_SESSION_FINDINGS_2026-10-10.md`](../../research/USB_ADB_SESSION_FINDINGS_2026-10-10.md)
+[`../../research/mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md`](../../research/mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md)
 — for the USB role-switch mechanism and ADB-reachability conditions, see that research document
 rather than this hardware reference.
 

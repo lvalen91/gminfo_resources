@@ -159,13 +159,13 @@ expecting window-bounds changes.
 
 ## 8. Key evidence
 
-`enumeration/Y181/apr2026/network_scan.txt`; `raw/{ip_addr,ip_route,network_interfaces,open_ports,
+`evidence/enumeration/Y181/apr2026/network_scan.txt`; `raw/{ip_addr,ip_route,network_interfaces,open_ports,
 arp_table,init_services,gm_update_service,i2c_devices}.txt`; `ghs_attack_surface.txt`;
 `pulled_files/vendor_sepolicy.cil`. Firmware vendor part `86331650` extracted to
 `scratchpad/diagx/` (`bin__diagnosticsd`, `bin__calserviced`, `lib64__libpal_diagnostics.so`,
 `lib64__vendor.gm.diagnostics.ethernet@1.0-impl.so`, `calibrations__CalSets.db`, `etc__init__*.rc`).
-Corroborating: `research/CALDEF_VIP_CALIBRATION_ANALYSIS.txt`, `research/UPDATE_PROCESS_ANALYSIS.txt`,
-`research/UNTRIED_ATTACK_VECTORS.md`, `eeprom/EEPROM_Analysis_Report.md`,
+Corroborating: `research/eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt`, `research/UPDATE_PROCESS_ANALYSIS.txt`,
+`research/security/UNTRIED_ATTACK_VECTORS.md`, `eeprom/EEPROM_Analysis_Report.md`,
 `eeprom/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md`, `hardware/teardown.md`.
 
 </artifact>
@@ -204,7 +204,7 @@ accepted sequence. Use tester F4, target 0x0084 and the eight-byte `>HHI`
 header; the old `>HHIH` example incorrectly inserted two extra bytes.
 Extended session `10 03`, seed request `27 01` (31 all-FF bytes), and
 `27 02` plus 12 zero bytes returned `67 02`. Default session was restored.
-See the [owning diagnostic sequence](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
+See the [owning diagnostic sequence](../../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14). No arbitrary-key,
 calibration-write, Android-root or GHS-shell result follows from this grant.
 
 ---

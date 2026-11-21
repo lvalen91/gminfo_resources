@@ -26,7 +26,7 @@ Confidence tags: **[C]** confirmed · **[FW]** firmware evidence · **[?]** open
 | Bus master | RH850 VIP MCU (R7F7015873AFP) — see [`vip_mcu.md`](vip_mcu.md) |
 
 **[C]** Legible in close-up photography; cross-referenced against the board I2C enumeration in
-`../../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §8 (I2C table) and the BOM entry in
+`../../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §8 (I2C table) and the BOM entry in
 [`identity_bom.md`](identity_bom.md) §4.1 ("VIP EEPROM").
 
 ## 2. Framing Protocol
@@ -112,7 +112,7 @@ most of that framing has since been retracted. Current status:
 > `0x04C0` with a CalGroup `0x44` handler, are **superseded** by the direct hex read.
 >
 > The remaining "871 refs" (`0x0A00`) and "311 refs" (`0x0B00`) figures are **retracted**
-> (`../../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0). They came from a radare2
+> (`../../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` §0). They came from a radare2
 > string-proximity pass that is not reproducible from this repo's artifacts and was
 > inconsistent between two passes (871 vs 854 for `0x0A00`; 311 vs 305 for `0x0B00`).
 > Do not treat "871" / "311" as hard counts.
@@ -129,7 +129,7 @@ reflash counters `0x1B60`). The SBI flag pair itself (`0x0440`/`0x0441` primary,
 **out of scope for this document** — see
 [`../../platform/eeprom_i2c_security.md`](../../platform/eeprom_i2c_security.md) and
 [`../../platform/security.md`](../../platform/security.md) (ProtoKey / ADB Authentication, MEC)
-for that analysis, and `../../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` for the primary research
+for that analysis, and `../../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` for the primary research
 trail.
 
 ## Sources
@@ -138,5 +138,5 @@ trail.
   structured-region table, undocumented-flag cross-reference and its correction history).
 - `../../platform/eeprom_i2c_security.md` — SBI flag pair, I2C bus permissions, CRC posture
   (cross-referenced, not duplicated).
-- `../../research/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` — primary EEPROM layout research; authoritative
+- `../../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` — primary EEPROM layout research; authoritative
   for anything retracted or superseded above.

@@ -1,7 +1,7 @@
 import pyghidra
 
 BIN = "/Volumes/stuff/misc/research/GM_research/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y175/extracted/85759599"
-PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"
+PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
 PROJ_NAME = "85759599_rh850"
 
 targets = set([0x4fb96, 0x4fb8c, 0xf0a1a, 0x18])  # 0x18=24 stride, likely too common; keep for reference only

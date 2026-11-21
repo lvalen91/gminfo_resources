@@ -5,9 +5,9 @@ Re-run analysis, save."""
 import sys, time
 import pyghidra
 
-PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"
+PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"
 PROJ_NAME = "hostos_x86"
-SYMTSV = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/hostos_symbols_funcobj.tsv"
+SYMTSV = "/Users/zeno/Downloads/github/gminfo_resources/tools/analysis-scripts/ghidra_rh850/hostos_symbols_funcobj.tsv"
 
 pyghidra.start(verbose=False)
 

@@ -348,19 +348,19 @@ separates the prior live results from this inventory.
 
 ### Existing catalogs and captured routines
 
-- [MDI2 static catalog](../mdi2_client/mdi2/data/did_map.json) contains generic
+- [MDI2 static catalog](../tools/mdi2_client/mdi2/data/did_map.json) contains generic
   DID metadata and four RIDs: `020E` wakeUpNetworks, `FF00` eraseMemory_alt,
   `FF01` checkProgrammingDependencies, and `FF02` eraseMemory. It spans ECU
   contexts; membership is not proof that A11 supports the item or that a name
   is the correct meaning on every ECU. For example, the captured `020E`
   network-wakeup request is addressed to the gateway, not to the radio.
-- [CAN/DPS reference](dps/A11_CSM_x80.Txt) records actual diagnostic exchanges;
-  [seed/key and signing analysis](../research/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
+- [CAN/DPS reference](../evidence/dps-logs/A11_CSM_x80.Txt) records actual diagnostic exchanges;
+  [seed/key and signing analysis](../research/eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
   identifies radio `0249` before programming and `039B` during finalization.
   Their presence in a CAN/SPS sequence does not establish equivalent direct-T1
   routing or completion. Exact CAN/VIP-side semantics remain distinct from
   the local Android RID0249 code traced above.
-- [MDI2 routine research](../research/MDI2_RAW_UDS_BYPASS_GUIDE.md#7-gm-adb-escape-hatch-via-31-routinecontrol-2026-09-10)
+- [MDI2 routine research](../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md#7-gm-adb-escape-hatch-via-31-routinecontrol-2026-09-10)
   describes candidate `0332` for ADB control, but its correct parameters,
   applicability and working T1 behavior are not established. The earlier
   invalid-tester rejection is not proof that this RID is absent.
@@ -564,7 +564,7 @@ The proven `0249` clear and package-programming surface do not establish a
 per-value UDS calibration setter. Stock packages are themselves override
 modules; their verified signatures remain relevant. A Y175 PAL
 `writeCalValueRequest` export was traced to a fixed-status response rather
-than a calibration update. The consolidated [override reachability analysis](../research/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3d-uds-override-reachability-and-per-value-write-stub)
+than a calibration update. The consolidated [override reachability analysis](../research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md#3d-uds-override-reachability-and-per-value-write-stub)
 owns the code addresses, local `.calovride` distinction and remaining gates.
 
 ## Source Structure, Symbols & HIDL

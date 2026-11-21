@@ -53,7 +53,7 @@ ZIP members, not a requirement that the original USB remain attached.
 
 The separate [GHS inventory](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) owns task,
 driver, device-grant and privacy inventories. The [EEPROM audit](EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
-owns EEPROM layout and VIP reverse engineering. The [update-stack reference](../platform/ota_update_stack.md)
+owns EEPROM layout and VIP reverse engineering. The [update-stack reference](../../platform/ota_update_stack.md)
 owns the AAOS updater/Binder interface. Distinct inventories stay with those owners.
 No complete live ELK transition, guest escape or accepted custom wipe package
 is established by this static evidence.
@@ -153,8 +153,8 @@ The GHS logs are retained text logs, not a complete host-memory dump.
 
 Member-specific conclusions belong in §2.2.1 (startup), §2.3.7 (MEC),
 §4.5.4–§4.5.5 (capture), the [guest-memory inventory](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#7a3-guest-memory),
-the [update-stack reference](../platform/ota_update_stack.md#y181b-recovery-export-evidence-2026-11-12),
-and the [vehicle calibration baseline](../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12).
+the [update-stack reference](../../platform/ota_update_stack.md#y181b-recovery-export-evidence-2026-11-12),
+and the [vehicle calibration baseline](../../platform/vehicle_config.md#y181b-exported-baseline-2026-11-12).
 
 **Recovery boot ledger across the retained `last_log` series (directly read from the second export, 2026-11-12):**
 
@@ -174,7 +174,7 @@ PowerModing. Its first-time path establishes a validation record; later
 mismatches or an unusable existing-record read can reach the replacement
 branch. This statically identifies an initiator for the historical wipe
 reason without proving which caller initiated each newer bench/vehicle
-reset. See the [owning function-level trace](../platform/security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
+reset. See the [owning function-level trace](../../platform/security.md#bcm-replacement-factory-wipe-code-trace-2026-11-14).
 
 Only counter 49 has a plausible RTC; all others read 2010/2011, so the dates above come from the reason
 strings. Recovery logs `Not get boot-see-dealer mode, start normal update process.` for 54/55 and then
@@ -251,8 +251,8 @@ and are not restated here.
 
 | Blocker | Resolution |
 |---|---|
-| The raw `85098662` container is a proprietary Green Hills INTEGRITY download image, not a format any standard tool (`file`, `r2`, `objdump`) auto-parses. A manually reverse-engineered end-of-file directory/symbol table (~48 KiB region near `0xe35000`) is a 64-bit canonical-VA + 32-bit size + name-string debug symbol table, cross-validated against known sections in `research/decompiled/ghs_analysis.txt`; it has no file-offset field, so it does not by itself enable section-byte extraction. | An existing Ghidra project (`ghidra_projects/ghs32.rep`, program `ghs_integrity.elf`, language `x86:LE:32:default`) exists in the external research archive; the documented `firmware_carved/ghs_integrity.elf` (standard-ELF conversion) no longer exists on disk — the same provenance-drift pattern seen elsewhere in this corpus (documented, not persisted). Ghidra 12.1.3 + PyGhidra (`brew install ghidra`, `pip3 install` the bundled PyGhidra wheel) opened the existing `ghs32` project headlessly (`GHIDRA_INSTALL_DIR=/opt/homebrew/Cellar/ghidra/<ver>/libexec`, `nested_project_location=False`) and extracted real section bytes for `.vmm1.text` (244,706 B), `.vmm1.rodata` (170,832 B), `.ota_update.text` (71,451 B) and `.ota_update.rodata` (6,588 B) — sizes match `ghs_analysis.txt` exactly. |
-| The corpus's pre-written `research/scripts/avb_audit.py`, run against the real loaded program via PyGhidra, produced zero results. `.vmm1.text`'s 140 identified function boundaries were mostly undefined/never disassembled, and reference counts to known AVB string addresses were zero. | Diagnosed, not initially resolved — confirms `INVENTORY.md`'s own prior note that the decompiled `vmm1_all.c` is "UNUSABLE due to Green Hills toolchain — no string refs." |
+| The raw `85098662` container is a proprietary Green Hills INTEGRITY download image, not a format any standard tool (`file`, `r2`, `objdump`) auto-parses. A manually reverse-engineered end-of-file directory/symbol table (~48 KiB region near `0xe35000`) is a 64-bit canonical-VA + 32-bit size + name-string debug symbol table, cross-validated against known sections in `evidence/decompiled/ghs_analysis.txt`; it has no file-offset field, so it does not by itself enable section-byte extraction. | An existing Ghidra project (`ghidra_projects/ghs32.rep`, program `ghs_integrity.elf`, language `x86:LE:32:default`) exists in the external research archive; the documented `firmware_carved/ghs_integrity.elf` (standard-ELF conversion) no longer exists on disk — the same provenance-drift pattern seen elsewhere in this corpus (documented, not persisted). Ghidra 12.1.3 + PyGhidra (`brew install ghidra`, `pip3 install` the bundled PyGhidra wheel) opened the existing `ghs32` project headlessly (`GHIDRA_INSTALL_DIR=/opt/homebrew/Cellar/ghidra/<ver>/libexec`, `nested_project_location=False`) and extracted real section bytes for `.vmm1.text` (244,706 B), `.vmm1.rodata` (170,832 B), `.ota_update.text` (71,451 B) and `.ota_update.rodata` (6,588 B) — sizes match `ghs_analysis.txt` exactly. |
+| The corpus's pre-written `tools/analysis-scripts/avb_audit.py`, run against the real loaded program via PyGhidra, produced zero results. `.vmm1.text`'s 140 identified function boundaries were mostly undefined/never disassembled, and reference counts to known AVB string addresses were zero. | Diagnosed, not initially resolved — confirms `INVENTORY.md`'s own prior note that the decompiled `vmm1_all.c` is "UNUSABLE due to Green Hills toolchain — no string refs." |
 | Bitness dispute surfaced while diagnosing the above: `radare2` disassembly of `.vmm1.text` at Ghidra-identified function entries decoded cleanly and idiomatically **only under a 64-bit interpretation** (`push rbp; mov rbp,rsp`, `fs:`-segment TLS access), even though the binary's ELF header is byte-verified EM_386/ELFCLASS32. | Not resolved here or in VPF. This is the corpus-wide **VMM1/.vmm1 task-code bitness** open conflict (32-bit ELF class vs. disassembled-64-bit task code); it is carried in [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)'s own Open Conflicts — see this document's own [Open conflicts](#open-conflicts) section below for the pointer. |
 | An exhaustive string/table/xref search found no AVB guard-string references anywhere in `.vmm1`/`.ota_update`. | The full guard-string set and the literal source path `hardware/intel/kernelflinger/avb/libavb/avb_vbmeta_image.c` trace into a *separate* binary, `elk_inner.elf` (the ELK/kernelflinger component, also covered live in §2.3.3 and the VIP-ELK mega-section below), reconstructed from its `objdump` listing, re-imported into Ghidra and decompiled there — producing VPF's confirmed guard matches (history only; see VPF for the finding itself). This identifies *which binary* carries the real AVB guards; it does not settle the bitness dispute above, which concerns a different binary/question and remains open. |
 
@@ -1236,7 +1236,7 @@ can be parsed or attributed without a physical read or an authoritative flash
 layout. Therefore the supported conclusion is: downstream IBB/IBBL/GHS/ELK
 selection does not currently call the tail directly; the pre-IBBL cold-reset
 root remains unknown.
-See [the readback map](../hardware/teardown.md#live-firmware-window-readback--2026-11-17).
+See [the readback map](../../hardware/teardown.md#live-firmware-window-readback--2026-11-17).
 The module was unloaded; no flash write or erase was performed.
 No hardware strap or blank-eMMC recovery path has been validated on this
 unit. Static tracing subsequently identified an automatic SPI-ELK fallback
@@ -1331,7 +1331,7 @@ remain relevant; elapsed time alone does not prove each timer was armed.
 Stock-system tests already show VIP participating in shutdown policy: after
 replay stopped, PowerModeOff/LocalInfotainment occurred; a subsequent driver-door
 CAN event led to Requesting Shutdown, animation failsafe, Sleep, and finally
-SoC power level 0. See the [door/shutdown evidence](../platform/can_bench_experiments.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
+SoC power level 0. See the [door/shutdown evidence](../../platform/can_bench_experiments.md#door-wake-and-explicit-shutdown-paths--2026-11-16).
 Those observations do not assign every step solely to VIP or AAOS. Native Probe
 surviving without the stock lifecycle handshake suggests a different active
 policy/state after ELK entry; that mechanism is not yet traced.
@@ -1823,7 +1823,7 @@ This supersedes the preceding trial's state of both GHS partitions being empty:
 slot A now contains a raw Android boot image, without an IPK wrapper.
 
 **Wrapped entry-probe experiment, 2026-11-17:**
-`research/tools/build_ipk_entry_probe.py` builds an unsigned IPK from the
+`tools/bench/build_ipk_entry_probe.py` builds an unsigned IPK from the
 hash-pinned archived ELK container. It preserves the four IPK components,
 recomputes the raw CRC32C header/body checksums, strips the signature trailer,
 and redirects the ELF32 entry to a new stub within verified zero file padding.
@@ -2887,7 +2887,7 @@ hash; it cannot establish MAC authenticity without the RPMB authentication key.
 
 A subsequent native T1 test loaded a matching standard `igb` module for PCI
 `8086:157c`, established VLAN-5 IP/SSH connectivity, and read a hash-matching
-64 MiB eMMC sample at 3.98 MiB/s. See [elk_recovery.md](../platform/elk_recovery.md#32-t1-ethernet-test-procedure-and-results) (`platform/networking.md` was retired in the platform/ reorg; this result now lives there).
+64 MiB eMMC sample at 3.98 MiB/s. See [elk_recovery.md](../../platform/elk_recovery.md#32-t1-ethernet-test-procedure-and-results) (`platform/networking.md` was retired in the platform/ reorg; this result now lives there).
 This proves an alternate readback path, not improved long-duration reliability.
 
 The complete graphics log shows i915 bound successfully but both native
@@ -3210,7 +3210,7 @@ No backlight class device exposed a brightness reading. The stock panel helper
 was later attempted through the existing USB root shell on native i2c-10
 (PCI 00:17.3, matching the cleanroom display-controller path). Its first reset
 transaction returned `panel I2C transfer: Remote I/O error`, exit 1, before
-the brightness write. See the [display ownership trace](../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17-extended-2026-11-17).
+the brightness write. See the [display ownership trace](../../video/display_subsystem.md#y175-panel-ownership-and-initialization--verified-2026-11-17-extended-2026-11-17).
 
 **Probe05 console follow-up (2026-11-17):** CAN ELK entry from the stock boot
 environment was acknowledged and USB 8087:09ef interface FF/42/03 confirmed.
@@ -3220,7 +3220,7 @@ transferred over T1 SSH, and successfully initialized the link (status CD).
 The owner confirmed visible display output. The corrected image includes Linux
 boot logos/fbcon, removal of PID1's periodic RGB repaint, 403 BusyBox applets,
 custom I2C/KMS tools, and matching maXTouch/network modules. See the
-[owning console and tooling result](../video/display_subsystem.md#probe05-console-and-diagnostic-tooling--2026-11-17)
+[owning console and tooling result](../../video/display_subsystem.md#probe05-console-and-diagnostic-tooling--2026-11-17)
 for the final hash, validation and remaining cold-boot limit.
 
 **Probe06 boot verified (2026-11-17):** stock boot reached HMI-ready;
@@ -3231,7 +3231,7 @@ PID1 started at0.437303s and video/media nodes appeared, without proving capture
 Panel initialization initially preceded stable link readiness; a live retry
 returnedCD. A corrected bounded-wait helper/image has been built and the helper
 installed in RAM; fresh-boot validation of that correction remains pending.
-The [owning build record](../video/display_subsystem.md#probe06-corrected-build-and-firmware-staging--2026-11-17)
+The [owning build record](../../video/display_subsystem.md#probe06-corrected-build-and-firmware-staging--2026-11-17)
 distinguishes booted and subsequently corrected image hashes and records the
 regulatory-database rejection. The broad hardware inventory remains a probe05
 snapshot; probe06 camera-node availability supersedes its earlier missing-node state.
@@ -3248,7 +3248,7 @@ This explains the Android-route failures without treating them as a VIP
 firmware rejection. The native `diagnosticsd` binary itself could not be
 byte-matched: live hashing returned `Permission denied`.
 
-The [diagnostic test record](../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15)
+The [diagnostic test record](../../diagnostics/diagnosticsd_routines_and_recovery.md#gwm-boot-target-and-gm-8180-follow-up-2026-11-15)
 owns exact live requests/results. Remaining questions:
 
 - Any additional receiver-side boot conditions after the accepted F000/8180 request.

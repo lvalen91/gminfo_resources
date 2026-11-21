@@ -18,7 +18,7 @@ was not established by that grant. Additional CAN03/05 trials reproduced PEC0015
 rejected021E before download. A later custom SXM write succeeded using separate
 CAN613/614 temporary VIP RAM writes, after which the owner confirmed SXM removal.
 The RAM words were restored. This does not make any grant a signature bypass;
-the owner confirmed retention after a10.505-second supply-off cycle with clean CAN status. See the [verification record](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed).
+the owner confirmed retention after a10.505-second supply-off cycle with clean CAN status. See the [verification record](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed).
 
 ---
 
@@ -49,7 +49,7 @@ semantic effect or successful write is established. No E010 write was sent.
 It must not be described as an ADB/debug-enable or ELK boot control.
 
 The separate CAN613/614 memory/development interface has its own
-[command inventory](../research/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-development-interface-xcp-style-command-inventory).
+[command inventory](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-17-development-interface-xcp-style-command-inventory).
 
 **F000/8180 distinction,2026-11-17:** Engineering09 alone returned7F3133 for
 `31 01 F000 8180 03`. Profile0D satisfied that routine's DCM security mask,
@@ -58,7 +58,7 @@ RAM change of that word to1 enabled a positive routine response and UART ELK
 request/response followed by reset. USB fastboot subsequently returned
 `kernelflinger-07.02-userdebug`, confirming ELK entry. This was not an
 Engineering09 grant effect; no ELK flash/unlock permission was tested. See the
-[ELK dispatcher analysis](../research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
+[ELK dispatcher analysis](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15).
 
 ## Live T1 SecurityAccess correction (2026-11-14)
 
