@@ -6,13 +6,13 @@ port identified in its section strings) and the confirmed guard-function reverse
 engineering that located and verified three of libavb's integrity checks inside a
 *different* binary, `elk_inner.elf` (kernelflinger). **Not here:** GHS boot-phase/ELK/
 recovery architecture and the Ghidra/PyGhidra tool-setup narrative behind this RE (see
-[GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), which absorbed
+[GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md), which absorbed
 that session log as a dated history subsection); general AVB/A-B/BCB boot-chain flow beyond
 what's needed as fuzz-target ground truth (`../../platform/boot_chain.md`,
-[GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md),
-[BOOT_CHAIN_ANALYSIS.txt](BOOT_CHAIN_ANALYSIS.txt)); rollback-counter/downgrade policy
-([GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt)); GHS
-hypervisor architecture generally ([GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md)).
+[GM_INFO37_BOOT_CHAIN_ANALYSIS.md](../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md),
+[BOOT_CHAIN_ANALYSIS.txt](../boot-update-recovery/BOOT_CHAIN_ANALYSIS.txt)); rollback-counter/downgrade policy
+([GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](../boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt)); GHS
+hypervisor architecture generally ([GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md)).
 
 **Evidence legend:** `[V]` verified/measured directly, `[FW]`/`[S]` static-firmware-derived,
 `[inferred]` reasoned from adjacent evidence, not directly observed, `[U]` unverified/stated
@@ -337,7 +337,7 @@ first:
 
 ## 6. Confirmed guard-function RE: `elk_inner.elf` (absorbed from GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md)
 
-See the dated history in [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#04-vmm1ota_update-re-tooling-history-aug-2026-session)
+See the dated history in [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#04-vmm1ota_update-re-tooling-history-aug-2026-session)
 for tool setup, Ghidra/PyGhidra installation, and the `.vmm1`/`.ota_update.text`
 disassembly method.
 

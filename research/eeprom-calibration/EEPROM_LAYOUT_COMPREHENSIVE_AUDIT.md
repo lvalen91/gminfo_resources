@@ -14,7 +14,7 @@ descriptor-table structure the firmware uses.
 **What does NOT live here (pointers only):**
 - The guest-side ADB/MEC/certificate chain (`GMAuthManagerService`, `gm_adb_auth_init`,
   `is_secure_mode`, MEC per-unit readings, root/registration limits) →
-  [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+  [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7](../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 - The live T1/Ethernet SecurityAccess (`$27`) correction for the calibration gate →
   [`../../diagnostics/diagnosticsd_security_access.md`](../../diagnostics/diagnosticsd_security_access.md#live-t1-securityaccess-correction-2026-11-14).
 - `SIGNATURE_BYPASS_TICKET` / `SECURE_UNLOCK_LEVEL` / dev-signed VIP firmware installs: kept in
@@ -105,7 +105,7 @@ table (full account in §12 History, item 2026-10-15):**
   SELinux. It is read by VIP_APP's CalGroup pipeline (§3) and, via a chain this doc does not own, ends
   up presented to the SoC as a Manufacturer Enable Counter (MEC) value that the SoC's ADB-auth stack
   treats as binary (0 vs nonzero) — full chain at
-  [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+  [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7](../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
   Separately, on CAN, the SBI-bypass state also makes the CSM's own `$27` seed come back all-`0xFF`
   (an independent, VIP-$27-validator-side effect, not consumed by the ADB chain) `[C]`.
 - **Not proven:** that flipping the ADB SBI also opens the *calibration* `$27` SecurityAccess gate.
@@ -579,7 +579,7 @@ in material sourced from that specific dump.
 The complete SoC-side chain — `GMAuthManagerService`, the GM-cloud-signed ADB policy,
 `gm_adb_auth_init`/`is_secure_mode`, MEC per-unit boot-log readings (Y175 stock `0x0`, bench-bypassed
 `0xFF`), and the DID `0xF1A0` transmission/root/registration-limit analysis — is owned by
-[GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
+[GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md §2.3.7](../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration).
 This doc continues to own EEPROM layout and VIP binary analysis only; do not restate that chain here.
 
 One EEPROM-relevant fact worth stating at this seam: the VIP's DID `0xF1A0` (the MEC value it

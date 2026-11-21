@@ -14,8 +14,8 @@ readable; follow the pointers for the facts themselves.
 [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md) ·
 [`../../platform/ethernet_networking.md`](../../platform/ethernet_networking.md) ·
 [`../../platform/vehicle_network.md`](../../platform/vehicle_network.md) ·
-[`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md) (GSK) ·
-[`GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](GM_INFO37_BOOT_CHAIN_ANALYSIS.md) (GIB)
+[`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md) (GSK) ·
+[`GM_INFO37_BOOT_CHAIN_ANALYSIS.md`](../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md) (GIB)
 
 ## Access & assets (session state)
 
@@ -35,7 +35,7 @@ readable; follow the pointers for the facts themselves.
 
 - **Emulator build/fidelity state** (VHAL frame-injection write path, navsens HIDL stub, DR-fusion
   gate, audio/TCC blocker, real-kernel boot status) → [`../../platform/emulator.md`](../../platform/emulator.md)
-  and, for the full real-kernel boot-chain walkthrough, [GIB](GM_INFO37_BOOT_CHAIN_ANALYSIS.md).
+  and, for the full real-kernel boot-chain walkthrough, [GIB](../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md).
 - **Physical AE link map** (Ethernet-2/4/6 → K56/K73/T3, vlan4/vlan5 CIDRs, the AVB link, the
   `192.168.171.0/24` tester-subnet-vs-radio-link correction) →
   [`../../platform/ethernet_networking.md`](../../platform/ethernet_networking.md) (IPs/VLANs/ports) and
@@ -45,7 +45,7 @@ readable; follow the pointers for the facts themselves.
   [`../../platform/fsa_protocol.md`](../../platform/fsa_protocol.md).
 - **Link-2 diagnostic surface / UDS** (8-byte GM UDS header vs DoIP, NRC 0x10, vndbinder-bypass gap) →
   [`../../diagnostics/ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md); seed/key
-  byte-length and signature detail → [GSK](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+  byte-length and signature detail → [GSK](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 - **Update/rollback/influence verdicts** (manifest signing gate, GHS hardware-enforced rollback,
   no-network-install conclusion) → [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md)
   and [`../../platform/ota_programming_roles.md`](../../platform/ota_programming_roles.md).
@@ -79,7 +79,7 @@ suffix), 12-byte responses, and `67 02`. `DPS+SPS.pcapng` programs amplifier `0x
 radio; its radio observations are DID reads and seed-only probes. An SPS host error banner does
 not establish why the ECU returned an all-FF seed. Full detail and the SBI/ADB-cert distinctions:
 [`ethernet_uds_diagnosticsd.md`](../../diagnostics/ethernet_uds_diagnosticsd.md) and
-[GSK](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+[GSK](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 
 *(Note: the 31-byte seed figure above is cited elsewhere as disputed against an earlier 32-byte
 claim — see GSK's Open Conflicts; this doc states the 31-byte figure as the correction-chain
@@ -140,7 +140,7 @@ credential, to this repo. Internal vehicle-network addresses (e.g. `192.168.1.x`
 ## Open conflicts
 
 None local to this doc. One cross-reference worth flagging: the 31-byte seed figure restated in
-this doc's Link-2 correction (above) is the same figure [GSK](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
+this doc's Link-2 correction (above) is the same figure [GSK](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)
 carries as disputed against a 32-byte claim traced to a retired doc — see GSK's own Open
 Conflicts section; this doc does not attempt to settle it.
 

@@ -17,11 +17,11 @@ across Y177/Y181 (`firmware_versions.md`), so Y181 key facts are treated as buil
 
 **This doc does NOT own (pointers):**
 - Downgrade/anti-rollback mechanism, OEM-key-extraction feasibility → [GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt)
-- libavb/`.vmm1` parser RE, AVB-guard fuzz targets → [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)
+- libavb/`.vmm1` parser RE, AVB-guard fuzz targets → [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)
 - ELK/kernelflinger as a recovery/fastboot environment, lock state, Boot Guard/FPF → [`../../platform/elk_recovery.md`](../../platform/elk_recovery.md), [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md)
 - GHS hypervisor architecture, `/dev/ghs/*`, VMR grant table → [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md)
 - Full boot-phase walkthrough (VIP→CSE→ABL→GHS→AVB→AAOS) → [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md)
-- GHS-image tamper as a ranked attack vector → [HARDWARE_HYPERVISOR_ATTACK_VECTORS.md](HARDWARE_HYPERVISOR_ATTACK_VECTORS.md) (mechanism owned here, §9)
+- GHS-image tamper as a ranked attack vector → [HARDWARE_HYPERVISOR_ATTACK_VECTORS.md](../security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md) (mechanism owned here, §9)
 
 ---
 

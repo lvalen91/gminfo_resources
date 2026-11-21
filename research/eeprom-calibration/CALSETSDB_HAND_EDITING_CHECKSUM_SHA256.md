@@ -12,7 +12,7 @@ message header and `calserviced` override-package (`.calovride`) container forma
 **What does NOT live here:**
 - SELinux/DAC reachability for the `calserviced`/`vendor_cald` write path (CIL rules,
   write-allow/neverallow lists, feasibility verdict) → owned by
-  [`SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`](SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md).
+  [`SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`](../security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md).
   This doc states only the directory/UID/domain facts needed to explain why a DB edit requires a
   foothold, and points there for the reachability analysis itself.
 - CAN613/614 scoped-VIP-RAM-write mechanism, the signed-header-rejection trial chronology, and the
@@ -256,7 +256,7 @@ ELF-relative, not live ASLR addresses.)
 The Y175 `calserviced` binary also contains the `OVERRIDE_BACKDOOR` warning string and `.calovride`
 suffix (§3e). This local development mechanism must not be equated with UDS programming or
 presumed shell-writable — **the SELinux/DAC reachability question for this write path is owned by
-[`SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`](SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md)**, not
+[`SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`](../security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md)**, not
 restated here. The destructive clear and recovery outcome referenced above is owned by
 `../../diagnostics/diagnosticsd_routines_and_recovery.md` (§6 below has the full pointer). A future
 override-write claim must identify an implemented setter/loader, its actual authorization, and a
@@ -463,7 +463,7 @@ SELinux access, and ordinary ADB shell has no verified write path here.
 
 > **History:** directory/ownership facts corrected 2026-11-15. The full SELinux/DAC reachability
 > audit for this path (CIL rule IDs, write-allow/neverallow lists, feasibility verdict) is owned by
-> [`SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`](SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md) and
+> [`SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md`](../security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md) and
 > is not restated here.
 
 A local override package must match the actual `calserviced` parser and the production-build entry

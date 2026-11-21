@@ -421,7 +421,7 @@ with unchanged XML/digest/length was rejected, and the original SXM edit returne
 PEC0015 before stock recovery. The matching VIP header-verification failure
 branch sets0015 and its first-block caller returns NRC72 before SoC calibration
 init. A separate validated-SBA-ticket exception exists in code but has not been
-activated. See the [confirmed verification record](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed).
+activated. See the [confirmed verification record](../eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed).
 This is not an accepted custom-calibration deployment recipe.
 
 ---

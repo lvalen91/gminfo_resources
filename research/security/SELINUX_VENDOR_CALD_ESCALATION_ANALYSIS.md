@@ -11,15 +11,15 @@ gates, a feasibility table, and the current verdict.
 **What does NOT live here:**
 - The `.calovride` container format, checksum/SHA-256 scheme, and the loader's version/rebuild
   behavior → owned by
-  [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md)
+  [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](../eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md)
   (§3e). This doc states only the DAC/MAC facts needed to gate that write path.
 - CAN613/614 scoped-VIP-RAM-write mechanism and the Ghidra signature-verification trace →
   owned by
-  [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md), which
+  [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](../eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md), which
   points seed/signature detail onward to
-  [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+  [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 - CalDef record structure / VIP calibration-index tables → owned by
-  [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](CALDEF_VIP_CALIBRATION_ANALYSIS.txt).
+  [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](../eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt).
 - The updater's own package-provenance/install-IPC narrative (DevCaloverrideInstaller discovery
   rules, APK provenance) → owned by
   [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15).
@@ -285,12 +285,12 @@ items in `PROVENANCE_AUDIT_AUG2026.md`/README.md's cross-doc Open Conflicts do n
 - `research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` L98–117 (backdoor description)
 
 ## Related
-- [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) —
+- [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](../eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) —
   `.calovride` container/checksum/loader format (this doc owns the write-path reachability only).
-- [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md) — the
+- [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](../eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md) — the
   one documented successful custom-write path (CAN613/614 scoped-VIP-RAM-write), unrelated to
   this filesystem/hwbinder surface.
-- [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](CALDEF_VIP_CALIBRATION_ANALYSIS.txt) — CalDef/VIP
+- [`CALDEF_VIP_CALIBRATION_ANALYSIS.txt`](../eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt) — CalDef/VIP
   calibration record structure.
 - [`../../platform/ota_update_stack.md`](../../platform/ota_update_stack.md#current-y175-development-calibration-import-route-2026-11-15) —
   updater caller-boundary / DevCaloverrideInstaller provenance (owner of the §(c) open question).

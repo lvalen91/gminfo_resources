@@ -104,7 +104,7 @@ inspection). **Operating voltage:** 1.8V (critical — do NOT use 3.3V programme
 
 **Live verification on the Y175 bench unit (2026-11-17).** These results supersede
 the live-access plan below. The primary record is the
-[SOC_ABL row in GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary).
+[SOC_ABL row in GM_INFO37_BOOT_CHAIN_ANALYSIS.md](../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary).
 - **FIT table at physical `0xFFFFFFC0`:** `[C]` reads all-`0xFF` on the running system via a
   custom kernel (`CONFIG_DEVMEM=y` + `iomem=relaxed`) — no FIT is host-visible post-boot
   (CSE/PCH closes that BIOS decode window after the pre-boot reset sequence). Closed for a live

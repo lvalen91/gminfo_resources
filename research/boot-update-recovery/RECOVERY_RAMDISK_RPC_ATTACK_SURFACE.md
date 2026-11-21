@@ -71,7 +71,7 @@ were decompiled to 18,041 lines of C. The full decompiled corpus has zero refere
 to `.ota_update.rodata`'s address range or any of its known string addresses
 (`0xdf60e8`, `0xdf610d`, `0xdf74d2`, `0xdf75e2`, `0xdf7793`) — a cross-validated
 negative result (same pattern independently found in `.vmm1.text`, see
-[`VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)), not a
+[`VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md`](../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)), not a
 coverage gap. The opcode/length-field framing below is therefore real but its dispatch
 table is not found in `.text`/`.rodata`; the next unexplored lead is `.ota_update.data`
 (700 B, not yet dumped). What *is* recoverable from the strings:

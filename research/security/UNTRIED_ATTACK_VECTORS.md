@@ -158,7 +158,7 @@ record is `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`, this entry is a pointer, not a
 Y175 VIP_APP has a descriptor/callback for selector `0x8180` and a compiled branch that logs the
 ELK request and sends byte `E0` through IPC API selector `0x0C`. The complete CAN request and
 outer authorization checks remain unverified. Runtime/file offsets must use the corrected module
-payload mapping; see the owning [ELK analysis](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
+payload mapping; see the owning [ELK analysis](../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15)
 (owner of the live-tested RID=0xFF01/`FUN_000641c2` ELK-trigger fact per the corpus-wide pointer
 rule — this doc does not restate it).
 
@@ -394,7 +394,7 @@ resolved here, since it touches a doc outside this reorg's authority.)
 ### 15. ghs_abl_update (vda4) Content Analysis
 
 **Status:** ANALYZED (2026-11-20)
-**Finding:** `ghs_abl_update` (vda4) is a **firmware-reflash capsule, not a runtime boot stage.** Its IPK payload (`0x600000` = 6 MiB; header CRC `0x3597d84c`, `0x55aa` marker, **no signature**) is byte-identical to the top 6 MiB of IFWI/SPI (`0x200000..0x800000`) — the field-updatable Intel firmware block (`$CPD`, FTPR, `$FPT`, the six RSA-2048 CSE/OEM manifests, and the firmware-resident ABL ELF). It is CRC-wrapped only; whether a reflash through it is authenticated depends on the updater and/or CSE/Boot Guard at next boot (not recoverable from this dump). Full detail + the related GHS-image-authentication verdict: [BOOT_TRUST_ANCHOR_AND_KEYS.md §3, §8](BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update).
+**Finding:** `ghs_abl_update` (vda4) is a **firmware-reflash capsule, not a runtime boot stage.** Its IPK payload (`0x600000` = 6 MiB; header CRC `0x3597d84c`, `0x55aa` marker, **no signature**) is byte-identical to the top 6 MiB of IFWI/SPI (`0x200000..0x800000`) — the field-updatable Intel firmware block (`$CPD`, FTPR, `$FPT`, the six RSA-2048 CSE/OEM manifests, and the firmware-resident ABL ELF). It is CRC-wrapped only; whether a reflash through it is authenticated depends on the updater and/or CSE/Boot Guard at next boot (not recoverable from this dump). Full detail + the related GHS-image-authentication verdict: [BOOT_TRUST_ANCHOR_AND_KEYS.md §3, §8](../boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update).
 
 ```bash
 adb shell ls -laZ /dev/block/by-name/ | grep vda4

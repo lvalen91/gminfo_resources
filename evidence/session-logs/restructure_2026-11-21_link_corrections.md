@@ -4336,3 +4336,89 @@ Moved-doc basenames that also exist elsewhere in the repo (ambiguity risk after 
 ## Part 3: .llm_index.jsonl Y177 entries
 
 Page entry for research/security/Y177_KERNEL_CVE_ANALYSIS.txt rewritten as an archive-stub record (the 'Y177 runs SELinux permissive' claims removed and marked REFUTED, pointing to KERNEL_CVE_ANALYSIS.txt Appendix E.8); new page entry added for research/security/archive/Y177_KERNEL_CVE_ANALYSIS.txt; entity-index rows for /dev/i2c-0..3, /dev/ttyS1 VIP, 4.19.305 same kernel, CVE-2024-36971, CVE-2024-53104, CVE-2024-53150/53197, gpio458/460/464/466, sepolicy MD5 e9ebb7d8 vs 6b2045bf, Y177.6.1 repointed from the stub to research/security/KERNEL_CVE_ANALYSIS.txt (verified to hold those items in Appendix E).
+
+## Part 4: same-directory markdown links repaired (pass 2)
+
+Pass 1 only matched path tokens that contain a directory component, so links written as a bare sibling file name (for example the link target GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md inside research/) were not rewritten even though source and target now sit in different research subfolders. A link-resolution check against the pre-restructure tag found 74 newly broken links; pass 2 pairs each link of the original file with the same-index link of the current file and corrects the target when it no longer resolves to the intended document. Result: broken markdown links = 207, the same set as before the restructure (all pre-existing: 186 in GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md, 21 in platform/archive/can_network_original.md).
+
+
+| file | before | after |
+|---|---|---|
+| `research/README.md` | `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | `boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` |
+| `research/README.md` | `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` | `boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` |
+| `research/README.md` | `GHS_FILE_MAP_85098662.md` | `boot-update-recovery/GHS_FILE_MAP_85098662.md` |
+| `research/README.md` | `BOOT_TRUST_ANCHOR_AND_KEYS.md` | `boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md` |
+| `research/README.md` | `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` | `boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` |
+| `research/README.md` | `BOOT_CHAIN_ANALYSIS.txt` | `boot-update-recovery/BOOT_CHAIN_ANALYSIS.txt` |
+| `research/README.md` | `GM_INFO37_BOOT_CHAIN_ANALYSIS.md` | `boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` |
+| `research/README.md` | `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` |
+| `research/README.md` | `RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md` | `boot-update-recovery/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md` |
+| `research/README.md` | `CSE_HECI_ORCHESTRATION_ANALYSIS.md` | `boot-update-recovery/CSE_HECI_ORCHESTRATION_ANALYSIS.md` |
+| `research/README.md` | `GORDON_PEAK_CELADON_INTELLIGENCE.md` | `boot-update-recovery/GORDON_PEAK_CELADON_INTELLIGENCE.md` |
+| `research/README.md` | `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` | `security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` |
+| `research/README.md` | `UNTRIED_ATTACK_VECTORS.md` | `security/UNTRIED_ATTACK_VECTORS.md` |
+| `research/README.md` | `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` | `eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` |
+| `research/README.md` | `EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md` | `eeprom-calibration/EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md` |
+| `research/README.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/README.md` | `CALDEF_VIP_CALIBRATION_ANALYSIS.txt` | `eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt` |
+| `research/README.md` | `VIP_CONTROL_ANALYSIS.txt` | `eeprom-calibration/VIP_CONTROL_ANALYSIS.txt` |
+| `research/README.md` | `DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md` | `eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md` |
+| `research/README.md` | `calibration_glossary.md` | `eeprom-calibration/calibration_glossary.md` |
+| `research/README.md` | `CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` | `eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` |
+| `research/README.md` | `SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` |
+| `research/README.md` | `MDI2_DPDU_API_PROTOCOL_AUG2026.md` | `mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md` |
+| `research/README.md` | `MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md` | `mdi2-bench-sessions/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md` |
+| `research/README.md` | `AUG24_SESSION_FULL_PCAP_TIMELINE.md` | `mdi2-bench-sessions/AUG24_SESSION_FULL_PCAP_TIMELINE.md` |
+| `research/README.md` | `AE_RESEARCH_HANDOFF.md` | `mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md` |
+| `research/README.md` | `USB_ADB_SESSION_FINDINGS_2026-10-10.md` | `mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md` |
+| `research/README.md` | `AOSP_REPLACEMENT_RESEARCH.txt` | `rights-and-roadmap/AOSP_REPLACEMENT_RESEARCH.txt` |
+| `research/README.md` | `GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt` | `rights-and-roadmap/GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt` |
+| `research/README.md` | `GM_REMOTE_ACCESS_ANALYSIS.txt` | `rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt` |
+| `research/README.md` | `PROVENANCE_AUDIT_AUG2026.md` | `provenance/PROVENANCE_AUDIT_AUG2026.md` |
+| `research/README.md` | `INVENTORY.md` | `provenance/INVENTORY.md` |
+| `research/boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md` | `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` |
+| `research/boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md` | `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` | `../security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` |
+| `research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` |
+| `research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` | `../eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` |
+| `research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` |
+| `research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` |
+| `research/boot-update-recovery/GORDON_PEAK_CELADON_INTELLIGENCE.md` | `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` | `../security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` |
+| `research/boot-update-recovery/GORDON_PEAK_CELADON_INTELLIGENCE.md` | `HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` | `../security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` |
+| `research/boot-update-recovery/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md` | `VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` |
+| `research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` | `SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `../security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` |
+| `research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` | `SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `../security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` |
+| `research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` | `SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `../security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` |
+| `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` | `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration` | `../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration` |
+| `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` | `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration` | `../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration` |
+| `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` | `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration` | `../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#237-mec-adb-certificate-authentication-root-and-registration` |
+| `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md` | `GM_INFO37_BOOT_CHAIN_ANALYSIS.md` | `../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` |
+| `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md` | `GM_INFO37_BOOT_CHAIN_ANALYSIS.md` | `../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` |
+| `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/mdi2-bench-sessions/AUG24_SESSION_FULL_PCAP_TIMELINE.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/mdi2-bench-sessions/AUG24_SESSION_FULL_PCAP_TIMELINE.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md` | `DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed` | `../eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-direct-can5-repeat-and-header-signature-rejection-confirmed` |
+| `research/provenance/INVENTORY.md` | `BOOT_TRUST_ANCHOR_AND_KEYS.md#9-ghs-self-integrity-gate-1-and-tamper-analysis` | `../boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md#9-ghs-self-integrity-gate-1-and-tamper-analysis` |
+| `research/provenance/INVENTORY.md` | `BOOT_TRUST_ANCHOR_AND_KEYS.md#6-current_android_key--the-trust-anchor-embedded-in-the-ghs-image` | `../boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md#6-current_android_key--the-trust-anchor-embedded-in-the-ghs-image` |
+| `research/security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` | `GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary` | `../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md#101-security-layer-summary` |
+| `research/security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` | `../eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` |
+| `research/security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md` | `../eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md` |
+| `research/security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` | `../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md` |
+| `research/security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `CALDEF_VIP_CALIBRATION_ANALYSIS.txt` | `../eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt` |
+| `research/security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` | `../eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md` |
+| `research/security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md` | `../eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md` |
+| `research/security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md` | `CALDEF_VIP_CALIBRATION_ANALYSIS.txt` | `../eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt` |
+| `research/security/UNTRIED_ATTACK_VECTORS.md` | `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15` | `../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#vip-elk-control-selector-and-gwm-comparison-2026-11-15` |
+| `research/security/UNTRIED_ATTACK_VECTORS.md` | `BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update` | `../boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md#3-soc_abl--elk-kernelflinger-and-ghs_abl_update` |
+| `research/security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` | `../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md` |
+| `research/security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `GM_INFO37_BOOT_CHAIN_ANALYSIS.md` | `../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md` |
+| `research/security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `BOOT_CHAIN_ANALYSIS.txt` | `../boot-update-recovery/BOOT_CHAIN_ANALYSIS.txt` |
+| `research/security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` | `../boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` |
+| `research/security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` | `../boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` |
+| `research/security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md` | `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#04-vmm1ota_update-re-tooling-history-aug-2026-session` | `../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#04-vmm1ota_update-re-tooling-history-aug-2026-session` |
+
+## Part 5: mdi2_client venv
+
+Git-ignored venv relocated to tools/mdi2_client/.venv; 17 text files (pyvenv.cfg, bin console scripts, activate scripts) had their absolute path updated; python -m pytest: 259 passed, 3 skipped.

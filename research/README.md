@@ -20,54 +20,54 @@ rewrite them — and ship byte-for-byte unchanged apart from the repo-path rewri
 ### GHS hypervisor, boot, update, recovery
 | Doc | Contents |
 |---|---|
-| [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) | **Canonical** boot/recovery/ELK owner: boot phases, special boot modes, recovery/fastbootd/ELK privilege boundaries, the live CAN-routine ELK entry, the SBI→MEC→ADB-cert bypass chain, A/B+BCB+trigger-file/USB-marker mechanics, dealer-recovery write paths, `85098662` module provenance |
-| [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) | GHS INTEGRITY hypervisor architecture: PCI driver table, task list, IPC ConnTo* map, VMM/VT-d/guest-memory functions, `.boottable` guest/VM config, `/dev/ghs/*` + SELinux labels, attack-surface catalog, privacy-capability assessment |
-| [GHS_FILE_MAP_85098662.md](GHS_FILE_MAP_85098662.md) | Byte-level address-space map of the SOC_HOSTOS (85098662) GHS monolith: container/ELF structure, offset→section→purpose table, USB-passthrough mechanism |
-| [BOOT_TRUST_ANCHOR_AND_KEYS.md](BOOT_TRUST_ANCHOR_AND_KEYS.md) | **Canonical** trust-anchor/verification-key owner: CSE/IFWI manifest keys, SOC_ABL `.oemkeys`, the active vbmeta key, the GHS-embedded `current_android_key` (incl. the second RSA-4096 key), AVB coverage, GHS-image authentication (**RSA-2048/SHA-256 sig rooted in Boot-Guard OBB — chain closed; enforcement measured via 1-byte sig-corrupt boot test, §8 2026-11-20**), GHS Gate-1 self-integrity + tamper, `ghs_abl_update` reflash capsule |
-| [GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt) | Y181→Y177 downgrade-block mechanism (GHS rollback counter vs vbmeta rollback index), OEM RSA pubkey extraction/signing-key feasibility |
-| [BOOT_CHAIN_ANALYSIS.txt](BOOT_CHAIN_ANALYSIS.txt) | Raw binary-forensic evidence layer: GM module headers, ABL/GHS/Android boot-image structure, CSE key list, SVN/lock-state strings, partition layout, cmdline, AVB verification strings |
-| [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](GM_INFO37_BOOT_CHAIN_ANALYSIS.md) | Architectural boot-chain walkthrough (VIP→CSE/ABL→GHS→AVB→AAOS), security-boundary table, QEMU-portability status |
-| [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md) | AVB/vbmeta parser security: TOCTOU/overflow fuzz targets against `.vmm1`, the confirmed `elk_inner.elf` AVB-guard RE |
-| [RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md](RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md) | GHS `ota_update` RPC opcode/validation-gap/state-machine map, `.ota_update.text` full decompile (negative dispatch-table result), 7 ranked fuzz targets |
-| [CSE_HECI_ORCHESTRATION_ANALYSIS.md](CSE_HECI_ORCHESTRATION_ANALYSIS.md) | HECI/MKHI/CSE command-protocol RE for the `ota_update` GHS partition: bus transport, opcodes, state machine, validation gates, fuzz targets |
-| [GORDON_PEAK_CELADON_INTELLIGENCE.md](GORDON_PEAK_CELADON_INTELLIGENCE.md) | Celadon/Gordon-Peak OSINT reference (public Apollo-Lake analog): clone/build commands, kernelflinger/libheci/avb/crashmode/BCB findings |
-| [HARDWARE_HYPERVISOR_ATTACK_VECTORS.md](HARDWARE_HYPERVISOR_ATTACK_VECTORS.md) | Hardware+hypervisor attack-surface catalog: DCI/Red-Unlock, SPI/IFWI/Boot-Guard/FPF, eMMC ISP, voltage glitching, RH850 JTAG, UART, IOMMU/VT-d, GHS CVEs |
-| [UNTRIED_ATTACK_VECTORS.md](UNTRIED_ATTACK_VECTORS.md) | Status tracker for the (refuted) Y181→Y177 permissive-downgrade goal: 17 ranked vectors, dependency graph |
+| [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) | **Canonical** boot/recovery/ELK owner: boot phases, special boot modes, recovery/fastbootd/ELK privilege boundaries, the live CAN-routine ELK entry, the SBI→MEC→ADB-cert bypass chain, A/B+BCB+trigger-file/USB-marker mechanics, dealer-recovery write paths, `85098662` module provenance |
+| [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) | GHS INTEGRITY hypervisor architecture: PCI driver table, task list, IPC ConnTo* map, VMM/VT-d/guest-memory functions, `.boottable` guest/VM config, `/dev/ghs/*` + SELinux labels, attack-surface catalog, privacy-capability assessment |
+| [GHS_FILE_MAP_85098662.md](boot-update-recovery/GHS_FILE_MAP_85098662.md) | Byte-level address-space map of the SOC_HOSTOS (85098662) GHS monolith: container/ELF structure, offset→section→purpose table, USB-passthrough mechanism |
+| [BOOT_TRUST_ANCHOR_AND_KEYS.md](boot-update-recovery/BOOT_TRUST_ANCHOR_AND_KEYS.md) | **Canonical** trust-anchor/verification-key owner: CSE/IFWI manifest keys, SOC_ABL `.oemkeys`, the active vbmeta key, the GHS-embedded `current_android_key` (incl. the second RSA-4096 key), AVB coverage, GHS-image authentication (**RSA-2048/SHA-256 sig rooted in Boot-Guard OBB — chain closed; enforcement measured via 1-byte sig-corrupt boot test, §8 2026-11-20**), GHS Gate-1 self-integrity + tamper, `ghs_abl_update` reflash capsule |
+| [GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt](boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt) | Y181→Y177 downgrade-block mechanism (GHS rollback counter vs vbmeta rollback index), OEM RSA pubkey extraction/signing-key feasibility |
+| [BOOT_CHAIN_ANALYSIS.txt](boot-update-recovery/BOOT_CHAIN_ANALYSIS.txt) | Raw binary-forensic evidence layer: GM module headers, ABL/GHS/Android boot-image structure, CSE key list, SVN/lock-state strings, partition layout, cmdline, AVB verification strings |
+| [GM_INFO37_BOOT_CHAIN_ANALYSIS.md](boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md) | Architectural boot-chain walkthrough (VIP→CSE/ABL→GHS→AVB→AAOS), security-boundary table, QEMU-portability status |
+| [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md) | AVB/vbmeta parser security: TOCTOU/overflow fuzz targets against `.vmm1`, the confirmed `elk_inner.elf` AVB-guard RE |
+| [RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md](boot-update-recovery/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md) | GHS `ota_update` RPC opcode/validation-gap/state-machine map, `.ota_update.text` full decompile (negative dispatch-table result), 7 ranked fuzz targets |
+| [CSE_HECI_ORCHESTRATION_ANALYSIS.md](boot-update-recovery/CSE_HECI_ORCHESTRATION_ANALYSIS.md) | HECI/MKHI/CSE command-protocol RE for the `ota_update` GHS partition: bus transport, opcodes, state machine, validation gates, fuzz targets |
+| [GORDON_PEAK_CELADON_INTELLIGENCE.md](boot-update-recovery/GORDON_PEAK_CELADON_INTELLIGENCE.md) | Celadon/Gordon-Peak OSINT reference (public Apollo-Lake analog): clone/build commands, kernelflinger/libheci/avb/crashmode/BCB findings |
+| [HARDWARE_HYPERVISOR_ATTACK_VECTORS.md](security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md) | Hardware+hypervisor attack-surface catalog: DCI/Red-Unlock, SPI/IFWI/Boot-Guard/FPF, eMMC ISP, voltage glitching, RH850 JTAG, UART, IOMMU/VT-d, GHS CVEs |
+| [UNTRIED_ATTACK_VECTORS.md](security/UNTRIED_ATTACK_VECTORS.md) | Status tracker for the (refuted) Y181→Y177 permissive-downgrade goal: 17 ranked vectors, dependency graph |
 
 ### EEPROM, VIP, seed/key, calibration
 | Doc | Contents |
 |---|---|
-| [EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md](EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md) | **Canonical** EEPROM memory map + SBI/security-flag/ADB-bypass mechanism, SBI-reset mechanism, candidate SBI DIDs |
-| [EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md](EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md) | Bench-test methodology: T0-T3 cost/risk ladder, backup/rollback procedure, 5 live UDS/DID test recipes |
-| [GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md) | **Canonical** seed-key/SecurityAccess/signature doc: UDS 27/67 exchange, `tisvcsv4.dll` multi-OEM dispatch, S84/DPS CMAC, ProtoKey VIP↔SoC IPC chain, calibration-container signature format |
-| [CALDEF_VIP_CALIBRATION_ANALYSIS.txt](CALDEF_VIP_CALIBRATION_ANALYSIS.txt) | Android CalDef vs VIP calibration — two separate systems: CalDef record structure, VIP `cal_*` boot-log values, VIP calibration-index table |
-| [VIP_CONTROL_ANALYSIS.txt](VIP_CONTROL_ANALYSIS.txt) | VIP control-scope overview: CRC-protection boundaries, I2C-software-access potential, DPS capability limits, VIP service inventory |
-| [DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md) | Live CAN-bench custom Type4 calibration workflow: CAN613/614 scoped-VIP-RAM-write bypass, XCP command inventory, Type4-DLL arbitrary-UDS-injection path, CAN-bus data-reset recovery procedure |
-| [calibration_glossary.md](calibration_glossary.md) **(NEW)** | 404-entry A11 LTZ slot04 `OverrideValue` calibration-key catalog (key/description/type/value/CalID, 30 groups) |
-| [CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) | CalSets.db checksum/SHA-256/container-layout RE, direct-DB-edit mechanics, theme/UI calibration inventory, GMBrand/`SCREEN_RESOLUTION` live trials |
-| [SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md](SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md) | SELinux+DAC reachability audit for `calserviced`/vendor_cald write path: CIL rules, feasibility verdict |
+| [EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md](eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md) | **Canonical** EEPROM memory map + SBI/security-flag/ADB-bypass mechanism, SBI-reset mechanism, candidate SBI DIDs |
+| [EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md](eeprom-calibration/EEPROM_SECURITY_FLAG_TEST_PROTOCOL.md) | Bench-test methodology: T0-T3 cost/risk ladder, backup/rollback procedure, 5 live UDS/DID test recipes |
+| [GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md](eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md) | **Canonical** seed-key/SecurityAccess/signature doc: UDS 27/67 exchange, `tisvcsv4.dll` multi-OEM dispatch, S84/DPS CMAC, ProtoKey VIP↔SoC IPC chain, calibration-container signature format |
+| [CALDEF_VIP_CALIBRATION_ANALYSIS.txt](eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt) | Android CalDef vs VIP calibration — two separate systems: CalDef record structure, VIP `cal_*` boot-log values, VIP calibration-index table |
+| [VIP_CONTROL_ANALYSIS.txt](eeprom-calibration/VIP_CONTROL_ANALYSIS.txt) | VIP control-scope overview: CRC-protection boundaries, I2C-software-access potential, DPS capability limits, VIP service inventory |
+| [DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md](eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md) | Live CAN-bench custom Type4 calibration workflow: CAN613/614 scoped-VIP-RAM-write bypass, XCP command inventory, Type4-DLL arbitrary-UDS-injection path, CAN-bus data-reset recovery procedure |
+| [calibration_glossary.md](eeprom-calibration/calibration_glossary.md) **(NEW)** | 404-entry A11 LTZ slot04 `OverrideValue` calibration-key catalog (key/description/type/value/CalID, 30 groups) |
+| [CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md](eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) | CalSets.db checksum/SHA-256/container-layout RE, direct-DB-edit mechanics, theme/UI calibration inventory, GMBrand/`SCREEN_RESOLUTION` live trials |
+| [SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md](security/SELINUX_VENDOR_CALD_ESCALATION_ANALYSIS.md) | SELinux+DAC reachability audit for `calserviced`/vendor_cald write path: CIL rules, feasibility verdict |
 
 ### MDI2 / diagnostic tooling, bench sessions
 | Doc | Contents |
 |---|---|
-| [MDI2_DPDU_API_PROTOCOL_AUG2026.md](MDI2_DPDU_API_PROTOCOL_AUG2026.md) | Bosch MDI2 D-PDU (ISO 22900-2) wire protocol on TCP/10123: framing, opcode table, UDS/SecurityAccess ordering, `J2534Wrapper.dll`/`bvtx4j32.dll` RE, 27-ECU SecurityAccess sweep result |
-| [MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md](MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md) | MDI2 Manager stack: `GM_MDI_Ident.exe`, 14-port bank, Blowfish-ECB keying, JSON session protocol, Get-Log-Files pull |
-| [AUG24_SESSION_FULL_PCAP_TIMELINE.md](AUG24_SESSION_FULL_PCAP_TIMELINE.md) | Provenance record for the 6-pcap Aug-24 session: capture inventory, DoIP-responder topology (open), captured seed/key pairs |
-| [AE_RESEARCH_HANDOFF.md](AE_RESEARCH_HANDOFF.md) | Automotive-Ethernet research session tracker: open items, forward work plan, redaction hard rule |
-| [USB_ADB_SESSION_FINDINGS_2026-10-10.md](USB_ADB_SESSION_FINDINGS_2026-10-10.md) | USB hardware + ADB-exposure logic: X8 connector, XDCI/xHCI, role-switch logic, gadget/configfs, DABridge, 6-condition ADB chain |
+| [MDI2_DPDU_API_PROTOCOL_AUG2026.md](mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md) | Bosch MDI2 D-PDU (ISO 22900-2) wire protocol on TCP/10123: framing, opcode table, UDS/SecurityAccess ordering, `J2534Wrapper.dll`/`bvtx4j32.dll` RE, 27-ECU SecurityAccess sweep result |
+| [MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md](mdi2-bench-sessions/MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md) | MDI2 Manager stack: `GM_MDI_Ident.exe`, 14-port bank, Blowfish-ECB keying, JSON session protocol, Get-Log-Files pull |
+| [AUG24_SESSION_FULL_PCAP_TIMELINE.md](mdi2-bench-sessions/AUG24_SESSION_FULL_PCAP_TIMELINE.md) | Provenance record for the 6-pcap Aug-24 session: capture inventory, DoIP-responder topology (open), captured seed/key pairs |
+| [AE_RESEARCH_HANDOFF.md](mdi2-bench-sessions/AE_RESEARCH_HANDOFF.md) | Automotive-Ethernet research session tracker: open items, forward work plan, redaction hard rule |
+| [USB_ADB_SESSION_FINDINGS_2026-10-10.md](mdi2-bench-sessions/USB_ADB_SESSION_FINDINGS_2026-10-10.md) | USB hardware + ADB-exposure logic: X8 connector, XDCI/xHCI, role-switch logic, gadget/configfs, DABridge, 6-condition ADB chain |
 
 ### Platform-variant / rights / roadmap
 | Doc | Contents |
 |---|---|
-| [AOSP_REPLACEMENT_RESEARCH.txt](AOSP_REPLACEMENT_RESEARCH.txt) | AOSP-replacement roadmap and attack-surface prioritization ("rights/remote/AOSP" trio, member 1) |
-| [GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt](GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt) | Rights/legal-position paper, counter-argument rebuttals (trio, member 2) |
-| [GM_REMOTE_ACCESS_ANALYSIS.txt](GM_REMOTE_ACCESS_ANALYSIS.txt) | Telematics/remote-access/cloud-endpoint/GHS-camera-bypass analysis (trio, member 3) |
+| [AOSP_REPLACEMENT_RESEARCH.txt](rights-and-roadmap/AOSP_REPLACEMENT_RESEARCH.txt) | AOSP-replacement roadmap and attack-surface prioritization ("rights/remote/AOSP" trio, member 1) |
+| [GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt](rights-and-roadmap/GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt) | Rights/legal-position paper, counter-argument rebuttals (trio, member 2) |
+| [GM_REMOTE_ACCESS_ANALYSIS.txt](rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt) | Telematics/remote-access/cloud-endpoint/GHS-camera-bypass analysis (trio, member 3) |
 
 ### Provenance / indexes
 | Doc | Contents |
 |---|---|
-| [PROVENANCE_AUDIT_AUG2026.md](PROVENANCE_AUDIT_AUG2026.md) | Cross-cutting claim-verification ledger: 6 clusters (EEPROM, security/lockdown, network, calibration/`$27`, module-signing, hardware-spec), each pointed to its topic-doc owner |
-| [INVENTORY.md](INVENTORY.md) | Artifact manifest: firmware_carved/, keys_extracted/, ../evidence/decompiled/, ghidra_projects/, dps_unpacked/, ../tools/analysis-scripts/, ../evidence/reports/, external resources |
+| [PROVENANCE_AUDIT_AUG2026.md](provenance/PROVENANCE_AUDIT_AUG2026.md) | Cross-cutting claim-verification ledger: 6 clusters (EEPROM, security/lockdown, network, calibration/`$27`, module-signing, hardware-spec), each pointed to its topic-doc owner |
+| [INVENTORY.md](provenance/INVENTORY.md) | Artifact manifest: firmware_carved/, keys_extracted/, ../evidence/decompiled/, ghidra_projects/, dps_unpacked/, ../tools/analysis-scripts/, ../evidence/reports/, external resources |
 
 ## Where does X live?
 | Question | Doc |

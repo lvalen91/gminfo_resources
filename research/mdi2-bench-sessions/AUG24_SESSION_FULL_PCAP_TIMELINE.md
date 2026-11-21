@@ -12,7 +12,7 @@ sequences, loopback-ident resolution) — owned by [MDI2_DPDU_API_PROTOCOL_AUG20
 protocol (port bank, Blowfish-ECB, JSON session layer, Get-Log-Files container) — owned by
 [MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md](MDI2_MANAGER_IDENT_LOG_PULL_AUG2026.md). The captured
 seed/key material's cryptographic meaning (CMAC algorithm, gate-independence table, signature
-verifier) — owned by [GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+verifier) — owned by [GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
 This doc states only what each of the 6 captures independently shows and feeds those facts to the
 three owners above by pointer, not by copy.
 
@@ -86,7 +86,7 @@ returned a master secret, derived intermediate, response, or authorization — t
 response formula and a usable master secret remain unresolved.
 
 The 31-byte seed length (16B ECUID + 15B challenge) matches
-[GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)'s stated
+[GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md](../eeprom-calibration/GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md)'s stated
 seed structure; the unresolved 31-vs-32-byte question itself is GSK's own Open Conflict (cites
 `MDI2_DPDU_API_PROTOCOL_AUG2026.md` §6's doubt against an earlier, now-retired source's 32-byte
 claim) — not restated or re-adjudicated here. Full CMAC/derivation analysis of this captured

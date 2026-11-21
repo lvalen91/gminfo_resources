@@ -9,7 +9,7 @@
 > Consolidated findings and source conventions: §0. Distinct inventory owners are linked there.
 > This document absorbed `GHS_VMM1_OTA_UPDATE_RE_STATUS_AUG2026.md`'s tool-setup/status
 > narrative as §0.4 (history); that session's confirmed AVB-guard RE findings
-> (`elk_inner.elf`) live in [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md),
+> (`elk_inner.elf`) live in [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md),
 > not here.
 
 ---
@@ -52,7 +52,7 @@ identified in §0.2; paths beneath `update_cache/` in capture citations are
 ZIP members, not a requirement that the original USB remain attached.
 
 The separate [GHS inventory](GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md) owns task,
-driver, device-grant and privacy inventories. The [EEPROM audit](EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
+driver, device-grant and privacy inventories. The [EEPROM audit](../eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md)
 owns EEPROM layout and VIP reverse engineering. The [update-stack reference](../../platform/ota_update_stack.md)
 owns the AAOS updater/Binder interface. Distinct inventories stay with those owners.
 No complete live ELK transition, guest escape or accepted custom wipe package
@@ -246,14 +246,14 @@ records only the tool-setup/status history of the session that first obtained
 real disassembly of this binary. Its confirmed AVB-guard-verification findings
 (the `elk_inner.elf` RE that matched `avb_descriptor_validate_and_byteswap`,
 `avb_safe_add_to` and `avb_vbmeta_image_verify` against upstream libavb) are
-owned by [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)
+owned by [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)
 and are not restated here.
 
 | Blocker | Resolution |
 |---|---|
 | The raw `85098662` container is a proprietary Green Hills INTEGRITY download image, not a format any standard tool (`file`, `r2`, `objdump`) auto-parses. A manually reverse-engineered end-of-file directory/symbol table (~48 KiB region near `0xe35000`) is a 64-bit canonical-VA + 32-bit size + name-string debug symbol table, cross-validated against known sections in `evidence/decompiled/ghs_analysis.txt`; it has no file-offset field, so it does not by itself enable section-byte extraction. | An existing Ghidra project (`ghidra_projects/ghs32.rep`, program `ghs_integrity.elf`, language `x86:LE:32:default`) exists in the external research archive; the documented `firmware_carved/ghs_integrity.elf` (standard-ELF conversion) no longer exists on disk — the same provenance-drift pattern seen elsewhere in this corpus (documented, not persisted). Ghidra 12.1.3 + PyGhidra (`brew install ghidra`, `pip3 install` the bundled PyGhidra wheel) opened the existing `ghs32` project headlessly (`GHIDRA_INSTALL_DIR=/opt/homebrew/Cellar/ghidra/<ver>/libexec`, `nested_project_location=False`) and extracted real section bytes for `.vmm1.text` (244,706 B), `.vmm1.rodata` (170,832 B), `.ota_update.text` (71,451 B) and `.ota_update.rodata` (6,588 B) — sizes match `ghs_analysis.txt` exactly. |
 | The corpus's pre-written `tools/analysis-scripts/avb_audit.py`, run against the real loaded program via PyGhidra, produced zero results. `.vmm1.text`'s 140 identified function boundaries were mostly undefined/never disassembled, and reference counts to known AVB string addresses were zero. | Diagnosed, not initially resolved — confirms `INVENTORY.md`'s own prior note that the decompiled `vmm1_all.c` is "UNUSABLE due to Green Hills toolchain — no string refs." |
-| Bitness dispute surfaced while diagnosing the above: `radare2` disassembly of `.vmm1.text` at Ghidra-identified function entries decoded cleanly and idiomatically **only under a 64-bit interpretation** (`push rbp; mov rbp,rsp`, `fs:`-segment TLS access), even though the binary's ELF header is byte-verified EM_386/ELFCLASS32. | Not resolved here or in VPF. This is the corpus-wide **VMM1/.vmm1 task-code bitness** open conflict (32-bit ELF class vs. disassembled-64-bit task code); it is carried in [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)'s own Open Conflicts — see this document's own [Open conflicts](#open-conflicts) section below for the pointer. |
+| Bitness dispute surfaced while diagnosing the above: `radare2` disassembly of `.vmm1.text` at Ghidra-identified function entries decoded cleanly and idiomatically **only under a 64-bit interpretation** (`push rbp; mov rbp,rsp`, `fs:`-segment TLS access), even though the binary's ELF header is byte-verified EM_386/ELFCLASS32. | Not resolved here or in VPF. This is the corpus-wide **VMM1/.vmm1 task-code bitness** open conflict (32-bit ELF class vs. disassembled-64-bit task code); it is carried in [VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md](../security/VMM1_PARSER_FUZZ_TARGETS_ANALYSIS.md)'s own Open Conflicts — see this document's own [Open conflicts](#open-conflicts) section below for the pointer. |
 | An exhaustive string/table/xref search found no AVB guard-string references anywhere in `.vmm1`/`.ota_update`. | The full guard-string set and the literal source path `hardware/intel/kernelflinger/avb/libavb/avb_vbmeta_image.c` trace into a *separate* binary, `elk_inner.elf` (the ELK/kernelflinger component, also covered live in §2.3.3 and the VIP-ELK mega-section below), reconstructed from its `objdump` listing, re-imported into Ghidra and decompiled there — producing VPF's confirmed guard matches (history only; see VPF for the finding itself). This identifies *which binary* carries the real AVB guards; it does not settle the bitness dispute above, which concerns a different binary/question and remains open. |
 
 ## 1. GHS Boot Process
