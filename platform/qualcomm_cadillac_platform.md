@@ -6,7 +6,7 @@ Evidence tag: [X] throughout. Bibliography and licenses: [external_references.md
 Related: [hardware_specs.md](../hardware/specs.md), [boot_chain.md](boot_chain.md), [security.md](security.md), [vehicle_network.md](vehicle_network.md), [ota_programming_roles.md](ota_programming_roles.md), [external_references.md](external_references.md), [../hardware/connectors.md](../hardware/connectors.md)
 
 Sources: Snipesy / Surreal Development, *"Rooting the Cadillac Part 1: Lay of the Land"* (2026-08-15) and *"The ABCs of Global B"* (2026-06-16, CC0 1.0); full URLs/licenses in [external_references.md](external_references.md). Primary vehicles: 2025 Cadillac Lyriq / 2025 CT5-V (Qualcomm) and a 2023 Chevy Colorado (Intel).
-Deeper GM-side CT5 firmware RE (Android layer) lives in the separate `/Volumes/.../GM_research` tree (`aaos/gm_aaos/2026_CT5/MASTER_REFERENCE.md`; volatile path), which agrees on SA8155P + QNX + the 33-inch 8960x1320 panel.
+Deeper GM-side CT5 firmware RE (Android layer) lives in a separate external research tree, not in this repository, which agrees on SA8155P + QNX + the 33-inch 8960x1320 panel.
 
 ## Platform split (Intel -> Qualcomm)
 
@@ -53,7 +53,7 @@ Board has **no silkscreen**. Author-reported components:
 ## Boot and VIN gate (summary; details live in the linked docs)
 
 - **VIN is effectively the only boot gate.** Provide the correct VIN and the radio boots (with minor errors). VIN is **broadcast on CAN** - author cites IDs **`0x712`, `0x75F`, `0x49B`** - and there is **no security on the VIN**: you can ask the radio its own VIN over normal UDS diagnostic CAN (repo note: the standard VIN read is `$22 F190` ReadDataByIdentifier; the article says only "over normal UDS", without naming the DID) and immediately re-broadcast it. *These arbitration IDs are Cadillac captures; this Silverado uses `0x80`/`0x45` diagnostic addressing (see [vehicle_network.md](vehicle_network.md)) - do not assume the IDs carry over.*
-- **Wrong VIN -> "Theft Locked"** overlay on the Android side, but even that is worked around and the unit runs. This laxity is by design: the radio must still show safety-critical data (speed, airbag and warning lights) in fault conditions. (Our Intel VIP shows the analogous `Theftlocked Active` / `evTheftlockedCleared` states - `/Volumes/.../VIP_BOOT_CONTROL_ANALYSIS.md`, volatile path.)
+- **Wrong VIN -> "Theft Locked"** overlay on the Android side, but even that is worked around and the unit runs. This laxity is by design: the radio must still show safety-critical data (speed, airbag and warning lights) in fault conditions. (Our Intel VIP shows the analogous `Theftlocked Active` / `evTheftlockedCleared` states - external `VIP_BOOT_CONTROL_ANALYSIS.md` notes, not in this repository.)
 - **Bootloader locked from factory (efuses burned).** Overwriting images just partial-bricks it. Per-module secure boot + HSM/TEE means an end-to-end aftermarket fix would need physical chip-level work on *every* module - consistent with this repo's Intel secure-boot findings.
 
 Pointers: Intel boot flow and boot modes - [boot_chain.md](boot_chain.md); secure-boot / locked-radio verdicts - [security.md](security.md); gateway/diagnostic addressing and SecOC plane - [vehicle_network.md](vehicle_network.md).

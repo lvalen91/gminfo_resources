@@ -10,7 +10,7 @@ The owner attached an external UART adapter to the confirmed-output VIP TX
 connection, reported as RH850 physical pin 52 (P1_9 / RLIN34TX), and retained
 an existing `screen` logger in another terminal. The adapter/probe location
 is owner-reported; the following console events and request correlations were
-observed live. See the [hardware pinout](../hardware/teardown.md#rh850f1k-package--uart-pinout).
+observed live. See the [hardware pinout](../hardware/module/vip_mcu.md#2-uart-rlin3-pinout).
 The analysis read only newly appended portions of the owner's existing capture;
 it did not open/reconfigure the serial adapter or transmit on UART.
 

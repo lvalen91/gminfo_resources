@@ -28,8 +28,8 @@ readable; follow the pointers for the facts themselves.
   `dps_readx80` DoIP sessions. **RAW: contain real VIN + `$27` seed/key + SPS creds — NEVER commit**
   (see Redaction below). Redacted analyses: `.../emu/y181_ref/diag/{doip_uds_surface.md,
   real_did_values.md}` and `.../emu/y181_ref/unstub/network_fsa.md`.
-- Full build tree + screenshots + reports preserved at
-  `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/`.
+- Full build tree + screenshots + reports preserved in an external working directory,
+  not in this repo.
 
 ## Where the facts live now (pointers only)
 

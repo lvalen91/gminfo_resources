@@ -54,7 +54,7 @@ one-line entries for the same addresses and are preserved here:
 > **VIN-tail residual (`0x14A0`) chain-of-custody detail (not in ELA, which states only the one-line
 > "mirrors whichever VIN was active when its NvM block was last written; can go stale"):** three
 > distinct real dumps show three different states at this address — `ADB_enabled.bin` (this file's
-> subject, the LTZ unit) reads its own current VIN tail (live, never re-VINed); `/Users/zeno/Downloads/dump.bin`
+> subject, the LTZ unit) reads its own current VIN tail (live, never re-VINed); an external dump
 > (the HC unit) reads the *previous* vehicle's VIN tail (stale); `Y181_ADB_enabled_HC.bin` (a third,
 > separately-sourced HC dump) reads all-zero (blank). Do not treat "always retains the old VIN" as a
 > guaranteed behavior. Corroborating evidence: firmware strings `cal_vin_relearn_en` / `Theftlocked`

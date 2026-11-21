@@ -80,7 +80,7 @@ boot on goldfish" statement above:
   (see fixes below); **kernel/vendor-ABI
   portability is demonstrated at full-boot fidelity**. Artifacts (`run.sh`, `mkstatic.py`, `patch_cpio.py`, `ssdt_noavb.aml`/`.dsl`,
   `fstab.patched`, `serial.log`) preserved to
-  `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/realk/`;
+  an external working directory, not in this repo;
   full working tree (incl. the 6GB `gm.img`, not copied off) remains on the Mac Pro at
   `~/gm_emu/realk/`. Hardware keymaster/attestation/RPMB (Trusty+GHS) and real Harman AVB audio remain
   hard blockers either way, as with the current stubs. See `research/boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`
@@ -291,7 +291,7 @@ need a paired phone; **Carlink** (aftermarket) isn't in the stock image.
 
 ## Un-stub roadmap — using GM's real files (verified vs the real-radio ADB dumps)
 Cross-checking the emulator's stubs against the running radio's dumps (`evidence/enumeration/Y181/raw/*`,
-`analysis/adb/Y181/*`) and the GM images. Full reports: `/Volumes/.../2024_Silverado_ICE/emu/y181_ref/unstub/`.
+`analysis/adb/Y181/*`) and the GM images. Full reports: an external working directory, not in this repository.
 
 - **VHAL `@2.0-service-gm` → GM's real one now runs [DONE].** `libipc.so` (ipcLib 3.0) is a **Unix-socket
   client of IPCServer** (the UART fanned into per-channel sockets per `/vendor/etc/ipc4.cfg`; ch3=`vehicle_network`),
@@ -341,7 +341,7 @@ Cross-checking the emulator's stubs against the running radio's dumps (`evidence
   data callback itself succeeds — a native C++ HIDL service would likely fix this and may also unblock
   DR fusion; and all measurements are under `SEL=permissive` — enforcing needs the stub in a real service
   domain (init `.rc` + sepolicy), not adb's `su` domain. Artifacts preserved to
-  `/Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_integration/navsens/`;
+  an external working directory, not in this repo;
   live on the Mac Pro at `~/gm_emu/hy/navsens/`, wired into `~/gm_emu/hy/emu_integration/scenario.sh`.
   **`vehicleaudiocontrol`
   → still absent; next low-effort addition.** Both are calserviced-HIDL clients with no `/dev/ipc` dep (verify vehicleaudiocontrol's

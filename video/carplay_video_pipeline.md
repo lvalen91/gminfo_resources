@@ -4,7 +4,7 @@
 **Platform:** Intel Apollo Lake (Broxton)
 **Android Version:** 12 (API 32)
 **Analysis Date:** January 2026
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.
 
 ---
 
@@ -528,8 +528,8 @@ vendor_iap2:x:2994:2994::/:/vendor/bin/sh
 ## Data Sources
 
 All specifications from analysis of:
-- `/Users/zeno/Downloads/misc/GM_research/gm_aaos/extracted_partitions/system_extracted/`
-- `/Users/zeno/Downloads/misc/GM_research/gm_aaos/analysis/adb_Y181/`
+- An external extracted-partitions working directory, not in this repository.
+- An external ADB-enumeration working directory, not in this repository.
 - Binary analysis: `strings`, `readelf`, `nm` on libNme*.so
 - ADB dumps: processes, services, logcat
 

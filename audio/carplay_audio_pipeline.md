@@ -4,7 +4,7 @@
 **Platform:** Intel Apollo Lake (Broxton)
 **Android Version:** 12 (API 32)
 **Analysis Date:** January 2026
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.
 
 ---
 
@@ -627,4 +627,4 @@ setprop vendor.audiodump.status start
 - `strings` on NME audio libraries
 - Audio format string extraction
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.

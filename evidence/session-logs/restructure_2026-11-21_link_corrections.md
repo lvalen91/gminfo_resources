@@ -3934,285 +3934,285 @@ Moved-doc basenames that also exist elsewhere in the repo (ambiguity risk after 
 - L40: `# A real captured DPS session (research/MDI2_DPDU_API_PROTOCOL_AUG2026.md §6,`
 
 ### `research/scripts/ghidra_rh850/step10_deep.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step11_sbi.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step12_groups.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step13_writers.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step14_af1be.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step15_r28.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step16_encoding.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step16b_encoding.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step17_scan.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step18_consumers.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step19_chain.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step1_probe.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step20_ptrscan.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step21_xrefcheck.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step22_commitfns.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step23_eeec8.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step24_f2064.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step25_save.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step26_77a00.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step27_decomp.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step28_probe.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step29_ground_truth.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step2_disasm.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step30_followup.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step31_ptrscan.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step3_jumptable.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step4_disasm2.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step5_handlers.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step6_xrefs.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step7_callers.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step8_final.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/step9_handler_types.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/p0_probe.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/p0b_list.py` (1 lines)
-- L7: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L7: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s10_sweep.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s11_residue.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s12_xref_eeprom.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s13_coverage_scoped.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s14_scalar_scan.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s15_check_str.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s16_callers.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s17_sanity.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s18_find_gp.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s19_find_tp.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s1_import.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s20_decompile.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s21_scan_table_refs.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s22_decompile2.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s23_callers2.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s24_scalar_scan2.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s25_xref_swc.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s26_decompile_swc.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s27_disasm_ctx.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s28_sbi_scan.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s29_sbi_context.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s2_probe_head.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s30_container.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s31_wide_dump.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s32_jumptable_entry.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s33_eeprom_err_strings.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s33_find_prologue.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s34_eeprom_readapi.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s35_ctx.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s36_bufscan.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s37_ee8k.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s3_analyze.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s4_check_entry.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s5_seed.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s6_aggressive.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s7_coverage.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipapp/s9_gaps.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s10_sweep.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s11_residue.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s12_i2c_strings.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s13_dump_disasm.py` (2 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
-- L18: `out = open("/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/vipboot/all_disasm.txt","w")`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
+- L18: `out = open("<repo>/research/scripts/ghidra_rh850/vipboot/all_disasm.txt","w")`
 
 ### `research/scripts/ghidra_rh850/vipboot/s14_decompile.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s1_import.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s2_vectors.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s3_setup.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s4_prune.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s5_uninit_and_seed.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s6_analyze.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s7_coverage.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s8_aggressive.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s8b_aggressive.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/vipboot/s9_gaps.py` (1 lines)
-- L4: `PROJ_LOC = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_LOC = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/x86_step1_import.py` (1 lines)
-- L8: `PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L8: `PROJ_DIR = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/x86_step2_symbols.py` (2 lines)
-- L8: `PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
-- L10: `SYMTSV = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/hostos_symbols_funcobj.tsv"`
+- L8: `PROJ_DIR = "<repo>/research/scripts/ghidra_rh850"`
+- L10: `SYMTSV = "<repo>/research/scripts/ghidra_rh850/hostos_symbols_funcobj.tsv"`
 
 ### `research/scripts/ghidra_rh850/x86_step3_coverage.py` (1 lines)
-- L7: `PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L7: `PROJ_DIR = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/x86_step4_tasks.py` (1 lines)
-- L8: `PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L8: `PROJ_DIR = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/x86_step5_inspect.py` (1 lines)
-- L4: `PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L4: `PROJ_DIR = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/x86_step6_aif.py` (1 lines)
-- L7: `PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L7: `PROJ_DIR = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/scripts/ghidra_rh850/x86_step7_xrefs.py` (1 lines)
-- L5: `PROJ_DIR = "/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"`
+- L5: `PROJ_DIR = "<repo>/research/scripts/ghidra_rh850"`
 
 ### `research/tools/bench_can/bench_can_validation.py` (1 lines)
 - L17: `DEFAULT_TOOLS = Path.home() / 'Downloads/github/gminfo_resources/research/tools'`
@@ -4237,100 +4237,100 @@ Moved-doc basenames that also exist elsewhere in the repo (ambiguity risk after 
 | `tools/bench/bench_can/bench_can_validation.py` | 1 | `gminfo_resources/research/tools'` | `gminfo_resources/tools/bench'` |
 | `research/eeprom-calibration/type4_radio_info/10018101.cfx` | 1 | `research/canbus_reset/10017909.cfx` | `research/eeprom-calibration/canbus_reset/10017909.cfx` |
 | `research/eeprom-calibration/type4_radio_info/RadioControllerInfo.def` | 1 | `research/canbus_reset Type4` | `research/eeprom-calibration/canbus_reset Type4` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step6_aif.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step23_eeec8.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step1_import.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step2_symbols.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step31_ptrscan.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step14_af1be.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step12_groups.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step20_ptrscan.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step25_save.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step24_f2064.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step7_callers.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step9_handler_types.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step11_sbi.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step18_consumers.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step17_scan.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step26_77a00.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step19_chain.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step3_jumptable.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step5_inspect.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step29_ground_truth.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step28_probe.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step21_xrefcheck.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step3_coverage.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step4_tasks.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step1_probe.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step22_commitfns.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step10_deep.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step8_final.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step5_handlers.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step6_xrefs.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step2_disasm.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step16_encoding.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step30_followup.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step4_disasm2.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step15_r28.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step27_decomp.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step13_writers.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step7_xrefs.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/step16b_encoding.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s9_gaps.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s8b_aggressive.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s5_uninit_and_seed.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s11_residue.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s7_coverage.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s12_i2c_strings.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s13_dump_disasm.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s1_import.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s3_setup.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s8_aggressive.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s2_vectors.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s4_prune.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s6_analyze.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s14_decompile.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipboot/s10_sweep.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s33_find_prologue.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s20_decompile.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s36_bufscan.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s4_check_entry.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s9_gaps.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s17_sanity.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s31_wide_dump.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s23_callers2.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s27_disasm_ctx.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s25_xref_swc.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s37_ee8k.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s19_find_tp.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s11_residue.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s7_coverage.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s14_scalar_scan.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/p0b_list.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s1_import.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s12_xref_eeprom.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s13_coverage_scoped.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s5_seed.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s24_scalar_scan2.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s2_probe_head.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s34_eeprom_readapi.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s15_check_str.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s32_jumptable_entry.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s33_eeprom_err_strings.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s30_container.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s16_callers.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/p0_probe.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s18_find_gp.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s29_sbi_context.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s35_ctx.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s6_aggressive.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s3_analyze.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s22_decompile2.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s26_decompile_swc.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s21_scan_table_refs.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s10_sweep.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/vipapp/s28_sbi_scan.py` | 1 | `"/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850"` | `"/Users/zeno/Downloads/github/gminfo_resources/evidence/ghidra-projects"` |
-| `tools/analysis-scripts/ghidra_rh850/x86_step2_symbols.py` | 1 | `/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/hostos_symbols_funcobj.tsv` | `/Users/zeno/Downloads/github/gminfo_resources/tools/analysis-scripts/ghidra_rh850/hostos_symbols_funcobj.tsv` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step6_aif.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step23_eeec8.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step1_import.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step2_symbols.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step31_ptrscan.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step14_af1be.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step12_groups.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step20_ptrscan.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step25_save.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step24_f2064.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step7_callers.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step9_handler_types.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step11_sbi.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step18_consumers.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step17_scan.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step26_77a00.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step19_chain.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step3_jumptable.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step5_inspect.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step29_ground_truth.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step28_probe.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step21_xrefcheck.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step3_coverage.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step4_tasks.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step1_probe.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step22_commitfns.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step10_deep.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step8_final.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step5_handlers.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step6_xrefs.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step2_disasm.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step16_encoding.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step30_followup.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step4_disasm2.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step15_r28.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step27_decomp.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step13_writers.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step7_xrefs.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/step16b_encoding.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s9_gaps.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s8b_aggressive.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s5_uninit_and_seed.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s11_residue.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s7_coverage.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s12_i2c_strings.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s13_dump_disasm.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s1_import.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s3_setup.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s8_aggressive.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s2_vectors.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s4_prune.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s6_analyze.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s14_decompile.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipboot/s10_sweep.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s33_find_prologue.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s20_decompile.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s36_bufscan.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s4_check_entry.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s9_gaps.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s17_sanity.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s31_wide_dump.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s23_callers2.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s27_disasm_ctx.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s25_xref_swc.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s37_ee8k.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s19_find_tp.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s11_residue.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s7_coverage.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s14_scalar_scan.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/p0b_list.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s1_import.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s12_xref_eeprom.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s13_coverage_scoped.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s5_seed.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s24_scalar_scan2.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s2_probe_head.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s34_eeprom_readapi.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s15_check_str.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s32_jumptable_entry.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s33_eeprom_err_strings.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s30_container.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s16_callers.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/p0_probe.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s18_find_gp.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s29_sbi_context.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s35_ctx.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s6_aggressive.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s3_analyze.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s22_decompile2.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s26_decompile_swc.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s21_scan_table_refs.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s10_sweep.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/vipapp/s28_sbi_scan.py` | 1 | `"<repo>/research/scripts/ghidra_rh850"` | `"<repo>/evidence/ghidra-projects"` |
+| `tools/analysis-scripts/ghidra_rh850/x86_step2_symbols.py` | 1 | `<repo>/research/scripts/ghidra_rh850/hostos_symbols_funcobj.tsv` | `<repo>/tools/analysis-scripts/ghidra_rh850/hostos_symbols_funcobj.tsv` |
 | `.gitignore` | 1 | `research/scripts/ghidra_rh850/*_rh850/ , *_broken/ , hostos_x86/ (3 patterns)` | `evidence/ghidra-projects/ (kept; added in P1)` |
 
 ## Part 3: .llm_index.jsonl Y177 entries

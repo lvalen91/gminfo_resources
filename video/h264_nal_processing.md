@@ -397,4 +397,4 @@ Binary analysis of:
 - `libNmeVideo.so` (121 KB) - strings, symbols
 - `libNmeCarPlay.so` (1.0 MB) - strings, symbols
 
-Source from: `/Users/zeno/Downloads/misc/GM_research/gm_aaos/extracted_partitions/system_extracted/system/lib64/`
+Source from: an external extracted-partitions working directory, not in this repository.

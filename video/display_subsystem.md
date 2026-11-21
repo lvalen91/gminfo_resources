@@ -588,7 +588,7 @@ contains the exact tests, limits, package versions and final image hash.
 
 | Metric | Value |
 |--------|-------|
-| Physical Size | 13.39 inches diagonal (confirmed: /Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/specs/gminfo3.7_tech_specs.md) |
+| Physical Size | 13.39 inches diagonal (confirmed: external tech-specs notes) |
 | Usable App Area | 1416 x 960 pixels (with system UI) |
 | Full Screen | 2400 x 960 pixels |
 

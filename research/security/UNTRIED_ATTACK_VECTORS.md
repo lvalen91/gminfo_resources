@@ -146,7 +146,7 @@ not make the downgrade optional.
 
 **OCD fuse status:** Unknown. Production RH850 units are frequently shipped without OCD fuse blown — the fuse is typically blown only in high-security applications. Probability of access: estimated moderate-to-high.
 
-**Next action:** Acquire E10A-USB debugger. Identify TCK/TMS/TDI/TDO/TRST on the QFP-176 pinout against the RH850/F1K datasheet (marking TM52176; confirmed: `/Volumes/stuff/misc/research/GM_research/csm_eeprom/RH850_Vol_Glitch_Tools.txt`).
+**Next action:** Acquire E10A-USB debugger. Identify TCK/TMS/TDI/TDO/TRST on the QFP-176 pinout against the RH850/F1K datasheet (marking TM52176; confirmed: external glitch-tooling notes).
 
 ---
 

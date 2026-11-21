@@ -268,4 +268,4 @@ private static final long DEFAULT_FRAME_DURATION_US = 16667;  // 60fps default
 - Android MediaCodec Documentation: PTS requirements for queueInputBuffer()
 - H.264/AVC Specification: Annex D (Timing and HRD)
 - carlink_native source analysis: H264Renderer.java, UsbDeviceWrapper.kt
-- GM AAOS research: `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+- GM AAOS research: an external working directory, not in this repository.

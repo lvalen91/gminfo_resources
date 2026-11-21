@@ -66,10 +66,9 @@ inner integrity, and application of the calibration are distinct checks.
 
 The existing archive-format references describe different DPS/Type4 packaging workflows;
 this document does not establish that a hand-written archive will load in DPS. See
-[`DPS_ARCHIVE_CREATOR_ANALYSIS.md`](/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/DPS_ARCHIVE_CREATOR_ANALYSIS.md),
-[`SPS_TO_DPS_TYPE4_CONVERSION.md`](/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/SPS_TO_DPS_TYPE4_CONVERSION.md),
-and the worked [reset application](canbus_reset/CANBUS_RESET_ANALYSIS.txt) (links kept as-is;
-the first two are absolute paths outside this repo and the third is in an excluded research/
+`DPS_ARCHIVE_CREATOR_ANALYSIS.md` and `SPS_TO_DPS_TYPE4_CONVERSION.md` (both external, not in
+this repo), and the worked [reset application](canbus_reset/CANBUS_RESET_ANALYSIS.txt) (the
+third is in an excluded research/
 subdirectory — not resolved here). A successful archive import would still not bypass
 radio-side verification.
 

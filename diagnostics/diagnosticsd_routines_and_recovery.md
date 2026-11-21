@@ -319,6 +319,38 @@ ADB transition. Earlier CAN-side domain attempts are recorded in the
 [MDI2 routine reference](../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md#7-gm-adb-escape-hatch-via-31-routinecontrol-2026-09-10);
 further direct-CAN testing is pending the owner's USB CAN adapter.
 
+#### AME8030 mechanism identified; CAN-level route still open (2026-11-20)
+
+A live bench session (VIN redacted; confirmed 2024 model year from `22 F1 90`) found
+the real ADB-enable mechanism is **not** RoutineControl `0332`. A non-mutating UDS
+service-presence scan on `0x14DA80F1` (bare-SID probing, destructive SIDs excluded)
+found every vendor-range SID (`0x80`–`0xFF`, including `0xDA`/`0xDB`) absent from the
+VIP's CAN-served set, and both RDBI `22 80 30` and RID `31 03 80 30` return `7F ... 31`
+(not a served DID/RID). The application-layer ADB frame `DA 80 30 03 xx xx 01`
+(handler `AME8030Class`, mode `01` = enable) is confirmed real in the Android guest,
+not on the VIP's CAN endpoint: `0xDA`/`0xDB` is a SoC-internal PCI vendor-message
+selector (`AMEDispatcher`, item id `0x8030`), not a CAN SID.
+
+A follow-up multi-agent firmware pass (VIP DID/RID tables, VIP transport, SoC
+jadx/HostOS/critical.apk; five isolated agents) traced the end-to-end path: tester
+CAN `0x14DA80F1` -> VIP DCM -> SPI-IPC diag channel -> J6/SoC -> Android guest VM
+(HostOS `85098662` is the GHS INTEGRITY type-1 hypervisor; Android runs as its guest
+VM, and the AME/ADB logic lives in that guest image, not in HostOS itself) ->
+`PciVendorMessageHandlerImpl`/`AMEDispatcher` -> `AME8030Class` ->
+`setprop sys.usb.config=adb`. Three agents
+independently found no DoIP below the Android guest: the VIP is CAN-only and HostOS
+is SPI-IPC-only, so a DoIP server for AME would have to live in the guest over the
+Ethernet PCI-passthrough path — untested, unproven, and the current leading
+hypothesis for whether this is reachable off-CAN at all.
+
+**Still unresolved:** the exact CAN-level DID/RID (if any) that tunnels the
+`80 30 ...` AME payload through the VIP — `0x8030` itself is confirmed absent from
+both the VIP's served-DID table and the SoC's DiagnosticDataID table, so it is the
+internal AME selector, not a wire identifier. This narrows, rather than replaces,
+the "remaining open" item above, and additionally rules out RoutineControl `0332` as
+the mechanism on this 2024 ICE build — consistent with the static finding that the
+2026 EV's `RID0332Handler` is a different vehicle/stack and does not exist here either.
+
 ### Owner power-cycle after clear: NoCalibration fault (2026-11-14)
 
 After the owner powered the radio back on, the display reported bad or

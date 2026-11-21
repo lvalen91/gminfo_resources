@@ -68,7 +68,7 @@ name/section only, never restated).
 |20| DSU/GSI present but dead (sepolicy-blocked) | QUICK_REF:185-193 | Split: present VERIFIED / dead INFERRED | `service_list.txt`: `dynamic_system` service present; sepolicy-block claim not confirmable (cil not in provided set) | |
 |21| No adb→root path | security corpus | VERIFIED (as configured) | ro.debuggable=0 + ro.adb.secure=1 (preconditions) | |
 
-> **[2026-11-13] ADB key-authorization scope:** see [Bus 2 source note §9.4](file:///Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md#94-2026-11-13-adb-per-key-authorization-not-enforced--c) for the same-radio authorization finding; the root/SELinux conclusions here remain separately scoped.
+> **[2026-11-13] ADB key-authorization scope:** see an external Bus 2 source note, §9.4 ("2026-11-13, ADB per-key authorization not enforced"), for the same-radio authorization finding; the root/SELinux conclusions here remain separately scoped.
 
 ## CLUSTER 3 — Network topology + listeners
 

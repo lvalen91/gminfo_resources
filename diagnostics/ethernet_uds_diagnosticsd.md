@@ -139,4 +139,4 @@ diagnostics/programming CAN bus is **CAN6 (5 Mbit/s)** per
 burst test on reported MCU RX pin 170 at 115200/8N1 produced no recognizable
 prompt or demonstrated shell. Pin-52 logs remained readable and included
 NoCalibration. This did not verify MCU reception or the RX mux. See the
-[owning UART findings](../hardware/teardown.md#rh850f1k-package--uart-pinout).
+[owning UART findings](../hardware/module/vip_mcu.md#2-uart-rlin3-pinout).

@@ -607,4 +607,4 @@ For Intel audio development, the closest public resource is:
 - `/vendor/etc/parameter-framework/` - XML configurations
 - `/vendor/etc/asound.conf` - ALSA configuration
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.

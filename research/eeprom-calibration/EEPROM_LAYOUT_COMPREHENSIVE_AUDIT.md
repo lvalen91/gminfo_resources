@@ -225,7 +225,7 @@ this mechanism; `../../platform/eeprom_i2c_security.md` no longer carries a pros
   the SBI cells is **REFUTED** (2026-08): those bytes live inside a gzip-compressed CalOvride XML
   stream, not an EEPROM address:value table. SBI values change only via the bulk
   restore-to-ROM-defaults routine above, not a targeted cal payload.
-  Content of `85783460`, consistent with that refutation: 34 `OverrideValue` entries (12 Boolean, 1 Integer, 21 `BinaryFile`). Their `CalID`s are opaque EMF/Rhapsody GUIDs, so descriptive names such as Bluetooth-profile names were inferred, not extracted; the 21 `.scd` files are telephony/hands-free echo-cancellation (SSE, Speech Signal Enhancement) tuning sets. `[X]` byte-level extraction, source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/A11_CALIBRATION_FILES_COMPLETE_ANALYSIS_AUG2026.md` §2.
+  Content of `85783460`, consistent with that refutation: 34 `OverrideValue` entries (12 Boolean, 1 Integer, 21 `BinaryFile`). Their `CalID`s are opaque EMF/Rhapsody GUIDs, so descriptive names such as Bluetooth-profile names were inferred, not extracted; the 21 `.scd` files are telephony/hands-free echo-cancellation (SSE, Speech Signal Enhancement) tuning sets. `[X]` byte-level extraction, source: external calibration-file extraction notes, §2.
 
 **Candidate SBI-carrying DIDs (read-attempt result, not a confirmed mapping):** four DIDs were
 probed for SBI content and all four failed in a read-only GCI session: `F0F4` ->
@@ -714,8 +714,8 @@ of being fixed once.
 
 **Dropped/out-of-scope corrections noted for completeness (not applied here):**
 `EEPROM_MAPPING_FABLE_REPORT.md` findings B, C, D, F, H all name defects in documents outside this
-reorg's 49-file research/ corpus (GM_research sibling tree under `/Volumes/stuff/...`, an
-`icloud_eeprom/` stale copy, a `diagnostics/gm_dps/docs/` copy, and a V850/RH850 symbol-drift note) —
+reorg's 49-file research/ corpus (an external sibling tree, a stale copy in another external
+location, a third external copy, and a V850/RH850 symbol-drift note) —
 see the ledger for the full list; they are not fixed by this pass.
 `AUG24_25_DOC_REVIEW_CORRECTIONS_AUG2026.md` item 2 (2026-08-25) proposed that the dual-SBI,
 both-bytes-must-match mechanism had zero code references and that the real storage was a single

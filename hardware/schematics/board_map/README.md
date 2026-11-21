@@ -55,4 +55,4 @@ Used with `board_map.json` (component overlay coordinates, `x`/`y`/`w`/`h` as % 
 
 RH850 identification corrected 2026-11-12: 176 pins (44 per side), not 144; `15873` is the
 device marking and `TM52176` is the manufacturing trace code. See
-[the corrected package and UART reference](../../teardown.md#rh850f1k-package--uart-pinout).
+[the corrected package and UART reference](../../module/vip_mcu.md#1-package-and-identification).

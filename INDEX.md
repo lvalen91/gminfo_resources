@@ -74,3 +74,33 @@ Rating rule: ratio = (C + FW + V) / (C + FW + V + I + U + ?), counting each docu
 | Unrated (fewer than 6 tags or none) | GM_AAOS_Y181_SECURITY_ANALYSIS, KERNEL_CVE_ANALYSIS, DIAGNOSTICSD_UDS_WORKER_STARVATION_DOS_AUG2026, RSA1024_PRIVATE_KEY_GHS_INTEGRITY, Y177_KERNEL_CVE_ANALYSIS (stub and archived copy), UNTRIED_ATTACK_VECTORS, AOSP_REPLACEMENT_RESEARCH, GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS |
 
 Method notes: 16 of the 30 read documents were rated from content because they use few or no bracket tags. A tag ratio alone mis-ranks some documents; for example PROVENANCE_AUDIT_AUG2026 quotes tags from the documents it audits.
+
+## External sources, not included in this repository
+
+The owner keeps a separate, external working directory of raw captures, vendor installers/tools,
+in-progress RE workspaces and other project material that predates or feeds this repo. It is not
+mirrored here and its internal layout isn't repeated in this doc — a path on someone else's drive
+tells another reader nothing useful and risks surfacing identifying detail, so this section
+describes categories and conclusions only. This repo is the clean, organized distillation of that
+material, not a copy of it: most of it is either superseded by a more-refined repo doc here,
+vendor/licensed material kept out on purpose, or working material too raw to summarize. Surveyed
+2026-11-21.
+
+| Category | Distilled into (this repo) |
+|---|---|
+| Pre-repo project workspace for this exact vehicle/radio (session logs, bench handoffs, firmware analysis drafts) | `research/`, `platform/`, `diagnostics/` generally |
+| Research tree for a **different vehicle platform** (Qualcomm SA8155 + QNX, Android 14) | `platform/qualcomm_cadillac_platform.md` only (flagged `[X] external`, unverified on this hardware) |
+| Licensed ALLDATA/GM service manuals and captures | Cited as reference throughout; never copied in, per this repo's provenance policy |
+| The original RE project this repo grew from, plus an early command-line precursor tool | `platform/pi_swap_feasibility.md`; otherwise superseded/stale (contradicted by later bench measurements) |
+| Unrelated side tooling / an opaque device backup | Not cited; not relevant to this repo's scope |
+| Active DPS/MDI2/calibration RE workspace (docs, disassembly, extracted installers, captures) | `research/mdi2-bench-sessions/`, `research/eeprom-calibration/` — the repo holds the distilled analysis, about 17 of its documents cited by name |
+| A duplicate copy of that same RE workspace's logs | Already covered via `evidence/dps-logs/`, no separate action needed |
+| Captures and RE scripts behind the Aug 2026 MDI2 work | `research/mdi2-bench-sessions/` |
+| Stock module firmware, programming packages, data-wipe and CAN-bus-reset source material | `research/eeprom-calibration/canbus_reset/`, `GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`, cited by name |
+| Vendor installers (a DPS archive-creation tool, a VCAP interpreter, a GM dealer-tool installer) and the original CalDef database archive | `reference/` (CalDef, complete except one hash file); two small bridge-config notes already copied in byte-identical |
+| Raw EEPROM dumps (stock, modified, debugging, a third ADB-enabled variant) and a glitch-tooling note | `eeprom/bins/` holds only 2 of these; kept external — see note below |
+
+**Known gaps, not acted on:**
+- One EEPROM dump there is already cited by name elsewhere in this repo (`research/eeprom-calibration/VIP_CONTROL_ANALYSIS.txt`) with an explicit note that it was deliberately **not preserved in this repository** — a prior editorial choice, not an oversight. A third ADB-enabled EEPROM variant differs from the repo's existing LTZ variant by only 44 of 8192 bytes (not meaningfully distinct); a "debugging" variant differs more (394 bytes) and is the one candidate that might be worth adding if someone wants to pursue it.
+- One file in the external tree looks like a license-keygen for a GM dealer tool — deliberately not indexed, cited, or copied here.
+- Several items in that external tree carry a real VIN or unit serial in their name or content — redact before citing or copying any of it into this repo.

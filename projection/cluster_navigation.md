@@ -88,7 +88,7 @@ behavior should change based on this section until it is externally verified.
 > *reachability + no-auth* on Info 3.7; it does **not** establish a glyph-injection path (the maneuver
 > layer is enum-typed with no bitmap field, as documented above).
 
-Verified extraction artifacts: `/Users/zeno/Downloads/misc/GM_research/gm_aaos/_cluster_authority_analysis/{ct5_templateshost,ct5_vmsplugin,ct5_openhooks,silverado}/`. The `/tmp/gm_extract/...` paths cited later in this doc are from the original (now-deleted) scratch extraction; the firmware-verified equivalents live under the path above.
+Verified extraction artifacts: an external working directory, not in this repository (ct5_templateshost, ct5_vmsplugin, ct5_openhooks, silverado). Any scratch-extraction paths cited later in this doc are from the original, now-deleted extraction; the firmware-verified equivalents live in that external directory.
 
 ### Both platforms have an ECU-side glyph library
 
@@ -878,7 +878,7 @@ The cluster renders navigation using these pre-built icons based on the maneuver
 - `unzip -l` on ClusterService.apk - PNG asset inventory
 - SELinux context analysis from product_service_contexts
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.
 
 ---
 
@@ -1070,7 +1070,7 @@ Instrument Cluster ECU
 
 ### GM AAOS Research Data
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.
 
 - ADB enumeration data
 - Extracted partitions (system, vendor, product)

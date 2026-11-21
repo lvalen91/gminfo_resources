@@ -556,7 +556,7 @@ No other referenced-but-unregistered authority surfaced.
 - **Media browser services, exported (by design) with no permission gate:** `com.gm.gmaudio.server` (`AudioMediaBrowserService`, `MediaSourceBrowserService`, …), `com.gm.domain.server.delayed` (`GmCarMediaService`, `LocalMediaBrowserService`, `CarPlayMediaService`, …), AOSP `CarMediaApp.MediaConnectorService`, Bluetooth `BluetoothMediaBrowserService`.
 - **`com.onstar.vttproxyserver`**: `VehicleServerService` + `WebServerService` — exported/no-perm in-vehicle web/vehicle proxy (notable attack surface).
 
-> CT5/AAOS 14 mirrors the same `ClusterIconContentProvider` orphan and the same `MapsContentProvider` / `NavStateImageProvider` exposure. See `projection/cluster_navigation.md` (2026-06-06 firmware-verified block). Extraction artifacts: `/Users/zeno/Downloads/misc/GM_research/gm_aaos/_cluster_authority_analysis/`.
+> CT5/AAOS 14 mirrors the same `ClusterIconContentProvider` orphan and the same `MapsContentProvider` / `NavStateImageProvider` exposure. See `projection/cluster_navigation.md` (2026-06-06 firmware-verified block). Extraction artifacts: an external working directory, not in this repository.
 
 ---
 
@@ -593,4 +593,4 @@ Variant Y181.3.2 labels/CIL; live-Y175 AVC corroborates the one positive control
 - `/vendor/etc/audio_policy_configuration.xml`
 - `/vendor/etc/asound.conf`
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.

@@ -414,7 +414,7 @@ AES-encrypted policy + VIN/CSM-ID match + X.509 chain + OCSP revocation check) b
 with a USB-ADB/dealer-cert-auth doc
 (`USB_ADB_SESSION_FINDINGS_2026-10-10.md` or `../../platform/security.md`), not here; this
 is a real, as-yet-unplaced gap this consolidation pass could not close (no target doc in
-`/tmp/research_reorg/new/` charters this content), flagged for a future pass. Its own §5
+this repo's planned reorg charters this content), flagged for a future pass. Its own §5
 (a correction to `MASTER_REFERENCE.md`'s Y175/Y177/Y181 permissive-behavior table)
 is itself superseded — the source doc's own banner says the three-way Y175/Y177/Y181
 `VIP_APP` diff found a full ~906-byte validator in **all** builds, no stub in any —
@@ -798,25 +798,25 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 
 [S1]: <EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md>
 [S2]: <#5-protokey--gm_protokey--libpal_securityso-ipc-chain> — retired; absorbed into this doc's §5 above.
-[S3]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/LIVE_DPS_CAPTURE_ECU80_AUG2026.md>
-[S4]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/SPS_radioCal_and_OS_UpdateCHeck.pcapng>
-[S5]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/SPS_RECAL_UDS_SEQUENCE_AUG2026.md>
+[S3] -- external source, not in this repository.
+[S4] -- external source, not in this repository.
+[S5] -- external source, not in this repository.
 [S6]: <../mdi2-bench-sessions/AUG24_SESSION_FULL_PCAP_TIMELINE.md>
-[S7]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/DPS+SPS.pcapng>
-[S8]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/capture_attempt1.pcapng>
-[S9]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/capture_attempt2.pcapng>
-[S10]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/multiple_intefaces_attempt1.pcapng>
-[S11]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/S84_ANALYSIS_LOG.md>
-[S12]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/S84.dll.UNRESOLVED_RESOLVED.md>
+[S7] -- external source, not in this repository.
+[S8] -- external source, not in this repository.
+[S9] -- external source, not in this repository.
+[S10] -- external source, not in this repository.
+[S11] -- external source, not in this repository.
+[S12] -- external source, not in this repository.
 [S13]: <../../tools/mdi2_client/mdi2/security_cmac.py>
-[S14]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/DPS_MASTER_REFERENCE.md>
+[S14] -- external source, not in this repository.
 [S15]: <../../platform/vehicle_network.md>
-[S16]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/pseudocode/IECS.dll.pseudocode.txt>
-[S17]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/pseudocode/S84.dll.pseudocode.txt>
-[S18]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/HOOKING_AND_TESTING_GUIDE.md>
-[S19]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/EMULATION_ANALYSIS.md>
-[S20]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/dllsecurity.dll.annotations.md>
-[S21]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/TISVCSV4_ANALYSIS.md>
+[S16] -- external source, not in this repository.
+[S17] -- external source, not in this repository.
+[S18] -- external source, not in this repository.
+[S19] -- external source, not in this repository.
+[S20] -- external source, not in this repository.
+[S21] -- external source, not in this repository.
 [S22]: <#21-tisvcsv4dll--multi-oem-securityaccess-dispatch-architecture> — retired; absorbed into this doc's §2.1 above.
 [S23]: <../../tools/mdi2_client/mdi2/calibration_transaction.py>
 [S24]: <../../eeprom/README.md>
@@ -824,12 +824,12 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S26]: <../../eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md>
 [S27]: <../boot-update-recovery/VIP_FIRMWARE_Y177_Y181_COMPARISON.md>
 [S28]: <../../eeprom/EEPROM_Analysis_Report.md>
-[S29]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/dps_extracted/DPS_User_Guide.pdf#page=17>
+[S29] -- external source, not in this repository.
 [S30]: <../../platform/ota_update_stack.md>
-[S31]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181/86331654>
-[S32]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/hy/re/apks/com.gm.domain.server.delayed.apk>
-[S33]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/calibrations/A11_extracted/spsCacheInternal/decompressed/>
-[S34]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/A11_CALIBRATION_FILES_COMPLETE_ANALYSIS_AUG2026.md>
+[S31] -- external source, not in this repository.
+[S32] -- external source, not in this repository.
+[S33] -- external source, not in this repository.
+[S34] -- external source, not in this repository.
 [S35]: <CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md>
 [S36]: <../../tools/mdi2_client/README.md>
 [S37]: <DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md>
@@ -837,14 +837,14 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S39]: <../../platform/security.md>
 [S40]: <../security/SHELL_ACCESS_ESCALATION_Jun2026.md>
 [S41]: <../security/AAOS_OFFENSIVE_AUDIT_PHASE1_SEP2026.md>
-[S42]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181/86331665.smd>
-[S43]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181/86331663.mnf>
+[S42] -- external source, not in this repository.
+[S43] -- external source, not in this repository.
 [S44]: <../../platform/ota_programming_roles.md>
-[S45]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/firmware/update_packages/Y181B/USB_Files/86405528.smd>
-[S46]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2026_CT5/Radio-IVE-86384258-AAOS14-UQBM/86384262.smd>
-[S47]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2026_Silverado_EV/firmware/470/86485092.smd>
+[S45] -- external source, not in this repository.
+[S46] -- external source, not in this repository.
+[S47] -- external source, not in this repository.
 [S48]: <../security/RSA1024_PRIVATE_KEY_GHS_INTEGRITY.md>
-[S49]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_ref/diag/real_did_values.md>
+[S49] -- external source, not in this repository.
 [S50]: <../../diagnostics/ethernet_uds_diagnosticsd.md>
 [S51]: <../boot-update-recovery/GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt>
 [S52]: <../../README.md>
@@ -899,86 +899,86 @@ duplicate paths counted once. Remaining six unique/absence scope below.
 [S101]: <../boot-update-recovery/GM_INFO37_BOOT_CHAIN_ANALYSIS.md>
 [S102]: <../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md>
 [S103]: <../rights-and-roadmap/AOSP_REPLACEMENT_RESEARCH.txt>
-[S104]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/MASTER_REFERENCE.md>
-[S105]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/SOC_PRODUCT_Y181_vs_Y181B_AUG2026.md>
-[S106]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/Y175_LIVE_RADIO_T1_SECURITY_ASSESSMENT_2026-11-02.md>
-[S107]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md>
-[S108]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/T1_RADIO_NETWORK_STRUCTURE.txt>
-[S109]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/T1_RADIO_appendix.txt>
-[S110]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_2026-11-02/source_notes/T1_RADIO_core.txt>
-[S111]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y175_OS_PARTITION_INVESTIGATION_AUG2026.md>
-[S112]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/Y181_vs_Y181B_DIFF_AUG2026.md>
-[S113]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/analysis/canbus_reset/CANBUS_RESET_ANALYSIS.txt>
-[S114]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/AOSP_REPLACEMENT_RESEARCH.txt>
-[S115]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/BOOT_CHAIN_ANALYSIS.txt>
-[S116]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/CALDEF_VIP_CALIBRATION_ANALYSIS.txt>
-[S117]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/DOCUMENTATION_REVIEW_AND_CORRECTIONS.txt>
-[S118]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/DPS_AND_MODIFICATION_LANDSCAPE.txt>
-[S119]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md>
-[S120]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md>
-[S121]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/GHS_PRIVACY_CAPABILITY_ANALYSIS.md>
-[S122]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt>
-[S123]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md>
-[S124]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/OTA_MODULE_PROGRAMMING_ROLES.md>
-[S125]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/PROJECT_MASTER_CHECKLIST.txt>
-[S126]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/QUICK_REFERENCE.txt>
-[S127]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/UPDATE_PROCESS_ANALYSIS.txt>
-[S128]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/VEHICLE_NETWORK_TOPOLOGY.md>
-[S129]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/VIP_CONTROL_ANALYSIS.txt>
-[S130]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/research/VIP_FIRMWARE_Y177_Y181_COMPARISON.md>
-[S131]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/docs/security/GM_AAOS_Y181_SECURITY_ANALYSIS.txt>
-[S132]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_ref/diag/doip_uds_surface.md>
-[S133]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_ref/security.md>
-[S134]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_ref/unstub/network_fsa.md>
-[S135]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/emu/y181_ref/vehicle_network.md>
-[S136]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/hardware/EEPROM/EEPROM_Analysis_Report.md>
-[S137]: </Volumes/stuff/misc/research/GM_research/aaos/gm_aaos/2024_Silverado_ICE/hardware/EEPROM/EEPROM_UNDOCUMENTED_FLAGS_ANALYSIS.md>
-[S138]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/DPS_ANALYSIS_REPORT.md>
-[S139]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/DPS_ARCHIVE_CREATOR_ANALYSIS.md>
-[S140]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/EEPROM_CALIBRATION_MAPPING.md>
-[S141]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/MDI2_LINUX_MACOS_ANALYSIS.md>
-[S142]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/OPENSOURCE_ECU_RESET_ANALYSIS.md>
-[S143]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/OS_UPDATE_CHECK_Y181B_AUG2026.md>
-[S144]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/SBI_SECURITY_SCOPE_ANALYSIS.md>
-[S145]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/SPS_TO_DPS_TYPE4_CONVERSION.md>
-[S146]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/TYPE4_CUSTOM_COMMAND_INTERFACE_AUG2026.md>
-[S147]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/VIP_BOOT_CONTROL_ANALYSIS.md>
-[S148]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/scripts/README.txt>
-[S149]: </Volumes/stuff/misc/research/GM_research/csm_eeprom/icloud_eeprom/EEPROM_Analysis_Report.md>
-[S150]: </Volumes/stuff/misc/research/GM_research/carplay/gm_pi/docs/10_GOAL_HIERARCHY.md>
-[S151]: </Volumes/stuff/misc/research/GM_research/carplay/gm_pi/docs/08_HARDWARE_CHIPS.md>
-[S152]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/cameraloopsRU/[Courses]: ▶︎ Learn how to manually create GM DPS archive file for module programming [The Quick Method] - www.CameraLoops.ru.pdf>
-[S153]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/create_dps_type4/lesson_1.pdf>
-[S154]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/create_dps_type4/lesson_2.pdf>
-[S155]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/dps_user_guide.pdf>
-[S156]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/dps_extracted/DPS_User_Guide.pdf>
-[S157]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/dps_extracted/pp_ug_no_bg.pdf>
-[S158]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/tools/VCAP_interpreter_v1.3.pdf>
-[S159]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/tools/VCAP_Interpreter_Standalone_Installation_Guide.pdf>
-[S160]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/tools/dps_type4_vcap_creator/Read me!.pdf>
-[S161]: </Volumes/stuff/misc/research/GM_research/diagnostics/icloud_diag/gds2/4050897revA_G071-4010-03MN_gminfo37.pdf>
-[S162]: </Volumes/stuff/misc/research/GM_research/diagnostics/icloud_diag/vcap_interpreter/VCAP_interpreter_v1.3.pdf>
-[S163]: </Volumes/stuff/misc/research/GM_research/diagnostics/icloud_diag/vcap_interpreter/VCAP_Interpreter_Standalone_Installation_Guide.pdf>
-[S164]: </Volumes/stuff/misc/research/GM_research/diagnostics/icloud_diag/vcap_interpreter/DPS Type4 VCAP creator file/Read me!.pdf>
-[S165]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/misc/Aug24_session/postOS_download_SPS.pcapng>
-[S166]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/live_captures_20260824_3/DPS+SPS.pcapng>
-[S167]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/live_captures_20260824_3/multiple_intefaces_attempt1.pcapng>
-[S168]: </Volumes/stuff/misc/research/GM_research/diagnostics/bus2_20261102_122611.pcap>
-[S169]: </Volumes/stuff/misc/research/GM_research/mdi2/mdi2_macos/captures/mdi_session_full_with_handshake.pcapng>
-[S170]: </Volumes/stuff/misc/research/GM_research/mdi2/mdi2_macos/captures/session2.pcapng>
-[S171]: </Volumes/stuff/misc/research/GM_research/mdi2/mdi2_macos/captures/mdi_20260825_225907.pcapng>
-[S172]: </Volumes/stuff/misc/research/GM_research/mdi2/mdi2_macos/captures/cold_arming/net.pcap>
-[S173]: </Volumes/stuff/misc/research/GM_research/mdi2/mdi2_macos/captures/cold_arming/usb2.pcap>
-[S174]: </Volumes/stuff/misc/research/GM_research/carplay/gm_pi/gmtool/gm_security.py>
-[S175]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/security_dlls/scripts/gm_security.py>
-[S176]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/annotations/S84.dll.annotations.md>
+[S104] -- external source, not in this repository.
+[S105] -- external source, not in this repository.
+[S106] -- external source, not in this repository.
+[S107] -- external source, not in this repository.
+[S108] -- external source, not in this repository.
+[S109] -- external source, not in this repository.
+[S110] -- external source, not in this repository.
+[S111] -- external source, not in this repository.
+[S112] -- external source, not in this repository.
+[S113] -- external source, not in this repository.
+[S114] -- external source, not in this repository.
+[S115] -- external source, not in this repository.
+[S116] -- external source, not in this repository.
+[S117] -- external source, not in this repository.
+[S118] -- external source, not in this repository.
+[S119] -- external source, not in this repository.
+[S120] -- external source, not in this repository.
+[S121] -- external source, not in this repository.
+[S122] -- external source, not in this repository.
+[S123] -- external source, not in this repository.
+[S124] -- external source, not in this repository.
+[S125] -- external source, not in this repository.
+[S126] -- external source, not in this repository.
+[S127] -- external source, not in this repository.
+[S128] -- external source, not in this repository.
+[S129] -- external source, not in this repository.
+[S130] -- external source, not in this repository.
+[S131] -- external source, not in this repository.
+[S132] -- external source, not in this repository.
+[S133] -- external source, not in this repository.
+[S134] -- external source, not in this repository.
+[S135] -- external source, not in this repository.
+[S136] -- external source, not in this repository.
+[S137] -- external source, not in this repository.
+[S138] -- external source, not in this repository.
+[S139] -- external source, not in this repository.
+[S140] -- external source, not in this repository.
+[S141] -- external source, not in this repository.
+[S142] -- external source, not in this repository.
+[S143] -- external source, not in this repository.
+[S144] -- external source, not in this repository.
+[S145] -- external source, not in this repository.
+[S146] -- external source, not in this repository.
+[S147] -- external source, not in this repository.
+[S148] -- external source, not in this repository.
+[S149] -- external source, not in this repository.
+[S150] -- external source, not in this repository.
+[S151] -- external source, not in this repository.
+[S152] -- external source, not in this repository.
+[S153] -- external source, not in this repository.
+[S154] -- external source, not in this repository.
+[S155] -- external source, not in this repository.
+[S156] -- external source, not in this repository.
+[S157] -- external source, not in this repository.
+[S158] -- external source, not in this repository.
+[S159] -- external source, not in this repository.
+[S160] -- external source, not in this repository.
+[S161] -- external source, not in this repository.
+[S162] -- external source, not in this repository.
+[S163] -- external source, not in this repository.
+[S164] -- external source, not in this repository.
+[S165] -- external source, not in this repository.
+[S166] -- external source, not in this repository.
+[S167] -- external source, not in this repository.
+[S168] -- external source, not in this repository.
+[S169] -- external source, not in this repository.
+[S170] -- external source, not in this repository.
+[S171] -- external source, not in this repository.
+[S172] -- external source, not in this repository.
+[S173] -- external source, not in this repository.
+[S174] -- external source, not in this repository.
+[S175] -- external source, not in this repository.
+[S176] -- external source, not in this repository.
 [S177]: <../../tools/mdi2_client/mdi2/captured_events.py>
 [S178]: <../../tools/mdi2_client/mdi2/capture_read_transport.py>
 [S179]: <../../tools/mdi2_client/scripts/scratch/radio_cal_decode.py>
-[S180]: </tmp/fwtriage/gm-y181-signing>
-[S181]: </tmp/gm_calibration_target_sources/Envelop.java>
-[S182]: </tmp/gm_calibration_target_sources/DiagnosticInstaller.java>
-[S183]: </tmp/gm_calibration_target_sources/UpdatePackage.java>
-[S184]: </tmp/gm_calibration_target_sources/UpdateFile.java>
-[S185]: </tmp/gm_calibration_target_sources/Signature.java>
-[S186]: </Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/disassembly/pseudocode/dpsvcs.dll.pseudocode.txt>
+[S180] -- external source, not in this repository.
+[S181] -- external source, not in this repository.
+[S182] -- external source, not in this repository.
+[S183] -- external source, not in this repository.
+[S184] -- external source, not in this repository.
+[S185] -- external source, not in this repository.
+[S186] -- external source, not in this repository.

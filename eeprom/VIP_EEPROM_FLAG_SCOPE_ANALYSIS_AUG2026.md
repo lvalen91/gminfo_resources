@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-24
 **Binary analyzed:** `vip_app.bin` (VIP_APP, GM part 86331656, Y181), Ghidra project
-`vip_app_proj` at `/Volumes/stuff/misc/research/GM_research/gm_aaos/2024_Silverado_ICE/analysis/extracted_artifacts/ghidra_projects/`.
+`vip_app_proj`, in an external Ghidra project directory, not in this repo.
 Also checked `vip_boot.bin` (`vip_boot_proj`) where noted.
 **Method:** headless Ghidra 12.1.3 (`analyzeHeadless ... -noanalysis`, i.e. relying on the
 project's pre-existing analysis, no re-analysis performed), Java `GhidraScript`s that (a) scan

@@ -20,8 +20,7 @@ and the security posture of its validation function.
 > the shipped bins: `0x0441`/`0x0A81` value→`0xFF`, `0x0B41` value→`0x01`. The *framing* byte
 > does not always become `5A` — stock keeps `C3 00 C3` @0x440 and `FF FF FF` @0x0A80, and a
 > reflashed/initialized bin shows `F0 00 F0` @0x0A80; the bypass state is `5A FF 5A FF` at both
-> 0x440 and 0x0A80 (confirmed: /Volumes/stuff/misc/research/GM_research/csm_eeprom/gm_csm_stock.bin
-> & EEPROM/gm_csm/Y181/ADB_enabled.bin, xxd). Locate each byte by offset — the reliable bypass
+> 0x440 and 0x0A80 (confirmed: external stock and ADB-enabled EEPROM dumps, xxd). Locate each byte by offset — the reliable bypass
 > signal is the value byte 0x441/0xA81 → 0xFF — not the framing value.
 
 ---

@@ -30,7 +30,7 @@ separate T1 bench connection is additional to that harness. The exact T1 media
 converter make/model and current radio-end tap pins have not been established
 by this baseline. Do not infer the automotive bus number from host interface `en12`.
 
-`[X]` A separate Y175 Bus 2 bench (BUELEC 100/1000Base-T1-TX-L converter) found that the converter must be forced to 100M, because its 1000BASE-T1 mode does not interoperate with this 100BASE-T1-only link; the polarity-swap and tap details are in `../VERIFICATION.md` and `../platform/vehicle_network.md`. Host NIC: a plain gigabit USB NIC (RTL8153) on a native USB port worked; an RTL8156 2.5G adapter and an onboard Aquantia 10G port were reported flaky at 100M. This does not establish the converter, tap pins or NIC used by this baseline. Source: `/Volumes/stuff/misc/research/GM_research/carplay/gm_pi/docs/11_100BASE_T1_TAP.md` §0a.
+`[X]` A separate Y175 Bus 2 bench (BUELEC 100/1000Base-T1-TX-L converter) found that the converter must be forced to 100M, because its 1000BASE-T1 mode does not interoperate with this 100BASE-T1-only link; the polarity-swap and tap details are in `../VERIFICATION.md` and `../platform/vehicle_network.md`. Host NIC: a plain gigabit USB NIC (RTL8153) on a native USB port worked; an RTL8156 2.5G adapter and an onboard Aquantia 10G port were reported flaky at 100M. This does not establish the converter, tap pins or NIC used by this baseline. Source: an external bench note, §0a.
 
 CAN 5 is the X6 p9/p10 pair, also called SER DATA 5; see
 [vehicle_network.md](../platform/vehicle_network.md#plane-1--can-from-the-dps-scan).
@@ -110,7 +110,7 @@ RTS/CTS and DSR/DTR flow control. Set DTR and RTS low before opening the port.
 The CP2102 RX input observes RH850 TX; do not connect/transmit from adapter TX
 for this baseline. The repo identifies the VIP console as owner-reported RH850
 physical pin 52, P1_9/RLIN34TX; that attribution is not a new physical trace result.
-See [the UART pinout reference](teardown.md#rh850f1k-package--uart-pinout).
+See [the UART pinout reference](module/vip_mcu.md#2-uart-rlin3-pinout).
 
 Only one process should own the serial port. A receiver can count bytes, newlines
 and printable characters in memory without writing event logs. A **35-second**

@@ -779,4 +779,4 @@ Figures are in the Executive Summary and Performance Comparison tables above.
 - MediaCodec decoder profiling on GM Info 3.7
 - Logcat-verified decode latency and frame rate measurements
 
-**Source:** `/Users/zeno/Downloads/misc/GM_research/gm_aaos/`
+**Source:** an external working directory, not in this repository.

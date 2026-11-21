@@ -182,14 +182,24 @@ First successful end-to-end network capture of the real Bosch VCI Manager 9.1.27
 (`GM_MDI_Manager.exe`, not Wine) driving a live MDI2. Bench: Win11 Surface Pro (host
 `192.168.171.30`) cabled USB to a Bosch VCI MDI2 (device `192.168.171.2`, MAC
 `70-C6-AC-00-05-38`). Device internals from the pulled plaintext: Linux 4.14.162-gvci, ARMv7,
-"Bosch LP518 Board". Capture driven remotely over SSH: `dumpcap` launched detached via WMI
+"Bosch LP518 Board". More from the same boot log (Varlog/Dmesg
+decrypted device logs from an external capture archive, not in this repository) **[C]**: i.MX6DL silicon
+rev 1.4; 512 MiB RAM (`524288K`, 64 MiB CMA); 256 MiB SLC NAND (S34ML02G1) on `gpmi-nand` with
+nine MTD partitions (`boot` 0x0-0x2e0000, `blob`, `blobbu`, `hwid`, `hwidbu`, `dtb`, `kernel`,
+`config` 0x900000-0x3100000, `rootfs` 0x3100000-0xfb00000 = 202 MiB); `rootfs` is a UBI volume
+(`ubi0` on `mtd8`, 1,616 PEBs) mounted as UBIFS ("recovery needed" on that boot); the USB gadget
+is `g_ether` (RNDIS, high-speed config #2) with `usb0` self MAC `70:c6:ac:00:05:38` and host MAC
+`70:c6:ac:00:05:39`. `init` logs `Id "mxc0" respawning too fast: disabled for 5 minutes` about
+every 5 minutes through the whole log **[inferred]** (a respawn entry for the i.MX serial console,
+`ttymxc0`, that keeps exiting). Capture driven remotely over SSH: `dumpcap` launched detached via
+WMI
 `Win32_Process.Create` (a plain SSH-child dumpcap dies with the SSH session; the scheduled-task
 route failed on account-SID mapping).
 
 **Artifact paths (primary, non-dead-end evidence):**
-`GM_research/mdi2_macos/captures/mdi_session_full_with_handshake.pcapng` + `markers.log` (uses an
+`mdi_session_full_with_handshake.pcapng` + `markers.log` (external capture archive, not in this repository; uses an
 in-band ICMP-echo-size-1337 marker technique to correlate capture timestamps), decrypted plaintext
-at `captures/plaintext_logs/`, the decrypt tool `mdi2_9052_decrypt.py`, and the cold-arming capture
+at `captures/plaintext_logs/` (same external archive), the decrypt tool `mdi2_9052_decrypt.py`, and the cold-arming capture
 files `captures/cold_arming/{usb2.pcap,net.pcap}` (§5).
 
 ### 4.1 Transport: a 14-socket bank on device ports 900x
@@ -441,7 +451,7 @@ tried and why each route failed, so the same dead ends are not re-run.
   arming message** — the device gets zero host→device packets until the 900x TCP connect itself.
   The dormancy was connection-pool/session exhaustion from rapid repeated test connects (§0, §4.10),
   not a missing activation step; this is the current, correct account.
-  Static corroboration `[S]`: the live install's `boschvci-v3.inf` binds the inbox Microsoft `rndismp6.sys` (VID `0x0ca0`, PID `0x1201`-`0x1222`, no custom Bosch `.sys`), and the RT and PDU-Vtx DLLs import none of winusb, setupapi or hid. The PID observed in the cold capture, `0x1301`, is outside that INF's listed range; the reason is not determined `[U]`. Source: `/Volumes/stuff/misc/research/GM_research/diagnostics/gm_dps/docs/BVTX_VCI_RT_EVIDENCE_transport.txt` ("INF / USB IDENTITY").
+  Static corroboration `[S]`: the live install's `boschvci-v3.inf` binds the inbox Microsoft `rndismp6.sys` (VID `0x0ca0`, PID `0x1201`-`0x1222`, no custom Bosch `.sys`), and the RT and PDU-Vtx DLLs import none of winusb, setupapi or hid. The PID observed in the cold capture, `0x1301`, is outside that INF's listed range; the reason is not determined `[U]`. Source: external DoIP/VCI driver evidence notes ("INF / USB IDENTITY").
 
 ---
 

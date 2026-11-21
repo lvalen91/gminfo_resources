@@ -166,4 +166,4 @@ unaffected by the SoftAP state.
 
 ---
 
-**Data sources:** `/Volumes/POTATO/logcat/20260219/`, 3.7GB logcat corpus (27 files, Feb 11-19, 2026)
+**Data sources:** an external 3.7GB logcat corpus, not in this repository (27 files, Feb 11-19, 2026)

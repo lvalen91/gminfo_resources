@@ -410,7 +410,7 @@ From binary debug strings:
 
 Binary analysis of NME libraries:
 ```
-/Users/zeno/Downloads/misc/GM_research/gm_aaos/extracted_partitions/system_extracted/system/lib64/libNme*.so
+An external extracted-partitions working directory, not in this repository: lib64/libNme*.so
 ```
 
 Methods: `strings`, `readelf -s`, `nm --demangle`

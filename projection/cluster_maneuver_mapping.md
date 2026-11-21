@@ -209,4 +209,4 @@ rich iAP2 data is therefore **gminfo3.7-only** (where the app composes/forwards 
   set ~57 icons `{0–23,30–47,99–101,200–211}`; directional roundabout 106–123 absent. Artifacts:
   `_cluster_authority_analysis/ct5_hmic/`.
 - Cluster architecture (QNX HMIC / Altia / blind Ethernet handoff): see `cluster_navigation.md` (2026-06-06 block).
-- Extraction artifacts: `/Users/zeno/Downloads/misc/GM_research/gm_aaos/_cluster_authority_analysis/`.
+- Extraction artifacts: an external working directory, not in this repository.
