@@ -147,7 +147,7 @@ are not all products of the homescreen-removal experiment. Recovery starts
 with a 2011 clock and subsequently sets a 2010 time; filesystem timestamps
 also show 2010. Order records using rotation, boot-relative time and explicit
 state transitions before trusting wall-clock dates. File counts are not boot
-counts. `bootup_log/vendor/ghs_new/ghs.log` has the entire `ghs.log` as a
+counts. `bootup_log/vendor/ghs_new/ghs.log` (external research archive; not present in this repo) has the entire `ghs.log` as a
 byte-for-byte prefix plus 57,336 bytes; deduplicate before counting events.
 The GHS logs are retained text logs, not a complete host-memory dump.
 
@@ -274,7 +274,7 @@ and are not restated here.
 │                         ▼                                                    │
 │  2. Intel ABL (Automotive Bootloader)                                        │
 │     ├── Secure Boot enabled (ABL.secureboot=1)                              │
-│     │   [NOTE 2026-11-12 CAVEAT: 'ABL.secureboot=1' appears only as a token in retained kernel-log cmdlines (live `getprop ro.boot.ABL.secureboot` is empty; hit count ~188 per archive, earlier '386' not reproduced); it is a cmdline indicator, not a verified secure-boot state. See platform/boot_chain.md.]
+│     │   [NOTE 2026-11-12 CAVEAT: 'ABL.secureboot=1' appears only as a token in retained kernel-log cmdlines (live `getprop ro.boot.ABL.secureboot` is empty; hit count ~188 per archive, earlier '386' not reproduced); it is a cmdline indicator, not a verified secure-boot state. See platform/boot_chain.md].
 │     ├── Loads GHS INTEGRITY from flash                                       │
 │     ├── Verifies GHS signature                                               │
 │     └── Transfers control to GHS kernel                                      │
@@ -2887,7 +2887,7 @@ hash; it cannot establish MAC authenticity without the RPMB authentication key.
 
 A subsequent native T1 test loaded a matching standard `igb` module for PCI
 `8086:157c`, established VLAN-5 IP/SSH connectivity, and read a hash-matching
-64 MiB eMMC sample at 3.98 MiB/s. See [elk_recovery.md](../../platform/elk_recovery.md#32-t1-ethernet-test-procedure-and-results) (`platform/networking.md` was retired in the platform/ reorg; this result now lives there).
+64 MiB eMMC sample at 3.98 MiB/s. See [elk_recovery.md](../../platform/elk_recovery.md#32-t1-ethernet-test-procedure-and-results) (the former platform networking note was retired in the platform/ reorg; this result now lives there).
 This proves an alternate readback path, not improved long-duration reliability.
 
 The complete graphics log shows i915 bound successfully but both native

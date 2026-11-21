@@ -1087,11 +1087,11 @@ Update Modules:
 - 86331656 - VIP_APP (1.9 MB)
 
 Analysis Sources:
-- logs/VIP_log_2B.174.4.1_10JUL24.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/raw/kernel_config.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/raw/all_properties.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/raw/partitions.txt
-- analysis/adb_Y181/gm_enum_20251220_081558/pulled_files/vendor_sepolicy.cil
+- evidence/enumeration/VIP_log_2B.174.4.1_10JUL24.txt
+- evidence/enumeration/Y181/raw/kernel_config.txt
+- evidence/enumeration/Y181/raw/all_properties.txt
+- evidence/enumeration/Y181/raw/partitions.txt
+- evidence/enumeration/Y181/pulled_files/vendor_sepolicy.cil
 
 ================================================================================
 OPEN CONFLICTS

@@ -453,4 +453,4 @@ These original `can_network.md` ranges are not reproduced in the consolidated do
 - L476-514: four-ID startup recipe (offsets, +7.892 / +21.199 s timings, restricted-boot procedure).
 - L1046-1091: activation-request hold, host-sleep confound, 62.519 / 62.385 s results.
 
-The independent loss audit of the original covered only L1-600; L600-2129 is covered by the writers' ledgers (`ledgers/can_network.ledger.md`, `ledgers/can_bench_experiments.ledger.md`) but not by a second reader.
+The independent loss audit of the original covered only L1-600; L600-2129 is covered by the writers' ledgers for `can_network` and `can_bench_experiments` (not preserved in this repository) but not by a second reader.

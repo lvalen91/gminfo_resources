@@ -97,7 +97,7 @@ independently of Android OTA).
 
 The last major release, **Y181** (`W231E-Y181.3.2-SIHM22B-499.3`, USB full package `86334732`),
 is a **15-part** bundle (15 rows in the archived `delivery_manifest.csv`;
-`research/UPDATE_PROCESS_ANALYSIS.txt:237`) — **all parts are CSM/radio-domain**, none are foreign
+`UPDATE_PROCESS_ANALYSIS.txt:237` of the retired original, folded into `research/boot-update-recovery/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` and `ota_update_stack.md`) — **all parts are CSM/radio-domain**, none are foreign
 vehicle ECUs. History: corrected 2026-11-12 from "18-part"; 18 is the radio's *installed-module*
 inventory ([below](#installed-module-inventory-on-radio-18-modules)). Cross-ref
 [`firmware_versions.md`](firmware_versions.md).

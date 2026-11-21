@@ -595,6 +595,6 @@ and was not re-added here; the programmed set is again all stock LTZ.
   the CSM signed header.
 - DB facts: queried live from `scratchpad/diagx/calibrations__CalSets.db`.
 - `$27`/VIP/EEPROM anchoring and the two write paths: cross-referenced in
-  `research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` and
+  retired `T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` (research-tier facts folded into `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`) and
   `research/eeprom-calibration/CALDEF_VIP_CALIBRATION_ANALYSIS.txt` (both retired/folded elsewhere per the reorg plan;
   not independently re-verified by this doc).

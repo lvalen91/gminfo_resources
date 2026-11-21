@@ -137,7 +137,7 @@ them by name/section rather than restating their content.
 | `MASTER_REFERENCE.md` | this README's "Where does X live" table |
 | `QUICK_REFERENCE.txt` | EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md, GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md, DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md, MDI2_DPDU_API_PROTOCOL_AUG2026.md + `../platform/ota_programming_roles.md`, `../platform/vehicle_config.md` |
 | `GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt` | CALDEF_VIP_CALIBRATION_ANALYSIS.txt (CalDef table), GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md (legacy seed table) + `../platform/vehicle_network.md`, `../platform/ota_programming_roles.md` |
-| `UPDATE_PROCESS_ANALYSIS.txt` | GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md (GHS evidence/partitions), GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (downgrade narrative, module-72 naming conflict) + `../platform/ota_update_stack.md`, `../platform/ota_programming_roles.md`, `../platform/security.md` |
+| `UPDATE_PROCESS_ANALYSIS.txt` | GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md (section "Guest-side hypervisor evidence and GHS partitions"), GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt (downgrade narrative, module-72 naming conflict) + `../platform/ota_update_stack.md`, `../platform/ota_programming_roles.md`, `../platform/security.md` |
 
 ## Open conflicts (corpus-wide)
 These span more than one doc; the per-doc-local items stay in that doc's own "Open conflicts"

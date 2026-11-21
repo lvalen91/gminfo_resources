@@ -238,7 +238,7 @@ This does not establish a UART shell, MCU RX reception, or ADB restoration.
 
 ## 4. VIP Boot Log Fields (Y175)
 
-**[C]** From `diagnostics/Y175_session.log`:
+**[C]** From `evidence/enumeration/Y175/Y175_VIP.log`:
 
 | Field | Value |
 |---|---|
@@ -271,7 +271,7 @@ Y175 `HwVariant: 56` above and is not directly comparable.
 
 ### 4.1 AUTOSAR SWC Modules Observed in Boot Log
 
-**[C]** `diagnostics/Y175_session.log` tags each line with an AUTOSAR software-component name.
+**[C]** `evidence/enumeration/Y175/Y175_VIP.log` tags each line with an AUTOSAR software-component name.
 Modules observed across the boot trace: `SS_SWC` (system state), `PLC` (power-level control),
 `LSWTCH_SWC` (LEO/Ethernet-switch control), `J6_CDD` (CAN complex device driver), `DTC`,
 `PROTOKEY`, `SBAT`, `UBLOX`, `NAV`, `RTC`, `IPC_S` (IPC core).
@@ -285,7 +285,7 @@ Modules observed across the boot trace: `SS_SWC` (system state), `PLC` (power-le
 yet come up — the VIP brings the Ethernet switch up in a default configuration before the
 SoC-hosted "LEO firmware" (switch-management agent running on the SoC) is available.
 
-Source: `diagnostics/Y175_session.log` lines 90, 94, 129-130, 192-193, 231-232.
+Source: `evidence/enumeration/Y175/Y175_VIP.log` lines 90, 94, 129-130, 192-193, 231-232.
 
 ### 4.3 PLC Power-Level Handshake / BootCounter
 
@@ -295,7 +295,7 @@ SoC SOH Timeout = 1500` (ms) — the VIP's watchdog window for SoC state-of-heal
 module reads the boot counter from NVM at startup: `Rte_Pim_PLC_BootCounter_PIM is : 4067`
 (`Nvm_ErrorStatus = 0`).
 
-Source: `diagnostics/Y175_session.log` lines 80-82, 171, 204.
+Source: `evidence/enumeration/Y175/Y175_VIP.log` lines 80-82, 171, 204.
 
 The [mute-hold reset sequence](../../runtime/boot_timing.md#mute-hold-reset-and-adb-reboot-boundaries-2026-11-15)
 shows this handshake completing before the VIP uptime resets, and distinguishes the observed
@@ -310,7 +310,7 @@ receiver being physically present and polled), followed by repeated baud-rate pr
 VIP UART BR to 9600 bps`, ending in `u-blox UART BR unknown`. This confirms GNSS rides a VIP
 UART channel (§2); it does not identify which channel.
 
-Source: `diagnostics/Y175_session.log` lines 173, 198, 270-271, 298-299.
+Source: `evidence/enumeration/Y175/Y175_VIP.log` lines 173, 198, 270-271, 298-299.
 
 ### 4.5 SBAT Ticket Validation and ProtoKey Seed-from-BCM
 
@@ -329,7 +329,7 @@ Validation fails (ticket is effectively unprogrammed) but boot continues — con
 document does not reproduce that analysis; see those references for the full SBAT/ProtoKey
 security-mechanism writeup.
 
-Source: `diagnostics/Y175_session.log` lines 211-215.
+Source: `evidence/enumeration/Y175/Y175_VIP.log` lines 211-215.
 
 **[C]** `PROTOKEY` on the same trace logs `Receives invalid seed [1] from BCM` /
 `Receives invalid seed [2] from BCM` repeatedly before the BCM seed becomes valid later in
@@ -338,7 +338,7 @@ the log), ProtoKey seed exchange with the BCM over CAN fails by default, consist
 three-phase ProtoKey sequence documented in [`../teardown.md`](../teardown.md) (deep-EEPROM
 section) and [`../../platform/security.md`](../../platform/security.md).
 
-Source: `diagnostics/Y175_session.log` lines 100-101, 197, 199.
+Source: `evidence/enumeration/Y175/Y175_VIP.log` lines 100-101, 197, 199.
 
 **[C] Live Y181 confirmation (2026-11-12):** the bench radio's `viplog.log` + `viplog.log.rot`
 (2026-11-11/12) contain **7113** `Receives invalid seed [n] from BCM` lines by raw `grep`
@@ -364,7 +364,7 @@ body state; their source is **[?]** not identified here.
 
 ## 5. Sources
 
-- `diagnostics/Y175_session.log` (lines cited inline per section above).
+- `evidence/enumeration/Y175/Y175_VIP.log` (lines cited inline per section above).
 - Bench radio `W231E-Y181.3.2-SIHM22B-499.3`: `viplog.log`, `viplog.log.rot` (2026-11-11/12),
   `/update_cache/update/moduleinfo`, `/update_cache/update/hw.conf`, `ghs.log`, recovery
   `last_log.*`.

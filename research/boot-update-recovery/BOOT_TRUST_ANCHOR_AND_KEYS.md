@@ -172,7 +172,7 @@ GHS receives it as a Multiboot module, but the module's **origin is the GHS imag
 >    `0xe3ce00` — the block ends at `0xe3ce04`, exactly the length of the stripped `payload.bin`
 >    (14,929,412 B). Verifying `s^e mod n` (both big-endian) yields a well-formed PKCS#1 v1.5 pad with
 >    the SHA-256 OID and embedded digest `7b02d1b7…113ed39db`, which equals **`SHA256(image[0:0xe3cb98])`
->    exactly**. Reproducible; confirmed ≥3× independently (`scratchpad/ias/rsa_verify.py`).
+>    exactly**. Reproducible; confirmed ≥3× independently (session scratch script `rsa_verify.py`, not preserved in this repository).
 > 2. **The signing key is the OEM "OS Kernel" key, and it lives in the Boot-Guard-authenticated SPI
 >    OBB** `[S]`. Key fingerprint `SHA256(reversed_modulus ‖ LE_exp)` = `e99d2f48…579beab7` (the GBUR
 >    OEM "OS Kernel"/usage-0x27 key). The same modulus is embedded in the SPI **OBB/ELK @ `0x114000`**
@@ -195,7 +195,7 @@ GHS receives it as a Multiboot module, but the module's **origin is the GHS imag
 >    B boots; it does not. The only construct the flipped byte invalidates is the RSA signature's math
 >    — therefore something cryptographic gates on it. Two blind observer agents independently
 >    classified the raw captures (A=booted, B=rejected). Captures:
->    `scratchpad/ias/runA_capture.txt`, `runB_capture.txt`.
+>    session scratch captures `runA_capture.txt`, `runB_capture.txt` (not preserved in this repository).
 >
 >    **Scope of this result:** it proves a signature-dependent check *rejects* a tampered image;
 >    it does **not** locate the verifying instruction. No RSA-verify routine over GHS was found on the

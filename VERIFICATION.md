@@ -78,7 +78,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   `audioserver`(611), `vendor.hardware.audio@5.0-harman-custom-service`(772), `gmvt`(856),
 >   `vendor.harman.audio.tuning@1.0-service`(860) — which one specifically holds the 6363 listening
 >   socket (inode 18019) was not pinned down to one PID. This actually **confirms**
->   `platform/networking.md`'s existing "AVB audio daemon (uid=1041 audioserver)" line rather than
+>   `platform/networking.md` [now: `platform/ethernet_networking.md`]'s existing "AVB audio daemon (uid=1041 audioserver)" line rather than
 >   contradicting it — `calserviced` was never the right answer. The `ethernet_uds_diagnosticsd.md`
 >   open-identity question for this port is **narrowed, not closed**: it's one of the 7
 >   audioserver-uid processes above, most plausibly `avb_streamhandler_app` given the AVB-audio
@@ -185,7 +185,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   explanations not yet distinguished: FSA TCP listeners bind lazily on first use/partition
 >   handshake rather than at process start, or something else about this decluttered/idle state
 >   suppresses them. Flagged, not corrected.
-> - **`platform/gmsystemui_app_capability_gating.md`**: the cited `GMSystemUI.apk` is confirmed to
+> - **`platform/gmsystemui_app_capability_gating.md`** [now: `platform/gmsystemui_app_gating.md`]: the cited `GMSystemUI.apk` is confirmed to
 >   exist exactly where the doc implies — `/system/priv-app/GMSystemUI/GMSystemUI.apk` (+ oat/vdex)
 >   — so the static-RE source material is real on this exact unit. The live behavioral claims (does
 >   CarPlay actually fail to get the WhiteList capability) could not be exercised this pass: both
@@ -296,7 +296,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >
 > **[G] live-Y175 2026-10-30, further extraction-batch checks — NOT YET independently
 > 2-agent-verified, pending that pass before treating as confirmed:**
-> - **`research/OTA_MODULE_PROGRAMMING_ROLES.md`** FSA ports 9010/9011 — both **absent** right now
+> - **`research/OTA_MODULE_PROGRAMMING_ROLES.md`** [now: `platform/ota_programming_roles.md`] FSA ports 9010/9011 — both **absent** right now
 >   (`/proc/net/tcp` has no `0x2332`/`0x2333`), consistent with the whole FSA stack being idle on
 >   this unit (per `[E]`). `fw_update_slota`/`fw_update_slotb` init services are **unset** — not
 >   present on this Y175 build at all (possibly Y181-only). `cmd_fw_update_vendor` confirmed present
@@ -460,7 +460,7 @@ the in-repo **ADB enumeration** dumps (Y175, Y181 Dec-2025, Y181 Apr-2026, **Y18
 >   relative to an in-vehicle capture); the allow-list/port findings are bounded to the tested
 >   source addresses and capture window, not proof the allow-list cannot be bypassed from an
 >   authorized/compromised peer. Docs updated: `platform/vehicle_network.md`,
->   `diagnostics/ethernet_uds_diagnosticsd.md`, `research/MASTER_REFERENCE.md`,
+>   `diagnostics/ethernet_uds_diagnosticsd.md`, `research/MASTER_REFERENCE.md` [retired; now `research/README.md`],
 >   `research/rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt`.
 
 Bottom line: the bulk of the repo verified **CONFIRMED**. The errors found are listed below;
@@ -480,7 +480,7 @@ the **Corrected** ones have been fixed in-tree. CCPA/CPC200 adapter material was
 | VHAL: RANGE_REMAINING | "not present (ICE)" | **present** (0x11600308) |
 | VHAL: FUEL_LEVEL_LOW | 0x11600308 | correct ID **0x11200405** (0x11600308 is RANGE_REMAINING) |
 | VHAL: HVAC | "standard HVAC IDs ALL ABSENT, GM non-standard" | **standard AOSP HVAC IDs present** (0x15400500/501 fan, 0x15600502/503 temp); CarHvacManager fan/temp works |
-| Networking ports | 9002/9010/9016 @ 192.168.1.100; 7000 ADB **[2026-11-12 CORRECTION: port 7000 is AirPlay/AirTunes per platform/networking.md (uid 1001000; `GET /` -> `Server: AirTunes/...`); ADB is 5555 and not listening (platform/security.md); the 'ADB' label is wrong, the listening-state re-confirmation below stands]** | **RE-CONFIRMED to original by live Jun-2026 capture**: guest IP is **192.168.1.100** (eth0/vlan5; no `.1` iface or route in guest), with **9002/9010/9016 + 7000 + 6363 + 49156 all LISTENING**. The earlier "9002/9016 @ .1, 9010 outbound, 7000 gone" correction was a single-dump artifact (state varies by projection session) and is withdrawn. WiFi-AP side: `br0 192.168.5.1/24` serves DNS :53; vlan4 `172.16.4.100`. |
+| Networking ports | 9002/9010/9016 @ 192.168.1.100; 7000 ADB **[2026-11-12 CORRECTION: port 7000 is AirPlay/AirTunes per platform/ethernet_networking.md (uid 1001000; `GET /` -> `Server: AirTunes/...`); ADB is 5555 and not listening (platform/security.md); the 'ADB' label is wrong, the listening-state re-confirmation below stands]** | **RE-CONFIRMED to original by live Jun-2026 capture**: guest IP is **192.168.1.100** (eth0/vlan5; no `.1` iface or route in guest), with **9002/9010/9016 + 7000 + 6363 + 49156 all LISTENING**. The earlier "9002/9016 @ .1, 9010 outbound, 7000 gone" correction was a single-dump artifact (state varies by projection session) and is withdrawn. WiFi-AP side: `br0 192.168.5.1/24` serves DNS :53; vlan4 `172.16.4.100`. |
 | CAN tester ID | Req 0x14DA80**F1** / Rsp 0x145AF1**80** | captured DPS session uses **F2** (0x14DA80F2 / 0x145AF280); F1 = generic OBD tester address |
 | EEPROM unlock guide | only 0x441/0xa81 documented | **(corrected 2026-11-12, per `eeprom/README.md`'s 2026-11-11 owner-corroborated recipe, which supersedes an earlier 4-byte claim in this row):** the minimal/sufficient Y181 edit is **0x0441→0xFF and 0x0A81→0xFF only**. `0x1A01` is not an established second SBI mirror, and `0x0B41` writes were tested across the full value range (`0x00`/`0x01`/`0xFF`) with no observed ADB/SELinux effect — neither is required. |
 | 0x0A00/0x0B00 ref counts | 871/311 stated as fact | flagged: 871 vs 854 / 311 vs 305 across passes; RE-sourced, not dump-reproducible |

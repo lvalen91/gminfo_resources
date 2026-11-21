@@ -274,8 +274,9 @@ point — do not touch this doc's content and are not repeated here.)
   (`:695-696`).
 - [GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md) — OTA flow (§3.3), A/B metadata layout + CRC32
   weakness (§3.1), attack-surface table (§6), USB trigger-file truth (§4.5).
-- `research/UPDATE_PROCESS_ANALYSIS.txt` — `gmext.*` manifest verbs (§4.1), raw-image confirmation,
-  live downgrade test + rollback-index string (§6).
+- Retired `UPDATE_PROCESS_ANALYSIS.txt` (content now in `platform/ota_update_stack.md` for the `gmext.*` manifest verbs
+  (former §4.1) and raw-image confirmation, and in `GHS_DOWNGRADE_PROTECTION_ANALYSIS.txt` for the
+  live downgrade test + rollback-index string (former §6)).
 - [`platform/ota_update_stack.md`](../../platform/ota_update_stack.md) — SWU state machine, package signing tiers, USB flags.
 - [`platform/ota_programming_roles.md`](../../platform/ota_programming_roles.md) — engine chain (`gm_update_engine → rb_ua → VIP RH850`), SXM-attempt history.
 - `research/security/HARDWARE_HYPERVISOR_ATTACK_VECTORS.md` — ota-isys node, ioctl-guess note, rollback path.

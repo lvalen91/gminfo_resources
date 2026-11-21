@@ -340,7 +340,7 @@ hashed in the **CSE FTPR Key Manifest** (@ `0x60354`), **not** in the mutable eM
 checksum and Gate-1 self-integrity are therefore integrity layers *beneath* a real OBB-rooted signature.
 The trust chain is **closed**, and enforcement is **empirically demonstrated**: a one-byte sig-corrupt A/B
 boot test boots AAOS from the stock image but is rejected to fastboot when a single signature byte is
-flipped (`scratchpad/ias/runA_capture.txt` / `runB_capture.txt`; two blind observers concurred). Still
+flipped (session scratch captures `runA_capture.txt` / `runB_capture.txt`, not preserved in this repository; two blind observers concurred). Still
 outstanding only: locating the verify instruction (upstream/uncaptured CSE-BootGuard-OBB) and disassembly
 of the OBB verify routine.
 Owner: [BOOT_TRUST_ANCHOR_AND_KEYS.md §8](BOOT_TRUST_ANCHOR_AND_KEYS.md#8-ghs-image-authentication-is-the-verifier-itself-verified).

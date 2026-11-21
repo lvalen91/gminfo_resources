@@ -282,7 +282,7 @@ items in `PROVENANCE_AUDIT_AUG2026.md`/README.md's cross-doc Open Conflicts do n
 - `evidence/enumeration/Y181/jun2026/raw/all_properties.txt` (locked bootloader, AVB green)
 - `evidence/enumeration/Y181/jun2026/raw/{fstab,mounts}.txt` (`/mnt/vendor/calibration` mount)
 - `research/provenance/PROVENANCE_AUDIT_AUG2026.md` #36–38 (backdoor + `770 vendor_cald system` provenance)
-- `research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` L98–117 (backdoor description)
+- `research/T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` L98–117 (backdoor description; that doc has been retired and folded into other docs per the research/README.md "Retired" table, original removed; the `OVERRIDE_BACKDOOR` description now lives in `research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`)
 
 ## Related
 - [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](../eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) —

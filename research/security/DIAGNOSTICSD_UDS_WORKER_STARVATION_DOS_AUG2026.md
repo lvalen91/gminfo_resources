@@ -96,7 +96,7 @@ frame, before any UDS-layer logic runs.
 
 No authentication, VIN, or vehicle state is required. Steps 1–4 were
 performed from the unprivileged Android guest shell (uid=2000) over loopback;
-per `platform/networking.md`, the same port is reachable without any UDS
+per `platform/ethernet_networking.md`, the same port is reachable without any UDS
 session state from any network partition permitted to reach `:49156`
 (documented as including the RTOS bridge address `172.16.4.107` and
 `172.16.4.112`), so on-vehicle-network reachability beyond loopback is
@@ -159,7 +159,7 @@ network position for this report.
 - `diagnostics/ethernet_uds_diagnosticsd.md` — primary source; full wire
   protocol, process profile, and all black-box test results this report
   summarizes.
-- `platform/networking.md` — VLAN/firewall reachability context for
+- `platform/ethernet_networking.md` — VLAN/firewall reachability context for
   `:49156`.
 - `platform/security.md#can--uds-diagnostic-services` — SELinux domain
   (`gm_diagnosticsd`) and UDS SID reference.

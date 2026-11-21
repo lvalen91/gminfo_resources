@@ -62,7 +62,7 @@ The backup camera works **during Android reboot**. GHS receives CAN gear positio
 
 ## 2. VIP MCU (Renesas RH850/F1K)
 
-Identification (corrected 2026-11-12): **R7F7015873AFP**, marking **15873**, 176-pin LFQFP. **TM52176 is a trace code.** Owner-reported VIP console TX is **pin 52 / P1_9 / RLIN34TX**; pin 53 provides the matching RX function, with reception unverified. Package evidence, manual and full UART table: [hardware teardown](../hardware/teardown.md#rh850f1k-package--uart-pinout).
+Identification (corrected 2026-11-12): **R7F7015873AFP**, marking **15873**, 176-pin LFQFP. **TM52176 is a trace code.** Owner-reported VIP console TX is **pin 52 / P1_9 / RLIN34TX**; pin 53 provides the matching RX function, with reception unverified. Package evidence, manual and full UART table: [hardware teardown](../hardware/module/vip_mcu.md#2-uart-rlin3-pinout).
 
 > **[ONLINE RESEARCH 2026-11-21] Pin-map discrepancy flagged for verification.** The closest publicly available datasheet — Renesas RH850/F1KH and F1KM 176-pin LQFP (Table 2A.1, farnell.com/datasheets/4165772.pdf; also renesas.com/document/dst/rh850f1kh-rh850f1km-datasheet) — lists pin 52 as **P1_9 / DPIN20 / INTP21 only**, with no RLIN alternate function. RLIN34TX in that document appears at:
 > - **Pin 88** (P8_9 / CSIH3CSS2 / PWGA41O / ADCA0SEL2 / **RLIN34TX** / ADCA0I16S) — primary
@@ -85,7 +85,7 @@ Summary only; the full security analysis is chartered to [security.md](security.
 - VIP security-function **address** `0x000b67d0` (not a firmware version): full ~906-byte validator present in ALL builds (Y175 @0xb6708, Y177 @0xb67d4, Y181 @0xb67d0); the earlier "Y177 4-byte stub" was a fixed-address misread. Corrected 2026-08-26 (three-way byte diff 2026-08-25). Called subroutines `0x000b6652`, `0x000aee28`; callers `0x000b6b06` (primary), `0x000b6e82` (secondary/fallback). `0x000ecd84` is a generic RTOS mutex primitive (285 call sites), not part of a validation chain. RAM `0x3e06` is a generic "security module initialized" readiness flag, not an EEPROM SBI value.
 - Y177 vs Y181 VIP firmware differs by 549,518 bytes (28.4% of the image); this is unrelated VIP change, not a security re-enablement. The hypervisor layer is unchanged between them.
 - The validator belongs to the ADB/MEC certificate path: SoC-side `gm_adb_auth_init` / `is_secure_mode` is driven by EEPROM SBI -> VIP MEC response on DID `F1A0`; it does not set SELinux mode.
-- Live evidence [C live-Y175 2026-10-05]: VIP internals are UNVERIFIABLE-FROM-LIVE, but the VIP boot log (diagnostics/Y175_session.log) shows the RH850 side of the handshake: `J6_prv_ProtoKey:Protokey transmitted to SoC` (repeating), `SbaTicketValidation validation failed: 0x0`, `Receives invalid seed [1/2] from BCM`. `gm_protokey` is live on the SoC (PID 889, root, domain `gm_protokey`).
+- Live evidence [C live-Y175 2026-10-05]: VIP internals are UNVERIFIABLE-FROM-LIVE, but the VIP boot log (evidence/enumeration/Y175/Y175_VIP.log) shows the RH850 side of the handshake: `J6_prv_ProtoKey:Protokey transmitted to SoC` (repeating), `SbaTicketValidation validation failed: 0x0`, `Receives invalid seed [1/2] from BCM`. `gm_protokey` is live on the SoC (PID 889, root, domain `gm_protokey`).
   > **[ONLINE RESEARCH 2026-11-21] PROTOKEY / ProtoKey — no official GM documentation found.**
   > No GM service publication, TSB, or NHTSA filing uses the name "PROTOKEY." The only public
   > reference is third-party reverse-engineering (GitHub `lvalen91/gminfo_resources`,

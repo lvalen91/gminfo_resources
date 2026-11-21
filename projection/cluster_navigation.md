@@ -55,7 +55,7 @@ analysis suggests **no clean method exists**, and inverts the original premise.
   identity inferred from source IP). Protobuf schemas are recovered.
 - The inter-VM endpoints (`192.168.118.x`/`172.16.5.x`, ports 9002/6364/6365, multicast `239.192.0.1:3000`)
   *appear* reachable from an unprivileged `untrusted_app`: global netns, routes in the kernel `local` table,
-  no `nodecon`/`netifcon`/`portcon` SELinux labels found [C re-checked 2026-10-10 on live-pulled policy: zero such rules in Y181 `gm_enum_20260909_225158` `pulled_files/vendor_sepolicy.cil` and `plat_sepolicy.cil`]. Routing reachability **NOT confirmed** — rests on documented Android-13+
+  no `nodecon`/`netifcon`/`portcon` SELinux labels found [C re-checked 2026-10-10 on live-pulled policy: zero such rules in Y181 `gm_enum_20260909_225158` `pulled_files/vendor_sepolicy.cil` and `plat_sepolicy.cil`; byte-identical in-repo copies at `evidence/enumeration/Y181/pulled_files/` also contain zero such rules]. Routing reachability **NOT confirmed** — rests on documented Android-13+
   netd local-route precedence; needs a live `ip route get 172.16.5.101` + an actual socket attempt (full-project searched 2026-10-10: Y181 `raw/ip_route.txt` shows only `172.16.4.0/24` vlan4, `192.168.1.0/24` vlan5/eth0, `192.168.5.0/24` br0 in the main table and shell cannot dump the `local` table; the `172.16.5.x`/`192.168.118.x` CT5-VCU topology has no capture in the Silverado adb tree).
 - **Apparent consequence:** an unprivileged app connecting as a *client* would only **receive** the cluster
   feed (info disclosure) or get an empty per-`DeviceName` stub — it could **not inject** into the real cluster
@@ -158,7 +158,7 @@ This is consistent with: GM's design intent is uniform cluster appearance regard
 1. **The shim was correct work for Silverado** — without it, the cluster widget would show no icon regardless of what carlink computed.
 2. **The shim is dead-weight on CT5** — even with a perfect bitmap, the ECU substitutes its own glyph. Cannot be fixed from 3P scope.
 3. **The most carlink can do on CT5** to control the rendered glyph is ensure `Maneuver.TYPE_*` mapping in `ManeuverMapper.kt` produces the most precise matching enum so the GM glyph chosen is at least correct for the maneuver. Mapping accuracy translates 1:1 to the cluster sprite chosen by the ECU.
-4. **Workaround experiment** (UNVERIFIED — full-project searched 2026-10-10; no CT5 hardware capture exists in the repo or `analysis/adb/`, which is Silverado-only): set `Maneuver.TYPE_UNKNOWN` unconditionally on CT5 to observe whether the ECU falls back to URI rendering or draws a generic "unknown" sprite. Risk-free runtime test.
+4. **Workaround experiment** (UNVERIFIED — full-project searched 2026-10-10; no CT5 hardware capture exists in the repo or `evidence/enumeration/`, which is Silverado-only): set `Maneuver.TYPE_UNKNOWN` unconditionally on CT5 to observe whether the ECU falls back to URI rendering or draws a generic "unknown" sprite. Risk-free runtime test.
 
 ### Cross-platform summary table
 
@@ -857,7 +857,7 @@ The cluster renders navigation using these pre-built icons based on the maneuver
 
 ## Data Sources
 
-**ADB Enumeration (`/analysis/adb_Y181/`):**
+**ADB Enumeration (`evidence/enumeration/Y181/`):**
 - `dumpsys SurfaceFlinger`
 - `dumpsys display`
 - `service list`

@@ -366,7 +366,7 @@ CONFIRMED WORKING:
 | Address | Stock Value                                    | Bypass Value | Effect                      |
 |---------|-------------------------------------------------|--------------|-------------------------------|
 | 0x0440  | C3 00 C3 FF                                      | 5A FF 5A FF  | Primary ADB bypass [C]        |
-| 0x0A80  | FF FF FF FF (older/uninitialized dumps) or C3 00 C3 (Y181 stock, initialized) -- History: corrected 2026-08-25 against eeprom/Y181_stock.bin; GM began actively initializing the backup SBI starting with Y181, so stock value is firmware-state-dependent, not fixed [C] | 5A FF 5A FF  | Backup ADB bypass [C]         |
+| 0x0A80  | FF FF FF FF (older/uninitialized dumps) or C3 00 C3 (Y181 stock, initialized) -- History: corrected 2026-08-25 against a Y181 stock EEPROM dump (`Y181_stock.bin`, not preserved in this repository; only `eeprom/bins/Y181_ADB_enabled_HC.bin` and `Y181_ADB_enabled_LTZ.bin` are present); GM began actively initializing the backup SBI starting with Y181, so stock value is firmware-state-dependent, not fixed [C] | 5A FF 5A FF  | Backup ADB bypass [C]         |
 | 0x0B41  | 69 00 69                                         | 69 01 69 (byte 0x0B41=0x01) | No demonstrated effect; not a debug-mode bypass [C/U] |
 
 TESTED (NO ADVERSE EFFECT):

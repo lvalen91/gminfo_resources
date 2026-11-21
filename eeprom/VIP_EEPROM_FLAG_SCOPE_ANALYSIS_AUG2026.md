@@ -327,7 +327,7 @@ work.**
 
 The task brief flagged `0xecd84` as the one address the provenance audit considered
 independently verified, with an existing decompile at
-`.../out_vip_app/f_000ecd84_FUN_000ecd84.c`:
+`eeprom/config_tool/firmware_re/out_vip_app/f_000ecd84_FUN_000ecd84.c`:
 
 ```c
 uint FUN_000ecd84(undefined4 param_1)

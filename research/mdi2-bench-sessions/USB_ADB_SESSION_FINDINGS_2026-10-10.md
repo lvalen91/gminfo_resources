@@ -318,7 +318,7 @@ or a CC strap.** This supersedes the earlier "host-side CC strap / receptacle mo
 *in-vehicle* explanation (that owner-bench result was the direct-line Path B).
 
 **[CROSS-CONFIRMED] VID `0x2996` = Aptiv.** A live enumeration snapshot of the radio's internal USB
-tree independently lists it [repo `research/GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt:798-800`]:
+tree independently lists it [retired repo doc `GM_AAOS_SECURITY_RESEARCH_COMPENDIUM.txt:798-800` (folded into other docs per `research/README.md` "Retired"; line range refers to the pre-retirement file); the same IDs are tabulated in [`platform/ethernet_networking.md`](../../platform/ethernet_networking.md)]:
 - **2× Aptiv H2H bridges — VID `10646`(`0x2996`) PID `261`(`0x0105`)** ← what `dabridge` binds
 - 2× GM V10 E2 PD hubs — `0x2996:0132`
 - 2× Vendor DFU devices — `0x2996:0120`

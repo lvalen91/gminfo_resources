@@ -18,7 +18,7 @@ Platform-wide values; Y177 = snapshot build W231E-Y177.6.1, Y181B = W231E-Y181.3
 | Component | Spec |
 |---|---|
 | CPU | Intel Atom x7-A3960 (Goldmont / Apollo Lake), 4 cores, 4 threads, LFM 800 MHz / HFM 1.6 GHz / burst 2.0 GHz [Intel 336256], 14 nm, 12 W TDP @ TjMax [Intel 336256], AEC-Q100, Tcase -40..+98 C |
-| Compute module | The Intel A3960 + RAM form a **discrete compute module** soldered on the Bosch/Harman carrier (photo-confirmed: `hardware/photos/soc_a3960_ram_rf_module.jpeg`); BGA1296, soldered |
+| Compute module | The Intel A3960 + RAM form a **discrete compute module** soldered on the Bosch/Harman carrier (photo-confirmed: `hardware/photos/soc_a3960_ram_rf_module.jpeg`, not preserved in this repository); BGA1296, soldered |
 | CPU part # | LH8066803226000 |
 | CPU ID | "IoT CPU 1.0" (cpu family 6, model 92, stepping 10) |
 | CPU clock | 1881.6 MHz (hypervisor-visible), BogoMIPS 3763.20 |
@@ -313,6 +313,8 @@ Single-sample keys from the Y177 tech_specs snapshot, kept for completeness; the
 ---
 
 ## Open conflicts
+
+[Line-number citations in this section (`hardware.md:N`, `gminfo3.7_tech_specs.md:N`, `intel_apl_external_resources.md:N`) refer to the pre-merge source docs, which are retired; the line numbers do not map to current files. The cited values are in the tables above.]
 
 1. **GPU boost 650 vs 750 MHz.** Datasheet burst is 650 MHz (`intel_apl_external_resources.md:158`; tech_specs `gpu_burst_mhz: 650` at `gminfo3.7_tech_specs.md:39`). The Y177 snapshot `gpu.freq_boost: 750` (`gminfo3.7_tech_specs.md:49`; `hardware.md:22` "300-750 MHz range") is [UNVERIFIED]: no GPU frequency node is shell-readable (search 2026-10-10). Both kept.
    > **[ONLINE RESEARCH 2026-11-21]** Intel ARK product page for x7-A3960 is currently inaccessible (301 → 404 redirect). The Intel Atom E3900/A3900 Datasheet Addendum 336256 (local copy confirmed in this project) is the authoritative source: it lists the HD Graphics 505 (Gen9 LP, 18 EU) at LFM/HFM/Burst 100/500/**650 MHz**, consistent with `gpu_burst_mhz: 650` in the Y177 snapshot. The industrial sibling x7-E3950 (identical GPU silicon, same 18 EU Gen9 LP) is documented at **500 MHz base / 650 MHz max** on multiple third-party databases (WikiChip, cpu-monkey.com, notebookcheck.net) — no source lists 750 MHz for either the E3950 or the A3960. No Intel documentation or credible third-party spec sheet showing 750 MHz for the A3960 (or E3950) GPU was found. **Assessment: 650 MHz is the confirmed Intel datasheet ceiling for the HD 505 on this SoC. The `gpu.freq_boost=750` prop value is likely a driver-side OC target or prop value error; it has no basis in published Intel specifications.**

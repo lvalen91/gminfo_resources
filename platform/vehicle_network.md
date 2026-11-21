@@ -379,7 +379,7 @@ The emulator un-stubs the service mesh with synthetic peers: **vlan5** `.106` Vi
 ## Open conflicts
 
 1. **`.107` / `.112` identity (unresolved).**
-   - This doc, vlan5 table: `.107` = "CGM host processor / telematics" [C] (also `networking.md:279` "CGM Host");
+   - This doc, vlan5 table: `.107` = "CGM host processor / telematics" [C] (also retired `networking.md:279` "CGM Host"; `networking.md` references below cite the pre-retirement file, successor `ethernet_networking.md`);
      `.112` = CGM_ETH/CGM_OTA, vlan4 face `172.16.4.112` = Bosch `10:66:50:0c:ed:d3`, TTL=64 (Linux).
    - Same doc, 2026-10-06 correction: vlan4 `172.16.4.107` = RTOS/GHS partition, MAC `02:05:00:00:02:00`
      (locally administered), TTL=255, "dual-homed as `192.168.1.112`" — which contradicts `.112` being the

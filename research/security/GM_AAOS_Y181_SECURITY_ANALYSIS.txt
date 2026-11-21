@@ -227,7 +227,7 @@ External interfaces (0.0.0.0):
 |-------|--------|------------------------------------|
 | 6363  | HIGH   | GMVT service                       |
 | 7000  | HIGH   | Unknown                            |
-  [2026-11-12: 7000 = AirPlay/AirTunes per platform/networking.md (uid 1001000); not ADB (5555, not listening)]
+  [2026-11-12: 7000 = AirPlay/AirTunes per platform/ethernet_networking.md (uid 1001000); not ADB (5555, not listening)]
 | 49156 | HIGH   | Unknown                            |
 
 Internal network (192.168.1.1):

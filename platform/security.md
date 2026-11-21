@@ -180,7 +180,7 @@ gates, not the originally-cited `dontaudit` rule.
 > **[C] live-Y175 2026-10-05: UNVERIFIABLE-FROM-LIVE.** VIP firmware version, the `0xb67d0`-class
 > validator, subroutines and byte-diffs are off-SoC/teardown artifacts, not observable from a
 > locked Y175 user shell. Corroboration available: `gm_protokey` is live (PID 889, root,
-> SELinux domain `gm_protokey`). **VIP-side corroboration** [diagnostics/Y175_session.log]:
+> SELinux domain `gm_protokey`). **VIP-side corroboration** [evidence/enumeration/Y175/Y175_VIP.log]:
 > the VIP boot log independently shows `J6_prv_ProtoKey:Protokey transmitted to SoC`
 > (repeating), `SbaTicketValidation validation failed: 0x0`, `Receives invalid seed [1/2]
 > from BCM` — the ProtoKey-transmit + SBAT-validation + seed-from-BCM path is observable from

@@ -363,8 +363,8 @@ The VIP MCU bridges CAN messages to the Intel SoC over the HDLC IPC link, transl
 
 ## Open conflicts
 
-1. **Y175 switch package vs running manager.** `85759612` (Marvell `MVL88Q5050_globalB_...`) was extracted from the *Y175* update package (networking.md L210), yet live Y175 runs `ethctrlmgr` with `ethmvlctrlmgr` absent (firmware_versions.md L131) and the board-variant rule maps `ethctrlmgr` to Broadcom. Not settled by any dated correction; could be package-vs-bench-board difference or a manager selection not tied to the IC. Unresolved.
-2. **eth0 IPv4 / MAC.** networking.md L18 gives `192.168.1.100/24` on eth0 for Y181 and no IPv4 on Y175; tech_specs L191 lists eth0 MAC `02:04:00:00:01:00` (build not stated) while the live Y175 MAC is unverifiable (L43). Not reconciled.
+1. **Y175 switch package vs running manager.** `85759612` (Marvell `MVL88Q5050_globalB_...`) was extracted from the *Y175* update package (retired `networking.md` L210; successor of that content is this doc), yet live Y175 runs `ethctrlmgr` with `ethmvlctrlmgr` absent (firmware_versions.md L131) and the board-variant rule maps `ethctrlmgr` to Broadcom. Not settled by any dated correction; could be package-vs-bench-board difference or a manager selection not tied to the IC. Unresolved.
+2. **eth0 IPv4 / MAC.** Retired `networking.md` L18 gives `192.168.1.100/24` on eth0 for Y181 and no IPv4 on Y175; tech_specs L191 lists eth0 MAC `02:04:00:00:01:00` (build not stated) while the live Y175 MAC is unverifiable (L43). Not reconciled.
 3. **Port-numbering domains** (section 2.2 vs 2.4) remain unreconciled by design; VLAN 9 unobserved.
 4. **VLAN-5 .107 / .112 identity.** Section 3.1 lists `.107` = CGM Host and `.112` = CGM_ETH; FSA instanceId 7 = CGM(.112); section 3.2 lists `172.16.4.107` as a disputed RTOS/GHS diagnostic candidate and `172.16.4.112` as CGM_OTA. Cross-doc conflict is carried in [vehicle_network.md](vehicle_network.md).
 5. **FSA client targets.** Historical `.102:9005/9012/9018` vs live SYN_SENT to `.112:9010/9018` (section 4.2): different snapshots; both retained.

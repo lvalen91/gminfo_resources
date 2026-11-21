@@ -188,7 +188,7 @@ name/section only, never restated).
 Actions taken in response to this audit:
 
 - **#16 `intel_iommu=off`, #18 `e1000e`, #28 `.1` reachability** — corrected in
-  `T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` with inline `⚠CORRECTED` markers + a
+  `T1_NETWORK_AND_EEPROM_CAL_CONVERGENCE_AUG2026.md` (since retired; landing docs per `research/README.md` "Retired") with inline `⚠CORRECTED` markers + a
   provenance banner. IOMMU-off downgraded to an unverified research question; driver fixed to
   `igb_avb`; `.1` reframed as guest-client-reachable-but-not-on-wire.
 - **#7 zero-marker-patterns, #9 VIP PN hash** — `⚠CORRECTED` annotations added in

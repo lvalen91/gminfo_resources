@@ -64,7 +64,7 @@ Classic A/B (NOT virtual A/B — no COW snapshots). `ro.build.ab_update=true`, `
 
 ### Ghidra Analysis (9 passes, VIP firmware 86331656)
 
-Binary: 1.9MB, Renesas RH850 — disassemble with the **RH850:LE:32** SLEIGH module. (The earlier V850:LE:32 pass reported here, 6,251 functions, was only an approximation; it is superseded by fresh RH850 projects — an RH850 disassembly of 86331656 yields substantially more functions than the abandoned ~6,251-function V850 pass (RH850 counts run ~10,350–12,939 across passes; see `research/MASTER_REFERENCE.md` and `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, not INVENTORY.md). The crypto findings below are from the superseded V850 pass but its conclusions — VIP is a transparent relay, no crypto — hold.)
+Binary: 1.9MB, Renesas RH850 — disassemble with the **RH850:LE:32** SLEIGH module. (The earlier V850:LE:32 pass reported here, 6,251 functions, was only an approximation; it is superseded by fresh RH850 projects — an RH850 disassembly of 86331656 yields substantially more functions than the abandoned ~6,251-function V850 pass (RH850 counts run ~10,350–12,939 across passes; see `research/MASTER_REFERENCE.md` (retired; its routing table is now `research/README.md`, and the function counts are carried in `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`) and `research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`, not INVENTORY.md). The crypto findings below are from the superseded V850 pass but its conclusions — VIP is a transparent relay, no crypto — hold.)
 
 **The VIP contains ZERO cryptographic operations:**
 

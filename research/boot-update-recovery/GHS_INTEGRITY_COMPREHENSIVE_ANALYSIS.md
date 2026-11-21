@@ -208,7 +208,7 @@ not restated here.
 
 #### ghsaudit.log format and event codes
 
-The file `recovery/ghsaudit.log` contains 65,536 × 16-byte fixed-size records. Each record has the layout: `u32 (client<<16)|type`, `u32 data`, `u64 tick`. A total of 1,224 session-start slots are present, which is not reconcilable with the 29 observed boots (G3 in forensic cache; event code names UNKNOWN).
+The extracted-device file `recovery/ghsaudit.log` (not checked into this repository) contains 65,536 × 16-byte fixed-size records. Each record has the layout: `u32 (client<<16)|type`, `u32 data`, `u64 tick`. A total of 1,224 session-start slots are present, which is not reconcilable with the 29 observed boots (G3 in forensic cache; event code names UNKNOWN).
 
 > **Online research note [ONLINE RESEARCH 2026-11-21]:** No public mapping found for GHS INTEGRITY audit log event type codes. Web searches for "GHS INTEGRITY audit log format," "Green Hills INTEGRITY security audit events," and "INTEGRITY IoT ghsaudit" found no published event code table, API header, or academic paper describing the per-type event codes. The Common Criteria Security Target for INTEGRITY-178B describes the audit log conceptually (circular buffer in kernel memory, fixed-format records, authorized-reader access control, success/failure flags for auditable security events) but does not publish the event-type encoding or the client/type bitfield layout. The INTEGRITY-178 Audit Logging feature is a licensed layered extension; its API documentation is customer-only. No public INTEGRITY IoT audit API documentation was located. The 65,536-record capacity with circular overwrite (consistent with the CC description) is the only structural element inferable from public material.
 
