@@ -394,11 +394,11 @@ Note: IDs are 29-bit extended CAN format (hex values in the ~0x10xxxxxx range).
 | Hex ID | Name | ECU | Bytes | Key signals |
 |--------|------|-----|-------|-------------|
 | 0x10630000 | DriverDoorStatus | GMLAN | 1 | DriverDoorOpened[0\|1] |
-| 0x10400000 | Chime | NEO→GMLAN | 5 | ChimeType[7\|8], ChimeRepeat[23\|8], ChimeDuration[15\|8] |
+| 0x10400000 | Chime | NEO→GMLAN | 5 | ChimeType[7\|8], ChimeRepeat[23\|8], ChimeDuration[15\|8], ChimeByte4, ChimeByte5 |
 | 0x1020C000 | BlinkerStatus | GMLAN | 5 | RightBlinker[6\|1], LeftBlinker[7\|1], BlinkerLight[25\|1] |
 | 0x10240000 | SteeringWheelAngle | GMLAN | 8 | SteeringWheelAngle[39\|16] (×0.0625°, −540..540°) |
 | 0x102CC000 | GearShifter | GMLAN | 8 | GearShifter[17\|2] (0=Drive/Low,3=Park) |
-| 0x102CA000 | GasPedalRegenCruise | GMLAN | 8 | GasPedal[47\|8] (0–254), MaxRegen[12\|1], CruiseControlActive[56\|1] |
+| 0x102CA000 | GasPedalRegenCruise | GMLAN | 8 | GasPedal[47\|8] (0–254), MaxRegen[12\|1], CruiseControlActive[56\|1], GearShifter2NotUsed |
 | 0x10250000 | BrakePedal | GMLAN | 2 | BrakeLevel[2\|2] (0–3), BrakeSensor[15\|8] (0–255) |
 | 0x106B8000 | WheelSpeed | GMLAN | 8 | WheelSpeedFL/FR/RL/RR[7,39,23,55\|16] (×0.01 yd/s, 0–70) |
 | 0x10210000 | VehicleSpeed | GMLAN | 8 | VehicleSpeed1[7\|16] (×0.01 mph), VehicleSpeed2[39\|16] |
