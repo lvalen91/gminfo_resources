@@ -20,7 +20,7 @@
 | Tester address | `0x00F4` (also `0x00F5` for basic reads) |
 | ECU address | `0x0084` |
 | Process | `/vendor/bin/diagnosticsd`, PID ~599, runs as root (UID 0) |
-| Session P2 timing | `50 03 00 64 01 F2` → P2=100ms, P2*=498ms |
+| Session P2 timing | `50 03 00 64 01 F2` → P2=100ms, P2*=4980ms (0x01F2=498 × 10ms per ISO 14229) |
 | CAN5 physical | 500 kbit/s, request `0x14DA80F2`, response `0x145AF280` |
 
 ---
@@ -45,7 +45,7 @@
 | 17 | `0x14` | ClearDiagnosticInformation |
 | 18 | `0x85` | ControlDTCSetting |
 
-**Not in native map** (SID → unknown service conversion, NRC 25): `0x11` ECUReset, `0x23` ReadMemoryByAddress, `0x24`, `0x35`, `0x38`, `0x83`.  
+**Not in native map:** `0x11` ECUReset → NRC 25; `0x23` ReadMemoryByAddress → NRC 25; `0x24`, `0x35`, `0x38`, `0x83` → NRC 11 (unknown-service conversion).  
 `0x3E` TesterPresent is handled separately (confirmed live: `3E 00` → `7E 00`).
 
 ### Full UDS service reference (GateKeeperESP_services.h + ISO 14229)
@@ -141,14 +141,14 @@ Sweep: all 65536 DIDs, extended session + SecurityAccess level 09, T1 Ethernet, 
 |-----|------:|--------------|
 | `5735` | 32 | Native DID — startup-time/startup-type listeners |
 | `573D` | 32 | Native DID — boot-time listener |
-| `5730`–`573E` (10 DIDs) | 32 ea. | 57xx listener group |
+| `5730`–`573E` (10 DIDs; 573A=1 byte, 573B=4 bytes are exceptions) | 1–32 | 57xx listener group |
 | `573A` | 1 | — |
 | `573B` | 4 | — |
 | `F180` | 15 | Boot module IDs: 2 records (tag47=85056831/AA, tag48=85098661/AB) |
 | `F181` | 15 | Software IDs: 2 records (tag01=85759599/CJ, tag15=85098662/BM) |
 | `F182` | 197 | Cal+component IDs: 28 seven-byte records (see §4a) |
 | `F190` | 17 | VIN (17 bytes, omitted) |
-| `F198` | 10 | Programming date/time |
+| `F198` | 10 | Repair Shop Code |
 | `F199` | 4 | — |
 | `F1CB` | 4 | — |
 | `F1CC` | 4 | — |
@@ -168,14 +168,14 @@ Sweep: all 65536 DIDs, extended session + SecurityAccess level 09, T1 Ethernet, 
 | `F0F6` | 24 | — |
 | `F0FA` | 99 | — |
 | `F0FB` | 2 | — |
-| `C002`–`C009` (6 DIDs) | 1–12 | C0xx group (SXM/HW revisions area) |
+| `C002`–`C009` (8 DIDs) | 1–12 | C0xx group (SXM/HW revisions area) |
 | `C00E` | 16 | — |
 | `C00F` | 3 | — |
 | `4FF0` | 3960 | Largest response (3960 bytes) |
 | `4FFA` | 36 | — |
 | `4FFB` | 2 | — |
 | `4F8E`/`4F8F` | 75 ea. | — |
-| `4FE2`–`4FE8` (6 DIDs) | 1–10 | — |
+| `4FE2`–`4FE8` (7 DIDs) | 1–10 | — |
 | `5FA7`–`5FAE` (8 DIDs) | 75 ea. | — |
 | `5812`/`5813`/`5814`/`5815` | 1–5 | Audio source state |
 | `5152` | 8 | — |
@@ -191,7 +191,7 @@ Sweep: all 65536 DIDs, extended session + SecurityAccess level 09, T1 Ethernet, 
 | `4478` | 1 | AF enable status |
 | `447A` | 102 | — |
 | `440A`–`440C` | 1 ea. | Diagnostic tone channel (RF/RR/LR) |
-| `41D8`–`41EF` (13 DIDs) | 1 ea. | IOCID current state DIDs |
+| `41D8`–`41EF` (12 DIDs) | 1 ea. | IOCID current state DIDs |
 | `41F5` | 190 | — |
 | `42AA`–`42C5` (22 DIDs) | 1–80 | — |
 
@@ -249,7 +249,7 @@ Positive response: `71 <sub> <RID-hi> <RID-lo> [data]`
 | `03D8` | Audio/HMI test enable (results: bit0=unmuted, bit1=screen, bit2=AM, bit3=FM) | — ; **[live]** result 07 |
 | `0405` | Broadcast `com.gm.android.action.REGISTRATION_START` | — ; **[live]** `71 01 04 05` |
 | `FF00` | `diagEraseOverrideFile` / `handleEraseMemoryRequest` | — |
-| `FF01` | Programmed-state check / programming monitor check | Level 01; **[live]** `71 01 FF 01 00 86 04 03 00` |
+| `FF01` | Programmed-state check / programming monitor check | Level 01; **[live]** `71 01 FF 01 00 86 04 03 00` (5 data bytes) |
 
 ### From MDI2 / CAN captures
 
@@ -313,6 +313,7 @@ Protocol: `ProtocolType=GMLAN`, `BusType=CAN`, `UseGMParameterIDs=0`
 | K114B_HPCM | Hybrid Powertrain Control Module |
 | K124_ASCM | Active Safety Control Module |
 | EPB | Electric Parking Brake |
+| NEO | Comma NEO (ASCM arbitration) |
 
 **Messages:**
 
@@ -330,8 +331,8 @@ Protocol: `ProtocolType=GMLAN`, `BusType=CAN`, `UseGMParameterIDs=0`
 | 328 | 0x148 | PSCM_148 | K43_PSCM | 1 | (empty) |
 | 352 | 0x160 | BCMImmobilizer | K9_BCM | 5 | ImmobilizerInfo[7\|32] (non-zero in ignition/accessory) |
 | 381 | 0x17D | ESPStatus | K20_ECM | 6 | TractionControlOn[5\|1], MSG17D_AccPower[35\|12] |
-| 384 | 0x180 | ASCMLKASteeringCmd | NEO→K124_ASCM | 4 | LKASteeringCmd[2\|11] (Nm), LKASteeringCmdActive, RollingCounter, LKASteeringCmdChecksum |
-| 388 | 0x184 | PSCMStatus | K43_PSCM | 8 | LKATorqueDelivered[18\|11] (×0.01 Nm), LKADriverAppldTrq[50\|11] (×0.01 Nm, ±10.24 Nm), HandsOffSWDetectionMode, LKATorqueDeliveredStatus |
+| 384 | 0x180 | ASCMLKASteeringCmd | NEO→K124_ASCM | 4 | LKASteeringCmd[2\|11], LKASteeringCmdActive, RollingCounter, LKASteeringCmdChecksum |
+| 388 | 0x184 | PSCMStatus | K43_PSCM | 8 | LKATorqueDelivered[18\|11] (×0.01 Nm), LKATotalTorqueDelivered, LKADriverAppldTrq[50\|11] (×0.01 Nm, ±10.24 Nm), HandsOffSWDetectionMode, HandsOffSWlDetectionStatus, LKATorqueDeliveredStatus, RollingCounter, PSCMStatusChecksum |
 | 417 | 0x1A1 | AcceleratorPedal | — | 7 | AcceleratorPedal[55\|8] |
 | 451 | 0x1C3 | GasAndAcc | — | 8 | GasPedalAndAcc2[55\|8] (baseline ACC=62) |
 | 452 | 0x1C4 | AcceleratorPedal2 | — | 8 | CruiseState[15\|3] (0=Off,1=Active,3=Faulted,4=Standstill), AcceleratorPedal2 |
@@ -346,16 +347,16 @@ Protocol: `ProtocolType=GMLAN`, `BusType=CAN`, `UseGMParameterIDs=0`
 | 562 | 0x232 | EBCMFrictionBrakeStatus | K17_EBCM | 8 | FrictionBrakeUnavailable (1 when ACC brake unavailable; latches if brake cmd blocked) |
 | 608 | 0x260 | SPEED_RELATED | — | 8 | ClusterSpeed[31\|8] |
 | 711 | 0x2C7 | BECMBatteryVoltageCurrent | K17_EBCM | 6 | HVBatteryVoltage[31\|12] (×0.125 V, 0–511.875 V), HVBatteryCurrent[12\|13] (×0.15 A, ±614 A) |
-| 715 | 0x2CB | ASCMGasRegenCmd | K124_ASCM | 8 | GasRegenCmd[10\|19] (×0.125 Nm, offset −22534, range −22534..43002 Nm), GasRegenCmdActive, GasRegenFullStopActive |
+| 715 | 0x2CB | ASCMGasRegenCmd | K124_ASCM | 8 | GasRegenCmd[10\|19] (×0.125 Nm, offset −22534, range −22534..43001.875 Nm), GasRegenCmdActive, GasRegenFullStopActive, GasRegenAccType, GasRegenChecksum, RollingCounter |
 | 717 | 0x2CD | ASCM_2CD | K124_ASCM | 5 | (empty) |
 | 761 | 0x2F9 | BRAKE_RELATED_2 | — | 7 | UserBrakePressure2[47\|9] |
 | 789 | 0x315 | EBCMFrictionBrakeCmd | K124_ASCM | 5 | FrictionBrakeCmd[3\|12], FrictionBrakeMode[7\|4], RollingCounter |
 | 800 | 0x320 | AEBCmd | K124_ASCM | 6 | AEBCmd[2\|11], AEBCmdActive[3\|1], AEBCmd2[23\|8], RollingCounter |
 | 810 | 0x32A | TCICOnStarGPSPosition | K73_TCIC | 8 | GPSLatitude[7\|32] (milliarcsecond), GPSLongitude[39\|32] (milliarcsecond, offset −2147483648) |
 | 840 | 0x348 | EBCMWheelSpdFront | K17_EBCM | 5 | FLWheelSpd[7\|16] (×0.0311 km/h), FRWheelSpd[23\|16] (×0.0311 km/h) |
-| 842 | 0x34A | EBCMWheelSpdRear | K17_EBCM | 5 | RLWheelSpd, RRWheelSpd (×0.0311 km/h), RRWheelDir/RLWheelDir (0=Stop,1=Fwd,2=Rev,4=Fault) |
+| 842 | 0x34A | EBCMWheelSpdRear | K17_EBCM | 5 | RLWheelSpd, RRWheelSpd (×0.0311 km/h), RRWheelDir/RLWheelDir (0=Stop,1=Fwd,2=Rev,3=Unsupported,4=Fault) |
 | 869 | 0x365 | ASCM_365 | K124_ASCM | 4 | (empty) |
-| 880 | 0x370 | ASCMActiveCruiseControlStatus | K124_ASCM | 6 | ACCSpeedSetpoint[19\|12] (×0.0625 km/h), ACCGapLevel[21\|2] (0=Inactive,1=Near,2=Med,3=Far), ACCCmdActive, ACCLeadCar, FCWAlert[41\|2] |
+| 880 | 0x370 | ASCMActiveCruiseControlStatus | K124_ASCM | 6 | ACCSpeedSetpoint[19\|12] (×0.0625 km/h), ACCGapLevel[21\|2] (0=Inactive,1=Near,2=Med,3=Far), ACCCmdActive, ACCLeadCar, FCWAlert[41\|2], ACCCruiseState, ACCResumeButton |
 | 967 | 0x3C7 | EVDriveMode | — | 4 | SinglePedalModeActive, SinglePedalModeRisingEdge, SinglePedalModeFallingEdge |
 | 977 | 0x3D1 | ECMCruiseControl | K20_ECM | 8 | CruiseActive[39\|1], CruiseSetSpeed[19\|12] (×0.0625 km/h) |
 | 1001 | 0x3E9 | ECMVehicleSpeed | K20_ECM | 8 | VehicleSpeed[7\|16] (×0.01 mph, right-front wheel), VehicleSpeedLeft[39\|16] (×0.01 mph) |
@@ -379,10 +380,10 @@ Protocol: `ProtocolType=GMLAN`, `BusType=CAN`, `UseGMParameterIDs=0`
 |-----|-----|------|-----|-------|-------------|
 | 368 | 0x170 | EBCMFrictionBrakeStatus | K17_EBCM | 8 | FrictionBrakePressure[23\|16] |
 | 560 | 0x230 | EBCMRegen | K17_EBCM | 6 | Regen[1\|10] |
-| 789 | 0x315 | EBCMFrictionBrakeCmd | K17_EBCM | 5 | FrictionBrakeCmd[3\|12], FrictionBrakeMode, RollingCounter |
-| 823 | 0x337 | PACMParkAssistCmd | NEO→K43_PSCM | 7 | SteeringWheelCmd[23\|16], SteeringWheelChecksum[47\|16], RollingCounter |
+| 789 | 0x315 | EBCMFrictionBrakeCmd | K17_EBCM / NEO | 5 | FrictionBrakeCmd[3\|12], FrictionBrakeMode, FrictionBrakeChecksum, RollingCounter |
+| 823 | 0x337 | PACMParkAssitCmd | NEO / K43_PSCM | 7 | SteeringWheelCmd[23\|16], SteeringWheelChecksum[47\|16], RollingCounter |
 
-**ECU nodes:** K182_PACM (Parking Assist), K43_PSCM, K17_EBCM, K124_ASCM
+**ECU nodes:** K182_PACM (Parking Assist), K43_PSCM, K17_EBCM, K124_ASCM, NEO
 
 ---
 
@@ -392,19 +393,19 @@ Note: IDs are 29-bit extended CAN format (hex values in the ~0x10xxxxxx range).
 
 | Hex ID | Name | ECU | Bytes | Key signals |
 |--------|------|-----|-------|-------------|
-| 0x1056E400 | DriverDoorStatus | GMLAN | 1 | DriverDoorOpened[0\|1] |
-| 0x103E5000 | Chime | NEO→GMLAN | 5 | ChimeType[7\|8], ChimeRepeat[23\|8], ChimeDuration[15\|8] |
-| 0x102A5000 | BlinkerStatus | GMLAN | 5 | RightBlinker[6\|1], LeftBlinker[7\|1], BlinkerLight[25\|1] |
-| 0x1023F400 | SteeringWheelAngle | GMLAN | 8 | SteeringWheelAngle[39\|16] (×0.0625°, −540..540°) |
-| 0x102AF800 | GearShifter | GMLAN | 8 | GearShifter[17\|2] (0=Drive/Low,3=Park) |
-| 0x102AE000 | GasPedalRegenCruise | GMLAN | 8 | GasPedal[47\|8] (0–254), MaxRegen[12\|1], CruiseControlActive[56\|1] |
-| 0x1023C000 | BrakePedal | GMLAN | 2 | BrakeLevel[2\|2] (0–3), BrakeSensor[15\|8] (0–255) |
-| 0x1066C800 | WheelSpeed | GMLAN | 8 | WheelSpeedFL/FR/RL/RR[7,39,23,55\|16] (×0.01 yd/s, 0–70) |
-| 0x1023C800 | VehicleSpeed | GMLAN | 8 | VehicleSpeed1[7\|16] (×0.01 mph), VehicleSpeed2[39\|16] |
-| 0x1072A000 | CruiseButtons | GMLAN | 3 | CruiseButtons[3\|3] (1=None,2=Resume,3=Set,5=Main,6=Cancel) |
-| 0x1072A400 | CruiseButtons2 | GMLAN | 1 | LKAGapButton[1\|2] |
-| 0x10740299 | LeftRadar | GMLAN | 2 | BSM_Indicator_Light[4\|1] |
-| 0x1074081B | RightRadar | GMLAN | 2 | BSM_Indicator_Light[0\|1] |
+| 0x10630000 | DriverDoorStatus | GMLAN | 1 | DriverDoorOpened[0\|1] |
+| 0x10400000 | Chime | NEO→GMLAN | 5 | ChimeType[7\|8], ChimeRepeat[23\|8], ChimeDuration[15\|8] |
+| 0x1020C000 | BlinkerStatus | GMLAN | 5 | RightBlinker[6\|1], LeftBlinker[7\|1], BlinkerLight[25\|1] |
+| 0x10240000 | SteeringWheelAngle | GMLAN | 8 | SteeringWheelAngle[39\|16] (×0.0625°, −540..540°) |
+| 0x102CC000 | GearShifter | GMLAN | 8 | GearShifter[17\|2] (0=Drive/Low,3=Park) |
+| 0x102CA000 | GasPedalRegenCruise | GMLAN | 8 | GasPedal[47\|8] (0–254), MaxRegen[12\|1], CruiseControlActive[56\|1] |
+| 0x10250000 | BrakePedal | GMLAN | 2 | BrakeLevel[2\|2] (0–3), BrakeSensor[15\|8] (0–255) |
+| 0x106B8000 | WheelSpeed | GMLAN | 8 | WheelSpeedFL/FR/RL/RR[7,39,23,55\|16] (×0.01 yd/s, 0–70) |
+| 0x10210000 | VehicleSpeed | GMLAN | 8 | VehicleSpeed1[7\|16] (×0.01 mph), VehicleSpeed2[39\|16] |
+| 0x10758000 | CruiseButtons | GMLAN | 3 | CruiseButtons[3\|3] (1=None,2=Resume,3=Set,5=Main,6=Cancel) |
+| 0x10756000 | CruiseButtons2 | GMLAN | 1 | LKAGapButton[1\|2] |
+| 0x1072C0B9 | LeftRadar | GMLAN | 2 | BSM_Indicator_Light[4\|1] |
+| 0x1073205B | RightRadar | GMLAN | 2 | BSM_Indicator_Light[0\|1] |
 
 ---
 
@@ -418,32 +419,34 @@ Tester address: `0xF1`. Request pattern: `0x14DAxxF1` (xx = ECU addr). Response 
 | `0x18` | TCM | 14DA18F1 | 142AF118 |
 | `0x1A` | EOCM | 14DA1AF1 | 142AF11A |
 | `0x28` | BCM | 14DA28F1 | 142AF128 |
-| `0x31` | TCM2 | 14DA31F1 | 142AF131 |
-| `0x40` | VCM (61 sw modules) | 14DA40F1 | 145AF140 |
-| `0x41` | TEHCM | 14DA41F1 | 145AF141 |
+| `0x31` | TCM2 | 14DA31F1 | 141AF131 |
+| `0x40` | VCM (61 sw modules) | 14DA40F1 | 142AF140 |
+| `0x41` | TEHCM | 14DA41F1 | 142AF141 |
 | `0x45` | CGM/gateway | 14DA45F1 | 14DAF145 (anomalous) |
 | `0x58` | IPC | 14DA58F1 | 141AF158 |
 | `0x59` | EBCM | 14DA59F1 | 141AF159 |
-| `0x60` | RCDLR | 14DA60F1 | 141AF160 |
-| `0x68` | HVAC | 14DA68F1 | 141AF168 |
+| `0x60` | RCDLR | 14DA60F1 | 145AF160 |
+| `0x68` | HVAC | 14DA68F1 | 145AF168 |
 | `0x6D` | TCCM | 14DA6DF1 | 141AF16D |
-| `0x75` | SDM (airbag) | 14DA75F1 | 141AF175 |
-| `0x80` | Radio / A11 (infotainment) | 14DA80F1 | 144AF180 |
-| `0x81` | AMP | 14DA81F1 | 144AF181 |
-| `0x97` | HUD | 14DA97F1 | 144AF197 |
+| `0x75` | SDM (airbag) | 14DA75F1 | 144AF175 |
+| `0x80` | Radio / A11 (infotainment) | 14DA80F1 | 145AF180 |
+| `0x81` | AMP | 14DA81F1 | 145AF181 |
+| `0x97` | HUD | 14DA97F1 | 145AF197 |
 | `0xA4` | TPMS | 14DAA4F1 | 144AF1A4 |
 | `0xA8` | PDM | 14DAA8F1 | 144AF1A8 |
 | `0xB9` | Camera | 14DAB9F1 | 144AF1B9 |
 | `0xBA` | ParkAssist | 14DABAF1 | 144AF1BA |
-| `0xBD` | TRLM | 14DABDF1 | 144AF1BD |
-| `0xBE` | VGRS | 14DABEF1 | 144AF1BE |
-| `0xBF` | PLGM | 14DABFF1 | 144AF1BF |
+| `0xBD` | TRLM | 14DABDF1 | 142AF1BD |
+| `0xBE` | VGRS | 14DABEF1 | 145AF1BE |
+| `0xBF` | PLGM | 14DABFF1 | 142AF1BF |
 
 **Note:** The Y175 Ethernet endpoint uses a different transport than ISO-TP CAN. On T1 Ethernet (port 49156), tester `0x00F4`, ECU `0x0084`. CAN5 direct: request `0x14DA80F2`, response `0x145AF280`.
 
 ---
 
-## 8. HIDL Interfaces Registered by diagnosticsd
+## 8. HIDL Interfaces (diagnosticsd-related)
+
+Registered by diagnosticsd (6 confirmed):
 
 | Interface | Function |
 |-----------|----------|
@@ -451,8 +454,15 @@ Tester address: `0xF1`. Request pattern: `0x14DAxxF1` (xx = ECU addr). Response 
 | `vendor.gm.diagnostics.bridge@1.0::IDiagnosticsBridgeService` | RTOS bridge |
 | `vendor.gm.diagnostics.obd@1.0::IDiagnosticsOBDService` | OBD bridge (Binder, uid=2000) |
 | `vendor.gm.diagnostics.internal@1.0::IDiagnosticsInternalService` | Internal/privileged channel |
-| `vendor.harman.hardware.ame@1.0::IDiagnostics` | AME HAL (Apple auth chip, Google key, USB/WiFi/ETH status) |
-| `vendor.gm.panel@1.0::IPanelDiagnostics` | Panel/cluster diagnostics |
+| `IPowerModeListener` | Power mode listener |
+| `ISystemStateListener` | System state listener |
+
+Registered by **separate binaries** (not diagnosticsd):
+
+| Interface | Binary | Function |
+|-----------|--------|----------|
+| `vendor.harman.hardware.ame@1.0::IDiagnostics` | harman.ame | AME HAL (Apple auth chip, Google key, USB/WiFi/ETH status) |
+| `vendor.gm.panel@1.0::IPanelDiagnostics` | gm.panel | Panel/cluster diagnostics |
 
 VHAL key properties:
 - `HW_KEY_INJECT` = `0x21410165`
@@ -507,7 +517,7 @@ VHAL key properties:
 | `0x22` | YES | Default session for 134 DIDs; extended+lvl09 for F0A7 | NRC 31 unknown DID; NRC 33 security |
 | `0x2E` | YES (mapped) | Extended session + correct level (varies by DID) | NRC 33 wrong level |
 | `0x2F` | YES | Extended session + lvl 01 for most IOCIDs | NRC 31 unknown IOCID; NRC 22 precond |
-| `0x31` | YES | Varies by RID (see §11c) | NRC 31 unknown RID; NRC 7F wrong session |
+| `0x31` | YES | Varies by RID (see §11d) | NRC 31 unknown RID; NRC 7F wrong session |
 | `0x19` | YES (stub) | Any session | NRC 31 would not occur (all 128 subfuncs accepted) |
 | `0x14` | YES (mapped) | Extended session | — |
 | `0x28` | YES (mapped) | Extended session | — |
@@ -533,7 +543,9 @@ VHAL key properties:
 - `F09A`, `F0F4`, `F1DB`, `F1DC` — UART correlation shows these reach the VIP but NRC 11 is returned.
 
 **DIDs returning NRC 22 (conditionsNotCorrect — prerequisite not met):**
-- `4838`, `5151`, `41ED`, `42B7`, `42BE`, `42A6`–`42A9`, `C001`, `C00A`–`C00F`, `4428`, `4775` (before 03D8 start)
+- `5151`, `41ED`, `42B7`, `42BE`, `42A6`–`42A9`, `C001`, `C00A`–`C00D`, `4428`, `4775` (before 03D8 start)
+
+Note: `C00E`/`C00F` are positive reads (see §4); `4838` returns NRC 31 (see §11e).
 
 **DIDs returning NRC 31 (requestOutOfRange — not in any handler):**
 - Everything not in the §4 positive list (65376 DIDs)
@@ -543,7 +555,7 @@ VHAL key properties:
 | DID | Security level(s) |
 |-----|------------------|
 | `F190` (VIN) | 01, 03, 05, 11, 13, 15 |
-| `F198` (prog date) | 01, 03, 05, 11, 13, 15 |
+| `F198` (repair shop code) | 01, 03, 05, 11, 13, 15 |
 | `F199` | 01, 03, 05, 11, 13, 15 |
 | `E010` | 09, 0D |
 | `F0F4` | 01, 0B, 11 |
@@ -553,7 +565,7 @@ VHAL key properties:
 | RID | Start sub (`01`) | Stop sub (`02`) | Results sub (`03`) | Minimum session | Level |
 |-----|-----------------|-----------------|---------------------|----------------|-------|
 | `0249` | ✓ (clears cal overrides) | ✓ | ✓ (also clears) | Extended | 01 |
-| `0475` | ✓ (background file transfer) | ✓ | ✓ | Extended | **05** |
+| `0475` | ✓ (background file transfer) | ✓ | NRC 22 (not functional) | Extended | **05** |
 | `0209` | Checks prog state | — | — | Programming | 01 |
 | `021E` | VIP pass-through | — | — | Extended + auth power mode | 01, 03, 05 |
 | `0247` | Settings restore + wipe | — | — | Extended | — |
@@ -561,10 +573,10 @@ VHAL key properties:
 | `0254` | LCM delete records | — | — | Extended | 09 |
 | `0260` | LCM reset counters (option 05 only works) | — | — | Extended | 09 |
 | `0300` | Returns `10` fixed | — | — | Programming session | — |
-| `03D8` | Audio/HMI enable | — | ✓ (bit mask) | Extended | 01 |
+| `03D8` | Audio/HMI enable | — | ✓ (bit mask) | Extended | — |
 | `0405` | Registration broadcast | — | — | Extended | — |
 | `FF00` | Erase override file | — | — | Extended | — |
-| `FF01` | Programming precheck (returns 8 bytes) | — | — | Extended | 01 |
+| `FF01` | Programming precheck (returns 5 data bytes) | — | — | Extended | 01 |
 | `FF02` | Erase memory | — | — | Extended | — |
 | `020E` | Wake up networks | — | — | Extended | — |
 | `039B` | Calibration finalization | — | — | Programming + CAN | — |
@@ -573,7 +585,7 @@ VHAL key properties:
 
 **All other RIDs → NRC 31 (requestOutOfRange)** at this endpoint.
 
-**Results sub-function caveat:** `AbstractRIDHandler.handleRequestResultRoutine` throws an exception by default; only `0249` (native, clears overrides), `03D8` (Java, returns state bits), and `0475` (native, delegates to update-engine) have implemented results handlers.
+**Results sub-function caveat:** `AbstractRIDHandler.handleRequestResultRoutine` throws an exception by default; only `0249` (native, clears overrides) and `03D8` (Java, returns state bits) have implemented results handlers. `0475` has a results handler in the ELF but level-05 results returns NRC 22 — it is not functional.
 
 ### 11e. I/O control (`0x2F`) — avoiding NRC 31/33
 
@@ -631,4 +643,4 @@ The `gminfo_resources` local files (this repo) are the most complete publicly un
 
 ---
 
-*Last updated: 2026-11-21. Sources: gminfo_resources diagnostics docs, DBC files, GateKeeperESP_services.h, online research (comma.ai opendbc, roffe/gocan, iDoka/awesome-automotive-can-id).*
+*Last updated: 2026-11-21 (v2 — Opus verification pass, all 4 agents). Sources: gminfo_resources diagnostics docs, DBC files, GateKeeperESP_services.h, online research (comma.ai opendbc, roffe/gocan, iDoka/awesome-automotive-can-id).*
