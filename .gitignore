@@ -37,3 +37,6 @@ research/scripts/ghidra_rh850/hostos_x86/
 # Agent instruction files (not part of the reference corpus)
 /CLAUDE.md
 /AGENTS.md
+
+# Ghidra RH850 projects after the 2026-11-21 restructure (old patterns above kept until verified)
+evidence/ghidra-projects/
