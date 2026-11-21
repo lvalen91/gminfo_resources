@@ -58,11 +58,11 @@ claims elsewhere in the repo. OBEY THESE RULES:
 </trust_filter>
 
 <artifact_reference>
-Read `gminfo_resources/research/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md`
+Read `gminfo_resources/research/boot-update-recovery/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md`
 ([relative link](../../boot-update-recovery/RECOVERY_RAMDISK_RPC_ATTACK_SURFACE.md)) before using this prompt.
 Its confirmed/inferred/unknown distinctions apply. The verified firmware findings
 are maintained in
-`gminfo_resources/research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`
+`gminfo_resources/research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`
 ([relative link](../../boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md)).
 No report is embedded here; use the current owning documents.
 </artifact_reference>

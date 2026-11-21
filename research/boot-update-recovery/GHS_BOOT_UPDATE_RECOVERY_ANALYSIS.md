@@ -16,7 +16,7 @@
 
 ## 0. Scope, ownership and evidence conventions
 
-**Canonical repository path:** `gminfo_resources/research/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`.
+**Canonical repository path:** `gminfo_resources/research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`.
 
 This document owns the consolidated Y181B GHS/recovery investigation: primary
 binary provenance, security-candidate limits, guest/dealer/fastbootd/ELK

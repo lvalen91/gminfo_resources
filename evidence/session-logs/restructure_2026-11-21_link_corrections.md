@@ -4422,3 +4422,6 @@ Pass 1 only matched path tokens that contain a directory component, so links wri
 ## Part 5: mdi2_client venv
 
 Git-ignored venv relocated to tools/mdi2_client/.venv; 17 text files (pyvenv.cfg, bin console scripts, activate scripts) had their absolute path updated; python -m pytest: 259 passed, 3 skipped.
+
+- tools/analysis-scripts/ghidra_rh850/vipboot/s13_dump_disasm.py: output path research/scripts/ghidra_rh850/vipboot/all_disasm.txt -> tools/analysis-scripts/ghidra_rh850/vipboot/all_disasm.txt (found by the P3 code verifier; missed by the first patch because it was an output-file path, not a project location).
+- research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md line 19 and research/security/fuzz/bundle2_ota_primed_prompt.md lines 61, 65: "gminfo_resources/research/<doc>" citations updated to the new research subfolder.

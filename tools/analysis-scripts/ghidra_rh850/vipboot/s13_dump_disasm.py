@@ -15,7 +15,7 @@ with pyghidra.open_program(
     from ghidra.program.model.address import AddressSet
 
     windows = [(0x0,0x224ff),(0x68500,0x8a37f)]
-    out = open("/Users/zeno/Downloads/github/gminfo_resources/research/scripts/ghidra_rh850/vipboot/all_disasm.txt","w")
+    out = open("/Users/zeno/Downloads/github/gminfo_resources/tools/analysis-scripts/ghidra_rh850/vipboot/all_disasm.txt","w")
     for s,e in windows:
         aset = AddressSet(addr(s), addr(e))
         for ins in listing.getInstructions(aset, True):
