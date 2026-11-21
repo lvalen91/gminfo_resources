@@ -16,35 +16,35 @@ Use [the research index](research/README.md) to find topic owners.
 ```
 gminfo_resources/
 ├── platform/          Platform reference (index: platform/README.md): hardware, boot/partitions/recovery, networks and protocols, CAN, OTA, security, vehicle config, emulator
-├── hardware/          Physical teardown, BOM, photos, EEPROM/IFWI analysis
+├── hardware/          Physical teardown, BOM, bench setup, module/ and interfaces/ docs, datasheets, schematics + board map (photos live in schematics/board_map/photos/)
 ├── eeprom/            EEPROM mod guide, analysis reports, undocumented flags, .bin dumps
 │   ├── bins/          EEPROM binary dumps (Y181 ADB-enabled: HC + LTZ)
 │   └── config_tool/   eeprom_editor.py + firmware_re/ (115 decompiled VIP_APP functions)
-├── evidence/enumeration/       ADB + fastboot enumeration by firmware build
-│   ├── scripts/       gm_aaos_enum.sh, quick_security_check.sh
-│   ├── Y175/          Jan 2026 enum, VIP UART log, SELinux policy
-│   └── Y181/          Dec 2025 enum + Apr 2026 (apr2026/) + Jun 2026 (jun2026/), fastboot enums
-├── diagnostics/       DPS session logs, CAN bus traces, Ethernet UDS (diagnosticsd :49156)
-│   └── dps/           A11 Radio (ECU 0x80) DPS 4.56 logs
-├── research/          Deep-dive analysis docs, decompiled artifacts, scripts, reports
-│   ├── README.md (topic index), INVENTORY.md, research topic docs + Y177/Y181 VIP/GHS analyses
-│   ├── security/      Security-specific CVE and threat analyses
-│   ├── fuzz/          VMM1/OTA parser fuzz bundles and synthesis outputs
-│   ├── type4_radio_info/  Type-4 radio SPAT/calibration build kit
-│   ├── canbus_reset/  CAN bus reset investigation (analysis + CFX config XML)
+├── diagnostics/       Ethernet UDS (diagnosticsd :49156), CAN/UDS reference, security access, DTC/DID docs (DPS session logs: evidence/dps-logs/)
+├── research/          Deep-dive analysis docs by topic (index: research/README.md)
+│   ├── boot-update-recovery/   GHS hypervisor, boot chain, trust anchors/keys, OTA recovery, VIP firmware comparison
+│   ├── security/               CVE and threat analyses, attack-vector catalogs, fuzz/ (VMM1/OTA parser fuzz bundles)
+│   ├── eeprom-calibration/     EEPROM layout, seed-key, CalDef/CalSets, DPS Type4 workflow, type4_radio_info/, canbus_reset/, calibration_prototypes/
+│   ├── mdi2-bench-sessions/    MDI2 protocol notes, raw UDS guide, Aug 2026 pcap timeline, AE tracker, USB/ADB findings
+│   ├── rights-and-roadmap/     AOSP replacement, lockdown and remote-access analyses
+│   └── provenance/             INVENTORY.md, PROVENANCE_AUDIT_AUG2026.md
+├── evidence/          Raw captures and generated artifacts (not prose)
+│   ├── enumeration/   ADB + fastboot enumeration by firmware build (Y175, Y177, Y181)
 │   ├── decompiled/    Ghidra/radare2 string dumps and decompiled C (VMM, ELK, SA015, IVCS)
-│   ├── scripts/       Analysis scripts (avb_audit.py, crypto_scan.py, ghs_dump.py, etc.)
 │   ├── reports/       Automation output (crypto_findings.json, avb_audit.out, forensics)
-│   ├── session_logs/  Dated research/security session notes
-│   └── tools/         ghs_probe app source, DPS archive tool bridge docs
+│   ├── session-logs/  Dated research/security session notes + the restructure correction report
+│   ├── dps-logs/      A11 Radio (ECU 0x80) DPS 4.56 logs
+│   ├── ghidra-projects/  Git-ignored Ghidra RH850/x86 project databases (~91 MB)
+│   ├── archives/      Dated backup zips; scratch/ holds stray root files
+├── tools/             Code
+│   ├── analysis-scripts/  Ghidra/pyghidra scripts, avb_audit.py, crypto_scan.py, ghs_dump.py, mdi2_doip/ …
+│   ├── bench/         CAN bench harness and emulator, ghs_probe, aaos_audio_probe, SPSToolBridge notes
+│   ├── enumeration/   gm_aaos_enum.sh, quick_security_check.sh
+│   └── mdi2_client/   Native macOS MDI2 diagnostic client (Python package, tests, docs; separate project)
 ├── reference/         GM official CalDef GIS-646 database (215 .caldef/.enumdef, schema)
-├── audio/             Audio subsystem, HAL, codecs, effects, CarPlay pipeline, AVB
-├── video/             Video pipeline, CINEMO/NME, H.264, display, HWC, codecs
-├── codecs/            Full media codec manifest
-├── projection/        CarPlay vs Android Auto, cluster nav, CPC200 integration
-├── runtime/           Boot timing, memory pressure, known issues
-├── analysis/          Debloat comparison, third-party API access, platform FAQ
-└── tools/mdi2_client/       Native macOS MDI2 diagnostic client (Python tooling, separate project)
+├── audio/  video/  projection/  runtime/  codecs/  analysis/   Android-side subsystem docs
+├── enumeration/, mdi2_client/   Stub READMEs pointing at evidence/enumeration/ and tools/mdi2_client/
+└── PATH_MAP.md        Old path to new path for every moved file (2026-11-21 restructure)
 ```
 
 ---
