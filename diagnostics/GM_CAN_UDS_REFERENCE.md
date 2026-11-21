@@ -1,8 +1,14 @@
 # GM CAN / UDS Reference — 2024 Silverado ICE (Y175 Platform)
 
-> Assembled from: DBC files (gm_global_a_*), GateKeeperESP_services.h, diagnosticsd live sweep docs, gminfo_resources diagnostics docs.  
+> **Sources:**
+> - DBC files (`gm_global_a_powertrain/chassis/lowspeed.dbc`) — from [comma.ai/opendbc](https://github.com/commaai/opendbc) (MIT License); byte-identical to repo master as of 2026-11
+> - `GateKeeperESP_services.h` — © 2018 Surreal Development LLC, GPL-3.0; author Justin Hoogestraat ([surrealdev.com](https://surrealdev.com))
+> - `diagnosticsd` live sweep, protocol, security, routines docs — gminfo_resources `diagnostics/` (this repo)
+> - `ecu_map.json`, `did_map.json` — gminfo_resources `mdi2_client/` (this repo)
+> - GMW8762 v3 message rate/ID confirmation — partial PDF via [miataturbo.net community mirror](https://www.miataturbo.net)
+>
 > **Coverage:** A11 infotainment (Y175/Y181B) Ethernet UDS endpoint + Global A powertrain/chassis CAN buses.  
-> Values already confirmed live on the T1 endpoint are marked **[live]**; spec-only entries are **[spec]**; CAN-capture only **[CAN]**.
+> Values confirmed live on the T1 endpoint are marked **[live]**; spec-only entries **[spec]**; CAN-capture only **[CAN]**.
 
 ---
 
@@ -624,13 +630,18 @@ Levels 01/03/05 all required (level 09 granted `021E` rejected with NRC 33).
 
 ### Available public DBC databases
 
-| Resource | URL | Coverage | Limitation |
-|----------|-----|----------|-----------|
-| comma.ai opendbc | https://github.com/commaai/opendbc | Global A platform (2016–2022.4 Silverado) ADAS signals only | Not 2024 ICE; not VIP/Global B |
-| karlyamashita GMLAN_CAN_ID.h | https://github.com/karlyamashita/common_libraries | LSCAN 29-bit body/infotainment IDs (older gen) | Pre-VIP only |
-| GMLAN Bible spreadsheet | https://docs.google.com/spreadsheets/d/1qEwOXSr3bWoc2VUhpuIam236OOZxPc2hxpLUsV0xkn0 | LSCAN arbitration IDs (community curated) | HS IDs not covered |
-| Opengarages GM 29-bit | Wayback: https://web.archive.org/web/20220124141625/http://opengarages.org/index.php/GM_LAN_29_Bit_ID | Older GMLAN 29-bit reference | Site dead |
-| roffe/gocan gmlan | https://github.com/roffe/gocan | GMW3110 service IDs (pre-UDS era) | Legacy protocol, not ISO 14229 UDS |
+| Resource | URL | License | Coverage | Limitation |
+|----------|-----|---------|----------|-----------|
+| comma.ai opendbc | https://github.com/commaai/opendbc | MIT | Global A DBC files used directly in §7a/7b/7c; `gm_global_a_lowspeed/chassis/powertrain.dbc` byte-identical to local copies | ADAS/Global A only; not VIP/Global B |
+| opendbc `gm_global_a_lowspeed_1818125.dbc` | https://github.com/commaai/opendbc/blob/master/opendbc/dbc/gm_global_a_lowspeed_1818125.dbc | MIT | 367-message extended GM-internal signal names for LSCAN; adds speaker flags, VSE, IMU, BrkPdlPos, per-button cruise flags | Different 29-bit IDs (0x80000000 DBC extended-frame bit set); likely a different build variant |
+| GateKeeperESP_services.h | https://github.com/surrealdev/GateKeeperESP *(source of local copy)* | GPL-3.0 | ISO 14229 UDS SID table, SAE J1979 OBD-II modes, GMLAN aliases used in §2 | 2018; GMLAN deprecated labels only |
+| GMW8762 v3 partial PDF | https://www.miataturbo.net *(community mirror, search "GMW8762")* | GM proprietary | HS CAN message IDs + transmission rates confirming §7a: $0C9 12.5ms, $12A, $1E5 10ms, $2CB 50ms, $3E9 100ms | v3 (2011); partial; full standard sold by IHS/GlobalSpec |
+| GMLAN Bible spreadsheet | https://docs.google.com/spreadsheets/d/1qEwOXSr3bWoc2VUhpuIam236OOZxPc2hxpLUsV0xkn0 | Community | LSCAN arbitration IDs (community curated) | 2013–2018 era; HS IDs not covered; login required |
+| karlyamashita GMLAN_CAN_ID.h | https://github.com/karlyamashita/common_libraries | — | LSCAN 29-bit body/infotainment IDs (older gen) | Pre-VIP only; file removed from master as of 2026 |
+| Opengarages GM 29-bit | https://web.archive.org/web/20220124141625/http://opengarages.org/index.php/GM_LAN_29_Bit_ID | Community | Older GMLAN 29-bit reference | Site dead; Wayback only |
+| roffe/gocan | https://github.com/roffe/gocan | — | GMW3110 service IDs (pre-UDS era) | Legacy protocol, not ISO 14229 UDS |
+| surrealdev — Rooting the Cadillac Pt.2 (SecOC) | https://surrealdev.com/rooting-the-cadillac-part-2-secoc/ | — | Closest public analog to GM degenerate SA exchange: 31-byte seed + CMAC over 0xFF test vector | Different platform; describes test vector, not confirmed production bypass |
+| XDA — GM Google Built-In tinkering | https://xdaforums.com/t/general-motors-google-built-in-tinkering.4668105/ | Community | Active thread; corroborates gm_protokey/VIP seed IPC path, ADB locked to GM-signed client | Community observations; no source analysis |
 
 ### Key conclusion on public availability
 
@@ -643,4 +654,4 @@ The `gminfo_resources` local files (this repo) are the most complete publicly un
 
 ---
 
-*Last updated: 2026-11-21 (v2 — Opus verification pass, all 4 agents). Sources: gminfo_resources diagnostics docs, DBC files, GateKeeperESP_services.h, online research (comma.ai opendbc, roffe/gocan, iDoka/awesome-automotive-can-id).*
+*Last updated: 2026-11-21 (v3 — source attribution pass). DBC files © comma.ai contributors, MIT License (https://github.com/commaai/opendbc). GateKeeperESP_services.h © 2018 Surreal Development LLC, GPL-3.0. All other analysis and live-sweep results are original work documented in this repository.*
