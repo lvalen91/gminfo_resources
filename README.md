@@ -1,5 +1,3 @@
-# gminfo_resources
-
 Canonical reference for the **GM Info 3.7** (`gminfo37`) infotainment system — 2024 Chevrolet/GMC ICE vehicles (Silverado, etc.).
 
 **Hardware:** Harman/Samsung · Intel Atom x7-A3960 (Apollo Lake) · Android 12 AAOS · GHS INTEGRITY IoT hypervisor
