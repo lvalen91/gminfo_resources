@@ -61,7 +61,7 @@ capability) is explicitly capability inference, not measured behaviour — see i
 
 | Property | Value |
 |----------|-------|
-| **OS** | INTEGRITY IoT 2020.18.19 |
+| **OS** | INTEGRITY IoT 2020.18.19 — version encoding unknown; see note below |
 | **Core Version** | 23739 |
 | **Modules Version** | 11500 |
 | **GM Version** | MY22-026 |
@@ -110,6 +110,8 @@ capability) is explicitly capability inference, not measured behaviour — see i
 │  • GM Applications                                                   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+> **INTEGRITY IoT 2020.18.19 version encoding — online research note [ONLINE RESEARCH 2026-11-21]:** No public documentation found for the "INTEGRITY IoT" product line's version numbering scheme. Web searches across Green Hills product pages, press releases, partner announcements, Common Criteria certification documents, and embedded-industry news found no publication naming "INTEGRITY IoT" as a distinct product or explaining the `MAJOR.MINOR.PATCH` encoding of `2020.18.19`. Possible interpretations: (a) `2020` = calendar year of the base release (the INTEGRITY-178B 2020 press activity aligns, but that is a different product line); (b) `2020` = internal product generation number unrelated to calendar year; (c) entirely opaque version string. The Core Version 23739 and Modules Version 11500 are likely independent internal build counters. This encoding remains unasserted; do not cite "2020" as a confirmed calendar year without a GHS source. The INTEGRITY-178B Common Criteria target uses a completely different version format (`IN-ICR750-0101-GH01_Rel`), so cross-product version-scheme inference is unreliable.
 
 Boot sequence and boot-command construction are owned by
 [GBUR §1](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#1-ghs-boot-process); not duplicated here.
@@ -201,8 +203,14 @@ not restated here.
 | `TEE_Gatekeeper` | Gatekeeper server [added 2026-11-21; `.tee_gatekeeper` section confirmed GHS_FILE_MAP_85098662.md; §7A.1 boottable] |
 | `TEE_Router` | TEE router — fans tipc to TEE_* servers (`TEEAtt` is a VMM1 connection here, not a separate AS; see §7A.4) [added 2026-11-21] |
 | `TEE_Storage` | Secure storage server [added 2026-11-21; §7A.1 boottable] |
-| `Audit` | Security audit log server (.audit section, GHS_FILE_MAP; §7A.1) [added 2026-11-21] |
+| `Audit` | Security audit log server (.audit section, GHS_FILE_MAP; §7A.1) [added 2026-11-21]; see ghsaudit.log note below |
 | `EMMC` | eMMC mux server (.emmc_mux section; GHS mediates eMMC to guest; §7A.1) [added 2026-11-21] |
+
+#### ghsaudit.log format and event codes
+
+The file `recovery/ghsaudit.log` contains 65,536 × 16-byte fixed-size records. Each record has the layout: `u32 (client<<16)|type`, `u32 data`, `u64 tick`. A total of 1,224 session-start slots are present, which is not reconcilable with the 29 observed boots (G3 in forensic cache; event code names UNKNOWN).
+
+> **Online research note [ONLINE RESEARCH 2026-11-21]:** No public mapping found for GHS INTEGRITY audit log event type codes. Web searches for "GHS INTEGRITY audit log format," "Green Hills INTEGRITY security audit events," and "INTEGRITY IoT ghsaudit" found no published event code table, API header, or academic paper describing the per-type event codes. The Common Criteria Security Target for INTEGRITY-178B describes the audit log conceptually (circular buffer in kernel memory, fixed-format records, authorized-reader access control, success/failure flags for auditable security events) but does not publish the event-type encoding or the client/type bitfield layout. The INTEGRITY-178 Audit Logging feature is a licensed layered extension; its API documentation is customer-only. No public INTEGRITY IoT audit API documentation was located. The 65,536-record capacity with circular overwrite (consistent with the CC description) is the only structural element inferable from public material.
 
 ---
 
@@ -273,6 +281,24 @@ this image's live/verified security-evidence state are maintained in
 [GBUR's 2026-11-12 provenance note](GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#01-y181b-binary-provenance-and-security-evidence-2026-11-12);
 what follows is this doc's own static function/string inventory only — an inventory of compiled
 checks, not proof any of them are live-enforced on a given boot.
+
+### Known CVEs and public security research [ONLINE RESEARCH 2026-11-21]
+
+Five CVEs are publicly assigned against GHS INTEGRITY RTOS, all from 2019, all against **INTEGRITY RTOS 5.0.4** only (not IoT, not automotive, not this version):
+
+| CVE | Component | Type | CVSS 3.0 |
+|-----|-----------|------|----------|
+| CVE-2019-7714 | Interpeak IPWEBS HTTP server | Stack buffer overflow (Authorization header, 60-byte fixed buffer) | 9.8 Critical |
+| CVE-2019-7713 | Interpeak IPCOMShell TELNET prompt | Heap buffer overflow (prompt modifier expansion) | 9.8 Critical |
+| CVE-2019-7712 | IPCOMShell `pwd` command | Format string (CWD used as `printf` arg) | 7.5 High |
+| CVE-2019-7715 | IPCOMShell TELNET greeting | Format string (`ipcom.shell.greeting` env var) | 7.5 High |
+| CVE-2019-7711 | IPCOMShell `prompt` command | Format string (undocumented command) | 7.5 High |
+
+Credit: Tobias Scharnowski and Ali Abbasi (Ruhr University Bochum). Source: [github.com/AlixAbbasi/GHS-Bugs](https://github.com/AlixAbbasi/GHS-Bugs); [opencve.io](https://app.opencve.io/cve/?product=integrity_rtos&vendor=ghs).
+
+**Relevance to this platform:** these bugs target the Interpeak IPCOM/IPWEBS network stack components of INTEGRITY RTOS 5.0.4. This build (INTEGRITY IoT 2020.18.19) is a substantially later version; it is unknown whether these Interpeak components are present, enabled, or reachable on this automotive build. The bugs chain to bypass the Interpeak IPShell jail and reach the INTEGRITY kernel; they are not direct kernel exploits.
+
+**No public CVEs exist for GHS INTEGRITY IoT or any automotive INTEGRITY variant.** No published conference paper, security advisory, or CVE assignment for a GHS INTEGRITY IoT hypervisor escape, privilege escalation, or automotive-platform-specific vulnerability was located. The GHS INTEGRITY hypervisor itself (kernel, VMM, address space isolation) has no public independent security evaluation in an adversarial context (Common Criteria EAL 6+ for INTEGRITY-178B is a formal correctness evaluation, not an adversarial pentest).
 
 ### Android Verified Boot (AVB)
 
@@ -497,6 +523,18 @@ GPIO," not as evidence the rest of the list is wrong.
 **VT-d / IOMMU:** root/context tables are built at runtime (no `.vtdpagetable` section, see §7). Six unnamed
 ASes are pure DMA domains: HDA, IPU, Lines, EMMC/SDHC, GPU_Dom_Gen9, GVTG_Dom. The guest runs
 **`intel_iommu=off`**, so all isolation is host-side.
+
+> **[ONLINE RESEARCH 2026-11-21] Apollo Lake A3960 VT-d errata — microcode-patchable, two CVEs confirmed:**
+>
+> The Apollo Lake Atom x7-A3960 (D0 stepping, CPUID family/model/stepping `6/92/9` = `0x506C9`) has two published VT-d-related privilege escalation CVEs:
+>
+> - **CVE-2020-24489** (Intel SA for June 2021 microcode): "VT-d context cache invalidation requests may not complete" — a failure in domain-specific context cache invalidation during certain IOMMU operations, allowing a local authenticated attacker to escalate privileges. Affects Apollo Lake D0 (A3930/A3940/A3950/A3960). Microcode fix: **revision 0x44** minimum. Source: [Red Hat KB June 2021 microcode update](https://access.redhat.com/articles/6101171).
+>
+> - **CVE-2021-0146** (Intel SA for February 2022 microcode): Additional VT-d privilege escalation, also affecting Apollo Lake D0 including A3960. Microcode fix: **revision 0x46** minimum. Source: [Red Hat KB February 2022 microcode update](https://access.redhat.com/articles/6716541).
+>
+> - **APLI-10 erratum** (Intel E3900 Spec Update Addendum, Doc# 612204): "VT-d domain-specific context cache invalidation requests may not complete." No silicon fix; a BIOS/firmware update may contain a workaround. This is the same underlying issue as CVE-2020-24489. Source: [Intel Doc 612204](https://cdrdv2-public.intel.com/612204/612204-002-APL-I%20Spec%20Update%20Addendum.pdf).
+>
+> **Relevance:** GHS relies on host-side VT-d isolation (the six DMA domains above) to confine passthrough devices. If the microcode on this unit is below rev 0x46, the VT-d context cache invalidation path may have a window where a local attacker with control of a passthrough device or DMA operation could escalate. The microcode revision on the actual unit has **not been read** (requires `/proc/cpuinfo` microcode field or a low-level tool; not available from the locked user shell captures). This is a **microcode-patchable hardware errata**, not a GHS software bug — but it qualifies the host-side IOMMU isolation claim until the microcode revision is confirmed at ≥ 0x46.
 
 **GVT-g:** the GPU server (`gvtg_server`, AS15) mediates the Gen9 GPU (GuC/HuC firmware in the server) and maps the
 whole of guest RAM; the guest sees a GVT-g vGPU (`ro.hardware.gralloc/hwcomposer=broxton`).

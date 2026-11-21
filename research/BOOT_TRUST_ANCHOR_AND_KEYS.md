@@ -352,6 +352,14 @@ stock→AAOS, one flipped signature byte→rejected to fastboot).
   uncaptured upstream CSE/Boot-Guard/OBB stage; and (b) **disassembly of the OBB's actual RSA-verify
   routine** to rule out a verifier logic bug. Exact Boot Guard fuse/FPF mode still needs a full SPI
   dump (current IFWI region reads `0xFF`).
+  >
+  > **[ONLINE RESEARCH 2026-11-21] Known public CVEs / advisories for Apollo Lake TXE gen3 and Boot Guard:**
+  >
+  > **INTEL-SA-00086 (2017) — TXE firmware vulnerabilities:** Affects Apollo Lake Atom E3900 series (TXE 3.0.x). Fixed by **TXE 3.1.50.2222**. CVEs: CVE-2017-5705 through -5712 (buffer overflows, privilege escalation, one network-reachable via CVE-2017-5712). Attack vectors are mostly local/physical (AV:L); CVE-2017-5712 is AV:N but requires remote admin access. This unit's TXE is **3.1.95.3140** — well above the fix threshold; these CVEs are **patched**. Source: [INTEL-SA-00086](https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00086.html).
+  >
+  > **INTEL-SA-00391 (2020) / CVE-2020-8705 — Boot Guard S3 sleep bypass (CVSS 7.1 High):** "Insecure default initialization of resource in Intel Boot Guard." Affects CSME/TXE **before 3.1.80**. Root cause: most OEM Boot Guard configurations validate firmware only on cold boot, not on S3 (sleep) resume. A local attacker with physical access can swap SPI flash contents during S3 sleep; the SPI flash is re-read on resume without re-verification, allowing unsigned firmware execution before OS protections are active. Intel's fix (TXE 3.1.80) reportedly adds a check on the S3 resume path. This unit's TXE **3.1.95.3140 > 3.1.80** — CVE-2020-8705 is **patched**. Sources: [INTEL-SA-00391](https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00391.html); [Trammell Hudson's sleep attack write-up](https://trmm.net/Sleep_attack/).
+  >
+  > **Boot Guard FPF mode documentation:** No authoritative public document describing Apollo Lake Boot Guard FPF enforcement modes (Measured / Verified / Disabled) was located in this search pass. Intel document numbers 585819 / 632576 (Apollo Lake EDS) are not publicly available. The FPF/fuse mode question therefore **remains open** pending a full SPI dump or teardown with JTAG. The two advisories above confirm the firmware chain is in a patched state against the publicly known Boot Guard bypass vectors.
 - **AVB-path consumption:** code-level proof (xrefs/decompilation) that `avb_slot_verify` — rather than
   the legacy Android-signature path — consumes the `current_android_key` module.
 - **Copy-or-map routine:** the exact GHS routine that maps the embedded key into `.mr_r_mod_android_key`.

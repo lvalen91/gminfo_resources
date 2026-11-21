@@ -64,6 +64,12 @@ The backup camera works **during Android reboot**. GHS receives CAN gear positio
 
 Identification (corrected 2026-11-12): **R7F7015873AFP**, marking **15873**, 176-pin LFQFP. **TM52176 is a trace code.** Owner-reported VIP console TX is **pin 52 / P1_9 / RLIN34TX**; pin 53 provides the matching RX function, with reception unverified. Package evidence, manual and full UART table: [hardware teardown](../hardware/teardown.md#rh850f1k-package--uart-pinout).
 
+> **[ONLINE RESEARCH 2026-11-21] Pin-map discrepancy flagged for verification.** The closest publicly available datasheet — Renesas RH850/F1KH and F1KM 176-pin LQFP (Table 2A.1, farnell.com/datasheets/4165772.pdf; also renesas.com/document/dst/rh850f1kh-rh850f1km-datasheet) — lists pin 52 as **P1_9 / DPIN20 / INTP21 only**, with no RLIN alternate function. RLIN34TX in that document appears at:
+> - **Pin 88** (P8_9 / CSIH3CSS2 / PWGA41O / ADCA0SEL2 / **RLIN34TX** / ADCA0I16S) — primary
+> - **Pin 171** (P12_2 / INTP19 / **RLIN34TX** / PWGA58O / ...) — alternate
+> RLIN34RX: pin 87 (P8_8) primary, pin 170 (P12_1) alternate. RLIN35TX: pin 8 (P11_8) primary, pin 74 (P1_5) alternate.
+> **Caveat:** the R7F7015873AFP belongs to the RH850/F1KM-S4 subfamily; the publicly available datasheet covers F1KH/F1KM. Alternate-function assignments can differ between sub-families. The discrepancy (P1_9 without RLIN34TX in the public document vs. the owner's bench identification) should be verified against the R7F701587 hardware user's manual or confirmed against the bench UART by baud-rate and traffic correlation. **Do not change the existing bench-confirmed UART identification without that verification.**
+
 Role: power, CAN gateway, early boot, EEPROM. Power mode state machine (Run, Accessory, Crank, Off) is managed by the VIP (networking.md L584-588).
 
 > **Low-power sleep (external corroboration [X]).** Surrealdev *"Rooting the Cadillac Part 1"* (Snipesy, 2026-08-15; `https://surrealdev.com/rooting-the-cadillac-part-1-lay-of-the-land/`; bibliography in [external_references.md](external_references.md) / [qualcomm_cadillac_platform.md](qualcomm_cadillac_platform.md)) reports the RH850 "VIP" powers itself down in deep sleep and wakes on a hardware signal direct from its **CAN phy**, letting the whole radio idle at **sub-milliamp** draw on the always-on 12 V feed. Consistent with this board's VIP role (power/CAN/early-boot); the sub-mA figure is the author's Cadillac measurement, **not independently confirmed on this A11 unit.** [X]
@@ -80,6 +86,25 @@ Summary only; the full security analysis is chartered to [security.md](security.
 - Y177 vs Y181 VIP firmware differs by 549,518 bytes (28.4% of the image); this is unrelated VIP change, not a security re-enablement. The hypervisor layer is unchanged between them.
 - The validator belongs to the ADB/MEC certificate path: SoC-side `gm_adb_auth_init` / `is_secure_mode` is driven by EEPROM SBI -> VIP MEC response on DID `F1A0`; it does not set SELinux mode.
 - Live evidence [C live-Y175 2026-10-05]: VIP internals are UNVERIFIABLE-FROM-LIVE, but the VIP boot log (diagnostics/Y175_session.log) shows the RH850 side of the handshake: `J6_prv_ProtoKey:Protokey transmitted to SoC` (repeating), `SbaTicketValidation validation failed: 0x0`, `Receives invalid seed [1/2] from BCM`. `gm_protokey` is live on the SoC (PID 889, root, domain `gm_protokey`).
+  > **[ONLINE RESEARCH 2026-11-21] PROTOKEY / ProtoKey — no official GM documentation found.**
+  > No GM service publication, TSB, or NHTSA filing uses the name "PROTOKEY." The only public
+  > reference is third-party reverse-engineering (GitHub `lvalen91/gminfo_resources`,
+  > `research/GM_INFO37_BOOT_CHAIN_ANALYSIS.md`), which describes: PROTOKEY is the VIP's
+  > **security key management module**, initialized after SBAT in the VIP module sequence; in
+  > normal mode (SBI=0x00) the VIP requests a seed from the BCM over **GMLAN**, validates a
+  > seed/key exchange, and transmits the result to the SoC via IPC channel
+  > `SERIAL_IPC_PROTO_KEY_CHANNEL`; in bypass mode (SBI=0xFF) a fixed 0xFF seed is returned and
+  > BCM communication is skipped. SoC-side service `/vendor/bin/gm_protokey` receives the seed
+  > from the VIP over GHS IPC (`/dev/ghs/ipc`); the result affects ADB shell access. This is
+  > consistent with the bench observation of "Receives invalid seed [n] from BCM" when no BCM is
+  > present (normal mode, no BCM to answer the GMLAN seed request).
+  >
+  > **CAN IDs 0x457 / 0x458:** No public GM DBC file, opendbc repository, or teardown analysis
+  > names these IDs. Global B / VIP platform DBC files are not publicly available (CAN bus
+  > encryption on Global B; openpilot explicitly unsupported).
+  >
+  > **BCM supplier (2022-2024 Silverado 2500HD):** Not identified in any public source.
+  > No Continental, Aptiv, ZF, or Delphi attribution found for the MY22-24 Silverado HD BCM.
 - MEC = Manufacturer Enable Counter (see [security.md](security.md#mec-manufacturer-enable-counter)). The earlier "Mode/Event/Condition" expansion was incorrect (corrected 2026-11-15).
 - PLC = power-level control / VIP-SoC power handshake. The earlier "Programmable Logic Controller" expansion was unsupported (corrected 2026-11-15).
 
@@ -259,6 +284,20 @@ Raw response payload (63 bytes):
 Decoded `ReadECUResetInfo_status`: field 1 `eCUResetInfo` { 2 timestamp `"1970-01-01 00:03:19"` (epoch+199 s, clock unset at crash); 3 reason **`"VP Failure ID: 007, Error ID: 0x0C03"`** }; field 2 = `1`.
 
 Interpretation: "VP" = **Virtual Processor** in the GHS INTEGRITY hypervisor. The Visteon IPC logs GHS partition (VP) crashes; VP 007 failed with `0x0C03`. This confirms the IPC partition has visibility into hypervisor VP failure events. Open: correlate VP 007 with a partition name (`/dev/hvc*`, `/vendor/etc/init/*.rc`); decode `0x0C03` (likely an INTEGRITY kernel error code). See [GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md).
+
+> **0x0C03 error code — online research note [ONLINE RESEARCH 2026-11-21]:** No public mapping found. Web searches across GHS product documentation, Common Criteria security targets (INTEGRITY-178B), academic literature, and public CVE databases found no published INTEGRITY kernel/VP error code table. GHS error code documentation is gated behind the customer support portal and is not publicly indexed. The only public hit for "0x0C03" is a Linux Bluetooth HCI command opcode (unrelated). The code remains undecoded. If a GHS INTEGRITY SDK or MULTI debugger session becomes available, the INTEGRITY kernel reference manual (`INTEGRITY_kernel_ref.pdf` or equivalent) would be the authoritative source for VP/AddressSpace error codes.
+
+### 4.6 GHS ShutdownReason codes
+
+The GHS firmware emits log entries of the form `"ShutdownReason: 0x%02x"` (format string confirmed in decompiled strings from SOC_HOSTOS 85098662). Three values have been observed in forensic log captures:
+
+| Code | Observed frequency | Meaning |
+|------|--------------------|---------|
+| 0x00 | 11 occurrences | Unknown |
+| 0x23 | 6 occurrences | Unknown |
+| 0x37 | 12–24 occurrences | Unknown |
+
+> **Online research note [ONLINE RESEARCH 2026-11-21]:** No public mapping found. Web searches for "GHS INTEGRITY ShutdownReason," "Green Hills INTEGRITY reboot reason codes," and related terms found no published enum table, header excerpt, or AUTOSAR BSW documentation covering these codes. The Windows shutdown reason code table (0x00 = Other Unplanned; completely different namespace) and Linux `reboot.h` are unrelated. GHS kernel shutdown/lifecycle APIs are documented in customer-only INTEGRITY reference manuals. If MULTI debugger SDK headers or INTEGRITY BSP sources become available, search for a `ShutdownReason` or `GHS_LIFECYCLE_SHUTDOWN` enum. The `0x00` code likely corresponds to a normal/clean shutdown (the most common semantics for code 0 across RTOS platforms), but this is inference, not a confirmed GHS mapping.
 
 ---
 

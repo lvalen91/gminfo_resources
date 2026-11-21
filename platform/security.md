@@ -70,7 +70,15 @@ token, it is not a reliable measurement of effective enforcement:
   overlapping streams, not de-duplicated) are `permissive=0`, none `granted`. The retained
   cmdlines carry BOTH an early `enforcing=0`/permissive pair AND a later `enforcing=1`/
   enforcing pair (all 30 retained cmdlines); "the later pair wins" is an inference about
-  kernel parsing — the runtime read is what is directly confirmed. The boot logs also carry
+  kernel parsing — the runtime read is what is directly confirmed.
+  > **[ONLINE RESEARCH 2026-11-21] "Last pair wins" — confirmed for kernel `selinux=` parsing; operative mechanism is the Android init override:**
+  > Two independent mechanisms produce the confirmed-enforcing result, with the second being the stronger one on user builds:
+  >
+  > 1. **Kernel `__setup` duplicate handling (confirmed):** The kernel's `__setup` mechanism invokes the registered handler once per matching occurrence in the cmdline — it does not deduplicate. The `selinux=` handler is `selinux_enabled_setup` (compiled under `CONFIG_SECURITY_SELINUX_BOOTPARAM`), which simply calls `kstrtoul()` on the argument and overwrites the global `selinux_enabled_boot` on each invocation with no guard check. For duplicate `selinux=` tokens the **last valid occurrence wins**. This confirms the "later pair wins" inference as the correct description of kernel-side parsing. Source: kernel source `security/selinux/hooks.c`, `selinux_enabled_setup` function; `__setup` dispatch in `init/main.c` (`do_early_param` runs the handler on each occurrence, `obsolete_checksetup` returns on first nonzero for non-early handlers — the overwrite-on-each-call behavior produces last-wins). ([`torvalds/linux`](https://github.com/torvalds/linux/blob/master/security/selinux/hooks.c))
+  >
+  > 2. **Android init override (the operative mechanism on user builds):** Android `init/selinux.cpp` implements `IsEnforcing()` and `SelinuxSetEnforcement()`. `IsEnforcing()` returns `true` unconditionally when `ALLOW_PERMISSIVE_SELINUX=0` — which is the case on all Y175/Y177/Y181 user builds (confirmed in this doc). `SelinuxSetEnforcement()` compares the kernel's current enforcement state (`security_getenforce()`) against `IsEnforcing()`'s result and calls `security_setenforce(1)` if they differ, **forcibly setting the kernel to enforcing regardless of what `selinux=` or `androidboot.selinux=` said**. The property `ro.boot.selinux` (derived from `androidboot.selinux=permissive` in the cmdline) is only consulted by `StatusFromProperty()` inside `IsEnforcing()`, which is bypassed entirely when `ALLOW_PERMISSIVE_SELINUX=0`. Source: AOSP `system/core/init/selinux.cpp` (`StatusFromProperty`, `IsEnforcing`, `SelinuxSetEnforcement`); [AOSP SELinux implement guide](https://source.android.com/docs/security/features/selinux/implement).
+  >
+  > **Net:** "last pair wins" is **confirmed** as the correct description of kernel `selinux=` parsing. The runtime Enforcing state on these user builds is **primarily driven by the Android init override** (`ALLOW_PERMISSIVE_SELINUX=0` → `SelinuxSetEnforcement` forces enforcing), which acts independently and after the kernel's own parameter parsing. The two mechanisms are consistent; either one alone would produce the observed Enforcing state. The boot logs also carry
   an `ABL.secureboot=1` token (count not reproducible across re-reads: 386 raw hits vs ~188
   per a second archive pass vs 376 if a duplicate export is double-counted); `getprop
   ro.boot.ABL.secureboot` is empty at runtime, so this flag is cmdline-only, not a live
@@ -122,6 +130,11 @@ This section keeps only the security verdict.
   update/ tree) — same 1.2/1.1 split seen on Y175; the vbmeta header itself
   is libavb version 1.1 / avbtool 1.2.0 (byte-confirmed, `BOOT_TRUST_ANCHOR_
   AND_KEYS.md` §4), so this is avbtool-version vs format-version, not an error.
+  > **[ONLINE RESEARCH 2026-11-21] AVB 1.2/1.1 split — mechanism confirmed, existing explanation refined:**
+  > Per the AOSP VINTF match-rules documentation ([source.android.com/docs/core/architecture/vintf/match-rules](https://source.android.com/docs/core/architecture/vintf/match-rules)), these two properties are set by **different components** and reflect which libavb version each used to verify AVB metadata:
+  > - **`ro.boot.vbmeta.avb_version`** = libavb version in the **bootloader** (ELK/ABL, here 1.1). Set by the bootloader on successful vbmeta verification. The vbmeta header's byte-confirmed "libavb version 1.1" matches directly — ELK carries libavb 1.1 and embeds that version in the header it creates/verifies.
+  > - **`ro.boot.avb_version`** = libavb version in the **Android OS** (init/fs_mgr, here 1.2). Set by Android init/fs_mgr when it re-verifies AVB metadata at the AAOS stage.
+  > The 1.2/1.1 split is **normal and expected** when AAOS has been updated to libavb 1.2 while the bootloader (ELK) still ships libavb 1.1. Both report the same vbmeta structures; the minor-version difference reflects a library update on the AAOS side only. The existing "avbtool-version vs format-version" shorthand is acceptable as-is — it captures that "avbtool 1.2.0" (the tool that produced the signed vbmeta, same as the AAOS libavb 1.2) differs from the bootloader's older libavb 1.1 that also validates it. The split is not an error or anomaly, and VINTF compatibility passes (major versions match).
 
 **Rollback protection (security framing; full mechanism in `boot_chain.md`):** GHS maintains
 its own rollback counter in `misc`, independent of Android's AVB rollback index (both Y177
@@ -776,3 +789,11 @@ posture, and are not restated here. The one apparent security-adjacent tension �
 enforcing on all builds" (this doc) vs. the real-kernel emulator booting permissive
 (`emulator.md`) — is a scope difference (stock firmware vs. a deliberately-permissive emulator
 build), not a disagreement about the same object; both statements stand as scoped above.
+
+---
+
+## GHS INTEGRITY CVEs and public security research [ONLINE RESEARCH 2026-11-21]
+
+Five CVEs are publicly assigned against GHS INTEGRITY RTOS (all 2019, all INTEGRITY RTOS 5.0.4, all in Interpeak networking components — CVE-2019-7711 through CVE-2019-7715). No CVE exists for GHS INTEGRITY IoT or any automotive INTEGRITY variant. No published conference paper, security advisory, or independent adversarial security evaluation for GHS INTEGRITY IoT was located. Full CVE table and analysis: [`../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md` §6](../research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md#known-cves-and-public-security-research-online-research-2026-11-21).
+
+Implications for this platform: the publicly known GHS INTEGRITY bugs target Interpeak stack components that may or may not be present in this automotive build. The GHS hypervisor isolation layer (kernel, VMM, address space boundaries) has no public independent adversarial security evaluation. The attack surfaces cataloged in `research/GHS_INTEGRITY_COMPREHENSIVE_ANALYSIS.md §11` (IPC channels, A/B metadata, Keymaster IPC, `/dev/ghs/snapshot-dbg`) remain unexercised in public research as of this date.

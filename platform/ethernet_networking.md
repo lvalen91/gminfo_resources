@@ -47,6 +47,24 @@ The backbone switch IC is selected by `persist.vendor.harman.hardwareid`. Both v
 - Full hardwareid-to-driver map: `video/hardware_rendering.md` (path relative to a different tree root; not verified from here).
 - SPI NOR note: whether the Marvell variant's switch firmware sits in the same NOR is not established (2026-11-12).
 
+### 2.1a Marvell 88Q5050 hardware spec [ONLINE RESEARCH 2026-11-21]
+
+Sources: Marvell product page (via Avnet/Sekorm), Infineon-hosted BrightLane product brief, Marvell newsroom announcements. The full datasheet is under NDA (extranet-access only on marvell.com).
+
+| Attribute | Value |
+|-----------|-------|
+| Port count | **8 ports** (confirmed by multiple public sources) |
+| Fixed 100BASE-T1 PHY ports | **4** IEEE 802.3bw / 100BASE-T1 |
+| Configurable port set (choose from) | 1x 100BASE-T1, 1x 100BASE-TX, 2x MII/RMII/RGMII, 1x GMII, 1x SGMII |
+| 1000BASE-T1 PHY ports | **none** — the "gigabit" in product descriptions refers to the internal switching fabric/MAC-layer throughput, not an external 1000BASE-T1 automotive PHY |
+| Qualification | AEC-Q100 |
+| Integrated CPU | ARM Cortex-M7 at 250 MHz (embedded management CPU) |
+| Package | 128-pin LQFP, 14 × 20 mm, 0.5 mm pitch |
+
+**Implications for the GM config (section 2.3):** `intf 5` with `speed: 1000` and `br: auto` is consistent with the SGMII or GMII uplink option — a copper/fabric gigabit MAC-to-MAC link to the Intel I210 on the same board. It is NOT a 1000BASE-T1 pair to an external node. The four/five 100-speed entries (intf 0-4, 100/101) map to the four (or more) 100BASE-T1 automotive PHY ports facing vehicle nodes.
+
+**Port-numbering note:** the config's `intf` indices (0-8, 100, 101) are the firmware's own domain and do not map directly to physical port numbers until confirmed by a Marvell register-map or design guide (section 2.4 open conflict still applies).
+
 ### 2.2 Historical switch-port labels
 
 Not reconciled to the firmware config numbering below.
@@ -90,6 +108,11 @@ Decoded from the actual `firmware/update_packages/Y175/extracted/85759612` packa
 | 9 | 10 | 0 | 1, 3 |
 
 - **[?] VLAN 9 configured but never observed live:** full, unfiltered VLAN-ID sweeps on both the Bus-2/pins-3-4 tap and the X11-pins-1/2 tap found only `{untagged, 2, 4, 5}`. Canonical evidence: `source_notes/BUS2_DIRECT_T1_TAP_BREAKTHROUGH_2026-11-02.md` section 14 in the `analysis/Y175_2026-11-02` tree. Open alternatives: VLAN 9 is tagged on ports not yet physically tapped; it carries a conditional/rare service; or it is defined but unused on this build. None selected.
+  > **[ONLINE RESEARCH 2026-11-21] No actionable public data found.** No public source identifies
+  > VLAN 9 in a GM automotive Ethernet context (GlobalB, Info 3.7, Apollo Lake, or Marvell 88Q5050).
+  > Marvell 88Q5050 switch firmware/config details are behind NDA. General automotive Ethernet VLAN
+  > segmentation literature (Sonatus, vendor marketing) assigns no VLAN 9 to any specific OEM function
+  > such as plant programming or diagnostics. VLAN 9 purpose remains UNKNOWN.
 - **[?] Numbering domains NOT reconciled:** the 2.2 table labels Port 2 as CGM, associated with Bus 2 where the VLAN 2 AVB flood is confirmed, yet config VLAN 2's mask 43 excludes bit 2 (includes {0,1,3,5}). The config `intf`/bit indices may be a different domain (internal MDIO/register indices vs physical-connector labels), or one of the port-to-bus mappings is wrong. **Do not transfer port numbers between this config and the 2.2 table until tested.** A future bench session needs per-port live captures; no physical-port assignment is resolved.
 - VLAN 2 (AVB audio flood, gPTP) is documented in [avb_audio_transport.md](avb_audio_transport.md). Physical bus map, X84/X11 pinouts: [Physical Automotive-Ethernet bus map](#physical-automotive-ethernet-bus-map) below (5-row summary table and VLAN-tag findings: [vehicle_network.md](vehicle_network.md)); connector detail `../hardware/connectors.md`.
 

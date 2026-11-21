@@ -57,6 +57,29 @@ outside entry 49, so only the reason strings carry the dates.
 unexplained and is flagged as UNKNOWN in the 2026-11-12 forensic cache; do not equate the
 one-byte file counter with the in-log runtime counter.
 
+> **[ONLINE RESEARCH 2026-11-21] `boot_cycle_counter` is not in public AOSP; best-fit
+> hypothesis for the 47-unit gap.** The filename `boot_cycle_counter` does not appear anywhere in
+> AOSP `bootable/recovery`, `system/core/bootstat`, `system/update_engine`, or the boot-control
+> HAL sources — this is a GM/Harman proprietary counter. AOSP recovery's own retry mechanism uses
+> `--retry_count=N` in the BCB (misc partition), capped at 4, unrelated to any file.
+>
+> **Most plausible explanation (consistent with the evidence, not confirmed by any GM source):**
+> industrial/automotive IO-Link specs define a standard dual-counter pattern: a **non-resettable
+> lifetime counter** that increments on every power-on, and a **resettable maintenance counter**
+> that is zeroed on factory reset / recommission events. If the in-log "Boot cycle counter" is the
+> non-resettable lifetime counter and `recovery/boot_cycle_counter` is the resettable counter, the
+> constant 47-unit gap would mean the file was last zeroed when the lifetime counter stood at 47
+> — plausibly during a data-wipe or recommission event. Both counters would increment together
+> thereafter, preserving the constant difference. The gap of 47 is not a recognized AOSP
+> wrap-point; a modular counter with wrap at 47 is indistinguishable from a reset at that value
+> without additional evidence.
+>
+> **Verdict:** semantics remain UNKNOWN (proprietary, no public source). The dual-counter /
+> resettable-vs-lifetime interpretation is the leading hypothesis, consistent with the five
+> `--wipe_data` recovery entries in the log history. Sources: AOSP recovery.cpp, bootstat.cpp,
+> boot_engine/update_engine main trees (confirmed absent); Balluff IO-Link Boot Cycle Counter
+> spec as the dual-counter reference pattern.
+
 The first archive preserves a concrete multi-reboot update sequence in
 `update_cache/recovery/last_log.10`, `.9` and `.8`:
 
@@ -424,9 +447,32 @@ not reachable via `service call`. Methods:
     script ran on this unit is NOT provable from the cached data** (2025 payloads and
     logs are absent). Do not assert the partition was formatted based solely on the
     presence of the script.
+    > **[ONLINE RESEARCH 2026-11-21] Package identity — no direct public match; circumstantial
+    > SPS match only.** Neither `SIHM22B-00526` nor part number `85874101` appears by name in any
+    > publicly accessible source (NHTSA TSB database, GM TechLink, GDS2/TIS2Web/SPS public material,
+    > general web). **Circumstantially relevant:** GM service bulletins PIT6209H (March 2026),
+    > PIC6602S (February 2026), and PIC6630 describe a Service Programming System (SPS) operation
+    > for the A11 radio called the **"Radio Data Wipe File"** — selecting the A11 in SPS, then
+    > "ONLY USE if following PIT6209 instruction — Radio Data Wipe File" — which clears radio stored
+    > data before replacement or when symptoms persist; applies to MY22.5–25 Silverado/Sierra 1500
+    > and broader platforms. SPS delivers a package installed via recovery, the same path this
+    > manifest uses, and the 2025 install date in the UpdateDB is consistent with a dealer-initiated
+    > data-wipe. **The `/data`-format function is consistent with PIT6209, but the specific binding
+    > of SIHM22B-00526 / 85874101 to that procedure is unconfirmed from public sources.** Sources:
+    > NHTSA-hosted copies of PIT6209H / PIC6602S / PIC6630.
 - OTA `GM Update N25-250552` (campaignId `pV7JR1D0EfCc7u7uCvix7Qcmp`) → Result=5
   (**meaning undefined** — corrected 2026-11-12: the only `UpdateResults.Result` value any log names is `0` = `RESULT_SUCCESS`;
   the `/cache` export also has `Result` 1, 2 and 5 rows with no defining string, so "declined/failed" is a guess)
+  > **[ONLINE RESEARCH 2026-11-21] AOSP update_engine ErrorCode mapping (inference, not GM-confirmed).**
+  > `gm_update_engine` is documented as a GM fork of AOSP A/B `update_engine`. AOSP
+  > `system/update_engine/common/error_code.h` defines:
+  > `kSuccess=0`, `kError=1` (generic/unspecified), `kOmahaRequestError=2` (OTA-server request
+  > failure), `kPostinstallRunnerError=5` (post-install script runner failed).
+  > Source: https://android.googlesource.com/platform/system/update_engine/+/refs/heads/main/common/error_code.h
+  > If GM preserved the AOSP enum, `Result=1` = generic error, `Result=2` = OTA server request
+  > error, `Result=5` = post-install runner error. **No public GM source confirms this mapping
+  > holds in the GM fork; it is inference from AOSP lineage only.** No GM-specific enum or
+  > `GMSWUpdater UpdateResults` documentation is publicly available.
 - Latest: SIHM22B-00499.03 from `/update_cache/update/` → Result=0 (SUCCESS)
 
 USB programming config: `mUSBProgrammingEnabled=true`,

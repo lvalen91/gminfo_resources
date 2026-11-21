@@ -135,6 +135,8 @@ Kernel `4.19.305-240125T145315Z-gf1edde901aa7` x86_64, `ro.build.version.securit
 
 Source: `recovery/last_log*` line `Value: 0xB1020260  Variant: 177 Global: 0 Region: 0 Project: 2 HD: 0 AMP: 1 SXM: 1 DAB: 0 GPS: 0 ...` and `HW variant is 0xB1020260` [read]. Consistent with the donor truck's U2K (SiriusXM) and UQA (branded amp) RPOs [inferred]. Bit layout (nibble-to-field) is taken from the decoder's printout, not reverse-engineered.
 
+**[ONLINE RESEARCH 2026-11-21] No public data found for `persist.vendor.hw.variant` or the value `0xB1020260`.** Searches covering "Harman hw.variant 0xB1020260", "persist.vendor.hw.variant automotive", and "Samsung Harman infotainment hardware variant bitmask" returned no indexed documentation. The decoder output in the recovery log (above) is the only available decode of this value and its field layout is from Harman/GM internal tooling.
+
 ### GHS-dependent vs Android-dependent vehicle functions
 - **GHS-dependent (work without Android, at hypervisor/VIP level):** turn-signal chimes, door chimes, seatbelt chimes, reverse backup camera, 360 surround view.
 - **Android-dependent (need the guest VM):** climate display, steering-wheel button processing, navigation, audio playback/media, CarPlay/Android Auto.

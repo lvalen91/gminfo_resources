@@ -300,6 +300,40 @@ The Android Auto resolution configuration may be:
 3. Negotiated at runtime via AAP protocol
 4. Configured via Google Automotive Services (GAS) overlay
 
+### AAP Resolution Negotiation Mechanism [ONLINE RESEARCH 2026-11-21]
+
+> **The HU declares resolution; the phone cannot substitute different dimensions.**
+> During AAP service discovery the HU sends a `ChannelDescriptor` containing an `AVChannel`
+> message with `repeated VideoConfig video_configs[]`. Each `VideoConfig` carries:
+> - `video_resolution`: a **fixed enum** (`NONE=0`, `_480p=1`, `_720p=2`, `_1080p=3`,
+>   `_1440p=4`, plus portrait variants) — **not** freeform width×height
+> - `video_fps`: `NONE=0`, `_30=1`, `_60=2`
+> - `margin_width` / `margin_height`: HU-specified crop margins in pixels
+> - `dpi`: declared screen density
+>
+> The phone replies with `AVChannelSetupResponse.configs[]` listing which offered indices it
+> accepts; it cannot propose different dimensions. The HU selects index 0 from its own list.
+> Touch-coordinate mapping is a separate `InputChannel.TouchConfig` with explicit `width`/`height`
+> independent of the video enum.
+>
+> **Implication for 2400×960 (2.5:1):** There is no "2400×960" enum value. The only standard
+> options are 480p, 720p, 1080p, 1440p. GM's implementation must offer one of these with
+> `margin_width`/`margin_height` to fit the 2.5:1 panel, or use Google's **widescreen extension**
+> (available from Android Auto 4.1+, but car-maker opt-in through the GAS partner agreement).
+> Third-party HU implementations (AARE, Crankshaft) confirm this is a known problem: a ZLink unit
+> offering 1280×720 at 160 dpi with 256×120 margins gets cut-off edges; 16×10 screens are
+> squeezed to 16:9 without explicit handling (Crankshaft issue #403).
+>
+> **Why no overlay file was found:** The resolution configuration is baked into
+> `com.google.android.embedded.projection` (the GAS component), not exposed as an AOSP OEM
+> overlay XML. Google's widescreen mode is enabled through the GAS partner agreement and the
+> GAS APK itself. This fully explains the absence of any resolution config in vendor/etc,
+> system/etc, product/etc, or CalDef — it was not extracted because it lives in the GAS APK.
+>
+> Sources: android-auto 0.3.8 Rust crate proto definitions
+> (https://docs.rs/crate/android-auto/latest/source/protobuf/Wifi.proto);
+> AARE project README; Crankshaft issue #403; Google Auto support thread on widescreen 4.1+.
+
 ### Recommendation
 
 Third-party implementations targeting GM AAOS should:
@@ -511,6 +545,8 @@ Uses standard Bluetooth HFP SCD files (no Android Auto specific tuning)
   > 2026-11-12 correction: on the Y181B bench radio the package named `android.car.usb.handler` is gm_ccpa (`zeno.gmccpa`, uid 1010123, user 10), media label **"GM CCPA"**; its traffic is CarPlay (`_airplay`/`_carplay-ctrl`, iAP) — **not** an Android Auto USB component. The Android Auto attribution here is from the earlier CPC200-rig era/stock naming and is not confirmed for this radio.
   >
   > **CRITICAL — log label ambiguity (2026-11-12, forensic cache [READ]):** the log label **"Android Auto"** seen in Y181B gmlogger (`30_gmlogger`) belongs to **`GM GALMediaBrowserService`**, not an actual Android Auto session. Do not interpret that log label as evidence of a live or confirmed Android Auto projection session on this unit.
+  >
+  > **[ONLINE RESEARCH 2026-11-21] What is GALMediaBrowserService?** No public source indexes this specific GM class name. Based on AAOS architecture: a `MediaBrowserService` (implementing `MediaBrowserServiceCompat`) is the standard Android/AAOS interface that exposes a media app's content tree to car launchers and to Android Auto's media UI. The Android Auto UI framework contacts these services at startup — before any phone session — to populate the media browser. In AAOS the car system automatically binds to registered `MediaBrowserService` implementations to build the media app catalog. "GAL" is not publicly documented; contextually it likely stands for a **GM Application Layer** (or General Application Layer) — an internal GM platform abstraction that wraps media browsing for the car launcher. Its presence in logs does NOT require an active Android Auto phone projection session: the service runs continuously as part of the AAOS media infrastructure, and the "Android Auto" process tag reflects that the Android Auto media framework hosts this service, not that a phone is connected. The `android.car.usb.handler` package (`zeno.gmccpa`, uid 1010123) on this unit is the GM CCPA (CarPlay) handler, not an AA USB handler — supporting the conclusion that no live AA phone session was active.
 
 **Security Certificates:**
 ```
