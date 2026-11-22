@@ -236,11 +236,61 @@ bytes. Slots 3 and 14 therefore receive the same empty payload, packaged separat
 All 114 entries are in the single CalDef group `VehicleSpecificEqualization`: a per-channel
 (LF/RF/LR/RR) 7-band parametric EQ (center frequency, Q factor, boost/cut, per-band function
 selection), per-channel high-pass frequency/order/Q, per-channel level adjust, and two
-`VSE_PARAM_EQ_F_HR`/`VSE_PARAM_EQ_R_HR` values. This is a vehicle/body-specific acoustic tune. The
-*individual* EQ values were extracted but their acoustic effect is not characterized here, and the
-CalDef text does not define the element layout of the arrays — so this slot is reported at the
-family/parameter level, not as a settings-by-effect summary. The earlier external inventory's
-per-type count ("36 int, 12 enum") omitted the 66 Float entries; the corrected breakdown is above.
+`VSE_PARAM_EQ_F_HR`/`VSE_PARAM_EQ_R_HR` values. The earlier external inventory's per-type count
+("36 int, 12 enum") omitted the 66 Float entries; the corrected breakdown is above.
+
+A follow-up pass (three independent agents: channel mapping, trim/tier variance, runtime-consumer
+trace) resolved most of what the family/parameter-level summary above left open. Full working
+notes, filter-coefficient-level detail, and the cross-vehicle comparison table are kept external at
+`module_map/87846380_channel_mapping.md`, `87846380_trim_variance.md`, and `87846380_runtime_path.md`
+(not checked in here, per this doc's provenance convention); the following is the distilled result.
+
+**Channel identity (directly documented, not just inferred from naming).** LF/RF/LR/RR are the
+four door speakers — left-front, right-front, left-rear, right-rear. GM's own CalDef text names
+them this way, and the shipped Y175 vendor audio service `/vendor/bin/vehicleaudiocontrol`
+(disassembled; source file `vse.cpp`) maps LF/RF/LR/RR to internal channels 1–4 identically. The
+ALLDATA Speakers (U95/UQF) schematic gives the matching radio-connector pins/circuits for each of
+the four door speakers (plus dash speakers in parallel on UQF). The physical TI TAS6424 amplifier's
+own internal channel ordering was not traced — that mapping step is inference, not confirmed.
+
+**Runtime consumer (Y175 vendor image, from disassembly — not observed on a live radio).**
+`vehicleaudiocontrol` reads the calibration DB values, converts headroom+level-trim into per-channel
+gain, and sends one high-pass filter plus 7 EQ bands per channel over HIDL
+(`IAmpControl::configPEQBand`) to the Harman audio HAL (`vendor.gm.audio@1.1-impl.so`), which routes
+through `libhmampcontrol.so` / `ampcontrolplugin.json` to `Dirana3Plugin` in `libhmdirana3layer.so`.
+That layer computes biquad coefficients on the main processor and writes them into the audio DSP's
+coefficient memory via I²C (`/dev/i2c-3`). The hardware parts list elsewhere in this repo names that
+DSP as an NXP SAF7751; the software side only ever says "Dirana3" — linking the two is inference,
+not a confirmed identity. No GHS-host component, VIP_APP (either Y175 or Y181), `calserviced`, or
+Java `info3` constant reads these values — each was checked and ruled out as a consumer.
+
+**It is not applied on this truck.** `vehicleaudiocontrol` only sends the VSE values at boot/resume
+when the calibration DB's `AmplifierType` is `InternalAmplifier` (0) or `RemoteANCModule` (2); it
+explicitly skips this step for `AnalogRemoteAmplifier` (1) and `BosePremiumAmplifier` (3). Slot 04
+(`85045371`) sets `AmplifierType` = 3 on this LTZ/UQA (Bose) truck — confirmed against a live
+calibration database recovered from the Y175 bench radio's own eMMC dump. The radio's own
+speaker-driver pins are not even wired on UQA; the separate Bose amplifier drives the same door
+speakers with its own tuning. The two independent agents (channel-mapping and runtime-path) reached
+this "skipped on Bose" conclusion by different methods (code-path gating check, and live-DB
+readback) without coordinating, which is why it's carried here as confirmed rather than inferred.
+The CalDef group's own description already stated it is scoped to "systems without a custom remote
+amplifier" — this is now directly verified, not just read off the spec text.
+
+**Trim/tier variance.** The content is NOT LTZ-specific: SPS logs for both an LTZ and a High
+Country session program byte-identical `87846380` into slot 15 (only slots 02/04/05 differ between
+those two trims — consistent with the rest of this doc). A second vehicle's calibration set (a
+different archive in the raw workspace; VIN withheld) carries a different part number in slot 0F
+with 82 of 114 values different, for a Chevrolet/non-NA-market/non-Bose (`AmplifierType`=0) vehicle
+— so slot-0F content does vary by vehicle/market/amplifier configuration, just not by GM-truck trim
+level specifically. No base-audio (non-Bose) Silverado reference exists anywhere in the corpus, so
+whether a non-Bose Silverado gets a different tune (and actually uses it) remains undetermined.
+87846380's values are a real custom tune, not factory defaults (97 of 114 differ from the CalDef
+defaults) — authored for a configuration this specific truck does not run in.
+
+**Still open:** TAS6424 physical channel ordering; the "UQF" rear-door wiring-flag meaning; whether
+Y177 gates `AmplifierType` the same way Y175/Y181 do (binary-identical between those two, Y177
+unchecked); how a stored high-pass Q of `0.0` is handled; the DSP coefficient memory layout (would
+need NXP documentation); and direct confirmation from a live radio rather than disassembly alone.
 
 ## The 15th file — `85577468` (SPS programming utility, not a slot)
 
