@@ -119,72 +119,98 @@ function modifiedCount(mod) {
   return mod.entries.reduce((n, e) => n + (isModified(e) ? 1 : 0), 0);
 }
 
-// Only the module shell (header + lazy body placeholder) is rebuilt on every state
-// change. A module's row content is built once, on first expand, and never torn down
-// and rebuilt again -- re-rendering all 404 rows of every module on every click was a
-// real performance problem, not just a style one.
+// A module's shell (header/summary/body/export-bar DOM nodes) is built exactly ONCE per
+// module and never recreated after that -- only its header badges and its body's
+// visibility get updated on subsequent calls. This matters: buildModuleBody() only
+// populates a body element the FIRST time it sees a given module (so editing one of up
+// to 404 rows doesn't re-render all of them) -- if renderModuleList() ever threw away
+// and rebuilt the body <div> itself (as an earlier version of this function did), that
+// guard would silently leave the brand-new element empty forever, which is exactly the
+// "section collapses and expanding it does nothing" bug: EVERY edit, and even a plain
+// collapse/re-expand with no edit at all, destroyed and replaced the populated body.
 function renderModuleList() {
   document.getElementById("moduleCount").textContent = modules.length;
   const container = document.getElementById("modules");
-  container.innerHTML = "";
 
-  modules.forEach((mod, idx) => {
-    const root = document.createElement("div");
-    root.className = "module";
-    root.dataset.index = idx;
-    root.dataset.expanded = String(mod.expanded);
+  const isFreshLoad = container.children.length !== modules.length ||
+    [...container.children].some((el, i) => Number(el.dataset.index) !== i);
 
-    const header = document.createElement("div");
-    header.className = "module-header";
-    header.setAttribute("role", "button");
-    header.setAttribute("tabindex", "0");
-    header.setAttribute("aria-expanded", String(mod.expanded));
-    const slotLabel = (mod.meta.slot !== null && mod.meta.slot !== undefined)
-      ? `Slot ${mod.meta.slot.toString(16).toUpperCase().padStart(2, "0")} (${mod.meta.slot})`
-      : "no container header";
-    const mCount = modifiedCount(mod);
-    header.innerHTML = `
-      <span class="chevron">${mod.expanded ? "▾" : "▸"}</span>
-      <span class="slot-badge">${escapeHtml(slotLabel)}</span>
-      <span class="filename">${escapeHtml(mod.filename)}</span>
-      <span class="entry-count">${mod.entries.length} entries</span>
-      ${mCount ? `<span class="modified-count">${mCount} modified</span>` : ""}
-      ${mod.slot_triage ? `<span class="triage-badge ${TRIAGE_CLASS[mod.slot_triage] || ""}">${escapeHtml(TRIAGE_LABEL[mod.slot_triage] || mod.slot_triage)}</span>` : ""}
-    `;
-    header.onclick = () => toggleModule(idx);
-    header.onkeydown = (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleModule(idx); } };
-    root.appendChild(header);
+  if (isFreshLoad) {
+    container.innerHTML = "";
+    modules.forEach((mod, idx) => container.appendChild(buildModuleShell(mod, idx)));
+  } else {
+    modules.forEach((mod, idx) => updateModuleShell(container.children[idx], mod, idx));
+  }
+}
 
-    if (mod.slot_summary) {
-      const summary = document.createElement("div");
-      summary.className = "slot-summary";
-      summary.textContent = mod.slot_summary;
-      root.appendChild(summary);
-    }
+function buildModuleShell(mod, idx) {
+  const root = document.createElement("div");
+  root.className = "module";
+  root.dataset.index = idx;
 
-    const body = document.createElement("div");
-    body.className = "module-body";
-    body.style.display = mod.expanded ? "block" : "none";
-    body.dataset.index = idx;
-    root.appendChild(body);
-    if (mod.expanded) buildModuleBody(body, mod, idx);
+  const header = document.createElement("div");
+  header.className = "module-header";
+  header.setAttribute("role", "button");
+  header.setAttribute("tabindex", "0");
+  header.onclick = () => toggleModule(idx);
+  header.onkeydown = (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleModule(idx); } };
+  root.appendChild(header);
 
-    const exportBar = document.createElement("div");
-    exportBar.className = "module-export";
-    const xmlBtn = document.createElement("button");
-    xmlBtn.textContent = "Download edited .calovride XML";
-    xmlBtn.onclick = () => exportModule(idx, "xml");
-    const containerBtn = document.createElement("button");
-    containerBtn.className = "primary";
-    containerBtn.textContent = "Download full container";
-    containerBtn.title = "Reuses this module's own header; digest recomputed, signature stays stale — see help";
-    containerBtn.disabled = !mod.template_b64;
-    containerBtn.onclick = () => exportModule(idx, "container");
-    exportBar.append(xmlBtn, containerBtn);
-    root.appendChild(exportBar);
+  if (mod.slot_summary) {
+    const summary = document.createElement("div");
+    summary.className = "slot-summary";
+    summary.textContent = mod.slot_summary;
+    root.appendChild(summary);
+  }
 
-    container.appendChild(root);
-  });
+  const body = document.createElement("div");
+  body.className = "module-body";
+  body.dataset.index = idx;
+  root.appendChild(body);
+
+  const exportBar = document.createElement("div");
+  exportBar.className = "module-export";
+  const xmlBtn = document.createElement("button");
+  xmlBtn.textContent = "Download edited .calovride XML";
+  xmlBtn.onclick = () => exportModule(idx, "xml");
+  const containerBtn = document.createElement("button");
+  containerBtn.className = "primary";
+  containerBtn.textContent = "Download full container";
+  containerBtn.title = "Reuses this module's own header; digest recomputed, signature stays stale — see help";
+  containerBtn.disabled = !mod.template_b64;
+  containerBtn.onclick = () => exportModule(idx, "container");
+  exportBar.append(xmlBtn, containerBtn);
+  root.appendChild(exportBar);
+
+  updateModuleShell(root, mod, idx);
+  return root;
+}
+
+function updateModuleShell(root, mod, idx) {
+  root.dataset.expanded = String(mod.expanded);
+  const header = root.querySelector(".module-header");
+  header.setAttribute("aria-expanded", String(mod.expanded));
+  const slotLabel = (mod.meta.slot !== null && mod.meta.slot !== undefined)
+    ? `Slot ${mod.meta.slot.toString(16).toUpperCase().padStart(2, "0")} (${mod.meta.slot})`
+    : "no container header";
+  const mCount = modifiedCount(mod);
+  header.innerHTML = `
+    <span class="chevron">${mod.expanded ? "▾" : "▸"}</span>
+    <span class="slot-badge">${escapeHtml(slotLabel)}</span>
+    <span class="filename">${escapeHtml(mod.filename)}</span>
+    <span class="entry-count">${mod.entries.length} entries</span>
+    ${mCount ? `<span class="modified-count">${mCount} modified</span>` : ""}
+    ${mod.slot_triage ? `<span class="triage-badge ${TRIAGE_CLASS[mod.slot_triage] || ""}">${escapeHtml(TRIAGE_LABEL[mod.slot_triage] || mod.slot_triage)}</span>` : ""}
+  `;
+  header.onclick = () => toggleModule(idx);
+  header.onkeydown = (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleModule(idx); } };
+
+  const body = root.querySelector(".module-body");
+  body.style.display = mod.expanded ? "block" : "none";
+  if (mod.expanded) buildModuleBody(body, mod, idx);  // no-op if mod._built is already true
+
+  const containerBtn = root.querySelector(".module-export button.primary");
+  if (containerBtn) containerBtn.disabled = !mod.template_b64;
 }
 
 function toggleModule(idx) {
