@@ -115,6 +115,49 @@ an open-source Python implementation targeting ASAM MCD-1 XCP compatibility, is 
 practical open-source reference to cross-check the existing XCPlite-derived command table
 against.
 
+### Can CAN613/614 produce a *persistent* (reboot-surviving) calibration change? (2026-11-22)
+
+Earlier this session the interface was shown to forge SBA-ticket **RAM** state. The question
+of whether it can reach **EEPROM** was traced via a whole-image direct-call graph (every
+`jarl`/`jr disp22` decoded, r2-cross-checked).
+
+**Single-command persistent write: no.** `[D]` Zero call sites inside the CAN613/614 module
+(`0xe3800`–`0xe6300`) target any write-path trigger (the per-CalGroup wrappers at `0x558ba+`,
+`FUN_0005540c`, `FUN_00096900`, or `FUN_00072d00`). The module's outbound calls go only to
+generic helpers. 613/614 is purely an XCP-style arbitrary-RAM read/write (`DOWNLOAD`/`UPLOAD`,
+the byte-copy loop at `0xe53c8`–`0xe53fc`). It cannot, by one command, persist a calibration.
+*Caveat:* the `cmd<0xC0` handler table at `0xFEBD5CF0` is runtime-populated by a callback
+registry, so the handler set can't be statically enumerated to a mathematical "none" — but
+613/614 handlers take a raw CAN buffer (`param_2 = byte*`) whereas every write-path function
+takes a CalGroup-ID/struct and is wired only to the calibration subsystem; they are not
+plausible 613/614 handlers. Conclusion is decisive on the balance of evidence, not absolute.
+
+**The real per-CalGroup EEPROM writer, located.** `[D]` `"[CAL] EEPROM Write Failure for
+CalGroup-%d"` (15 copies) → 15 near-identical wrappers at `0x558ba`–`0x55e60` (+ a 16th at
+`0x55fba`) → `FUN_0005540c` (retry ≤3, emits the failure log) → `FUN_0005bf68` →
+`FUN_00072d00`. The writer does **not** bit-bang I2C — it writes a 2-byte job record
+(`DAT_febe196c = 0x10` opcode, `DAT_febe196d = group`) and polls an NvM-engine-ready
+event-flag (`FUN_00076272(8)`). Physical persistence is **asynchronous**: the job is queued
+to the NvM/MemIf engine; a background task performs the actual medium access. No `0x50`/`0xA0`
+slave-address constant or RIIC register write appears in this writer's call tree — the medium
+layer is abstracted behind the job queue (opcode `0x10` at `0xFEBE196C`), giving no positive
+I2C evidence from the writer itself (ties to the still-open "how the RAM shadow reaches the
+physical M24C64" question, §`[SFLASH]` below).
+
+**The durable route exists, via a background commit task.** `[U]` strong-inference, not
+end-to-end-proven. A periodic scheduler task (`FUN_000a32ec` MainFunction → `FUN_000d218e` →
+`FUN_00096900`) autonomously scans a per-CalGroup dirty/pending table (indices `0x49fb2`/
+`0x49fb3`, records `0x49d3c`) and, for any group marked pending, calls **every** CalGroup
+wrapper in sequence — submitting the write jobs. So the realistic durable mechanism is:
+**use 613/614's RAM-write to (a) overwrite a CalGroup's RAM shadow with the custom value and
+(b) set that group's dirty/pending flag — then the background task persists it to EEPROM on
+its own, surviving reboot.** This needs **no SecurityAccess** and is *more direct* than the
+UDS `$36`/`$37` path, **if** the dirty-flag/shadow bookkeeping can be forged consistently
+(write gate in `FUN_0005540c`: `DAT_febd0bbc != 0 && group < 0xf && DAT_febd0bba != group`).
+The dirty-flag forge was **not** proven end-to-end — flagged strong-inference. The
+firmware-intended path (UDS SecurityAccess `$27` → `$2E`/`$31`/`$36`-`$37` → the same
+per-CalGroup writer) also reaches EEPROM and **is** confirmed, but requires a real seed/key.
+
 ## Security / protocol strings — present, but not auto-cross-referenced
 
 Searched `/strings` for: checksum(5), signature(2), SBA(27), Ticket(19), ProtoKey(15),
@@ -285,6 +328,58 @@ flash-update strings show *the SoC drives VIP's bootloader update*
 reverse. VIP's profile here matches a companion/gateway MCU on a UART/CAN link; it has
 neither the code nor the hardware interface of an EC/BMC-class supervisor with access to a
 host's BIOS flash.
+
+### `[SFLASH]` — VIP's own serial-NOR, pinned down, then corrected against physical ground truth (2026-11-22)
+
+A complete generic SPI-NOR driver on CSIH channel 6 (file `0x6d490`–`0x6d930`; the string
+base-delta `K=0x27A7A`, used throughout this doc, had to be independently re-derived here —
+Ghidra's own auto-analysis of this region is wrong and `/xrefs_to` was non-functional for
+it): `[D]` WREN `0x06`, RDSR `0x05`, WRSR `0x01`, 4 KB sub-sector erase `0x20`, 256 B page
+program `0x02`, 256 B page read `0x03`, 24-bit addressing (≤16 MB), 5000-retry busy-poll —
+a textbook generic SPI-NOR chip, not a proprietary device. The shared CSIH bus's other
+channels are the Marvell/Leo Ethernet switch (CS4/5) — confirmed **not** another storage
+device (16-bit register-swap traffic, no NOR command set).
+
+**Retraction (2026-11-22), driven by physical ground truth:** the owner confirmed there is
+only **one** TSSOP-8 storage IC on the real board, sitting beside the VIP — the ST M24C64
+**I2C** EEPROM already fully mapped in `../../hardware/module/eeprom.md`. There is no second
+discrete storage chip. A dedicated reconciliation pass resolved what this means for the
+`[SFLASH]` driver below:
+
+- The driver's "shared NvM primitives" claim was a **misreading of a device-agnostic admin
+  layer**. `FUN_000e1258`/`FUN_000e13b2`/`FUN_000e040e` only manipulate RAM block-status
+  tables — they never call into the SPI-NOR driver's actual transfer functions. The real
+  cal write path is `FUN_000558ba` → `FUN_000e13b2`; the real cal read path is
+  `FUN_0004f6ba` → `FUN_000555b0`, both RAM-shadow-only. **That RAM shadow is backed by the
+  M24C64 I2C EEPROM** (per `hardware/module/eeprom.md`'s physically-confirmed byte-offset
+  map), not by this SPI driver.
+- **CSIH ≠ I2C and cannot address the M24C64 at all** — CSIH is clocked SPI (its opcode set
+  WREN/RDSR/WRSR/erase/program/read is a SPI-NOR command set, electrically incompatible
+  with an I2C part). The on-chip RIIC (I2C) peripheral (`0xFFCA0000`) is confirmed
+  **disabled** — one reset-only write at init, its register table otherwise completely
+  unreferenced. So nothing in this image's I2C path explains the EEPROM link either; see
+  below.
+- The SPI-NOR driver itself is real, compiled-in code (not dead — its handler sits in a
+  live, populated dispatch table alongside other live NvM/SWC handlers, and CSIH is
+  genuinely brought up and used for the Marvell/Leo Ethernet switch) — but on **this board
+  variant** it has no populated storage chip to talk to. Best explanation: a generic
+  MemStack backend compiled in for a hardware configuration this board doesn't use.
+
+**So:** calibrations/SBAT/BootCounter/PIM are confirmed to live on the M24C64 (consistent
+with `hardware/module/eeprom.md`'s offset map), reached through the RAM-shadow CalGroup/NvM
+layer described above — **not** through this `[SFLASH]` SPI-NOR driver, which is real code
+with no live storage target on this hardware.
+
+**New genuine open question, not yet resolved by any pass:** *how* the RAM shadow actually
+reaches the physical M24C64 — i.e. the last-mile bus — is still unknown. No bit-banged I2C
+transaction to the EEPROM's slave address was found (the one confirmed bit-banged I2C in
+this image targets a different, unrelated `[ELMOS_IC]` sensor/lighting device). Two
+candidates, neither confirmed: a GPIO-bit-banged I2C path hidden in an undisassembled
+region (same class of gap as elsewhere in this image), or the calibration data is actually
+proxied through the SoC over the VIP↔SoC IPC link (`TrySendCalUpdateData`/`CalUpdateStatus
+from J6` strings confirm calibration *updates* do arrive this way) with the SoC acting as
+the real I2C master. This doesn't affect the resolution above — it's a "how," not a
+"where" — but it's worth a dedicated pass if the mechanism matters.
 
 ## Idle/sleep timer system
 

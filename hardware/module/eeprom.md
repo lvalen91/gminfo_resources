@@ -127,6 +127,24 @@ bitmask `0x0400`/`0x0420`, SecurityAccess unlock bitmask `0x1AE0`, MEC NVM value
 reflash counters `0x1B60`). The SBI flag pair itself (`0x0440`/`0x0441` primary,
 `0x0A80`/`0x0A81` backup) and the mechanism by which its state affects ADB authentication are
 **out of scope for this document** — see
+
+> **Firmware-trace status of the unknowns (2026-11-22):** a dedicated VIP_APP (85759599)
+> pass attempted to confirm the `0x1AE0` "SecurityAccess unlock bitmask" label and resolve
+> `0x0B60`/`0x0C01`/`0x0680`/the `0x1A80` MEC-vs-CRC conflict **from firmware code**, and
+> could not — not for lack of effort, but for a structural reason worth recording so it is
+> not blindly re-attempted: VIP's NvM addresses blocks by **16-bit block handle**, not by
+> raw EEPROM byte offset, and the handle→offset descriptor table did not resolve cleanly
+> (the `0x73xxx` region is ambiguous between code and descriptor data under Ghidra's broken
+> auto-analysis for this image). None of these byte offsets appears anywhere in the firmware
+> as an immediate, so there is no reader/writer to point at via offset. The `0x1AE0`
+> "unlock bitmask" label therefore remains **dump-inferred, never confirmed by tracing**;
+> whether forging it short-circuits a diagnostic session to "already unlocked" is unknown.
+> Two concrete threads would unblock this: (1) decompile the NvM job-queue consumer (the
+> opcode-`0x10` consumer at `0xFEBE196C`; descriptor base lead `FUN_000de380`'s
+> `param_4*0x28 + 0x73130`, stride `0x28`) to recover the handle→offset map; (2) crack the
+> DIAG/security module's string-ID indirection to reach the `$27` seed/key success handler.
+> Full trace: `../../research/boot-update-recovery/VIP_APP_FILE_MAP_85759599.md` (CAN613/614
+> + calibration-writer sections).
 [`../../platform/eeprom_i2c_security.md`](../../platform/eeprom_i2c_security.md) and
 [`../../platform/security.md`](../../platform/security.md) (ProtoKey / ADB Authentication, MEC)
 for that analysis, and `../../research/eeprom-calibration/EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` for the primary research
