@@ -21,11 +21,37 @@ from __future__ import annotations
 
 import gzip
 import hashlib
+import io
+import zlib
 from dataclasses import dataclass
 
 HEADER_LEN = 0x368
 DIGEST_OFF = 0x1E
 DIGEST_SPAN = 858
+
+# Real calibration payloads top out around 600KB (the largest, slot04's 404-entry LTZ
+# document, is ~594KB). 16MiB is generous headroom for anything legitimate while still
+# bounding memory against a small, highly-compressed file claiming to decompress to
+# hundreds of MB.
+MAX_DECOMPRESSED_SIZE = 16 * 1024 * 1024
+
+
+def _bounded_decompress(data: bytes, cap: int = MAX_DECOMPRESSED_SIZE) -> bytes:
+    """gzip.decompress() with a cap on the decompressed size, so a small, highly-compressed
+    input can't be used to force an unbounded memory allocation. Reads incrementally rather
+    than decompressing everything first and checking the length after."""
+    with gzip.GzipFile(fileobj=io.BytesIO(data)) as gz:
+        out = gz.read(cap + 1)
+    if len(out) > cap:
+        raise ContainerError(f"decompressed payload exceeds the {cap} byte safety cap -- refusing to process")
+    return out
+
+# Every exception gzip.decompress can actually raise on malformed input: BadGzipFile for a
+# bad magic/CRC/size trailer, EOFError for truncation, zlib.error for corrupted deflate
+# data. All three must be caught at every decompress call, or "never raises" (parse_any)
+# and "clean CLI/API errors" both silently break on exactly the kind of damaged-container
+# input this tool exists to handle.
+_GZIP_ERRORS = (gzip.BadGzipFile, EOFError, zlib.error, OSError)
 
 
 class ContainerError(ValueError):
@@ -36,6 +62,10 @@ class ContainerError(ValueError):
 class Container:
     header: bytes          # 872 bytes, container[0:0x368], including the (possibly stale) signature
     inner_xml: bytes        # the decompressed CalOvride XML payload
+    digest_ok: bool = True  # False if the container's own stored payload digest doesn't match
+                            # its actual bytes -- i.e. it was tampered with or corrupted after
+                            # being signed. Ingesting such a container still succeeds (so you can
+                            # inspect what's in it), but callers should surface this prominently.
 
     @property
     def slot(self) -> int:
@@ -59,9 +89,9 @@ def parse(raw_outer_gzip: bytes) -> Container:
     """raw_outer_gzip is the file exactly as stored under spsCacheInternal/ (outer gzip
     wrapping the container)."""
     try:
-        container = gzip.decompress(raw_outer_gzip)
-    except gzip.BadGzipFile as e:
-        raise ContainerError(f"not a gzip file (expected outer gzip wrapping a CSM container): {e}") from e
+        container = _bounded_decompress(raw_outer_gzip)
+    except _GZIP_ERRORS as e:
+        raise ContainerError(f"not a valid gzip file (expected outer gzip wrapping a CSM container): {e}") from e
     return parse_unwrapped(container)
 
 
@@ -72,12 +102,18 @@ def parse_unwrapped(container: bytes) -> Container:
     if container[HEADER_LEN:HEADER_LEN + 3] != b"\x1f\x8b\x08":
         raise ContainerError("no inner gzip stream found at offset 0x368")
     header = container[:HEADER_LEN]
-    inner_xml = gzip.decompress(container[HEADER_LEN:])
-    return Container(header=header, inner_xml=inner_xml)
+    try:
+        inner_xml = _bounded_decompress(container[HEADER_LEN:])
+    except _GZIP_ERRORS as e:
+        raise ContainerError(f"CSM header is valid but the inner gzip payload is corrupt: {e}") from e
+    return Container(header=header, inner_xml=inner_xml, digest_ok=verify_digest(container))
 
 
 def verify_digest(container_bytes: bytes) -> bool:
-    """container_bytes is the full unwrapped container (header + inner gzip)."""
+    """container_bytes is the full unwrapped container (header + inner gzip). Returns
+    False (never raises) on input too short to contain a digest."""
+    if len(container_bytes) < DIGEST_SPAN:
+        return False
     stored = container_bytes[DIGEST_OFF:DIGEST_OFF + 32]
     actual = hashlib.sha256(container_bytes[DIGEST_SPAN:]).digest()
     return stored == actual

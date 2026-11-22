@@ -38,9 +38,50 @@ NS = "http://caltools.gm.com/calovride"
 ET.register_namespace("calovride", NS)
 
 SCALAR_TYPES = {"Boolean", "Integer", "Float", "Enumeration"}
-ARRAY_TYPES = {"IntegerArray", "FloatArray"}
+# StringArray (seen on Android_Auto_VEC_Whitelist) behaves identically to Integer/FloatArray
+# at this layer -- always a list of <ArrayValue> text, with no type-specific parsing here.
+ARRAY_TYPES = {"IntegerArray", "FloatArray", "StringArray"}
 MAP_TYPES = {"EnumIntegerMap", "EnumFloatMap"}
 ALL_VALUE_TYPES = SCALAR_TYPES | ARRAY_TYPES | MAP_TYPES | {"String", "Record", "BinaryFile"}
+
+
+def _escape(text) -> str:
+    """Escape &, < and > in element text. GM's format never puts our interpolated values
+    in an attribute, only in element text, so this is the only escaping ever needed. Order
+    matters: & must be escaped first or the escapes themselves get re-escaped."""
+    s = str(text)
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def validate_value(type_: str, value) -> None:
+    """Raise CalOvrideError if `value` is not a sane assignment for `type_`. Intended for
+    callers (the CLI, the web API) accepting a user-supplied scalar edit -- catches the
+    "set a Boolean to 'maybe'" class of mistake before it reaches serialize(). Does not
+    (and cannot, without the CalDef's declared Min/Max/ArrayLen) catch every bad value --
+    this is a sanity check, not full schema validation."""
+    if type_ == "Boolean":
+        if value not in ("true", "false"):
+            raise CalOvrideError(f"Boolean value must be exactly 'true' or 'false', got {value!r}")
+    elif type_ == "Integer":
+        try:
+            int(str(value))
+        except ValueError:
+            raise CalOvrideError(f"Integer value must parse as an integer, got {value!r}") from None
+    elif type_ == "Float":
+        try:
+            float(str(value))
+        except ValueError:
+            raise CalOvrideError(f"Float value must parse as a number, got {value!r}") from None
+    elif type_ in SCALAR_TYPES or type_ == "String":
+        if not isinstance(value, str):
+            raise CalOvrideError(f"{type_} value must be a string, got {type(value).__name__}")
+        if "\n" in value or "\r" in value:
+            raise CalOvrideError(f"{type_} value may not contain embedded newlines (would corrupt CRLF framing)")
+    else:
+        raise CalOvrideError(
+            f"{type_} is a structured type (array/map/record/binary) -- it cannot be set from a "
+            f"single scalar value; edit its structured JSON representation directly"
+        )
 
 
 class CalOvrideError(ValueError):
@@ -105,15 +146,18 @@ def _local(tag: str) -> str:
 def parse(xml_bytes: bytes) -> list[Override]:
     """Parse a CalOvride document (bytes, as extracted from a container's inner gzip, or
     a standalone .calovride file) into a list of Override records."""
-    root = ET.fromstring(xml_bytes)
+    try:
+        root = ET.fromstring(xml_bytes)
+    except ET.ParseError as e:
+        raise CalOvrideError(f"not well-formed XML: {e}") from e
     if _local(root.tag) != "CalOvrideFile":
         raise CalOvrideError(f"unexpected root element {root.tag!r}")
     overrides = []
     for ov in root:
         if _local(ov.tag) != "OverrideValue":
             raise CalOvrideError(f"unexpected child of root: {ov.tag!r}")
-        cal_id = ov.findtext("CalID")
-        version = ov.findtext("Version")
+        cal_id = _require(ov.findtext("CalID"), "<OverrideValue><CalID>")
+        version = _require(ov.findtext("Version"), "<OverrideValue><Version>")
         type_elem = None
         for c in ov:
             if _local(c.tag) not in ("CalID", "Version"):
@@ -126,26 +170,39 @@ def parse(xml_bytes: bytes) -> list[Override]:
     return overrides
 
 
+def _require(value, what: str):
+    if value is None:
+        raise CalOvrideError(f"missing/empty required element: {what}")
+    return value
+
+
 def _parse_value(type_: str, elem: ET.Element):
     if type_ in SCALAR_TYPES:
-        return elem.findtext("Value")
+        return _require(elem.findtext("Value"), f"<{type_}><Value>")
     if type_ == "String":
-        return elem.findtext("StringValue")
+        return _require(elem.findtext("StringValue"), "<String><StringValue>")
     if type_ in ARRAY_TYPES:
-        return [c.text for c in elem if _local(c.tag) == "ArrayValue"]
+        out = []
+        for c in elem:
+            if _local(c.tag) != "ArrayValue":
+                continue
+            out.append(_require(c.text, f"<{type_}><ArrayValue>"))
+        return out
     if type_ in MAP_TYPES:
         pairs = []
         for entry in elem:
             if _local(entry.tag) != "Entry":
                 continue
-            pairs.append((entry.findtext("Key"), entry.findtext("Value")))
+            k = _require(entry.findtext("Key"), f"<{type_}><Entry><Key>")
+            v = _require(entry.findtext("Value"), f"<{type_}><Entry><Value>")
+            pairs.append((k, v))
         return pairs
     if type_ == "Record":
         fields = []
         for f in elem:
             if _local(f.tag) != "Field":
                 continue
-            name = f.findtext("FieldName")
+            name = _require(f.findtext("FieldName"), "<Record><Field><FieldName>")
             nested = None
             for c in f:
                 if _local(c.tag) != "FieldName":
@@ -155,15 +212,19 @@ def _parse_value(type_: str, elem: ET.Element):
                 raise CalOvrideError(f"Record Field {name!r} has no typed value")
             ntype = _local(nested.tag)
             nval = nested.findtext("StringValue") if ntype == "String" else nested.findtext("Value")
+            nval = _require(nval, f"<Record><Field {name!r}> nested <{ntype}> value")
             fields.append(Field(name, ntype, nval))
         return fields
     if type_ == "BinaryFile":
-        return BinaryFileValue(
-            filename=elem.findtext("Filename"),
-            data_b64=elem.findtext("Data"),
-            length=int(elem.findtext("Length")),
-            checksum=int(elem.findtext("Checksum")),
-        )
+        filename = _require(elem.findtext("Filename"), "<BinaryFile><Filename>")
+        data_b64 = _require(elem.findtext("Data"), "<BinaryFile><Data>")
+        length_s = _require(elem.findtext("Length"), "<BinaryFile><Length>")
+        checksum_s = _require(elem.findtext("Checksum"), "<BinaryFile><Checksum>")
+        try:
+            length, checksum = int(length_s), int(checksum_s)
+        except ValueError as e:
+            raise CalOvrideError(f"<BinaryFile> Length/Checksum not integers: {e}") from e
+        return BinaryFileValue(filename=filename, data_b64=data_b64, length=length, checksum=checksum)
     raise CalOvrideError(f"unknown override type {type_!r}")
 
 
@@ -180,13 +241,21 @@ def serialize(overrides: list[Override]) -> bytes:
     lines.append(f'<calovride:CalOvrideFile xmlns:calovride="{NS}">')
     for ov in overrides:
         lines.append("  <OverrideValue>")
-        lines.append(f"    <CalID>{ov.cal_id}</CalID>")
-        lines.append(f"    <Version>{ov.version}</Version>")
+        lines.append(f"    <CalID>{_escape(_require(ov.cal_id, 'CalID'))}</CalID>")
+        lines.append(f"    <Version>{_escape(_require(ov.version, 'Version'))}</Version>")
         lines.extend(_serialize_value(ov.type_, ov.value, depth=2))
         lines.append("  </OverrideValue>")
     lines.append("</calovride:CalOvrideFile>")
     doc = CR.join(lines)
-    return doc.encode("ascii")
+    try:
+        return doc.encode("ascii")
+    except UnicodeEncodeError as e:
+        raise CalOvrideError(
+            f"this CalOvride document is ASCII-only -- a value contains a non-ASCII character "
+            f"({e.reason} at document offset {e.start}); GM's own writer would need a numeric "
+            f"character reference for this, which this module does not attempt to produce "
+            f"automatically since the exact form GM uses for that is unverified"
+        ) from e
 
 
 def _pad(depth: int) -> str:
@@ -197,12 +266,14 @@ def _serialize_value(type_: str, value, depth: int) -> list[str]:
     p = _pad(depth)
     p1 = _pad(depth + 1)
     if type_ in SCALAR_TYPES:
-        return [f"{p}<{type_}>", f"{p1}<Value>{value}</Value>", f"{p}</{type_}>"]
+        v = _escape(_require(value, f"<{type_}><Value>"))
+        return [f"{p}<{type_}>", f"{p1}<Value>{v}</Value>", f"{p}</{type_}>"]
     if type_ == "String":
-        return [f"{p}<String>", f"{p1}<StringValue>{value}</StringValue>", f"{p}</String>"]
+        v = _escape(_require(value, "<String><StringValue>"))
+        return [f"{p}<String>", f"{p1}<StringValue>{v}</StringValue>", f"{p}</String>"]
     if type_ in ARRAY_TYPES:
         out = [f"{p}<{type_}>"]
-        out += [f"{p1}<ArrayValue>{v}</ArrayValue>" for v in value]
+        out += [f"{p1}<ArrayValue>{_escape(_require(v, f'<{type_}><ArrayValue>'))}</ArrayValue>" for v in value]
         out.append(f"{p}</{type_}>")
         return out
     if type_ in MAP_TYPES:
@@ -210,8 +281,8 @@ def _serialize_value(type_: str, value, depth: int) -> list[str]:
         p2 = _pad(depth + 2)
         for k, v in value:
             out.append(f"{p1}<Entry>")
-            out.append(f"{p2}<Key>{k}</Key>")
-            out.append(f"{p2}<Value>{v}</Value>")
+            out.append(f"{p2}<Key>{_escape(_require(k, f'<{type_}><Entry><Key>'))}</Key>")
+            out.append(f"{p2}<Value>{_escape(_require(v, f'<{type_}><Entry><Value>'))}</Value>")
             out.append(f"{p1}</Entry>")
         out.append(f"{p}</{type_}>")
         return out
@@ -220,19 +291,24 @@ def _serialize_value(type_: str, value, depth: int) -> list[str]:
         p2 = _pad(depth + 2)
         for f in value:
             out.append(f"{p1}<Field>")
-            out.append(f"{p2}<FieldName>{f.name}</FieldName>")
+            out.append(f"{p2}<FieldName>{_escape(_require(f.name, '<Record><Field><FieldName>'))}</FieldName>")
             out.extend(_serialize_value(f.type_, f.value, depth + 2))
             out.append(f"{p1}</Field>")
         out.append(f"{p}</Record>")
         return out
     if type_ == "BinaryFile":
         bf: BinaryFileValue = value
+        if not isinstance(bf, BinaryFileValue):
+            raise CalOvrideError(
+                f"BinaryFile value must be a BinaryFileValue instance, got {type(bf).__name__} "
+                f"-- this type cannot be assigned from a plain string/scalar"
+            )
         return [
             f"{p}<BinaryFile>",
-            f"{p1}<Filename>{bf.filename}</Filename>",
-            f"{p1}<Data>{bf.data_b64}</Data>",
-            f"{p1}<Length>{bf.length}</Length>",
-            f"{p1}<Checksum>{bf.checksum}</Checksum>",
+            f"{p1}<Filename>{_escape(_require(bf.filename, '<BinaryFile><Filename>'))}</Filename>",
+            f"{p1}<Data>{_escape(_require(bf.data_b64, '<BinaryFile><Data>'))}</Data>",
+            f"{p1}<Length>{_escape(_require(bf.length, '<BinaryFile><Length>'))}</Length>",
+            f"{p1}<Checksum>{_escape(_require(bf.checksum, '<BinaryFile><Checksum>'))}</Checksum>",
             f"{p}</BinaryFile>",
         ]
     raise CalOvrideError(f"unknown override type {type_!r}")
@@ -241,3 +317,39 @@ def _serialize_value(type_: str, value, depth: int) -> list[str]:
 def roundtrip_ok(xml_bytes: bytes) -> bool:
     """True if parse(xml_bytes) -> serialize(...) reproduces xml_bytes exactly."""
     return serialize(parse(xml_bytes)) == xml_bytes
+
+
+# --------------------------------------------------------- JSON interchange shape ---
+#
+# One canonical full-fidelity JSON representation of an Override, shared by the CLI and
+# the web API so there's a single place that knows how to round-trip every type --
+# including the structured ones (array/map/record/binary). Anything that flattens a
+# structured value to a display string (e.g. for showing in a table) must keep that
+# string separate from what actually gets sent to to_jsonable/from_jsonable, or editing
+# unrelated entries and re-exporting will silently corrupt or crash on them -- this was
+# a real, confirmed bug (both the CLI and the web UI independently corrupted
+# IntegerArray/FloatArray values and crashed on Map/Record/BinaryFile on export, because
+# the display string was what got sent back instead of this shape).
+
+def to_jsonable(ov: Override) -> dict:
+    value = ov.value
+    if isinstance(value, BinaryFileValue):
+        value = {"filename": value.filename, "length": value.length,
+                 "checksum": value.checksum, "data_b64": value.data_b64}
+    elif ov.type_ in MAP_TYPES:
+        value = [{"key": k, "value": v} for k, v in value]
+    elif ov.type_ == "Record":
+        value = [{"name": f.name, "type": f.type_, "value": f.value} for f in value]
+    return {"cal_id": ov.cal_id, "version": ov.version, "type": ov.type_, "value": value}
+
+
+def from_jsonable(d: dict) -> Override:
+    value = d["value"]
+    type_ = d["type"]
+    if type_ == "BinaryFile":
+        value = BinaryFileValue(value["filename"], value["data_b64"], value["length"], value["checksum"])
+    elif type_ in MAP_TYPES:
+        value = [(e["key"], e["value"]) for e in value]
+    elif type_ == "Record":
+        value = [Field(e["name"], e["type"], e["value"]) for e in value]
+    return Override(d["cal_id"], str(d["version"]), type_, value)

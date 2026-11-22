@@ -12,6 +12,7 @@ across a server restart.
 from __future__ import annotations
 
 import base64
+import binascii
 import io
 import os
 import sys
@@ -33,23 +34,29 @@ def _repo_root() -> Path:
     return Path(root) if root else Path(__file__).resolve().parent.parent.parent.parent
 
 
+# Set at import time (not just in __main__) so caldef lookups work regardless of how this
+# module is invoked -- direct script run, `flask run`, or imported by a test harness.
+os.environ.setdefault("GMINFO_REPO_ROOT", str(_repo_root()))
+
+
 def _entry_to_dict(ov: calovride.Override) -> dict:
     de = None
     try:
-        entries_by_id = _caldef_by_id()
-        de = entries_by_id.get(ov.cal_id)
+        de = caldef.lookup_by_id(ov.cal_id)
     except caldef.CalDefError:
         pass
-    value = ov.value
+    jsonable = calovride.to_jsonable(ov)
+    value_raw = jsonable["value"]  # the authoritative, full-fidelity value -- always sent back on export
+    display_value = value_raw
     editable = ov.type_ in calovride.SCALAR_TYPES or ov.type_ == "String"
-    if isinstance(value, calovride.BinaryFileValue):
-        value = f"<BinaryFile: {value.filename}, {value.length} bytes>"
+    if isinstance(ov.value, calovride.BinaryFileValue):
+        display_value = f"<BinaryFile: {ov.value.filename}, {ov.value.length} bytes>"
     elif ov.type_ in calovride.MAP_TYPES:
-        value = f"<{ov.type_}: {len(value)} entries>"
+        display_value = f"<{ov.type_}: {len(ov.value)} entries>"
     elif ov.type_ == "Record":
-        value = f"<Record: {len(value)} fields>"
+        display_value = f"<Record: {len(ov.value)} fields>"
     elif ov.type_ in calovride.ARRAY_TYPES:
-        value = ", ".join(value)
+        display_value = ", ".join(ov.value)
     enum_options = []
     if de and de.type_ == "Enumeration" and de.enum_id:
         labels = caldef._load_enum_labels().get(de.enum_id, {})
@@ -58,7 +65,8 @@ def _entry_to_dict(ov: calovride.Override) -> dict:
         "cal_id": ov.cal_id,
         "version": ov.version,
         "type": ov.type_,
-        "value": value,
+        "value": display_value,     # for display only -- a flattened string for structured types
+        "value_raw": value_raw,     # authoritative -- ALWAYS send this back on export, never "value"
         "editable": editable,
         "name": de.name if de else None,
         "group": de.group if de else None,
@@ -68,29 +76,46 @@ def _entry_to_dict(ov: calovride.Override) -> dict:
     }
 
 
+def _entries_from_payload(entry_dicts: list[dict]) -> list[calovride.Override]:
+    """Build Override objects from client-submitted entries, using the authoritative
+    value_raw field (falling back to value for older/simpler payloads where they're the
+    same thing, e.g. a freshly-added scalar entry). Never trusts a flattened display
+    string for a structured type."""
+    out = []
+    for d in entry_dicts:
+        value = d["value_raw"] if "value_raw" in d else d["value"]
+        out.append(calovride.from_jsonable({"cal_id": d["cal_id"], "version": d["version"],
+                                             "type": d["type"], "value": value}))
+    return out
+
+
+def _restricted_names(entries: list[calovride.Override]) -> list[str]:
+    """Names of every entry that resolves to a safety-restricted CalDef group. Used to
+    gate export: see api_export/api_export_zip. This can't distinguish "already present
+    unmodified" from "just added/edited" without server-side session state, which this
+    stateless API intentionally doesn't keep -- so it gates on presence, not on change.
+    That's a known, documented tradeoff (see README), not an oversight."""
+    names = []
+    for ov in entries:
+        de = caldef.lookup_by_id(ov.cal_id)
+        if de and caldef.is_safety_restricted(de):
+            names.append(de.name)
+    return names
+
+
 def _ingest_bytes(data: bytes) -> tuple[list, dict]:
     """Returns (entries_dict_list, meta). meta['has_container_header'] tells callers
     whether a container export is possible for this module."""
-    meta = {"slot": None, "alpha_code": None, "part_number": None, "has_container_header": False}
+    meta = {"slot": None, "alpha_code": None, "part_number": None, "has_container_header": False, "digest_ok": None}
     c = container.parse_any(data)
     if c is not None:
         xml = c.inner_xml
-        meta.update(slot=c.slot, alpha_code=c.alpha_code, part_number=c.part_number, has_container_header=True)
+        meta.update(slot=c.slot, alpha_code=c.alpha_code, part_number=c.part_number,
+                    has_container_header=True, digest_ok=c.digest_ok)
     else:
         xml = data
     entries = calovride.parse(xml)  # may raise calovride.CalOvrideError -- let caller decide
     return [_entry_to_dict(e) for e in entries], meta
-
-
-_caldef_cache = None
-
-
-def _caldef_by_id():
-    global _caldef_cache
-    if _caldef_cache is None:
-        os.environ.setdefault("GMINFO_REPO_ROOT", str(_repo_root()))
-        _caldef_cache = {e.cal_id: e for e in caldef._load_all().values()}
-    return _caldef_cache
 
 
 @app.route("/")
@@ -207,65 +232,133 @@ def api_caldef_groups():
     return jsonify(caldef.groups())
 
 
+class _ExportInputError(ValueError):
+    """Malformed export request body -- always a clean 400, never a 500."""
+
+
+def _safe_member_name(raw_name: str) -> str:
+    """Strip directory separators (both / and \\, so a Windows-style traversal name
+    can't survive on a POSIX host either) and collapse a resulting empty/"."/".."  name
+    to something inert. The export zip is for the user's own download, not written to
+    disk server-side, but a hostile or just-malformed member name shouldn't be allowed
+    to look like a traversal path to whatever extracts the zip later."""
+    name = raw_name.replace("\\", "/")
+    name = Path(name).name  # keeps only the final path component
+    if name in ("", ".", ".."):
+        name = "unnamed"
+    return name
+
+
+def _build_entries(entry_dicts) -> list[calovride.Override]:
+    if not isinstance(entry_dicts, list):
+        raise _ExportInputError(f"'entries' must be a list, got {type(entry_dicts).__name__}")
+    try:
+        return _entries_from_payload(entry_dicts)
+    except (KeyError, TypeError) as e:
+        raise _ExportInputError(f"malformed entry (expected cal_id/version/type/value_raw on each) -- {e}") from e
+
+
+def _check_safety_gate(entries: list[calovride.Override], acknowledged: bool) -> None:
+    """See _restricted_names()'s docstring for the "gates on presence, not on change"
+    tradeoff this makes as a stateless API."""
+    if acknowledged:
+        return
+    restricted = _restricted_names(entries)
+    if restricted:
+        raise _ExportInputError(
+            "safety_ack required: this export includes entries from elevated-caution chime/"
+            f"safety/driver-workload CalDef groups ({', '.join(restricted[:10])}"
+            f"{f', and {len(restricted)-10} more' if len(restricted) > 10 else ''}). "
+            "Set safety_ack:true in the request after confirming with the user -- see "
+            "CALIBRATION_CUSTOMIZATION_GUIDE.md §3."
+        )
+
+
 @app.route("/api/export", methods=["POST"])
 def api_export():
-    """Body: {"entries": [{cal_id, version, type, value}, ...], "format": "xml"|"container",
-    "template_b64": optional base64 of a genuine container to borrow the header from}."""
-    payload = request.get_json(force=True)
-    entries = []
-    for d in payload["entries"]:
-        type_ = d["type"]
-        value = d["value"]
-        entries.append(calovride.Override(d["cal_id"], str(d["version"]), type_, value))
-    xml = calovride.serialize(entries)
-    fmt = payload.get("format", "xml")
-    if fmt == "xml":
-        return send_file(io.BytesIO(xml), mimetype="application/xml",
-                          as_attachment=True, download_name="custom.calovride")
-    if fmt == "container":
-        template_b64 = payload.get("template_b64")
-        if not template_b64:
-            return jsonify({"error": "format=container requires template_b64 (a genuine container to borrow the header from)"}), 400
-        template_raw = base64.b64decode(template_b64)
-        c = container.parse_any(template_raw)
-        if c is None:
-            return jsonify({"error": "template_b64 is not a recognized CSM container (gzip-wrapped or unwrapped)"}), 400
-        unwrapped = container.reseal(c.header, xml)
-        outer = container.pack_outer(unwrapped)
-        return send_file(io.BytesIO(outer), mimetype="application/octet-stream",
-                          as_attachment=True, download_name="custom_container")
-    return jsonify({"error": f"unknown format {fmt!r}"}), 400
+    """Body: {"entries": [{cal_id, version, type, value_raw}, ...], "format": "xml"|"container",
+    "template_b64": optional base64 of a genuine container to borrow the header from,
+    "safety_ack": optional bool, required true if any entry is safety-restricted}."""
+    try:
+        payload = request.get_json(force=True)
+        if not isinstance(payload, dict) or "entries" not in payload:
+            raise _ExportInputError("request body must be a JSON object with an 'entries' list")
+        entries = _build_entries(payload["entries"])
+        _check_safety_gate(entries, payload.get("safety_ack") is True)
+        xml = calovride.serialize(entries)
+        fmt = payload.get("format", "xml")
+        if fmt == "xml":
+            return send_file(io.BytesIO(xml), mimetype="application/xml",
+                              as_attachment=True, download_name="custom.calovride")
+        if fmt == "container":
+            template_b64 = payload.get("template_b64")
+            if not template_b64:
+                return jsonify({"error": "format=container requires template_b64 (a genuine container to borrow the header from)"}), 400
+            try:
+                template_raw = base64.b64decode(template_b64, validate=True)
+            except (binascii.Error, ValueError) as e:
+                return jsonify({"error": f"template_b64 is not valid base64: {e}"}), 400
+            c = container.parse_any(template_raw)
+            if c is None:
+                return jsonify({"error": "template_b64 is not a recognized CSM container (gzip-wrapped or unwrapped)"}), 400
+            unwrapped = container.reseal(c.header, xml)
+            outer = container.pack_outer(unwrapped)
+            return send_file(io.BytesIO(outer), mimetype="application/octet-stream",
+                              as_attachment=True, download_name="custom_container")
+        return jsonify({"error": f"unknown format {fmt!r}"}), 400
+    except (_ExportInputError, calovride.CalOvrideError, container.ContainerError) as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @app.route("/api/export_zip", methods=["POST"])
 def api_export_zip():
-    """Body: {"modules": [{"filename", "entries": [...], "template_b64": optional}, ...]}.
-    Each module is packed as a full container if it has a template_b64, else as plain
-    .calovride XML. Returns one .zip containing all of them."""
-    payload = request.get_json(force=True)
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+    """Body: {"modules": [{"filename", "entries": [...], "template_b64": optional}, ...],
+    "safety_ack": optional bool, required true if any entry in any module is restricted}."""
+    try:
+        payload = request.get_json(force=True)
+        if not isinstance(payload, dict) or not isinstance(payload.get("modules"), list):
+            raise _ExportInputError("request body must be a JSON object with a 'modules' list")
+        acknowledged = payload.get("safety_ack") is True
+        built = []
         for mod in payload["modules"]:
-            entries = [calovride.Override(d["cal_id"], str(d["version"]), d["type"], d["value"])
-                       for d in mod["entries"]]
-            xml = calovride.serialize(entries)
-            base_name = Path(mod["filename"]).name
-            xml_name = base_name if base_name.endswith(".calovride") else base_name + ".calovride"
-            if mod.get("template_b64"):
-                template_raw = base64.b64decode(mod["template_b64"])
-                c = container.parse_any(template_raw)
-                if c is None:
-                    zf.writestr(xml_name, xml)
-                    continue
-                unwrapped = container.reseal(c.header, xml)
-                outer = container.pack_outer(unwrapped)
-                zf.writestr(base_name, outer)
-            else:
-                zf.writestr(xml_name, xml)
-    buf.seek(0)
-    return send_file(buf, mimetype="application/zip", as_attachment=True, download_name="custom_calibration_set.zip")
+            if not isinstance(mod, dict) or "filename" not in mod:
+                raise _ExportInputError("each module needs a 'filename'")
+            entries = _build_entries(mod.get("entries", []))
+            built.append((mod["filename"], entries, mod.get("template_b64")))
+        all_entries = [ov for _, entries, _ in built for ov in entries]
+        _check_safety_gate(all_entries, acknowledged)
+
+        buf = io.BytesIO()
+        used_names = set()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for filename, entries, template_b64 in built:
+                xml = calovride.serialize(entries)
+                base_name = _safe_member_name(str(filename))
+                xml_name = base_name if base_name.endswith(".calovride") else base_name + ".calovride"
+                member_name, data = xml_name, xml
+                if template_b64:
+                    try:
+                        template_raw = base64.b64decode(template_b64, validate=True)
+                    except (binascii.Error, ValueError):
+                        template_raw = None
+                    c = container.parse_any(template_raw) if template_raw is not None else None
+                    if c is not None:
+                        unwrapped = container.reseal(c.header, xml)
+                        member_name, data = base_name, container.pack_outer(unwrapped)
+                # de-duplicate: two modules with the same basename would otherwise
+                # silently collide and one would be lost from the zip
+                final_name, n = member_name, 1
+                while final_name in used_names:
+                    n += 1
+                    stem, dot, ext = member_name.rpartition(".")
+                    final_name = f"{stem or member_name}_{n}{dot}{ext}" if dot else f"{member_name}_{n}"
+                used_names.add(final_name)
+                zf.writestr(final_name, data)
+        buf.seek(0)
+        return send_file(buf, mimetype="application/zip", as_attachment=True, download_name="custom_calibration_set.zip")
+    except (_ExportInputError, calovride.CalOvrideError, container.ContainerError) as e:
+        return jsonify({"error": str(e)}), 400
 
 
 if __name__ == "__main__":
-    os.environ.setdefault("GMINFO_REPO_ROOT", str(_repo_root()))
-    app.run(host="127.0.0.1", port=5057, debug=True)
+    app.run(host="127.0.0.1", port=5057, debug=False, use_reloader=False)

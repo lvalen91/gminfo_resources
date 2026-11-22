@@ -28,9 +28,12 @@
   </tbody>
 </table>
 
-<h2>Off-limits CalDef domains — never shipped, never tested</h2>
-<p>These exist as base defaults in <code>CalSets.db</code> but have never been touched by any
-   shipped or custom override on this vehicle:</p>
+<h2>Elevated-caution CalDef domains — chime/alert/safety-volume/driver-workload</h2>
+<p><b>Correction (2026-11-22):</b> this section previously claimed these groups were "never
+   shipped." That was false — direct verification found 162 real entries from these groups in
+   stock slot 04 alone (seat-belt-reminder and forward-collision chime records, `ADASIS_SUPPORT`,
+   `SAFETY_VOL_OVRD_LEVEL`) and 5 more in slot 05. The gate on them stays; the reason is what they
+   govern, not whether GM has shipped them:</p>
 <ul>
   <li><code>GIS604_SafetyRelatedVolumeGroupOverrides</code> — safety-chime volume behavior</li>
   <li><code>GIS631_ConfigChimeProd_*</code> (4 variants) — chime/alert sound configuration</li>
@@ -39,7 +42,7 @@
   <li><code>SFS22_SecurityEventLoggingFRD</code></li>
   <li><code>ADASIS</code></li>
 </ul>
-<p>Treat these as off-limits, not as the next experiment — see the customization guide for why.</p>
+<p>Treat these as elevated-caution, not as the next experiment — see the customization guide for why.</p>
 
 <h2>Already proven on this bench</h2>
 <ul>

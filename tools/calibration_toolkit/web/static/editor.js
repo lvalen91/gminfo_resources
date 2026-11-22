@@ -13,9 +13,30 @@ async function ingest() {
   const isZip = file.name.toLowerCase().endsWith(".zip");
   const form = new FormData();
   form.append("file", file);
-  const res = await fetch(isZip ? "/api/ingest_zip" : "/api/ingest", { method: "POST", body: form });
-  const data = await res.json();
+  let res, data;
+  try {
+    res = await fetch(isZip ? "/api/ingest_zip" : "/api/ingest", { method: "POST", body: form });
+  } catch (err) {
+    status.textContent = "";
+    alert("network error talking to the local server: " + err.message);
+    return;
+  }
+  const contentType = res.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    // e.g. a 413 (file too large) or a raw Flask error page -- never call res.json() on
+    // these, it throws and used to leave the UI stuck on "loading…" forever
+    status.textContent = "";
+    alert(`upload failed: HTTP ${res.status} ${res.statusText}` +
+          (res.status === 413 ? " (file too large)" : ""));
+    return;
+  }
+  data = await res.json();
   if (data.error) { status.textContent = ""; alert(data.error); return; }
+
+  // reset per-load state so a smaller/different set loaded next can't leave addEntry
+  // targeting a module index that no longer exists, or a collapsed one silently
+  expandedIndex = null;
+  document.getElementById("searchResults").innerHTML = "";
 
   if (isZip) {
     modules = data.modules.map(m => ({ ...m, expanded: false }));
@@ -90,7 +111,13 @@ function toggleModule(headerEl) {
   const root = headerEl.closest(".module");
   const idx = parseInt(root.dataset.index, 10);
   modules[idx].expanded = !modules[idx].expanded;
-  if (modules[idx].expanded) expandedIndex = idx;
+  if (modules[idx].expanded) {
+    expandedIndex = idx;
+  } else if (expandedIndex === idx) {
+    // collapsing the module "add to open module" currently targets -- clear it rather
+    // than silently letting the next add land in a module the user can no longer see
+    expandedIndex = null;
+  }
   renderModules();
 }
 
@@ -116,7 +143,7 @@ function renderEntriesTable(tbody, mod, modIdx) {
       const badge = document.createElement("span");
       badge.className = "safetybadge";
       badge.textContent = " ⚠";
-      badge.title = "never-shipped safety/chime group";
+      badge.title = "elevated-caution chime/safety group";
       nameTd.appendChild(badge);
     }
 
@@ -148,7 +175,7 @@ function renderValueControl(td, e, mod, entryIdx) {
       if (e.value === v) opt.selected = true;
       select.appendChild(opt);
     });
-    select.onchange = () => { mod.entries[entryIdx].value = select.value; };
+    select.onchange = () => { mod.entries[entryIdx].value = mod.entries[entryIdx].value_raw = select.value; };
     td.appendChild(select);
     return;
   }
@@ -181,14 +208,14 @@ function renderValueControl(td, e, mod, entryIdx) {
     select.onchange = () => {
       if (select.value === "__custom__") {
         customInput.style.display = "inline-block";
-        mod.entries[entryIdx].value = customInput.value;
+        mod.entries[entryIdx].value = mod.entries[entryIdx].value_raw = customInput.value;
       } else {
         customInput.style.display = "none";
-        mod.entries[entryIdx].value = select.value;
+        mod.entries[entryIdx].value = mod.entries[entryIdx].value_raw = select.value;
       }
       updateTitle();
     };
-    customInput.onchange = () => { mod.entries[entryIdx].value = customInput.value; };
+    customInput.onchange = () => { mod.entries[entryIdx].value = mod.entries[entryIdx].value_raw = customInput.value; };
     td.append(select, customInput);
     return;
   }
@@ -196,7 +223,7 @@ function renderValueControl(td, e, mod, entryIdx) {
     const input = document.createElement("input");
     input.type = "text";
     input.value = e.value;
-    input.onchange = () => { mod.entries[entryIdx].value = input.value; };
+    input.onchange = () => { mod.entries[entryIdx].value = mod.entries[entryIdx].value_raw = input.value; };
     td.appendChild(input);
     return;
   }
@@ -242,7 +269,7 @@ function searchCalDef() {
     results.forEach(r => {
       const row = document.createElement("div");
       row.className = "searchrow";
-      const warn = r.safety_restricted ? ' <span class="safetybadge">⚠ never-shipped safety/chime group</span>' : "";
+      const warn = r.safety_restricted ? ' <span class="safetybadge">⚠ elevated-caution chime/safety group</span>' : "";
       row.innerHTML = `<b>${r.name}</b> (${r.group}, ${r.type}, default ${r.default})${warn} — ${r.description}
         <button onclick='addEntry(${JSON.stringify(r.name)})'>add to open module</button>`;
       div.appendChild(row);
@@ -269,26 +296,44 @@ async function addEntry(name) {
     );
     if (!ok) return;
   }
+  const initial = e.default_value || "";
   mod.entries.push({
-    cal_id: e.cal_id, version: e.version, type: e.type, value: e.default_value || "",
+    cal_id: e.cal_id, version: e.version, type: e.type, value: initial, value_raw: initial,
     editable: true, name: e.name, group: e.group, description: e.description,
     enum_options: e.enum_options || [], safety_restricted: e.safety_restricted,
   });
   renderModules();
 }
 
-function b64ToArrayBuffer(b64) {
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
+function _entryForExport(e) {
+  // value_raw is the authoritative, full-fidelity value for every type (set on ingest,
+  // and kept in sync with .value by every editable control's onchange handler above).
+  // Never send the flattened display string for a structured type -- that was a real,
+  // confirmed data-corruption bug.
+  return { cal_id: e.cal_id, version: e.version, type: e.type, value_raw: e.value_raw };
+}
+
+function _confirmSafetyRestricted(entries) {
+  const restricted = entries.filter(e => e.safety_restricted);
+  if (!restricted.length) return true;
+  const names = restricted.slice(0, 10).map(e => e.name || e.cal_id);
+  const more = restricted.length > 10 ? `, and ${restricted.length - 10} more` : "";
+  return confirm(
+    `This export includes ${restricted.length} entr${restricted.length === 1 ? "y" : "ies"} from ` +
+    `elevated-caution chime/safety/driver-workload CalDef group(s): ${names.join(", ")}${more}.\n\n` +
+    "These govern chime/alert/safety-volume/driver-workload/security-logging behavior, not a " +
+    "cosmetic feature -- see CALIBRATION_CUSTOMIZATION_GUIDE.md §3. Click OK only if you " +
+    "intend to export this data as a deliberate research action."
+  );
 }
 
 async function exportModule(idx, format) {
   const mod = modules[idx];
+  if (!_confirmSafetyRestricted(mod.entries)) return;
   const body = {
-    entries: mod.entries.map(e => ({ cal_id: e.cal_id, version: e.version, type: e.type, value: e.value })),
+    entries: mod.entries.map(_entryForExport),
     format: format === "container" ? "container" : "xml",
+    safety_ack: true,  // the confirm() above (a no-op if nothing restricted) is this tool's gate
   };
   if (format === "container") {
     if (!mod.template_b64) { alert("no container header available for this module"); return; }
@@ -297,22 +342,34 @@ async function exportModule(idx, format) {
   const res = await fetch("/api/export", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
   });
-  if (!res.ok) { alert(await res.text()); return; }
+  if (!res.ok) { alert(await _errorText(res)); return; }
   const name = format === "container" ? mod.filename : mod.filename.replace(/\.[^.]*$/, "") + ".calovride";
   download(await res.blob(), name);
 }
 
 async function exportAllZip() {
-  const payload = { modules: modules.map(m => ({
-    filename: m.filename,
-    entries: m.entries.map(e => ({ cal_id: e.cal_id, version: e.version, type: e.type, value: e.value })),
-    template_b64: m.template_b64,
-  })) };
+  const allEntries = modules.flatMap(m => m.entries);
+  if (!_confirmSafetyRestricted(allEntries)) return;
+  const payload = {
+    modules: modules.map(m => ({
+      filename: m.filename, entries: m.entries.map(_entryForExport), template_b64: m.template_b64,
+    })),
+    safety_ack: true,
+  };
   const res = await fetch("/api/export_zip", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
   });
-  if (!res.ok) { alert(await res.text()); return; }
+  if (!res.ok) { alert(await _errorText(res)); return; }
   download(await res.blob(), "custom_calibration_set.zip");
+}
+
+async function _errorText(res) {
+  try {
+    const d = await res.json();
+    return d.error || `HTTP ${res.status}`;
+  } catch {
+    return `HTTP ${res.status} ${res.statusText}`;
+  }
 }
 
 function download(blob, name) {
