@@ -375,6 +375,74 @@ the stock set, the projection *policy* flags that do exist live in slot 05's
 `GIS337_ConsumerDeviceProjection` group, which is a different group from the `GIS513` feature
 enables.)
 
+## Live storage: the `calibration` eMMC partition and `CalSets.db`
+
+A bench eMMC dump (`emmc_user_wifi.bin`, GPT-partitioned) has a standalone 16 MB partition named
+`calibration` (not folded into `super`/vendor), separate from the OTA-delivered `SOC_VENDOR` image —
+calibration updates and full firmware/vendor-partition updates are two different update paths onto
+two different storage locations. Its ext4 filesystem (volume name `mnt/vendor/calib[ration]`) was
+captured mid-use ("needs journal recovery"); replaying the journal (`e2fsck -fy`) against a working
+copy — never the original dump — produced a clean, consistent filesystem with no further repairs
+needed, and `debugfs` (no native macOS ext4 mount) pulled the contents read-only.
+
+**Directory layout on disk:**
+- `/database/CalSets.db` (+ `-journal`) — the live calibration database, see below.
+- `/applied_overrides/<part>.<alpha>.<slot-decimal>.cmod` — exactly 14 files, one per slot. Decimal
+  slot numbers in these filenames (`.03`, `.04`, … `.15`) independently confirm the header-byte slot
+  map above — a third, fully independent confirmation after the header bytes and the SPS logs.
+- `/overrides` — present, empty on this dump.
+- Raw `strings` across the *unallocated* space of the partition image (before journal replay) turned
+  up three part-number-shaped fragments (`85102233`, `88102305`, a partial `…3140000`) that do **not**
+  correspond to any of the 15 known containers or to any live file in `applied_overrides/` — leftover
+  remnants of deleted/overwritten inodes, not current content. Not chased further.
+
+**The `.cmod` format strips the signature, keeps the payload.** Each file is a 14-byte identity
+header (slot number, alpha code, a short checksum field — no RSA/signer-record material) directly
+followed by the *same* gzip stream that sits at offset `0x368` in the raw signed SPS container. Once
+a container is accepted and locally cached, the heavy signature apparatus is dropped; the calibration
+payload itself is not re-encoded.
+
+**Result: the applied payload is byte-for-byte identical to the stock containers, 14/14.** Decompressing
+all 14 `.cmod` files and hashing the inner XML reproduces the exact inner-XML SHA-256 already recorded
+for every slot in this document — including slot 04's full 594,178-byte / 404-entry XML
+(`d0ce7db9…`) and slot 0F's 114-entry VSE table (`5f119c9c…`). No adjustment, truncation, or
+re-encoding at this layer; this bench unit is currently running the plain stock LTZ set across all 14
+slots.
+
+**`CalSets.db` itself is a different, expanded representation — not a mirror of the override XML.**
+Its `AllCalSets` table holds **2,574 rows**: every CalDef-defined calibration on the platform (not
+just the ones in the 14 slots), each resolved to a human-readable `CalName`/`CalDefFileName` plus
+type, min/max, array length and enum reference — fields the opaque-CalID override XML never carries.
+An `OverRiden` column records which slot owns a row: `OverRiden=0` for the 1,592 rows left at their
+untouched base-calibration default, and `OverRiden=<slot>` for the rest, with per-slot counts matching
+the override counts above exactly (`OverRiden=4`→404 rows, `=15`→114, `=12`→20, `=8`→30, `=5`→194,
+etc.). So: the **delivery/wire format (14 signed containers) is a 1:1 mirror; the runtime format (one
+merged table covering the whole platform, with resolved names and an ownership tag) is the
+expanded/decompiled one.** These are two layers of the same system, not competing descriptions.
+
+**Live values confirm the stock-restoration state directly, not just by inference:**
+
+| CalName | Live value | `OverRiden` |
+|---|---|---|
+| `SXM_Enabled` | `1` (true) | `12` (slot 0C) |
+| `Enable_Application_Apple_Carplay` | `1` (true) | `0` — base default, **not** slot-owned |
+| `Enable_application_google_Automotive_link` | `1` (true) | `0` — base default, **not** slot-owned |
+| `SCREEN_RESOLUTION` | `4` (2400×960) | `8` (slot 08) |
+
+This bench unit is currently running fully stock calibration: SXM enabled, stock screen resolution,
+and the CarPlay/Android Auto rows showing as plain platform defaults rather than slot 0C overrides at
+all — consistent with (and a second, independent confirmation of) the 2026-11-17 full stock LTZ
+restoration superseding the November custom trials; see the CarPlay/Android Auto correction above.
+
+**Two loose ends from this pass, flagged rather than resolved:**
+- 12 of the 14 `.cmod` files carry a 17-Nov-2026 mtime (matching the documented restoration date);
+  slots 08 and 0C's files still carry the original 26-Jun-2024 factory mtime despite both having gone
+  through custom edits and restoration per the trial log. Content is confirmed stock either way; why
+  those two files' mtimes weren't bumped is unexplained (possibly a dedup-on-identical-content write
+  path, not confirmed).
+- Slot 0B (`86292118`) shows 41 `OverRiden` rows live vs. 42 entries in the earlier raw-container
+  catalog above — a 1-entry discrepancy, not run down.
+
 ## Sources and provenance
 
 The complete per-part extracts — every `OverrideValue` row with CalID, type, value and verbatim
