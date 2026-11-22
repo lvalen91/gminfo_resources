@@ -1277,16 +1277,85 @@ Thus making a diagnostic gate pass does not replace the missing SoC recipient
 or perform the CSE selector operation. This establishes the dependency of the
 known path, not the absence of every possible alternative CAN path.
 
-**Boot Reason Record correction:** `SoCReqType` at `0xFEBF0BC1` is not a
-verified cold-boot target latch. `0x5CEBA` derives the reset reason from reset
-flags and clears this byte. SoC shutdown-request handling around `0x74476`
-writes values 3/4/5 and the over-temperature branch writes 6; the accompanying
-strings identify shutdown, controlled reset and BOLO handling. `0x7363C`
-also records a request type for a special-use BOLO/reset request. `0x741A4`
-packages the record into the last-boot-reason IPC report. No traced consumer
-selects Intel ELK from this field. The old inference that nonzero values imply
-recovery/fastboot selection is withdrawn; a boot-selection consumer would need
-separate evidence before any RAM modification is useful for this objective.
+**Second documented call site of the same primitive — gear status, channel 4
+(2026-11-21).** The same `0x76272`/`0x570FE` availability-check/submit-byte pair is also
+used by `FUN_0005c30e` (file `0x5C30E`, 116 B) to transmit **gear status** on channel 4: it
+checks channel 4 via `0x76272`, builds a 9-byte record (`type 0x0C, sub-id 0x05`, then the
+gear value read via `FUN_0008e4f2` from `DAT_0002fc7c`), and submits it via `0x570fe`. On
+failure it logs `"[J6_CDD] Channel[4] Not Available. Unable to transmit GEAR STATUS"` /
+`"[J6_CDD] Write Gear to Channel[4] failed with return value %d"`. The channel-4 transport
+handle, like channel 12's, resolves at runtime from the SRAM channel table
+(`*_DAT_febd0cf0 + ch*0x18`) — not statically readable, so whether this egresses as a raw
+CAN frame or stays an internal VIP↔SoC IPC record is unresolved from static analysis alone.
+Confirms this channel-transmit mechanism is a general-purpose primitive reused across at
+least two distinct producers (the cold-entry/ELK selector and the gear-status reporter), not
+a one-off. Cross-ref: `../../platform/can_network.md#complete-tx-catalog--every-can-id-vip_app-is-configured-to-transmit`.
+
+**Boot Reason Record, fully traced (2026-11-22).** Field layout corrected: `0xFEBF0BC0` =
+`RstRsn`/companion byte, **`0xFEBF0BC1` = `SoCReqType`** (the earlier draft had these two
+swapped), `0xFEBF0BC2` = record-valid flag, `0xFEBF0BC4` = Unique Boot Counter. Reader/logger
+`FUN_000741a4`; clear routine `FUN_0005ceba` (`0x5CEBA`) writes 0.
+
+The literal value-5 write (`0x744a8`, inside the dispatcher case commonly surfaced as
+`FUN_00074452`) is the **only** site in the image that writes 5. It is a direct,
+unconditional translation of an inbound IPC command's fields — **not** gated by any
+counter, EEPROM flag, or fault/retry threshold:
+- Case entry requires `param2 == 5`; then `msg[1] (mode) == 0` and `msg[2] (subtype) == 2`
+  selects the write. (`subtype==0`→4, `subtype==1`→3, `mode>=2`→6/over-temp.)
+- The BOLO branch uniquely also writes `0xFEBF0000 = 0xBB` via `FUN_000862ee` — a
+  cross-core "boot to BOLO" handshake word (a sibling path writes `0xAC` there for a
+  different, non-BOLO target, confirming this is a multi-valued boot-target register, not
+  a flag).
+
+**"BOLO" label corrected a second time (2026-11-22) — this is NOT an SoC boot image.**
+A same-day follow-up pass resolved this definitively at the code level, not just from
+string naming, and **overturns the "named SoC boot image" conclusion two paragraphs above**:
+
+- **BOLO = VIP's own bootloader**, the same bootloader documented in
+  `VIP_BOOT_FILE_MAP_85056831.md`. Proof: VIP_APP's `"Bolo Version"` getter (`0x862bc`)
+  reads runtime address `0x27FE0` — a 0x20-byte version block physically inside VIP's own
+  flash (bootloader partition `0x0`–`0x27FFF`), tagged literally `"bolo"` in the image
+  (sibling tags: `"appl"` for the application block, `"blud"` for the boot-updater block).
+  The embedded bootloader copy inside the VIP_BOOT image has its *own* identical version
+  block at the same offset, and prints it at startup as `"BOLO: Bootloader Version
+  %02X.%02X.%02X.%02X"` — the exact same four bytes VIP_APP's string reports. Not a
+  coincidence of naming; it's the same data read from the same place.
+- **The `0xFEBF0000` handshake word is VIP_BOOT's own boot-target latch**, not a
+  cross-core/SoC-facing register as previously described. VIP_BOOT itself checks this word
+  at startup: `0xAA`/`0xAB` → jump into the app; **anything else (including `0xBB`, `0xAC`)
+  → stay in the bootloader.** So "reboot to BOLO" means **VIP resets and re-enters its own
+  bootloader instead of booting its application** — it is not selecting what the Atom/SoC
+  boots into.
+- `0xBB` (written by the J6_CDD handler and by `SPEC_USE_CHANNEL` sub-ID `0xFD`, both on
+  IPC **channel 13** — this is what `SPEC_USE_CHANNEL` actually is, a UDS-style
+  programming/identification channel shared by VIP_BOOT and VIP_APP) simply keeps VIP in
+  its bootloader across the reset. `0xAC` (written by `AME_DIAG`'s "Reboot to BOLO for
+  OCDID update") additionally stages a 32-byte payload at `0xFEBF0006` that the bootloader
+  feeds into a Renesas Code-Flash-Library dispatcher — consistent with **OCDID being the
+  RH850 On-Chip Debug ID**, a 32-byte debugger/programmer authentication code needed to
+  perform a privileged self-reflash of VIP's own flash. (`OCDID` is not textually expanded
+  anywhere in the image — this is a strong code-shape inference, not a confirmed string
+  expansion; flagged accordingly.) `AME` itself is never expanded in any string either — it
+  names a private ~16-bit-ID diagnostic command set (dispatch table, file `0x6c86`–`0x74b6`)
+  distinct from standard UDS DID/RoutineControl/IOControl, not a known acronym.
+- **Revised `SoCReqType` semantics:** values 3/4/5/6 are a **reset-reason record for VIP's
+  own next reset cycle** (shutdown / controlled-reset / re-enter-bootloader / over-temp),
+  written and later read back over channel 13 (sub-ID `0xF1` returns the Bolo/bootloader
+  version block to whoever asks — the SoC can read it, but doesn't set VIP's boot target by
+  writing this field). The SoC's role in triggering value 5 is as the **requester** of the
+  AME_DIAG/J6_CDD command that leads to it, not as the recipient of a boot-mode selection.
+  **This retracts the "SoCReqType is a real SoC boot-target selector" framing above** —
+  it selects VIP's own next boot stage, which happens to ride along with a full-system
+  reset the SoC also sees, but it is not analogous to the ELK trigger.
+- Not resolved: the exact sender/caller of the opcode that reaches `0x744a8` (logging here
+  is index/descriptor-based, defeating string-xref tracing to a single named caller) —
+  the module-string vocabulary (`[AME_DIAG]`, `[J6_CDD]`) identifies the trigger class, not
+  a decoded call edge. Also unconfirmed: whether the SoC actively participates in the
+  channel-13 handshake beyond requesting/reading it (inferred, not bench-tested).
+
+**Net correction to "what SoC boot modes can VIP select besides ELK": none found.** ELK
+remains the only confirmed case of VIP steering the *Atom's* own boot target. BOLO is a
+VIP-self-referential bootloader re-entry mode; it does not belong on that list.
 
 **Packaged ELK IOC-reset lead:** the extracted Y175 ELK ELF is 1,122,304
 bytes, SHA-256 `3acbf174207a2c621d24ba5a1278c3b214b11c88e580228599057b4ad3a8951c`,

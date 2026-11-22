@@ -67,8 +67,8 @@ endianness or cryptographic format.
 | `529`, tester → radio | b0 bits 5–7: IPC Animation Status | RH850 animation-status log; full 3-bit field was swept through 0–7 | Eight cold starts plus a 2→1 transition distinguish not-ready (0), complete (1), and ready/incomplete (2–7); conditional on CSM readiness; OEM enum names unresolved. Full sweep/animation-player trial log: `can_bench_experiments.md` |
 | `53B`, tester → radio | b7 bit 3: Infotainment Activation Request | RH850 activation-request log | Two 1/0 round trips plus an Off-state prewake: request=1 advanced Sleep → AnimationInit before the later door-open / request-1 candidate; actual video unverified. Full trial log: `can_bench_experiments.md` |
 | `4BE`, tester → radio | b7 bit 3: Key/ID Device Present | RH850 true/false log | Synthetic payload; no claim of key authentication or theft-deterrent authorization |
-| `4BE`, tester → radio | b6 bits 6–7: Valet Mode Response | RH850 raw value log | Values 0–3 observed; enum labels and actual valet behavior not established |
-| `4DA`, tester → radio | b6 bits 3–5: Folding Top State | RH850 raw value log | Values 0–2 observed; optional equipment and enum meanings unresolved |
+| `4BE`, tester → radio | b6 bits 6–7: Valet Mode Response | RH850 raw value log | Values 0–3 observed. `[D]` Firmware trace (2026-11-22): VIP does **not** distinguish 1/2/3 — treats them as one "active" class (same event-flag, same two constant IPC posts), and forwards the raw byte unmodified to the SoC (message `0x59` on channels 2/`0x10`). Per-value enum meaning (active/pending/exiting) exists only on the SoC side, not recoverable from this firmware. |
+| `4DA`, tester → radio | b6 bits 3–5: Folding Top State | RH850 raw value log | Values 0–2 observed. `[D]` Firmware trace (2026-11-22): collapsed to a single boolean (`value==1`) at the moment of reception — values 0 and 2 are indistinguishable everywhere downstream in this firmware. No "fully-closed vs. fault/unknown" distinction exists in VIP. |
 | `4DA`, tester → radio | b7 bit 0: DriverDoorOpen; 1=open, 0=closed | RH850 DriverDoorOpen/Closed events; after PowerModeOff, ends LocalInfotainment and starts display shutdown | Live open/close control in Propulsion had no shutdown; opening after Off caused display off, HmiInactive, then Sleep and SoC-off; startup/shutdown animation request meanings documented in `can_bench_experiments.md`. Bit also exercised in the OTA USB-update Off sequence: [`ota_update_stack.md`](ota_update_stack.md#y175-full-usb-update-bench-observation--2026-11-17) |
 | `526`, tester → radio | b5 bit 7: mute-hold reset input, DLC 8 | Mute timer arming → SWC reset request after 9.998 s → coordinated SoC shutdown and VIP software reset | Synthetic frame, all other bits zero; ~100 ms repetition; original 145/529 continued; input released after reset detection, below the 20 s trial ceiling. Bit also exercised in the OTA post-install reset sequence: [`ota_update_stack.md`](ota_update_stack.md#y175-full-usb-update-bench-observation--2026-11-17) |
 | `526`, tester → radio | b5 bit 3: volume down; b5 bit 2: volume up | Normal CAN button press/release → AAOS diagnostic volume readback | Separate 50 ms presses and all-zero releases gave 15→14→15; longer holds repeated; does not identify the physical button-source module |
@@ -454,3 +454,180 @@ These original `can_network.md` ranges are not reproduced in the consolidated do
 - L1046-1091: activation-request hold, host-sleep confound, 62.519 / 62.385 s results.
 
 The independent loss audit of the original covered only L1-600; L600-2129 is covered by the writers' ledgers for `can_network` and `can_bench_experiments` (not preserved in this repository) but not by a second reader.
+
+## Complete RX catalog — every CAN ID VIP_APP is configured to receive
+
+Consolidates the firmware RX table (§Firmware receive/transmit configuration, 299 entries
+total) with every known-meaning decode elsewhere in this doc, into one reference. This is
+the firmware's own configured-acceptance list — **configured does not mean tested**; most
+rows below have never been individually driven on the bench.
+
+**Status legend:** `BENCH-VERIFIED` = specific bit(s) decoded and live-tested ·
+`BENCH-OBSERVED` = ID appears in a live capture (harness or radio) and has an exact slot-3
+route, but no bit-level meaning decoded · `BENCH-CANDIDATE` = a Com signal descriptor maps
+this ID to a named signal, but it was not independently live-tested · `FIRMWARE-CONFIGURED`
+= present in the firmware's RX table with no bench correlation attempted in any retained
+document.
+
+### Dispatch breakdown (299 entries, by callback slot)
+
+| Slot | Role (software dispatch index, not a physical channel) | Count | Entries |
+|---|---|---:|---|
+| 1 | NM-style range record | 1 | `100` (mask `600001FF`) |
+| 2 | Diagnostic/UDS | 20 | `680`, `3FA`, `3F2`, `3F1` (standard, DLC 8) + extended `14DAF645`; `14DA80F1`–`14DA80F5`; `10EBFEF1`–`10EBFEF5`; `10DBFEF1`–`10DBFEF5` (all DLC 8) |
+| 3 | Main application (signal/event consumption) | 277 | Full ID:DLC inventory already given verbatim in **§Exact standard-ID slot-3 inventory** above — not retyped here to avoid a transcription-risk duplicate of that code block |
+| 4 | OBD | 1 | `613` (DLC 8) — the CAN613/614 XCP-style debug interface traced in `VIP_APP_FILE_MAP_85759599.md` |
+
+### Known-meaning rows (every slot-3 ID with any decoded bit, named signal, or bench observation)
+
+| CAN ID | DLC | Known meaning | Status |
+|---|---:|---|---|
+| `457` | 8 | ProtoKey Seed 1 (opaque 8B; GMLAN → RH850 cache → SoC) | BENCH-VERIFIED |
+| `458` | 8 | ProtoKey Seed 2 (opaque 8B) | BENCH-VERIFIED |
+| `560` | 6 | VIN digit 1 (signal `6B3` `VehIdNmDig1`) | BENCH-VERIFIED (pointer; real VIN value never captured) |
+| `45A` | 8 | VIN digits 2–9 (signal `6B5` `VehIdNmDig2_9`) | BENCH-VERIFIED (pointer; real VIN value never captured) |
+| `459` | 8 | VIN digits 10–17 (signal `6B4` `VehIdNmDig10_17`) | BENCH-VERIFIED (pointer; real VIN value never captured) |
+| `529` | 6 | b1 bit1: IPC HMI Ready · b0 bits5-7: Animation Status · b1 bit7: power-mode selector | BENCH-VERIFIED |
+| `53B` | 8 | b7 bit3: Infotainment Activation Request | BENCH-VERIFIED |
+| `4BE` | 8 | b7 bit3: Key/ID Device Present · b6 bits6-7: Valet Mode Response | BENCH-VERIFIED |
+| `4DA` | 8 | b7 bit0: DriverDoorOpen/Closed · b6 bits3-5: Folding Top State | BENCH-VERIFIED |
+| `4DB` | 8 | Door-position signal (`14C`, bit56) | BENCH-CANDIDATE (signal mapped, position/live test not done) |
+| `4D9` | 8 | Door-position signal (`8B7`, bit59) | BENCH-CANDIDATE |
+| `4D8` | 8 | Door-position signal (`B05`, bit6) | BENCH-CANDIDATE |
+| `526` | 8 | b5 bit7: mute-hold reset · b5 bit3: volume down · b5 bit2: volume up | BENCH-VERIFIED |
+| `284` | 6 | b4 bits3-5: `SPMP_SysPwrModeAuth` candidate | BENCH-VERIFIED |
+| `20D` | 6 | b5 bit7: remote-programming-active authenticated | BENCH-VERIFIED |
+| `016` | 8 | — | BENCH-OBSERVED (harness capture, exact slot-3 match, meaning undecoded) |
+| `023` | 8 | — | BENCH-OBSERVED |
+| `028` | 8 | — | BENCH-OBSERVED |
+| `02B` | 8 | — | BENCH-OBSERVED |
+| `02C` | 6 | — | BENCH-OBSERVED |
+| `037` | 6 | — | BENCH-OBSERVED |
+| `08C` | 6 | — | BENCH-OBSERVED |
+| `0B5` | 8 | — | BENCH-OBSERVED |
+| `204` | 6 | External GM DBC conflict: a public battery-signal DBC lists this ID at DLC 8, not 6 | BENCH-OBSERVED |
+| `22A` | 7 | — | BENCH-OBSERVED |
+| `4B6` | 8 | — | BENCH-OBSERVED |
+| `521` | 6 | — | BENCH-OBSERVED |
+| `523` | 7 | — | BENCH-OBSERVED |
+
+**Every other ID in the 277-entry slot-3 inventory, all 20 slot-2 entries, the slot-1 NM
+range, and the slot-4 OBD entry (`613`) are `FIRMWARE-CONFIGURED`** — present in the
+firmware's own acceptance table with no bench correlation attempted in any retained
+document. This is the actual "known vs. untested" boundary: **17 of 277** application-slot
+IDs have ever been individually observed on this bench, and only **14** of those have a
+decoded bit-level meaning. The remaining ~260 are real, firmware-accepted messages whose
+content this radio has never been sent and whose effect is unknown.
+
+**Harness-observed IDs with no firmware RX route at all** (seen live on the bus, but absent
+from VIP_APP's own 299-entry table — consuming path, if any, is unconfirmed, not negative):
+`01E`, `0AA`, `0C1` (external DBC candidate: driven-wheel rotational status), `0C9`
+(candidate `ECMEngineStatus`), `0F1` (candidate `EBCMBrakePedalPosition`), `145` (wake
+effect, NM-format candidate), `18E`, `1C6`, `1E5` (candidate `PSCMSteeringAngle`), `1F1`
+(candidate `BCMGeneralPlatformStatus`, Run-state), `26F`, `435`, `50F`, `551`.
+`1F5` (external candidate `ECMPRDNL2`) was also in this no-route list — **superseded below**:
+firmware tracing has now identified the real PRNDL/gear receive path, and it is not `1F5`.
+
+### PRNDL/gear receive path
+
+Traced by static firmware analysis (2026-11-21), not by DBC name-matching. Chain: SRAM
+`_DAT_febd3434`/`_DAT_febd3438` (already read by the gear-status transmitter, see TX
+catalog below) ← setter `FUN_0008c6d4` (`0x8c6d4`) ← Com-RX unpack function at `0x4da62`
+← PRNDL decode `FUN_0004d7dc` (`0x4d7dc`: raw code 1→3, 3→1, 4→4, else Park-default via
+`DAT_0002922f`) ← two Com signal descriptors (`0x28112 + signalID*0x18`):
+
+| CAN ID | DLC | Com signal | Bit field | Role | Status |
+|---|---:|---|---|---|---|
+| `40B` | 5 | `0xDC6` | 2-bit @ start-bit 35 | Primary PRNDL input | `FIRMWARE-TRACED` |
+| `264` | 8 | `0xCA5` | 4-bit @ start-bit 45 | Fallback (used when `0xDC6`'s validity byte reads 0) | `FIRMWARE-TRACED` |
+
+`FIRMWARE-TRACED` = two independent exact ComIPdu-handle matches (`0x10d`, `0x31`), DLC and
+bit-position consistent — not yet bench-verified by driving `40B`/`264` live and observing
+AAOS react. Assumes ComIPdu handle routes 1:1 to the CanIf PDU field; no separate PduR
+indirection table was independently checked. No RX-side string exists for either signal.
+
+This explains why `1F5`/`ECMPRDNL2` had no slot-3 match: that was an external public-DBC
+name for a different vehicle's signal layout, not this firmware's real (unnamed,
+internally-numbered) gear inputs. Apply the same caution to every other external-DBC name
+in the no-route list above — a public DBC name match does not predict this firmware's
+actual signal IDs.
+
+
+## Complete TX catalog — every CAN ID VIP_APP is configured to transmit
+
+The firmware's transmit table has **58 twelve-byte entries** at file `0x23D06` (compiled
+`0x4B780`), immediately following the RX table. Three groups:
+
+### 1. Standard IDs matching the 40 bench-observed radio IDs (§The 40 radio IDs above)
+
+All 40 are radio-transmit-confirmed by direct capture; DLC matches the firmware TX entry
+exactly for every one. Meaning/confidence column reproduced from that section — not
+retyped in full detail here to avoid a duplicate that could drift out of sync; see
+**§The 40 radio IDs** for the complete per-ID changing-byte/period data. Status for all 40:
+`BENCH-VERIFIED (sender confirmed)` — a frame being sent is confirmed live; its payload
+*meaning* is mostly still undecoded except where noted:
+
+| CAN ID | DLC | Decoded meaning (where any exists) |
+|---|---:|---|
+| `180` | 8 | NM-format candidate; external steering-command DBC conflicts |
+| `4E9` | 8 | External candidate: platform configuration |
+| `4F1` | 8 | External candidates: powertrain configuration (conflicting DBC sources, neither A11-validated) |
+| `4F3` | 4 | External candidate: powertrain configuration 2 (one-shot) |
+| `4FC`, `54E`, `54F` | 8 | Four recurring payload states each, meaning undecoded |
+| `4FA` | 6 | Counter-like progression (623 distinct values over the full capture), meaning undecoded |
+| all remaining 32 of the 40 (`267 424 427 4E4 4E6 4EA 4ED 4EE 4EF 4F0 4F2 4F4 4F5 4F6 4F7 4F8 4F9 4FB 4FD 4FE 4FF 500 501 502 503 504 505 54C 576 587 58B 59B`) | 4–8 | Sender confirmed, payload/function fully undecoded |
+
+### 2. Additional standard-ID TX entries (configured, not in the 40-radio bench set)
+
+| CAN ID | DLC | Status |
+|---|---:|---|
+| `228` | 6 | FIRMWARE-CONFIGURED — never observed as radio-sent in any retained capture |
+| `614` | 8 | FIRMWARE-CONFIGURED — the CAN613/614 XCP debug-interface reply ID (see slot-4 RX `613`, `VIP_APP_FILE_MAP_85759599.md`) |
+| `3F0` | 8 | FIRMWARE-CONFIGURED |
+| `3F3` | 8 | FIRMWARE-CONFIGURED |
+| `3FB` | 8 | FIRMWARE-CONFIGURED |
+
+### 3. Extended-format (29-bit) diagnostic TX routes — 13 entries, all DLC 8
+
+`14DCF180`, `14DCF280`, `14DCF380`, `14DCF480`, `14DCF580`, `14DAFC80`, `14DAF180`,
+`14DAF280`, `14DAF380`, `14DAF480`, `14DAF580`, `14DA45F6`, `10DBFEF6`.
+
+`[D]` Firmware trace (2026-11-22) resolves most of this family — J1939 29-bit diagnostic
+addressing `14DA{TA}{SA}`, radio diagnostic address `0x80`, tester addresses F1–F5:
+
+| Group | Finding |
+|---|---|
+| `14DA80F1`–`F5` (RX) ↔ `14DAF180`–`F580` (TX) | **Firmware-confirmed uniform pairing**, not just the one live-tested `F2` pair — RX handler `FUN_0006708a` and TX validity check `FUN_00067168` both treat all five tester channels identically (source-address latch `DAT_febd1ad1`, response set enumerated as a fixed list of 5) |
+| `14DAFC80` | Not request-paired by design — a conditional **functional-response substitute**: `FUN_00067168` rewrites a normal response to this ID when a specific payload/flag condition holds |
+| `14DAF645` ↔ `14DA45F6` | Self-evident tester/gateway (`0x45`) address swap pair |
+| `10DBFEF1`–`F5` | Feed the same tester-channel latch as the `14DA80Fx` family |
+| `10EBFEF1`–`F5` | J1939 TP.DT multi-packet transport RX (PGN `0xEB`) — no direct TX pair |
+| `14DCF180`–`F580` | **Still unestablished** — no matching RX, and no code found that constructs them; present only in the static TX config table, not exercised by the traced SecurityAccess path |
+
+### Egress paths not covered by this static table
+
+Two transmit mechanisms exist outside the 58-entry TX config table and are **not** raw CAN
+IDs resolvable from the static image:
+- **Gear status** (internal "channel 4", 9-byte IPC-style record type `0x0C`/sub-id `0x05`,
+  built by `FUN_0005c30e`) — see
+  [`GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md`'s cold-entry selector trace](../research/boot-update-recovery/GHS_BOOT_UPDATE_RECOVERY_ANALYSIS.md#cold-entry-selector-trace--2026-11-17)
+  for the shared channel-transmit primitive this reuses. Whether channel 4 egresses as a raw
+  CAN frame or stays internal VIP↔SoC IPC is unresolved from static analysis.
+- Any traffic routed through the **`CanIf` compiled callback wrapper** (file `0x9F466`) that
+  isn't a static table entry — e.g. computed/runtime-built frames — is not enumerable
+  without live tracing.
+
+
+## CAN-received signal fate
+
+Every received signal falls into one of five outcomes: not received (`0C1`, `0C9`, `0F1`);
+received, NM-only, never decoded (`1E5`, `1F1`); received and consumed locally (`4DA` door,
+`4BE` valet, gear); received and pushed to the SoC over a dedicated IPC channel (gear,
+channel 4); received, decoded, and never read by anything (`4D8`/`49B`/`561`/`492`/`4D4` and
+~250 others — no SoC pull path exists either; this firmware has no UDS
+`ReadMemoryByAddress` service).
+
+Full trace detail (SystemState HSM/audio-cue chain, SoC power-on/ELK gating, the idle-timer
+system) is owned by
+[`VIP_APP_FILE_MAP_85759599.md`](../research/boot-update-recovery/VIP_APP_FILE_MAP_85759599.md#can-received-signal-fate)
+— not restated here.
