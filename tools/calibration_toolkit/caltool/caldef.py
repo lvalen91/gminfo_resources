@@ -134,11 +134,7 @@ def _load_all() -> dict[str, CalDefEntry]:
                 continue
             type_ = _local(type_elem.tag)
             default = type_elem.findtext("Value") or type_elem.findtext("StringValue")
-            enum_id = None
-            if type_ == "Enumeration":
-                # Enum definitions carry their EnumID as a sibling attribute/child in
-                # some CalDef files; fall back to None if not present.
-                enum_id = defn.get("EnumID")
+            enum_id = type_elem.findtext("EnumID") if type_ == "Enumeration" else None
             by_name[name] = CalDefEntry(
                 name=name, cal_id=cal_id, type_=type_, version=version or "1",
                 description=desc, group=group, default_value=default, enum_id=enum_id,
@@ -156,17 +152,20 @@ def _load_enum_labels() -> dict[str, dict[str, str]]:
             tree = ET.parse(path)
         except ET.ParseError:
             continue
-        for enum_set in tree.getroot():
-            enum_id = enum_set.get("EnumID") or enum_set.findtext("EnumID")
+        for enum_def in tree.getroot():
+            if _local(enum_def.tag) != "EnumDefinition":
+                continue
+            enum_id = enum_def.findtext("EnumID")
             if not enum_id:
                 continue
             labels = {}
-            for member in enum_set.iter():
-                if _local(member.tag) == "EnumMember":
-                    val = member.get("Value") or member.findtext("Value")
-                    label = member.get("Name") or member.findtext("Name")
-                    if val is not None and label is not None:
-                        labels[val] = label
+            for member in enum_def:
+                if _local(member.tag) != "EnumValueDefinition":
+                    continue
+                val = member.findtext("Value")
+                label = member.get("Name")
+                if val is not None and label is not None:
+                    labels[val] = label
             if labels:
                 out[enum_id] = labels
     return out
