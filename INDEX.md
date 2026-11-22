@@ -38,6 +38,7 @@ Routing page for the whole repository. Paths are the current layout (restructure
 | diagnosticsd protocol, DIDs, routines | [diagnostics/diagnosticsd_protocol.md](diagnostics/diagnosticsd_protocol.md), [diagnostics/diagnosticsd_dids_and_dtc.md](diagnostics/diagnosticsd_dids_and_dtc.md), [diagnostics/diagnosticsd_routines_and_recovery.md](diagnostics/diagnosticsd_routines_and_recovery.md) |
 | Custom calibration, DPS, CalSets | [research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md](research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md), [research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md](research/eeprom-calibration/CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) |
 | UDS calibration slot (02–0F) → part number → content map | [research/eeprom-calibration/CALIBRATION_SLOT_MAP.md](research/eeprom-calibration/CALIBRATION_SLOT_MAP.md) |
+| Which calibration parameters are safe to customize vs. avoid | [research/eeprom-calibration/CALIBRATION_CUSTOMIZATION_GUIDE.md](research/eeprom-calibration/CALIBRATION_CUSTOMIZATION_GUIDE.md) |
 | Full 404-key slot04 calibration catalog | [research/eeprom-calibration/calibration_glossary.md](research/eeprom-calibration/calibration_glossary.md) |
 | MDI2 protocol and client | [research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md](research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md), [tools/mdi2_client/README.md](tools/mdi2_client/README.md) |
 | Bench setup (OPU harness, T1/VLAN, CAN, UART) | [hardware/bench_setup.md](hardware/bench_setup.md) |
