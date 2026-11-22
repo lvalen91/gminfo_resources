@@ -125,6 +125,43 @@ button:disabled:hover { background: var(--bg); }
 .filter-bar label { font-size: 0.85em; color: var(--muted); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
 .filter-count { font-size: 0.82em; color: var(--muted); white-space: nowrap; }
 
+/* "+ Add entry..." -- always the right-most control in the filter bar, and never the
+   same control as the filter itself: the filter narrows what's loaded, this one
+   searches the whole CalDef reference to bring something new in. */
+.add-entry-toggle { margin-left: auto; flex: 0 0 auto; font-size: 0.85em; padding: 5px 10px; }
+.add-entry-toggle[aria-expanded="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+
+.filter-no-match {
+  display: none; padding: 8px 14px; font-size: 0.85em; color: var(--muted);
+  border-bottom: 1px solid var(--border); background: rgba(127,127,127,0.03);
+}
+.link-button {
+  background: none; border: none; padding: 0; margin: 0; font: inherit; color: var(--accent);
+  cursor: pointer; text-decoration: underline;
+}
+
+/* module-scoped "search everything, add one" panel */
+.add-panel {
+  padding: 10px 14px 12px; border-bottom: 1px solid var(--border); background: var(--caution-bg, rgba(127,127,127,0.05));
+}
+.add-panel-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 0.85em; font-weight: 600; margin-bottom: 8px;
+}
+.add-panel-close { background: none; border: none; font-size: 18px; line-height: 1; padding: 0 4px; margin: 0; color: var(--muted); }
+.add-panel-search { width: 100%; box-sizing: border-box; }
+.add-panel-results { max-height: 50vh; overflow-y: auto; margin-top: 8px; border: 1px solid var(--border); border-radius: 8px; }
+.add-panel-results:empty { border: none; margin-top: 0; }
+.add-panel-hint { padding: 10px 12px; margin: 0; font-size: 0.85em; }
+.add-panel-footer { padding: 8px 12px; font-size: 0.8em; text-align: center; }
+.add-panel-unsupported { font-size: 11px; white-space: nowrap; }
+
+.searchrow.already-present { opacity: 0.6; }
+.searchrow.already-present .searchrow-name { color: var(--muted); }
+
+@keyframes row-flash { from { background: var(--caution-bg, rgba(255,196,0,0.25)); } to { background: transparent; } }
+.entry-row.flash { animation: row-flash 1.2s ease-out; }
+
 /* ------------------------------------------------------------------- group sections --- */
 
 .group-section { border-top: 1px solid var(--border); content-visibility: auto; contain-intrinsic-size: auto 400px; }

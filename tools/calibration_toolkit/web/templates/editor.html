@@ -25,15 +25,10 @@
     <h2>Loaded modules (<span id="moduleCount"></span>)</h2>
     <button class="primary" onclick="exportAllZip()" id="exportAllBtn">Download all as .zip</button>
   </div>
+  <p class="caldef-lookup-note">Each module below has its own filter (for what's already loaded)
+     and its own "+ Add entry…" control (to pull in a new one from the whole CalDef reference).
+     See the <a href="/help">help page</a> for which CalDef groups are elevated-caution.</p>
   <div id="modules"></div>
-</section>
-
-<section id="caldefLookup" style="display:none">
-  <h2>Look up any calibration (across all CalDef groups, not just loaded ones)</h2>
-  <p class="caldef-lookup-note">Add a new entry to the currently-expanded module. See the
-     <a href="/help">help page</a> for which CalDef groups are elevated-caution.</p>
-  <input type="text" id="calSearch" placeholder="search by name, e.g. SXM or TRAILER" oninput="searchCalDef()">
-  <div id="searchResults"></div>
 </section>
 
 <dialog id="safetyDialog" class="safety-dialog">
