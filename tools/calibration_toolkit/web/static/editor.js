@@ -155,13 +155,6 @@ function buildModuleShell(mod, idx) {
   header.onkeydown = (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleModule(idx); } };
   root.appendChild(header);
 
-  if (mod.slot_summary) {
-    const summary = document.createElement("div");
-    summary.className = "slot-summary";
-    summary.textContent = mod.slot_summary;
-    root.appendChild(summary);
-  }
-
   const body = document.createElement("div");
   body.className = "module-body";
   body.dataset.index = idx;
@@ -203,6 +196,21 @@ function updateModuleShell(root, mod, idx) {
   `;
   header.onclick = () => toggleModule(idx);
   header.onkeydown = (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleModule(idx); } };
+
+  // slot-summary isn't built once in buildModuleShell -- a shell can be reused for a
+  // DIFFERENT module (same index, re-loaded), so whether this element should exist at
+  // all, and what it says, has to be re-decided on every update, not just the first.
+  let summary = root.querySelector(".slot-summary");
+  if (mod.slot_summary) {
+    if (!summary) {
+      summary = document.createElement("div");
+      summary.className = "slot-summary";
+      header.after(summary);
+    }
+    summary.textContent = mod.slot_summary;
+  } else if (summary) {
+    summary.remove();
+  }
 
   const body = root.querySelector(".module-body");
   body.style.display = mod.expanded ? "block" : "none";
@@ -374,6 +382,11 @@ function buildModuleBody(bodyEl, mod, idx) {
     textInput.oninput = applyFilter;
     typeSelect.onchange = applyFilter;
     modifiedCheckbox.onchange = applyFilter;
+    mod._domRefs.clearFilter = () => {
+      if (!textInput.value && !typeSelect.value && !modifiedCheckbox.checked) return;
+      textInput.value = ""; typeSelect.value = ""; modifiedCheckbox.checked = false;
+      applyFilter();
+    };
   } else {
     noMatch.style.display = "block";
     noMatch.textContent = "Use Add entry to pull a calibration in from the CalDef reference.";
@@ -804,18 +817,28 @@ function buildAddPanelRow(mod, idx, r) {
     addBtn.type = "button";
     addBtn.textContent = "Add";
     addBtn.onclick = async () => {
-      if (r.safety_restricted) {
+      addBtn.disabled = true; // the only guard against a double-click firing two overlapping fetches
+      // Always resolve the full CalDef entry first -- search results carry no cal_id/
+      // version/safety_warning, so a restricted-entry confirm needs this fetch BEFORE
+      // showing the dialog, and a failed resolution (e.g. one of the ~154 CalDef names
+      // that collide across two groups, which /api/caldef/entry rejects as ambiguous)
+      // must be caught before the button is ever marked "Added".
+      const res = await fetch("/api/caldef/entry?name=" + encodeURIComponent(r.name));
+      const e = await res.json();
+      if (e.error) { alert(e.error); addBtn.disabled = false; return; }
+      if (e.safety_restricted) {
         const ok = await confirmDialog(
           "Add an elevated-caution entry?",
-          (r.safety_warning || "") + " Confirm only if you have read CALIBRATION_CUSTOMIZATION_GUIDE.md §3 and are " +
+          (e.safety_warning || "") + " Confirm only if you have read CALIBRATION_CUSTOMIZATION_GUIDE.md §3 and are " +
           "proceeding as a deliberate research action, not a feature customization.",
           [], "Add anyway"
         );
-        if (!ok) return;
+        if (!ok) { addBtn.disabled = false; return; }
       }
-      await addCalDefEntryToModule(mod, idx, r.name);
+      insertCalDefEntryIntoModule(mod, idx, e);
       row.classList.add("already-present");
       addBtn.textContent = "Added · Show";
+      addBtn.disabled = false;
       addBtn.onclick = () => scrollToAndFlashEntry(mod, r.name);
     };
     actions.appendChild(addBtn);
@@ -825,10 +848,7 @@ function buildAddPanelRow(mod, idx, r) {
   return row;
 }
 
-async function addCalDefEntryToModule(mod, idx, name) {
-  const res = await fetch("/api/caldef/entry?name=" + encodeURIComponent(name));
-  const e = await res.json();
-  if (e.error) { alert(e.error); return; }
+function insertCalDefEntryIntoModule(mod, idx, e) {
   const initial = e.default_value || "";
   mod.entries.push({
     cal_id: e.cal_id, version: e.version, type: e.type, value: initial, value_raw: initial,
@@ -838,7 +858,7 @@ async function addCalDefEntryToModule(mod, idx, name) {
   });
   const entryIdx = mod.entries.length - 1;
   const rowEl = mod._domRefs.addRowToGroup(e.group || "(unresolved CalID)", entryIdx);
-  flashRow(rowEl);
+  revealRow(mod, rowEl);
   renderModuleList(); // only refreshes header badges (updateModuleShell) -- the open panel is untouched
 }
 
@@ -847,8 +867,25 @@ function scrollToAndFlashEntry(mod, name) {
   if (entryIdx === -1) return;
   const ref = mod._domRefs.allRowEls.find(r => r.entryIdx === entryIdx);
   if (!ref) return;
-  ref.el.style.display = ""; // a filter may be hiding it
-  flashRow(ref.el);
+  revealRow(mod, ref.el);
+}
+
+// Guarantees a row is actually visible before flashing it -- not just un-hiding the row
+// itself, which left it invisible whenever its whole group section was hidden (by a
+// non-matching filter) or collapsed. Clears the module's filter, since "where did my
+// new entry go" is exactly the complaint a half-fix (row.style.display only) left open.
+function revealRow(mod, rowEl) {
+  const refs = mod._domRefs;
+  if (refs.clearFilter) refs.clearFilter();
+  const groupEl = rowEl.closest(".group-section");
+  if (groupEl) {
+    groupEl.dataset.expanded = "true";
+    const chevron = groupEl.querySelector(".chevron");
+    if (chevron) chevron.textContent = "▾";
+    groupEl.style.display = "";
+  }
+  rowEl.style.display = "";
+  flashRow(rowEl);
 }
 
 function flashRow(el) {

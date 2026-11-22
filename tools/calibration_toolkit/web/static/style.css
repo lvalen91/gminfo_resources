@@ -115,10 +115,18 @@ button:disabled:hover { background: var(--bg); }
 .module-body { padding: 0; }
 .module-export { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
 
-/* sticky filter bar under the (sticky) module header */
+/* The redesign wraps the filter bar, the no-match bridge line, and the (optional) add
+   panel in one .module-toolbar block. Sticky positioning has to live on THAT wrapper,
+   not on .filter-bar alone -- a sticky element can't stick past its own parent's
+   bottom edge, and the parent here is just this short toolbar, not the (much taller)
+   module body it sits above. Putting position:sticky on .filter-bar left it sticking
+   for only the toolbar's own ~100px before silently stopping. */
+.module-toolbar {
+  position: sticky; top: 45px; z-index: 4; background: var(--bg);
+}
 .filter-bar {
   display: flex; gap: 8px; align-items: center; padding: 8px 14px; background: var(--bg);
-  border-bottom: 1px solid var(--border); position: sticky; top: 45px; z-index: 4; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
 }
 .filter-bar input[type="text"] { flex: 1 1 220px; }
 .filter-bar select { flex: 0 0 auto; }
