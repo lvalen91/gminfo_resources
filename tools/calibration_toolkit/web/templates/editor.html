@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Editor — GM Calibration Toolkit{% endblock %}
+{% block content %}
+<h1>Calibration module editor</h1>
+<p>Upload a genuine or custom calibration file — a signed container (<code>spsCacheInternal/&lt;part&gt;</code>),
+   an unwrapped container, or a bare <code>.calovride</code> XML file. Nothing is uploaded anywhere except
+   to this local server process; downloads are real files.</p>
+
+<section id="upload">
+  <input type="file" id="fileInput">
+  <button onclick="ingest()">Load</button>
+  <span id="meta"></span>
+</section>
+
+<section id="addRow" style="display:none">
+  <h2>Add a new override</h2>
+  <p>Search any of the ~215 CalDef groups defined on this platform — not just entries already in this file.
+     See the <a href="/help">help page</a> for which groups are safe to touch.</p>
+  <input type="text" id="calSearch" placeholder="search CalDef name, e.g. SXM or TRAILER" oninput="searchCalDef()">
+  <div id="searchResults"></div>
+</section>
+
+<section id="entriesSection" style="display:none">
+  <h2>Entries (<span id="entryCount"></span>)</h2>
+  <table id="entriesTable">
+    <thead><tr><th>Name</th><th>Group</th><th>Type</th><th>Value</th><th>Description</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section id="exportSection" style="display:none">
+  <h2>Export</h2>
+  <button onclick="exportXml()">Download edited .calovride XML</button>
+  <button onclick="exportContainer()">Download full container (reuses uploaded file's header; digest recomputed; signature stays stale — see help)</button>
+</section>
+
+<script src="/static/editor.js"></script>
+{% endblock %}

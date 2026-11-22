@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}GM Calibration Toolkit{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="topnav">
+    <a href="/" class="brand">calibration toolkit</a>
+    <a href="/">editor</a>
+    <a href="/help">slots &amp; modules help</a>
+  </nav>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    Local tool only. Produces correctly-formatted, correctly-digested calibration payloads;
+    it does not sign anything and does not write to live hardware. See
+    <code>CALIBRATION_CUSTOMIZATION_GUIDE.md</code> before using any output on a real radio.
+  </footer>
+</body>
+</html>

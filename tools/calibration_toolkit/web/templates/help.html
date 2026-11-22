@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Help — Slots &amp; Modules{% endblock %}
+{% block content %}
+<h1>Slots, modules, and what's safe to touch</h1>
+<p>This is a summary. Full detail, citations, and live-trial evidence live in
+   <code>research/eeprom-calibration/CALIBRATION_SLOT_MAP.md</code> and
+   <code>research/eeprom-calibration/CALIBRATION_CUSTOMIZATION_GUIDE.md</code> in this repo —
+   read those before acting on anything here.</p>
+
+<h2>The 14 UDS calibration slots (A11 LTZ)</h2>
+<table>
+  <thead><tr><th>Slot</th><th>Part</th><th>Content</th><th>Triage</th></tr></thead>
+  <tbody>
+    <tr><td>02</td><td>87863250</td><td>Fuel type, GCWR, steering-wheel buttons</td><td class="mixed">mixed</td></tr>
+    <tr><td>03</td><td>84517309</td><td>Empty</td><td class="safe">n/a</td></tr>
+    <tr><td>04</td><td>85045371</td><td>404 entries — GMBrand/Model/Trim, HUD, every app feature-enable, recorder, porch-view</td><td class="safe">best candidate</td></tr>
+    <tr><td>05</td><td>87846416</td><td>Region/market, language, AM/FM band plan, driver-distraction lockout levels</td><td class="mixed">mixed</td></tr>
+    <tr><td>06</td><td>87846371</td><td>Speech-recognition tuning</td><td class="safe">try</td></tr>
+    <tr><td>07</td><td>85783460</td><td>Bluetooth feature switches, hands-free audio tuning</td><td class="safe">try</td></tr>
+    <tr><td>08</td><td>87846432</td><td>Rear-camera geometry, guidelines, parking-sensor icons, screen resolution</td><td class="avoid">avoid geometry entries</td></tr>
+    <tr><td>09</td><td>87846376</td><td>DTC masks, GNSS dead-reckoning, VIN-relearn</td><td class="avoid">avoid DTC masks</td></tr>
+    <tr><td>0A</td><td>87846368</td><td>HVAC config</td><td class="safe">try (not defrost)</td></tr>
+    <tr><td>0B</td><td>86292118</td><td>OnStar, WiFi, location, DTC masks</td><td class="avoid">avoid OnStar/DTC</td></tr>
+    <tr><td>0C</td><td>85102312</td><td>SXM/HD/DAB/AM-FM antenna, speech-recognition radio domain</td><td class="safe">try (proven)</td></tr>
+    <tr><td>0D</td><td>87846384</td><td>Trailer cameras, trailer height max, rear-seat entertainment</td><td class="avoid">avoid trailer/height</td></tr>
+    <tr><td>0E</td><td>84517418</td><td>Empty</td><td class="safe">n/a</td></tr>
+    <tr><td>0F</td><td>87846380</td><td>Speaker EQ (VSE) — confirmed inert on Bose-equipped trucks</td><td class="safe">try (may be no-op)</td></tr>
+  </tbody>
+</table>
+
+<h2>Off-limits CalDef domains — never shipped, never tested</h2>
+<p>These exist as base defaults in <code>CalSets.db</code> but have never been touched by any
+   shipped or custom override on this vehicle:</p>
+<ul>
+  <li><code>GIS604_SafetyRelatedVolumeGroupOverrides</code> — safety-chime volume behavior</li>
+  <li><code>GIS631_ConfigChimeProd_*</code> (4 variants) — chime/alert sound configuration</li>
+  <li><code>GlobalChimeGainCals</code>, <code>MuteUnmuteRampTimes</code>, <code>VolumeGroupRampTimes</code></li>
+  <li><code>DrivingRestrictions</code>, <code>GIS509_DriverWorkloadRestrictions</code></li>
+  <li><code>SFS22_SecurityEventLoggingFRD</code></li>
+  <li><code>ADASIS</code></li>
+</ul>
+<p>Treat these as off-limits, not as the next experiment — see the customization guide for why.</p>
+
+<h2>Already proven on this bench</h2>
+<ul>
+  <li>SXM disable (slot 0C) — accepted, UI effect confirmed, survived one cold cycle</li>
+  <li>CarPlay/Android Auto disable (slot 0C, added CalIDs) — accepted, UI effect confirmed</li>
+  <li>GMBrand 3→0 (slot 04) — accepted, theme change confirmed</li>
+  <li>Screen resolution 4→2 (slot 08) — accepted but <b>caused display tearing</b></li>
+  <li>Google app visibility false (slot 04) — accepted but <b>had no effect</b></li>
+</ul>
+<p>"Accepted" is not "safe" or "effective" — verify the actual behavior after every write.</p>
+
+<h2>The override type schema (verified, 28/28 byte-exact against real containers)</h2>
+<p>Ten types: <code>Boolean</code>, <code>Integer</code>, <code>Float</code>, <code>Enumeration</code>,
+   <code>String</code>, <code>IntegerArray</code>, <code>FloatArray</code>, <code>EnumIntegerMap</code>,
+   <code>EnumFloatMap</code>, <code>Record</code>, plus <code>BinaryFile</code> for embedded blobs.
+   CRLF line endings, 2-space indent per nesting depth, no trailing newline, self-closing root if empty.
+   This toolkit's editor only exposes the scalar/String types for in-place editing; array/map/record/binary
+   types need the CLI or direct JSON editing (see the entry's raw value column).</p>
+
+<h2>What this tool does <em>not</em> do</h2>
+<p>It does not sign anything, and it does not talk to any radio. A repacked container's digest is
+   recomputed correctly; its RSA signature is carried forward unchanged from whatever template you
+   gave it, and will be stale relative to any edit — exactly as documented for every real bench trial.
+   Getting an edited container accepted by real hardware requires the separate CAN613/614 VIP-RAM
+   bypass procedure in <code>DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md</code>, which is a live-hardware
+   action, not something this tool automates.</p>
+{% endblock %}
