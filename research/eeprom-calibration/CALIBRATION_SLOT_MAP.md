@@ -1,0 +1,343 @@
+# A11 CSM Calibration Slot Map
+
+**Scope:** the full UDS-slot (02–0F) → part-number → content map for the stock A11 LTZ CSM
+calibration set of the gminfo37 radio (`0x80`). Fourteen signed CSM calibration containers, one
+per slot, plus a fifteenth file (`85577468`) that is the SPS programming-sequence utility, not a
+calibration. This doc gives the slot assignment, the per-slot override count / type breakdown, the
+named settings resolved through the local CalDef database, and the evidence for the slot-encoding
+method. Compiled 2026-11-21.
+
+**Does NOT live here:**
+- The complete 404-entry slot04 (`85045371`) calibration-key catalog is owned by
+  [`calibration_glossary.md`](calibration_glossary.md); it is pointed to, not restated (see
+  slot 04 below).
+- The custom-write trial log, the signed-container RSA/SHA verification trace, the CAN613/614
+  scoped-VIP-RAM-write path, and the Type4-vs-calibration-value distinction are owned by
+  [`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md) ("DTW")
+  and [`GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md).
+- Byte-level checksum/hash/container-edit mechanics for specific edits are owned by
+  [`CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md`](CALSETSDB_HAND_EDITING_CHECKSUM_SHA256.md) ("CHS").
+- The EEPROM/SBI layout and the refutation of the "`85783460` resets the SBI" claim are owned by
+  [`EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md`](EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md).
+
+**Related:** `../../tools/mdi2_client/mdi2/ltz_reference_manifest.py` (the pinned per-slot
+`TrustedContainer(slot, part, sha256)` manifest), `../../tools/mdi2_client/mdi2/calibration_payloads.py`
+(the loader that reads `slot = data[3]`), `../../evidence/dps-logs/A11_CSM_x80.Txt` (DPS GCI module
+readback), `../../tools/bench/tis2web.txt` (DPS Archive Creator part list).
+
+## Resolution method (stated once; it applies to every slot below)
+
+Each container is `outer gzip → CSM container → inner gzip at offset `0x368` → `CalOvride` XML`. The
+override XML carries only `CalID` + `Version` + one typed value element; **it contains no
+calibration names**. Every name, group and description below was resolved by **exact CalID match**
+against the local GIS-646 CalDef database (Info3.7/3.8 V7.0.8, 19 April 2023, in
+[`../../reference/GIS-646_CalDef_Database_Info3.7_and_Info3.8_V7.0.8_19April2023/`](../../reference/)),
+cross-checked against the `AllCalSets`/`EnumSets` tables of the Y177/Y181 `CalSets.db` emulator
+copies. CalDef text is manufacturer documentation, not a live behavior test. Two standing caveats
+from the source extraction are **not** upgraded here:
+
+- **Version skew.** The 2023 CalDef database and the override `Version` fields frequently differ.
+  Where they differ the description may not describe the exact installed revision. In most
+  containers the override is the older of the two; in slot 0A (`87846368`) 12 of 23 overrides are
+  *newer* than the 2023 CalDef, i.e. the local CalDef DB predates that container's definitions —
+  CalID/name/type still match exactly, but descriptions and enum labels for those 12 may be stale.
+- **Header tag `AA`/`AB`.** The two ASCII bytes at `container[0x362:0x364]` (the "alpha" / design-level
+  code) match the alpha column of the DPS GCI readback for every container, but the meaning of
+  `AA` vs `AB` is **not established** by this data.
+
+Values below are the stock LTZ overrides as extracted. "CalDef default" means the value in the
+CalDef file, not a live readback. Do not infer undocumented units or semantics, and do not change
+diagnostic masks or audio/safety settings on the strength of a name alone.
+
+## Slot summary
+
+| Slot (hex) | SPS/GCI dec | Part | Alpha | Overrides | Content area (one line) |
+|---|---|---|---|---|---|
+| 02 | 2 | `87863250` | AA | 21 | Navigation/fuel-type config and the MFC steering-wheel switch map |
+| 03 | 3 | `84517309` | AA | 0 | Empty override payload (valid, correctly digested, no overrides) |
+| 04 | 4 | `85045371` | AA | 404 | UI / home-screen / chime / audio / distortion / diagnostics — owned by `calibration_glossary.md` |
+| 05 | 5 | `87846416` | AB | 194 | Broad HMI policy: driver-workload lockout levels, projection (CarPlay/AA), tuner, region/language, server endpoints |
+| 06 | 6 | `87846371` | AA | 34 | Speech-recognition configuration plus 10 `.vtc` GMVT tuning files |
+| 07 | 7 | `85783460` | AA | 34 | Bluetooth profile enables plus 21 `.scd` hands-free audio tuning files |
+| 08 | 8 | `87846432` | AA | 30 | Rear-vision-camera geometry/intrinsics plus screen resolution |
+| 09 | 9 | `87846376` | AA | 48 | Diagnostic masks, GNSS dead-reckoning config, system-state timers |
+| 0A | 10 | `87846368` | AA | 23 | HVAC/climate touch-screen UI plus air-quality UI |
+| 0B | 11 | `86292118` | AA | 42 | Connectivity/telematics switches, GIS641 DTC masks, OMA-DM timers (supersedes `87846390`) |
+| 0C | 12 | `85102312` | AB | 20 | Tuner / SXM / HD / DAB feature set plus antenna and voice-recognition DTC masks |
+| 0D | 13 | `87846384` | AB | 19 | Trailering and trailer-camera features, rear-seat entertainment, DTC masks |
+| 0E | 14 | `84517418` | AA | 0 | Empty override payload (inner XML byte-identical to slot 03) |
+| 0F | 15 | `87846380` | AA | 114 | Vehicle-specific parametric EQ (per-channel acoustic tune) |
+| — | 0 | `85577468` | — | n/a | Not a calibration: SPS programming-sequence utility (see below) |
+
+Every CalID in every container resolved to a real GM name; **no container has an unresolved /
+opaque CalID**. No CalID appears in more than one container (each CalID is assigned to a single
+slot). No VIN, serial, or trim-name string appears inside any container's XML; what the containers
+carry are feature/equipment-presence and configuration values, not identity tokens.
+
+## Per-slot detail
+
+### Slot 02 — `87863250` (AA, 21 overrides: 15 Enumeration, 5 Boolean, 1 Integer)
+
+Navigation and fuel-type configuration plus the Multi-Function Controller steering-wheel switch
+map. Fuel markers are consistent with a gasoline vehicle: `FuelType` = 1 (`FuelType_Unleaded`),
+`VEHICLE_FUEL_TYPE_PETROL` true, `VEHICLE_FUEL_TYPE_DIESEL` false, `DEFAULT_POI_FUEL_STATION` = 0
+(`Gasoline`). The MFC map sets switches 1–6 to Back / Phone / Navigation / Audio / SeekUp /
+SeekDown with switches 7–8 and all indicators Unused (all equal to CalDef default).
+`ENABLE_REVEALONAPPROACH` = 0 (OFF, CalDef default 1); navigation app and Predictive Cards enabled;
+`GCWR` = 11111 (CalDef default 99999; the CalDef gives no unit, so the number is left
+uninterpreted). Nothing VIN-specific.
+
+### Slot 03 — `84517309` (AA, 0 overrides)
+
+A valid, correctly digested CSM container whose inner XML is a self-closing
+`<calovride:CalOvrideFile/>` root with **no overrides** — the module keeps its built-in CalDef
+defaults for every key. No CalIDs are catalogued because none exist in the file. The container
+differs from slot 0E (`84517418`) only in the slot bytes, the digest, the 256-byte OTA-only RSA
+field, and the part-number low bytes; the inner XML is byte-identical between the two.
+
+### Slot 04 — `85045371` (AA, 404 overrides)
+
+The stock LTZ slot04 container: UI, home-screen application visibility/ordering, chime
+configuration, audio routing/levels, distortion limiting, faceplate buttons, and diagnostic masks.
+**Its full 404-entry catalog is owned by [`calibration_glossary.md`](calibration_glossary.md) and is
+not duplicated here.** A fresh 2026-11-21 re-extraction of the live container was compared
+programmatically against every row of that glossary: 404 rows vs 404 XML entries, identical CalID
+sets, 0 name/type/group mismatches, 0 value mismatches across all 161 scalar values and enum
+labels, and the glossary's "133 CalDef versions equal the override version" count reproduced. The
+glossary describes this container accurately; no discrepancies were found. Its decompressed-container
+SHA-256 equals the `LTZ_REFERENCE` pin for slot 4.
+
+### Slot 05 — `87846416` (AB, 194 overrides: 94 Enumeration, 50 Integer, 41 Boolean, 8 String, 1 EnumIntegerMap)
+
+The broadest container: an HMI-policy and connectivity set spanning ~30 CalDef groups. By name, a
+large majority of entries are driver-workload / lockout levels across the GIS500–GIS539 UI groups
+(including all 21 `GIS539_TrailerAppUI` entries); the remainder includes 13 CarPlay/Android Auto
+projection flags (`GIS337_ConsumerDeviceProjection`: e.g. `Apple_CarPlay_enableWireless` true,
+`AndroidAuto_enableWireless` true, various fidelity/keypad/content sub-flags), 46 AM/FM tuner values
+plus 14 HD Radio (`GIS605`) and 1 SXM, and 4 language/regionalization entries.
+
+Region/market markers (market-specific, not vehicle-specific) are present: `COUNTRY_CODE` = 49
+(`UNITED_STATES`), `REGIONS` = 0 (`GMNA`), `DEFAULT_SYSTEM_LANGUAGE` = 0 (`ENGLISH_US`),
+`Onstar_Regional_Brand_HMI_Logo` = 1 (`North_America`), and three of 36 target languages enabled
+(US English, Canadian French, North-American Spanish); North-American tuner band plan. Eight String
+entries carry server endpoints verbatim (`vehicle.api.gm.com` on ports 20443/20445,
+`gm.secure.force.com`, `gminfo3-am-ncs-ssl.gm.nuancemobility.net`). Header tag is `AB`. Note the
+prior one-line summary "Android Auto / Apple CarPlay connectivity settings" in the external
+`EEPROM_CALIBRATION_MAPPING.md` covered only a small part of this container's 194 entries.
+
+### Slot 06 — `87846371` (AA, 34 overrides: 10 BinaryFile, 10 IntegerArray, 9 Boolean, 3 Integer, 1 EnumIntegerMap, 1 Enumeration)
+
+Speech-recognition configuration: disambiguation thresholds, per-language server-ASR enables,
+server/embedded confidence-threshold arrays, maximum user speech time, voice barge-in, a
+per-language static-text map, and 10 `GM_SR_TuningFiles` BinaryFile entries. The 10 BinaryFile
+payloads are all `.vtc` "GMVT tuning file" blobs (default VA driver/passenger/mix, Android Auto,
+CarPlay Siri, Bluetooth Siri/VR); each `Length` matches the base64-decoded size and each `Checksum`
+equals the CRC-32 of the decoded bytes, but the internal `.vtc` format was not decoded. **Market
+hint (inference, the data names no market):** server ASR is enabled for US English, Canadian French,
+Mexican Spanish and Mandarin, and disabled for the EU languages — a language set that fits a
+North-American calibration.
+
+### Slot 07 — `85783460` (AA, 34 overrides: 21 BinaryFile, 12 Boolean, 1 Integer)
+
+Bluetooth profile/feature enables plus hands-free audio tuning. All 11 Bluetooth booleans are true
+(HFP, A2DP, AVRCP, PBAP, MAP, DIP, SPP, PAN, WBS, in-band ringing, and the
+`BluetoothFeatureEnables`-grouped `K_AUTO_FAN_SPEED_REDUCTION_ENABLED` — whose own description
+actually concerns HVAC fan-speed ODI calls). `ENABLE_CALL_TIMERS` true;
+`IGNITION_OFF_IN_CALL_VIEW_DELAY` = 0 (CalDef default 3000). The 21 BinaryFile entries are all
+`.scd` files in CalDef group `HandsFree`, `SSE_*` names, CalDef-described as "Default voice
+parameters for app based VoIP calling" or "Tuning Parameter for SSE_HF_GM_INFO3_<use case>" (BT
+telephony NB/WB, CarPlay Tel/FaceTime NB/WB/SWB wired and WiFi, Android Auto WB, OnStar
+Advisor/eCall WB, 48 kHz downlink variants); each `Length` matches the decoded size (472–708 B,
+11,712 B total) and each `Checksum` equals the CRC-32 (several payloads are byte-identical under
+different names). The internal `.scd` format was not decoded, and the "SSE = Speech Signal
+Enhancement / echo cancellation" gloss from older notes is **not** stated in the CalDef text — the
+CalDef supports only "hands-free voice/tuning parameters." All 34 CalIDs resolve exactly; see the
+correction to `EEPROM_LAYOUT_COMPREHENSIVE_AUDIT.md` recorded below.
+
+### Slot 08 — `87846432` (AA, 30 overrides: 20 Integer, 5 Enumeration, 3 Boolean, 2 IntegerArray)
+
+Rear-vision-camera (RVS) geometry and the display resolution. 26 `FRONTREARCAMERASTATIC` entries:
+smart-tow feature, UPA zone type and icon pixel arrays, RCTA icon positions, camera
+intrinsics/extrinsics (distortion coefficients, focal length, optical offsets, rotation),
+hysteresis speeds/timers, steering geometry (wheelbase, rear-axle offset, steering
+ratio/saturation), guideline availability, and `RVS_PRESENT_STATUS` = 2
+(`PRESENT_VPM_CAMERA_PROCESSING_MODULE`, CalDef default 1); plus the home-screen camera-app enable,
+two "wrong camera installed" DTC masks, and `SCREEN_RESOLUTION` = 4 (`SIZE_2400_BY_960`, CalDef
+default 2 `SIZE_1280_BY_768`). `SCREEN_RESOLUTION` is the value DTW's 2026-11-17 trial changed to 2
+and rolled back after display tearing. Geometry integers carry no units in the file; the CalDef
+hints are reproduced but not extended. Decompressed-container SHA-256 equals the `LTZ_REFERENCE`
+pin for slot 8.
+
+### Slot 09 — `87846376` (AA, 48 overrides: 41 Boolean, 6 Integer, 1 Enumeration)
+
+Diagnostic masks, GNSS dead-reckoning configuration, and system-state timers. 20
+diagnostic-mask/counter entries (`GIS621` Global A: 9, `GIS641` Global B: 11, covering wireless
+charger, Ethernet bus, cluster-link and display DTCs); 21 `GNSS_DR` entries (constellations GPS and
+GLONASS on, BeiDou and Galileo off; sensor availability/utilization flags; `SBAS_DGPS` = 0 `NONE`;
+`LOC_SHFT` false); 3 `GIS618_SystemState` timers/flags including `VIN_RELEARN_EN` true; 2 `GIS507`
+settings; a welcome-message value; and `ValetMaskMenu`. `VIN_RELEARN_EN` and `DID_MASK_2F`
+*concern* VIN handling but are configuration flags, not VIN data. The external
+`EEPROM_CALIBRATION_MAPPING.md`'s "valet mode, TTS speed, welcome message, timeouts" one-liner
+covers only a minority of the 48 entries.
+
+### Slot 0A — `87846368` (AA, 23 overrides: 13 Boolean, 8 Enumeration, 2 Integer)
+
+HVAC/climate touch-screen UI (`GIS550_ClimateTouchScreenUI_GlobalB`, 19 entries) plus air-quality
+UI (`GIS551_AirQualityUI`, 3) and one home-screen air-quality switch. Several values describe
+installed climate hardware: `KeHVC_Cnt_CfgNumOfFrontZones` = 2 (`Dual_Front_Zone`),
+`Number_of_Rear_Temp_Zones` = 0, `Rear_Climate_Application_Available` false,
+`Rear_Blower_Control_Available` false, `Air_Conditioning_Compressor_Type` = 1
+(`NOT_Equal_to_None`), `HiVoltCoolHtrPresent` false, `Maximum_FanSpeed` = 8. These are
+equipment-content markers, not a trim name. `APPLICATION_HOMESCREEN_AIRQUALITY_ENABLED` false is
+consistent with RPO `USK` (Air Quality Sensor) absent. This is the container with the reversed
+version skew noted in the method section (12 of 23 overrides newer than the 2023 CalDef).
+
+### Slot 0B — `86292118` (AA, 42 overrides: 37 Boolean, 5 Integer)
+
+Connectivity/telematics feature switches plus diagnostics and remote-programming timers. Content:
+OnStar wrapper launch points, WiFi / WiFi P2P, data and location services, connected/local profiles,
+global server-ASR switch, App Shop enables; 19 `GIS641` DTC-mask booleans (WiFi antenna, telematics
+license-compliance, Ethernet Bus 4, cellular mic, GPS coax antenna); 3
+`GIS668_RemoteOMADMServerInterface` retry timers and 2 `GIS887_RemoteProgrammingHMI` timers.
+Feature-presence values such as `APPLICATION_HOMESCREEN_APPSHOP_ENABLED` false,
+`APP_SHOP_SERVER_ENABLED` false, `APPLICATION_HOMESCREEN_ONSTAR_ENABLED` true describe software
+content, not identity. 41 of 42 CalIDs are present in the emulator `CalSets.db` (the 42nd is absent
+there, not contradicted). See the slot 0B history note below — this part superseded `87846390`.
+
+### Slot 0C — `85102312` (AB, 20 overrides: 18 Boolean, 1 Enumeration, 1 IntegerArray)
+
+The radio/tuner feature container: DAB/SXM/HD source-mode icons, speech-recognition radio domains,
+HD Radio activation, AM/FM secondary-antenna type and phase diversity, DAB enable, SXM enable plus
+default presets, and the antenna/XM/voice-recognition DTC masks that accompany those features.
+Effective configuration: SXM on, HD and DAB off, FM antenna 2 not connected. `SXM_Enabled` = true
+(CalDef default false) is the single value flipped in DTW's SXM-disable experiments. **Stock slot 0C
+has exactly these 20 overrides** — see the CarPlay/Android Auto correction note below.
+
+### Slot 0D — `87846384` (AB, 19 overrides: 13 Boolean, 5 Enumeration, 1 Integer)
+
+Trailering and trailer-camera features plus rear-seat entertainment and DTC masks. `VEHICLE_TYPE` =
+1 (`Full_Size_Truck`); `TraileringAppType` = 2 (`FULL`); rear and interior trailer camera, rear
+trailer guidelines, load monitoring and ESBZA HMI all true; `TRAILER_HEIGHT_MAX` = 100 (CalDef
+default 36; CalDef says inches); transparent-trailer and jackknife features at default; rear-seat
+entertainment (`ENABLE_APPLICATION_RSE`, `RearSeatOverEthernet`) false; home-screen Video app false;
+`LVM_TLIN_Node_Available` false; three `GIS641` B1A21 Ethernet-Bus-5 DTC masks false. This describes
+a trailering-equipped full-size-truck configuration; nothing VIN-specific. This container shares no
+CalIDs, groups or BinaryFile content with slot 07 (`85783460`) — their historical pairing under the
+old "encrypted EEPROM reset payload" claim reflected the claim, not the data.
+
+### Slot 0E — `84517418` (AA, 0 overrides)
+
+A second empty override container. The inner XML is byte-for-byte identical to slot 03
+(`84517309`); the two differ only in the slot bytes, digest, OTA-only RSA field, and part-number low
+bytes. Slots 3 and 14 therefore receive the same empty payload, packaged separately.
+
+### Slot 0F — `87846380` (AA, 114 overrides: 66 Float, 36 Integer, 12 Enumeration)
+
+All 114 entries are in the single CalDef group `VehicleSpecificEqualization`: a per-channel
+(LF/RF/LR/RR) 7-band parametric EQ (center frequency, Q factor, boost/cut, per-band function
+selection), per-channel high-pass frequency/order/Q, per-channel level adjust, and two
+`VSE_PARAM_EQ_F_HR`/`VSE_PARAM_EQ_R_HR` values. This is a vehicle/body-specific acoustic tune. The
+*individual* EQ values were extracted but their acoustic effect is not characterized here, and the
+CalDef text does not define the element layout of the arrays — so this slot is reported at the
+family/parameter level, not as a settings-by-effect summary. The earlier external inventory's
+per-type count ("36 int, 12 enum") omitted the 66 Float entries; the corrected breakdown is above.
+
+## The 15th file — `85577468` (SPS programming utility, not a slot)
+
+`85577468` is **not** a CSM calibration container and has no UDS calibration slot. Its decompressed
+body (1818 bytes) begins `00 00 00 00 05 19 ce fc 41 41 …` with no `CSM\0` magic, no inner gzip, and
+no `CalOvride` XML — it is a GM SPS/DPS utility (programming-interpreter) script, listed by SPS as
+`#0: 0/85577468/817` (module 0) and by `tis2web.txt` as `A11 00 N/A 85577468`.
+`MDI2_RAW_UDS_BYPASS_GUIDE.md` already calls it "the cached LTZ utility."
+
+Structurally it is a header, 109 fixed 16-byte step records, and a trailer. Its step records
+reference UDS services by their positive-response codes (`27` SecurityAccess, `10`
+DiagnosticSessionControl, `34`/`36`/`37` RequestDownload/TransferData/RequestTransferExit, `22`
+ReadDataByIdentifier, `2E` WriteDataByIdentifier, `31` RoutineControl, `11` ECUReset). The control
+flow is: a SecurityAccess + session-setup sequence, then **14 download blocks**, one per data index
+`02`…`0F` in order (each a `34`/`36`/`37` triple), then a readback of DID `F0F0`; a second sequence
+writes DIDs `F198`/`F199`/`F190` (repair-shop code / programming date / VIN) and issues a hard
+`ECUReset`. The trailer carries a 14-entry list of indices `02`…`0F` — the "14-slot list." This is
+the programming sequence that drives the 14 slot downloads and verifies, which is why there are 15
+part numbers for 14 calibration slots. Field-level meanings of several interpreter ops (`01`, `53`,
+`e0`, `ee`, `fb`–`ff`) and the trailer words `0249`/`039b` are **not established**; the slot→part
+pairing of its download indices is inferred by matching the two numbering schemes, since the utility
+names no part numbers. No values for the F198/F199/F190 writes are stored in the file (the tool
+presumably supplies them at runtime).
+
+## Slot-encoding method and its cross-validation
+
+The slot number is carried **inside the signed CSM header**, not in the XML: `container[0x03]` holds
+the slot, repeated at `container[0x35F]`; `container[0x362:0x364]` holds the ASCII alpha code; the
+big-endian u32 at `container[0x364]` equals the part number; ASCII `Infotainment` sits at
+`container[0x3E]` in every container (so it names the module class, not the slot). The header begins
+`03 01 00 <slot> 00 00 'CSM\0'`.
+
+**The byte-offset *meaning* is inferred — no GM tool documentation confirms that `container[0x03]`
+is "the slot" — but the slot values it produces are corroborated independently and by two different
+methods:**
+
+1. **Header-byte reading vs. the loader.** `container[0x03]` is the exact field the owner's loader
+   uses (`tools/mdi2_client/mdi2/calibration_payloads.py`: `slot = data[3]`, which requires exactly
+   one container per slot 02–0F), and each container's decompressed SHA-256 matches its pinned
+   `TrustedContainer(slot, part, sha256)` row in `tools/mdi2_client/mdi2/ltz_reference_manifest.py`
+   byte-for-byte.
+2. **External logs, independent of the header.** The same slot→part set appears in the SPS
+   programming log
+   `misc/Aug24_session/spsCacheInternal/26_HC_A11/sps2.log` (lines ~1849–1863, `#n: <module>/<part>/<size>`
+   format, file sizes matching the cached gzip sizes byte-for-byte); in the DPS Archive Creator part
+   list `tools/DPS_Archive_Creator_V2/tis2web.txt`; and in the DPS GCI module readback
+   `DPS_All_Module_Read/2025DEC30/read_*/GCI_0x80_*.txt` (also mirrored in this repo at
+   [`../../evidence/dps-logs/A11_CSM_x80.Txt`](../../evidence/dps-logs/A11_CSM_x80.Txt), whose MOD
+   column is decimal 02…15 = 0x02…0x0F). The alpha codes `AA`/`AB` in the header match the alpha
+   column of that readback for every container.
+
+These were produced by multiple independently-run agents, cross-checking the header byte against the
+logs above and against this repo's own pinned manifest. The three slots that were already known
+before this round (04, 08, 0C) agree with every source. The byte-offset interpretation remains an
+inference; the slot assignment it yields is well corroborated.
+
+## Slot 0B part-number history (`87846390` → `86292118`)
+
+The DPS GCI reads (DPS PC clock stamped 02/18/24, folder `2025DEC30`),
+[`../../evidence/dps-logs/A11_CSM_x80.Txt`](../../evidence/dps-logs/A11_CSM_x80.Txt),
+`tools/bench/tis2web.txt` and the `icloud_diag` copy all record slot 11 as **`87846390` AB** — an
+*older* part. By the 2026-07-07 SPS session (VIT1 readback) the radio already reported `86292118` in
+that position, and SPS reprogrammed `86292118` there; the current `A11_extracted` cache (dated
+Dec 30 2025) already contains `86292118`. So `86292118` superseded `87846390` in slot 0B at some SPS
+programming in between; the exact date is not proven. **No local copy of `87846390` exists**, so it
+could not be catalogued — only the current occupant `86292118` is detailed above. Note this is also
+why `tools/bench/tis2web.txt` in this repo still lists the pre-update `87846390` for slot 11.
+
+## Correction: no CarPlay / Android Auto override in stock slot 0C
+
+The Apple CarPlay (`Enable_Application_Apple_Carplay`, `_vZTHQMZZEeOEzdA9o_rOxw`) and Android Auto
+(`Enable_application_google_Automotive_link`, `_1pZzYMZZEeOEzdA9o_rOxw`) feature-enable overrides
+described in DTW's
+[2026-11-16 CarPlay/Android Auto trial](DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-16-carplay-and-android-auto-custom-calibration-accepted)
+are **not present in the stock slot 0C container** (`85102312`). Genuine stock slot 0C has exactly
+the 20 overrides listed above, all in the radio-tuner / SXM / HD / DAB / antenna /
+speech-recognition domain. The two projection overrides were **added** to a custom 1478-byte
+candidate in that trial (version-3 Booleans, both set false); they do not exist in the 1457-byte
+genuine container. The 2026-11-17 full stock LTZ restoration put the genuine 20-entry container
+back. (The projection feature-enable CalIDs themselves are defined in `GIS513_DeviceProjection`; in
+the stock set, the projection *policy* flags that do exist live in slot 05's
+`GIS337_ConsumerDeviceProjection` group, which is a different group from the `GIS513` feature
+enables.)
+
+## Sources and provenance
+
+The complete per-part extracts — every `OverrideValue` row with CalID, type, value and verbatim
+CalDef description, plus full container hashes, header dumps and the extraction/reproduction scripts
+— remain in the **external research workspace**, one markdown file per part number plus a
+`SLOT_MAPPING.md`, under the project's `diagnostics/gm_dps/calibrations/module_map/` tree. This repo
+intentionally does **not** check in the raw containers, the full inner-XML dumps, or the full
+per-part override tables — the same editorial split used for `calibration_prototypes/`,
+`type4_radio_info/` and the other external-pointer material referenced elsewhere here: curated,
+distilled analysis lives in the repo; bulk/raw material stays external.
+
+Of the 14 calibration containers, **two are empty** (slot 03 = `84517309` and slot 0E = `84517418`,
+zero overrides each); the other twelve are substantive. The fifteenth file (`85577468`) is the
+programming utility, not a calibration. The stock set forms exactly one complete 02–0F slot
+assignment with one part per slot; the High Country trim substitutes `87846412`/`85045386`/`85877786`
+in slots 02/04/05 and lives outside this LTZ set.
