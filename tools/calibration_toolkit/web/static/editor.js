@@ -110,6 +110,7 @@ function renderEntriesTable(tbody, mod, modIdx) {
     }
 
     const nameTd = document.createElement("td");
+    nameTd.title = e.name || e.cal_id;
     nameTd.textContent = e.name || `(unresolved: ${e.cal_id})`;
     if (e.safety_restricted) {
       const badge = document.createElement("span");
@@ -120,13 +121,18 @@ function renderEntriesTable(tbody, mod, modIdx) {
     }
 
     const groupTd = document.createElement("td");
+    groupTd.title = e.group || "";
     groupTd.textContent = e.group || "";
 
     const typeTd = document.createElement("td");
+    typeTd.title = e.type;
     typeTd.textContent = e.type;
 
     const valueTd = document.createElement("td");
-    renderValueControl(valueTd, e, mod, entryIdx);
+    const valueInner = document.createElement("div");
+    valueInner.className = "value-cell-inner";
+    valueTd.appendChild(valueInner);
+    renderValueControl(valueInner, e, mod, entryIdx);
 
     tr.append(infoTd, nameTd, groupTd, typeTd, valueTd);
     tbody.appendChild(tr);
@@ -149,9 +155,11 @@ function renderValueControl(td, e, mod, entryIdx) {
   if (e.type === "Enumeration" && e.enum_options && e.enum_options.length) {
     const select = document.createElement("select");
     let matched = false;
+    const optionLabel = (opt) => `${opt.value} — ${opt.label}`;
     e.enum_options.forEach(opt => {
       const o = document.createElement("option");
-      o.value = opt.value; o.textContent = `${opt.value} — ${opt.label}`;
+      o.value = opt.value; o.textContent = optionLabel(opt);
+      o.title = optionLabel(opt);
       if (opt.value === e.value) { o.selected = true; matched = true; }
       select.appendChild(o);
     });
@@ -164,6 +172,11 @@ function renderValueControl(td, e, mod, entryIdx) {
     customInput.style.display = matched ? "none" : "inline-block";
     if (!matched) customInput.value = e.value;
     if (!matched) select.value = "__custom__";
+    const updateTitle = () => {
+      const sel = e.enum_options.find(o => o.value === select.value);
+      select.title = sel ? optionLabel(sel) : "custom value";
+    };
+    updateTitle();
 
     select.onchange = () => {
       if (select.value === "__custom__") {
@@ -173,6 +186,7 @@ function renderValueControl(td, e, mod, entryIdx) {
         customInput.style.display = "none";
         mod.entries[entryIdx].value = select.value;
       }
+      updateTitle();
     };
     customInput.onchange = () => { mod.entries[entryIdx].value = customInput.value; };
     td.append(select, customInput);

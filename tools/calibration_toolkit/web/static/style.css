@@ -6,8 +6,9 @@
   :root { --bg: #0d1117; --fg: #e6edf3; --muted: #9198a1; --border: #30363d;
            --safe: #3fb950; --mixed: #d29922; --avoid: #f85149; --accent: #58a6ff; }
 }
+html { overflow-x: hidden; }
 body { background: var(--bg); color: var(--fg); font-family: -apple-system, system-ui, sans-serif;
-       margin: 0; max-width: 1100px; margin-inline: auto; padding: 0 16px; }
+       margin: 0; max-width: 1100px; margin-inline: auto; padding: 0 16px; overflow-x: hidden; }
 .topnav { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
 .topnav a { color: var(--accent); text-decoration: none; }
 .topnav .brand { font-weight: 700; color: var(--fg); margin-right: auto; }
@@ -17,7 +18,9 @@ td.desc { color: var(--muted); font-size: 0.85em; }
 .safe { color: var(--safe); font-weight: 600; }
 .mixed { color: var(--mixed); font-weight: 600; }
 .avoid { color: var(--avoid); font-weight: 600; }
-input[type="text"] { padding: 4px 6px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); border-radius: 4px; width: 100%; }
+input[type="text"] { padding: 4px 6px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); border-radius: 4px; width: 100%; box-sizing: border-box; max-width: 100%; }
+select { padding: 4px 6px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); border-radius: 4px;
+         max-width: 100%; box-sizing: border-box; text-overflow: ellipsis; }
 button { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--accent); color: white; cursor: pointer; margin-right: 8px; }
 .searchrow { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.9em; }
 .enumhint { font-size: 0.8em; color: var(--muted); }
@@ -41,11 +44,21 @@ button { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
 .module-body { padding: 10px 14px; }
 .module-export { margin-top: 10px; }
 
+.table-scroll { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+.entries-table { table-layout: fixed; min-width: 640px; }
 .entries-table th { color: var(--muted); font-size: 0.8em; text-transform: uppercase; }
-.info-btn { width: 20px; height: 20px; border-radius: 50%; padding: 0; font-style: italic; font-weight: 700; line-height: 1; background: var(--muted); }
-.info-popover { position: absolute; max-width: 360px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.88em; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 100; }
-.custom-enum-input { margin-left: 6px; width: 90px; }
-.readonly-value { color: var(--muted); font-size: 0.9em; }
+.entries-table col.col-info { width: 32px; }
+.entries-table col.col-name { width: 24%; }
+.entries-table col.col-group { width: 20%; }
+.entries-table col.col-type { width: 13%; }
+.entries-table col.col-value { width: 43%; }
+.entries-table td, .entries-table th { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.info-btn { width: 20px; height: 20px; border-radius: 50%; padding: 0; font-style: italic; font-weight: 700; line-height: 1; background: var(--muted); flex-shrink: 0; }
+.info-popover { position: absolute; max-width: 360px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.88em; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 100; white-space: normal; }
+.custom-enum-input { margin-left: 6px; width: 90px; flex-shrink: 0; }
+.value-cell-inner { display: flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; }
+.value-cell-inner select, .value-cell-inner input { min-width: 0; flex: 1 1 auto; }
+.readonly-value { color: var(--muted); font-size: 0.9em; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .muted { color: var(--muted); }
 footer { color: var(--muted); font-size: 0.85em; margin: 40px 0 20px; border-top: 1px solid var(--border); padding-top: 12px; }
 code { background: rgba(127,127,127,0.15); padding: 1px 5px; border-radius: 4px; }

@@ -46,10 +46,15 @@
     </div>
     <div class="slot-summary"></div>
     <div class="module-body" style="display:none">
-      <table class="entries-table">
-        <thead><tr><th></th><th>Name</th><th>Group</th><th>Type</th><th>Value</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="entries-table">
+          <colgroup>
+            <col class="col-info"><col class="col-name"><col class="col-group"><col class="col-type"><col class="col-value">
+          </colgroup>
+          <thead><tr><th></th><th>Name</th><th>Group</th><th>Type</th><th>Value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <div class="module-export">
         <button class="export-xml-btn">Download edited .calovride XML</button>
         <button class="export-container-btn">Download full container (digest recomputed; signature stays stale — see help)</button>
