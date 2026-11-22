@@ -94,6 +94,52 @@ treating them as the next item on the list.
    methodology rigor as the rest of this corpus (control candidates, explicit hashes, documented
    rollback) rather than as a one-off bench change.
 
+## 5. Compiler feasibility — verified, not just plausible
+
+A hand-built `CalOvride` XML document (CalID + type + value only, no reference to any genuine
+container's bytes) was serialized and diffed byte-for-byte against GM's own compiled output, then
+stress-tested across every real container that exists for this platform. The formula was
+independently re-derived from scratch by a second agent as a check. Confirmed:
+
+- **Format rule:** CRLF line endings throughout, `2 × nesting-depth` spaces of indent at every
+  level, no trailing newline after the final closing tag, and an empty root serializes
+  **self-closing** (`<calovride:CalOvrideFile .../>`) rather than open/close.
+- **Ten override types exist, not the seven obvious scalar/array ones** — the full set is `Boolean`,
+  `Integer`, `Float`, `Enumeration`, `String`, `IntegerArray`, `FloatArray`, `EnumIntegerMap`,
+  `EnumFloatMap`, and `Record` (a repeated `<Field><FieldName>…</FieldName><TypedValue>…</TypedValue>
+  </Field>` structure, nesting one level deeper than the array/map types). The three easy-to-miss
+  ones (`FloatArray`, `EnumFloatMap`, `Record`) only appear in the two full slot04 documents
+  (`85045371` LTZ / `85045386` HC) — 198 `Record`, 11 `EnumFloatMap`, 6 `FloatArray` entries each —
+  which is exactly why a smaller test sample missed them.
+- **Full-corpus result: all 28 genuine CSM containers across both trims reproduce byte-for-byte**
+  (SHA-256-verified) — every LTZ and HC container, all ten override types, the two empty-root cases,
+  and the 404/598-entry large documents. `85577468` in both directories is correctly excluded — it's
+  the SPS programming-utility script, not a CSM container.
+- **Negative control:** a GMC-trim single-override file already in this repo
+  (`calibration_prototypes/a11_gmbrand_gmc_single.calovride`) does **not** match — not GM-compiled
+  output. Three independent, additive differences: single-quoted lowercase `'1.0'`/`'ascii'`
+  declaration instead of GM's double-quoted `"1.0"`/`"ASCII"`, plain LF instead of CRLF, and a
+  trailing newline GM's format never has. All three have to be corrected before the content (which
+  is otherwise fine) matches.
+- **Positive control:** the LTZ/HC trim-comparison file in the same folder
+  (`a11_ltz_gmtrim_highcountry.calovride.xml`) does match the formula exactly (404 entries, 594,177
+  bytes) and turns out to differ from the real LTZ container by exactly one line (a `GMTrim` value)
+  and from the real HC container by exactly one different line — a genuine one-value-swapped
+  illustration document, not a synthetic test file.
+- **Platform boundary, fully characterized:** a different GM vehicle (Cadillac CT5) uses a
+  structurally different format at the same offsets — `VCU\x00` instead of `CSM\x00` at the same
+  header position, but past `0x368` the payload is **LZMA-ALONE-compressed raw binary** (packed
+  floats/int16, `0xFF`-padded), not a nested gzip XML document at all. The formula above is specific
+  to the gminfo37 CSM platform; it does not generalize across GM infotainment platforms.
+
+**Practical upshot:** compiling a brand-new, well-formed override for any of the ~215 CalDef groups
+— including ones never shipped in any package on this vehicle — is a solved problem at the XML/
+container layer. The signature is not, and was never attempted here (see `GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md`
+and the CAN613/614 bypass in the workflow doc for that separate, already-documented obstacle). The
+risk triage in §§2–3 above is unchanged by any of this — knowing the formula doesn't tell you what a
+new override does once applied, and the never-shipped chime/safety groups are exactly as untested as
+before.
+
 ## Related
 
 - [`CALIBRATION_SLOT_MAP.md`](CALIBRATION_SLOT_MAP.md) — full per-slot `OverrideValue` catalog, slot
