@@ -1,38 +1,62 @@
 {% extends "base.html" %}
 {% block title %}Editor — GM Calibration Toolkit{% endblock %}
 {% block content %}
-<h1>Calibration module editor</h1>
-<p>Upload a genuine or custom calibration file — a signed container (<code>spsCacheInternal/&lt;part&gt;</code>),
-   an unwrapped container, or a bare <code>.calovride</code> XML file. Nothing is uploaded anywhere except
-   to this local server process; downloads are real files.</p>
+<h1>Calibration set editor</h1>
+<p>Load a single calibration file, or a <code>.zip</code> of several (e.g. a whole
+   <code>spsCacheInternal/</code> directory). Each file can be a signed container, an
+   already-unwrapped container, or a bare <code>.calovride</code> XML file — detected
+   automatically. Files that aren't recognized as a calibration module are skipped and
+   listed, nothing fails the whole upload. Nothing is sent anywhere except this local
+   server process.</p>
 
 <section id="upload">
-  <input type="file" id="fileInput">
+  <input type="file" id="fileInput" accept=".zip,*">
   <button onclick="ingest()">Load</button>
-  <span id="meta"></span>
+  <span id="uploadStatus"></span>
 </section>
 
-<section id="addRow" style="display:none">
-  <h2>Add a new override</h2>
-  <p>Search any of the ~215 CalDef groups defined on this platform — not just entries already in this file.
-     See the <a href="/help">help page</a> for which groups are safe to touch.</p>
-  <input type="text" id="calSearch" placeholder="search CalDef name, e.g. SXM or TRAILER" oninput="searchCalDef()">
+<section id="skippedSection" style="display:none">
+  <p class="skipped-note" id="skippedNote"></p>
+</section>
+
+<section id="moduleList" style="display:none">
+  <div class="list-header">
+    <h2>Loaded modules (<span id="moduleCount"></span>)</h2>
+    <button onclick="exportAllZip()" id="exportAllBtn">Download all as .zip</button>
+  </div>
+  <div id="modules"></div>
+</section>
+
+<section id="caldefLookup" style="display:none">
+  <h2>Look up any calibration (across all CalDef groups, not just loaded ones)</h2>
+  <p>Add a new entry to the currently-expanded module. See the <a href="/help">help page</a>
+     for which CalDef groups are safe to touch.</p>
+  <input type="text" id="calSearch" placeholder="search by name, e.g. SXM or TRAILER" oninput="searchCalDef()">
   <div id="searchResults"></div>
 </section>
 
-<section id="entriesSection" style="display:none">
-  <h2>Entries (<span id="entryCount"></span>)</h2>
-  <table id="entriesTable">
-    <thead><tr><th>Name</th><th>Group</th><th>Type</th><th>Value</th><th>Description</th></tr></thead>
-    <tbody></tbody>
-  </table>
-</section>
-
-<section id="exportSection" style="display:none">
-  <h2>Export</h2>
-  <button onclick="exportXml()">Download edited .calovride XML</button>
-  <button onclick="exportContainer()">Download full container (reuses uploaded file's header; digest recomputed; signature stays stale — see help)</button>
-</section>
+<template id="moduleTemplate">
+  <div class="module">
+    <div class="module-header" onclick="toggleModule(this)">
+      <span class="chevron">▸</span>
+      <span class="slot-badge"></span>
+      <span class="filename"></span>
+      <span class="entry-count"></span>
+      <span class="triage-badge"></span>
+    </div>
+    <div class="slot-summary"></div>
+    <div class="module-body" style="display:none">
+      <table class="entries-table">
+        <thead><tr><th></th><th>Name</th><th>Group</th><th>Type</th><th>Value</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="module-export">
+        <button class="export-xml-btn">Download edited .calovride XML</button>
+        <button class="export-container-btn">Download full container (digest recomputed; signature stays stale — see help)</button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <script src="/static/editor.js"></script>
 {% endblock %}

@@ -51,6 +51,18 @@
 </ul>
 <p>"Accepted" is not "safe" or "effective" — verify the actual behavior after every write.</p>
 
+<h2>Loading a whole set</h2>
+<p>The editor accepts a <code>.zip</code> of several files — e.g. a whole
+   <code>spsCacheInternal/</code> directory — and sorts out what's in it automatically:
+   signed containers, already-unwrapped containers, and bare <code>.calovride</code> files
+   are all detected per-file; anything else (DLLs, <code>.cfx</code>, logs, manifests) is
+   skipped and listed, not treated as an error. Each recognized module appears as a row
+   with its slot number and a one-line summary of that slot's general purpose; click a row
+   to expand its full entry list. <b>Boolean</b> values get a true/false toggle;
+   <b>Enumeration</b> values get a dropdown of every known labeled value (e.g. for
+   <code>GMBrand</code>: 0=None, 3=Chevrolet, 4=GMC, …) plus a "Custom value" option for
+   anything not in that list. Every entry has an "i" button showing its CalDef description.</p>
+
 <h2>The override type schema (verified, 28/28 byte-exact against real containers)</h2>
 <p>Ten types: <code>Boolean</code>, <code>Integer</code>, <code>Float</code>, <code>Enumeration</code>,
    <code>String</code>, <code>IntegerArray</code>, <code>FloatArray</code>, <code>EnumIntegerMap</code>,

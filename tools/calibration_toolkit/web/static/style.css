@@ -22,5 +22,30 @@ button { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
 .searchrow { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.9em; }
 .enumhint { font-size: 0.8em; color: var(--muted); }
 .safetybadge { color: var(--avoid); font-weight: 600; font-size: 0.85em; }
+
+.list-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.skipped-note { color: var(--muted); font-size: 0.88em; background: rgba(127,127,127,0.08); padding: 8px 12px; border-radius: 6px; }
+
+.module { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+.module-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; background: rgba(127,127,127,0.05); }
+.module-header:hover { background: rgba(127,127,127,0.1); }
+.module-header .chevron { width: 1em; color: var(--muted); }
+.module-header .slot-badge { font-weight: 700; min-width: 140px; }
+.module-header .filename { color: var(--muted); font-size: 0.9em; flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.module-header .entry-count { color: var(--muted); font-size: 0.85em; }
+.triage-badge { font-size: 0.78em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
+.triage-badge.safe { color: var(--safe); border-color: var(--safe); }
+.triage-badge.mixed { color: var(--mixed); border-color: var(--mixed); }
+.triage-badge.avoid { color: var(--avoid); border-color: var(--avoid); }
+.slot-summary { padding: 6px 14px; font-size: 0.85em; color: var(--muted); background: rgba(127,127,127,0.03); border-top: 1px solid var(--border); }
+.module-body { padding: 10px 14px; }
+.module-export { margin-top: 10px; }
+
+.entries-table th { color: var(--muted); font-size: 0.8em; text-transform: uppercase; }
+.info-btn { width: 20px; height: 20px; border-radius: 50%; padding: 0; font-style: italic; font-weight: 700; line-height: 1; background: var(--muted); }
+.info-popover { position: absolute; max-width: 360px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.88em; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 100; }
+.custom-enum-input { margin-left: 6px; width: 90px; }
+.readonly-value { color: var(--muted); font-size: 0.9em; }
+.muted { color: var(--muted); }
 footer { color: var(--muted); font-size: 0.85em; margin: 40px 0 20px; border-top: 1px solid var(--border); padding-top: 12px; }
 code { background: rgba(127,127,127,0.15); padding: 1px 5px; border-radius: 4px; }

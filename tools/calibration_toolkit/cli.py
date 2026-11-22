@@ -160,7 +160,10 @@ def cmd_pack(args):
               "(this tool never fabricates a signature) unless --xml-only is given", file=sys.stderr)
         sys.exit(1)
     template_raw = Path(args.template).read_bytes()
-    c = container.parse(template_raw)
+    c = container.parse_any(template_raw)
+    if c is None:
+        print(f"error: {args.template} is not a recognized CSM container (gzip-wrapped or unwrapped)", file=sys.stderr)
+        sys.exit(1)
     unwrapped = container.reseal(c.header, xml)
     outer = container.pack_outer(unwrapped)
     Path(args.out).write_bytes(outer)

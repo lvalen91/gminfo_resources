@@ -11,6 +11,7 @@ across a server restart.
 """
 from __future__ import annotations
 
+import base64
 import io
 import os
 import sys
@@ -21,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from flask import Flask, jsonify, render_template, request, send_file
 
-from caltool import caldef, calovride, container
+from caltool import caldef, calovride, container, slotinfo
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
@@ -49,6 +50,10 @@ def _entry_to_dict(ov: calovride.Override) -> dict:
         value = f"<Record: {len(value)} fields>"
     elif ov.type_ in calovride.ARRAY_TYPES:
         value = ", ".join(value)
+    enum_options = []
+    if de and de.type_ == "Enumeration" and de.enum_id:
+        labels = caldef._load_enum_labels().get(de.enum_id, {})
+        enum_options = [{"value": v, "label": lbl} for v, lbl in sorted(labels.items(), key=lambda kv: int(kv[0]))]
     return {
         "cal_id": ov.cal_id,
         "version": ov.version,
@@ -58,8 +63,23 @@ def _entry_to_dict(ov: calovride.Override) -> dict:
         "name": de.name if de else None,
         "group": de.group if de else None,
         "description": de.description if de else None,
-        "enum_labels": caldef._load_enum_labels().get(de.enum_id, {}) if de and de.enum_id else {},
+        "enum_options": enum_options,
+        "safety_restricted": caldef.is_safety_restricted(de) if de else False,
     }
+
+
+def _ingest_bytes(data: bytes) -> tuple[list, dict]:
+    """Returns (entries_dict_list, meta). meta['has_container_header'] tells callers
+    whether a container export is possible for this module."""
+    meta = {"slot": None, "alpha_code": None, "part_number": None, "has_container_header": False}
+    c = container.parse_any(data)
+    if c is not None:
+        xml = c.inner_xml
+        meta.update(slot=c.slot, alpha_code=c.alpha_code, part_number=c.part_number, has_container_header=True)
+    else:
+        xml = data
+    entries = calovride.parse(xml)  # may raise calovride.CalOvrideError -- let caller decide
+    return [_entry_to_dict(e) for e in entries], meta
 
 
 _caldef_cache = None
@@ -89,24 +109,63 @@ def api_ingest():
     if not f:
         return jsonify({"error": "no file uploaded"}), 400
     raw = f.read()
-    meta = {"slot": None, "alpha_code": None, "part_number": None, "has_container_header": False}
     try:
-        c = container.parse(raw)
-        xml = c.inner_xml
-        meta.update(slot=c.slot, alpha_code=c.alpha_code, part_number=c.part_number, has_container_header=True)
-    except container.ContainerError:
-        try:
-            c = container.parse_unwrapped(raw)
-            xml = c.inner_xml
-            meta.update(slot=c.slot, alpha_code=c.alpha_code, part_number=c.part_number, has_container_header=True)
-        except container.ContainerError:
-            xml = raw
-    try:
-        entries = calovride.parse(xml)
+        entries, meta = _ingest_bytes(raw)
     except Exception as e:
         return jsonify({"error": f"could not parse as CalOvride XML: {e}"}), 400
-    return jsonify({"meta": meta, "filename": f.filename,
-                     "entries": [_entry_to_dict(e) for e in entries]})
+    slot_info = slotinfo.describe(meta["slot"])
+    return jsonify({
+        "meta": meta, "filename": f.filename, "entries": entries,
+        "template_b64": base64.b64encode(raw).decode("ascii") if meta["has_container_header"] else None,
+        "slot_summary": slot_info.summary if slot_info else None,
+        "slot_triage": slot_info.triage if slot_info else None,
+    })
+
+
+@app.route("/api/ingest_zip", methods=["POST"])
+def api_ingest_zip():
+    """Accept a .zip (e.g. a whole spsCacheInternal/ directory, or a mix of outer-gzip
+    SPS files / already-unwrapped .dec containers / bare .calovride files) and return
+    every file that parses as a calibration module. Files that don't parse as either a
+    CSM container or a bare CalOvride XML document (DLLs, .cfx, .log, manifests, etc.)
+    are silently skipped and listed under "skipped", never raise an error for the whole
+    upload."""
+    f = request.files.get("file")
+    if not f:
+        return jsonify({"error": "no file uploaded"}), 400
+    try:
+        zf = zipfile.ZipFile(io.BytesIO(f.read()))
+    except zipfile.BadZipFile:
+        return jsonify({"error": "not a valid .zip file"}), 400
+
+    modules = []
+    skipped = []
+    for info in zf.infolist():
+        if info.is_dir():
+            continue
+        name = info.filename
+        try:
+            raw = zf.read(info)
+        except Exception as e:
+            skipped.append({"filename": name, "reason": str(e)})
+            continue
+        try:
+            entries, meta = _ingest_bytes(raw)
+        except Exception:
+            skipped.append({"filename": name, "reason": "not a CSM container or CalOvride XML"})
+            continue
+        slot_info = slotinfo.describe(meta["slot"])
+        modules.append({
+            "filename": name,
+            "meta": meta,
+            "entries": entries,
+            "template_b64": base64.b64encode(raw).decode("ascii") if meta["has_container_header"] else None,
+            "slot_summary": slot_info.summary if slot_info else None,
+            "slot_triage": slot_info.triage if slot_info else None,
+        })
+
+    modules.sort(key=lambda m: (m["meta"]["slot"] is None, m["meta"]["slot"] or 0))
+    return jsonify({"modules": modules, "skipped": skipped})
 
 
 @app.route("/api/caldef/search")
@@ -130,9 +189,14 @@ def api_caldef_entry():
     except caldef.CalDefError as exc:
         return jsonify({"error": str(exc)}), 404
     restricted = caldef.is_safety_restricted(e)
+    enum_options = []
+    if e.type_ == "Enumeration" and e.enum_id:
+        labels = caldef._load_enum_labels().get(e.enum_id, {})
+        enum_options = [{"value": v, "label": lbl} for v, lbl in sorted(labels.items(), key=lambda kv: int(kv[0]))]
     return jsonify({
         "name": e.name, "cal_id": e.cal_id, "version": e.version, "type": e.type_,
         "group": e.group, "description": e.description, "default_value": e.default_value,
+        "enum_options": enum_options,
         "safety_restricted": restricted,
         "safety_warning": caldef.SAFETY_WARNING.format(name=e.name, group=e.group) if restricted else None,
     })
@@ -145,11 +209,8 @@ def api_caldef_groups():
 
 @app.route("/api/export", methods=["POST"])
 def api_export():
-    """Body: {"entries": [{cal_id, version, type, value}, ...], "format": "xml"|"json",
+    """Body: {"entries": [{cal_id, version, type, value}, ...], "format": "xml"|"container",
     "template_b64": optional base64 of a genuine container to borrow the header from}."""
-    import base64
-    import json as jsonlib
-
     payload = request.get_json(force=True)
     entries = []
     for d in payload["entries"]:
@@ -166,12 +227,43 @@ def api_export():
         if not template_b64:
             return jsonify({"error": "format=container requires template_b64 (a genuine container to borrow the header from)"}), 400
         template_raw = base64.b64decode(template_b64)
-        c = container.parse(template_raw)
+        c = container.parse_any(template_raw)
+        if c is None:
+            return jsonify({"error": "template_b64 is not a recognized CSM container (gzip-wrapped or unwrapped)"}), 400
         unwrapped = container.reseal(c.header, xml)
         outer = container.pack_outer(unwrapped)
         return send_file(io.BytesIO(outer), mimetype="application/octet-stream",
                           as_attachment=True, download_name="custom_container")
     return jsonify({"error": f"unknown format {fmt!r}"}), 400
+
+
+@app.route("/api/export_zip", methods=["POST"])
+def api_export_zip():
+    """Body: {"modules": [{"filename", "entries": [...], "template_b64": optional}, ...]}.
+    Each module is packed as a full container if it has a template_b64, else as plain
+    .calovride XML. Returns one .zip containing all of them."""
+    payload = request.get_json(force=True)
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for mod in payload["modules"]:
+            entries = [calovride.Override(d["cal_id"], str(d["version"]), d["type"], d["value"])
+                       for d in mod["entries"]]
+            xml = calovride.serialize(entries)
+            base_name = Path(mod["filename"]).name
+            xml_name = base_name if base_name.endswith(".calovride") else base_name + ".calovride"
+            if mod.get("template_b64"):
+                template_raw = base64.b64decode(mod["template_b64"])
+                c = container.parse_any(template_raw)
+                if c is None:
+                    zf.writestr(xml_name, xml)
+                    continue
+                unwrapped = container.reseal(c.header, xml)
+                outer = container.pack_outer(unwrapped)
+                zf.writestr(base_name, outer)
+            else:
+                zf.writestr(xml_name, xml)
+    buf.seek(0)
+    return send_file(buf, mimetype="application/zip", as_attachment=True, download_name="custom_calibration_set.zip")
 
 
 if __name__ == "__main__":

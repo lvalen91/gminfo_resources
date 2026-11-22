@@ -100,3 +100,20 @@ def reseal(header: bytes, new_inner_xml: bytes) -> bytes:
 def pack_outer(unwrapped_container: bytes) -> bytes:
     """Wrap an unwrapped container back into the on-disk outer-gzip file form."""
     return gzip.compress(unwrapped_container, mtime=0)
+
+
+def parse_any(data: bytes) -> Container | None:
+    """Try every known on-disk form in turn: outer-gzip SPS file, an already-unwrapped
+    container (e.g. a decompressed/*.dec sibling), or neither. Returns None (never
+    raises) if data doesn't look like a CSM container in any known wrapping -- callers
+    that also want to fall back to bare CalOvride XML should try calovride.parse() on
+    the original bytes themselves when this returns None."""
+    try:
+        return parse(data)
+    except ContainerError:
+        pass
+    try:
+        return parse_unwrapped(data)
+    except ContainerError:
+        pass
+    return None
