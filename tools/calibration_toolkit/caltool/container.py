@@ -58,7 +58,10 @@ class Container:
 def parse(raw_outer_gzip: bytes) -> Container:
     """raw_outer_gzip is the file exactly as stored under spsCacheInternal/ (outer gzip
     wrapping the container)."""
-    container = gzip.decompress(raw_outer_gzip)
+    try:
+        container = gzip.decompress(raw_outer_gzip)
+    except gzip.BadGzipFile as e:
+        raise ContainerError(f"not a gzip file (expected outer gzip wrapping a CSM container): {e}") from e
     return parse_unwrapped(container)
 
 
