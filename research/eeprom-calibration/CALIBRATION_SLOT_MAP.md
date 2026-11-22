@@ -443,6 +443,49 @@ restoration superseding the November custom trials; see the CarPlay/Android Auto
 - Slot 0B (`86292118`) shows 41 `OverRiden` rows live vs. 42 entries in the earlier raw-container
   catalog above — a 1-entry discrepancy, not run down.
 
+## Partition-wide sweep: no recoverable content outside the known 14 slots, but real history in deleted filenames
+
+A follow-up pass checked whether the `calibration` partition holds any calibration content, feature
+flag, or value not already accounted for above. Two different questions, two different answers:
+
+**Recoverable payload: nothing new.** Every gzip-magic-prefixed byte sequence in the full 16 MB image
+was located and decompressed (16 found total). All 16 hash to one of the stock inner-XML SHA-256
+values already recorded in this document — no exceptions. Slots 08 and 0C each have **two** physical
+copies of their own byte-identical stock payload sitting in different blocks (a second, independent
+explanation for their stale-mtime oddity above: the content was evidently rewritten at some point
+without the directory entry's mtime being bumped, not a sign the two copies ever differed). `CalSets.db`'s
+three other tables (`SubSets`: 4,563 rows of array/composite field-layout metadata; `EnumSets`: 1,350
+rows of enum labels; `ModuleData`: 14 rows, a third independent confirmation of the slot map, with a
+constant non-vehicle-specific `PartNumber_D`/`DLS_D` placeholder of `70008`/`00` on every row) add
+structure, matching the already-known CalDef schema — none of the three contributes content beyond
+what's already catalogued.
+
+**Directory-entry history: real, unrecoverable evidence of more part numbers than are currently live.**
+Deleted/superseded directory entries for `applied_overrides/` survive in unallocated blocks, preserved
+alongside literal `security.selinux` xattr context strings (`u:object_r:calibration_data_file:s0`) —
+i.e. genuine past filenames, not database-journal noise. Scanning for every `8\d{7}\.A[A-Z]` pattern in
+the full image surfaced 27 distinct part+alpha combinations, well beyond the 15 known containers:
+
+- **Direct physical confirmation of the documented High Country bench writes on this exact unit:**
+  `85045386.AA` (HC slot 04), `85877786.AA` (HC slot 05), and `87846412.AB` (HC slot 02) all appear in
+  this partition's deleted-entry history — this bench radio really was programmed with genuine HC
+  calibration at some point, independently of the SPS-log evidence already cited elsewhere in this
+  doc.
+- **An undocumented revision history for slot 0C:** at least seven distinct historical part numbers —
+  `85102233`, `85102238`, `85102293`, `85102311`, `85102312` (current), `85102317`, `85102335` — far
+  more GM-released revisions of this slot than anything previously catalogued in this corpus.
+- **One genuinely unidentified lead: an `88102xxx` family** — `88102229.AC`, `88102305.AB`,
+  `88102310.AB`, `88102312.AA`, `88102324.AA`. This does not match any of the 14 current slots, either
+  trim's known part numbers, or anything referenced anywhere else in this entire corpus. Its payload is
+  **not recoverable** — the directory entry survived, the underlying data blocks did not — so neither
+  its slot assignment nor its content/purpose is known. Flagged here as an open lead, not resolved.
+
+Net result: no new calibration *values* or feature sets exist anywhere in this image beyond the known
+stock LTZ/HC set — but the filename-only remnants prove this unit's real calibration history is
+considerably larger than what any single snapshot (this doc's 14-slot table, or any one SPS session)
+shows, and the `88102xxx` family is a legitimately open question for anyone with a later image or a
+fresh bench capture to chase.
+
 ## Sources and provenance
 
 The complete per-part extracts — every `OverrideValue` row with CalID, type, value and verbatim
