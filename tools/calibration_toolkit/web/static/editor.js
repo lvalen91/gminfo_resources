@@ -622,15 +622,52 @@ function searchCalDef() {
       div.innerHTML = "<p class='muted'>Expand a module above first — new entries are added to whichever module is open.</p>";
       return;
     }
-    results.forEach(r => {
-      const row = document.createElement("div");
-      row.className = "searchrow";
-      const warn = r.safety_restricted ? safetyBadgeHtml() : "";
-      row.innerHTML = `<b>${escapeHtml(r.name)}</b> (${escapeHtml(r.group)}, ${escapeHtml(r.type)}, default ${escapeHtml(String(r.default))}) ${warn} — ${escapeHtml(r.description)}
-        <button onclick='addEntry(${JSON.stringify(r.name)})'>add to open module</button>`;
-      div.appendChild(row);
-    });
+    results.forEach(r => div.appendChild(buildSearchRow(r)));
   }, 250);
+}
+
+function buildSearchRow(r) {
+  const row = document.createElement("div");
+  row.className = "searchrow";
+
+  const identity = document.createElement("div");
+  identity.className = "searchrow-identity";
+  identity.innerHTML = `
+    <div class="searchrow-name-line">
+      <span class="searchrow-name">${nameWithBreaks(r.name)}</span>
+      <span class="entry-type-chip">${escapeHtml(r.type)}</span>
+      <span class="searchrow-meta">${escapeHtml(r.group)} · default ${escapeHtml(String(r.default))}</span>
+      ${r.safety_restricted ? safetyBadgeHtml() : ""}
+    </div>
+  `;
+  if (r.description) {
+    const desc = document.createElement("div");
+    desc.className = "searchrow-desc";
+    desc.textContent = r.description;
+    identity.appendChild(desc);
+    requestAnimationFrame(() => {
+      if (desc.scrollHeight > desc.clientHeight + 2) {
+        const toggle = document.createElement("button");
+        toggle.className = "entry-desc-toggle";
+        toggle.textContent = "more";
+        toggle.onclick = () => {
+          const expanded = desc.classList.toggle("expanded");
+          toggle.textContent = expanded ? "less" : "more";
+        };
+        identity.appendChild(toggle);
+      }
+    });
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "searchrow-actions";
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "Add";
+  addBtn.onclick = () => addEntry(r.name);
+  actions.appendChild(addBtn);
+
+  row.append(identity, actions);
+  return row;
 }
 
 async function addEntry(name) {
