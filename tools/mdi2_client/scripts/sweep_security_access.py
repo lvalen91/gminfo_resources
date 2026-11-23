@@ -5,7 +5,7 @@ all-0xFF seed) vs locked (real random challenge) vs not implemented (NRC) on
 THIS unit, right now. No sendKey is ever issued — this cannot lock out the ECU
 or trigger a write; it is a pure read/probe, safe to re-run freely.
 
-Why: the VIP RH850 $27 handler (research/eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md)
+Why: the VIP RH850 $27 handler (eeprom/VIP_SEED_SCOPE_ANALYSIS_AUG2026.md)
 tracks a 19-level SecurityAccess unlock bitmask. A prior single $27 probe via
 this same MDI2 tooling showed "some levels unlocked, others locked" but was
 never swept systematically level-by-level. This script does that sweep and
