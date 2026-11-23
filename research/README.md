@@ -64,6 +64,7 @@ rewrite them — and ship byte-for-byte unchanged apart from the repo-path rewri
 | [AOSP_REPLACEMENT_RESEARCH.txt](rights-and-roadmap/AOSP_REPLACEMENT_RESEARCH.txt) | AOSP-replacement roadmap and attack-surface prioritization ("rights/remote/AOSP" trio, member 1) |
 | [GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt](rights-and-roadmap/GM_LOCKDOWN_ANALYSIS_AND_COUNTERARGUMENTS.txt) | Rights/legal-position paper, counter-argument rebuttals (trio, member 2) |
 | [GM_REMOTE_ACCESS_ANALYSIS.txt](rights-and-roadmap/GM_REMOTE_ACCESS_ANALYSIS.txt) | Telematics/remote-access/cloud-endpoint/GHS-camera-bypass analysis (trio, member 3) |
+| [AAOS_GROUND_UP_EMMC_REPLACEMENT.md](rights-and-roadmap/AAOS_GROUND_UP_EMMC_REPLACEMENT.md) | **Distinct from member 1 above:** full eMMC-wipe, no-GHS/no-GM-code AOSP/AAOS replacement — boot-flow design options (eMMC-resident vs. ELK-staged slim-loader), build-requirement gap table, net open-work list |
 
 ### Provenance / indexes
 | Doc | Contents |
