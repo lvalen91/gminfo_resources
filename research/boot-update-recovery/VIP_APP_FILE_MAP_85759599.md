@@ -497,6 +497,22 @@ exact numeric message IDs were not recovered. Unknown IDs/SIDs are logged and dr
 (`"RECEIVED UNSUPPORTED SID"`, `"unknown custom request... not processed"`) — a fixed
 allow-list, not a generic command interpreter.
 
+**[U] Adjacent raw disassembly, unattributed.** A standalone RH850 disassembly snippet exists at
+[`evidence/decompiled/vip_app_85759599_disasm_0x77e20.txt`](../../evidence/decompiled/vip_app_85759599_disasm_0x77e20.txt),
+addressing `0x77e20`–`~0x77e5e` — just past this dispatcher region's cited upper bound
+(`0x77000`). Structurally it reads as an interrupt/exception-vector-stub cluster: the first 11
+words are a jump table, six of them (`jr 0x1fffecce`, every other entry) point at an identical
+target consistent with a shared "unhandled vector" default stub, while the other five point at
+four distinct handlers spaced an even `0x22` bytes apart (`0x4e92`/`0x4eb4`/`0x4ed6`/`0x4ef8`),
+consistent with a small table of fixed-size per-source interrupt entry stubs. This is a
+structural read of the raw bytes only — it has **not** been matched to a named function, nor
+confirmed to be inside/adjacent to the J6_CDD dispatcher specifically. Verification needs the
+live `85759599_rh850` Ghidra project (`get_function_by_address`/`disassemble_function` at
+`0x77e20`); attempted during this pass and blocked twice over — the checked-in project was
+saved by Ghidra 12.2 and this machine only has 12.1.2 installed, and the Ghidra-12.2 host
+(`macpro`, reachable over WireGuard) was unreachable at the time. Follow up with whoever next
+has matching-version Ghidra access to either project.
+
 | Category | Commands | Effect |
 |---|---|---|
 | Power/lifecycle | `RequestSuspendToRAMFeature`, `RequestDisplayOnOff`, `RequestOffModeActivation`, `ShutdownRequest6`, `ReportPowerLevel` | SystemState HSM events, S2R/power-level flags |

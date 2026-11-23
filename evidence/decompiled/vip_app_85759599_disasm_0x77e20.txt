@@ -1,0 +1,32 @@
+0x00000000   4                 8007924e  jr 0x4e92
+0x00000004   4                 bf07caec  jr 0x1fffecce
+0x00000008   4                 bf07c6ec  jr 0x1fffecce
+0x0000000c   4                 8007a84e  jr 0x4eb4
+0x00000010   4                 bf07beec  jr 0x1fffecce
+0x00000014   4                 bf07baec  jr 0x1fffecce
+0x00000018   4                 bf07b6ec  jr 0x1fffecce
+0x0000001c   4                 8007ba4e  jr 0x4ed6
+0x00000020   4                 bf07aeec  jr 0x1fffecce
+0x00000024   4                 bf07aaec  jr 0x1fffecce
+0x00000028   4                 8007d04e  jr 0x4ef8
+0x0000002c   4                 805e00e0  ori 57344, r0, r11
+0x00000030   2                     eb31  cmp r11, r6
+0x00000032   2                     b925  bnl 0x78
+0x00000034   4                 06366cd2  addi -11668, r6, r6
+0x00000038   2                     6b32  cmp 11, r6
+0x0000003a   1                       fb  invalid
+0x0000003b   2                     0795  sst.w r18, 12[ep]
+0x0000003d   6             ec0698c29af3  jmp 4087005848[r12]
+0x00000043   2                     06e2  mov 6, r28
+0x00000045   2                     f809  cmp r24, r1
+0x00000047   2                     0080  mov r0, r16
+0x00000049   2                     0792  mov 7, r18
+0x0000004b   2                     2880  not r8, r16
+0x0000004d   4                 07be2880  addi -32728, r7, r23
+0x00000051   2                     07ea  mov 7, r29
+0x00000053   2                     2880  not r8, r16
+0x00000055   4                 07162980  addi -32727, r7, r2
+0x00000059   2                     0742  mov 7, r8
+0x0000005b   2                     2980  not r9, r16
+0x0000005d   1                       07  truncated from 4 to 3
+0x0000005e   2                     6e29  tst r14, tp
