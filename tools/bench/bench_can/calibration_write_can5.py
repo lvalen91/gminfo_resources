@@ -160,6 +160,20 @@ class CalDiagnostics(CanDiagnostics):
         step('85 02', bytes.fromhex('8502'))
         step('28 03 01', bytes.fromhex('280301'))
         step('10 02', bytes.fromhex('1002'))
+        if not genuine:
+            # The 2026-11-16 successful custom write applied the override AFTER this
+            # exact session-open sequence (profile-01 grant/FF01/021E/programming-session
+            # first, THEN the verifier-word write) -- this driver does it BEFORE, matching
+            # the documented order for session mechanics but not for override placement.
+            # Re-read (not re-write) both words now to check whether anything in 021E/85
+            # 02/28 03 01/10 02 reset them before any TransferData/signature check runs.
+            for addr in VERIFIER_WORDS:
+                readback = self.read_word(addr)
+                rec(f'post-session-open check {addr:08X}', readback)
+                if readback != MARKER_VALUES[addr]:
+                    print(f'!!! verifier word {addr:08X} no longer holds the marker after '
+                          f'session-open (expected {MARKER_VALUES[addr].hex()}, got '
+                          f'{readback.hex()}) -- session-open cleared it', flush=True)
         return saved
 
     def transfer_one(self, slot_hex, container_bytes, log):
@@ -318,6 +332,15 @@ def write_package(transport, package_dir, *, genuine=True, only=None):
                 if r.get('ok'):
                     break
                 print(f'!!! slot {slot_hex} attempt {attempt} FAILED: {r.get("error")}', flush=True)
+                # Capture PEC immediately, at the moment of failure -- it was found to not
+                # persist usefully once later diagnostic reads (verify mode, etc.) happen
+                # after the fact.
+                try:
+                    time.sleep(STEP_DELAY)
+                    r['pec_at_failure'] = transport.uds(bytes.fromhex('22f0f1')).hex()
+                    print(f'    PEC at failure -> {r["pec_at_failure"]}', flush=True)
+                except Exception as pec_error:
+                    print(f'    PEC read after failure also failed: {pec_error}', flush=True)
                 if attempt < SLOT_RETRIES:
                     time.sleep(SLOT_SETTLE)
             r['part'] = part
@@ -375,7 +398,7 @@ def verify_package(transport, package_dir, only=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=('test613', 'write', 'package', 'verify'))
+    parser.add_argument('mode', choices=('test613', 'write', 'package', 'verify', 'pec'))
     parser.add_argument('--package-dir', type=Path, help='directory of part-number-named containers')
     parser.add_argument('--only', help='comma-separated hex slots to (re)attempt, e.g. 03,04,05')
     parser.add_argument('--tools', type=Path, default=Path.home() /
@@ -402,7 +425,7 @@ def main():
     spec.loader.exec_module(bench)
     profile = bench.load_profile(args.profile)
     validate_keepalive(profile)
-    if args.mode in ('write', 'package', 'verify'):
+    if args.mode in ('write', 'package', 'verify', 'pec'):
         # verify (22 F182) needs no SecurityAccess/RoutineControl, but it still needs the
         # module AWAKE and responsive -- the just-run 'verify' attempt without this got
         # 10 03 accepted (module was still winding up) and then timed out on the very next
@@ -460,6 +483,12 @@ def main():
             elif args.mode == 'verify':
                 only = [s.strip().upper() for s in args.only.split(',')] if args.only else None
                 result_holder['result'] = verify_package(transport, args.package_dir, only=only)
+            elif args.mode == 'pec':
+                time.sleep(STEP_DELAY)
+                s10 = transport.uds(bytes.fromhex('1003'))
+                time.sleep(STEP_DELAY)
+                pec = transport.uds(bytes.fromhex('22f0f1'))
+                result_holder['result'] = {'ok': True, '10 03': s10.hex(), '22 F0F1': pec.hex()}
             else:
                 data = load_container(args.container)
                 result_holder['result'] = transport.write_calibration(args.slot, data, genuine=not args.modified)

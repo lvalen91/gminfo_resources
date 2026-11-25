@@ -520,6 +520,61 @@ mode) matched all 14 slots against the pinned stock LTZ containers byte-for-byte
 identical `22 F1 82` response bytes as the pre-attempt baseline — the rejected attempt wrote
 nothing and left the ECU's calibration state unchanged.
 
+### 2026-11-25: root-cause isolated — recompression alone triggers rejection, not the edit
+
+Two follow-up diagnostics on the rejection above, both against slot03/`84517309` (the
+simplest candidate: 989-byte container, empty `<calovride:CalOvrideFile/>` override, no
+entries at all):
+
+**1. The override survives session-open.** Added a non-destructive read-back of
+`FEBF0BF8`/`FEBF0BFC` immediately after the full `10 01`→`10 02` session-open sequence,
+before any custom `34`/`36`. Both words still held the marker pair
+(`A5163829`/`5AE9C7D6`) exactly — nothing in `10 03`/SecurityAccess/`FF01`/`021E`/`85
+02`/`28 03 01`/`10 02` resets them. The override is genuinely active at the moment of the
+rejected transfer, not silently cleared beforehand.
+
+**2. PEC at the moment of failure is `0015`** — the same programming-error code the
+2026-11-16 entries above trace to signed-header verification failure. Captured
+immediately (a later `22 F0F1` read, after other bus activity, no longer reflects it: the
+PEC register does not persist usefully past subsequent session activity, which is why the
+first full-package attempt's PEC was not recorded there).
+
+**3. Decisive isolation — a zero-edit repack is rejected identically.** Diffed the
+"custom" slot03 against pinned stock slot03 at the `caltool/container.py` level: the
+decompressed XML is **byte-for-byte identical** to stock (both the same empty override
+file) — slot03 in `LTZ_CustomCAL.zip` carries no actual calibration edit at all. The only
+difference is in the header's digest field (bytes 30–61, expected: digest covers
+`container[858:]`, which differs because the **inner gzip stream itself differs byte-for-
+byte** despite identical decompressed content — stock's inner-gzip header is `1f 8b 08 00
+00 00 00 00 00 00` (`XFL=00`, `OS=00`/FAT); the repacked version is `1f 8b 08 00 00 00 00
+00 02 ff` (`XFL=02`, `OS=0xFF`/unknown) — Python's `gzip` module's fixed header fingerprint,
+not GM's own tooling's.
+
+To isolate "recompression artifact" from "edit content," `caltool/container.reseal()` was
+called on the **genuine, unedited** stock slot03 header+XML — same bytes, same header
+outside the digest field, zero content change — producing a container that is functionally
+identical to stock but was pushed through this toolkit's gzip repack. That pure-repack
+container was written through the same CAN613/614 override path (override applied and
+verified both before and after session-open, as in point 1 above): **rejected identically**
+— `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; PEC `0015`.
+
+**Conclusion:** the full-package rejection above is not about edit size or
+all-14-slots-at-once scope — a single slot with literally zero calibration change, whose
+only difference from the accepted stock original is a different gzip encoding of identical
+bytes, fails the same way. The CAN613/614 marker-pair exemption (§3) covers a failed
+**header-signature** check, but whatever is rejecting these containers is evidently a
+**separate** check that the marker pair does not exempt — most likely the "production-CA
+signer record" §3 mentions as a distinct field from the header RSA, since the 2026-11-16
+successful SXM candidate's trace explicitly reports that record as having verified
+successfully for that edit, unlike this toolkit's current repack output. Every historically
+successful custom write through this mechanism predates `caltool/container.py` (2026-11-22)
+and was produced by a different process; this is the first test of containers produced by
+`caltool/container.reseal()`+`pack_outer()` specifically. Root-causing the second check
+itself (its byte range, what it actually validates, whether a different repack strategy —
+e.g. preserving the original inner-gzip bytes when no edit changes it, or matching GM's
+observed `OS`/`XFL` header fingerprint) requires binary-level tracing of that verifier
+function, not established here.
+
 ## 5. Other paths and unresolved questions
 
 **Type4 custom DLL -> arbitrary UDS service ID.** A custom Type4 PE32 DLL (exporting
