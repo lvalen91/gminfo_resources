@@ -469,6 +469,57 @@ separate display-support check: `T/C0129w.java:a` allows only `SIZE_1920_BY_1080
 specifies 2400×960 — a concrete additional gate that can make a true override ineffective;
 live provider readback remains necessary to confirm running values.
 
+### 2026-11-25: full 14-slot custom package rejected (first full-package custom test)
+
+**Input:** owner-supplied `LTZ_CustomCAL.zip`, 14 files named by part number (same
+`SLOT_PARTS` mapping as the stock package). All 14 decompress to valid CSM containers with
+correct slot bytes, and all 14 differ byte-for-byte from the pinned stock LTZ containers
+(confirmed by direct comparison, not just size) — this is a genuinely modified package, not a
+mislabeled stock copy:
+
+| Slot | Part | Stock decompressed length | Custom decompressed length | Custom SHA-256 |
+|---|---|---|---|---|
+| 02 | 87863250 | 1421 | 1415 | `8e47a6507b4f9b1f6dd5734498d73c0dfa4966d69ba8512ee9e166b562bcabd0` |
+| 03 | 84517309 | 989 | 989 | `d446168131bc095ac6276cce93a333cf497cb167550b192897f057a707d89d8a` |
+| 04 | 85045371 | 15284 | 13242 | `6ddf00208fe3e3141d87300817c19bf948fbd1dc7cc0ab15ce4305c6306eee5a` |
+| 05 | 87846416 | 3740 | 3597 | `f1b12418f9ad4fb9175717cfa4ed8edfc224ff18e54e11883cec5cfbe1fd67fe` |
+| 06 | 87846371 | 7895 | 7637 | `464bd9daade0834eaf5997ca3948f6fc169014a378653e947d49f542990c29a1` |
+| 07 | 85783460 | 4285 | 4197 | `bc3fee02939c21a48b11c22c28be9b5129c172184c4a6985517e7a14854e539d` |
+| 08 | 87846432 | 1563 | 1545 | `4516a83c0b578b9fbbe07f1a7eaeaec0419371d105f9e54ba20ceaea19b2c186` |
+| 09 | 87846376 | 1725 | 1714 | `7827078dbfdc63b28970821890b77a73e3b51b17f36eca74892020a6d2e9b39e` |
+| 0A | 87846368 | 1421 | 1411 | `9171474a3d79b5d25d4554e7910e50bea064015a58873ca9a4227a5c53baeea9` |
+| 0B | 86292118 | 1724 | 1712 | `aac06dedbcffa0c41bbbb861d2f2dbd6d4d9139f599a2b1ca223c27c9f26f262` |
+| 0C | 85102312 | 1457 | 1445 | `966d96bc1833eb37890906d3253e55897bccf7f54a5f1aaec3b3a28c09377061` |
+| 0D | 87846384 | 1434 | 1423 | `cb70efcce940bcabf821d2c0bda800bb17da484c10bd6623db15896af9194b40` |
+| 0E | 84517418 | 989 | 989 | `3f31886155e795206e404d97d65b2248db58b8555dbe169c27449c65f7f7f1f4` |
+| 0F | 87846380 | 2235 | 2187 | `bf8b6eaf0b7bc44d262e372960f738d2470b29a05b24c7c31cbf98d0a884f6d0` |
+
+**Method:** [`tools/bench/bench_can/calibration_write_can5.py`](../../tools/bench/bench_can/calibration_write_can5.py)
+package mode with `--modified` (the full CAN613/614 scoped-RAM-override path, §4
+2026-11-16 above), driven through the just-fixed single-session structure (one
+`enter_programming_session(genuine=False)` for the whole batch, `transfer_one()` looped over
+all 14 slots, one `exit_programming_session()` at the end — see
+[CAN campaign, 2026-11-25](../../platform/can_bench_experiments.md#full-genuine-ltz-rewrite--two-driver-process-bugs-found-and-fixed-1414-verified--2026-11-25)
+for that fix). The override was applied and verified by readback exactly once, before slot 02,
+and restored exactly once, after slot 0F — not re-applied per slot.
+
+**Result: rejected on every slot.** `34` negotiated normally (`74 20 0F FF`) for all 14, but
+every slot's first `36` block returned `7F 36 72` — no custom transfer exit was ever sent, and
+no slot's data was written. This is new: every previously-documented successful custom write
+through this same CAN613/614 mechanism (SXM, CarPlay/AA, GMBrand3, screen-resolution, Google
+visibility/navigation/recorder, porch-view) was a single slot with one small field changed
+(stock-vs-candidate deltas of a few bytes); this package changes all 14 slots at once with
+much larger per-slot deltas (up to 2042 bytes on slot04). Whether the rejection is driven by
+the all-14-at-once scope, the larger per-slot edit size, some other content property of this
+specific candidate, or a combination, is not established by this test alone — do not treat
+this as proof that CAN613/614 only works for single-field edits in general; it is proof only
+that this specific 14-slot candidate was rejected on every slot.
+
+**Safety:** confirmed clean. Live `F182` readback immediately after (same driver, `verify`
+mode) matched all 14 slots against the pinned stock LTZ containers byte-for-byte, with the
+identical `22 F1 82` response bytes as the pre-attempt baseline — the rejected attempt wrote
+nothing and left the ECU's calibration state unchanged.
+
 ## 5. Other paths and unresolved questions
 
 **Type4 custom DLL -> arbitrary UDS service ID.** A custom Type4 PE32 DLL (exporting
