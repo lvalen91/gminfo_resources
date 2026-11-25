@@ -626,6 +626,51 @@ tracing of the exemption's real trigger condition (the verifier at file offset `
 PEC-setter at `86302`) — comparable in scope to the existing 021E-precondition
 disassembly — not established here.
 
+### 2026-11-25: resolved — the driver was sending the marker-pair VALUES byte-swapped
+
+**Correction to "Status: unresolved" immediately above.** Three agents were set loose on
+this in parallel: one re-deriving the exact 2026-11-16 procedure from the docs/code, one
+disassembling the marker-pair exemption's firmware logic, and one searching raw local
+Codex session transcripts for the literal byte-level log of the original successful
+write. The transcript search found it:
+`~/.codex/sessions/2026/11/16/rollout-2026-11-16T22-54-24-01a1e87f-fc2c-7100-a170-80ccb6790305.jsonl`,
+line 914 (the success) and line 712 (an earlier failing control in the same session,
+useful as a direct contrast).
+
+**The actual bug, found by comparing the real on-wire bytes:** the successful transcript's
+inline tool writes the marker pair via CAN613 `DOWNLOAD` (`F0`) as
+`F0 04 29 38 16 A5` (for `FEBF0BF8`) and `F0 04 D6 C7 E9 5A` (for `FEBF0BFC`) — i.e. the
+32-bit values `0xA5163829`/`0x5AE9C7D6` encoded **little-endian** (RH850 is a little-endian
+core, and the verifier does a native 32-bit load of these words). `calibration_write_can5.py`'s
+`MARKER_VALUES` instead held `bytes.fromhex("A5163829")`/`bytes.fromhex("5AE9C7D6")` — natural
+(big-endian) byte order — so `write_word()` sent `F0 04 A5 16 38 29` instead: the *wrong*
+32-bit value landed in RAM (`0x29381 6A5`, not `0xA5163829`). Every "override+verify" check
+in every attempt this session reported success anyway, because `read_word()` reads back
+the same raw bytes it wrote and the comparison was against that same wrong constant — a
+self-consistent-but-wrong check that could never catch its own error. This is why the
+override's live presence was confirmed correct at every checkpoint (including right before
+the rejected `34`/`36` calls) while the actual RAM content was never the value the
+verifier was checking for.
+
+The same transcript also showed two other real (but non-causal, confirmed by the control
+run at line 712 using the same values anyway) procedural differences, now matched for
+fidelity: the marker override was written **after** `10 02` (profile-01 grant → `FF01` →
+`021E` → `85 02` → `28 03 01` → `10 02` → **then** override), not before the whole
+sequence; and `TransferData` used a hardcoded **1022-byte** chunk regardless of the ECU's
+advertised `0x0FFF`, not the near-maximal 4093-byte chunk this driver used for genuine
+writes.
+
+**Fixed and verified live.** `tools/bench/bench_can/calibration_write_can5.py`: `MARKER_VALUES`
+now packs both words little-endian (`struct.pack('<I', ...)`); the override moved to after
+`10 02`; `transfer_one()` takes a `block` parameter (1022 for `genuine=False`, unchanged
+4093 for `genuine=True`, which was already proven against all 14 stock slots and is left
+alone). Rewriting the exact same SXM-disable candidate (slot 0C,
+`_ysOddU1AEeO3UM5MzM17kw` true→false) through the fixed driver: **accepted** —
+`34 → 74 20 0F FF`; `36 01 → 76 01`; `36 02 → 76 02`; `37 → 77`; PEC `62 F0 F1 00 00`. The
+on-wire override bytes read back as `29 38 16 A5`/`D6 C7 E9 5A`, matching the 2026-11-16
+transcript exactly. This reproduces the one documented successful custom write, this time
+through this repo's own driver rather than a lost inline one-liner.
+
 ## 5. Other paths and unresolved questions
 
 **Type4 custom DLL -> arbitrary UDS service ID.** A custom Type4 PE32 DLL (exporting

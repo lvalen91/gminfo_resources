@@ -64,7 +64,18 @@ def _load_mdi2_readback():
 Calibration, parse_f182, calibration_record = _load_mdi2_readback()
 
 VERIFIER_WORDS = (0xFEBF0BF8, 0xFEBF0BFC)
-MARKER_VALUES = {0xFEBF0BF8: bytes.fromhex("A5163829"), 0xFEBF0BFC: bytes.fromhex("5AE9C7D6")}
+# Wire bytes for the DOWNLOAD (F0) payload -- RH850 is little-endian, and the verifier
+# does a native 32-bit load of these words, so the 4 bytes must go out least-significant
+# byte first (struct.pack('<I', ...)), exactly as the one verified-successful 2026-11-16
+# session sent them (F0 04 29 38 16 A5 / F0 04 D6 C7 E9 5A -- recovered from the raw Codex
+# transcript ~/.codex/sessions/2026/11/16/rollout-...fc2c.../, line 914). The prior version
+# of this constant used bytes.fromhex("A5163829") -- natural (big-endian) byte order --
+# which put the WRONG 32-bit value in RAM (0x29381 6A5, not 0xA5163829) even though the
+# write+immediate-readback check here was comparing against that same wrong constant and
+# so always reported success: a self-consistent-but-wrong verification that silently
+# passed on every attempt this session, which is why the marker override never actually
+# took effect despite "override+verify" always printing correctly.
+MARKER_VALUES = {0xFEBF0BF8: struct.pack('<I', 0xA5163829), 0xFEBF0BFC: struct.pack('<I', 0x5AE9C7D6)}
 DEGENERATE_KEY = bytes(12)  # pi_dashboard/backend/diagdata.py DEGENERATE_KEY
 
 # Programming-session precondition, verified byte-for-byte against a real accepted
@@ -136,6 +147,22 @@ class CalDiagnostics(CanDiagnostics):
             time.sleep(STEP_DELAY)
             rec(name, self.uds(payload))
 
+        step('10 01 (pre-clear)', bytes.fromhex('1001'))
+        # Verified order (raw Codex transcript ~/.codex/sessions/2026/11/16/
+        # rollout-...fc2c.../, line 914, the ONE confirmed-successful custom write):
+        # 10 03 / SecurityAccess / FF01 / 021E / 85 02 / 28 03 01 / 10 02 -- THEN the
+        # 613/614 marker override, immediately after 10 02, with no settle delay before
+        # the transfer. Earlier versions of this method applied the override BEFORE this
+        # whole sequence; moved to match the verified transcript exactly.
+        step('10 03', bytes.fromhex('1003'))
+        step('27 01', bytes.fromhex('2701'))
+        step('27 02 (key)', bytes.fromhex('2702') + DEGENERATE_KEY)
+        step('31 01 FF01', bytes.fromhex('3101ff01'))
+        step('31 01 021E', bytes.fromhex('3101021e'))
+        step('85 02', bytes.fromhex('8502'))
+        step('28 03 01', bytes.fromhex('280301'))
+        step('10 02', bytes.fromhex('1002'))
+
         saved = {}
         if not genuine:
             self.connect_613_614()
@@ -148,37 +175,16 @@ class CalDiagnostics(CanDiagnostics):
                 if readback != MARKER_VALUES[addr]:
                     raise RuntimeError(f'verifier word {addr:08X} override readback mismatch')
                 rec(f'override+verify {addr:08X}', readback)
-
-        step('10 01 (pre-clear)', bytes.fromhex('1001'))
-        # Verified order (~/.codex/sessions/2026/11/16/...fc2c.../ lines 442, 789):
-        # 10 03 / SecurityAccess / FF01 / 021E / 85 02 / 28 03 01 / 10 02.
-        step('10 03', bytes.fromhex('1003'))
-        step('27 01', bytes.fromhex('2701'))
-        step('27 02 (key)', bytes.fromhex('2702') + DEGENERATE_KEY)
-        step('31 01 FF01', bytes.fromhex('3101ff01'))
-        step('31 01 021E', bytes.fromhex('3101021e'))
-        step('85 02', bytes.fromhex('8502'))
-        step('28 03 01', bytes.fromhex('280301'))
-        step('10 02', bytes.fromhex('1002'))
-        if not genuine:
-            # The 2026-11-16 successful custom write applied the override AFTER this
-            # exact session-open sequence (profile-01 grant/FF01/021E/programming-session
-            # first, THEN the verifier-word write) -- this driver does it BEFORE, matching
-            # the documented order for session mechanics but not for override placement.
-            # Re-read (not re-write) both words now to check whether anything in 021E/85
-            # 02/28 03 01/10 02 reset them before any TransferData/signature check runs.
-            for addr in VERIFIER_WORDS:
-                readback = self.read_word(addr)
-                rec(f'post-session-open check {addr:08X}', readback)
-                if readback != MARKER_VALUES[addr]:
-                    print(f'!!! verifier word {addr:08X} no longer holds the marker after '
-                          f'session-open (expected {MARKER_VALUES[addr].hex()}, got '
-                          f'{readback.hex()}) -- session-open cleared it', flush=True)
         return saved
 
-    def transfer_one(self, slot_hex, container_bytes, log):
+    def transfer_one(self, slot_hex, container_bytes, log, *, block=0x0FFF - 2):
         """34/36/37/F0F1 for ONE slot. Caller must already have an open programming
-        session (enter_programming_session) -- this does not touch session state."""
+        session (enter_programming_session) -- this does not touch session state.
+        `block` is the TransferData chunk size: default 0x0FFF-2 (4093) is the
+        genuine-write value, verified live against all 14 stock slots. The one
+        confirmed-successful custom/modified write (raw transcript, 2026-11-16) used a
+        hardcoded 1022-byte chunk regardless of the ECU's advertised 0x0FFF -- pass
+        block=1022 for that path to match it exactly (write_package does this below)."""
         def rec(name, result):
             entry = {name: result.hex() if isinstance(result, (bytes, bytearray)) else result}
             log.append(entry)
@@ -188,21 +194,16 @@ class CalDiagnostics(CanDiagnostics):
         time.sleep(STEP_DELAY)
         rd = self.uds(b'\x34\x00\x44' + b'\x00\x00\x00\x00' + length.to_bytes(4, 'big'))
         rec('34 RequestDownload', rd)
-        # Root cause of the 04/06/07 timeouts (NOT a settle-time issue -- a settle delay
-        # here was tried and made no difference, same identical failure): every slot
-        # whose decompressed container is >= 4095 bytes needs a block at the full 0x0FFF
-        # size, and 0x0FFF ("maxNumberOfBlockLength" from the ECU's own 74 response)
-        # INCLUDES the 0x36 service byte and the block-sequence-counter byte -- verified
-        # byte-for-byte against tools/mdi2_client/mdi2/calibration_payloads.py
-        # transfer_requests()'s own "max_request_length includes the service byte and
-        # transfer block counter" / "block_size = max_request_length - 2". The old code
-        # here sliced a 0x0FFF-byte DATA chunk and then prepended the 2 header bytes,
-        # sending 4097 bytes total for a full block -- 2 bytes over the ECU's own stated
-        # limit, which it silently drops (no response at all) rather than NRC'ing.
-        # Every slot that happened to fit in one block under 4093 data bytes (02, 03, 05,
-        # 08, 09, 0A, 0B, 0C, 0D, 0E, 0F) never hit this ceiling and transferred fine.
+        # 0x0FFF ("maxNumberOfBlockLength" from the ECU's own 74 response) INCLUDES the
+        # 0x36 service byte and the block-sequence-counter byte -- verified byte-for-byte
+        # against tools/mdi2_client/mdi2/calibration_payloads.py transfer_requests()'s own
+        # "max_request_length includes the service byte and transfer block counter" /
+        # "block_size = max_request_length - 2". An earlier version of this method sliced
+        # a 0x0FFF-byte DATA chunk and prepended the 2 header bytes, sending 4097 bytes for
+        # a full block -- 2 over the ECU's own stated limit, silently dropped (timeout, no
+        # NRC) rather than rejected.
         time.sleep(STEP_DELAY)
-        block, idx = 0x0FFF - 2, 1
+        idx = 1
         for off in range(0, length, block):
             chunk = container_bytes[off:off + block]
             resp = self.uds(bytes([0x36, idx & 0xFF]) + chunk)
@@ -247,7 +248,8 @@ class CalDiagnostics(CanDiagnostics):
         saved = {}
         try:
             saved = self.enter_programming_session(log, genuine=genuine)
-            return self.transfer_one(slot_hex, container_bytes, log)
+            block = 1022 if not genuine else 0x0FFF - 2
+            return self.transfer_one(slot_hex, container_bytes, log, block=block)
         except Exception as error:
             return {'ok': False, 'slot': slot_hex, 'log': log, 'error': f'{type(error).__name__}: {error}'}
         finally:
@@ -319,6 +321,7 @@ def write_package(transport, package_dir, *, genuine=True, only=None):
                          'log': session_log})
         return {'ok': False, 'results': results}
 
+    block = 1022 if not genuine else 0x0FFF - 2
     try:
         for slot_hex, part, data in loaded:
             r = None
@@ -326,7 +329,7 @@ def write_package(transport, package_dir, *, genuine=True, only=None):
                 print(f'\n=== slot {slot_hex} ({part}) attempt {attempt}/{SLOT_RETRIES} (shared session) ===',
                       flush=True)
                 try:
-                    r = transport.transfer_one(slot_hex, data, [])
+                    r = transport.transfer_one(slot_hex, data, [], block=block)
                 except Exception as error:
                     r = {'ok': False, 'slot': slot_hex, 'error': f'{type(error).__name__}: {error}'}
                 if r.get('ok'):
