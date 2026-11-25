@@ -34,6 +34,18 @@ byte-for-byte. Full root-cause analysis, fix detail and the per-slot verificatio
 table are owned by the
 [CAN campaign](../platform/can_bench_experiments.md#full-genuine-ltz-rewrite--two-driver-process-bugs-found-and-fixed-1414-verified--2026-11-25).
 
+### CANable custom-slot write — byte-order bug resolved (2026-11-25)
+
+The same session also resolved the separate custom (non-stock) single-slot write
+through the CAN613/614 VIP development-memory interface: its blocking bug was the
+marker-pair values being sent in the wrong byte order on the wire, not a firmware or
+toolkit limit. The fix is verified both by a clean UDS transfer and the owner's own
+visual confirmation that the modified feature (SXM) was gone from AAOS Radio.
+Root-cause trace and reproduction are owned by the
+[custom calibration workflow doc](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-25-resolved--the-driver-was-sending-the-marker-pair-values-byte-swapped);
+the mechanism and full results table are owned by the
+[CAN campaign](../platform/can_bench_experiments.md#calibration-write-mechanism-can613614).
+
 ### Resolution work and controlled actions
 
 Follow-up tests retained concurrent USB logcat and append-only UART observation.

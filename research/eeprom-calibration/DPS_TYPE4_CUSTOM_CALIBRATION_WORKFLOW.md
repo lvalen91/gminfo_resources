@@ -3,7 +3,7 @@
 **Scope:** the live CAN-bench record of what actually happens when a hand-edited Type4/
 calibration payload is sent to the gminfo37 A11 CSM radio (`0x80`, Silverado gminfo37 /
 Y17x / Y181/B) — the Type4-vs-calibration-value distinction, the chronological trial/
-supersession log (2026-11-07 → 2026-11-17), and the one documented successful custom-write
+supersession log (2026-11-07 → 2026-11-25), and the one documented successful custom-write
 path (a scoped temporary VIP-RAM write over CAN613/614). This is the workflow/evidence
 record, not the crypto or protocol reference.
 
@@ -27,10 +27,17 @@ of this doc; nothing from it is restated here.
 
 ## Current state and correction history
 
-**Current installed custom slot (2026-11-17):** SXM disabled plus Apple CarPlay/Android
-Auto feature-enable overrides disabled; the owner independently confirmed both projection
-entries disappeared from the UI. The SXM-only predecessor survived a cold power cycle;
-projection persistence under a cold cycle has not yet been tested.
+**Current installed custom slot (2026-11-25):** slot 0C has `SXM_Enabled` disabled
+(true→false) via the now-fixed CAN613/614 driver, exactly reproducing the original
+2026-11-16 edit; all other 13 slots are stock LTZ (restored 2026-11-17 and confirmed
+unchanged by this same 2026-11-25 session's pre-test `F182` byte-for-byte readback and by
+every intervening rejected test, none of which wrote anything). This supersedes the
+2026-11-17 CarPlay/Android-Auto-also-disabled candidate, which was itself already
+superseded by the 2026-11-17 full stock LTZ restoration and has not been reapplied. The
+owner independently confirmed the SXM entry is again gone from AAOS Radio; a dedicated
+cold-power-cycle test of this specific rewrite has not yet been run (the 2026-11-16
+SXM-only candidate's cold-cycle persistence was verified previously, but today's write is
+a new transfer through a corrected driver).
 
 **History:**
 - **2026-11-10:** stock LTZ write succeeded under the SBI-dependent all-FF seed; same-day
@@ -52,6 +59,27 @@ projection persistence under a cold cycle has not yet been tested.
   change, a full stock LTZ restoration, and several further calibration trials (screen
   resolution, Google-app visibility, recorder, porch-view) — see the chronological log below
   for the full supersession chain.
+- **2026-11-25:** a full 14-slot custom-package test, run through a new driver
+  (`tools/bench/bench_can/calibration_write_can5.py`, which did not exist before this date),
+  was rejected on every slot; isolation work briefly implicated the CalSetsDB repack
+  toolkit and then a production-CA-signer-record theory, both subsequently withdrawn in the
+  same day's log. The real cause, found by recovering and diffing the raw on-wire bytes of
+  the one historically-successful 2026-11-16 write against today's driver: `calibration_write_can5.py`
+  sent the CAN613/614 marker-pair override values (`0xA5163829`/`0x5AE9C7D6`) big-endian
+  instead of the RH850 core's native little-endian, so the wrong 32-bit value landed in VIP
+  RAM; every write-then-readback check still reported success because it compared only
+  against that same wrong constant, silently self-verifying a broken write all day. The bug
+  is now fixed (marker values packed little-endian) and independently verified: the exact
+  2026-11-16 SXM-disable edit (slot 0C, `_ysOddU1AEeO3UM5MzM17kw` true→false) was rewritten
+  through the fixed driver, the UDS transfer was accepted cleanly (`34 → 74 20 0F FF`;
+  `36 01 → 76 01`; `36 02 → 76 02`; `37 → 77`; PEC `0000`), and the owner has now visually
+  confirmed the SXM feature is gone from AAOS Radio. This does not change the original
+  2026-11-16 entry's own record (its restart-pending portion was already superseded there by
+  the same day's cold-cycle entry) — it independently reproduces that entry's result end to
+  end, fresh owner visual confirmation included, through the now-corrected driver, closing
+  the question today's byte-order bug had reopened over whether CAN613/614 custom writes
+  work at all. See the chronological log's final three 2026-11-25 entries for the full
+  investigation.
 
 This page keeps the Type4/calibration-value distinction and the CAN-bench trial record; GSK
 owns the seed/key/signature/certificate evidence.

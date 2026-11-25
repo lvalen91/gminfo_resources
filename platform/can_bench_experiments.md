@@ -87,6 +87,137 @@ block (original L29–427) does **not** appear in
 "security-profile matrix" hits in that file). It is kept in full below
 rather than pointed.
 
+### Verified procedure (2026-11-25) — how to actually do this
+
+Both calibration-write paths below are implemented, fixed and live-verified in
+[`tools/bench/bench_can/calibration_write_can5.py`](../tools/bench/bench_can/calibration_write_can5.py),
+the source of truth for exact byte sequences. This is a HOWTO, not a trial log — for the
+investigation history (bugs found, dead ends ruled out) see the dated 2026-11-25 entries
+below in this file and in the
+[custom calibration workflow doc](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md)
+(search both for `2026-11-25`).
+
+#### A. Genuine/stock full-package write
+
+```
+calibration_write_can5.py package --package-dir <dir> [--only <slots>]
+```
+
+Genuine is the default — no `--modified` flag. `--only 04,06,07` restricts to specific
+hex slots.
+
+What `write_package()` does, in order:
+
+1. `enter_programming_session()` runs **once for the whole package**: `10 01` (pre-clear),
+   `10 03`, SecurityAccess (`27 01` / `27 02` + 12 zero bytes), `31 01 FF01`, `31 01 021E`,
+   `85 02`, `28 03 01`, `10 02`.
+2. `transfer_one()` loops over every slot **inside that same open session**: `34`
+   RequestDownload, `36 <ctr> <data>` TransferData in `0x0FFF - 2` = 4093-byte chunks,
+   `37` TransferExit, `22 F0F1` PEC check.
+3. `exit_programming_session()` runs **once**, after the last slot.
+
+Two bugs this fixes and must never be reintroduced:
+
+| Bug | Symptom | Rule |
+|---|---|---|
+| Re-running `enter_programming_session()` per slot | Alternating success/fail across slots — the VIP reads a mid-package `10 01` as "programming event ended" (`evRemoteReflashProgrammingEnd` → `Shutdown`) and races the next slot's re-entry; this is a driver bug, **not** a vehicle-side quirk | Open the session once for the whole package, never between slots |
+| `TransferData` chunk = `0x0FFF` (4095) instead of `0x0FFF - 2` (4093) | Silent timeout (no NRC) on any slot whose container needs a full-size block (only slots 04/06/07 are large enough to hit it) | The ECU's advertised `maxNumberOfBlockLength` **includes** the `0x36` service byte and the block-counter byte; block size = `max_request_length - 2` |
+
+Full root-cause writeup: [Full genuine LTZ rewrite — two driver-process bugs found and fixed, 14/14 verified — 2026-11-25](#full-genuine-ltz-rewrite--two-driver-process-bugs-found-and-fixed-1414-verified--2026-11-25).
+
+**Verify:**
+
+```
+calibration_write_can5.py verify --package-dir <dir>
+```
+
+Reads live DID `F182` (`10 03` then `22 F1 82`, no SecurityAccess needed) and compares
+every slot's identity record against its on-disk container, using mdi2's own validated
+`parse_f182()`/`calibration_record()` parser (loaded directly by file, not through
+`mdi2/__init__.py`, to avoid its unneeded `pycryptodome` import).
+
+#### B. Custom/modified single-slot write via CAN613/614
+
+Mechanism name to use: **the VIP development-memory diagnostic interface**. Never call
+it a "bypass" — that phrasing is banned in this project.
+
+```
+calibration_write_can5.py package --package-dir <dir> --only <slot> --modified
+```
+
+What the driver does, in order, and why each exact detail matters:
+
+1. `enter_programming_session(genuine=False)` runs the **same** session-open sequence as
+   the genuine path (`10 01` / `10 03` / SecurityAccess / `31 01 FF01` / `31 01 021E` /
+   `85 02` / `28 03 01` / `10 02`).
+2. **Only after `10 02`** — not before the session-open sequence — it connects
+   CAN613/614 (`FF 00`), saves the two VIP RAM words at `FEBF0BF8`/`FEBF0BFC`, and writes
+   the override marker pair `0xA5163829`/`0x5AE9C7D6`.
+3. `transfer_one()` runs with `block=1022` (**not** the genuine path's 4093).
+4. `exit_programming_session()` restores both words to their saved values and
+   disconnects CAN613/614 (`FE`).
+
+**Byte order is load-bearing — this is the 2026-11-25 bug that must never come back.**
+RH850 is a little-endian core and the firmware does a native 32-bit load of these words,
+so the CAN613 `DOWNLOAD` (`F0`) command's 4 data bytes must go out **little-endian**:
+
+```
+FEBF0BF8  <-  F0 04 29 38 16 A5      (0xA5163829, little-endian)
+FEBF0BFC  <-  F0 04 D6 C7 E9 5A      (0x5AE9C7D6, little-endian)
+```
+
+**Not** the naive big-endian encoding you'd get from `bytes.fromhex("A5163829")` directly
+(`F0 04 A5 16 38 29`). A prior version of this driver sent the big-endian bytes, which put
+the wrong 32-bit value in RAM (`0x29381 6A5`) — but because the write-then-read-back
+verification check compared the readback against that same wrong big-endian constant, it
+*always* printed "override+verify" success even though the real RAM value was never
+correct. This made the bug invisible to live testing for most of a day; it was only found
+by recovering the raw byte-level transcript of the one historically-successful write (see
+[the 2026-11-25 resolution](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-25-resolved--the-driver-was-sending-the-marker-pair-values-byte-swapped)).
+Current code (`MARKER_VALUES` in `calibration_write_can5.py`) packs both words with
+`struct.pack('<I', ...)` — do not revert this to a direct hex-string decode.
+
+**Chunk size:** the one proven-working recipe used a hardcoded 1022-byte `TransferData`
+chunk, not the ECU's advertised `0x0FFF`. Whether 1022 is causally necessary (vs. the
+byte-order fix alone being sufficient) was **not** independently isolated — until someone
+proves otherwise, keep custom writes on `block=1022`.
+
+**Verified live (2026-11-25):** reproducing the historical SXM_Enabled disable (CalID
+`_ysOddU1AEeO3UM5MzM17kw`, slot `0C`/part `85102312`, `true`→`false`) through this exact
+procedure was **accepted** — `34 → 74 20 0F FF`; `36 01 → 76 01`; `36 02 → 76 02`;
+`37 → 77`; PEC `62 F0 F1 00 00` — and the owner visually confirmed SXM disappeared from
+AAOS Radio.
+
+**Known limit (open item, not evidence either way):** only this one custom edit has ever
+been confirmed end-to-end. A full 14-slot custom *package* has never succeeded — the
+[2026-11-25 full-package attempt](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-25-full-14-slot-custom-package-rejected-first-full-package-custom-test)
+was rejected on every slot, and predates this byte-order fix; it has not been retried
+since. Do not claim a full custom package would work now; there is no evidence either
+way.
+
+#### C. If you're debugging a rejection
+
+- **`7F 36 72` on every slot, no exit sent** → check override byte order first. Confirm
+  the on-wire `DOWNLOAD` bytes are little-endian (`29 38 16 A5` / `D6 C7 E9 5A`), not a
+  direct hex-string decode of `A5163829`/`5AE9C7D6`. A write+verify that "always passes"
+  is not proof the RAM value is correct if the verify compares against the same constant
+  it wrote.
+- **Timeout on one slot's first `36` block, no NRC** → check `TransferData` chunk size.
+  Genuine path must use `0x0FFF - 2` (4093); custom path must use `1022`. Using the raw
+  `0x0FFF` (4095) advertised by the ECU overflows its real limit by 2 bytes and is
+  silently dropped.
+- **Alternating success/fail/timeout across slots in the same package** → check that
+  `enter_programming_session()` runs exactly once for the whole package, not once per
+  slot. A mid-package `10 01` ends the VIP's programming event and races the next slot's
+  re-entry.
+- **Override applied before vs. after session-open** → the override must be written
+  *after* `10 02`, not before the `10 03`/SecurityAccess/`FF01`/`021E`/`85 02`/`28 03 01`/
+  `10 02` sequence.
+- Still rejected after checking all of the above → you are likely hitting an
+  unrecorded/unresolved precondition, not one of the four fixed bugs above; see the
+  [root-cause isolation entries](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-25-root-cause-isolated--recompression-alone-triggers-rejection-not-the-edit)
+  before re-deriving anything from scratch.
+
 #### Expanded validation campaign — 2026-11-16
 
 **Goal:** reach genuine programming-session entry over CAN5 and/or T1
