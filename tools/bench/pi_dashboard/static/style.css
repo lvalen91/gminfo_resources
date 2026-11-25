@@ -1,0 +1,257 @@
+/* gminfo37 bench dashboard -- macOS HIG-flavored look: sidebar + content (System
+   Settings/Finder-style), SF-system font stack, grouped inset lists, native-feeling
+   toggles/segmented controls, full light+dark via prefers-color-scheme. Every existing
+   danger-zone/Tier-2 confirmation behavior is untouched here -- this file is presentation
+   only. */
+
+:root {
+  /* Light (default) palette -- macOS System Settings-like */
+  --bg: #ececef;             /* window background behind the sidebar */
+  --content-bg: #f5f5f7;     /* content area background */
+  --sidebar-bg: rgba(246, 246, 248, 0.85);
+  --panel: #ffffff;          /* grouped-list / card surface */
+  --panel2: #f2f2f5;         /* inset row / control surface */
+  --border: rgba(0, 0, 0, 0.09);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --fg: #1d1d1f;
+  --muted: #6e6e73;
+  --accent: #007aff;         /* system blue */
+  --accent-fg: #ffffff;
+  --ok: #30a46c;
+  --warn: #b98900;
+  --bad: #e5484d;
+  --danger-bg: #fff2f2;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+          "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --radius: 10px;
+  --radius-sm: 7px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e20;
+    --content-bg: #161618;
+    --sidebar-bg: rgba(30, 30, 32, 0.78);
+    --panel: #252528;
+    --panel2: #2e2e32;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --fg: #f2f2f3;
+    --muted: #98989d;
+    --accent: #0a84ff;
+    --accent-fg: #ffffff;
+    --ok: #30d158;
+    --warn: #e5a000;
+    --bad: #ff6b6b;
+    --danger-bg: #2a1616;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(0, 0, 0, 0.35);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--content-bg);
+  color: var(--fg);
+  font: 400 13.5px/1.5 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  min-width: 760px;
+  overflow-x: auto;
+}
+h2 { font-size: 15px; margin: 0 0 4px; font-weight: 600; letter-spacing: -0.01em; }
+h2 small, h3 small { color: var(--muted); font-weight: 400; font-size: 12px; }
+h3 { font-size: 12px; margin: 16px 0 6px; color: var(--muted); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.02em; }
+p { margin: 6px 0; }
+code { font-family: var(--mono); background: var(--panel2); border-radius: 4px;
+  padding: 1px 5px; font-size: 0.93em; }
+
+/* ---------------------------- top bar ---------------------------- */
+#topbar {
+  display: flex; align-items: center; gap: 16px; padding: 0 16px; height: 46px;
+  background: var(--sidebar-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border); flex-wrap: nowrap; position: sticky; top: 0; z-index: 10;
+}
+.brand { font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; font-size: 13.5px; }
+.brand span { color: var(--muted); font-weight: 400; font-size: 12px; }
+.indicators { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.ind { display: flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 20px;
+  background: var(--panel2); border: 1px solid var(--border); font-size: 11.5px; color: var(--fg); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.dot.ok { background: var(--ok); box-shadow: 0 0 5px color-mix(in srgb, var(--ok) 60%, transparent); }
+.dot.bad { background: var(--bad); }
+.dot.warn { background: var(--warn); }
+.dot.stale { background: transparent; border: 1px solid var(--muted); }
+.clock { color: var(--muted); font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+#btnExportLogs { flex: none; font-size: 11.5px; padding: 4px 10px; }
+
+/* ---------------------------- app shell: sidebar + content ---------------------------- */
+#appshell { display: flex; align-items: stretch; min-height: calc(100vh - 46px); }
+
+#tabs {
+  /* the left sidebar, Finder/System Settings style */
+  width: 196px; flex: none; background: var(--sidebar-bg);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border); padding: 12px 10px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 2px;
+}
+#tabs .nav-group-label { font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.03em; margin: 14px 8px 4px; }
+#tabs .nav-group-label:first-child { margin-top: 2px; }
+#tabs button {
+  display: flex; align-items: center; gap: 9px; background: none; border: none;
+  color: var(--fg); padding: 7px 9px; border-radius: 7px; cursor: pointer;
+  font-size: 13px; text-align: left; width: 100%; font-family: var(--sans);
+}
+#tabs button .nav-icon { width: 18px; height: 18px; flex: none; display: inline-flex;
+  align-items: center; justify-content: center; font-size: 13px; border-radius: 5px;
+  background: var(--panel2); }
+#tabs button:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+#tabs button.active { background: var(--accent); color: var(--accent-fg); }
+#tabs button.active .nav-icon { background: color-mix(in srgb, white 25%, transparent); }
+
+main {
+  flex: 1; min-width: 0; padding: 22px 26px 60px; max-width: 1280px;
+}
+.tab { display: none; } .tab.active { display: block; }
+.tab > h1.tab-title { font-size: 22px; font-weight: 700; letter-spacing: -0.015em;
+  margin: 2px 0 18px; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+@media (max-width: 980px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* ---------------------------- grouped card (Settings.app-style) ---------------------------- */
+.card {
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow); margin-bottom: 18px;
+}
+.grid2 .card { margin-bottom: 0; }
+
+/* inset grouped rows, like a Settings.app list */
+.group-list { border: 1px solid var(--border); border-radius: var(--radius-sm);
+  overflow: hidden; background: var(--panel2); margin: 10px 0; }
+.group-row { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 13px; border-bottom: 1px solid var(--border); background: var(--panel); }
+.group-row:last-child { border-bottom: none; }
+.group-row .row-label { font-size: 13px; }
+.group-row .row-sub { color: var(--muted); font-size: 11.5px; margin-top: 1px; }
+
+/* ---------------------------- buttons ---------------------------- */
+button {
+  background: var(--panel2); color: var(--fg); border: 1px solid var(--border-strong);
+  padding: 6px 13px; border-radius: 7px; cursor: pointer; font-size: 12.8px;
+  font-family: var(--sans); transition: background .1s ease, border-color .1s ease;
+}
+button:hover { border-color: var(--accent); }
+button:active { background: var(--border); }
+button:disabled { opacity: .4; cursor: not-allowed; border-color: var(--border); }
+
+/* one clear primary action per view */
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+button.primary:hover { background: color-mix(in srgb, var(--accent) 88%, black); }
+
+button.danger, button.destructive { border-color: var(--bad); color: var(--bad); background: transparent; }
+button.danger:hover, button.destructive:hover { background: color-mix(in srgb, var(--bad) 12%, transparent); }
+button.armed { background: var(--bad); border-color: var(--bad); color: #fff; }
+
+.btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; align-items: center; }
+label.inline { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; }
+form label { display: block; margin: 10px 0; color: var(--muted); font-size: 12.8px; }
+form input[type="text"], form input[type="file"], form select {
+  margin-left: 0; display: block; margin-top: 4px; background: var(--panel); color: var(--fg);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 6px 9px;
+  font-size: 13px; font-family: var(--sans); width: 100%; max-width: 420px;
+}
+select { min-width: 200px; }
+
+.field-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 10px 0; }
+.field-label { font-size: 12.8px; color: var(--muted); min-width: 110px; }
+
+/* ---------------------------- native-feeling toggle switch ---------------------------- */
+/* Wraps an existing <input type=checkbox> -- no id/behavior change, CSS-only restyle. */
+.switch-label { display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
+  font-size: 12.5px; color: var(--muted); user-select: none; }
+.switch-label input[type="checkbox"] { appearance: none; -webkit-appearance: none;
+  width: 36px; height: 21px; border-radius: 11px; background: var(--border-strong);
+  position: relative; outline: none; cursor: pointer; flex: none; margin: 0;
+  transition: background .15s ease; }
+.switch-label input[type="checkbox"]::before { content: ""; position: absolute; top: 2px; left: 2px;
+  width: 17px; height: 17px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  transition: transform .15s ease; }
+.switch-label input[type="checkbox"]:checked { background: var(--accent); }
+.switch-label input[type="checkbox"]:checked::before { transform: translateX(15px); }
+
+/* ---------------------------- segmented control ---------------------------- */
+.segmented { display: inline-flex; background: var(--panel2); border: 1px solid var(--border-strong);
+  border-radius: 8px; padding: 2px; gap: 2px; flex-wrap: wrap; }
+.segmented .seg-btn { border: none; background: transparent; border-radius: 6px; padding: 6px 13px;
+  font-size: 12.8px; color: var(--fg); cursor: pointer; }
+.segmented .seg-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.segmented .seg-btn.sel { background: var(--accent); color: var(--accent-fg); }
+.segmented .seg-btn:disabled { opacity: .42; cursor: not-allowed; text-decoration: line-through; }
+
+.out { background: var(--panel2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 12px; font-family: var(--mono); font-size: 12px; white-space: pre-wrap; word-break: break-all;
+  max-height: 240px; overflow: auto; margin: 10px 0 0; color: var(--fg); }
+.out.tall { max-height: 420px; }
+.statrow { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
+.statrow b { color: var(--fg); font-family: var(--mono); }
+.warn { color: var(--warn); font-size: 12px; background: color-mix(in srgb, var(--warn) 14%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--warn) 45%, var(--border)); padding: 8px 10px; border-radius: var(--radius-sm); }
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+th, td { text-align: left; padding: 6px 9px; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .02em; }
+td.mono, .mono { font-family: var(--mono); }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 10.5px; font-weight: 600; }
+.tag.safe { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.tag.avoid { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.tag.mixed { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.tag.na { background: var(--panel2); color: var(--muted); }
+.tag.destructive { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.tag.ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+
+.term { height: 300px; background: #000; border-radius: var(--radius-sm); margin-top: 8px; padding: 4px;
+  border: 1px solid var(--border); }
+.term-interactive { height: 340px; }
+#uartTermWrap .term { height: 360px; }
+
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: flex;
+  align-items: center; justify-content: center; z-index: 50; backdrop-filter: blur(3px); }
+.modal.hidden { display: none; }
+.modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  padding: 20px; max-width: 460px; width: 90%; box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+.modal-box input { width: 100%; margin: 8px 0 14px; padding: 7px 9px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong); background: var(--panel2); color: var(--fg); font-family: var(--sans); }
+.dps-step { border-left: 2px solid var(--border); padding: 4px 0 4px 12px; margin: 6px 0; }
+.dps-step b { color: var(--accent); } .dps-step .uds { color: var(--ok); font-family: var(--mono); }
+
+.hint { color: var(--muted); font-size: 12px; margin: 4px 0 10px; line-height: 1.5; }
+
+/* Tier-2 danger zone: collapsed by default, true red, visually separated. Behavior
+   (disclosure toggle, literal-confirm step) is unchanged -- styling only. */
+.danger-zone { margin: 18px 0; border: 1px solid color-mix(in srgb, var(--bad) 55%, var(--border));
+  border-radius: var(--radius); background: var(--danger-bg); overflow: hidden; }
+.danger-zone > summary { cursor: pointer; padding: 12px 16px; color: var(--bad); font-weight: 600;
+  list-style: none; user-select: none; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.danger-zone > summary::-webkit-details-marker { display: none; }
+.danger-zone > summary::before { content: "\25B8"; display: inline-block; font-weight: 400;
+  transition: transform .15s ease; }
+.danger-zone[open] > summary::before { transform: rotate(90deg); }
+.danger-zone > summary::after { content: "click to expand"; margin-left: auto; font-weight: 400;
+  font-size: 11px; color: var(--muted); text-transform: none; }
+.danger-zone[open] > summary::after { content: "click to collapse"; }
+.danger-zone[open] > summary { border-bottom: 1px solid color-mix(in srgb, var(--bad) 40%, var(--border)); }
+.danger-card { border: none; background: none; padding: 14px 16px 16px; box-shadow: none; margin: 0; border-radius: 0; }
+.danger-card .warn { background: color-mix(in srgb, var(--bad) 14%, var(--panel));
+  border-color: var(--bad); color: var(--bad); }
+.danger-step2 { margin-top: 10px; padding-top: 10px; border-top: 1px dashed color-mix(in srgb, var(--bad) 55%, var(--border)); }
+.danger-step2 input { font-family: var(--mono); }
+.state-pill { font-size: 10.5px; padding: 1px 8px; border-radius: 10px; margin-left: 6px; font-weight: 600; }
+.state-ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.state-zero { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.state-error { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.state-stale { background: var(--panel2); color: var(--muted); }

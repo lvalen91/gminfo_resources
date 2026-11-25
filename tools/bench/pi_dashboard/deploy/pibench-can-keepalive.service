@@ -1,0 +1,22 @@
+[Unit]
+Description=Bench CAN: radio keepalive sender on can0 (fixed captured schedule)
+Wants=pibench-can0.service
+After=pibench-can0.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=zeno
+Environment=PYTHONUNBUFFERED=1
+ExecStartPre=+/opt/pibench/bin/can0-setup ensure
+ExecStart=/opt/pibench/venv/bin/python /opt/pibench/tools/bench/bench_can/can0_radio.py keepalive --profile /var/lib/pibench/harness-profile.json --startup-if /var/lib/pibench/startup-once
+ExecStopPost=+/opt/pibench/bin/can0-setup post-stop
+Restart=always
+# The radio may be absent/asleep (no CAN ACK) or power-cycling; retry calmly instead of
+# hammering. can0 stays up for observers between attempts (post-stop only bounces on bus-off).
+RestartSec=6
+KillSignal=SIGTERM
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Bench CAN: can0 (SocketCAN, 500 kbit/s pinned timing)
+After=sys-subsystem-net-devices-can0.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/pibench/bin/can0-setup ensure
+ExecReload=/opt/pibench/bin/can0-setup ensure
+
+[Install]
+WantedBy=multi-user.target

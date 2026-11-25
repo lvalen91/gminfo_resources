@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gminfo37 Bench</title>
+<link rel="stylesheet" href="/vendor/xterm.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">GM&nbsp;Info&nbsp;3.7 <span>bench</span></div>
+  <div id="indicators" class="indicators"></div>
+  <button id="btnExportLogs" title="Download everything captured so far (UART, CAN, terminals) as a .tar -- browser memory only, nothing is written to the Pi">Export logs</button>
+  <div class="clock" id="clock"></div>
+</header>
+
+<div id="appshell">
+<nav id="tabs">
+  <div class="nav-group-label">Bench</div>
+  <button data-tab="can" class="active"><span class="nav-icon">&#128225;</span>CAN</button>
+  <button data-tab="diag"><span class="nav-icon">&#129534;</span>Diagnostics</button>
+  <button data-tab="cal"><span class="nav-icon">&#128190;</span>Calibration</button>
+  <button data-tab="elk"><span class="nav-icon">&#9888;</span>ELK</button>
+  <div class="nav-group-label">Connectivity</div>
+  <button data-tab="uart"><span class="nav-icon">&#128225;</span>UART</button>
+  <button data-tab="t1"><span class="nav-icon">&#128241;</span>T1 / adb</button>
+  <button data-tab="term"><span class="nav-icon">&#8250;_</span>Terminals</button>
+</nav>
+
+<main>
+  <!-- ======================= CAN ======================= -->
+  <section id="tab-can" class="tab active">
+    <h1 class="tab-title">CAN</h1>
+    <div class="grid2">
+      <div class="card">
+        <h2>can0 stats</h2>
+        <div class="statrow" id="canStatRow"></div>
+      </div>
+      <div class="card">
+        <h2>Top CAN IDs</h2>
+        <canvas id="canIdChart" height="160"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Engine power mode &amp; gear position <small>(verified CAN signals only)</small></h2>
+      <p class="hint">Off/Run are wired to a directly-verified CAN <code>0x284</code> frame
+      (owner's bench observation, <code>platform/ota_update_stack.md</code>, 2026-11-17 — UART
+      confirmed <code>PowerModeOff</code> / <code>SystemPowerMode RUN</code> for the exact bytes
+      sent). Accessory, Service, and every gear position have <b>no verified CAN signal</b> on
+      this platform yet — per this project's zero-guessing rule they stay disabled scaffolding
+      until a firmware trace or captured frame confirms them. Hover a disabled control for why.</p>
+      <div class="field-row">
+        <span class="field-label">Power mode</span>
+        <div class="segmented" id="vehiclePowerModes"></div>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Gear position</span>
+        <div class="segmented" id="vehicleGearPositions"></div>
+      </div>
+      <pre id="vehicleOut" class="out"></pre>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Sequences <small>(frame bytes come from the pinned profile)</small></h2>
+        <label class="switch-label"><input type="checkbox" id="seqDryRun" checked> dry-run (validate only, send nothing)</label>
+        <div id="seqButtons" class="btnrow"></div>
+        <div id="seqContinuousRow" class="btnrow" style="display:none">
+          <span id="seqContinuousStatus"></span>
+          <button id="btnSeqStop" class="destructive-ish">Stop running sequence</button>
+        </div>
+        <pre id="seqOut" class="out"></pre>
+      </div>
+      <div class="card">
+        <h2>Live frames <small>(newest first)</small></h2>
+        <pre id="canLog" class="out tall"></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= Diagnostics (UDS) ======================= -->
+  <section id="tab-diag" class="tab">
+    <h1 class="tab-title">Diagnostics</h1>
+    <div class="card">
+      <h2>diagnosticsd <small id="diagEndpoint"></small></h2>
+      <div class="btnrow">
+        <button id="btnReadSafe">Read safe DIDs</button>
+        <button id="btnReadCal">Read calibration identity (F182)</button>
+        <button id="btnReadDtc">Read DTCs (19 02)</button>
+        <button id="btnUnlock">SecurityAccess unlock (level 01)</button>
+      </div>
+      <div id="didTableWrap"></div>
+    </div>
+    <div class="card">
+      <h2>Reset / recovery routines <small>($31 RoutineControl)</small></h2>
+      <label class="switch-label"><input type="checkbox" id="rtnDryRun" checked> dry-run (show exact bytes, send nothing)</label>
+      <div id="routineButtons" class="btnrow"></div>
+      <pre id="routineOut" class="out"></pre>
+    </div>
+  </section>
+
+  <!-- ======================= Calibration ======================= -->
+  <section id="tab-cal" class="tab">
+    <h1 class="tab-title">Calibration</h1>
+    <div class="card">
+      <h2>Calibration slots <small>(live identity read; content map from slot-map doc)</small></h2>
+      <button id="btnSlotMap">Load slot map + live parts</button>
+      <div id="slotTableWrap"></div>
+    </div>
+    <div class="card">
+      <h2>Stock LTZ reference set <small>(ground-truth known-good, hash-verified)</small></h2>
+      <button id="btnLtzRef">Verify reference set vs manifest</button>
+      <div id="ltzRefWrap"></div>
+    </div>
+    <div class="card">
+      <h2>613/614 VIP dev-interface test <small>(Tier 1, live, non-destructive)</small></h2>
+      <p class="hint">Connects the CAN 613/614 VIP development interface and saves + verify-reads the two
+      verifier words (<span class="mono">FEBF0BF8 / FEBF0BFC</span>). This is the exact connect/readback the
+      calibration write performs — run it to confirm the link is live without touching calibration data.</p>
+      <button id="btn613Test">Run 613/614 connect + save + verify</button>
+      <pre id="dev613Out" class="out"></pre>
+    </div>
+    <div class="card">
+      <h2>Offline container validation <small>(caltool digest)</small></h2>
+      <form id="calValidateForm">
+        <label>Candidate container <input type="file" name="container" required></label>
+        <label>Genuine template (optional, for reseal+digest) <input type="file" name="template"></label>
+        <button type="submit" class="primary">Validate offline (dry-run)</button>
+      </form>
+      <pre id="calValidateOut" class="out"></pre>
+    </div>
+
+    <details class="danger-zone" id="calWriteZone">
+      <summary>&#9888; Danger zone — live calibration write (Tier 2, destructive)</summary>
+      <div class="card danger-card">
+        <p class="warn">Overwrites verified stock calibration on the real ECU.</p>
+        <form id="calWriteForm">
+          <label>Scope
+            <select name="scope" id="calWriteScope">
+              <option value="slot">individual slot</option>
+              <option value="package">full package (all slots)</option>
+            </select>
+          </label>
+          <label id="calWriteSlotLabel">Slot <select name="slot" id="calWriteSlot"></select></label>
+          <label>Package .zip <small>(optional; verified stock only)</small>
+            <input type="file" name="package" id="calWritePackage" accept=".zip"></label>
+          <button type="button" id="btnCalWritePlan">1. Plan write (offline-validate + token)</button>
+        </form>
+        <pre id="calWriteOut" class="out"></pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- ======================= ELK ======================= -->
+  <section id="tab-elk" class="tab">
+    <h1 class="tab-title">ELK</h1>
+    <div class="card">
+      <h2>ELK status <small>(recovery bootloader)</small></h2>
+      <p class="hint">ELK is the Intel kernelflinger fastboot-class bootloader (USB <span class="mono">8087:09EF</span>,
+      iface FF/42/03). A RAM image boot is <b>volatile / non-persistent</b> (no flash, cannot burn a fuse). Flash/SPI
+      writes are intentionally not exposed here. The CAN F000/8180 entry trigger is a <b>candidate</b> (bench-confirmed
+      entry route is MEI/HECI).</p>
+      <div class="btnrow">
+        <button id="btnElkStatus">Probe ELK (USB)</button>
+        <button id="btnElkCheck">Check CAN transport (non-destructive)</button>
+      </div>
+      <pre id="elkStatusOut" class="out"></pre>
+    </div>
+    <div class="card">
+      <h2>Custom image <small>(RAM boot, volatile)</small></h2>
+      <form id="elkUploadForm">
+        <label>Upload .img <input type="file" name="image" required></label>
+        <button type="submit" class="primary">Upload &amp; validate (no boot)</button>
+      </form>
+      <pre id="elkUploadOut" class="out"></pre>
+    </div>
+
+    <details class="danger-zone" id="elkEnterZone">
+      <summary>&#9888; Danger zone — enter ELK (Tier 2, reboots the unit)</summary>
+      <div class="card danger-card">
+        <p class="warn">Reboots the unit into fastboot if accepted. Type <b>ENTER ELK</b> to confirm.</p>
+        <button type="button" id="btnElkEnterPlan">1. Plan ELK entry</button>
+        <pre id="elkEnterOut" class="out"></pre>
+      </div>
+    </details>
+
+    <details class="danger-zone" id="elkBootZone">
+      <summary>&#9888; Danger zone — boot custom image (Tier 2, brick risk)</summary>
+      <div class="card danger-card">
+        <p class="warn">Volatile RAM-boot of an uploaded image via ELK. Type <b>BOOT &lt;filename&gt;</b> to confirm.</p>
+        <form id="elkBootForm">
+          <label>Uploaded image <select name="image" id="elkBootImage"></select></label>
+          <button type="button" id="btnElkBootPlan">1. Plan image boot</button>
+        </form>
+        <pre id="elkBootOut" class="out"></pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- ======================= UART ======================= -->
+  <section id="tab-uart" class="tab">
+    <h1 class="tab-title">UART</h1>
+    <div class="card">
+      <h2>UART tail <small>(client of ser2net loopback ports)</small></h2>
+      <div class="btnrow" id="uartButtons"></div>
+      <div id="uartTermWrap"><div id="uartTerm" class="term"></div></div>
+    </div>
+  </section>
+
+  <!-- ======================= T1 / adb ======================= -->
+  <section id="tab-t1" class="tab">
+    <h1 class="tab-title">T1 / adb</h1>
+    <div class="grid2">
+      <div class="card">
+        <h2>T1 / VLAN status</h2>
+        <div id="t1Status"></div>
+        <div class="btnrow">
+          <button id="btnConnectT1" class="primary">adb connect T1 (VLAN5)</button>
+          <button id="btnRefreshT1">Refresh</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>adb devices</h2>
+        <div id="adbDevices"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Install APK</h2>
+      <form id="apkForm">
+        <label>Target <select name="serial" id="apkSerial"></select></label>
+        <label class="switch-label"><input type="checkbox" name="reinstall" checked> reinstall (-r)</label>
+        <label>APK <input type="file" name="apk" accept=".apk" required></label>
+        <button type="submit" class="primary">Upload &amp; install</button>
+      </form>
+      <pre id="apkOut" class="out"></pre>
+    </div>
+  </section>
+
+  <!-- ======================= Terminals ======================= -->
+  <section id="tab-term" class="tab">
+    <h1 class="tab-title">Terminals</h1>
+    <div class="grid2">
+      <div class="card">
+        <h2>Pi shell</h2>
+        <button id="btnPiShell" class="primary">Open / restart</button>
+        <div id="piTerm" class="term term-interactive"></div>
+      </div>
+      <div class="card">
+        <h2>adb shell</h2>
+        <div class="btnrow">
+          <select id="adbShellSerial"></select>
+          <button id="btnAdbShell" class="primary">Open / restart</button>
+        </div>
+        <div id="adbTerm" class="term term-interactive"></div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <h3 id="modalTitle">Confirm</h3>
+    <p id="modalBody"></p>
+    <label>Type the confirm phrase: <input id="modalInput" type="text" autocomplete="off"></label>
+    <div class="btnrow">
+      <button id="modalCancel">Cancel</button>
+      <button id="modalOk" class="danger">Execute</button>
+    </div>
+  </div>
+</div>
+
+<script src="/vendor/chart.umd.min.js"></script>
+<script src="/vendor/xterm.js"></script>
+<script src="/vendor/xterm-addon-fit.js"></script>
+<script src="/logcapture.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

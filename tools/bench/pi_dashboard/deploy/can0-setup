@@ -1,0 +1,66 @@
+#!/bin/sh
+# Bring the bench CANable up as SocketCAN can0 with the validated bit timing.
+#   can0-setup ensure      configure and raise can0 unless it is already up with the pinned timing
+#   can0-setup bounce      down/up cycle (flushes frames the adapter is still retrying)
+#   can0-setup post-stop   bounce only when the keepalive sender exited on a confirmation timeout
+#   can0-setup down
+# Timing is set segment by segment so the kernel bit-rate solver never chooses it:
+# 500 kbit/s at 48 MHz, tq 125 ns (brp 6), prop 1, phase1 12, phase2 2, sjw 1, sample point 0.875.
+set -eu
+IFACE=can0
+DRIVER=/sys/bus/usb/drivers/gs_usb
+
+configured() {
+    ip -details link show dev "$IFACE" 2>/dev/null | grep -q 'tq 125 prop-seg 1 phase-seg1 12 phase-seg2 2 sjw 1 brp 6'
+}
+
+is_up() {
+    ip link show dev "$IFACE" 2>/dev/null | grep -q '<[^>]*\bUP\b'
+}
+
+bind_adapter() {
+    # A raw-USB tool may have left the CANable (1d50:606f) unbound from gs_usb.
+    for dev in /sys/bus/usb/devices/*; do
+        [ -f "$dev/idVendor" ] || continue
+        [ "$(cat "$dev/idVendor")" = 1d50 ] && [ "$(cat "$dev/idProduct")" = 606f ] || continue
+        for intf in "$dev":*; do
+            [ -e "$intf" ] || continue
+            [ -e "$intf/driver" ] || printf '%s' "$(basename "$intf")" > "$DRIVER/bind" 2>/dev/null || true
+        done
+    done
+}
+
+raise() {
+    ip link set "$IFACE" down
+    # gs_usb has no bus-off auto-restart; omit restart-ms (the keepalive supervisor restarts instead).
+    ip link set "$IFACE" type can tq 125 prop-seg 1 phase-seg1 12 phase-seg2 2 sjw 1
+    ip link set "$IFACE" up
+    configured || { echo "$IFACE timing verification failed" >&2; ip link set "$IFACE" down; exit 1; }
+}
+
+wait_iface() {
+    n=0
+    while [ ! -e "/sys/class/net/$IFACE" ]; do
+        n=$((n + 1))
+        [ "$n" -le 50 ] || { echo "$IFACE did not appear" >&2; exit 1; }
+        sleep 0.1
+    done
+}
+
+case "${1:-ensure}" in
+    ensure)
+        [ -e "/sys/class/net/$IFACE" ] || { modprobe gs_usb 2>/dev/null || true; bind_adapter; wait_iface; }
+        if is_up && configured; then exit 0; fi
+        raise ;;
+    bounce)
+        wait_iface; raise ;;
+    post-stop)
+        # systemd sets EXIT_STATUS. Only bus-off (5) wedges the controller and needs a
+        # re-raise (gs_usb has no restart-ms). A plain no-ACK timeout (3, radio absent/
+        # asleep) leaves can0 healthy for observers - do NOT flap it in that case.
+        if [ "${EXIT_STATUS:-0}" = 5 ] && [ -e "/sys/class/net/$IFACE" ]; then raise; fi ;;
+    down)
+        ip link set "$IFACE" down ;;
+    *)
+        echo "usage: $0 ensure|bounce|post-stop|down" >&2; exit 2 ;;
+esac

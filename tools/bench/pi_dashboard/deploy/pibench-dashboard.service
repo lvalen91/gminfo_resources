@@ -1,0 +1,21 @@
+[Unit]
+Description=GM Info 3.7 bench dashboard (FastAPI backend)
+After=network-online.target ser2net.service
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=zeno
+WorkingDirectory=/opt/pibench/dashboard
+Environment=PYTHONUNBUFFERED=1
+Environment=GMINFO_TOOLS=/opt/pibench/tools/bench
+Environment=GMINFO_CALTOOL=/opt/pibench/tools/calibration_toolkit
+Environment=GMINFO_REPO_ROOT=/opt/pibench/repo
+Environment=BENCH_PYTHON=/opt/pibench/venv/bin/python
+Environment=HARNESS_PROFILE=/var/lib/pibench/harness-profile.json
+ExecStart=/opt/pibench/dashboard/venv/bin/uvicorn backend.app:app --host 127.0.0.1 --port 8088
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
