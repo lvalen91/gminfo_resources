@@ -283,6 +283,100 @@ not repeated.
 **Evidence:** B/H captures as above; VIN values never written to capture or
 this document.
 
+#### Full genuine LTZ rewrite — two driver-process bugs found and fixed, 14/14 verified — 2026-11-25
+
+**Goal:** repeat the full genuine LTZ rewrite (all 14 slots) from the
+[2026-11-16 campaign](#full-genuine-ltzhc-rewrite-through-canable--2026-11-16) over
+CAN5/CANable, after the owner reported a repeating success/fail pattern across slots
+on this bench that the prior campaign did not show, and asked whether the per-slot
+process itself was correct.
+
+**Driver:** [`tools/bench/bench_can/calibration_write_can5.py`](../tools/bench/bench_can/calibration_write_can5.py),
+a mechanical adaptation of `boot_radio_elk.py`'s `CanDiagnostics`/keepalive-replay
+architecture, chaining the already-validated UDS byte sequence from
+`pi_dashboard/backend/app.py`'s `_uds_cal_transfer` and the CAN613/614
+save/override/restore sequence from `can0_dev.py` — not new protocol logic.
+
+**Issue 1 — per-slot session re-entry (the alternating success/fail cause).** The
+driver re-ran the full `10 03`/SecurityAccess/`31 01 FF01`/`31 01 021E`/`85
+02`/`28 03 01`/`10 02` session-open sequence for every slot, tearing down to the
+default session (`10 01`) between each one.
+[`tools/mdi2_client/mdi2/calibration_transaction.py`](../tools/mdi2_client/mdi2/calibration_transaction.py)'s
+already-validated `program()` opens this sequence exactly once and loops all 14
+transfers inside the same open session — the driver did not match that structure.
+Live VIP console UART (115200 8N1, CP2102, DTR/RTS cleared) showed the real effect: a
+`10 01` between slots is read by the module as "programming event ended"
+(`evt=evRemoteReflashProgrammingEnd` → `st=Shutdown`), which raced the next slot's
+session re-entry and once produced a real fault cascade (`evSuspendFault` →
+`evUnmountTimeout` → `FAILURE DETECTED: Unmount Timeout` → `CSM_Sleep`) — not a
+vehicle-side quirk. **Fix:** split `write_calibration()` into
+`enter_programming_session()` (session-open, once), `transfer_one()` (`34`/`36`/`37`/
+`22 F0F1` for one slot, touches no session state), and `exit_programming_session()`
+(restore + close, once, at the end); `write_package()` now opens once, loops
+`transfer_one()` over every slot, and closes once.
+
+**Issue 2 — TransferData block-size off-by-two.** After fixing Issue 1, three slots
+(04, 06, 07 — the only three of the fourteen whose decompressed container is
+≥4095 bytes, needing at least one full-size block) still timed out, always on the
+first `36` block, with no response at all — reproduced identically across two
+separate retries (including one where only those three were attempted, ruling out a
+bus-settle/ordering explanation). Root cause: the ECU's `74`
+(RequestDownload-positive) response gave `maxNumberOfBlockLength=0x0FFF`, and per
+ISO 14229-1 — confirmed byte-for-byte against
+[`tools/mdi2_client/mdi2/calibration_payloads.py`](../tools/mdi2_client/mdi2/calibration_payloads.py)'s
+own `transfer_requests()` ("max_request_length includes the service byte and
+transfer block counter" / `block_size = max_request_length - 2`) — that figure is the
+TOTAL block length including the `0x36` service byte and the block-sequence-counter
+byte. The driver sliced a full `0x0FFF`-byte DATA chunk and prepended those 2 header
+bytes, sending 4097 bytes for a full block: 2 bytes over the ECU's own stated limit,
+which it silently dropped rather than rejecting with a `7F` (hence a timeout, not an
+NRC). Every slot that fit in one block under 4093 data bytes never hit this ceiling,
+which is why only slots 04/06/07 were ever affected. **Fix:** block size corrected to
+`0x0FFF - 2` (4093 data bytes/block).
+
+**Verification added.** A `verify` mode was added to the driver: read live DID
+`F182` (calibration identity block) and compare every slot against its on-disk
+container using
+[`tools/mdi2_client/mdi2/calibration_readback.py`](../tools/mdi2_client/mdi2/calibration_readback.py)'s
+own validated `parse_f182()`/`calibration_record()` (loaded directly by file,
+bypassing `mdi2/__init__.py`'s `pycryptodome` import, a dependency this bench venv
+does not have and this offline comparison does not need). The read needs only
+`10 03`+`22 F1 82` (no SecurityAccess/RoutineControl), but still needs the module
+held awake by the same precondition injector (modified `20D` + `284`=all-zero) used
+for the write — a bare native-profile replay was tried first and the module went
+unresponsive right after the session-control response.
+
+**Result:** slots 04, 06 and 07 were written and reconfirmed under the fixed driver
+in this session (clean `36`/`37` exits, PEC `62 F0 F1 00 00`); slots 02, 03, 05, 08,
+0B–0F are single-block transfers that predate these two fixes in this same bench
+session and were not individually re-exercised against the fixed code path. The
+live `F182` readback below is the authoritative, current confirmation that all 14
+slots are correct on the ECU as of this write-up, independent of which run wrote
+each one:
+
+| Slot | Part | F182 record (observed) | Match |
+|---|---|---|---|
+| 02 | 87863250 | `02 05 3c af d2 41 41` | yes |
+| 03 | 84517309 | `03 05 09 a1 bd 41 41` | yes |
+| 04 | 85045371 | `04 05 11 b0 7b 41 41` | yes |
+| 05 | 87846416 | `05 05 3c 6e 10 41 42` | yes |
+| 06 | 87846371 | `06 05 3c 6d e3 41 41` | yes |
+| 07 | 85783460 | `07 05 1c f3 a4 41 41` | yes |
+| 08 | 87846432 | `08 05 3c 6e 20 41 41` | yes |
+| 09 | 87846376 | `09 05 3c 6d e8 41 41` | yes |
+| 0A | 87846368 | `0a 05 3c 6d e0 41 41` | yes |
+| 0B | 86292118 | `0b 05 24 b6 96 41 41` | yes |
+| 0C | 85102312 | `0c 05 12 8e e8 41 42` | yes |
+| 0D | 87846384 | `0d 05 3c 6d f0 41 42` | yes |
+| 0E | 84517418 | `0e 05 09 a2 2a 41 41` | yes |
+| 0F | 87846380 | `0f 05 3c 6d ec 41 41` | yes |
+
+Every observed record matched its expected value — `calibration_record()` computed
+from the same on-disk stock LTZ containers — byte-for-byte; no mismatches.
+
+**Evidence:** live session logs captured this run (driver stdout, `--json-out`);
+VIP console UART log cross-correlated the Issue-1 fault cascade in real time.
+
 #### Factory-reset and ELK CAN-control attempts — 2026-11-17
 
 **Goal (factory reset):** trigger a UDS user-data reset over CAN5.

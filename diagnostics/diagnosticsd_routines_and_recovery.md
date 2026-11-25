@@ -23,6 +23,17 @@ records preparation, transport differences, NoVIN recovery and remaining limits.
 Historical failed T1 attempts below are not a current claim that MDI2 is required.
 No `0249`, `FF00`, or substitute calibration clear was used in this campaign.
 
+### CANable full-package rewrite — driver bug fixes (2026-11-25)
+
+A repeat of the above full-package genuine LTZ rewrite surfaced two real bugs in the
+CAN5 driver itself (not a vehicle-side quirk): a per-slot session re-entry that the
+VIP read as "programming ended" between slots, and a TransferData block-size
+off-by-two that silently dropped any full-size (≥4095-byte) block. Both are fixed;
+live `F182` readback now matches all 14 slots against their stock LTZ containers
+byte-for-byte. Full root-cause analysis, fix detail and the per-slot verification
+table are owned by the
+[CAN campaign](../platform/can_bench_experiments.md#full-genuine-ltz-rewrite--two-driver-process-bugs-found-and-fixed-1414-verified--2026-11-25).
+
 ### Resolution work and controlled actions
 
 Follow-up tests retained concurrent USB logcat and append-only UART observation.
