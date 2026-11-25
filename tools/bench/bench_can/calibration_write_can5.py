@@ -488,7 +488,10 @@ def main():
                 s10 = transport.uds(bytes.fromhex('1003'))
                 time.sleep(STEP_DELAY)
                 pec = transport.uds(bytes.fromhex('22f0f1'))
-                result_holder['result'] = {'ok': True, '10 03': s10.hex(), '22 F0F1': pec.hex()}
+                time.sleep(STEP_DELAY)
+                f181 = transport.uds(bytes.fromhex('22f181'))
+                result_holder['result'] = {'ok': True, '10 03': s10.hex(), '22 F0F1': pec.hex(),
+                                            '22 F181': f181.hex()}
             else:
                 data = load_container(args.container)
                 result_holder['result'] = transport.write_calibration(args.slot, data, genuine=not args.modified)

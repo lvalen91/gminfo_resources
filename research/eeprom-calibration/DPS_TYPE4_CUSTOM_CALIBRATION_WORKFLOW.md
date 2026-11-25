@@ -575,6 +575,57 @@ e.g. preserving the original inner-gzip bytes when no edit changes it, or matchi
 observed `OS`/`XFL` header fingerprint) requires binary-level tracing of that verifier
 function, not established here.
 
+### 2026-11-25: exact reproduction of the 2026-11-16 SXM success also rejected — toolkit ruled out, root cause still open
+
+**Correction to the "Conclusion" immediately above:** the production-CA-signer-record
+theory is withdrawn. Checked against
+[GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md §7](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md#7-csm-calibration-format-c)'s
+exact byte-range table: the signer record `[62:344]` and the CA signature over it
+`[344:600]` are both completely untouched by the zero-edit repack test (only `[30:62]`,
+the digest, differs) — that check's own inputs are provably unchanged from stock, so it
+cannot be what's failing. Measuring the actual bytes further: the repacked inner gzip
+stream differs from stock by exactly 2 bytes (the `XFL`/`OS` gzip-header metadata fields);
+the compressed payload data, CRC32 trailer, and size trailer are all byte-identical,
+because this XML happens to compress identically under both encoders.
+
+**Clean-power-cycle control.** Physically power-cycled the bench (HomeKit-outlet toggle,
+confirmed by a fresh `RstRsn=0x33`/incremented boot-counter line in the VIP console UART —
+a genuine power-on reset, not internal sleep/wake) to rule out stale session state from
+the day's several back-to-back attempts. Repeated the slot03 zero-edit-repack write from
+that clean boot: byte-for-byte identical result (`7F 36 72`, PEC `0015`).
+
+**Exact reproduction, independent of `caltool`.** At the owner's request, assumed
+`tools/calibration_toolkit` itself might be producing a wrong/corrupt module and bypassed
+it entirely: a from-scratch, standalone script (no import of any `caltool` module) read
+the genuine stock slot 0C container, located `CalID` `_ysOddU1AEeO3UM5MzM17kw`
+(`SXM_Enabled`, confirmed present with `<Value>true</Value>`, matching the 2026-11-16
+record exactly), flipped only that one value to `false`, recompressed with
+`gzip.compress(..., mtime=0)`, and recomputed only the digest field — asserting
+byte-for-byte that every other header byte stayed identical to stock. This is the exact
+edit, exact slot, and exact CalID the 2026-11-16 success used. Written through the same
+CAN613/614 path (override applied and verified present both before and after
+session-open): **rejected identically** — `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; PEC
+`0015`.
+
+**Firmware identity cross-check.** Live `F181` read during this same session:
+`01 05 1c 96 6f 43 4a` → module 01, part `85759599`, alpha `CJ` — an exact match to the
+pinned reference the 2026-11-16 success and its Ghidra disassembly were both recorded
+against. The firmware build has not changed.
+
+**Status: every bench-side variable has now been tested and ruled out** — override
+presence/timing (confirmed live, both before and after session-open), edit content and
+size (down to a byte-identical zero-edit repack), full-package scope, session/latched
+state (fresh power-on reset), toolkit involvement (independent from-scratch script), and
+firmware build (identity-matched). The exact documented 2026-11-16 recipe, reproduced as
+faithfully as live testing allows, does not reproduce its own result on this bench today.
+This points to either an unrecorded precondition from the original 2026-11-16 session that
+none of the existing documentation captures, or a stateful/one-time aspect of the
+marker-pair exemption (an NVM-backed flag, a counter, a latch set once and not since
+reset) that a live CAN-side test cannot observe. Resolving which requires binary-level
+tracing of the exemption's real trigger condition (the verifier at file offset `56D50`,
+PEC-setter at `86302`) — comparable in scope to the existing 021E-precondition
+disassembly — not established here.
+
 ## 5. Other paths and unresolved questions
 
 **Type4 custom DLL -> arbitrary UDS service ID.** A custom Type4 PE32 DLL (exporting
