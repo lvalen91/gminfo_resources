@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>8</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/24/2015</Date>
+    <Description>This speech caldef was last included in cal database release version 0.6, but it shouldn't have been removed and is needed for MY17. So it's being readded. </Description>
+    <Author>Robert Sims</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/5/2015</Date>
+    <Description>Removed the following Calibrations: 1.) ENABLE_SPEECHRECOGNITIONDOMAIN_DAB, 2.) ENABLE_SPEECHRECOGNITIONDOMAIN_NAVIGATION, 3.) ENABLE_SPEECHRECOGNITIONDOMAIN_ONSTARHANDOFF, 4.) ENABLE_SPEECHRECOGNITIONDOMAIN_XM_AUDIO, 5.) SPEECH_SETTING_MENU_MASK_BYTE_1_BIT4, 6.) SPEECH_SETTING_MENU_CONFIDENCE_THRESHOLD_ENABLE  from this CalDef file that are no longer needed</Description>
+    <Author>Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>12/1/2015</Date>
+    <Description>Based on feedback received from Jideok Son, made usage correction to remove Low Radio usage for all of the calibrations within this CalDef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>5/11/2018</Date>
+    <Description>Add a new parameter Speech_MyBrandApp_Contacts for GIS-808 SPEC</Description>
+    <Author>Xufang and Phani</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>5/11/2018</Date>
+    <Description>Per CR# 1311802, within SpeechRecognitionContentSettings.caldef file added one enumeration parameter (Speech_MyBrandApp_Contacts) per GIS-808.</Description>
+    <Author>Xufang Zhao and Phani Lakkavajhala</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration value enables or disables the functionality of Contacts Download of Manage Device Application Message. Furthermore, this calibration is used to enable contacts download from mobile mybrandApp to the vehicle." Name="Speech_MyBrandApp_Contacts" References="GIS-808" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NWxRUFU8EeiX6c692dtayQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/11/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Xufang Zhao and Phani Lakkavajhala</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_3V_zsFU5EeiX6c692dtayQ</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Disables Handset VR Application on Home Screen.&#xA;" Name="ENABLE_APPLICATION_HANDSET_VR" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqibYE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_country_caln</Description>
+      <Author>Robert Sims</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Shows Handset VR Application on application tray on startup." Name="ENABLE_APPLICATIONTRAY_HANDSET_VR" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqnT6k1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_country_caln</Description>
+      <Author>Robert Sims</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Add new calibration IN_PHONE_SPEECH_REC_ENABLE Boolean to allow the usage of the phone&#x92;s pass-thru internal speech recognition per supplier request.&#xA;$00  = Disable phone&#x92;s SR for vehicle.  Phone SR stays on handset.  Application  and icon is removed from the Homescreen.&#xA;$01 = Enable phone SR to use vehicle audio system (Speakers and microphone).  Application and icon is enabled and shown on the homepage.&#xA;" Name="IN_PHONE_SPEECH_REC_ENABLE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq7c_U1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_wireless_comn_caln</Description>
+      <Author>Robert Sims</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Prompt Length" Name="SPEECH_SETTING_MENU_PROMPT_LENGTH_ENABLE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysCQTE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>Robert Sims</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Settings Application Speech view provides the fol&#xad;lowing settings:" Name="ENABLE_SPEECH_SETTING_MENU" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ysCQTk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>Robert Sims</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

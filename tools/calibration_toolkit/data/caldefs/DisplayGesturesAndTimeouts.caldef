@@ -1,0 +1,1132 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This file contains calibrations for center stack display gesture performances and various timeouts, such as popup autodismiss timeouts.">
+  <CalDefFileVersion>16</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>24APR14</Date>
+    <Description>Initial Version.</Description>
+    <Author>Andrew Gellatly</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>13OCT14</Date>
+    <Description>Fixed Name errors that prevented use of code generation.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/24/2015</Date>
+    <Description>Just revised change history on cals where appropriate to show which cals are applicable to GIS-500.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>4/21/2015</Date>
+    <Description>In this Caldef file, deleted the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2 and POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3 cals since these cals are duplicate cals to the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_1 cal already released in this caldef file. Also changed the name of the cal POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4 cal to POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2 since the previous released cals, POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2 and POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3, that were duplicated cals are being deleted.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>7/10/2015</Date>
+    <Description>Per feedback from Cody Hansen made the following updates in this Caldef file: 1.) Re-added the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2, POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3, and POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4 CALs that were deleted  in the initial MY18 CAL Database Release in revision 6 of this CalDef file that was used for that CAL database release since it's been confirmed these CALs are now still needed, and updated the description for the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_1, POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2, POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3, and POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4 CALs to match the description shown in the GIS-500 Version 3.0,  June 26, 2015. 2.) Updated resolution for the FACEPLATE_VOLUME_STEP_PER_SLIDER_SENSOR and VOLUME_PRESS_HOLD_VOLUMESLEWRATE CALs within this Caldef file  from 10 to 1 to be able to set these CALs to the same value used for current production that is yielding optimized performance for faceplate volumn adjustements. Also, updated the default values for the following CALs: ENABLE_FACEPLATE_VOLUME_PRESS_HOLD (change default value from false to true), ENABLE_FACEPLATE_VOLUME_TAP CALs (changed default value from False to True), POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_1 (changed default value from 20 to 60 ), POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2 (changed default value from 10 to 6), ENABLE_REVEALON_APPROACH (changed the default value from DEFAULT (Value = 0xFF) to a value of ON (Value = 0x1) ). 3.) Deleted the following legacy CALs that are no longer needed for Info. 3.0: CHEVY_APPS_TRAY_INACTIVITY_TIMER, ENABLE_AUDIONOWPLAYING_SENDTOCLUSTER, HOME_SCREEN_TIMEOUT, and ENABLE_APPTRAY_NAV_MODE_QSP.  4.) Also, deleted the ENABLE_REVEALONAPPROACHFADEOUT CAL from this CalDef file since it is not being used and is not necessary, given there is already another ENABLE_PROXIMITY_SENSING calibration. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>9/3/2015</Date>
+    <Description>Within this CalDef file made the following updates: 1.) Changed the CAL name of the FACEPLATE_FLING_MIN_SLIDER_POSITIONS CAL from FACEPLATE_FLING_MIN_SLIDER_POSITIONS to FACEPLATE_FLING_MIN_VOLUME_POSITIONS, updated the CAL description for this CAL, and changed the CAL default value from 2 to 10 to match the actual implementation of this CAL. 2.) Changed the CAL name of the MAX_FACEPLATE_VOLUME_SLIDER_SENSORS CAL from MAX_FACEPLATE_VOLUME_SLIDER_SENSORS to MAX_FACEPLATE_VOLUME_POSITIONS, updated the CAL description for this CAL, and changed the CAL default value from 12 to 63 to match the actual implementation of this CAL. 3.) Changed the CAL name of the FACEPLATE_VOLUME_STEP_PER_SLIDER_SENSOR CAL from FACEPLATE_VOLUME_STEP_PER_SLIDER_SENSOR to FACEPLATE_SLIDER_POSITIONS_PER_VOLUME_STEP, updated the CAL description for this CAL, and changed the CAL default value from 2 to 3 to match the actual implementation of this CAL. 4.) Updated the description for the VOLUME_PRESS_HOLD_VOLUMESLEWRATE CAL to match the actual implementation of this CAL. 5.) Updated the description for the FACEPLATE_TAP_MAX_TIME CAL, and changed the CAL default value from 1500 to 1000  to match the actual implementation of this CAL. 6.) Per request from Sanghyun Ryu, updated CAL usage for the APPLICATION_REVEALONAPPROACHTIME CAL to not show Low Radio usage. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>12/1/2015</Date>
+    <Description>Based on feedback received from Jideok Son, made usage correction to remove Low Radio usage for the following calibrations: FACEPLATE_SLIDER_POSITIONS_PER_VOLUME_STEP, ENABLE_REVEALONAPPROACH, ENABLE_PROXIMITY_SENSING, REVEALONAPPROACHFADEOUTTIME, MAX_FACEPLATE_VOLUME_POSITIONS, and CSHMI_AUX_TOUCH_EVENT_BUFFER_TIME calibrations within this CalDef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>2/26/2016</Date>
+    <Description>Within this caldef file, updated the default value for the FACEPLATE_FLING_MIN_VOLUME_POSITIONS CAL from 10 to 5, updated default value of the FACEPLATE_TAP_MAX_TIME CAL from 1000 to 500,updated the default value of the VOLUME_PRESS_HOLD_VOLUMESLEWRATE CAL from 250 to 50. Based off of feedback received from Cody Hansen that this is the most optimal value to set this value to at this point.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>1/13/2017</Date>
+    <Description>Within the DisplayGesturesAndTimeouts.caldef file made the following updates: Updated the default value for the FACEPLATE_FLING_MIN_VOLUME_POSITIONS calibration from a value of 5 to 2 to match the optimized value it was determined this calibration needed to be set to for MY17. Updated the units reflected for the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_1, POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2, POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3, and POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4  calibrations from none to seconds to match the units that were always reflected for these calibration in the GIS-500. Updated the units for the ALERTWINDOWELEMENT_DELAYEDACTIONPRESENTATIONTIME calibration from none to miliseconds to reflect the units that was always defined for this calibration in the GIS-500. Also deleted the ENABLE_CLIMATECONTROL_QUICK_STATUS_PANE calibration from this caldef, as reference the calibration for the Quick Status Pane enable function is being added in the GIS550_ClimateTouchScreenUI_GlobalB.caldef file as a part of the calibration updates in this MY19 CAL Database Version 3.0.3 release. Also deleted the following eleven calibrations confirmed not to be needed: 1.) POPUP_DISMISS_KEY_DELAY, 2.) MINACTIVITYINDICATORENABLETIME, 3.) MEDIA_SOURCE_CHANGE_TO_NOW_PLAYING_TIMEOUT, 4.) ENABLE_POP_UPS_WIDGET_AUTOMATICDISMISSAL, 5.) D_SHORT_AUTO_ACK, 6.) D_MEDIUM_AUTO_ACK, 7.) D_LONG_AUTO_ACK, 8.) CANCEL_TIME, 9.) ALERT_AUTODISMISSFADEOUTTIME, 10.) POPUPWIDGET_AUTODISMISSFADEOUTTIME, and 11.) MINACTIVITYINDICATORACTIVETIME. Also, updated the description for the DEFAULT_AUDIO_TOUCH_FEEDBACK_SETTING calibration to match the description reflected in the latest version GIS-507. And, updated the default value of the DEFAULT_AUDIO_TOUCH_FEEDBACK_SETTING calibration to match the default value of On (True/enabled) referenced for this calibration in GIS-500 Section 5.3.2.1 Audible Touch Feedback Off/On.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>2/27/2017</Date>
+    <Description>Within the DisplayGesturesAndTimeouts.caldef file, deleted the QUICKSTATUSPANEWIDGET_AUTOMATICDISMISSALTIME calibration since the GM User Interface Team (Mark Miller) confirmed this specific calibration was a  legacy calibration used for NGI that is not intended to be used for Info3.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>6/10/2017</Date>
+    <Description>Within the DisplayGesturesAndTimeouts.caldef file added back in the following seven NGI legacy calibrations deleted in a prior release: 1.) MINACTIVITYINDICATORENABLETIME, 2.) MINACTIVITYINDICATORACTIVETIME, 3.) D_SHORT_AUTO_ACK, 4.) D_MEDIUM_AUTO_ACK, 5.) D_LONG_AUTO_ACK, 6.) POPUPWIDGET_AUTODISMISSFADEOUTTIME, and 7.) QUICKSTATUSPANEWIDGET_AUTOMATICDISMISSALTIME. Note, these seven calibrations are for F-Ten Info3 Low Radio use only since these legacy calibrations are still being used by F-Ten in software for the F-Ten Info3.0 Low Radio only. Also, updated the usage field for all of the calibrations in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>9/29/2017</Date>
+    <Description>Within the DisplayGesturesAndTimeouts.caldef file, added GEM usage to the following calibrations within this caldef: (1.) ALERTWINDOWELEMENT_DELAYEDACTIONPRESENTATIONTIME , (2. ) CSHMI_TOUCH_EVENT_BUFFER_TIME,  (3.) DEFAULT_AUDIO_TOUCH_FEEDBACK_SETTING, (4.) ENABLE_FACEPLATE_VOLUME_PRESS_HOLD, (5.) ENABLE_FACEPLATE_VOLUME_TAP, (6.) ENABLE_MENU_AUDIO_TOUCH_FEEDBACK, (7.) FACEPLATE_FLING_MIN_VOLUME_POSITIONS, (8.) FACEPLATE_TAP_MAX_TIME, (9.) FACEPLATE_VOLUME_TAP_VOLUME_STEP_DELTA, (10.) FRONT_FAN_SPEED_ADJUSTMENT_SLEW_RATE, (11.) FRONT_TEMPERATURE_ADJUSTMENT_SLEW_RATE, (12.) POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_1, (13.) POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2,  (14.) POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3, (15.) POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4, (16.) SCROLLBAR_PAGEUPDOWN_SLEWRATE, and  (17.) VOLUME_PRESS_HOLD_VOLUMESLEWRATE. Since these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application. Note, excluded adding GEM usage to the F-Ten Low Radio only specific legacy calibrations within this caldef since these calibrations are only being used for the F-Ten Radio supplier, which does support the GEM.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>05/03/2018</Date>
+    <Description>Within DisplayGesturesAndTimeouts.caldef, updated the default value of the ALERTWINDOWELEMENT_DELAYEDACTIONPRESENTATIONTIME calibration to match the default value reflected in the GIS-500 Version 5.4 of April 9, 2018</Description>
+    <Author>Emmaanuel Oleka</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>16</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Quick Status Panes auto-dismiss after 3 seconds (calibratable) of inactivity with the vehicle controls. The pane will immediately be removed from the display (no  gradual/slow fading).  (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier) " Name="QUICKSTATUSPANEWIDGET_AUTOMATICDISMISSALTIME" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yr6UaE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/27/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="To offer the user more time to make a final dismiss selection before the pop-up is unavailable the pop-up will fade into the background over a 3 second period (calibratable). UPDATE: ALERT_AUTODISMISSFADEOUTTIME must be in all CALDS bundles and common to all HMI software sets. * However the calibration only functions with 8 systems and shall have default of 3 seconds. * The calibration will perform no action in the 4.2 software sets and shall have default of 0 seconds. auto-dismiss fadeout is not described in GIS-402 and alerts will not FADE out. No transitional animation for 4.2 systems. (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)  " Name="POPUPWIDGET_AUTODISMISSFADEOUTTIME" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yr34N01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The alert will be considered acknowledged when displayed continuously for D_LONG_AUTO_ACK. (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)" Name="D_LONG_AUTO_ACK" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yp4UEk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>25000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>25500</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The alert will be considered acknowledged when displayed continuously for D_MEDIUM_AUTO_ACK. (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)" Name="D_MEDIUM_AUTO_ACK" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yp4UE01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>25500</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The alert will be considered acknowledged when displayed continuously for D_SHORT_AUTO_ACK. (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)" Name="D_SHORT_AUTO_ACK" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yp4UFE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>25500</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The guideline for displaying an Activity Indicator is when the result of a button press or other system operation will take more than 1 second to complete (e.g. display something relevant to the task being performed) or when some system process is taking place in the background where users should be kept informed (see Applications for specific examples). (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)  " Name="MINACTIVITYINDICATORENABLETIME" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yrRbRk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2550</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="to prevent blings of this indicator it should have a minimum active time. (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)" Name="MINACTIVITYINDICATORACTIVETIME" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yrRbRU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2550</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time for how long buttons on Alerts and Pop-ups should be delayed before being presented to prevent the user from inadvertently dismissing the pop-up unintentionally. The default time is 500ms." Name="ALERTWINDOWELEMENT_DELAYEDACTIONPRESENTATIONTIME" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypCmk01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the units for the ALERTWINDOWELEMENT_DELAYEDACTIONPRESENTATIONTIME  calibration from none to miliseconds to reflect the units that was always defined for this calibration in the GIS-500.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>05/03/2018</Date>
+      <Description>Updating the default value to match the default value reflected in the GIS-500 Version 5.4 of April 9, 2018</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>12750</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The page indicator is a reveal on approach element.&#xA;&#xA;APPLICATION_REVEALONAPPROACHTIME is the amount of time before the reveal starts to fade away.  " Name="APPLICATION_REVEALONAPPROACHTIME" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_ypItMU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the APPLICATION_REVEALONAPPROACHTIME CAL to not show Low Radio usage. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="To minimize the message load on the MOST network in case the RSE is active on the CenterStackDisplay  this parameter gives the time in which touch events are buffered before they will be sent to the RSE-System. The proximity event or the first touch event (start of a gesture) are sent immediately. A release event will trigger the sending of the events buffered so far even if the time for buffering has not ended." Name="CSHMI_AUX_TOUCH_EVENT_BUFFER_TIME" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yp4UEE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="To minimize the message load inside the HMIModule  this parameter gives the time in which touch events are buffered before they will be sent to the HMI thread. The proximity event or the first touch event (start of a gesture) are sent immediately. A release event will trigger the sending of the events buffered so far even if the time for buffering has not ended." Name="CSHMI_TOUCH_EVENT_BUFFER_TIME" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yp4UEU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>50</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Audible Touch Feedback specifies if sounds play when you press the touchscreen or a physical control on the radio faceplate." Name="DEFAULT_AUDIO_TOUCH_FEEDBACK_SETTING" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yp_o3E1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the description for the DEFAULT_AUDIO_TOUCH_FEEDBACK_SETTING calibration to match the description reflected in the latest version GIS-507. Also, updated the default value of the DEFAULT_AUDIO_TOUCH_FEEDBACK_SETTING calibration to match the default value of On (True/enabled) referenced for this calibration in GIS-500 Section 5.3.2.1 Audible Touch Feedback Off/On.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If the user presses and holds on a side  the volume&#xA;ramps up or down depending on the side of the bar the&#xA;hold on." Name="ENABLE_FACEPLATE_VOLUME_PRESS_HOLD" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yqrlVE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Updated default for this CAL from false to true</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Volume Tap" Name="ENABLE_FACEPLATE_VOLUME_TAP" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yqrlVU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Updated the default for this CAL from False to True</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Menu Configuration Settings&#xA;This bit controls the presence of a user selectable menu for audible touchscreen feedback and shall be enabled for all NON-CADILLAC systems with audible beeps and disabled for Cadillac system with Haptic feedback.&#xA;&#xA;2) Potentially need to add new calibration to allow calibration DEFAULTING of the selection of audible touch feedback Currently  the MY2014 software defaults the touch feedback setting menu item to OFF.&#xA;" Name="ENABLE_MENU_AUDIO_TOUCH_FEEDBACK" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yqszek1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Menu Configuration Setting and function enable.&#xA;Enable for Cadillac.  Disalble for all non-Cadillac.&#xA;&#xA;Proximity Sensing in the center stack enables specific&#xA;interaction capabilities with the system. Proximity sensing&#xA;in the center stack is used to provide feedback to&#xA;the user and keep the screen clutter-free (i.e.  elegant).&#xA;When a user&#x92;s hand approaches the display  it comes&#xA;alive and interactive elements are displayed that the&#xA;user can touch. Users can interact with the interface in&#xA;an exciting and delightful way when the system detects&#xA;their hand approaching the screen." Name="ENABLE_PROXIMITY_SENSING" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yquopU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="9.13.4.4~MY13 Proximity Sensing&#xA;If the system has Proximity Sensing  the Proximity Sensing setting menu should be dynamically added to the Display menu options.&#xA;The options shown to the user are as follows:&#xA;&#x95; Off&#xA;&#x95; On&#xA;&#x95; On - Map Only&#xA;&#xA;The Apps Tray is normally hidden from view. The Apps Tray is revealed on proximity on almost all views. In cases where the Apps Tray is NOT shown  it is documented in that section. Apps Tray will fade when reveal on approach time expires." Name="ENABLE_REVEALONAPPROACH" References="GIS-500" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yquoqU1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>7/10/2015</Date>
+      <Description>Updated the default value for this CAL from DEFAULT (Value = 0xFF) to a value of ON (Value = 0x1).</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_yquoqk1AEeO3UM5MzM17kw</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This defines the minimum number of volume positions that must be detected before it qualifies the action as a swipe/fling of the faceplate volume." Name="FACEPLATE_FLING_MIN_VOLUME_POSITIONS" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yq2kek1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Changed the CAL name of the FACEPLATE_FLING_MIN_SLIDER_POSITIONS CAL from FACEPLATE_FLING_MIN_SLIDER_POSITIONS to FACEPLATE_FLING_MIN_VOLUME_POSITIONS, updated the CAL description for this CAL, and changed the CAL default value from 2 to 10 to match the actual implementation of this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2/26/2016</Date>
+      <Description>Updated the default value for this CAL from 10 to 5. Based off of feedback received from Cody Hansen that this is the most optimal value to set this value to at this point.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value for the FACEPLATE_FLING_MIN_VOLUME_POSITIONS calibration from a value of 5 to 2 to match the optimized value it was determined this calibration needed to be set to for MY17.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This defines the amount of time (in milliseconds) that still qualifies the action as a Tap and not a press and hold. Once a press and hold is detected based on this timer, the volume is incremented or decremented by one step, and the timer in VOLUME_PRESS_HOLD_VOLUMESLEWRATE is started to determine when the volume will be incremented or decremented again." Name="FACEPLATE_TAP_MAX_TIME" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yq2ke01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Updated the description for the FACEPLATE_TAP_MAX_TIME CAL, and changed the CAL default value from 1500 to 1000  to match the actual implementation of this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2/26/2016</Date>
+      <Description>Updated the default value for this CAL from 1000 to 500. Based off of feedback received from Cody Hansen that this is the most optimal value to set this value to at this point.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2550</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This Calibrations defines how sensitive the volume slider should be to obtain the desired effect for the number of swipes needed to reach max volume. It defines how many slider positions must be traversed before the volume is increased by one step. Higher numbers lead to a less sensitive volume bar." Name="FACEPLATE_SLIDER_POSITIONS_PER_VOLUME_STEP" References="GIS-500" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yq2kfU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Updated resolution for the FACEPLATE_VOLUME_STEP_PER_SLIDER_SENSOR CAL from 10 to 1 to be able to set this CAL to the same value used for current production that is yielding optimized performance for faceplate volumn adjustements.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/3/2015</Date>
+      <Description>Changed the CAL name of the FACEPLATE_VOLUME_STEP_PER_SLIDER_SENSOR CAL from FACEPLATE_VOLUME_STEP_PER_SLIDER_SENSOR to FACEPLATE_SLIDER_POSITIONS_PER_VOLUME_STEP, updated the CAL description for this CAL, and changed the CAL default value from 2 to 3 to match the actual implementation of this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This defines the number of Volume Steps each tap on the Faceplate Volume bar either increments or decrements" Name="FACEPLATE_VOLUME_TAP_VOLUME_STEP_DELTA" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yq2kfk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Finally  users can also increase/decrease fan speed incrementally&#xA;by tapping at the extremes of the displayed&#xA;fan speed range (e.g.  as denoted by +/- symbols or&#xA;other icons at the extremes). For each tap  fan speed is&#xA;increased or decreased by one setting value. Users can&#xA;press-and-hold at the extremes to increase/decrease fan&#xA;speed rapidly at the rate of 2 Hz (TBD  calibratable)." Name="FRONT_FAN_SPEED_ADJUSTMENT_SLEW_RATE" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yq4ZqU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2550</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Finally  users can increase/decrease the &#x93;set&#x94; temperature&#xA;incrementally by tapping at the extremes of the&#xA;displayed temperature range (e.g.  as denoted by +/-&#xA;symbols at the extremes). For each tap  the &#x93;set&#x94; temperature&#xA;value is increased or decreased by one degree.&#xA;Users can press-and-hold at the extremes to increase/&#xA;decrease &#x93;set&#x94; temperature rapidly at the rate of 5 Hz&#xA;(TBD  calibratable)." Name="FRONT_TEMPERATURE_ADJUSTMENT_SLEW_RATE" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yq4Zqk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>200</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2550</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the number of slider postitions that are used to communicate the position of the finger from the far left to the far right side of the slider. This is based on the interface between the faceplate and radio." Name="MAX_FACEPLATE_VOLUME_POSITIONS" References="GIS-500" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yrNJ1E1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Changed the CAL name of the MAX_FACEPLATE_VOLUME_SLIDER_SENSORS CAL from MAX_FACEPLATE_VOLUME_SLIDER_SENSORS to MAX_FACEPLATE_VOLUME_POSITIONS, updated the CAL description for this CAL, and changed the CAL default value from 12 to 63 to match the actual implementation of this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>63</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Pop-ups will auto-dismiss if not explicitly dismissed by the user Pop-ups are triggered to auto-dismiss after 60 seconds (calibratable)." Name="POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_1" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yr34Mk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Updated the default value for this CAL from 20 to 60.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the units for the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_1 calibration from none to seconds to reflect the units that was always defined for this calibration in the GIS-500.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Pop-ups will auto-dismiss if not explicitly dismissed by the user Pop-ups are triggered to auto-dismiss after 6 seconds calibratable)." Name="POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yr34M01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Re-added the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2 CAL back into this CalDef file as it was confirmed to be a CAL that is needed. Also updated the default value for this CAL from 10 to 6. Also, updated the description the description shown for these CALs to match the description shown in GIS-500 Version 3.0,  June 26, 2015. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the units for the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_2 calibration from none to seconds to reflect the units that was always defined for this calibration in the GIS-500.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Quick Notice long timeout of 5 seconds." Name="POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yr34NE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Re-added the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3 CAL back into this CalDef file as it was confirmed to be a CAL that is needed. Also, updated the description the description shown for these CALs to match the description shown in GIS-500 Version 3.0,  June 26, 2015. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the units for the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_3 calibration from none to seconds to reflect the units that was always defined for this calibration in the GIS-500.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Quick Notice short timeout of 3 second" Name="POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yr34NU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Re-added the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4 CAL back into this CalDef file as it was confirmed to be a CAL that is needed. Also, updated the description the description shown for these CALs to match the description shown in GIS-500 Version 3.0,  June 26, 2015. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the units for the POP_UPS_WIDGET_AUTOMATIC_DISMISSAL_TIME_4 calibration from none to seconds to reflect the units that was always defined for this calibration in the GIS-500.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Apps Tray is normally hidden from view. The Apps&#xA;Tray is revealed on proximity on almost all views. In&#xA;cases where the Apps Tray is NOT shown  it is documented&#xA;in that section. Apps Tray will fade when reveal&#xA;on approach time expires." Name="REVEALONAPPROACHFADEOUTTIME" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yr8JsE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="users can press and hold on the end-points of&#xA;the Scroll Bar causing the list to page up/down at a rate&#xA;of TBD Hz." Name="SCROLLBAR_PAGEUPDOWN_SLEWRATE" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_ysBCH01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>128</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This defines how quickly the volume should increase or decrease as the user presses and holds their finger. This calibration defines how many milliseconds should pass in between increasing or decreasing the volume by one step while the finger is held. " Name="VOLUME_PRESS_HOLD_VOLUMESLEWRATE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysMoTk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Updated resolution for the VOLUME_PRESS_HOLD_VOLUMESLEWRATE CAL from 10 to 1 to be able to set this CAL to the same value used for current production that is yielding optimized performance for faceplate volumn adjustements.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/3/2015</Date>
+      <Description>Updated the description for the VOLUME_PRESS_HOLD_VOLUMESLEWRATE CAL to match the actual implementation of this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>2/26/2016</Date>
+      <Description>Updated the default value for this CAL from 250 to 50. Based off of feedback received from Cody Hansen that this is the most optimal value to set this value to at this point.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>50</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2550</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Enable frequency of task adaptive feature for MY 18. ">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>22APR14</Date>
+    <Description></Description>
+    <Author>Robert Sims</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on MID and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10Feb15</Date>
+    <Description>Changes for GIS 350 Version 1.2</Description>
+    <Author>Ute Winter</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/18/2015</Date>
+    <Description>Changes: Cal parameter DisambiguationFlag deleted; cal parameter Domainnumberoftasks type changed from integer to EnumIntegerMap and linked to enumdef; cal parameter FCtaskdatabound type changed from interger to float; cal paramter Expertisetimewindows linked to enumdef; cal paramter Ignoreactionforfactor changed from EnumIntegerMap to Enumeration and linked to enumdef; added usage type to the Expertisetimewindows CAL all paramter values set to 65% BOR cal overrides  </Description>
+    <Author>Ute Winter</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>3/4/2016</Date>
+    <Description>Enable adaptive feature Frequency of Task for MY 18 and adjust cals according to performance test results. Change cal IgnoreFactorForAction from Enumeration to EnumIntegerMap</Description>
+    <Author>Ute Winter, Xufang Zhao</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="GIS 350-207 Holds a non-negative value to weight the task preference of a user for each distinguished task by the typical context it is usually requested from the HMI/Speech system. It weights the final prior probability of a task to be optimally balanced between the context prior probability and the general prior probability:" Name="ContextualWeightFactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ySyh4MYiEeO1w62ps1mvqw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-208 Absolute disambiguation threshold: see GIS-350-1205) Constant value Dabs, as threshold for confidence scores in disambiguation lists. A disambiguation list may be rank ordered if the entry with the highest confidence score C1 exceeds Dabs : C1 > Dabs" Name="AbsoluteDisambiguationThreshold" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_EVkK0MYjEeO1w62ps1mvqw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-209 Delta disambiguation threshold: (see GIS-350-1205) Constant value Ddelta, referring to the distance between the two highest confidence scores C1 and C2 in disambiguation lists. A disambiguation list may be ranked ordered if this distance exceeds Dabs: C1  &#xf02d; C2 > Ddelta." Name="DeltaDisambiguationThreshold" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_OMlTQMYjEeO1w62ps1mvqw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-246 User model threshold: (see GIS-350-902) real or natural number in the range of the speech systems confidence scores. The threshold allows all tasks with confidence scores below to enter the User Model only under specified conditions to prevent falsely accepted tasks to enter the user Model." Name="Usermodelthreshold" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_IeIT4Kn6EeSUBfpqmsgk4g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>6000</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-211 TC sample size:(see GIS-350-1303) Natural number S which determines the number of tasks for one sample, while monitoring task completion rate. " Name="TCsamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_pTl80MYjEeO1w62ps1mvqw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>12</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-212 TC monitor frequency: (see GIS-350-1303) Natural number F which determines the frequency for taking a new sample, while monitoring task completion rate" Name="TCmonitorFrequency" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_0HjOoMYjEeO1w62ps1mvqw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-213 TC SNR normalizer: (see GIS-350-1303) Natural number F which determines the frequency for taking a new sample, while monitoring task completion rate" Name="TCSNRnormalizer" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_AWMgUMYlEeO1w62ps1mvqw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-214 TC sample control factor: (see GIS-350-1303) Real number s which is a factor to the standard deviation of the sample mean and determines the distance from the mean as lower limit of acceptable task completion behavior per sample." Name="TCsampleControlFactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RYVysMYlEeO1w62ps1mvqw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.5</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-215 TC mean sample size: (see GIS-350-1303) Natural number k which determines how many recent samples are included in the current mean of last k samples, while monitoring task completion rate" Name="TCmeansamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_8fbTAMY4EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-216 TC mean control factor: (see GIS-350-1303) Real number m  which is a factor to the standard deviation of the overall mean and determines the distance from the overall task completion mean as lower limit of acceptable current mean for the last k samples" Name="TCmeancontrolfactor" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_48KyMMY5EeOpjZKz3hOPiA</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.0</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-217 TC out-of-control limit: (see GIS-350-1303) Natural number K for upper bound of successive samples which are out-of-control regarding task completion. If adaptation is temporarily out-of-control regarding task completion successively for K times adaptation is out-of-control regarding task completion and recommendation value for adaptation to frequency of task is set to 0" Name="TCoutofcontrollimit" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_MRwt4MY6EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-218 DT sample size: (see GIS-350-1304) Natural number S which determines the number of tasks for one sample, while monitoring dialog time" Name="DTsamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Xp5q0MY6EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>12</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-219 DT monitor frequency: (see GIS-350-1304) Natural number F which determines the frequency for taking a new sample, while monitoring dialog time" Name="DTmonitorfrequency" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_h_Xp0MY6EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-220 DT SNR normalizer: (see GIS-350-1304) Number which determines the percentage of recognition degradation allowed according to GIS-381-(510-517) for low SNR average in a sample, while monitoring dialog time" Name="DTSNRnormalizer" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_uLzKcMY6EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-221 DT sample control factor: (see GIS-350-1304) Real number s which is a factor to the standard deviation of the sample mean and determines the distance from the mean as upper limit of acceptable dialog time behavior per sample" Name="DTsamplecontrolfactor" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_398Z8MY6EeOpjZKz3hOPiA</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.5</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-222 DT mean sample size: (see GIS-350-1304) Natural number k which determines how many recent samples are included in the current mean of last k samples, while monitoring dialog time" Name="DTmeansamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_H5EZ4MY7EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-223 DT mean control factor: (see GIS-350-1304) Real number m  which is a factor to the standard deviation of the overall mean and determines the distance from the overall dialog time mean as upper limit of acceptable current mean for the last k samples" Name="DTmeancontrolfactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_OKsI8MY7EeOpjZKz3hOPiA</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.0</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-224 DT out-of-control limit: (see GIS-350-1304) Natural number K for upper bound of successive samples which are out-of-control regarding dialog time. If adaptation is temporarily out-of-control regarding dialog time successively for K times adaptation is out-of-control regarding dialog time and recommendation value for adaptation to frequency of task is set to 0" Name="DToutofcontrollimit" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Z7s44MY7EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>1023</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-225 CR sample size: (see GIS-350-1305) Natural number S which determines the number of tasks for one sample, while monitoring confirmation rate" Name="CRsamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gnjs4MY7EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>12</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-226 CR monitor frequency: (see GIS-350-1305) Natural number F which determines the frequency for taking a new sample, while monitoring confirmation rate" Name="CRmonitorfrequency" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_MTMmYMY8EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-227 CR SNR normalizer: (see GIS-350-1305) Number which determines the percentage of recognition degradation allowed according to GIS-381-(510-517) for low SNR average in a sample, while monitoring confirmation rate" Name="CRSNRnormalizer" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TGmM0MY8EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-228 CR sample control factor: (see GIS-350-1305) Real number s which is a factor to the standard deviation of the sample mean and determines the distance from the mean as upper limit of acceptable confirmation rate behavior per sample" Name="CRsamplecontrolfactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_aRCaQMY8EeOpjZKz3hOPiA</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.5</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-229 CR mean sample size: (see GIS-350-1305) Natural number k which determines how many recent samples are included in the current mean of last k samples, while monitoring confirmation rate" Name="CRmeansamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_l-Bl0MY8EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-230 CR mean control factor: (see GIS-350-1305) Real number m  which is a factor to the standard deviation of the overall mean and determines the distance from the overall confirmation rate mean as upper limit of acceptable current mean for the last k samples" Name="CRmeancontrolfactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_t7ADcMY8EeOpjZKz3hOPiA</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.0</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-231 CR out-of-control limit: (see GIS-350-1305) Natural number K for upper bound of successive samples which are out-of-control regarding confirmation rate. If adaptation is temporarily out-of-control regarding confirmation rate successively for K times adaptation is out-of-control regarding confirmation rate and recommendation value for adaptation to frequency of task is set to 0" Name="CRoutofcontrollimit" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_4rtM8MY8EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>1023</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-232 Maximal out-of-control number: (see GIS-350-1306) If the recommendation value for adaptation is set to 0 for a maximal out-of-control number I, hence adaptation has shut itself of for I times, then the recommendation value is not set back to 1 anymore and adaptation deactivates itself" Name="Maximaloutofcontrolnumber" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Dnwq0MY9EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-233 RD time frame recent rejections: (see GIS-350-1307) Rejected task data will be monitored by how many rejections occurred in a predefined recent time frame by natural number RD time frame recent rejections, representing the number of days counted from current date" Name="RDtimeframerecentrejections" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_N6WU8MY9EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-247 Deactivation frequency adaptation: (see GIS-350-1401) Parameter to manually and externally deactivate and reactivate the adaptation process. Default value is 1 to disable adaptation process. When value is set to 0, adaptation is activated." Name="Deactivationfrequencyadaptation" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_4KpiwMZGEeO6mvg1ehG6GQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-235 RD minimum rejections: (see GIS-350-1307) Natural number representing the minimum number of rejections in the time frame for parameter RD time frame recent rejections, for which reward weight is calculated" Name="RDminimumrejections" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_erq9EMY9EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-236 RD minimum confusions: (see GIS-350-1307) Natural number representing the minimum number of confusions between task data k and task data i, for which prior probability for this task data k in dependency to task data i is added as additional prior probability with the default value as specified in GIS-350-904 for unknown task data" Name="RDminimumconfusions" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_khQQYMY9EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-237 FC task data bound: (see GIS-350-1308) real number FC task data bound is the lower bound of most frequently requested task data obtained from the last updated prior probabilities Prior (O) as specified in GIS-350-90. Abnormal frequency changes are controlled for all task data above this lower bound." Name="FCtaskdatabound" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Ur-_EA9LEeWwaaRaR87fAw</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2015</Date>
+      <Description>Updated the FCtaskdatabound CAL from an Integer to a Float type CAL.</Description>
+      <Author>Ute Winter</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>0.2</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-238 FC sample size: (see GIS-350-1308) Natural number S resembling the number of days for each sample, while monitoring abnormal frequency changes. The sample frequency is the same number S, so that the time scale is partitioned by S without time gaps" Name="FCsamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9SHh8MY9EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-239 FC mean sample size: (see GIS-350-1308) Natural number k which determines how many recent samples are included in the current mean of last k samples, while monitoring abnormal frequency changes" Name="FCmeansamplesize" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_DpwZcMY-EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-240 FC sample control factor: (see GIS-350-1308) real number f which is a factor to the standard deviation of the sample mean and determines the distance from the mean as upper and lower limit of acceptable frequency changes per sample" Name="FCsamplecontrolfactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_K19hcMY-EeOpjZKz3hOPiA</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.5</Value>
+      <MinValue>1.4E-45</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-241 Minimum task for prior: (see GIS-350-1309) natural number as a threshold for a minimum of observed task data to estimate reliable and representative prior probabilities in the User Model. Below this threshold each prior probability is lowered by a reward weight factor Wp" Name="Minimumtaskforprior" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XliycMY-EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>10000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-242 Action tree factor: (see GIS-350-903) natural number n and constant natural number f_act as a weight factor f_act^n in the action tree to normalize the absolute counts of all actions regarding their position in the tree" Name="Actiontreefactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qZO68MY-EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>12</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-243 Ignore action for factor: (see GIS-350-903) list of nodes representing partial actions in the action tree, for which the action tree factor (GIS-350-241) is not increased by 1" Name="Ignoreactionforfactor" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-rQQsBXKEeWrE5gvqLmfyg</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/4/2016</Date>
+      <Description>Changed the  cal parameter type for the Ignoreactionforfactor CAL from from Enumeration to EnumIntegerMap.</Description>
+      <Author>Ute Winter</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_-uSjQA9LEeWwaaRaR87fAw</EnumID>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>2</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>3</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>4</Value>
+      </Entry>
+      <Entry>
+        <Key>5</Key>
+        <Value>5</Value>
+      </Entry>
+      <Entry>
+        <Key>6</Key>
+        <Value>6</Value>
+      </Entry>
+      <Entry>
+        <Key>7</Key>
+        <Value>7</Value>
+      </Entry>
+      <Entry>
+        <Key>8</Key>
+        <Value>8</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-244 Score redistribution range: (see GIS-350-1202) real or natural numbers in the same range as the speech systems confidence scores. They represent the upper and lower bound  [Max post  Min post ] for the range of confidence scores after redistribution of the adapted scores" Name="Scoreredistributionrange" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_47ylcMY-EeOpjZKz3hOPiA</CalID>
+    <Type>IntegerArray</Type>
+    <Version>2</Version>
+    <IntegerArray>
+      <ArrayLength>2</ArrayLength>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>3000</ArrayValue>
+      <ArrayValue>8000</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-245 Action no score decrease: (see GIS-350-1203) list of actions for which original confidence score are not replaced by scores after adaptation if this leads to a decrease in the score. The original score is only replaced if this leads to an increase in the score. The value of this parameter may be &#x201c;all&#x201d; actions" Name="Actionnoscoredecrease" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_QqeoUMY_EeOpjZKz3hOPiA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-303 Domain number of tasks: (see GIS-350-2500) List of natural numbers TD for each domain, for which expertise level adaptation is done. If the number of performed tasks within a given time frame is larger than TD, prompts for this domain may be set from &#x201c;Informative&#x201d; to &#x201c;Efficient&#x201d;" Name="Domainnumberoftasks" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_y9mcEA9OEeWwaaRaR87fAw</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2015</Date>
+      <Description>Changed the CAL parameter type of the Domainnumberoftasks CAL from an Integer to EnumIntegerMap and correctly linked to the enumdef file.</Description>
+      <Author>Ute Winter</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_eFXo8A9OEeWwaaRaR87fAw</EnumID>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>3</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>3</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>3</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>5</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-304 Expertise time windows: (see GIS-350-2100) List of natural numbers representing a number of days per each domain, for which parameter GIS-350-303 is set. This list contains the number of days, in which the system counts the number of tasks per domain" Name="Expertisetimewindows" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_b00rAA9AEeWoP-wCPdsxpQ</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/18/2015</Date>
+      <Description>Updated to link Expertisetimewindows CAL to correct enumdef file.</Description>
+      <Author>Ute Winter</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_oOXQAA8_EeWoP-wCPdsxpQ</EnumID>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>60</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>60</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>60</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>60</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="GIS-350-305 Activation Expertise Adaptation: (see GIS-350-2700) Parameter to manually and externally deactivate and reactivate the adaptation process. Default value is 1 for activation of adaptation process. When value is set to 0, adaptation is deactivated and data is reset" Name="ActivationExpertiseAdaptation" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_e39u0MZMEeO6mvg1ehG6GQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

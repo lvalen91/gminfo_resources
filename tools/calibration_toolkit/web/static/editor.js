@@ -35,7 +35,35 @@ function download(blob, name) {
   const a = document.createElement("a");
   a.href = url; a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
+  // revoking synchronously can cancel the download before the browser has read the blob
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+function baseName(path) {
+  // zip members keep their directory ("spsCacheInternal/04"); a download name cannot
+  return String(path).split(/[\\/]/).pop() || "module";
+}
+
+// A CalDef name is not unique: ~154 names exist in two groups with different CalIDs, so
+// "is this search result already in the module" must compare name AND group.
+function sameCalDef(e, name, group) {
+  return e.name === name && (e.group || null) === (group || null);
+}
+
+// POST a JSON body and download the response. Every failure, including the network
+// itself, ends in an alert rather than an unhandled rejection that looks like nothing.
+async function postAndDownload(url, body, name) {
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+    });
+  } catch (err) {
+    alert("network error talking to the local server: " + err.message);
+    return;
+  }
+  if (!res.ok) { alert(await _errorText(res)); return; }
+  download(await res.blob(), name);
 }
 
 async function _errorText(res) {
@@ -53,6 +81,9 @@ async function ingest() {
   const input = document.getElementById("fileInput");
   if (!input.files.length) { alert("choose a file first"); return; }
   const file = input.files[0];
+  // loading replaces every open module; the desktop UI asks first, so does this
+  if (modules.some(m => modifiedCount(m) > 0) &&
+      !confirm("Replace the open modules? Their edits are lost unless you have already downloaded them.")) return;
   const status = document.getElementById("uploadStatus");
   status.textContent = " loading…";
 
@@ -191,6 +222,7 @@ function updateModuleShell(root, mod, idx) {
     <span class="slot-badge">${escapeHtml(slotLabel)}</span>
     <span class="filename">${escapeHtml(mod.filename)}</span>
     <span class="entry-count">${mod.entries.length} entries</span>
+    ${mod.meta.digest_ok === false ? `<span class="triage-badge avoid">digest mismatch</span>` : ""}
     ${mCount ? `<span class="modified-count">${mCount} modified</span>` : ""}
     ${mod.slot_triage ? `<span class="triage-badge ${TRIAGE_CLASS[mod.slot_triage] || ""}">${escapeHtml(TRIAGE_LABEL[mod.slot_triage] || mod.slot_triage)}</span>` : ""}
   `;
@@ -663,10 +695,14 @@ function buildStructuredPanel(e, mod, entryIdx, row, previewEl) {
   const resetBtn = document.createElement("button");
   resetBtn.className = "reset-btn"; resetBtn.textContent = "Reset to loaded value";
   resetBtn.onclick = () => {
-    mod.entries[entryIdx].value_raw = cloneValue(mod.entries[entryIdx].original_value_raw);
-    mod.entries[entryIdx].is_new = false;
-    togglePanel(row, () => buildStructuredPanel(mod.entries[entryIdx], mod, entryIdx, row, previewEl));
-    previewEl.textContent = structuredPreview(mod.entries[entryIdx]);
+    const entry = mod.entries[entryIdx];
+    entry.value_raw = cloneValue(entry.original_value_raw);
+    entry.value = structuredPreview(entry);
+    // rebuild the panel in place: its inputs still show the edited values, and
+    // togglePanel() here only closed it, so Reset looked like "Close"
+    const fresh = buildStructuredPanel(entry, mod, entryIdx, row, previewEl);
+    panel.replaceWith(fresh);
+    previewEl.textContent = entry.value;
     markModified(mod, entryIdx, row);
   };
   footer.appendChild(resetBtn);
@@ -744,8 +780,20 @@ async function runAddPanelSearch(mod, idx, panel, rawQuery) {
     resultsEl.innerHTML = '<p class="muted add-panel-hint">Type at least 2 characters.</p>';
     return;
   }
-  const res = await fetch("/api/caldef/search?q=" + encodeURIComponent(q));
-  const results = await res.json();
+  let results;
+  try {
+    const res = await fetch("/api/caldef/search?q=" + encodeURIComponent(q));
+    if (!res.ok) throw new Error(await _errorText(res));
+    results = await res.json();
+  } catch (err) {
+    if (panel.querySelector(".add-panel-search").value.trim() !== q) return;
+    resultsEl.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "muted add-panel-hint";
+    p.textContent = "Search failed: " + err.message;
+    resultsEl.appendChild(p);
+    return;
+  }
   if (panel.querySelector(".add-panel-search").value.trim() !== q) return; // stale response
   resultsEl.innerHTML = "";
   if (!results.length) {
@@ -797,7 +845,7 @@ function buildAddPanelRow(mod, idx, r) {
 
   const actions = document.createElement("div");
   actions.className = "searchrow-actions";
-  const alreadyPresent = mod.entries.some(e => e.name === r.name);
+  const alreadyPresent = mod.entries.some(e => sameCalDef(e, r.name, r.group));
   const supported = ["Boolean", "Integer", "Float", "Enumeration", "String"].includes(r.type);
 
   if (alreadyPresent) {
@@ -805,7 +853,7 @@ function buildAddPanelRow(mod, idx, r) {
     const showBtn = document.createElement("button");
     showBtn.type = "button";
     showBtn.textContent = "In this module · Show";
-    showBtn.onclick = () => scrollToAndFlashEntry(mod, r.name);
+    showBtn.onclick = () => scrollToAndFlashEntry(mod, r.name, r.group);
     actions.appendChild(showBtn);
   } else if (!supported) {
     const note = document.createElement("span");
@@ -823,9 +871,21 @@ function buildAddPanelRow(mod, idx, r) {
       // showing the dialog, and a failed resolution (e.g. one of the ~154 CalDef names
       // that collide across two groups, which /api/caldef/entry rejects as ambiguous)
       // must be caught before the button is ever marked "Added".
-      const res = await fetch("/api/caldef/entry?name=" + encodeURIComponent(r.name));
-      const e = await res.json();
+      let e;
+      try {
+        const res = await fetch("/api/caldef/entry?name=" + encodeURIComponent(r.name) +
+                                "&group=" + encodeURIComponent(r.group));
+        e = await res.json();
+        if (!res.ok && !e.error) e = { error: `HTTP ${res.status}` };
+      } catch (err) {
+        e = { error: "could not look up this CalDef entry: " + err.message };
+      }
       if (e.error) { alert(e.error); addBtn.disabled = false; return; }
+      if (mod.entries.some(x => x.cal_id === e.cal_id)) {
+        alert(`${e.name} (CalID ${e.cal_id}) is already in this module`);
+        addBtn.disabled = false;
+        return;
+      }
       if (e.safety_restricted) {
         const ok = await confirmDialog(
           "Add an elevated-caution entry?",
@@ -839,7 +899,7 @@ function buildAddPanelRow(mod, idx, r) {
       row.classList.add("already-present");
       addBtn.textContent = "Added · Show";
       addBtn.disabled = false;
-      addBtn.onclick = () => scrollToAndFlashEntry(mod, r.name);
+      addBtn.onclick = () => scrollToAndFlashEntry(mod, r.name, r.group);
     };
     actions.appendChild(addBtn);
   }
@@ -857,13 +917,24 @@ function insertCalDefEntryIntoModule(mod, idx, e) {
     enum_options: e.enum_options || [], safety_restricted: e.safety_restricted,
   });
   const entryIdx = mod.entries.length - 1;
-  const rowEl = mod._domRefs.addRowToGroup(e.group || "(unresolved CalID)", entryIdx);
+  const refs = mod._domRefs;
+  const rowEl = refs.addRowToGroup(e.group || "(unresolved CalID)", entryIdx);
+  // the type filter's options were built from the types present at build time; a new
+  // type would otherwise be unfilterable
+  const typeSelect = refs.toolbar.querySelector(".filter-type");
+  if (typeSelect && ![...typeSelect.options].some(o => o.value === e.type)) {
+    const o = document.createElement("option");
+    o.value = e.type; o.textContent = e.type;
+    typeSelect.appendChild(o);
+  }
+  // an initially empty module shows a "use Add entry" hint that is stale once it has one
+  if (!refs.clearFilter) refs.toolbar.querySelector(".filter-no-match").style.display = "none";
   revealRow(mod, rowEl);
   renderModuleList(); // only refreshes header badges (updateModuleShell) -- the open panel is untouched
 }
 
-function scrollToAndFlashEntry(mod, name) {
-  const entryIdx = mod.entries.findIndex(e => e.name === name);
+function scrollToAndFlashEntry(mod, name, group) {
+  const entryIdx = mod.entries.findIndex(e => sameCalDef(e, name, group));
   if (entryIdx === -1) return;
   const ref = mod._domRefs.allRowEls.find(r => r.entryIdx === entryIdx);
   if (!ref) return;
@@ -968,22 +1039,19 @@ function _entryForExport(e) {
 
 async function exportModule(idx, format) {
   const mod = modules[idx];
+  if (format === "container" && !mod.template_b64) {
+    alert("no container header available for this module"); return;
+  }
   if (!(await confirmExportIfNeeded(mod.entries))) return;
   const body = {
     entries: mod.entries.map(_entryForExport),
     format: format === "container" ? "container" : "xml",
     safety_ack: true,
   };
-  if (format === "container") {
-    if (!mod.template_b64) { alert("no container header available for this module"); return; }
-    body.template_b64 = mod.template_b64;
-  }
-  const res = await fetch("/api/export", {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
-  });
-  if (!res.ok) { alert(await _errorText(res)); return; }
-  const name = format === "container" ? mod.filename : mod.filename.replace(/\.[^.]*$/, "") + ".calovride";
-  download(await res.blob(), name);
+  if (format === "container") body.template_b64 = mod.template_b64;
+  const base = baseName(mod.filename);
+  const name = format === "container" ? base : base.replace(/\.[^.]*$/, "") + ".calovride";
+  await postAndDownload("/api/export", body, name);
 }
 
 async function exportAllZip() {
@@ -995,9 +1063,5 @@ async function exportAllZip() {
     })),
     safety_ack: true,
   };
-  const res = await fetch("/api/export_zip", {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
-  });
-  if (!res.ok) { alert(await _errorText(res)); return; }
-  download(await res.blob(), "custom_calibration_set.zip");
+  await postAndDownload("/api/export_zip", payload, "custom_calibration_set.zip");
 }

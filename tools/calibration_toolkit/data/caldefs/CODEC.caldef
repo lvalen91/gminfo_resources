@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>4/16/2014</Date>
+    <Description></Description>
+    <Author>Karen Juzswik</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated ENABLE_AUDIO_CODEC_FLAC, ENABLE_AUDIO_CODEC_REALAUDIO, ENABLE_AUDIO_CODEC_VORBIS, ENABLE_VIDEO_CODEC_FLV, ENABLE_VIDEO_CODEC_H263_3GP, ENABLE_VIDEO_CODEC_H263_MP4, ENABLE_VIDEO_CODEC_MPEG1_MP4, ENABLE_VIDEO_CODEC_MPEG1_MPEG, ENABLE_VIDEO_CODEC_MPEG2_MP4,ENABLE_VIDEO_CODEC_MPEG4_3GP, ENABLE_VIDEO_CODEC_MPEG4_AVI, ENABLE_VIDEO_CODEC_MPEG4_MP4, ENABLE_VIDEO_CODEC_REALVIDEO, and ENABLE_VIDEO_CODEC_WEBM cals in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>9/29/2017</Date>
+    <Description>Within the CODEC.caldef  file, added GEM usage to the following calibrations within this caldef: (1.) ENABLE_AUDIO_CODEC_AAC, (2. ) ENABLE_AUDIO_CODEC_APPLELOSSLESS, (3.) ENABLE_AUDIO_CODEC_MP3,  (4.) ENABLE_AUDIO_CODEC_MP4, (5) ENABLE_AUDIO_CODEC_WAV, (6) ENABLE_VIDEO_CODEC_H264_3GP,  (7) ENABLE_VIDEO_CODEC_H264_AVI, and (8) ENABLE_VIDEO_CODEC_H264_MP4. Since these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Enable AAC LC, AAC, and AAC v2 codecs, in containers as specified in GIS-615" Name="ENABLE_AUDIO_CODEC_AAC" References="GIS-615-2100" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yqpwI01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Apple Lossless codec" Name="ENABLE_AUDIO_CODEC_APPLELOSSLESS" References="GIS-615-2100" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yqpwJU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MP3 codec" Name="ENABLE_AUDIO_CODEC_MP3" References="GIS-615-2100" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yqpwJ01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MP4 codec" Name="ENABLE_AUDIO_CODEC_MP4" References="GIS-615-2100" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yqpwKE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Flac codec" Name="ENABLE_AUDIO_CODEC_FLAC" References="GIS-615-2100" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_5M72EMrvEeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_AUDIO_CODEC_FLAC cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Real Audio codec" Name="ENABLE_AUDIO_CODEC_REALAUDIO" References="GIS-615-2100" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_d7pyAMr2EeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_AUDIO_CODEC_REALAUDIO cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Vorbis codec, for ogg and mka extensions" Name="ENABLE_AUDIO_CODEC_VORBIS" References="GIS-615-2100" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yqpwKU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_AUDIO_CODEC_VORBIS cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable PCM/WAV codec" Name="ENABLE_AUDIO_CODEC_WAV" References="GIS-615-2100" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yqpwKk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable FLV container, for codecs specified in GIS-615" Name="ENABLE_VIDEO_CODEC_FLV" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yqzhI01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_FLV cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable H.263 codec in 3GP container" Name="ENABLE_VIDEO_CODEC_H263_3GP" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yqzhJE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_H263_3GP cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable H263 codec in MP4 container" Name="ENABLE_VIDEO_CODEC_H263_MP4" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_lyirMMr1EeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_H263_MP4 cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable H264 codec in 3GP container" Name="ENABLE_VIDEO_CODEC_H264_3GP" References="GIS-615-2300" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_I8M8kMr2EeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable H264 codec in AVI container" Name="ENABLE_VIDEO_CODEC_H264_AVI" References="GIS-615-2300" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yqzhJU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable H264 codec in MP4 container" Name="ENABLE_VIDEO_CODEC_H264_MP4" References="GIS-615-2300" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yqzhJk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MPEG1 codec in MP4 container" Name="ENABLE_VIDEO_CODEC_MPEG1_MP4" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yqzhJ01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_MPEG1_MP4 cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MPEG1 codec in MPEG container" Name="ENABLE_VIDEO_CODEC_MPEG1_MPEG" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yqzhKE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_MPEG1_MPEG cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MPEG2 codec in MP4 container" Name="ENABLE_VIDEO_CODEC_MPEG2_MP4" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yqzhKk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_MPEG2_MP4 cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MPEG4 codec in 3GP container" Name="ENABLE_VIDEO_CODEC_MPEG4_3GP" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_tRyrAMr1EeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_MPEG4_3GP cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MPEG4 codec in AVI container" Name="ENABLE_VIDEO_CODEC_MPEG4_AVI" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_hvo2cMr1EeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_MPEG4_AVI cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable MPEG4 codec in MP4 container" Name="ENABLE_VIDEO_CODEC_MPEG4_MP4" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yqzhLU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_MPEG4_MP4 cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable Real Video codec" Name="ENABLE_VIDEO_CODEC_REALVIDEO" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_BgFJQMr2EeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_REALVIDEO cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable WebM container" Name="ENABLE_VIDEO_CODEC_WEBM" References="GIS-615-2300" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_89dSoMr1EeOpWbus8QHizA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_VIDEO_CODEC_WEBM cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/24/2016</Date>
+      <Description>Updated the default values for all the CODEC enable calibrations to be True (configured as enabled) instead of False (configured as disabled) per email on 7/27/2016 from the current  System Engineer (Karitkay Chaudhry) working on this feature that Codec should be enable by default.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

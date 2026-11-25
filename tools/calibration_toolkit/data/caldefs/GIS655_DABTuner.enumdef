@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Enumdef file containing all DAB tuner related enums.">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>25.03.2015</Date>
+    <Description>This enum was created for the April 15, 2015 release to support DAB band III selection for various markets.  As such, the enum for DABFrequencyBand was added.</Description>
+    <Author>Christian Gross</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2015-July-22</Date>
+    <Description>Added DAB AnnouncementFilter and DAB Channels enums.</Description>
+    <Author>Kiran Soni</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration containing the different DAB frequency bands for EU, Australia, and New Zealand" Name="DABFrequencyBand">
+    <EnumID>_EdTK8NI3EeS7moXKCsUKKg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Option for adjusting DAB frequency band to EU settings." Name="Band_III_EU">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Option for adjusting DAB frequency band to Australia / New Zealand settings." Name="Band_III_AU_NZ">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of DAB Channels" Name="DABChannels">
+    <EnumID>_GYEAcNOVEeSPn-nUOvTPiQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="DAB Channel 5A" Name="DABChannels_5A">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="DAB Channel 5B" Name="DABChannels_5B">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="DAB Channel 5C" Name="DABChannels_5C">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_5D">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_6A">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_6B">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_6C">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_6D">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_7A">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_7B">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_7C">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_7D">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_8A">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_8B">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_8C">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_8D">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_9A">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_9B">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_9C">
+      <Value>18</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_9D">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_10A">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_10B">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_10C">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_10D">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_10N">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_11A">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_11B">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_11C">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_11D">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_11N">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_12A">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_12B">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_12C">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_12D">
+      <Value>33</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_12N">
+      <Value>34</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_13A">
+      <Value>35</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_13B">
+      <Value>36</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_13C">
+      <Value>37</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_13D">
+      <Value>38</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_13E">
+      <Value>39</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABChannels_13F">
+      <Value>40</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of DAB announcement filters." Name="DABAnnouncementFilter">
+    <EnumID>_1t7zMNOZEeSDguH-pictGw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Alarm filter" Name="DABAnnouncementFilter_Alarm">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Road Traffic Flash Annoucement Filter" Name="DABAnnouncementFilter_RoadTrafficFlash">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Transport Flash " Name="DABAnnouncementFilter_Transport_Flash">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DABAnnouncementFilter_Warning_Service">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="News Flash" Name="DABAnnouncementFilter_News_Flash">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Area weather flash" Name="DABAnnouncementFilter_Area_Weather_Flash">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Event Announcement" Name="DABAnnouncementFilter_Event_Announcement">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Special Event" Name="DABAnnouncementFilter_Special_Event">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Program Information" Name="DABAnnouncementFilter_Program_Information">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Sport report" Name="DABAnnouncementFilter_Sport_Report">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Financial report" Name="DABAnnouncementFilter_Financial_Report">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -2,7 +2,7 @@
 
 Format facts this module encodes (verified byte-for-byte against all 28 genuine LTZ+HC
 containers for this platform, independently re-verified by a second from-scratch
-implementation — see research/eeprom-calibration/CALIBRATION_CUSTOMIZATION_GUIDE.md §5):
+implementation — see docs/CALIBRATION_CUSTOMIZATION_GUIDE.md §5):
 
 - CRLF line endings throughout, no bare LF/CR anywhere in the document.
 - Uniform indent of 2 spaces per nesting depth (root=0, OverrideValue=2, CalID/Version/
@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import base64
 import binascii
+import math
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from typing import Union
@@ -69,9 +70,19 @@ def validate_value(type_: str, value) -> None:
             raise CalOvrideError(f"Integer value must parse as an integer, got {value!r}") from None
     elif type_ == "Float":
         try:
-            float(str(value))
+            f = float(str(value))
         except ValueError:
             raise CalOvrideError(f"Float value must parse as a number, got {value!r}") from None
+        if not math.isfinite(f):
+            raise CalOvrideError(f"Float value must be a finite number, got {value!r}")
+    elif type_ == "Enumeration":
+        # Enumeration values are always integers in this format (the enum label is a
+        # display name keyed by the integer); a non-integer would serialize to a value
+        # the module can't interpret. int(str(...)) also rejects embedded newlines.
+        try:
+            int(str(value))
+        except ValueError:
+            raise CalOvrideError(f"Enumeration value must be an integer, got {value!r}") from None
     elif type_ in SCALAR_TYPES or type_ == "String":
         if not isinstance(value, str):
             raise CalOvrideError(f"{type_} value must be a string, got {type(value).__name__}")
@@ -186,7 +197,11 @@ def _parse_value(type_: str, elem: ET.Element):
         for c in elem:
             if _local(c.tag) != "ArrayValue":
                 continue
-            out.append(_require(c.text, f"<{type_}><ArrayValue>"))
+            # An empty <ArrayValue/> is a legitimate empty-string element, not a missing
+            # one: ElementTree gives .text == None for it. serialize() round-trips an
+            # empty-string element, so parse() must accept it too, or the tool cannot
+            # re-ingest its own output (and would reject a genuine empty array element).
+            out.append(c.text if c.text is not None else "")
         return out
     if type_ in MAP_TYPES:
         pairs = []

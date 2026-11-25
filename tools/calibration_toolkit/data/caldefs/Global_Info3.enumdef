@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/24/2015</Date>
+    <Description>Removed GM_VEHICLE_BRAND from Global_Info3 as the Brand cal is already being used in GIS500_UI. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="SoftwareArchitecture">
+    <EnumID>_PMo5oMvXEeO6_edpFoCmQg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Control Area Network based system." Name="GlobalA">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Systems using an AutoSAR. " Name="GlobalB">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

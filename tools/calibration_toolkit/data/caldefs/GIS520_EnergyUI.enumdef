@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This enumdef files defines the possible enumeration values defined for the enumeration calibrations in the GIS520_EnergyUI.caldef file.">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>7/1/2016</Date>
+    <Description>Intial release of this enumdef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>09/10/2018</Date>
+    <Description>Per CR#1827410, made one update within the GIS520_EnergyUI.enumdef file, added NonEnergyVehicle to I3_HYBRID_SYSTEM_HMI enumeration</Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Calibrateable enumeration screen options based on the type of Hybrid Powertrain." Name="I3_HYBRID_SYSTEM_HMI">
+    <EnumID>_nm9cIEBIEeaGBJmmd0Rx-Q</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $00 = Non Energy Vehicle" Name="NonEnergyVehicle">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $01 = BEVFWD" Name="BEVFWD">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As SHown in GIS520 Section 5.1.1.1 BEVFWD2 enumeration is added" Name="BEVFWD2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As SHown in GIS520 Section 5.1.1.1 BEVFWD3 enumeration is added" Name="BEVFWD3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $10 = BEVFWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $10." Name="BEVRWD">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $20 = EREVFWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $20." Name="EREVFWD">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $30 = EREVRWD. Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $30." Name="EREVRWD">
+      <Value>48</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $40 = PHEVFWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $40." Name="PHEVFWD">
+      <Value>64</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $50 = PHEVRWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $50." Name="PHEVRWD">
+      <Value>80</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $60 = HEVFWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $60." Name="HEVFWD">
+      <Value>96</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $70 = HEVRWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $70." Name="HEVRWD">
+      <Value>112</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $80 = BAS3FWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $80." Name="BAS3FWD">
+      <Value>128</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="As shown in GIS-520: Cal Option: $90 = BAS3RWD Note: Also note as reference the value shown in the value field in the enumeration value list is the Decimal (Hexadecimal converted equivalent) of $90." Name="BAS3RWD">
+      <Value>144</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="I3_HYBRID_SYSTEM_HMI_145">
+      <Value>145</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration values for the CHRG_CALC_DEFAULT enumeration calibration" Name="CHRG_CALC_DEFAULT">
+    <EnumID>_zcXRgEDEEeaX676o0O3GfQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="$0 = Both" Name="Both">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$1 = Charge Station," Name="Charge_Station">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="$2 = Portable Cord," Name="Portable_Cord">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

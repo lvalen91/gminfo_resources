@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="System" Description="This file contains global remote server settings.  As of the initial release, the file consists of XXX_SERVER_NAME and XXX_HOST_PORT pairs that are combined by application clients within the CSM to form the full URL  Note that calibrations are only defined for critical CSM functionality that cannot otherwise be updated from the AppShop.  For apps delivered from the app show itself, the general strategy is that those apps will carry their server URLs within their respective application payloads. ">
+  <CalDefFileVersion>10</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>12/3/2014</Date>
+    <Description>Initial release for Info 3.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2FEB15</Date>
+    <Description>Deleted the OVER_THE_AIR_REFLASH_SERVER cals due to duplication with cals in GIS668_RemoteOMADMServerInterface.caldef</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>23MAR15</Date>
+    <Description>BACK_OFFICE_SERVER_ENABLED calibration to allow apps to determine if a back office server is available for a particular vehicle or not. Also, added APP_SHOP_SERVER_ENABLED calibration to determine if a AppShop server is available for a particular vehicle or not.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/12/2015</Date>
+    <Description>Based on feedback from Aaron Worsham, within the RemoteServerSettings.caldef, updated the default value for APP_SHOP_SERVER_NAME CAL in this caldef file from a value of vehicle.api.gm.com to sit-gm.cs21.force.com.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>7/30/2015</Date>
+    <Description>Added the following ACCOUNT_AUTHENTICATOR_SERVER_NAME, ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT, PERSONALIZATION_SYNCH_SERVER_NAME, and PERSONALIZATION_SYNCH_SERVER_HOST_PORT.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>5/8/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>5/8/2017</Date>
+    <Description>Within the RemoteServerSettings.caldef made the following calibraion update:  added two new calibrations (SECURITY_EVENT_LOGGING_SERVER_HOST_PORT and SECURITY_EVENT_LOGGING_NAME) under the authorization of RTC CR#: 833667. </Description>
+    <Author>Xueying Hou</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>9/25/2017</Date>
+    <Description>Per MY20 Defect#: 28590, changed the name of the SECURITY_EVENT_LOGGING_NAME calibration to SECURITY_EVENT_LOGGING_SERVER_NAME to match the correct calibration reflected in the SFS22 specification</Description>
+    <Author>Xueying Hou</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>03/26/2019</Date>
+    <Description>Per CR#1945094, within RemoteServerSettings.caldef adding LOW and GEM Radio to the USAGE field for BACK_OFFICE_SERVER_ENABLED</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This is the {host_port} number within the Security Event Logging server URL." Name="SECURITY_EVENT_LOGGING_SERVER_HOST_PORT" References="SFS-22, section 5.4.6" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_mg4KADQNEeemgIPqCE0u4A</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/8/2017</Date>
+      <Description>Intial release of this calbiration</Description>
+      <Author>Xueying Hou</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20445</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the base {server_name} portion of the Security Event Logging server URL.  The full format of the url is defined within SFS-22." Name="SECURITY_EVENT_LOGGING_SERVER_NAME" References="SFS-22, section 5.4.6" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_FrzxcDQNEeemgIPqCE0u4A</CalID>
+    <Type>String</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/8/2017</Date>
+      <Description>Intial release of this calbiration</Description>
+      <Author>Xueying Hou</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/25/2017</Date>
+      <Description>Per MY20 Defect#: 28590, changed the name of the SECURITY_EVENT_LOGGING_NAME calibration to SECURITY_EVENT_LOGGING_SERVER_NAME to match the correct calibration reflected in the SFS22 specification.</Description>
+      <Author>Xueying Hou</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>500</MaxLength>
+      <StringValue>vehicle.api.gm.com</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="True if a GM back office server is available for this vehicle, false if not (generally for a non-connected region)" Name="BACK_OFFICE_SERVER_ENABLED" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_5fHiAc8IEeS-cPt7sAFc7A</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#1945094, adding LOW and GEM Radio to the USAGE field for BACK_OFFICE_SERVER_ENABLED</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is the base {server_name} portion of the device registration server URL.  The full format of the url is defined within SFS-2." Name="DEVICE_REGISTRATION_SERVER_NAME" References="SFS-2" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_auhmwHpSEeSU5OG4R8i3Bw</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>500</MaxLength>
+      <StringValue>vehicle.api.gm.com</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="This is the {host port} number within the device registration server URL." Name="DEVICE_REGISTRATION_SERVER_HOST_PORT" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_s6vJcHpbEeSWd5Vg9ZVyOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>443</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the base {server_name} portion of the app shop server URL." Name="APP_SHOP_SERVER_NAME" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_5O9i4XpVEeSU5OG4R8i3Bw</CalID>
+    <Type>String</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Per request from Aaron Worsham, updated the default value for APP_SHOP_SERVER_NAME CAL from a value of vehicle.api.gm.com to sit-gm.cs21.force.com.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>500</MaxLength>
+      <StringValue>sit-gm.cs21.force.com</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="This is the {host port} number within the app shop server URl for all mutual authenticated TLS traffic. " Name="APP_SHOP_SERVER_MUTUAL_AUTH_HOST_PORT" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ZZiv0XpdEeSxt7AdELm9Zg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>20647</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the {host port} number within the app shop server URl for all simple authentication TLS traffic. " Name="APP_SHOP_SERVER_SIMPLE_AUTH_HOST_PORT" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zWblEXpcEeSxt7AdELm9Zg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>443</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="True if the AppShop server (and the corresponding app) is enabled for this vehicle.  False if no app shop server available." Name="APP_SHOP_SERVER_ENABLED" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-brZQNGSEeSOseqHIXcgaA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This is the base {server_name} portion of the remote speech rec server URL." Name="SPEECH_REC_SERVER_NAME" References="" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9ajyYIBwEeSJA6mg-_vcmQ</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>500</MaxLength>
+      <StringValue>vehicle.api.gm.com</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="This is the {host port} portion of the remote speech rec server URL.  This is the public Internet facing port." Name="SPEECH_REC_SERVER_HOST_PORT" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_D7fv0IBxEeSJA6mg-_vcmQ</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>443</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the base server name for the Account Authenticator server URL used by Personalization." Name="ACCOUNT_AUTHENTICATOR_SERVER_NAME" References="SFS-1" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_0zYY8dlLEeSof9WxF9vnow</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>500</MaxLength>
+      <StringValue>vehicle.api.gm.com</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="This is the {host port} portion of the Account Authenticator server URL used by Personalization. " Name="ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT" References="SFS-1" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-rDosdlLEeSof9WxF9vnow</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>20647</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the base server name for the Personaliation synchronization server URL used by Personalization." Name="PERSONALIZATION_SYNCH_SERVER_NAME" References="SFS-1" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gz2S8dlMEeSof9WxF9vnow</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>500</MaxLength>
+      <StringValue>vehicle.api.gm.com</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="This is the {host port} portion of the Personalization Synch server URL used by Personalization." Name="PERSONALIZATION_SYNCH_SERVER_HOST_PORT" References="SFS-1" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_mUep8dlMEeSof9WxF9vnow</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>20647</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

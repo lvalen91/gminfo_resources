@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Intended to specify enumeration values needed for the enumeration calibrations in the GIS550_ClimateTouchScreenUI_GlobalB.caldef file.">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>7/1/2016</Date>
+    <Description>Intial release of this enumdef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/24/2016</Date>
+    <Description>Added the possible enumeration values for the Defrost_Label_GlobalB enumeration calibration from the GIS-550 being added in this release</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration values defined for the Windshield_Symbol_GlobalB enumeration calibration" Name="Windshield_Symbol_GlobalB">
+    <EnumID>_XqkToJ_9Eea-Ao5FQchwtQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Windshield_Symbol = $00" Name="Three_Squiggly_Arrows">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Windshield_Symbol = $01" Name="Single_Arrow">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration values defined for the Defrost_Label_GlobalB enumeration calibration" Name="Defrost_Label_GlobalB">
+    <EnumID>_2XAuMEFHEeaX676o0O3GfQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Defrost_Label = $00" Name="ISO_Only">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Defrost_Label = $01" Name="Front_Plus_ISO">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Defrost_Label = $02" Name="Max_Plus_ISO">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Possible enumeration values for the Air_Conditioning_Compressor_Type enumeration calibration" Name="Air_Conditioning_Compressor_Type">
+    <EnumID>_p6k18EE3EeaX676o0O3GfQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="&#x2022; None - The Front Climate Screen does NOT display an A/C button and status. (Air Conditioning Compressor Type: None)" Name="None">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="&#x2022; NOT Equal to None - The Front Climate Screen displays the A/C as only OFF or ON. (Air Conditioning Compressor Type: Fixed_Displacement_Clutched; Variable_Displacement_Mechanical; Variable_Displacement_Electronic; or Electric_Driven_Motor)" Name="NOT_Equal_to_None">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Possible enumeration values for the Number_of_Rear_Temp_Zones enumeration calibration" Name="Number_of_Rear_Temp_Zones">
+    <EnumID>_PuLesEEwEeaX676o0O3GfQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="&#x2022; 0 - No Rear Temp Zone (Number of Rear Temp Zones: 0)" Name="No_Rear_Temp_Zone">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="&#x2022; 1 - Single Front Zone (Number of Rear Temp Zones: 1)" Name="Single_Front_Zone">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="&#x2022; 2 - Dual Front Zone (Number of Rear Temp Zones: 2)" Name="Dual_Front_Zone">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Possible enumeration values for the KeHVC_Cnt_CfgNumOfFrontZones enumeration calibration" Name="KeHVC_Cnt_CfgNumOfFrontZones">
+    <EnumID>_DgOJgEEvEeaX676o0O3GfQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Note: This is not an enumeration currently being used per latest version GIS-550. However there is an issue the current version CalDef Tool that requires an enumeration value of 0 to be set in the enumeration value listing before an enumeration calibration can be defined with the CalDef Tool. If GIS-550 continues not to need to use an enumeration value of 0 for this calibration. This enumeration value of 0, will removed in the next MY19 CAL Database release when this has been fixed in the CalDef Tool to not require this anymore for an enumeration calibration to be defined with the CalDef Tool." Name="Not_Applicable_ThisEnumeration_IsNotCurrentlyBeingUsed_PerLatestVersionGIS550">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="&#x2022; 1 - Single Front Zone (KeHVC_Cnt_CfgNumOfFrontZones: 1)" Name="Single_Front_Zone">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="&#x2022; 2 - Dual Front Zone (KeHVC_Cnt_CfgNumOfFrontZones: 2)" Name="Dual_Front_Zone">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

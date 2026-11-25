@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This is the set of enums associated with the GIS502TunerHMI.caldef file.">
+  <EnumDefFileVersion>5</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>20Feb2015</Date>
+    <Description>Updated GIS502_TunerHMI.enumdef to remove ATC and DSP Mode cals that were previously shown in this enum as they are already covered in the AudioHMICals.enumdef. And removed BrowseLockout and VideoLockout cals that were previously shown in this enum, enums for these cals are covered under the DriverWorkload.Enums. Also, added NumberFavPagesShown cal in this enum.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>April 15, 2015</Date>
+    <Description>The following changes have been implemented to support the April 15, 2015 calibration release: added the StationListViewSort enumeration CAL.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/24/2016</Date>
+    <Description>Added enumeration values for DAB_EPG_Length_EventDescriptionDetailedView to go along with the DAB_EPG_Length_EventDescriptionDetailedViewInDrivingMode and DAB_EPG_Length_EventDescriptionDetailedViewInParkingMode calibrations shown as needed in the GIS-502 Audio UI starting for MY19.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/19/2019</Date>
+    <Description>Per CR# 2303128 AOSP transition, in MY22 GIS-646 Cal DB V6.0.3, deprecating cal DAB_EPG_Length_EventDescriptionDetailedView</Description>
+    <Author>Christine Marzan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This enum defines the possible enumeration values for the DAB_EPG_LengthEventDescriptionDetailedViewInDrivingMode and DAB_EPG_LengthEventDescriptionDetailedViewInParkingMode calibrations  " Name="DAB_EPG_Length_EventDescriptionDetailedView">
+    <EnumID>_nYvqMJlOEea-Ao5FQchwtQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Short (180 chars)" Name="Off_Only_List_View_Short_180_Chars">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Long (1800 chars)" Name="Off_Only_List_View_Long_180_Chars">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This enum defines how the station list should be sorted based on a specific market." Name="StationListViewSort">
+    <EnumID>_X4a-4N7EEeSfuIbaAz9ajg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="FM stations are sorted by PI Code in the list view." Name="SortByPICode">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="FM stations are sorted alphabetically (A to Z) by PSN in the list view." Name="SortByPSN">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="FM stations are sorted in ascending order by Frequency in the list view." Name="SortByFrequency">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This enum defines sets the amount of Favorite Pages presented to the user." Name="NumberFavPagesShown">
+    <EnumID>_OiXQgLlLEeSMLcx9-dghJQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Infotainment System Determines number of setting based on quantity of user stored favorites." Name="Auto">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display 5 Favorites" Name="NumberFavPagesShown_5">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display 10 Favorites" Name="NumberFavPagesShown_10">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display 15 Favorites" Name="NumberFavPagesShown_15">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display 20 Favorites" Name="NumberFavPagesShown_20">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display 25 Favorites" Name="NumberFavPagesShown_25">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display  Favorites" Name="NumberFavPagesShown_30">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display 35 Favorites" Name="NumberFavPagesShown_35">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Display 40 Favorites" Name="NumberFavPagesShown_40">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

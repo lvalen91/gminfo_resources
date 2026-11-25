@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>1</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/4/2021</Date>
+    <Description>Initial Release of the caldef file based on CR 2689912</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Calibration present in each ECU which supports SRU generation.  This calibration is used to configure the timespan of the activity counter increment interval." Name="ActivityCounterIncrementInterval" References="CR 2689912" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_RNJrgMVtEeuBH_Cv6Zqg7g</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/4/2021</Date>
+      <Description>Initial Release of the calibration based on CR 2689912</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>120</MinValue>
+      <MaxValue>65353</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Calibration present in each ECU which supports SRU generation.  This calibration is used to enable/disable the entier SRU generateion funtion" Name="EnableSelfReportedUsageData" References="CR 2689912" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_b_DZwMVrEeuBH_Cv6Zqg7g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/4/2021</Date>
+      <Description>Initial Release of the calibration based on CR 2689912</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

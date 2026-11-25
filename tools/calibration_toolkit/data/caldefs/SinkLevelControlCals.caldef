@@ -1,0 +1,1646 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="Audio" Description="This file contains calibrations for the SinkLevelController defined in GIS-604 which computes the sink levels for both an internally amplified CSM or Low Radio as well as for the remote Amplifier via the GIS-633 spec over CAN.">
+  <CalDefFileVersion>15</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>03JAN2014</Date>
+    <Description>Version 2 was released along with GIS-604 V1.1 and contains numerous additions and update corrections as part of the final cleanup of GIS-604.  See change records on specific calibrations for details.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>28JAN2014</Date>
+    <Description>Deleted RearChimeBoostLevel calibration.  This cal didn't belong in SinkLevelControls.caldef and is instead being reborn as K_REAR_CHIME_BOOST in the gis631 chime amp/interface caldef instead.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/31/2014</Date>
+    <Description>Addition of &quot;STREAM_NATIVE_HFM_WB&quot; to SourceOffsetCCalibrationMap calID file.  This is in response to Harman Assembla ticket #1223.  </Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/8/2015</Date>
+    <Description>Switched the max and min values for the MaxMixPromptLevel Cal to correct the issue with the min and max values being reversed for this Cal after confirming this with Dominic Colella.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>3/4/2016</Date>
+    <Description>Updated PROMPT level in MinimumActivationVolumeMap based on tuning results. Upates to volume groups MUSIC, AUDIO_CUE, and RING to lower default levels for better customer experience.</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>5/31/2016</Date>
+    <Description>MidChimeBoostLevel - Default value changed from 6 to 3 dB due to complains on chime volume loudness.  MidChimeBoostStepThreshold - Default value changed from step 15 to 25.  HighChimeBoostLevel - Default value changed from 9 to 6 dB due to complains on chime volume loudness.  HighChimeBoostStepThreshold - Default value changed from step 40 to 47.  SeparationGain - Updated Separation Gain curve based on integration testing and MY17 cal override submitted for production.  </Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>6/24/2016</Date>
+    <Description>In the SourceOffsetCalibrationMap calibration made the following audio stream default value updates based on feedback from MY17 vehicle testing: STREAM_MUSIC - Default value changed from 0 to 3 dB, 14.STREAM_NATIVE_AM_TUNER - Default value changed from 0 to 3 dB, STREAM_NATIVE_SDARS_TUNER - Default value changed from 0 to 7 dB, STREAM_NATIVE_IPOD - Default value changed from 0 to 5 dB, STREAM_NATIVE_DTCP_CALL - Default value changed from 5 to 16 dB, STREAM_VOICE_CALL - Default value changed from 0 to 24 dB, STREAM_NATIVE_MEDIA_PLAYER - Default value changed from 0 to 4 dB, STREAM_NATIVE_BLUETOOTH_AUDIO - Default value changed from 0 to 4 dB,and STREAM_NATIVE_LVM_STEREO_AUDIO  - Default value changed from 0 to 20 dB.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>1/20/2017</Date>
+    <Description>Within the SinkLevelControlCals.caldef file, made the following default value updates based on feedback and vehicle verification testing done for MY17 Info3: Updated the VOL_GROUP_VOICE_CALL calibration from a value of 28 to 18 within the MinimumActivationVolumeMap EnumInteger Map calibration.  Also, updated Updated the default value of the MinAudibleFeedbackLevel calibration from -50 to -22 dB.  And, Updated the default value of the AudibleFeedbackBoostLevel calibration from 6 to 20.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>2/13/2017</Date>
+    <Description>Within the SinkLevelControlCals.caldef file, made the following default value update based on feedback and vehicle verification testing done for MY17 Info3: Updated the default value of the  VOL_GROUP_EMERGENCY_PHONE calibration from a value of 28 to 26 within the MinimumVolumeMap EnumInteger Map calibration.</Description>
+    <Author>Ginnard Kimbrough </Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>2017-Jun-22</Date>
+    <Description>As per CR 1371572 revising max value from 15 to 25 for SCVChimeBoostTable Array</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>10/2/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the SinkLevelControlCals.caldef . Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>9/11/2018</Date>
+    <Description>CR1261915 - Added new stream type STREAM_NATIVE_PROJ_ALT_AUDIO  in SourceOffsetCalibrationMap</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>6/13/2019</Date>
+    <Description>Per CR#2060763 AOSP transition, in MY22 GIS-646 Cal DB V6.0.3 for MinimumVolumeMap, MaximumVolumeMap, MinimumActivationVolumeMap, VolumeGroupInitialDefaultsMap, SourceOffsetCalibrationMap - uncheck MID/HIGH, VCU. Replacement MID/HIGH, VCU calibrations can be found in AOSPSinkLevelControl.caldef &amp; AOSPSinkLevelControlEnum.enumdef. Per CR# 2303227, in MY22 GIS-646 Cal DB V6.0.3 deprecating the following cals: SCVEnabled, SCVVolumeCompensationFactorStepTable, SCVVehicleSpeedUpdateDelta, SCVVolumeCompensationFactorLevelScaleTable, SCVLevelScaleTable, SCVVolumeBoostTable, SCVVolumeBoostSpeedTable, SCVBassBoostTable, SCVBassBoostSpeedTable, and SCVDefaultMenuSelection. These cals will not be supported.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Master volume table used for lookups on all system volumes" Name="VolumeCalibrationTable" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATnrsCR6EeOFAcqdxEN3jw</CalID>
+    <Type>FloatArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>64</ArrayLength>
+      <MinValue>-127.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>-127.0</ArrayValue>
+      <ArrayValue>-85.0</ArrayValue>
+      <ArrayValue>-77.0</ArrayValue>
+      <ArrayValue>-71.5</ArrayValue>
+      <ArrayValue>-67.0</ArrayValue>
+      <ArrayValue>-63.5</ArrayValue>
+      <ArrayValue>-60.5</ArrayValue>
+      <ArrayValue>-57.5</ArrayValue>
+      <ArrayValue>-55.0</ArrayValue>
+      <ArrayValue>-53.0</ArrayValue>
+      <ArrayValue>-50.5</ArrayValue>
+      <ArrayValue>-48.5</ArrayValue>
+      <ArrayValue>-47.0</ArrayValue>
+      <ArrayValue>-45.0</ArrayValue>
+      <ArrayValue>-43.5</ArrayValue>
+      <ArrayValue>-42.0</ArrayValue>
+      <ArrayValue>-40.5</ArrayValue>
+      <ArrayValue>-39.0</ArrayValue>
+      <ArrayValue>-37.5</ArrayValue>
+      <ArrayValue>-36.0</ArrayValue>
+      <ArrayValue>-35.0</ArrayValue>
+      <ArrayValue>-33.5</ArrayValue>
+      <ArrayValue>-32.5</ArrayValue>
+      <ArrayValue>-31.0</ArrayValue>
+      <ArrayValue>-30.0</ArrayValue>
+      <ArrayValue>-29.0</ArrayValue>
+      <ArrayValue>-28.0</ArrayValue>
+      <ArrayValue>-27.0</ArrayValue>
+      <ArrayValue>-26.0</ArrayValue>
+      <ArrayValue>-25.0</ArrayValue>
+      <ArrayValue>-24.0</ArrayValue>
+      <ArrayValue>-23.0</ArrayValue>
+      <ArrayValue>-22.0</ArrayValue>
+      <ArrayValue>-21.0</ArrayValue>
+      <ArrayValue>-20.0</ArrayValue>
+      <ArrayValue>-19.5</ArrayValue>
+      <ArrayValue>-18.5</ArrayValue>
+      <ArrayValue>-18.0</ArrayValue>
+      <ArrayValue>-17.0</ArrayValue>
+      <ArrayValue>-16.0</ArrayValue>
+      <ArrayValue>-15.0</ArrayValue>
+      <ArrayValue>-14.5</ArrayValue>
+      <ArrayValue>-13.5</ArrayValue>
+      <ArrayValue>-13.0</ArrayValue>
+      <ArrayValue>-12.0</ArrayValue>
+      <ArrayValue>-11.5</ArrayValue>
+      <ArrayValue>-11.0</ArrayValue>
+      <ArrayValue>-10.0</ArrayValue>
+      <ArrayValue>-9.5</ArrayValue>
+      <ArrayValue>-8.5</ArrayValue>
+      <ArrayValue>-8.0</ArrayValue>
+      <ArrayValue>-7.5</ArrayValue>
+      <ArrayValue>-6.5</ArrayValue>
+      <ArrayValue>-6.0</ArrayValue>
+      <ArrayValue>-5.5</ArrayValue>
+      <ArrayValue>-4.5</ArrayValue>
+      <ArrayValue>-4.0</ArrayValue>
+      <ArrayValue>-3.5</ArrayValue>
+      <ArrayValue>-3.0</ArrayValue>
+      <ArrayValue>-2.5</ArrayValue>
+      <ArrayValue>-2.0</ArrayValue>
+      <ArrayValue>-1.0</ArrayValue>
+      <ArrayValue>-0.5</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="This is the map of minimum allowed volume index values for each volume group." Name="MinimumVolumeMap" References="GIS-604-550" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_IJUX8HPfEeOrWuwMpf0tEg</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Fixed the Min/MaxVolumeMap, MinACtivationVolumeMap, and the VolumeGroupInitialDefaultsMap to use the correct Volume Groups as defined in GIS-604.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2/13/2017</Date>
+      <Description>Based on feedback and vehicle verificaion testing done for MY17 Info3: Updated the default value of the  VOL_GROUP_EMERGENCY_PHONE calibration from a value of 28 to 26 within the MinimumVolumeMap EnumInteger Map calibration.</Description>
+      <Author>Ginnard Kimbrough </Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>6/13/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_AStswCR6EeOFAcqdxEN3jw</EnumID>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>4097</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>4096</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>4116</Key>
+        <Value>26</Value>
+      </Entry>
+      <Entry>
+        <Key>4098</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>65535</Key>
+        <Value>0</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="This is the map of maximum allowed volume index values for each volume group." Name="MaximumVolumeMap" References="GIS-604-550" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_gNJkYXPfEeOrWuwMpf0tEg</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Fixed the Min/MaxVolumeMap, MinACtivationVolumeMap, and the VolumeGroupInitialDefaultsMap to use the correct Volume Groups as defined in GIS-604.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/13/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_AStswCR6EeOFAcqdxEN3jw</EnumID>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>63</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>63</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>63</Value>
+      </Entry>
+      <Entry>
+        <Key>4097</Key>
+        <Value>63</Value>
+      </Entry>
+      <Entry>
+        <Key>4096</Key>
+        <Value>63</Value>
+      </Entry>
+      <Entry>
+        <Key>4116</Key>
+        <Value>63</Value>
+      </Entry>
+      <Entry>
+        <Key>4098</Key>
+        <Value>63</Value>
+      </Entry>
+      <Entry>
+        <Key>65535</Key>
+        <Value>0</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="This is the map of minimum activation volume index values for each volume group." Name="MinimumActivationVolumeMap" References="GIS-604-550" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_gdLPUHPdEeOrWuwMpf0tEg</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Fixed the Min/MaxVolumeMap, MinACtivationVolumeMap, and the VolumeGroupInitialDefaultsMap to use the correct Volume Groups as defined in GIS-604.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/4/2016</Date>
+      <Description>Updated PROMPT level to be step 12 instead of 26 based on tuning.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/20/2017</Date>
+      <Description>Made the following default value updates based on feedback from MY17 Info3 vehicle testing: Updated the VOL_GROUP_VOICE_CALL calibration from a value of 28 to 18 within the MinimumActivationVolumeMap EnumInteger Map calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>6/13/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_AStswCR6EeOFAcqdxEN3jw</EnumID>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>18</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>12</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>4097</Key>
+        <Value>12</Value>
+      </Entry>
+      <Entry>
+        <Key>4096</Key>
+        <Value>12</Value>
+      </Entry>
+      <Entry>
+        <Key>4116</Key>
+        <Value>44</Value>
+      </Entry>
+      <Entry>
+        <Key>4098</Key>
+        <Value>12</Value>
+      </Entry>
+      <Entry>
+        <Key>65535</Key>
+        <Value>0</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="Initial default volume setting for each VolumeGroup." Name="VolumeGroupInitialDefaultsMap" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_AToSwCR6EeOFAcqdxEN3jw</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Fixed the Min/MaxVolumeMap, MinACtivationVolumeMap, and the VolumeGroupInitialDefaultsMap to use the correct Volume Groups as defined in GIS-604.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/4/2016</Date>
+      <Description>Upates to volume groups MUSIC, AUDIO_CUE, and RING to lower default levels for better customer experience.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>6/13/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_AStswCR6EeOFAcqdxEN3jw</EnumID>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>30</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>20</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>15</Value>
+      </Entry>
+      <Entry>
+        <Key>4097</Key>
+        <Value>30</Value>
+      </Entry>
+      <Entry>
+        <Key>4096</Key>
+        <Value>20</Value>
+      </Entry>
+      <Entry>
+        <Key>4116</Key>
+        <Value>30</Value>
+      </Entry>
+      <Entry>
+        <Key>4098</Key>
+        <Value>30</Value>
+      </Entry>
+      <Entry>
+        <Key>65535</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>4125</Key>
+        <Value>30</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="Map of AudioStreamEnum audio streams for each audio source to the corresponding source offset in dB." Name="SourceOffsetCalibrationMap" References="GIS-604-320" Usage="LOW,ENTRY_VCU,GEM,GLOBALA,GLOBALB,MID,HIGH,VCU">
+    <CalID>_ATpg4CR6EeOFAcqdxEN3jw</CalID>
+    <Type>EnumFloatMap</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/31/2014</Date>
+      <Description>Addition of &quot;STREAM_NATIVE_HFM_WB&quot; to SourceOffsetCCalibrationMap calID file.  This is in response to Harman Assembla ticket #1223.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/24/2016</Date>
+      <Description>Made the following default value updates based on feedback from MY17 vehicle testing: STREAM_MUSIC - Default value changed from 0 to 3 dB, 14.STREAM_NATIVE_AM_TUNER - Default value changed from 0 to 3 dB, STREAM_NATIVE_SDARS_TUNER - Default value changed from 0 to 7 dB, STREAM_NATIVE_IPOD - Default value changed from 0 to 5 dB, STREAM_NATIVE_DTCP_CALL - Default value changed from 5 to 16 dB, STREAM_VOICE_CALL - Default value changed from 0 to 24 dB, STREAM_NATIVE_MEDIA_PLAYER - Default value changed from 0 to 4 dB, STREAM_NATIVE_BLUETOOTH_AUDIO - Default value changed from 0 to 4 dB, and STREAM_NATIVE_LVM_STEREO_AUDIO  - Default value changed from 0 to 20 dB.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>9/11/2018</Date>
+      <Description>CR1261915 - Added new stream type STREAM_NATIVE_PROJ_ALT_AUDIO  </Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>8</Version>
+      <Date>6/13/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <EnumFloatMap>
+      <EnumID>_ATQfUCR6EeOFAcqdxEN3jw</EnumID>
+      <MinValue>-32.0</MinValue>
+      <MaxValue>32.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>24.0</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>3.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>5</Key>
+        <Value>5.0</Value>
+      </Entry>
+      <Entry>
+        <Key>6</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>7</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>8</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>9</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4096</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4097</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4098</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4099</Key>
+        <Value>3.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4100</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4101</Key>
+        <Value>7.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4102</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4103</Key>
+        <Value>4.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4104</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4105</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4106</Key>
+        <Value>20.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4107</Key>
+        <Value>4.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4108</Key>
+        <Value>5.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4109</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4110</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4111</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4112</Key>
+        <Value>11.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4113</Key>
+        <Value>10.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4114</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4115</Key>
+        <Value>16.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4116</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4117</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4118</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4119</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4120</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4121</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4122</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4123</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4124</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4125</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4126</Key>
+        <Value>11.0</Value>
+      </Entry>
+      <Entry>
+        <Key>4127</Key>
+        <Value>0.0</Value>
+      </Entry>
+      <Entry>
+        <Key>65535</Key>
+        <Value>0.0</Value>
+      </Entry>
+    </EnumFloatMap>
+  </CalDefinition>
+  <CalDefinition Description="This is the initial default value of the maximum allowed startup volume" Name="DefaultMaximumStartupVolume" References="GIS-604-552" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_rhWP8HP0EeOq8K11VvtDWw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>03JAN2014</Date>
+      <Description>Added calibration as part of GIS-604 1.1 improvements</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated value to 31 to reflect NGI implementation.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>31</Value>
+      <MinValue>31</MinValue>
+      <MaxValue>63</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Separation gain table that contains the dB separation used on the MixPrompt sink." Name="SeparationGainCalibrationTable" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATqvACR6EeOFAcqdxEN3jw</CalID>
+    <Type>FloatArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/31/2016</Date>
+      <Description>SeparationGain - Updated Separation Gain curve based on integration testing and MY17 cal override submitted for production.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>64</ArrayLength>
+      <MinValue>-127.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>-2.5</ArrayValue>
+      <ArrayValue>-2.5</ArrayValue>
+      <ArrayValue>-3.0</ArrayValue>
+      <ArrayValue>-3.0</ArrayValue>
+      <ArrayValue>-3.5</ArrayValue>
+      <ArrayValue>-3.5</ArrayValue>
+      <ArrayValue>-4.0</ArrayValue>
+      <ArrayValue>-4.0</ArrayValue>
+      <ArrayValue>-4.5</ArrayValue>
+      <ArrayValue>-4.5</ArrayValue>
+      <ArrayValue>-5.0</ArrayValue>
+      <ArrayValue>-5.0</ArrayValue>
+      <ArrayValue>-5.5</ArrayValue>
+      <ArrayValue>-5.5</ArrayValue>
+      <ArrayValue>-6.0</ArrayValue>
+      <ArrayValue>-6.0</ArrayValue>
+      <ArrayValue>-6.5</ArrayValue>
+      <ArrayValue>-6.5</ArrayValue>
+      <ArrayValue>-7.0</ArrayValue>
+      <ArrayValue>-7.0</ArrayValue>
+      <ArrayValue>-7.5</ArrayValue>
+      <ArrayValue>-7.5</ArrayValue>
+      <ArrayValue>-8.0</ArrayValue>
+      <ArrayValue>-8.0</ArrayValue>
+      <ArrayValue>-8.5</ArrayValue>
+      <ArrayValue>-8.5</ArrayValue>
+      <ArrayValue>-9.0</ArrayValue>
+      <ArrayValue>-9.0</ArrayValue>
+      <ArrayValue>-9.5</ArrayValue>
+      <ArrayValue>-9.5</ArrayValue>
+      <ArrayValue>-10.0</ArrayValue>
+      <ArrayValue>-10.0</ArrayValue>
+      <ArrayValue>-11.0</ArrayValue>
+      <ArrayValue>-11.0</ArrayValue>
+      <ArrayValue>-12.0</ArrayValue>
+      <ArrayValue>-12.0</ArrayValue>
+      <ArrayValue>-12.5</ArrayValue>
+      <ArrayValue>-12.5</ArrayValue>
+      <ArrayValue>-13.0</ArrayValue>
+      <ArrayValue>-13.0</ArrayValue>
+      <ArrayValue>-13.5</ArrayValue>
+      <ArrayValue>-13.5</ArrayValue>
+      <ArrayValue>-14.0</ArrayValue>
+      <ArrayValue>-14.0</ArrayValue>
+      <ArrayValue>-14.5</ArrayValue>
+      <ArrayValue>-14.5</ArrayValue>
+      <ArrayValue>-15.0</ArrayValue>
+      <ArrayValue>-15.0</ArrayValue>
+      <ArrayValue>-15.5</ArrayValue>
+      <ArrayValue>-15.5</ArrayValue>
+      <ArrayValue>-16.0</ArrayValue>
+      <ArrayValue>-16.0</ArrayValue>
+      <ArrayValue>-17.0</ArrayValue>
+      <ArrayValue>-17.0</ArrayValue>
+      <ArrayValue>-18.0</ArrayValue>
+      <ArrayValue>-18.0</ArrayValue>
+      <ArrayValue>-18.5</ArrayValue>
+      <ArrayValue>-19.5</ArrayValue>
+      <ArrayValue>-20.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Enables or disables the SCV algorithm as well as hides/shows the SCV menu within the HMI." Name="SCVEnabled" References="GIS-604-630" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_SzS6MHSWEeONqtLMgOmNHg</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>03JAN2014</Date>
+      <Description>Added calibration as part of GIS-604 1.1 improvements</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Speed Comp Volume - Volume Compensation Factor Step Index table." Name="SCVVolumeCompensationFactorStepTable" References="GIS-604" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ATqvASR6EeOFAcqdxEN3jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>1</ArrayValue>
+      <ArrayValue>31</ArrayValue>
+      <ArrayValue>50</ArrayValue>
+      <ArrayValue>63</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="This is the minimum delta change in vehicle speed required to trigger a new calculation of the Speed Compensated Volume algorithm" Name="SCVVehicleSpeedUpdateDelta" References="GIS-604-580 Bullet 5" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_NEM0MHP4EeOq8K11VvtDWw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>50</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Volume Compensation Factor Level Scale table within the Speed Compensated Volume algorithm" Name="SCVVolumeCompensationFactorLevelScaleTable" References="GIS-604" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ATrWECR6EeOFAcqdxEN3jw</CalID>
+    <Type>FloatArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.01</Resolution>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>1.0</ArrayValue>
+      <ArrayValue>0.7</ArrayValue>
+      <ArrayValue>0.2</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Table of Speed Comp Level scale multipliers relating the level scale to the SCV setting." Name="SCVLevelScaleTable" References="GIS-604" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ATrWESR6EeOFAcqdxEN3jw</CalID>
+    <Type>FloatArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>6</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.01</Resolution>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.2</ArrayValue>
+      <ArrayValue>0.4</ArrayValue>
+      <ArrayValue>0.6</ArrayValue>
+      <ArrayValue>0.8</ArrayValue>
+      <ArrayValue>1.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Speed compensation volume boost level table." Name="SCVVolumeBoostTable" References="GIS-604" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ATrWEiR6EeOFAcqdxEN3jw</CalID>
+    <Type>FloatArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>15.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>1.0</ArrayValue>
+      <ArrayValue>2.0</ArrayValue>
+      <ArrayValue>3.0</ArrayValue>
+      <ArrayValue>4.0</ArrayValue>
+      <ArrayValue>5.0</ArrayValue>
+      <ArrayValue>6.0</ArrayValue>
+      <ArrayValue>7.0</ArrayValue>
+      <ArrayValue>8.0</ArrayValue>
+      <ArrayValue>9.0</ArrayValue>
+      <ArrayValue>14.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Speed compensation volume boost speed table." Name="SCVVolumeBoostSpeedTable" References="GIS-604" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ATrWEyR6EeOFAcqdxEN3jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>30</ArrayValue>
+      <ArrayValue>35</ArrayValue>
+      <ArrayValue>40</ArrayValue>
+      <ArrayValue>45</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>70</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>155</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Speed compensation bass boost level table." Name="SCVBassBoostTable" References="GIS-604" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ATrWFCR6EeOFAcqdxEN3jw</CalID>
+    <Type>FloatArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>15.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.5</ArrayValue>
+      <ArrayValue>1.0</ArrayValue>
+      <ArrayValue>1.5</ArrayValue>
+      <ArrayValue>2.0</ArrayValue>
+      <ArrayValue>2.5</ArrayValue>
+      <ArrayValue>3.0</ArrayValue>
+      <ArrayValue>3.5</ArrayValue>
+      <ArrayValue>4.0</ArrayValue>
+      <ArrayValue>5.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Speed compensation volume bass boost speed table." Name="SCVBassBoostSpeedTable" References="GIS-604" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_ATrWFSR6EeOFAcqdxEN3jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>30</ArrayValue>
+      <ArrayValue>35</ArrayValue>
+      <ArrayValue>40</ArrayValue>
+      <ArrayValue>45</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>70</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>155</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="Speed compensation chime boost level table." Name="SCVChimeBoostTable" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATrWFiR6EeOFAcqdxEN3jw</CalID>
+    <Type>FloatArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2017-Jun-22</Date>
+      <Description>As per CR 1371572 revising max value from 15 to 25 for SCVChimeBoostTable Array</Description>
+      <Author>Kiran Soni</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>25.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.5</ArrayValue>
+      <ArrayValue>1.0</ArrayValue>
+      <ArrayValue>1.5</ArrayValue>
+      <ArrayValue>2.0</ArrayValue>
+      <ArrayValue>2.5</ArrayValue>
+      <ArrayValue>3.0</ArrayValue>
+      <ArrayValue>3.5</ArrayValue>
+      <ArrayValue>4.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Speed compensation volume chime boost speed table." Name="SCVChimeBoostSpeedTable" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATrWFyR6EeOFAcqdxEN3jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>11</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>25</ArrayValue>
+      <ArrayValue>30</ArrayValue>
+      <ArrayValue>35</ArrayValue>
+      <ArrayValue>40</ArrayValue>
+      <ArrayValue>45</ArrayValue>
+      <ArrayValue>55</ArrayValue>
+      <ArrayValue>65</ArrayValue>
+      <ArrayValue>70</ArrayValue>
+      <ArrayValue>85</ArrayValue>
+      <ArrayValue>155</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="This is the factory default setting for the SCV menu.  0 is OFF, 5 is Maximum SCV boost." Name="SCVDefaultMenuSelection" References="GIS-604-600" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU,MID,HIGH,VCU">
+    <CalID>_vgd7MHSUEeONqtLMgOmNHg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>03JAN2014</Date>
+      <Description>Added calibration as part of GIS-604 1.1 improvements</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/19/2019</Date>
+      <Description>Uncheck MID/HIGH, VCU usage</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>5</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The volume index of the minimum chime level" Name="MinChimeVolumeStep" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATrWGCR6EeOFAcqdxEN3jw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 1.0.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The volume index of the maximum chime level" Name="MaxChimeVolumeStep" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATr9ICR6EeOFAcqdxEN3jw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 1.0.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>50</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The chime boost when the chime volume is in the MID volume range" Name="MidChimeBoostLevel" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATr9ISR6EeOFAcqdxEN3jw</CalID>
+    <Type>Float</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 0.5.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>5/31/2016</Date>
+      <Description>MidChimeBoostLevel - Default value changed from 6 to 3 dB due to complains on chime volume loudness.  </Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>3.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The chime volume index at which the MID boost starts," Name="MidChimeBoostStepThreshold" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskMCR6EeOFAcqdxEN3jw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/31/2016</Date>
+      <Description>MidChimeBoostStepThreshold - Default value changed from step 15 to 25.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>25</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The chime boost when the chime volume is in the HIGH volume range" Name="HighChimeBoostLevel" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskMSR6EeOFAcqdxEN3jw</CalID>
+    <Type>Float</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 0.5.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>5/31/2016</Date>
+      <Description>HighChimeBoostLevel - Default value changed from 9 to 6 dB due to complains on chime volume loudness.  </Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>6.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The chime volume index at which the HIGH chime boost starts," Name="HighChimeBoostStepThreshold" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskMiR6EeOFAcqdxEN3jw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/31/2016</Date>
+      <Description>HighChimeBoostStepThreshold - Default value changed from step 40 to 47.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>47</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>63</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The rear chime boost implemented in the remote amplifier" Name="RearChimeBoostLevel" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskMyR6EeOFAcqdxEN3jw</CalID>
+    <Type>Float</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 0.5.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>6.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The maximum level of the mix prompt sink. This value is defined in order to insure that mix prompts are never distorted and remain intelligable." Name="MaxMixPromptLevel" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskNCR6EeOFAcqdxEN3jw</CalID>
+    <Type>Float</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>2/8/2015</Date>
+      <Description>Switched the max and min values for the MaxMixPromptLevel Cal to correct the issue with the min and max values being reversed for this Cal after confirming this with Dominic Colella.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>-12.0</Value>
+      <MinValue>-127.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum level of the AudibleFeedback sink." Name="MinAudibleFeedbackLevel" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskNSR6EeOFAcqdxEN3jw</CalID>
+    <Type>Float</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 0.5.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>22SEP14</Date>
+      <Description>Corrected erroneously swapped Min and Max values.</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/20/2017</Date>
+      <Description>Updated the default value of the MinAudibleFeedbackLevel calibration from -50 to -22 dB based on based on feedback and vehicle verification testing done for MY17 Info3</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>-22.0</Value>
+      <MinValue>-127.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The maximum level of the AudibleFeedback sink." Name="MaxAudibleFeedbackLevel" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskNiR6EeOFAcqdxEN3jw</CalID>
+    <Type>Float</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 0.5.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22SEP14</Date>
+      <Description>Changed erroneously swapped Min/Max values</Description>
+      <Author>Scott Rush</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>-6.0</Value>
+      <MinValue>-127.0</MinValue>
+      <MaxValue>0.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The audible feedback boost level above the Mutex sink" Name="AudibleFeedbackBoostLevel" References="GIS-604" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ATskNyR6EeOFAcqdxEN3jw</CalID>
+    <Type>Float</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>22MAY2014</Date>
+      <Description>Updated resolution value from 0.0 to 0.5.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/20/2017</Date>
+      <Description>Updated the default value of the AudibleFeedbackBoostLevel calibration from 6 to 20 dB based on based on feedback and vehicle verification testing done for MY17 Info3.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>20.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

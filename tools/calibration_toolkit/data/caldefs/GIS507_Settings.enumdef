@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Includes enumerations for the enumeration calibrations from the GIS507_Settings.caldef that are neither Global A or B specific.">
+  <EnumDefFileVersion>3</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this enumdef file, added the possible enumeration values for the AmbientLightingInfoPageVersion enumeration calibration</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>05/07/2018</Date>
+    <Description>Within the GIS-507_Settings.enumdef file, added the possible enumeration values for the TRANSMITTER_POCKET_LOCATION enumeration calibration per CR# 1291582</Description>
+    <Author>Emmanuel Oleka</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="TRANSMITTER_POCKET_LOCATION">
+    <EnumID>_iDSUAFIYEeibCblrVhJh5A</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="None" Name="None">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Center_Console_with_Slot" Name="Center_Console_with_Slot">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Center_Console_Recessed_Area" Name="Center_Console_Recessed_Area">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Column_Slot" Name="Column_Slot">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Top_of_Instrument_Panel" Name="Top_of_Instrument_Panel">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Cup_Holder" Name="Cup_Holder">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Console_Lower_Bin" Name="Console_Lower_Bin">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Cup_Holder_ForeAndAfter" Name="Cup_Holder_ForeAndAfter">
+      <Value>7</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="TODO" Name="AmbientLightingInfoPageVersion">
+    <EnumID>_b5CLkJ6yEea-Ao5FQchwtQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Enables the appropriate info screen for either Global A" Name="GlobalA">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enables the appropriate info screen for either Global B" Name="GlobalB">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Name" Name="Name">
+    <EnumID>_VyLcAGlQEeSUD4W2RgDvTg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Name_Cadillac_Cue">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Name_Chevrolet_MyLink">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="System" Description="GIS-642 OTC Requester ECU calibrations">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>4-10-14</Date>
+    <Description>Initial release of the gis642_OnBoardTesterCoord.caldef based on GIS-642 Info 3.0 On-Board Tester Coordination v1.0 11Mar14. Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on MID and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2FEB15</Date>
+    <Description>Addressed Harman/GM concerns over cals with resolution not equal to 1.</Description>
+    <Author>Pete Ansbro</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS642_OnBoardTesterCoord.caldef file to GIS642_OnBoardTesterCoord_GlobalA.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef files that conatin Global A specific calibrations</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="GIS-642-640 OTC Request signal transmit retry timer" Name="OTC_Request_Retry_Timer" References="GIS-642-640" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_mlSo0LXjEeOnXpmUKC7TAw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed resolution to 1ms and default to 3000ms</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>6300</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-642-650 OTC Requester ECU enable.  When disabled, the ECU shall not transmit OTC Requester signals nor any on-board test device diagnostic messages. " Name="OTC_Requester_ECU_Enable" References="GIS-642-650" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_1M0dcLXkEeOnXpmUKC7TAw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="GIS-642-660 OTC Master message failsoft timer" Name="OTC_Master_Signal_RX_Timer" References="GIS-642-660" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_fv3XMLXlEeOnXpmUKC7TAw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2FEB15</Date>
+      <Description>Changed resolution to 1ms and default to 7500ms</Description>
+      <Author>Pete Ansbro</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>7500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="GIS-642-670 OTC Master ECU present calibration." Name="OTC_System_Config_Master_ECU_Present" References="GIS-642-670" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LBIB0LXmEeOnXpmUKC7TAw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="GIS-642-680 Multiple OTC Requester present calibration." Name="OTC_System_Config_Multiple_Requester_ECU_Present" References="GIS-642-680" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_bE_RkLXnEeOnXpmUKC7TAw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

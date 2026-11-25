@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Includes diagnostic related calibrations specific only to the GIS-888 for the CSM, and not applicable at all to either the GIS-621 or GIS-641.">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>12/15/2017</Date>
+    <Description>For CR#: 1482227, added two new calibrations (DTC_MASK_B248A_02 and DTC_MASK_B248A_04) within the new GIS888_DiagnosticCalDef_Info3_5CSM_GlobalA.caldef file.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>08/06/2018</Date>
+    <Description>Adding DTC Masks for MY21 Global A DTC B1265 Entertainment System Remote Enable Circuit</Description>
+    <Author>Arun A Ganesan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="DTC B1265_02 Entertainment System Remote Enable Circuit - Short to Ground" Name="DTC_MASK_B1265_02" References="GIS 888" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_-ttCcJnUEeinc77WrbDLoA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>08/06/2018</Date>
+      <Description>DTC B1265_02 &#x2013; Entertainment System Remote Enable Circuit - Short to Ground</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B1265_04 Entertainment System Remote Enable Circuit - Open Circuit" Name="DTC_MASK_B1265_04" References="GIS 888" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_xCjhEJnUEeinc77WrbDLoA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>08/06/2018</Date>
+      <Description>DTC B1265_04 &#x2013; Entertainment System Remote Enable Circuit - Open Circuit</Description>
+      <Author>Arun A Ganesan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B248A_04_Wifi Antenna Circuit - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B248A_04" References="GIS-888" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_R_lVcQK8EeiDo-Dq14by9g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/15/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B248A_02_Wifi Antenna Circuit - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B248A_02" References="GIS-888" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_YLv8wQK8EeiDo-Dq14by9g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>12/15/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="2016-Dec-08: Removed RDS_CONFIG Enum because this variable is covered in GIS-653 FMTuner.">
+  <CalDefFileVersion>10</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>John Edens</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>11/21/2014</Date>
+    <Description>Added the following calibration:  TZDSTAckWaitTime</Description>
+    <Author>John Edens</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>06FEB15</Date>
+    <Description>Change GPS_DATA_SOURCE default to ExternalOnStarGPS=0x2.</Description>
+    <Author>John Edens</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>12/1/2015</Date>
+    <Description>Based on feedback received from Jideok Son, made usage correction to remove Low Radio usage for the following calibrations: TZDSTAdjust_UL, TZDSTAdjust_LL, and TZDSTAckWaitTime CAL within this CalDef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>2016-Dec-08</Date>
+    <Description>Within the GIS651_TimeOfDay.caldef and GIS651_TimeOfDay.enumdef files as a part of the updates for RTC CR#: 1231009, removed RDS_CONFIG enumeration calibration because this variable is covered by the calibration called FM_RDS_Clocktime_enabled in the GIS653_FMTuner.caldef file.</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS651_TimeOfDay.caldef, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS651_TimeOfDay.caldef file, added GEM usage to the following calibrations within this caldef: (1.) TCP, (2.) GPS_DATA_SOURCE, (3.) PI_CODE_CONFIGURATION, and (4.) RDS_CLOCK_TIME_MAX_DIFF. Since these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The Low Radio shall utilize the TCP calibration to conclude which scenario, described in the table shown below, applies to the Low Radio, as follows: If TCP == TRUE, the System Time is synchronized to the trusted time source, GPS time provided by the TCP module.  The ClockOffset is used for determination of the Time of Day message. If TCP == FALSE, there is no trusted time source for System Time to synchronize.  The ClockOffset shall be set to zero and not used for the determination of the Time of Day message.  Changes to the Manual Clock time shall be reflected in the System Time maintained by the Low Radio." Name="TCP" References="GIS-651-255 ~MY18 System Time for Low Radio" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_wvZsQKAMEea-Ao5FQchwtQ</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/24/2016</Date>
+      <Description>Per current GIS-651 owner (Younus A Syed) and the team's request moved the existing TCP calibration that was previously in the Global_Info3.caldef to this caldef ( GIS651_TimeOfDay.caldef ) to make it clearer this calibration is defined by the GIS-651. Also, updated the description that was previously shown for the TCP calibration to match the description defined for this calibration in the GIS-651. And, updated the usage for the TCP calibration to be just Low Radio and not include the CSM as is defined in the GIS-651.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Wait time to acknowledge a time zone or day light savings time change beforeTOD provider recalculates the ClockOffset and updates the Time of Day message." Name="TZDSTAckWaitTime" References="GIS-651-310" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9tqw4HGkEeSbMrVThuMbXA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1023</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Calibration to determine whether GPS/UTC Time is a potential time source for synchronization." Name="GPS_DATA_SOURCE" References="GIS-651-130" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_mSCtoFz3EeOQzJtmpqqaoA</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_IDkOwFz1EeOiWbDi2SsW8w</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="For setting the PI code for the countries - Definition is $HighByteLowByte, eg. Germany = $2002" Name="PI_CODE_CONFIGURATION" References="GIS-651-245" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_v3EuMFz3EeOQzJtmpqqaoA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Calibration to determine whether received RDS Clock Time should be used for synchronization.  The TOD provider compares the current time to the received RDS clock time and checks whether the received RDS clock time differs from RDS_CLOCK_TIME_MAX_DIFF calibration (DEFAULT=5min).  If difference is greater than the calibration value, clock will not be synchronized! If difference is less than calibration value, then clock will be synchronized " Name="RDS_CLOCK_TIME_MAX_DIFF" References="GIS-651-245" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_8zzqYFz3EeOQzJtmpqqaoA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Lower limit value used to recognize either Daylight Savings Time or Time Zone change for cellular network time synchronization source." Name="TZDSTAdjust_LL" References="GIS-651-225" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_SCSAwLpiEeOPlcP4_0xCtQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1800</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>4096</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper limit value used to recognize either Daylight Savings Time or Time Zone change for cellular network time synchronization source." Name="TZDSTAdjust_UL" References="GIS-651-225" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_QJ0N0LpjEeOPlcP4_0xCtQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to remove Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>4096</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

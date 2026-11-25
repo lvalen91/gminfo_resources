@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>04/16/2018</Date>
+    <Description>CR1344108: Added DirectionalAudioPromptRenderingRange, DirectionalAudioPromptRenderingDirection, DirectionalAudioPromptRenderingZone, DirectionalAudioPromptRenderingDistanceMap, DirectionalAudioPromptRenderingZoneMap_DecisionEnum</Description>
+    <Author>Kiran Soni</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description=" Defines the Zone the external amplifier uses from the navigation TTS information." Name="DirectionalAudioPromptRenderingZone">
+    <EnumID>_pNxHUD_wEeeK3tJi-kcCzA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="No Zone" Name="Zone_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Outside Front Left" Name="Zone_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Outside Front Right" Name="Zone_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Left Front" Name="Zone_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Front Center" Name="Zone_4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Front Right" Name="Zone_5">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Side Left" Name="Zone_6">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Side Right" Name="Zone_7">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Rear Left" Name="Zone_8">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Rear Center" Name="Zone_9">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Inside Rear Right" Name="Zone_10">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Range 1 = Zone 1 + Zone 2" Name="Zone_11">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Range 2 = Zone 3 + Zone 4 + Zone 5" Name="Zone_12">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Range 3 = Zone 6 + Zone 7" Name="Zone_13">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TBD" Name="Custom_1">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TBD" Name="Custom_2">
+      <Value>15</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Set to include either none, left, right, or center from the navigation TTS information." Name="DirectionalAudioPromptRenderingDirection">
+    <EnumID>_bdTBED_wEeeK3tJi-kcCzA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="None" Name="None">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Left" Name="Left">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Right" Name="Right">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="Center">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Custom_1">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Custom_2">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Custom_3">
+      <Value>6</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="A DirectionalAudioPromptRenderingRange_Enum calibration is used within the HMI controller to define the range bracket enumerations required to support the Directional Audio Prompt Rendering function." Name="DirectionalAudioPromptRenderingRange">
+    <EnumID>_zRUsYD_vEeeK3tJi-kcCzA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters" Name="Range_Bracket_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters" Name="Range_Bracket_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300 &lt;= Distance &lt;1600 meters" Name="Range_Bracket_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters" Name="Range_Bracket_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TBD" Name="Custom_1">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TBD" Name="Custom_2">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TBD" Name="Custom_3">
+      <Value>6</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="A DirectionalAudioPromptRenderingZoneMap calibration is defined as an array to map the range brackets and direction to a defined zone." Name="DirectionalAudioPromptRenderingZoneMap_Enum">
+    <EnumID>_eci0YD8gEei-NtDhvxbfzg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters, No Direction" Name="Range_Bracket_0_Direction_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters, Left Direction" Name="Range_Bracket_0_Direction_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters, Right Direction" Name="Range_Bracket_0_Direction_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters, Center Direction" Name="Range_Bracket_0_Direction_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters, Custom 1 Direction" Name="Range_Bracket_0_Direction_4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters, Custom 2 Direction" Name="Range_Bracket_0_Direction_5">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="0&lt;= Distance &lt;150 meters, Custom 3 Direction" Name="Range_Bracket_0_Direction_6">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters, No Direction" Name="Range_Bracket_1_Direction_0">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters, Left Direction" Name="Range_Bracket_1_Direction_1">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters, Right Direction" Name="Range_Bracket_1_Direction_2">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters, Center Direction" Name="Range_Bracket_1_Direction_3">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters, Custom 1 Direction" Name="Range_Bracket_1_Direction_4">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters, Custom 2 Direction" Name="Range_Bracket_1_Direction_5">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="150 &lt;=Distance &lt; 300 meters, Custom 3 Direction" Name="Range_Bracket_1_Direction_6">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300&lt;= Distance &lt;1600 meters, No Direction" Name="Range_Bracket_2_Direction_0">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300&lt;= Distance &lt;1600 meters, Left Direction" Name="Range_Bracket_2_Direction_1">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300&lt;= Distance &lt;1600 meters, Right Direction" Name="Range_Bracket_2_Direction_2">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300&lt;= Distance &lt;1600 meters, Center Direction" Name="Range_Bracket_2_Direction_3">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300&lt;= Distance &lt;1600 meters, Custom 1 Direction" Name="Range_Bracket_2_Direction_4">
+      <Value>18</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300&lt;= Distance &lt;1600 meters, Custom 2 Direction" Name="Range_Bracket_2_Direction_5">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="300&lt;= Distance &lt;1600 meters, Custom 3 Direction" Name="Range_Bracket_2_Direction_6">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters, No Direction" Name="Range_Bracket_3_Direction_0">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters, Left Direction" Name="Range_Bracket_3_Direction_1">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters, Right Direction" Name="Range_Bracket_3_Direction_2">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters, Center Direction" Name="Range_Bracket_3_Direction_3">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters, Custom 1 Direction" Name="Range_Bracket_3_Direction_4">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters, Custom 2 Direction" Name="Range_Bracket_3_Direction_5">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Distance >= 1600 meters, Custom 3 Direction" Name="Range_Bracket_3_Direction_6">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 1 Distance, No Direction" Name="Range_Bracket_4_Direction_0">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 1 Distance, Left Direction" Name="Range_Bracket_4_Direction_1">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 1 Distance, Right Direction" Name="Range_Bracket_4_Direction_2">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 1 Distance, Center Direction" Name="Range_Bracket_4_Direction_3">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 1 Distance, Custom 1 Direction" Name="Range_Bracket_4_Direction_4">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 1 Distance, Custom 2 Direction" Name="Range_Bracket_4_Direction_5">
+      <Value>33</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 1 Distance, Custom 3 Direction" Name="Range_Bracket_4_Direction_6">
+      <Value>34</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 2 Distance, No Direction" Name="Range_Bracket_5_Direction_0">
+      <Value>35</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 2 Distance, Left Direction" Name="Range_Bracket_5_Direction_1">
+      <Value>36</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 2 Distance, Right Direction" Name="Range_Bracket_5_Direction_2">
+      <Value>37</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 2 Distance, Center Direction" Name="Range_Bracket_5_Direction_3">
+      <Value>38</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 2 Distance, Custom 1 Direction" Name="Range_Bracket_5_Direction_4">
+      <Value>39</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 2 Distance, Custom 2 Direction" Name="Range_Bracket_5_Direction_5">
+      <Value>40</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 2 Distance, Custom 3 Direction" Name="Range_Bracket_5_Direction_6">
+      <Value>41</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 3 Distance, No Direction" Name="Range_Bracket_6_Direction_0">
+      <Value>42</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 3 Distance, Left Direction" Name="Range_Bracket_6_Direction_1">
+      <Value>43</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 3 Distance, Right Direction" Name="Range_Bracket_6_Direction_2">
+      <Value>44</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 3 Distance, Center Direction" Name="Range_Bracket_6_Direction_3">
+      <Value>45</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 3 Distance, Custom 1 Direction" Name="Range_Bracket_6_Direction_4">
+      <Value>46</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 3 Distance, Custom 2 Direction" Name="Range_Bracket_6_Direction_5">
+      <Value>47</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Custom 3 Distance, Custom 3 Direction" Name="Range_Bracket_6_Direction_6">
+      <Value>48</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

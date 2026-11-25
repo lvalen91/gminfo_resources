@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Cal Defs for INFO 3.0 Language and Regionalization. Note as clarification although this caldef has GlobalA in it's naming convention, the calibrations within this caldef are not intended to have any Global A or Global B dependence and to support both either Global A and Global B. With that said, unfortunately it is too late to make a naming convention update to remove the GlobalA reference in the name to clarify that now without affecting the GM Apps software team, which are using this exact caldef naming convention in the current MY17 and MY18 App software code releases too.">
+  <CalDefFileVersion>9</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage attribute with initial allocations</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>05FEB15</Date>
+    <Description>Change default CountryCode to UnitedStates from Andorra</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/24/2016</Date>
+    <Description>Within the LanguageAndRegionalizationGlobalA.caldef  and LanguageAndRegionalizationGlobalA.caldef LanguageAndRegionalizationGlobalA.enumdef files made the following updates: Added a new calibration called AVAILABLE_TARGET_SYSTEM_LANGUAGE_ENABLES to allow the flexibiltiy to enable (display in the SETTINGS SYSTEM LANGUAGE selection menu list)/disable (not display in the SETTINGS SYSTEM LANGUAGE selection menu list) as needed the available system languages in the SETTINGS SYSTEM LANGUAGE selection menu instead of tying the display of the available system languages to the COUNTRY_CODE calibration as was being done previously. Renamed the SYSTEM_LANGUAGE calibration to DEFAULT_SYSTEM_LANGUAGE and updated the description of this calibration to clarify the intended purposes of this calibration. Also, updated the enumeration value names and values for each of these enumeration to correspond to the Software Mapping (Hexadecimal Converted) number shown in the GIS-547 to make it easier to follow corresponding calibration enumeration references in relation to the GIS-547. Added on to the description shown for the COUNTRY_CODE calibration to clarify that this calibration is also being used as referenced in GIS-331 Wifi Calibration Specification for determining the regulatory wifi power variation settings to use for the wifi chip that shall be dynamically determined and set based on the value (country value) set for this calibration. Also added additonal COUNTRY_CODE enumeration values that needed to be added. Deleted the following three calibrations that were confirmed by Thiep Nguyen not to be needed for NAV: 1.) LANGUAGE_NAVIGATION_MAP_SCRIPT, 2.) LANGUAGE_NAVIGATION_PHONETIC_STREET_NAMES_FOR_PROMPTS, and 3.) LANGUAGE_NAVIGATION_PHONETIC_POINTS_OF_INTEREST. Deleted the following two calibrations: 1.) LANGUAGE_SPEECH_VOICE_RECOGNITION and 2.) TEXT_TO_SPEECH_MANEUVER_PROMPTS_AND_MESSAGE_READBACK that were confirmed by Greg Lindemann not to be needed for voice recognition/speech recongniton. Deleted the KEYBOARD_LANGUAGES calibration (along with the associated KEYBOARD_LANGUAGE_ENABLE_VARIABLES enumeration calibration) confirmed by team (Greg Frietag, Paul Hollenbeck, and Scott Griesmann) not to be needed. Also, deleted the HMI_TEXT_LANGUAGE calibration that was confirmed not to be needed with the use of the DEFAULT_SYSTEM_LANGUAGE calibration that has the same function. Also, deleted the following three calibrations 1.) DATE_FORMAT_DISPLAYED_VARIABLES, 2.) DATE_FORMAT_SEPERATOR_VARIABLES, and 3.) GRAPHICS_ANIMATION_THEMES_VAIRABLES since these calibrations were confirmed by Cody Hansen not be needed. Note these calibrations are not needed because the date format displayed and date format separator are automatically determined by the language setting selected, and the GRAPHICS_ANIMATION_THEMES_VAIRABLES calibration is not needed since the GMBrand calibration is already being used for the purpose of what this calibration was going to be used for. Also, added on to the description shown for the COUNTRY_CODE calibration to clarify that this calibration is also being used as referenced in GIS-331 Wifi Calibration Specification for determining the regulatory wifi power variation settings to use for the wifi chip that shall be dynamically determined and set based on the value (country value) set for this calibration. Also added additonal COUNTRY_CODE enumeration values that needed to be added.  </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the LanguageAndRegionalizationGlobalA.caldef file to LanguageAndRegionalization.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to not have any reference to GlobalA or GlobalB in the caldef/enumdef naming convention if calibrations contained in a caldef/enumdef file are not GlobalA or GlobalB specific.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>11/21/2016</Date>
+    <Description> Changed the names of both the LanguageAndRegionalization caldef/enumdef files back to LanguageAndRegionalizationGlobalA. The name of these caldef/enumdef files were changed initially to help make it clearer that the calibrations within these caldef/enumdef files are not Global A specific calibrations, and these calibrations are intended to be used for both Global A and B. However, a naming convention change to these caldef/enumdef files would cause the GM Apps team to support a different software branch for MY19 than what was done for MY17 and MY18, which the GM Apps team confirmed could not be supported long term. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>6/13/2017</Date>
+    <Description>Within the LanguageAndRegionalizationGlobalA.caldef updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the LanguageAndRegionalizationGlobalA.caldef, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration is intended to be used to enable (display in the SETTINGS SYSTEM LANGUAGE selection menu list)/disable (not display in the SETTINGS SYSTEM LANGUAGE selection menu list) as needed the available system languages in the SETTINGS SYSTEM LANGUAGE selection menu. A given system language shall be displayed in the SETTINGS SYSTEM LANGUAGE selection menu list when the enable calibration for that system language is set to a value of 1 (enable), and shall not be displayed when the enable calibration for that system language is set to a value of 0 (disable)." Name="AVAILABLE_TARGET_SYSTEM_LANGUAGE_ENABLES" References="GIS-507 and GIS-547" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_X7ucgDisEeaLbPZ4FkO9uQ</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_vRtzsDh5EeaLbPZ4FkO9uQ</EnumID>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>31</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>32</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>19</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>5</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>14</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>23</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>6</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>16</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>15</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>7</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>17</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>13</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>11</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>40</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>20</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>24</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>41</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>10</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>27</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>8</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>9</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>29</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>28</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>99</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>25</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>21</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>22</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>26</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>30</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>35</Key>
+        <Value>0</Value>
+      </Entry>
+      <Entry>
+        <Key>12</Key>
+        <Value>0</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="This calibration shall be used to set the initial default system language that is available in the SETTINGS SYSTEM LANGUAGE selection menu. The DEFAULT_SYSTEM_LANGUAGE shall be checked to confirm it is one of the available system languages enabled at a given time by the TARGET_SYSTEM_LANGUAGE_ENABLE_CALIBRATIONS. If at any time the value set for the DEFAULT_SYSTEM_LANGUAGE calibration is not one of the available system languages enabled by the TARGET_SYSTEM_LANGUAGE_ENABLE_CALIBRATIONS, the DEFAULT_SYSTEM_LANGUAGE calibration shall be set to a fail safe value based on the value the REGION calibration is set to at that time. For the purpose of referencing the REGION calibration to determine the fail safe value to set the DEFAULT_SYSTEM_LANGUAGE calibration if the REGION calibration is set to any of the following four REGION enumeration calibration values of 1.) EUROPE, 2.) AFRICA, 3.) AUSTRALIA, or 4.) INDIA, the DEFAULT_SYSTEM_LANGUAGE calibration shall be set to a fail safe default system language of ENGLISH_UK. Otherwise if the REGION calibration is not set to any one of these four Region enumeration calibration values, the DEFAULT_SYSTEM_LANGUAGE calibration shall be set to a fail safe default system language of ENGLISH_US." Name="DEFAULT_SYSTEM_LANGUAGE" References="GIS-507 and GIS-547" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_E4ARALEQEeO_VpIpRoy4MQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/24/2016</Date>
+      <Description>Renamed this calibration from SYSTEM_LANGUAGE to DEFAULT_SYSTEM_LANGUAGE and updated the description of this calibration to clarify the intended purposes of this calibration. Also, updated the enumeration value names and values for each of the enumeration values for this calibration to correspond to the Software Mapping (Hexadecimal Converted) number shown in the GIS-547 to make it easier to follow corresponding enumeration references in relation to the GIS-547.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_sJrvYLEKEeO_VpIpRoy4MQ</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="UNITED STATES IS DEFAULT COUNTRY CODE. Contry code will be based on RPO Calibration. As referenced in the GIS-331 Wifi Requirements Specification, this country code calibration is also being used for determining the regulatory wifi power variation settings to use for the wifi chip that shall be dynamically determined and set based on the value (country value) set for this calibration. Note, the value (country value) set for this calibration is determined by the country RPO (Regular Production Options Content) code for a given vehicle based on the PPC (Program Planning Content) for that vehicle, which represents the intended country of sell for that vehicle." Name="COUNTRY_CODE" References="GIS-331" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_J8iWULEaEeO_VpIpRoy4MQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/24/2016</Date>
+      <Description>Added on to the description shown for the COUNTRY_CODE calibration to clarify that this calibration is also being used as referenced in GIS-331 Wifi Calibration Specification for determining the regulatory wifi power variation settings to use for the wifi chip that shall be dynamically determined and set based on the value (country value) set for this calibration. Also, under the enumeration values for this calibration added additonal COUNTRY_CODE enumeration values that needed to be added. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_NiUcILEYEeO_VpIpRoy4MQ</EnumID>
+      <Value>49</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="LEFT HAND DRIVE IS DEFAULT. DRIVE_SIDE to comprehend vehicle configuration of Right Hand Drive (RHD) versus Left Hand Drive (LHD) with respect to GMLAN message location of driver front versus passenger front. Selection based on RPO Calibration." Name="DRIVER_SIDE" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_uuK8EMPnEeOFYIr7JW1WWw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_kGfywMPnEeOFYIr7JW1WWw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="The contents of the Audio More Features may be based on Regions." Name="REGIONS" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Q_tGINRQEeOBI_YIOwraKg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_LqdnINRNEeOBI_YIOwraKg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

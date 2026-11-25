@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Contains the AudioStreamEnum enumeration definition used in GIS-604 and GIS-606.">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/31/2014</Date>
+    <Description>Added new stream type &quot;STREAM_NATIVE_HFM_WB&quot; to support wide band bluetooth audio.  Part of Harman Assembla ticket 1223.  </Description>
+    <Author>Dominic Colella</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>9/11/2018</Date>
+    <Description>CR1261915 - Added new stream type STREAM_NATIVE_PROJ_ALT_AUDIO  </Description>
+    <Author>Christine Marzan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration of system audio streams as defined in GIS-606 and used for both audio request management and source offset computation in 604." Name="AudioStreamEnum">
+    <EnumID>_ATQfUCR6EeOFAcqdxEN3jw</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Name="STREAM_VOICE_CALL">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_SYSTEM">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_RING">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_MUSIC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_ALARM">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NOTIFICATION">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_BLUETOOTH_SCO">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_SYSTEM_ENFORCED">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_DTMF">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_TTS">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_AUDIO_CUE">
+      <Value>4096</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_LVM_PROMPT">
+      <Value>4097</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_RDS_TRAFFIC">
+      <Value>4098</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_AM_TUNER">
+      <Value>4099</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_FM_TUNER">
+      <Value>4100</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_SDARS_TUNER">
+      <Value>4101</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_DABFM_TUNER">
+      <Value>4102</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_BLUETOOTH_AUDIO">
+      <Value>4103</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_AUDIO_DISK_PLAYER">
+      <Value>4104</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_AUX">
+      <Value>4105</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_LVM_STEREO_AUDIO">
+      <Value>4106</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_MEDIA_PLAYER">
+      <Value>4107</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_IPOD">
+      <Value>4108</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_INTERNET_APP_AUDIO">
+      <Value>4109</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_RSI1">
+      <Value>4110</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="STREAM_NATIVE_RSI2">
+      <Value>4111</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_HFM">
+      <Value>4112</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_MUTEX_PROMPT">
+      <Value>4113</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_DTCP_PROMPT">
+      <Value>4114</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_DTCP_CALL">
+      <Value>4115</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_DTCP_ECALL">
+      <Value>4116</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_ATCP_ECALL">
+      <Value>4117</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_RING">
+      <Value>4118</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_DTCP_RING">
+      <Value>4119</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_ATCP_RING">
+      <Value>4120</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_SPEECH">
+      <Value>4121</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_PHN_VR">
+      <Value>4122</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STREAM_NATIVE_MIX_PROMPT">
+      <Value>4123</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="STREAM_NATIVE_DTCP_MIX_PROMPT">
+      <Value>4124</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="STREAM_NATIVE_CHIME">
+      <Value>4125</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="STREAM_NATIVE_HFM_WB">
+      <Value>4126</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="STREAM_NATIVE_PROJ_ALT_AUDIO">
+      <Value>4127</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="STREAM_NONE">
+      <Value>65535</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

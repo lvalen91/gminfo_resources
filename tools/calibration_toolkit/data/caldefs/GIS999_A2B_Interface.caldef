@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>4/30/2018</Date>
+    <Description>Per CR 1779173 Initial Release of Calibrations within new GIS999_A2B_Interface.caldef file.</Description>
+    <Author>Araripe De Faria </Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration is intended to be used to configure a given vehicle for three microphones (i.e. Dual front microphone arrays and a single rear array for rear passengers)." Name="TRIPLE_ARRAYS_ENABLE" References="GIS-999 (Network Configuration Management Section) " Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_8cvM4UyaEeiQRvFV6_uePw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is intended to be used to configure a given vehicle for two microphones (i.e. Dual front microphone arrays). " Name="DUAL_ARRAYS_ENABLE" References="GIS-999 (Network Configuration Management Section) " Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_mNjqYEyZEeiQRvFV6_uePw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

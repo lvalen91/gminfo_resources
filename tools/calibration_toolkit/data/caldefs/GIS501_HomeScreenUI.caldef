@@ -1,0 +1,2640 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>16</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/19/15</Date>
+    <Description>Fixed Application ordering Cal. You can now select which apps you want in which slot on the home screen or you can set it to none. Also added Driver Workload restriction</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/12/2015</Date>
+    <Description>Updated the default value for the ApplicationOrdering8 CAL from MirrorLink = 0x9 to AndroidAuto = 0xA within this caldef file</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>9/3/2015</Date>
+    <Description>Within this CalDef file per request from Sanghyun Ryu, updated CAL usage for the Navigation_Zone_Enabled CAL to not show Low Radio usage.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>12/1/2015</Date>
+    <Description>Within this CalDef file, updated the default values for ApplicationOrdering2 CAL through ApplicationOrdering16 CAL (Omitting value settings for the MirrorLink and Text icons for these CALs since there not intended to be used) to match the MY18 Default Application Ordering shown in the GIS-501.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/24/2016</Date>
+    <Description>Updated the initial default home screen calibration enumeration sort order positioning to match the HomeScreen icon order shown in the latest version GIS-501. Also, added ApplicationOrdering20 through ApplicationOrdering24 to account for the additional home screen sort order postioning needed for this. Note, this is intended to represent the initial default home screen calibration order positioning, which can be calibrated as needed to update the initial default position ordering. Also added new enable application calibrations for each home appplication for the purpose of adding or removing the given home screen application icon as defined by these enable calibrations in the position on the home screen set by the ApplicationOrdering calibrations.  </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>7/1/2016</Date>
+    <Description>Updated the description for the APPLICATION_HOMESCREEN_CLIMATE_ENABLED calibration to note both the Global A or Global B Climate feature calibrations, HvacRadioDisplayEnable (Global A specific calibration) or Climate Application Available (Global B specific calibration), to use as the first/overriding condition for determining if the Climate HomeScreen application icon shall be displayed or not.  Also, updated the description for APPLICATION_HOMESCREEN_REARCLIMATE_ENABLED to note both the Global A or Global B RearClimate feature calibrations,  RearHvacRadioDisplayEnable (Global A specific calibration) or 2.) Rear_Climate_Application_Available (Global B specific calibration), to use as the first/overriding condition for determining if the RearClimate HomeScreen application icon shall be displayed or not.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef file added the APPLICATION_HOMESCREEN_WIFIHOTSPOT_ENABLED and APPLICATION_HOMESCREEN_TRAILERING_ENABLED calibrations, and deleted the APPLICATION_HOMESCREEN_TEXT_ENABLED calibration since as noted in the GIS-501 the Text App is no longer needed as a possible App that could need to be added in the default HomeScreen list. Also updated the default value for the HomeScreen ApplicationOrdering calibrations to match the updated ordering shown in the GIS-501 Home Screen UI V4 Climate Ordering- Snippit-1 14OCT2016 as a part of the update in RTC CR#: 1112145.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>1/23/2017</Date>
+    <Description>Within the GIS501_HomeScreenUI.caldef file for RTC CR#: 1153650, updated the default value for the default ordering ApplicationOrdering14 through ApplicationOrdering20 calibrations to match the HomeScreen icon order shown in latest version GIS-501.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>6/13/2017</Date>
+    <Description>Within the GIS501_HomeScreenUI.caldef file made the following updates: 1.) Updated the description of the APPLICATION_HOMESCREEN_BAIDUCARLIFE_ENABLED calibration to note the BAIDUCARLIFE feature calibration (ENABLE_APPLICATIONBAIDU_CARLIFE) from the GIS-513 to factor in the criteria for whether or not the BAIDUCARLIFE homescreen application icon gets dispayed. 2.) Updated the description for the ENABLE_APPLICATION_HOMESCREEN_INTERIOR_ENABLED calibration to note the correct feature calibration to use for this feature is AmbientLightingEnable, not the previously noted ENABLE_APPLICATION_INTERIOR_LIGHTING calibration in the description of this calibration., and  3.) Also, updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>10/1/2017</Date>
+    <Description>Within the GIS501_HomeScreenUI.caldef file, added GEM usage to all of the calibrations within this caldef except for the Navigation_Zone_Enabled calibration. Since the Navigation_Zone_Enabled calibration was the only calibration within this caldef file that did not fall within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>1/25/2018</Date>
+    <Description>Within the GIS501_HomeScreenUI.caldef file made the following updates for CR#: 1529732:: Added APPLICATION_HOMESCREEN_AIRQUALITY_ENABLED calibration shown in the GIS-501 and GIS-551. Updated the default value for  ApplicationOrdering20 through ApplicationOrdering25 to reflect the latest MY20 Default Application ordering to account for the additon of the AirQuality HomeScreen App. Also, added new ApplicationOrdering26 calibration to account for the shifting down of the default values of ApplicationOrdering20 through ApplicationOrdering25 calibrations, and with this reflect the latest MY20 Default Application ordering shown in GIS-501 with the additon of the AirQuality HomeScreen App.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>09/17/2018</Date>
+    <Description>Per CR#1897607, Updated GIS501_HomeScreenUI.caldef with ApplicationOrdering27 = Vehicle Information, ApplicationOrdering28 = APA, and ApplicationOrdering29 = Owner&#x2019;s Manual, APPLICATION_HOMESCREEN_VEHICLEINFORMATION_ENABLED, APPLICATION_HOMESCREEN_OWNERSMANUAL_ENABLED, and APPLICATION_HOMESCREEN_APA_ENABLED</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>10/30/2018</Date>
+    <Description>Per CR#1686594, Updated GIS501_HomeScreenUI.caldef file with ApplicationOrdering30 = PA, and APPLICATION_HOMESCREEN_PA_ENABLED calibrations.</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>9/28/2020</Date>
+    <Description>Per CRs #2526202 and #2620007 adding several new cals and updating several default settings</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>16</Version>
+    <Date>9/17/2021</Date>
+    <Description>In support of CR#: 3098258, updated the GIS501_HomeScreenUI.caldef file to add the new calibration called APPLICATION_HOMESCREEN_PERFORMANCEAPP_ENABLED and added the new ApplicationOrdering44 calibration paired with the APPLICATION_HOMESCREEN_PERFORMANCEAPP_ENABLED to support enabling/disabling the Performance App on the home screen. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>17</Version>
+    <Date>11/18/2021</Date>
+    <Description>In support of CR#: 3105232, updated the GIS501_HomeScreenUI.caldef file to add the new calibration called APPLICATION_HOMESCREEN_ALEXA_ENABLED.</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>18</Version>
+    <Date>4/19/2023</Date>
+    <Description>In support of CR#: 3381323, updated the GIS501_HomeScreenUI.caldef file to add the new calibration called APPLICATION_HOMESCREEN_MAPSPLUS_ENABLED, APPLICATION_HOMESCREEN_SPOTIFY_ENABLED, APPLICATION_HOMESCREEN_IHEARTRADIO_ENABLED, APPLICATION_HOMESCREEN_WEATHER_ENABLED</Description>
+    <Author>Andrea Campbell</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration is used to enable the HP1 Performance App on the home screen. This calibration will need to be set to TRUE (ie: enabled) for any vehicle that requires the performance app.  The Performance App calibration is used to Enable/Disable the display of this Application on the HomeScreen. When this calibration is set to True(Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False(Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_PERFORMANCEAPP_ENABLED" References="GIS-501" Usage="MID,HIGH,GLOBALB">
+    <CalID>_JjMx0BgSEey1B_g7sgX8Bg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/17/2021</Date>
+      <Description>Initial release of this calibration to support CR#: 3098258. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Vehicle Information Application provides vehicle status information (e.g. Oil Life, Tire Pressure, etc.). The Vehicle Information calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True(Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False(Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_VEHICLEINFORMATION_ENABLED" References="GIS501 Section 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_e-mgwLtwEei-5bHnoORlAg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The PA application is an application that gives you the information about PA provided with the vehicle. The PA calibration is used to Enable/Disable the display of this Application on the HomeScreen. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen and in the App Tray. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_PA_ENABLED" References="GIS501 SECTION 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_0BkNcdxPEeirwbrltDv1bw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The APA application is an application that gives you the information about APA provided with the vehicle. The APA calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_APA_ENABLED" References="GIS501 SECTION 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Uqdz8LtvEei-5bHnoORlAg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Owner's manual application is an electronic version of the physical Owner's Manual that is typically provided with a vehicle. The Owner's Manual calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False(Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_OWNERSMANUAL_ENABLED" References="GIS501 SECTION5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_0iBQ0LtuEei-5bHnoORlAg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_TRAILERING_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_lQLDcJ6ZEea-Ao5FQchwtQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Inital release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="RPO Air Quality Sensor to Determine Availability of the Air Quality Application on the HomeScreen and in the App Tray.  As noted in the GIS-551 Air Quality UI, RPO: &quot;USK&quot; is the applicable RPO for Air Quality Sensor to Determine Availability." Name="APPLICATION_HOMESCREEN_AIRQUALITY_ENABLED" References="GIS-501 (Section#s: 3.7.5 and 5.1.1) and GIS-551 (Section #: 5.1.1)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ACCUMAHfEeiDo-Dq14by9g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/25/2018</Date>
+      <Description>For CR#:1529732, added APPLICATION_HOMESCREEN_AIRQUALITY_ENABLED calibration shown in the GIS-501 and GIS-551.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_WIFIHOTSPOT_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_I5qWUJ6YEea-Ao5FQchwtQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Inital release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_AUDIO_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_8268QDw2EeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_DMBLVM_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_cRpL0Dw5EeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Inital release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_PHONE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Upt7sDw6EeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of NAV feature calibration (ENABLE_APPLICATION_NAVIGATION). When the value of the ENABLE_APPLICATION_NAVIGATION is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_NAV_ENABLED) is set to. When the ENABLE_APPLICATION_NAVIGATION is set to True, the value of the APPLICATION_HOMESCREEN_NAV_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_NAV_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_NAV_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_VGwAgDw7EeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2020</Date>
+      <Description>Default changed to False per CR 2526202</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_NAVLVM_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_wQpP4DxEEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of the Climate feature calibration (HvacRadioDisplayEnable for Global A or Climate Application Available for Global B ). When the value of the HvacRadioDisplayEnable (Global A specific calibration) or Climate Application Available (Global B specific calibration) is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_CLIMATE_ENABLED) is set to. When the HvacRadioDisplayEnable (Global A specific calibration) or Climate Application Available (Global B specific calibration) is set to True, the value of the APPLICATION_HOMESCREEN_CLIMATE_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_CLIMATE_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_CLIMATE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_RBdakDxFEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>7/1/2016</Date>
+      <Description>Updated the description for the APPLICATION_HOMESCREEN_CLIMATE_ENABLED calibration to distinquish between the two different Climate feature calibration: 1.) HvacRadioDisplayEnable (Global A specific calibration) or 2.) Climate Application Available (Global B specific calibration) that should be used as the first/overriding condition for determining if the Climate HomeScreen application icon shall be displayed or not.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_USERS_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_8jazoDxFEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_SETTINGS_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_dVkbEDxGEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of AppleCarPlay feature calibration (Enable_Application_Apple_Carplay). When the value of the Enable_Application_Apple_Carplay is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_APPLECARPLAY_ENABLED) is set to. When the Enable_Application_Apple_Carplay is set to True, the value of the APPLICATION_HOMESCREEN_APPLECARPLAY_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_APPLECARPLAY_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_APPLECARPLAY_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_WLXowDxHEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of MirrorLink feature calibration (Enable_Application_MirrorLink). When the value of the Enable_Application_MirrorLink is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_MIRRORLINK_ENABLED) is set to. When the Enable_Application_MirrorLink is set to True, the value of the APPLICATION_HOMESCREEN_MIRRORLINK_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_MIRRORLINK_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_MIRRORLINK_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_xeCBUDxKEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of ANDROIDAUTO feature calibration (Enable_application_google_Automotive_link). When the value of the Enable_application_google_Automotive_link is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_ANDROIDAUTO_ENABLED) is set to. When the Enable_application_google_Automotive_link is set to True, the value of the APPLICATION_HOMESCREEN_ANDROIDAUTO_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_ANDROIDAUTO_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_ANDROIDAUTO_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_uszTADxOEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Inital release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of BAIDUCARLIFE feature calibration (ENABLE_APPLICATIONBAIDU_CARLIFE). When the value of the ENABLE_APPLICATIONBAIDU_CARLIFE is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_BAIDUCARLIFE_ENABLED) is set to. When the ENABLE_APPLICATIONBAIDU_CARLIFE is set to True, the value of the APPLICATION_HOMESCREEN_BAIDUCARLIFE_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_BAIDUCARLIFE_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_BAIDUCARLIFE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ng_sQDxREeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the description of the APPLICATION_HOMESCREEN_BAIDUCARLIFE_ENABLED calibration to note the BAIDUCARLIFE feature calibration (ENABLE_APPLICATIONBAIDU_CARLIFE) from the GIS-513 to factor in the criteria for whether or not the BAIDUCARLIFE homescreen application icon gets dispayed. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_APPSHOP_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_KiaAkDxSEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2020</Date>
+      <Description>Default changed to False per CR 2526202</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_ENERGY_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_vasW8DxSEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_CUSTOMMODE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_abJlcDxTEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_ONSTAR_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Hwhc4DxUEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of any of the PDR related calibrations (LVM_1, LVM_2, or LVM_3). If the value of none of the PDR related calibrations (LVM_1, LVM_2, or LVM_3) is set to a value other than LVM_PERFORMANCE_COMPUTER, this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_PDRLVM_ENABLED) is set to. If at least one of the PDR related calibrations (LVM_1, LVM_2, or LVM_3) is set to a value of LVM_PERFORMANCE_COMPUTER, then the value of the APPLICATION_HOMESCREEN_PDRLVM_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_PDRLVM_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen." Name="APPLICATION_HOMESCREEN_PDRLVM_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_iFSrADxxEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_VIDEO_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Lqa0sDxWEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of the RearClimate feature calibration (RearHvacRadioDisplayEnable for Global A or Rear_Climate_Application_Available for Global B ). When the value of the RearHvacRadioDisplayEnable (Global A specific calibration) or Rear_Climate_Application_Available (Global B specific calibration) is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_REARCLIMATE_ENABLED) is set to. When the RearHvacRadioDisplayEnable (Global A specific calibration) or Rear_Climate_Application_Available (Global B specific calibration) is set to True, the value of the APPLICATION_HOMESCREEN_REARCLIMATE_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_REARCLIMATE_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_REARCLIMATE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_pC-6QDyPEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>7/1/2016</Date>
+      <Description>Updated the description for the APPLICATION_HOMESCREEN_REARCLIMATE_ENABLED calibration to distinquish between the two different RearClimate feature calibration: 1.) RearHvacRadioDisplayEnable (Global A specific calibration) or 2.) Rear_Climate_Application_Available (Global B specific calibration) that should be used as the first/overriding condition for determining if the Climate HomeScreen application icon shall be displayed or not.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this HomeScreen Application shall be displayed on the HomeScreen is the value of Interior/Ambient lighting feature calibration (AmbientLightingEnable). When the value of the AmbientLightingEnable is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (ENABLE_APPLICATION_HOMESCREEN_INTERIOR_ENABLED) is set to. When the AmbientLightingEnable is set to True, the value of the APPLICATION_HOMESCREEN_INTERIORLIGHTING_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_INTERIORLIGHTING_ENDABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_INTERIORLIGHTING_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_FKW1oDyFEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the description for the ENABLE_APPLICATION_HOMESCREEN_INTERIOR_ENABLED calibration to note the correct feature calibration to use for this feature is AmbientLightingEnable, not the previously noted ENABLE_APPLICATION_INTERIOR_LIGHTING calibration in the description of this calibration. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_VIDEORECORDERLVM_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Mes-0Dz6EeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/26/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. Note: The first/overriding condition for determining if this VPM Camera HomeScreen Application shall be displayed on the HomeScreen is the value of VPM present configured calibration (RVS_PRESENT_STATUS). If the value of the VPM present configured calibration (RVS_PRESENT_STATUS) is set to a value other than PRESENT_VPM_CAMERA_PROCESSING_MODULE, this HomeScreen Application shall not be displayed on the HomeScreen no matter what the value of this calibration (APPLICATION_HOMESCREEN_CAMERALVM_ENABLED) is set to. If the VPM present configured calibration (RVS_PRESENT_STATUS) is set to a value of PRESENT_VPM_CAMERA_PROCESSING_MODULE, then the value of the APPLICATION_HOMESCREEN_CAMERALVM_ENABLED calibration is then used as the next/secondary condition for determining if this HomeScreeHomeScreen Appliation shall be displayed on the HomeScreen. When this calibration (APPLICATION_HOMESCREEN_CAMERALVM_ENABLED) is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen.    " Name="APPLICATION_HOMESCREEN_CAMERALVM_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_MFSHUDz8EeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_OTHERINTERNETAPPS_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-ObUMDxWEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_GOOGLEASSISTANT_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_vzMekQTMEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_GOOGLEMAPS_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_7p18cQTMEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_PLAYSTORE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>__jFe4QTMEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_CAMERA_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_laqIAQTNEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_TEENDRIVER_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_k7bOUQTNEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_CONTROLS_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_4FkvAQTNEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_THEMES_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_7zwQ8QTNEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_DRIVEMODE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-d14oQTNEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_TIPS_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_A9bggQTOEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_SVR_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Ex20YQTOEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_SUPERCRUISE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_HacnQQTOEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_OFFROAD_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JbqREQTOEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to Enable/Disable the display of this Application on the HomeScreen and in the App Tray. When this calibration is set to True (Enabled), this HomeScreen Application shall be displayed on the HomeScreen. When this calibration is set to False (Disabled), this HomeScreen Application shall not be displayed on the HomeScreen. " Name="APPLICATION_HOMESCREEN_AIRDOWNMODE_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_LsPzoQTOEeuhM_xpS7qcsA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/24/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable the Alexa App on the home screen. This will be set to FALSE in the case there is a need to disable Alexa application functionality due to unseen issue. Therefore, the main purpose of this calibration is for risk mitigation." Name="APPLICATION_HOMESCREEN_ALEXA_ENABLED" References="GIS-501" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_iQC7IUibEeyz4sN06ocNDQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/18/2021</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable the MapsPlus App on the home screen for the GAS Alternative. This will be set to FALSE in the case there is a need to disable Maps Plus application functionality due to unseen issue. Therefore, the main purpose of this calibration is for risk mitigation." Name="APPLICATION_HOMESCREEN_MAPSPLUS_ENABLED" References="UIS-401" Usage="MID,HIGH,GLOBALB">
+    <CalID>_bteIsdkwEe2G7odLxTDoMQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/19/2023</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>David Bojanowski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable the Spotify App on the home screen for GAS Alternative. This will be set to FALSE in the case there is a need to disable Spotify application functionality due to unseen issue. Therefore, the main purpose of this calibration is for risk mitigation." Name="APPLICATION_HOMESCREEN_SPOTIFY_ENABLED" References="UIS-401" Usage="MID,HIGH,GLOBALB">
+    <CalID>_bKCEcdkwEe2G7odLxTDoMQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/19/2023</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>David Bojanowski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable the iHeartRadio App on the home screen for the GAS Alternative. This will be set to FALSE in the case there is a need to disable iHeartRadio application functionality due to unseen issue. Therefore, the main purpose of this calibration is for risk mitigation." Name="APPLICATION_HOMESCREEN_IHEARTRADIO_ENABLED" References="UIS-401" Usage="MID,HIGH,GLOBALB">
+    <CalID>_XO9WAdkwEe2G7odLxTDoMQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/19/2023</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>David Bojanowski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable the Weather App on the home screen for GAS Alternative. This will be set to FALSE in the case there is a need to disable Weather application functionality due to unseen issue. Therefore, the main purpose of this calibration is for risk mitigation." Name="APPLICATION_HOMESCREEN_WEATHER_ENABLED" References="UIS-401" Usage="MID,HIGH,GLOBALB">
+    <CalID>_wtO8oNkvEe2G7odLxTDoMQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/19/2023</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>David Bojanowski</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Application 1 on HomeScreen" Name="ApplicationOrdering1" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_MbJEMbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Audio per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 2 on HomeScreen" Name="ApplicationOrdering2" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_M0qXcbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Google Maps per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>30</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 3 on HomeScreen" Name="ApplicationOrdering3" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_NENPUbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Phone per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 4 on HomeScreen" Name="ApplicationOrdering4" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_NUMMEbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Trailering per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>11</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 5 on HomeScreen" Name="ApplicationOrdering5" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_NfutsbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Google Assistant per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>31</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 6 on HomeScreen" Name="ApplicationOrdering6" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Nt3QUbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Play Store per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>32</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 7 on HomeScreen" Name="ApplicationOrdering7" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_N5KhYbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Android Auto per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>10</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 8 on HomeScreen" Name="ApplicationOrdering8" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_OD5xwbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/12/2015</Date>
+      <Description>Updated the default value for the ApplicationOrdering8 CAL from MirrorLink = 0x9 to AndroidAuto = 0xA based on feedback from Cody Hansen.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Car Play per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>8</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 9 on HomeScreen" Name="ApplicationOrdering9" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_OOssgbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Camera per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>33</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 10 on HomeScreen" Name="ApplicationOrdering10" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ObImAbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Climate per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>13</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 11 on HomeScreen" Name="ApplicationOrdering11" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_OoE10bhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Rear Climate per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>20</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 12 on HomeScreen" Name="ApplicationOrdering12" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_OzeNgbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Date>
+      <Description>6/13/2017</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to APA per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>27</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 13 on HomeScreen" Name="ApplicationOrdering13" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_PN-YMbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Settings per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>7</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 14 on HomeScreen" Name="ApplicationOrdering14" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_QTwUgbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>7</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/23/2017</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to WiFi Hotspot per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>5</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 15 on HomeScreen" Name="ApplicationOrdering15" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_QgCdAbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>7</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/23/2017</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Air Quality per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>25</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 16 on HomeScreen" Name="ApplicationOrdering16" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_QsF8AbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>7</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>12/1/2015</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown for MY18 in the GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/23/2017</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>7</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Video per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>19</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 17 on HomeScreen" Name="ApplicationOrdering17" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Q8vnIbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/23/2017</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Teen Driver per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>34</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 18 on HomeScreen" Name="ApplicationOrdering18" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_RIqjQbhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/23/2017</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Vehicle Information per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>26</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 19 on HomeScreen" Name="ApplicationOrdering19" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JcIVYLhtEeSmdeXBYRoUqg</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/24/2016</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/23/2017</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to PA per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>29</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 20 on HomeScreen" Name="ApplicationOrdering20" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_rkm5MDwxEeaGEeA8k3J6-w</CalID>
+    <Type>Enumeration</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Added this additional ApplicationOrdering CAL number to account for additional home screen sort order postioning needed.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/23/2017</Date>
+      <Description>Updated the default value for this CAL to match HomeScreen icon order shown in latest version GIS-501</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>1/25/2018</Date>
+      <Description>Update the default value for  ApplicationOrdering20 through ApplicationOrdering25 to reflect the latest MY20 Default Application ordering to account for the additon of the AirQuality HomeScreen App per CR#: 1529732.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Owners Manual per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>28</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 21 on HomeScreen" Name="ApplicationOrdering21" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_wpKGQDwzEeaGEeA8k3J6-w</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Added this additional ApplicationOrdering CAL number</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/25/2018</Date>
+      <Description>Update the default value for  ApplicationOrdering20 through ApplicationOrdering25 to reflect the latest MY20 Default Application ordering to account for the additon of the AirQuality HomeScreen App per CR#: 1529732.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to DMBLVM per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 22 on HomeScreen" Name="ApplicationOrdering22" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_It2OUDw0EeaGEeA8k3J6-w</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Added this additional ApplicationOrdering CAL number to account for additional home screen sort order postioning needed.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/25/2018</Date>
+      <Description>Update the default value for  ApplicationOrdering20 through ApplicationOrdering25 to reflect the latest MY20 Default Application ordering to account for the additon of the AirQuality HomeScreen App per CR#: 1529732.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Nav per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 23 on HomeScreen" Name="ApplicationOrdering23" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_YMftoDw0EeaGEeA8k3J6-w</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Added this additional ApplicationOrdering CAL number to account for additional home screen sort order postioning needed.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/25/2018</Date>
+      <Description>Update the default value for  ApplicationOrdering20 through ApplicationOrdering25 to reflect the latest MY20 Default Application ordering to account for the additon of the AirQuality HomeScreen App per CR#: 1529732.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to NavLVM per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 24 on HomeScreen" Name="ApplicationOrdering24" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yNg_gDw0EeaGEeA8k3J6-w</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Added this additional ApplicationOrdering CAL number to account for additional home screen sort order postioning needed.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/25/2018</Date>
+      <Description>Update the default value for  ApplicationOrdering20 through ApplicationOrdering25 to reflect the latest MY20 Default Application ordering to account for the additon of the AirQuality HomeScreen App per CR#: 1529732.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Users per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>6</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 25 on HomeScreen" Name="ApplicationOrdering25" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_N5v6IJ6aEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Added this additional ApplicationOrdering CAL number to account for additional home screen sort order postioning needed.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/25/2018</Date>
+      <Description>Update the default value for  ApplicationOrdering20 through ApplicationOrdering25 to reflect the latest MY20 Default Application ordering to account for the additon of the AirQuality HomeScreen App per CR#: 1529732.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Mirror Link per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>9</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 26 on HomeScreen" Name="ApplicationOrdering26" References="GIS501 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_3B6zAQHoEeiDo-Dq14by9g</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/25/2018</Date>
+      <Description>Added new ApplicationOrdering26 calibration to account for the shifting down of the default values of ApplicationOrdering20 through ApplicationOrdering25 calibrations, and with this reflect the latest MY20 Default Application ordering shown in GIS-501 with the additon of the AirQuality HomeScreen App per CR#: 1529732</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Baidu CarLife per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>12</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 27 on the Homescreen" Name="ApplicationOrdering27" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_OEP4gLqsEeiqH4My0Pp0QQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to App Shop per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>14</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 28 on the Home Screen" Name="ApplicationOrdering28" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_h9cQgLqsEeiqH4My0Pp0QQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Energy per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>15</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 29 on the Home Screen" Name="ApplicationOrdering29" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_sImc8LqsEeiqH4My0Pp0QQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to Custom Mode per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>16</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 30 on the Home Screen" Name="ApplicationOrdering30" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_p6JRgdxPEeirwbrltDv1bw</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/30/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/28/2020</Date>
+      <Description>Changed default to OnStar per CR 2620007</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>17</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 31 on the Home Screen" Name="ApplicationOrdering31" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_RYALoATFEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>18</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 32 on the Home Screen" Name="ApplicationOrdering32" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_37N18QTJEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>21</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 33 on the Home Screen" Name="ApplicationOrdering33" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_EAVNoQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>22</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 34 on the Home Screen" Name="ApplicationOrdering34" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_ExsZIQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/29/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>23</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 35 on the Home Screen" Name="ApplicationOrdering35" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_KqLPcQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>24</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 36 on the Home Screen" Name="ApplicationOrdering36" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_QvN7EQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>35</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 37 on the Home Screen" Name="ApplicationOrdering37" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_UjrEIQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>36</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 38 on the Home Screen" Name="ApplicationOrdering38" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_ZRuHoQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>37</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 39 on the Home Screen" Name="ApplicationOrdering39" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_cYAjIQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>38</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 40 on the Home Screen" Name="ApplicationOrdering40" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_szWUMQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>39</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 41 on the Home Screen" Name="ApplicationOrdering41" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_v9NBEQTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>40</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 42 on the Home Screen" Name="ApplicationOrdering42" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_zPl-4QTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>41</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 43 on the Home Screen" Name="ApplicationOrdering43" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_2PZ-8QTKEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/28/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>42</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 44 on the Home Screen" Name="ApplicationOrdering44" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,GLOBALB">
+    <CalID>_ILvA4BgYEey1B_g7sgX8Bg</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>9/17/2021</Date>
+      <Description>Initial release of this calibration to support CR#: 3098258. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>43</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 1 on the App Tray" Name="AppTray_ApplicationOrdering1" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_Dsa9sQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 2 on the App Tray" Name="AppTray_ApplicationOrdering2" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_OzxsoQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>30</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 3 on the App Tray" Name="AppTray_ApplicationOrdering3" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_OkG48QTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 4 on the App Tray" Name="AppTray_ApplicationOrdering4" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_OVMTMQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>11</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 5 on the App Tray" Name="AppTray_ApplicationOrdering5" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_ODopIQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>31</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 6 on the App Tray" Name="AppTray_ApplicationOrdering6" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_NuuJEQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>32</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 7 on the App Tray" Name="AppTray_ApplicationOrdering7" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_ifbX4QTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>10</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 8 on the App Tray" Name="AppTray_ApplicationOrdering8" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_iIoBcQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>8</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 9 on the App Tray" Name="AppTray_ApplicationOrdering9" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_h6naoQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>33</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 10 on the App Tray" Name="AppTray_ApplicationOrdering10" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_hokoYQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>13</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 11 on the App Tray" Name="AppTray_ApplicationOrdering11" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_jaWIAQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>20</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Application 12 on the App Tray" Name="AppTray_ApplicationOrdering12" References="GIS501 Section5.1.1.1" Usage="MID,HIGH,VCU,GLOBALA,GLOBALB">
+    <CalID>_gaGDEQTLEeuhM_xpS7qcsA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/2/2020</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_PLqvsLfsEeSKN7pLHsmKkw</EnumID>
+      <Value>27</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This cal is unbounded but with a default of 1. The number of pages that are available to the user to put applications on is based on this calibration." Name="DefaultNumOfPages" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_06xe0MTEEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration enables or disables the navigation zone in the Porch View" Name="Navigation_Zone_Enabled" References="GIS501 5.1.1.1*MY17 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_reXS4GkUEeSgh9VY6ZvAyA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description>Per request from Sanghyun Ryu, updated CAL usage for the Navigation_Zone_Enabled CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration enables or disables the porch view. When disabled, the porch view is not accessible and is not indicated as a page in the page indicators." Name="Porch_View_Enabled" References="GIS501 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_sIt3cGkUEeSgh9VY6ZvAyA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When the user performs a long press on a home screen icon, the lockout popup is shown indicating that they cannot edit the icons. When the lockout pop-up is dismissed, the  user is taken back to the home screen that they were on before." Name="EditingHomeScreenDriverWorkload" References="GIS501 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JOIXALisEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/13/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

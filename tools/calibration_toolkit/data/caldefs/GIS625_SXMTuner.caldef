@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="Adding SXM favorites presets as per SXM Presets CR 1416733. This GIS625_SXMTuner is used for GIS-625, GIS-756 (SXM 360L App) Calibrations, and GIS-757 X40 HA family requirements. ">
+  <CalDefFileVersion>13</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>May 8, 2014</Date>
+    <Description>Dropped ENABLE_AM_FM_XM_AUDIOMOREFEATURE_TAGSONG, MAX_XM_TAGGED_SONGS, ENABLE_XM_AUDIOMOREFEATURE_TUNESELECT, MAX_XM_SONG_ALERTS as these cals were specific to NGI and these features will not be offered in Info 3.  Dropped SXM_No_CategoryFoundMsgTimer as this cal. Combined individual Artist, Song, and Channel list views into a single cal called SXM_ArtistSongListViewEnabled.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>18Aug2014</Date>
+    <Description>This change accounts for tunerHMI cals not being assigned to the correct caldef file.  The ExplicitContentFilterActive cal has been moved from tunerHMI caldef to this document.  The SXM_ListViewUpdateTime cal has been removed as it is not need in our architecture.  Added SXM_FastSeekRate to defined channels/sec the tuner traverses the available SXM channels during a press/hold event.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date></Date>
+    <Description>Original Release</Description>
+    <Author></Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>December 1, 2014</Date>
+    <Description>Release File Change Log:  Cal Def File Version 5.  December 1, 2014
+Here is a summary of the changes for this release: 
+
+1.  Corrected the description and default state for the  ExplicitContentFilterActive calibration as it was a copy/paste error from SXM_Enabled.  Also changed the default state to FALSE for this calibration.
+
+    </Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>April 15, 2015</Date>
+    <Description>These are the changes associated with the April 15, 2015 release of calibrations.  These changes are required to support the MY18 content changes for SXM and to address the tuner/HMI feature linkages defined in Assembla ticket #1708.&#xD;
+&#xD;
+   1.  Addition calibrations to enable/disable TuneMix, TuneStart, InstantReply, and SportsFlash.  These are defined as:&#xD;
+&#xD;
+   TuneMixActiveCopy&#xD;
+   TuneStartActiveCopy&#xD;
+   InstantReplayActiveCopy&#xD;
+   SportsFlashActive&#xD;
+&#xD;
+&#xD;
+&#xD;
+    </Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>5Nov2015</Date>
+    <Description>Here are the changes associated with the V7 release: Here are the changes associated with the V7 release:&#xD;
+Fixed copy/paste error that included removing the work Copy from Instant Replay, TuneStart, and Tune Mix.  Also fixed copy/paste error in the descriptions so that they are correct for the above mentioned cals.&#xD;
+</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>2016-Jun-15</Date>
+    <Description>Deleted DirectTuneSXMAdvisoryMsg&#xa0; as per CR # 1096165</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>10/2/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the GIS625_SXMTuner.caldef  file. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>2018-Jan-03</Date>
+    <Description>Adding SXM favorites presets as per SXM Presets CR 1416733. This GIS625_SXMTuner is used for GIS-625, GIS-756 (SXM 360L App or DOORS equivalent) Calibrations, and GIS-757 X40 HA family requirements.</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>6/11/2019</Date>
+    <Description>Per CR# 2303157, in MY22 GIS-646 Cal DB V6.0.3 deprecating the following calibrations: InstantReplyActive, SXM_ArtistSongListViewEnabled, SportsFlashActive, TuneMixActive, ExplicitContentFilterActive, &amp; TuneStartActive. These cals were never implemented by SXM.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The calibration value is defined as a SID. (e.g. SID=13 is SXM ch 2 for Hits 1.) SIDS may change so this is as an example. There are a total of 10 spots (array 0-9) for default presets defined in a single array.  Not all spots are necessary to be filled based on program decision. For example, if 4 spots are needed, then 4 values in the array (0 to 3) can be defined to represent each favorite. The remaining values (4 thru 9) are defined as SID=0. If the SID value is 0 (Zero), no preset definition is required. The last preset on a first page needs to be kept for &quot; Hold to Set&quot; Therefore if there are 5 presets spots on the page, only 4 needs to be defined in cal and the last would remain as &quot; Hold to Set&quot;. See appropriate GIS specs. e.g. GIS-625, 757, 502, etc." Name="SXM_Default_Presets" References="GIS-625-10000" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_N6PzkDWvEeehCq1AckY2Kg</CalID>
+    <Type>IntegerArray</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2018-Jan-03</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Kiran Soni</Author>
+    </CalDefChangeRecord>
+    <IntegerArray>
+      <ArrayLength>10</ArrayLength>
+      <MinValue>0</MinValue>
+      <MaxValue>999</MaxValue>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>13</ArrayValue>
+      <ArrayValue>46</ArrayValue>
+      <ArrayValue>16</ArrayValue>
+      <ArrayValue>132</ArrayValue>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>0</ArrayValue>
+      <ArrayValue>0</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable/disable the SXM tuner processing explicit channels.  When set to TRUE, the SXM tuner shall filter out explicit channels.  When set to FALSE, the SXM tuner shall not filter explicit channels.  The default state is FALSE." Name="ExplicitContentFilterActive" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_SCmxYScBEeSmb8tw1ZVRMw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable/disable the SXM Instant Replay feature.  When set to TRUE, the SXM Instant Replay feature shall be enabled.   When set to FALSE, the SXM Instant Replay feature shall be disabled." Name="InstantReplyActive" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_q_IyQd7eEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The SXM_ArtistSongListViewEnabled calibration is used to enable/disable the Artist and Song metadata from appearing in the combined Channel List view.  The combined Channel List view includes Channel Number, Channel Name, Artist Name, and Song Name.  The default state for this calibration is TRUE." Name="SXM_ArtistSongListViewEnabled" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yq0IME1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="SXM Enable cal. Used to turn off SXM when not regionally supported. " Name="SXM_Enabled" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysOddU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The SXMFastSeekRate calibration is used to define the rate the tuner will traverse through the available SXM channels during a user Press/Hold event.  The default value is 10 channels/second." Name="SXM_FastSeekRate" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_JLZyYTRCEeS02-rXT2e8SA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable/disable the SXM Sports Flash feature in the tuner and the HMI display information associated with this feature.  When set to TRUE, the tuner shall enable Sports Flash and associated HMI display item(s). When set to FALSE, the tuner shall disable Sports Flash and the associated HMI display item(s).  The default state is TRUE." Name="SportsFlashActive" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_uhxykd7eEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable/disable the SXM Tune Mix feature.  When set to TRUE, the SXM Tune Mix feature shall be enabled.   When set to FALSE, the SXM Tune Mix feature shall be disabled." Name="TuneMixActive" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_jtctUN7eEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to enable/disable the SXM Tune Start feature.  When set to TRUE, the SXM Tune Start feature shall be enabled.   When set to FALSE, the SXM Tune Start feature shall be disabled." Name="TuneStartActive" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_oXI1Qd7eEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

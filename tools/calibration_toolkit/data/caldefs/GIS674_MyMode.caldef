@@ -1,0 +1,1017 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="The following CALS were changed: KeMMMR_l_ElectRangeMin, KeMMMR_l_FuelRangeMin, KeMMMR_l_RouteMax, KeMMMR_l_RouteMin.">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/21/2016</Date>
+    <Description>Initial release of this caldef file.</Description>
+    <Author>Shanmukh Rajurs</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/18/2016</Date>
+    <Description>The following CALS have been added: MyModeNormalMapping, MyModeHoldMapping, KeMMMR_k_CnvrtSpdHst, KeMMMR_k_CnvrtSpdLmt, KeMMMR_k_CnvrtSpdLv, KeMMMR_k_GrdMinMax, KeMMMR_l_EngOffMxBtwnEvnts, KeMMMR_l_RouteMax, KeMMMR_l_RouteMin, KeMMMR_l_TmBlndLrnDstMx, KeMMMR_P_LrnMinPwr, KeMMMR_P_RstCbnCndng, KeMMMR_P_RstRdLd, KeMMMR_P_RstTtlPwr, KeMMMR_r_MinDstDlt, KeMMMR_r_MinTmDlt, KeMMMR_r_TmBlndRscl, KeMMMR_T_Heat_MaxECT, KeMMMR_T_MinTrnsLrn, KeMMMR_t_RstTm, KeMMMR_t_TmBttnPrss, KnMMMR_v_TrnsTWrmUpSpd, KnMMMR_v_RdLdSpeed, KtMMMR_k_GrdMult, KtMMMR_P_RdLdNominal, KtMMMR_P_SpinLoss. The following CALS have been deleted: KeMMMR_k_GrdMult, KeMMMR_l_RouteMax, KeMMMR_l_RouteMin, KeMMMR_P_RdLdDdBnd, KeMMMR_T_Heat_MaxECT, KeMMMR_T_MinOATLrn, KeMMMR_T_MinTrnsLrn, KeMMMR_t_TmBttnPrss, KnMMMR_v_RdLdSpeed, KtMMMR_P_RdLdNominal, KtMMMR_P_SpinLoss. The following CALS have been changed (updated: type, min, max, resolution, units, and default value): KeMMMR_l_ElectRangeMin, KeMMMR_l_FuelRangeMin, KeMMMR_M_MinAxlTrq, KeMMMR_P_HPThresh, KeMMMR_P_LPThresh, KeMMMR_t_TmBttnPrss, KeMMMR_v_HSThresh, KeMMMR_v_LSThresh, KnMMMR_T_CbnTmp, KnMMMR_T_TrnsTmp, KnMMMR_v_DltaSpd, KtMMMR_E_PwrDltSpd, KtMMMR_k_TrnsTmpMult, KtMMMR_k_TrnsTWrmUp, KtMMMR_t_HVACSwtchMntn. </Description>
+    <Author>Shanmukh Rajurs</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>1/06/2017</Date>
+    <Description>The following CALS were changed: KeMMMR_l_ElectRangeMin, KeMMMR_l_FuelRangeMin, KeMMMR_l_RouteMax, KeMMMR_l_RouteMin.</Description>
+    <Author>Shanmukh Rajurs</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>3/1/2017</Date>
+    <Description>Within the GIS674_MyMode.caldef as reviewed with Shanmukh Rajurs (GIS-674 Spec. owner ) and other team members working on MyMode made the following updates within GIS674_MyMode.caldef file: Updated the allowable minimum value defined for the KtMMMR_t_HVACSwtchMntn float array calibration from a minumum value of 1.4E-45 to 0. Note, this update had to made to correct an issue with the default value for one of the array parameters (KtMMMR_t_HVACSwtchMntn[2]=0.0 ) needed being below the predefined allowable/workable minimum value. Also, updated the allowable minimum value from a minumum value of 1.4E-45 to 0 defined for the following four float array calibrations: (1) KtMMMR_P_SpinLoss, (2) KtMMMR_P_RdLdNominal, (3) KtMMMR_k_TrnsTWrmUp, (4) KnMMMR_v_RdLdSpeed. Note, made this update as a result of the needed use case of another float array calibration (KtMMMR_t_HVACSwtchMntn )within this caldef file having a default value of zero, also updated the minimum value of these four float array calibration (  1.) KtMMMR_P_SpinLoss, 2.) KtMMMR_P_RdLdNominal, 3.) KtMMMR_k_TrnsTWrmUp, and 4.) KnMMMR_v_RdLdSpeed ) to also allow the flexibltiy to set one of the array parameters for these calibration to zero in the future via a CAL override if it were to ever be needed too.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration turns the disclaimer screen ON or OFF." Name="MyModeDisclaimer" References="GIS-674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9gOg0SdiEea__7-NDV_xoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration turns the MyMode app on or off on the home screen. If NAV, Hybrid vehicle and North American Region, this calibration is TRUE else False" Name="MyModeEnable" References="GIS-674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gBkqcCdiEea__7-NDV_xoQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This CAL defines the corresponding signal index for Normal mode." Name="MyModeNormalMapping" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_goCgsJSTEeaAxIsnyTOKmg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>8</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This CAL defines the corresponding signal index for Hold mode." Name="MyModeHoldMapping" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xQzpwZSTEeaAxIsnyTOKmg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>8</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable use of 4T's for learning, this will use a multiplier in future MyMode events for RoadLoad compensation." Name="KeMMMR_b_Use4Ts" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-GwKgBIHEea9zbViOphNRQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use ETA Live speed if not -1 and enabled" Name="KeMMMR_b_UseETASpdLv" References="GIS-674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_f5oQsDSaEeaJQ61MvkNTxQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use Historical speed if not -1, if enabled, and ETA Speed not used." Name="KeMMMR_b_UseSpdHst" References="GIS-674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>__pZOEDSaEeaJQ61MvkNTxQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable use of learning algorithm which looks at expected Propulsion Power and actual Propulsion Power and creates a multiplier for Low, Med, and High Power.   This will use a multiplier in future MyMode events for RoadLoad compensation." Name="KeMMMR_b_UseRdLdLrng" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_6G-s0RIIEea9zbViOphNRQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Energy Offset for the Last Hold, this is used to add additional Energy for the last Hold to allow for errors, if the error during Charge Depletion results in extra Energy being used, this offset will allow the final HOLD to stay True longer for compensation. (Note:Unit for this CAL is kW&#x2219;s)" Name="KeMMMR_E_EnrgyLstHldOffst" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_OgWZsBIJEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Conversion for changing Vehicle Speed to Wheel Speed. (Note:Unit for this CAL is Coef)" Name="KeMMMR_k_CnvrtAxlTtoP" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LAu-kRIREea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.001</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Conversion of Speed Historical to kph" Name="KeMMMR_k_CnvrtSpdHst" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_8yZKgJR7EeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>3.5990002</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.001</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Conversion of Speed Limit to kph" Name="KeMMMR_k_CnvrtSpdLmt" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_VaI8UJR8EeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>3.5990002</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.001</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Conversion of Speed Live to kph" Name="KeMMMR_k_CnvrtSpdLv" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_vuar8ZR9EeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>3.5990002</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.001</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum and maximum grade which the calculation will be clipped to, minimum will be negative of this value." Name="KeMMMR_k_GrdMinMax" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_l47_IZR-EeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>16.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Multiplier applied to turn cost used to increase the time in Energy calculation based on Nav inputs (1.0 will use the Navigation Turn Cost). (Note:Unit for this CAL is Filter)" Name="KeMMMR_k_TurnCostMult" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_5d9nMRIXEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>1.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Electrical Range to enable MyMode. (Note:Unit for this CAL is km)" Name="KeMMMR_l_ElectRangeMin" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_L8nT0RIYEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/06/2017</Date>
+      <Description>Made the following updates: 1. Default value changed to 3 km.</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>3.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100000.0</MaxValue>
+      <Units>km</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The maximum Engine Off Time allowed between Hold Events" Name="KeMMMR_l_EngOffMxBtwnEvnts" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_7RiUYZR-EeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>1000000.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>km</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Fuel Range to enable MyMode. (Note:Unit for this CAL is km)" Name="KeMMMR_l_FuelRangeMin" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_dciHURIYEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/06/2017</Date>
+      <Description>Changed the following: 1. Default Value changed to 100km. 2. Changed description to km.</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>100.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>500000.0</MaxValue>
+      <Units>km</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The maximum route length allowed for MyMode. (Note:Unit for this CAL is km)" Name="KeMMMR_l_RouteMax" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_g7pJQJR_EeaIoZ25tPZZ7w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/06/2017</Date>
+      <Description>Changed the following: 1. Default Value changed to 300km. 2. Changed description to km. </Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000000</MaxValue>
+      <Units>km</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The minimum route length allowed for MyMode. (Note:Unit for this CAL is km)" Name="KeMMMR_l_RouteMin" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_uE3pUZR_EeaIoZ25tPZZ7w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/06/2017</Date>
+      <Description>Changed the following: 1. Default Value changed to 3km. 2. Changed description to km.</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>30000</MaxValue>
+      <Units>km</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The maximum Distance remaining in an edge to apply learning." Name="KeMMMR_l_TmBlndLrnDstMx" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_1MCgUZR_EeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>5.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>km</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Axle Torque required to allow Hold to go True, is used to ensure HOLD is not enetered when the RoadLoad is very small when it should be greater. (Note:Unit for this CAL is N.m)" Name="KeMMMR_M_MinAxlTrq" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Pl3dARIZEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Changed the following: 1. . Max value changed to:1000.0 and 2. . Resolution changed to:0.1</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>10.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Power unaccounted for in the system.  Will primarily be the Power used by the APM. (Note:Unit for this CAL is kW)" Name="KeMMMR_P_AddtnlPwr" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_SKijwRIaEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>10.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The Power threshold to seperate data from being considered Medium Power and High Power. (Note:Unit for this CAL is kW)" Name="KeMMMR_P_HPThresh" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qB72sRIaEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Max value changed to:100.0</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>12.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The Power threshold to seperate data from being considered Low Power and Medium Power. (Note:Unit for this CAL is kW)" Name="KeMMMR_P_LPThresh" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_N6ue8RIbEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Max value changed to:100.0</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>5.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Power to use learning." Name="KeMMMR_P_LrnMinPwr" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_UCl9wZSAEeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>5.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Power to reset learning for cabin conditioning." Name="KeMMMR_P_RstCbnCndng" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_bfPVgZSAEeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>1.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Power to reset learning for road load." Name="KeMMMR_P_RstRdLd" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_h8wykZSAEeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>5.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Power to reset learning for total power." Name="KeMMMR_P_RstTtlPwr" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_owUxEZSAEeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>5.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The percentage of Energy which will be used in an additional final Hold.  The purpose of this final Hold is to correct for any errors in the Power and Energy calculations. (Note:Unit for this CAL is Pct)" Name="KeMMMR_Pct_EnrgyLstHld" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RyCVcRIgEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.1</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>10.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The maximum correction factor allowed from the 4T's in learning. (Note:Unit for this CAL is Pct)" Name="KeMMMR_Pct_MaxRatio4Ts" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_bijNQRIgEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.2</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>10.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum SOC to allow MyMode. (Note:Unit for this CAL is Pct)" Name="KeMMMR_Pct_SOCMin" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gyVr4RIgEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>30.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum distance delta ratio to enable learning." Name="KeMMMR_r_MinDstDlt" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_4wUC4ZSAEeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>5.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum time delta ratio to enable learning." Name="KeMMMR_r_MinTmDlt" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>__uCqAZSAEeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>5.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum time ratio to rescale learning." Name="KeMMMR_r_TmBlndRscl" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_GwWPIZSBEeaIoZ25tPZZ7w</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>0.6</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>1000000.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The maximum ECT to allow enabling the Winter Heat Early feature. (Note:Unit for this CAL is Celsius)" Name="KeMMMR_T_Heat_MaxECT" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Vkpw8JSBEeaIoZ25tPZZ7w</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The maximum OAT to allow enabling the Winter Heat Early feature. (Note:Unit for this CAL is Celsius)" Name="KeMMMR_T_Heat_MaxOAT" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XOHuMRIhEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Trans Temp to allow learning. (Note:Unit for this CAL is Celsius)" Name="KeMMMR_T_MinTrnsLrn" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qKdXUJSBEeaIoZ25tPZZ7w</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>85</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The minimum reset time to enable learning." Name="KeMMMR_t_RstTm" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_6Zo7sZSBEeaIoZ25tPZZ7w</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time to &quot;Press the Hold Button&quot;, the button is pressed and released to cycle Hold mode. (Note:Unit for this CAL is seconds" Name="KeMMMR_t_TmBttnPrss" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_D7P00JSCEeaIoZ25tPZZ7w</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The speed threshold to seperate Medium speed and High Speed Road Load multipliers from learning. (Note:Unit for this CAL is kph" Name="KeMMMR_v_HSThresh" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_l7IfwRIiEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Default value changed to:100.0</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>100.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>200.0</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The speed threshold to seperate Lowe speed and Medium speed Road Load multipliers from learning. (Note:Unit for this CAL is kph" Name="KeMMMR_v_LSThresh" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xYkzcRIiEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Default value changed to:50.0</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>50.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>200.0</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The minimum Vehicle Speed required to allow Hold to go True, is used to ensure HOLD is not enetered at low speed. (Note:Unit for this CAL is kph" Name="KeMMMR_v_MinVhSpd" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_3Mpq4RIiEea9zbViOphNRQ</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>10.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>200.0</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Axis Cabin Temperature used in KtMMMR_t_HVACSwtchMntn. (Note: Unit for this is Celcius)" Name="KnMMMR_T_CbnTmp" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-NRsUROTEeaB2ZyDJwV__w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Changed units to Celsius</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>-100.0</MinValue>
+      <MaxValue>200.0</MaxValue>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>-10.0</ArrayValue>
+      <ArrayValue>18.0</ArrayValue>
+      <ArrayValue>20.0</ArrayValue>
+      <ArrayValue>22.0</ArrayValue>
+      <ArrayValue>30.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Axis Trans Temp. (Note: Unit for this is Celcius)" Name="KnMMMR_T_TrnsTmp" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_oZlWgROTEeaB2ZyDJwV__w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Changed units to Celsius</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>-100.0</MinValue>
+      <MaxValue>200.0</MaxValue>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>-10.0</ArrayValue>
+      <ArrayValue>25.0</ArrayValue>
+      <ArrayValue>40.0</ArrayValue>
+      <ArrayValue>70.0</ArrayValue>
+      <ArrayValue>90.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Axis Trans Temp Warm Up. (Note: Unit for this is Celcius)" Name="KnMMMR_v_TrnsTWrmUpSpd" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_TZrRsZSCEeaIoZ25tPZZ7w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>-100.0</MinValue>
+      <MaxValue>200.0</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>20.0</ArrayValue>
+      <ArrayValue>40.0</ArrayValue>
+      <ArrayValue>70.0</ArrayValue>
+      <ArrayValue>90.0</ArrayValue>
+      <ArrayValue>110.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Axis Delta Vehicle Speed" Name="KnMMMR_v_DltaSpd" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RXf68BOTEeaB2ZyDJwV__w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Units changed to:km_per_hour</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>-100.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>-20.0</ArrayValue>
+      <ArrayValue>-10.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>10.0</ArrayValue>
+      <ArrayValue>20.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Axis for vehicle speed." Name="KnMMMR_v_RdLdSpeed" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_57SWUJSCEeaIoZ25tPZZ7w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/1/2017</Date>
+      <Description>With agreement from Shanmukh Rajurs and Terry Meehan, updated the allowable minimum value defined for the KnMMMR_v_RdLdSpeed float array calibration from a minumum value of 1.4E-45 to 0. Note, made this update as a result of the needed use case of another float array calibration (KtMMMR_t_HVACSwtchMntn )within this caldef file having a default value of zero, also updated the minimum value of this float array calibration (KnMMMR_v_RdLdSpeed) to also allow the flexibltiy to set one of the array parameters for this calibration to zero in the future via a CAL override if it were to ever be needed too.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>12</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>10.0</ArrayValue>
+      <ArrayValue>20.0</ArrayValue>
+      <ArrayValue>30.0</ArrayValue>
+      <ArrayValue>40.0</ArrayValue>
+      <ArrayValue>50.0</ArrayValue>
+      <ArrayValue>60.0</ArrayValue>
+      <ArrayValue>70.0</ArrayValue>
+      <ArrayValue>80.0</ArrayValue>
+      <ArrayValue>90.0</ArrayValue>
+      <ArrayValue>100.0</ArrayValue>
+      <ArrayValue>110.0</ArrayValue>
+      <ArrayValue>120.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="The amount of Energy as a function of delta vehicle speed, an accel will be positive and regen will be negative. (Note: Unit for this CAL is kW.s) " Name="KtMMMR_E_PwrDltSpd" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_zlKTkROSEeaB2ZyDJwV__w</CalID>
+    <Type>FloatArray</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Changed units to kWs</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Resolution>0.01</Resolution>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Grade calculation, represents the slope of the equations used in the RoadLoad Calculation of grade and speed. (Note:Unit for this CAL is Filter)" Name="KtMMMR_k_GrdMult" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ZZXGwJSDEeaIoZ25tPZZ7w</CalID>
+    <Type>FloatArray</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>12</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>50.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0E-4</Resolution>
+      <ArrayValue>0.52</ArrayValue>
+      <ArrayValue>1.0409</ArrayValue>
+      <ArrayValue>1.5507</ArrayValue>
+      <ArrayValue>2.0465</ArrayValue>
+      <ArrayValue>2.5247998</ArrayValue>
+      <ArrayValue>2.9812</ArrayValue>
+      <ArrayValue>3.4101999</ArrayValue>
+      <ArrayValue>3.8051999</ArrayValue>
+      <ArrayValue>4.1579</ArrayValue>
+      <ArrayValue>4.4585</ArrayValue>
+      <ArrayValue>4.6946</ArrayValue>
+      <ArrayValue>4.9981</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="The multiplier as a function of Trans Temp to offset the SpinLoss. (Note: Unit for this CAL is Filter) " Name="KtMMMR_k_TrnsTmpMult" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_B6rdEROSEeaB2ZyDJwV__w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>1. Description has changed to: The multiplier as a function of Trans Temp to offset the SpinLoss. (Note: Unit for this CAL is Filter)</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Resolution>0.01</Resolution>
+      <ArrayValue>1.99</ArrayValue>
+      <ArrayValue>0.65999997</ArrayValue>
+      <ArrayValue>0.44</ArrayValue>
+      <ArrayValue>0.099999994</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="The filter coefficient as a function of vehicle speed used to model transmission temperature warmup. (Note: Unit for this CAL is Filter) " Name="KtMMMR_k_TrnsTWrmUp" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_npY6kBOREeaB2ZyDJwV__w</CalID>
+    <Type>FloatArray</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/18/2016</Date>
+      <Description>Resolution changed to:1.0E-5</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>3/1/2017</Date>
+      <Description>With agreement from Shanmukh Rajurs and Terry Meehan, updated the allowable minimum value defined for the KtMMMR_k_TrnsTWrmUp float array calibration from a minumum value of 1.4E-45 to 0. Note, made this update as a result of the needed use case of another float array calibration (KtMMMR_t_HVACSwtchMntn )within this caldef file having a default value of zero, also updated the minimum value of this float array calibration (KtMMMR_k_TrnsTWrmUp) to also allow the flexibltiy to set one of the array parameters for this calibration to zero in the future via a CAL override if it were to ever be needed too.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Resolution>1.0E-5</Resolution>
+      <ArrayValue>0.0052</ArrayValue>
+      <ArrayValue>0.0052</ArrayValue>
+      <ArrayValue>0.0052</ArrayValue>
+      <ArrayValue>0.01083</ArrayValue>
+      <ArrayValue>0.02283</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="The Power lost to SpinLoss as a function of modeled Transmission temperature. (Note: Unit for this CAL is kW)" Name="KtMMMR_P_RdLdNominal" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_VV7REJSEEeaIoZ25tPZZ7w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/1/2017</Date>
+      <Description>With agreement from Shanmukh Rajurs and Terry Meehan, updated the allowable minimum value defined for the KtMMMR_P_RdLdNominal float array calibration from a minumum value of 1.4E-45 to 0. Note, made this update as a result of the needed use case of another float array calibration (KtMMMR_t_HVACSwtchMntn )within this caldef file having a default value of zero, also updated the minimum value of this float array calibration (KtMMMR_P_RdLdNominal) to also allow the flexibltiy to set one of the array parameters for this calibration to zero in the future via a CAL override if it were to ever be needed too.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>12</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Resolution>1.0E-4</Resolution>
+      <ArrayValue>0.3879</ArrayValue>
+      <ArrayValue>0.7155</ArrayValue>
+      <ArrayValue>1.2671</ArrayValue>
+      <ArrayValue>1.9933</ArrayValue>
+      <ArrayValue>2.8539</ArrayValue>
+      <ArrayValue>3.6034</ArrayValue>
+      <ArrayValue>5.0046997</ArrayValue>
+      <ArrayValue>6.6735997</ArrayValue>
+      <ArrayValue>9.097799</ArrayValue>
+      <ArrayValue>11.8656</ArrayValue>
+      <ArrayValue>15.3918</ArrayValue>
+      <ArrayValue>19.474499</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="The Power lost to SpinLoss as a function of modeled Transmission temperature. (Note: Unit for this CAL is kW)" Name="KtMMMR_P_SpinLoss" References="GIS 674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_86XrsJSEEeaIoZ25tPZZ7w</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/18/2016</Date>
+      <Description>Initial Release</Description>
+      <Author>Shanmukh Rajurs</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/1/2017</Date>
+      <Description>With agreement from Shanmukh Rajurs and Terry Meehan, updated the allowable minimum value defined for the KtMMMR_P_SpinLoss float array calibration from a minumum value of 1.4E-45 to 0. Note, made this update as a result of the needed use case of another float array calibration (KtMMMR_t_HVACSwtchMntn )within this caldef file having a default value of zero, also updated the minimum value of this float array calibration (KtMMMR_P_SpinLoss) to also allow the flexibltiy to set one of the array parameters for this calibration to zero in the future via a CAL override if it were to ever be needed too.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>12</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Resolution>1.0E-4</Resolution>
+      <ArrayValue>0.049999997</ArrayValue>
+      <ArrayValue>0.099999994</ArrayValue>
+      <ArrayValue>0.16</ArrayValue>
+      <ArrayValue>0.24</ArrayValue>
+      <ArrayValue>0.34</ArrayValue>
+      <ArrayValue>0.45999998</ArrayValue>
+      <ArrayValue>0.59</ArrayValue>
+      <ArrayValue>0.68</ArrayValue>
+      <ArrayValue>0.92999995</ArrayValue>
+      <ArrayValue>1.16</ArrayValue>
+      <ArrayValue>1.41</ArrayValue>
+      <ArrayValue>1.67</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+  <CalDefinition Description="Time to switch from Power to Reach Cabin Temperature to Power to Maintain Cabin Temp as a function of Cabin Temperature. (Note: Unit for this CAL is seconds)" Name="KtMMMR_t_HVACSwtchMntn" References="GIS674" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_VLeqYBIIEea9zbViOphNRQ</CalID>
+    <Type>FloatArray</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/1/2017</Date>
+      <Description>With agreement from Shanmukh Rajurs and Terry Meehan, updated the minimum value defined for the KtMMMR_t_HVACSwtchMntn float array calibration from a minumum value of 1.4E-45 to 0. Note, this update had to made to correct an issue with the default value for one of the array parameters (KtMMMR_t_HVACSwtchMntn[2]=0.0 ) needed being below the predefined allowable/workable minimum value.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <FloatArray>
+      <ArrayLength>5</ArrayLength>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3.4028235E38</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>0.1</Resolution>
+      <ArrayValue>300.0</ArrayValue>
+      <ArrayValue>60.0</ArrayValue>
+      <ArrayValue>0.0</ArrayValue>
+      <ArrayValue>60.0</ArrayValue>
+      <ArrayValue>180.0</ArrayValue>
+    </FloatArray>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

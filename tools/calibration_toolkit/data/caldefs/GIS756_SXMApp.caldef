@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="Tuner" Description="GIS-756 SXM 360L App Cals Per CR 950689 MFL 392 . ">
+  <CalDefFileVersion>5</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2016-May-19</Date>
+    <Description>Per CR 950689 MFL 392 adding cals for SXM17 App</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/18/2017</Date>
+    <Description>Updated the usage field for the calibrations in this caldef to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2017-Sep-27</Date>
+    <Description>Under CR#: 950689, added the following six new calibrations for initial release for MY20 Cals related to GIS-756 SXM 360L App: 1.) LinearTunerTimeout, 2.) MoreLikeThis, 3.) Recommendations, 4.) AlbumArtEnabled, 5.) ChannelBackgroundArtEnabled, and  6.) ChannelLogosEnabled. Also, deleted the following two calibrations confirmed not to be needed: 1.) SXM_AlbumArtEnabled and 2.) SXM_ChannelLogosEnabled.</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/19/2019</Date>
+    <Description>Per CR# 2303157, in MY22 GIS-646 Cal DB V6.0.3 deprecating GIS756_SXMApp.caldef file. Calibrations were never implemented. </Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="LinearTunerTimeout " Name="LinearTunerTimeout" References="GIS-756 SXM 360L" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_07aj0HxBEeeh54ugmABbPA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>3</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="More Like This to provide similar contents available." Name="MoreLikeThis" References="GIS-756 SXM 360L" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_NiPMIHeuEeekkJ1lDgmXYQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Recommendations" Name="Recommendations" References="GIS-756 SXM 360L" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_d0sG8XeuEeekkJ1lDgmXYQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description=" Display Album art on/off shall be controlled by the cal variable SXM_AlbumArtEnabled. When SXM_AlbumArtEnabled is True, the logos are allowed to display. When SXM_AlbumArtEnabled is False, the album arts are not permitted to be displayed. The default value for SXM_AlbumArtEnabled shall be True" Name="AlbumArtEnabled" References="GIS-756 SXM 360L" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_xQ5XEHelEeekkJ1lDgmXYQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description=" The SXM App shall provide the ability to display relevant background images for channels and categories. Default is set to True." Name="ChannelBackgroundArtEnabled" References="GIS-756 SXM 360L" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_OK0vwXemEeekkJ1lDgmXYQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description=" Display Channel logos on/off shall be controlled by the cal variable  SXM_ChannelLogosEnabled. When SXM_ChannelLogosEnabled is True, the logos are allowed to display. When SXM_ChannelLogosEnabled is False, the logos are not permitted to be displayed. The default value for SXM_ChannelLogosEnabled shall be True" Name="ChannelLogosEnabled" References="GIS-756 SXM 360L" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_WI3Z0HelEeekkJ1lDgmXYQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

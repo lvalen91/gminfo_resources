@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" xsi:schemaLocation="http://www.caltools.gm.com/enumdef enumdef_1.0.xsd">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS363_InfotainmentProg.enumdef file to GIS363_InfotainmentProg_GlobalA.enumdef for this enumdef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef/enumdef files that conatin Global A specific calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Used to determine if the park brake status needs to be included in vehicle state determination" Name="VehicleTransmissionType">
+    <EnumID>_FbXhsHALEeScl-WC6VhZAg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Automatic Transmission" Name="AutomaticTrans">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Manual Transmission" Name="ManualTrans">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

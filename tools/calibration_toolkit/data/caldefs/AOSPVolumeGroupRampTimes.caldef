@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup.">
+  <CalDefFileVersion>1</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/13/2019</Date>
+    <Description>Per CR#2060763 AOSP transition, Created new calibration for AOSP. Add MUTE &amp; UNMUTE RAMPS for VOICE, MISCELLANEOUS, HIGHPRIORITY volume groups to existing groups, entered default values, Set usages.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_RING" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_OJTQ4Y7BEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_RING" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_92IPQY6-Eem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_VOICE_CALL" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_PmmVUY7BEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index.  Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience.  To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_VOICE_CALL" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_Bg67sY4fEemVs5jVkDCV6A</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_MUSIC" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_o20cYY7BEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_MUSIC" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_P2zmcY6_Eem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_PROMPT" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_vKQwYY7BEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_PROMPT" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_uH4_UY6_Eem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_AUDIO_CUE" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_xz5sIY7BEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_AUDIO_CUE" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_AMM5UY7AEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_EMERGENCY_PHONE" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_1TDTkY7BEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_EMERGENCY_PHONE" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_D12gkY7AEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_RDS_TRAFFIC" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_Fn-6oY7CEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_RDS_TRAFFIC" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_Xi7IIY7AEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_VOICE" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_HB4FwI7CEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_VOICE" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_iL4D0Y7AEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_MISCELLANEOUS" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_LQxvIY7CEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_MISCELLANEOUS" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_mtcxkY7AEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="UNMUTE_RAMP_AOSP_VOL_GROUP_HIGH_PRIORITY" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_MpQlAY7CEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="VolumeGroups organize similar audio streams together under a common volume index. Since users may move through the various VolumeGroups supporting the Mutex Sink, with the possibility of each volume group being at a different step of the index, it is import to ensure that these transitions produce a pleasing audio experience. To facilitate this, the calibrateable ramp times are used to define the mute/unmute ramp rates used when an audio stream is activated or deactivated according to their VolumeGroup." Name="MUTE_RAMP_AOSP_VOL_GROUP_HIGH_PRIORITY" References="" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_I-GXUY7BEem6S5_uwl3E0g</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_EIFYsGX2EeSy4KUHhd_sAg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

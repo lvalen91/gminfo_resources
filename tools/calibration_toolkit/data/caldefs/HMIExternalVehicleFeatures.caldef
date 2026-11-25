@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11APR14</Date>
+    <Description>Deleted ENABLE_APPLICATIONTRAY_DMC3. Deleted ENABLE_APPLICATIONTRAY_INTERIOR_LIGHTING. Deleted VALET_COMBO_DIGITS_SUPPORTED. Deleted VALET_COMBO_FLASH_FREQUENCY. Deleted VALET_COMBO_FLASH_TIME.</Description>
+    <Author>Matthew Highstrom</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>9/3/2015</Date>
+    <Description>Removed the VALET_MASK_MENU CAL that was in this CalDef file, as there is already a duplicate CAL for this already being used in the GIS507_Settings.caldef file. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated ENABLE_APPLICATION_DMC3, ENABLE_APPLICATION_INTERIOR_LIGHTING, ENABLE_DMC3_MODE_ALL_TERRAIN, ENABLE_DMC3_MODE_COMFORT, ENABLE_DMC3_MODE_ECO, ENABLE_DMC3_MODE_NORMAL, ENABLE_DMC3_MODE_OFF_ROAD, ENABLE_DMC3_MODE_SNOW, ENABLE_DMC3_MODE_SNOW_ICE, ENABLE_DMC3_MODE_SPORT, ENABLE_DMC3_MODE_TOUR, ENABLE_DMC3_MODE_TOW_HAUL, ENABLE_DMC3_MODE_TRACK, ENABLE_DMC3_MODE_TOW_HAUL, ENABLE_DMC3_MODE_TRACK, ENABLE_DMC3_MODE_WEATHER,  MWS_PANE_PASSENGER_VIEW_DELAY, MWS_PANE_AUTO_DISMISS_TIMER, MWS_PANE_MINI_MODE_TIMER, and MWS_PANE_SUPPRESSION_TIMER cal to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/28/2017</Date>
+    <Description>Within the HMIExternalVehicleFeatures.caldef file, removed the following two calibrations: 1.) ENABLE_APPLICATION_DMC3 and 2.) ENABLE_APPLICATION_INTERIOR_LIGHTING calibrations since the GM User Interface Team (Cody Hansen and Derek Fraser) confirmed these two specific calibrations were legacy calibrations used for NGI that are not intended to be used for Info3.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Enables DMC3 All Terrain Mode" Name="ENABLE_DMC3_MODE_ALL_TERRAIN" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-SE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_ALL_TERRAIN cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Comfort Mode" Name="ENABLE_DMC3_MODE_COMFORT" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-SU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_COMFORT cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Eco Mode" Name="ENABLE_DMC3_MODE_ECO" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-Sk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_ECO cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Normal Mode" Name="ENABLE_DMC3_MODE_NORMAL" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-S01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_NORMAL cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Off Road Mode" Name="ENABLE_DMC3_MODE_OFF_ROAD" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-TE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_OFF_ROAD cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Snow Mode" Name="ENABLE_DMC3_MODE_SNOW" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-TU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_SNOW cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Snow_Ice Mode" Name="ENABLE_DMC3_MODE_SNOW_ICE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-Tk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_SNOW_ICE cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Sport Mode" Name="ENABLE_DMC3_MODE_SPORT" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-T01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_SPORT cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Tour Mode" Name="ENABLE_DMC3_MODE_TOUR" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-UE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_TOUR cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Tow_Haul Mode" Name="ENABLE_DMC3_MODE_TOW_HAUL" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-UU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_TOW_HAUL cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Track Mode" Name="ENABLE_DMC3_MODE_TRACK" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqq-Uk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_TRACK cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables DMC3 Weather Mode" Name="ENABLE_DMC3_MODE_WEATHER" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yqrlUE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_display_interface_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ENABLE_DMC3_MODE_WEATHER cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Mini Mode also allows for both the driver and the passenger to be&#xA;adjusting their seats simultaneously.&#xA;The Driver always gets priority in controlling their seat. If the Passenger&#xA;is controlling their seat and the driver begins to play with&#xA;their seat control  the Driver seat would shift to the 3/4 view and&#xA;the passenger would go to mini mode.&#xA;Figure 9.18.8.1 shows the passenger with primary control. If the&#xA;Driver operates the switch  the view would switch to give the&#xA;Driver screen dominance as shown in Figure 9.18.8.2&#xA;If the Driver completes their interaction  after 3 seconds (calibratable)&#xA;when their pane times out  the Passenger would regain the&#xA;dominant view." Name="MWS_PANE_PASSENGER_VIEW_DELAY" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yrTQa01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_country_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MWS_PANE_PASSENGER_VIEW_DELAY cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>25500</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="MULTIWAYSEAT_STATUS_PANE_AUTO_DISMISS_TIMER - calibration to set the time period to wait before auto-dismissing  the Seat Status Pane  due to inactivity with the seat switch controls.  Type - ENM  Range = 0-255 Sec  Resolution = 1 Sec  Default = 3 Sec.&#xA;" Name="MWS_PANE_AUTO_DISMISS_TIMER" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yrTQbE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_country_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MWS_PANE_AUTO_DISMISS_TIMER cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="MULTIWAYSEAT_STATUS_PANE_MINI_MODE_TIMER - calibration to set the time period to wait before switching the dominant view (i.e.  Driver OR Passenger) in the Miniature Seat Status Pane (Mini Mode).  Type - ENM  Range = 0-255 Sec  Resolution = 1 Sec  Default = 3 Sec." Name="MWS_PANE_MINI_MODE_TIMER" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yrTQbU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_country_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MWS_PANE_MINI_MODE_TIMER cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="MULTIWAYSEAT_STATUS_PANE_SUPPRESSION_TIMER - calibration to set the time period to wait after the Seat Status Pane is suppressed into mini mode  before returning back to full screen mode.  Type - ENM  Range = 0-255 Sec  Resolution = 1 Sec  Default = 20 Sec." Name="MWS_PANE_SUPPRESSION_TIMER" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_yrTQbk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_country_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MWS_PANE_SUPPRESSION_TIMER cal to remove usage of Low Radio.</Description>
+      <Author>Ginanrd Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

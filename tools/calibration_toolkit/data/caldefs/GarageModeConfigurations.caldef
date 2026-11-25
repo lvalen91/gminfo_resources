@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="System">
+  <CalDefFileVersion>3</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>3/18/2020</Date>
+    <Description>In support of CR# 2507408 intially releasing the GarageModeConfigurations.caldef file to release the cals contained within this caldef file.</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Key cycle count used to determine when to begin Garage Mode sessions again after server battery State of Charge events." Name="GARAGE_MODE_DELAY_KEY_CYCLES" References="FH.09.02.06 Garage Mode Allowed" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_bcGXUFS8Eeq-j4wPCivtBg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>6</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Threshold used for SoC BEFORE mileage threshold is met.  " Name="GARAGE_MODE_EARLY_SOC_MIN_THRESHOLD" References="FH.09.02.06 - Garage Mode Allowed" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_wObzQVS7Eeq-j4wPCivtBg</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>90.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Threshold used for IBS battery temperature.  " Name="GARAGE_MODE_TEMP_MIN_THRESHOLD" References="FH.09.02.06 - Garage Mode Allowed" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_5S9u0VS7Eeq-j4wPCivtBg</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>-10.0</Value>
+      <MinValue>-100.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Threshold used to determine correct vehicle mileage for alternate IBS SoC values.  " Name="GARAGE_MODE_MILEAGE_THRESHOLD" References="FH.09.02.06 - Garage Mode Allowed" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_LMBbEVS8Eeq-j4wPCivtBg</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>805.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>10000.0</MaxValue>
+      <Units>km</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Threshold used for SoC after mileage threshold is met.  " Name="GARAGE_MODE_SOC_MIN_THRESHOLD" References="FH.09.02.06 - Garage Mode Allowed" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_XDHaUFS7Eeq-j4wPCivtBg</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>75.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>percent</Units>
+      <Resolution>0.5</Resolution>
+    </Float>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

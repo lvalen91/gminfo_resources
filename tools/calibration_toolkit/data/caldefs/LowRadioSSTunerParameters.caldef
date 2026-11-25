@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="These are the Low Radio specific AM/FM Tuner parameters">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the LowRadioSSTunerParameters.caldef, added GEM usage to the SS_LOW_RADIO_TUNER_BIN calibration in this caldef. Since this calibration fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Binary of Low Radio Supplier Specific tuner parameters" Name="SS_LOW_RADIO_TUNER_BIN" References="" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_wNticALZEeWhetwCpvIaHA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>LowRadioDefaultTunerData.bin</Filename>
+      <Data>////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f///EeuFEeuFHCj1HCj1B+B++B+CBk0x+bLPMzMzf///HCj1HCj1f///gAAAf///gAAAAAEH/0ZmZkAAAAAABEAAADmZmQAAAAAAAAAAAAAAdzECAAM1AA9VBf8AGBuUmQBGDUVVBQAAAAAAB/8A6QePAAAFIAKQAAIBCAAABbYGTTIBlw4AECIAAOUAgACAAAAAAAFFAAAAAABkABAiAADlABAiAADlAAAAAAePAAAHjwAAApAAAAEIAAAFtgKQAAABCAAABbb+AAACAAAAB+8AAMsBJQbbBAABJQbbCqsBJQbbCZoH8AgQB+EAAAgPwPwgAAABrw/zAAADgAEeD90AAAABABAAEAAAAQAAAAIAAAAAGQ/2D10AAAAZD/YPXQAAABkP9g9dAAAAGQ/2D10AAAJmAAAA//fv//+Z/795//+Z//fv//fvAAzo//MYDjwA0QAAABIABgf/AAAAgAKAD6AAAAcsAFsEAAEAAIAAAAAAAAAAEwATB/8AAACAAAAP/QGaB/8PVQAuAC4AAAD/9+///mP/v3n//1v/9+//v3kADOj/8xgJDgMyAAAAEwBbB/8AAACAByUO7gAABywH/wQAAQAAgAAAAAAAAAATAFsH/wAAAIAAAA/9AZoAAAf/AC4AFAAAAP/37///mf+/ef//mf/37//37wAM6P/zGA0PAK0AEwBbB/8AAAAtAoAPQAAABywAGgf/AAAAJgAAAAAAAAATABMH/wAAAIAAAAElBtsAAAAAAP/37//fvP/37//37/r1cv/zGAAM6P/zGAwAAJQAAAATABIH/wAAAHMAAAAAAAAAEwATB/8AAAA2AAAAAAAAALIACQf/AEAAAAH2BcMAhQWuBa4MowAAAAAD/QwDA/oHaQYNCtEBRgKGAJcDTAT7BNoNkgaxAAAAAAAAAB0AdCgGZgAAAAAEzQAAAQAAAAAAAAAADQABAAAAAAAAAAAH/wf/AAADAAAAB/8AAAAAAAAAAwf9D/0AAwbbAAAEAAAAAAAdAHQoAAAAAAAAA5oAAAAAAB0AdCgHmgAAAAAEzQAAAAAAHQB0KAAAAAAAAAOaBmZmBmZmAAAECZmZAAAAIAAAfwAAAJSRAACIzAAA5wAAAAAAAAAAAAAMzM0AAAAAowADAAMAowAACg4AAD0Bmgf/AUAPrgDNBZoH/wAAKAMigAAAAAAAPgAAAZkABnQCgA9aAA4FGgGMAAzoAWAAOgOaAKAP6wAAB/8ARgAAAAAAkwCTAtoH9AgAB+kH9AgAB+kHaQYNCtEBRgKGAJcDTAT7BNoNkgaxAACAAAAAMgAAAAAAAAdSAAAAMrAAMoABAACA/3kAABCA/3gAABABAACA/3kAABCA/3gAABABAACA/3kAABCA/3gAABABAACA/3kAABCA/3gAABAAAAAAB4ABTQAdAB1///8AAAQCWX8MzM0AAAAAAABJB/8AARwAnrEAAAAAABAAAAAH/wf/AAAAAAgA6QW2ApAAAgAAAQgFtgCAAIAAAAAAAAEnAAEuAAElAAEqAALKAALKAALKAAChAAChAAChD/AP8A8A//gAD/gPwA8A//gAD/AP8A8A//gAD/gPwA8A//gAD/gPwA8A//gAD/gPwA8A//gAVBRAAAAAD/gH/wAAAAEIAAETAAAeAAEJAAA4AAD8AAcA</Data>
+      <Length>1392</Length>
+      <Checksum>1393592315</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

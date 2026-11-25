@@ -1,0 +1,1453 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="HMI" Description="GIS-621 - CSM Component Diagnostic Specification for Global A">
+  <CalDefFileVersion>15</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>14APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/17/2015</Date>
+    <Description>Updated GIS-621 to version 1.7 GIS-621</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/19/2015</Date>
+    <Description>Deleted the DEBOUNCE_TIME CAL that was incorrected defined as a Boolean type CAL in the previous version of this caldef file, and replacing with a new DEBOUNCE_TIME CALCAL correctly defined as an Integer. Also, changed the default values for the B127B_2B, U0020_00 CALs from False to True  and default value for RECOVERY_UNDER_OVER_VOLTAGE CAL from 0 to 9 within this caldef file.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>8/13/2015</Date>
+    <Description>Deleted the MANUFACTURER_ENABLE_COUNTER CAL, as the MANUFACTURER_ENABLE_COUNTER should not be a CAL. Also deleted the DTC_MASK_B124C_00 CAL, as this was added as a CAL in error.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>8/31/2015</Date>
+    <Description>Added DTC Mask for DTC B0010 &#x2013; REVERSE GEAR SIGNAL CIRCUIT.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>11/6/2015</Date>
+    <Description>Within the GIS621_DiagnosticCalDefGlobalA.caldef file made a documentation only update to fill in the missing information description field for the DTC_MASK_U0020_00 CAL with the DTC failure criteria that has always been captured in the GIS-621 Spec. </Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>2/26/2016</Date>
+    <Description>Within this caldef file , deleted the following: DTC_MASK_B126A_00 (APPLICATION DOWNLOAD PERFORMANCE), DTC_MASK_U240B_00 (Radio Dedicated Bus Off -No Additional Information. (Private CAN Bus between CSM and Touch Pad Module) ), DTC_MASK_U1101_00 (LOST_COMMUNICATION_WITH_INFOTAINMENT_CONTROL_TOUCHPAD), DTC_MASK_U0140_00 (LOST_COMMUNICATION_WITH_BODY_CONTROL_MODULE - CSM detects Loss of transmitted headers for 3 seconds), DTC_MASK_U18AE_00 (LOST_COMMUNICATION_WITH_INFOTAINMENT_CONTROL_TOUCHPAD_ON_DEDICATED_BUS_1 - CSMMaster detects parity errors of the transmitted headers for 3 seconds)  Also, added DTC_MASK_B124C_00 ( UNIVERSAL SERIAL BUS CIRCUIT 2).  Also made the following updates to how the DEBOUNCE_TIME CAL is defined: Changed the units from seconds to milliseconds, and updated the maximum and default values defined for the DEBOUNCE_TIME CAL.  </Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>5/13/2016</Date>
+    <Description>Added the following new calibrations: DTC_MASK_B127E_00, DTC_MASK_B127E_02, and DTC_MASK_B127E_04. Changed the default values for the following calibrations: DTC_MASK_U18B0_08, DTC_MASK_U18B0_02, DTC_MASK_U18B0_04, and DTC_MASK_U18B0_0D. Updated the calibration description shown only for the following calibrations: DTC_MASK_B124F_41, DTC_MASK_B124F_42, DTC_MASK_B124F_4A, DTC_MASK_B124C_00, and DTC_IGN_CYCLE_CTR_MAX.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>5/14/2016</Date>
+    <Description>Added the following three new calibrations for MY19: 1.) DTC_MASK_B395A_08, 2.) DTC_MASK_B395A_72, and 3.) DTC_MASK_U240B_00. Also, updated the default value of the DTC_MASK_U18B0_00 from True to False. And, changed the default values for the following calibrations: DTC_MASK_U18B0_08, DTC_MASK_U18B0_02, DTC_MASK_U18B0_04, and DTC_MASK_U18B0_0D. </Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS621_DiagnosticCalDefGlobalA.caldef file to GIS621_DiagnosticCalDef_GlobalA.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef files that contain Global A specific calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>1/7/2017</Date>
+    <Description>Within the GIS621_DiagnosticCalDef_GlobalA.caldef file for RTC CR#: 1248710, deleted the following eight calibrations confirmed no longer to be needed and to correspond to what is reflected in the latest released GIS-621: 1.) DTC_MASK_U18AF_08, 2.) DTC_MASK_U18AF_0D, 3.) DTC_MASK_U18B0_08, 4.) DTC_MASK_U18B0_0D, 5.) DTC_MASK_U18B1_08, 6.) DTC_MASK_U18B1_0D, 7.) DTC_MASK_U18B2_08, and 8.) DTC_MASK_U18B2_0D.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>1/26/2017</Date>
+    <Description>Within the GIS621_DiagnosticCalDef_GlobalA.caldef file for RTC CR#: 1248710, added the DTC_MASK_B395A_3A calibration as a new DTC mask calibration reflected in the latest GIS-621. Also, updated the calibration description for the DTC_MASK_B395A_72 and DTC_MASK_B395A_08 calibrations to reflect the description shown in the latest GIS-621.</Description>
+    <Author>David Bonello</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS621_DiagnosticCalDef_GlobalA.caldef, corrected the description reflected for the DTC_MASK_U18B1_02 and DTC_MASK_U18B1_04 calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="U240B_00 - Radio Dedicated Bus Off -No Additional Information. (Private CAN Bus between CSM and Touch Pad Module)" Name="DTC_MASK_U240B_00" References="GIS-621 Section 22.4.5" Usage="MID,HIGH,GLOBALA">
+    <CalID>_X4Mi4EFpEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/14/2016</Date>
+      <Description>Initial release of diagnostic trouble code for MY19</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC_MASK_B395A_72 - Alive Counter Incorrect/Not Updated&#xa0; " Name="DTC_MASK_B395A_72" References="GIS-621 Section 22.3.17" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_QWwcoEFnEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/14/2016</Date>
+      <Description>Initial release of Diagnostic Trouble Code for MY19</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/26/2017</Date>
+      <Description>Calibration description only update for the DTC_MASK_B395A_72 calibration to match the description reflected in the latest GIS-641.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B395A_3A - Wrong Camera Installed " Name="DTC_MASK_B395A_3A" References="GIS-621 Section 22.3.17" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_qyZDEePrEeayQ7dTF1k6LA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/26/2017</Date>
+      <Description>Initial release of this Diagnostic Trouble Code for MY19</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B395A_08 &#x2013; Invalid/Incorrect/loss of Low Voltage Differential Signal Sync Pulse " Name="DTC_MASK_B395A_08" References="GIS-621 Section 22.3.17" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_6SSVUEFlEeaX676o0O3GfQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/14/2016</Date>
+      <Description>Initial release of Diagnostic Trouble Code for MY19</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>1/26/2017</Date>
+      <Description>Calibration description only update for the DTC_MASK_B395A_08 calibration to match the description reflected in the latest GIS-641.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Debounce Time shall be 2.5 Times the Timeout (timeout is 2.5 times the nominal periodic rate of the signal." Name="DEBOUNCE_TIME" References="GIS-621 1.12.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_zPjjcBObEeWRRp_APrKM0Q</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/15/2015</Date>
+      <Description>Deleted the DEBOUNCE_TIME CAL that was incorrected defined as a Boolean type CAL in the previous version of this caldef file, and replacing with this new DEBOUNCE_TIME CALCAL correctly defined as an Integer.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/26/2016</Date>
+      <Description>Changed the units from seconds to milliseconds, and updated the maximum and default values defined for the DEBOUNCE_TIME CAL.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DTC Enable Criteria.  It is important that the test enable criteria exclude power modes where the CSM MODULE is not supposed to be fully functional.  If a DTC is enabled in Crank Request this has to be motivated and clearly shown that no false (ghost) codes will be set. For DTC&#x2019;s enabled in Off and Accessory power mode, they shall be linked with a secondary parameter (i.e. system voltage range) that clearly inhibit setting false (ghost) codes in under-voltage conditions" Name="DTC_CRANK_DELAY_TIME" References="GIS-621 -> 13.11" Usage="MID,HIGH,GLOBALA">
+    <CalID>_iBYC0JPjEeObkJNbevKUAw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/16/16</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DTC_ENABLE_CRITERIA -Each fault detection algorithm may only be active (test running) in specific vehicle power modes or when a specific Virtual Network is active. All power modes/VN active states where the fault detection algorithm is active shall be specified for each DTC." Name="VN_ACTIVATION" References="GIS-621 1.12.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_Btq70JjOEeOY6q-k73fxZA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Virtual Network Activation</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC_ENABLE_CRITERIA - All DTC's should not set within 5 seconds of a under or over voltage condition." Name="RECOVERY_UNDER_OVER_VOLTAGE" References="GIS-621 1.12.1" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_Cww7EJjPEeOY6q-k73fxZA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/14</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>9</Value>
+      <MinValue>9</MinValue>
+      <MaxValue>16</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="There shall be an automatic clearing of DTC Information method implemented within the CSM MODULE.  All DTC Status and Failure Type information shall be cleared within the CSM Module when the Fault Free Ignition Cycle Counter reaches [calibration: DTC_IGN_CYCLE_CTR_MAX].  There shall be a single Fault Free Ignition Cycle Counter in the ECU which tracks the automatic clearing of DTC Information for all DTCs supported within the CSM MODULE (i.e., the report of a test fail result for any DTC supported by the ECU will reset the Fault Free Ignition Cycle Counter.)" Name="DTC_IGN_CYCLE_CTR_MAX" References="GIS-621 4.1.5" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_sCm2wJwJEeSUfZTikgbI3Q</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/16/15</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/2016</Date>
+      <Description>Added the description shown in GIS-621 for DTC_IGN_CYCLE_CTR_MAX since a description was not shown previously for it in the CAL Database.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>40</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DID $2F &#x2013; VEHICLEIDENTIFICATIONNUMBER DIGITS 2-17. This DID contains the Vehicle Identification Number.  The data content shall be specified by the vehicle manufacturer.  If the VIN has not yet been programmed into the ECU's permanent memory, those locations shall be either '$00' or '$FF'." Name="DID_MASK_2F" References="GIS-621 4.1.7" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_In5RoJwJEeSUfZTikgbI3Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/15/15</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_1_MODEL_YEAR - This byte is an USN value that represents the target model year using the year 1900 as the base year. To represent the 2000 model year, the value of byte 1 would be 100 or ($64). This is derived from 1900 + 100 = 2000. If the module supports multiple model years, then this byte is filled in with $23 (ASCII equivalent to &#x201c;#&#x201d;)." Name="DID_B6_BYTE_1" References="GMW 3110 Appendice C" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_6dugwLXAEeOAHtc5B2bVlA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_2_VEHICLE_MAKE - This byte is the ASCII representation of the Vehicle Make as Identified in the Vehicle Identification Number (VIN). For example, Cadillac = 6 or $36. If the part is used in multiple vehicle makes, then a value of $23 (ASCII &#x201c;#&#x201d;) is used. " Name="DID_B6_BYTE_2" References="GMW 3110 Appendice C" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_CP1LILXBEeOAHtc5B2bVlA</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>TODO</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_3_VEHICLE_CAR_LINE - This byte is an ASCII character representing the vehicle car line (e.g., J for Chevy Cavalier). If the module can be used in multiple car lines, then a value of $23 (ASCII &#xfffd;&#xfffd;&#xfffd;#&#xfffd;&#xfffd;&#xfffd;) is used." Name="DID_B6_BYTE_3" References="GMW 3110 Appendice C" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_LW1y8LXBEeOAHtc5B2bVlA</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>TODO</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="DID_B6_BYTE_4_5_ENGINE_RPO - Bytes 4 and 5 contain the ASCII representation of the last two characters of the engine Regular Production Option (RPO). The first character of an engine RPO is constant and is therefore not stored. For the L67 engine, the value for these two bytes would be &#x201c;6&#x201d; = $36, and &#x201c;7&#x201d; = $37. If the module is to be used with multiple engines, then a $23 (ASCII &#x201c;#&#x201d;) is put in both bytes. If the module can be used with any engine type, then $2A (ASCII &#x201c;*&#x201d;) is put in both bytes. " Name="DID_B6_BYTE_4_5" References="GMW 3110 Appendice C" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_TCl9sLXBEeOAHtc5B2bVlA</CalID>
+    <Type>String</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/14/14</Date>
+      <Description>Initial Release</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>TODO</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="B101D_00 - ELECTRONIC CONTROL UNIT HARDWARE. General checksum failure (NOR 0 &amp; RAW memory failure)" Name="DTC_MASK_B101D_31" References="GIS-621 Section 22.2.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_Zjj3AKYZEeSUf6i0Vy6YFQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101D_34 - ELECTRONIC CONTROL UNIT HARDWARE. Hardware Performance RAM failure - This sub type is used by the ECU to indicate a Random Access Memory (RAM) failure." Name="DTC_MASK_B101D_34" References="GIS-621 Section 22.2.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_ysK9wJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101D_35_ELECTRONIC CONTROL UNIT HARDWARE. ECU Hardware Performance ROM failure - This sub type is used by the ECU to indicate a Read Only Memory (ROM) failure." Name="DTC_MASK_B101D_35" References="GIS-621 Section 22.2.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_x71F8JKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101D_36_ELECTRONIC CONTROL UNIT HARDWARE. FTB6 = $36: EEPROM failure (Flash write Error)" Name="DTC_MASK_B101D_36" References="GIS-621 Section 22.2.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_vAEb4KYZEeSUf6i0Vy6YFQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101D_39_ELECTRONIC CONTROL UNIT HARDWARE.  Internal Electronic Failure - This sub type is used by the ECU to indicate the detection of an internal circuit failure." Name="DTC_MASK_B101D_39" References="GIS-621 Section 22.2.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_xKwOUJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101D_3B_ELECTRONIC CONTROL UNIT HARDWARE.  ECU Hardware Performance internal self-test failed - This sub type is used by the ECU to indicate a sensor self-test failure launched by an ECU command." Name="DTC_MASK_B101D_3B" References="GIS-621 Section 22.2.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_wcW3QJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101D_3C_ELECTRONIC CONTROL UNIT HARDWARE.  Internal communications failure - This sub type is used by the ECU to indicate loss of an internal communication line, e.g., between microprocessors in a dual microprocessor configuration." Name="DTC_MASK_B101D_3C" References="GIS-621 Section 22.2.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_voWAYJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101E_46_ELECTRONIC CONTROL UNIT SOFTWARE.  Vehicle configuration not programmed - This sub type is used to indicate the need to enter (program) the vehicle option content." Name="DTC_MASK_B101E_46" References="GIS-621 Section 22.2.2" Usage="MID,HIGH,GLOBALA">
+    <CalID>_uxCk8JKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B101E_47_ELECTRONIC CONTROL UNIT SOFTWARE.  VIN not programmed - This sub type is used to indicate the need to enter (program) the vehicle identification number (VIN)." Name="DTC_MASK_B101E_47" References="GIS-621 Section 22.2.2" Usage="MID,HIGH,GLOBALA">
+    <CalID>_uCLT0JKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1024_00_PRINTED CIRCUIT BOARD TEMPERATURE SENSOR - Temp Sensor on the internal audio amplifier indicates the thermal pre-warn flag is indicating the temperature exceeded 160 C." Name="DTC_MASK_B1024_00" References="GIS-621 Section 22.2.3" Usage="MID,HIGH,GLOBALA">
+    <CalID>_G1FwQKYaEeSUf6i0Vy6YFQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1024_02_PRINTED CIRCUIT BOARD TEMPERATURE SENSOR - Temp Sensor J6 microprocessor or internal amplifier Open Circuit" Name="DTC_MASK_B1024_04" References="GIS-621 Section 22.2.3" Usage="MID,HIGH,GLOBALA">
+    <CalID>_Usu1gKYaEeSUf6i0Vy6YFQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1024_08_PRINTED CIRCUIT BOARD TEMPERATURE SENSOR - Temp Sensor for the J6 microprocessor or internal amplifier Signal Invalid  is (above threshold of 120 C)" Name="DTC_MASK_B1024_08" References="GIS-621 Section 22.2.3" Usage="MID,HIGH,GLOBALA">
+    <CalID>_tQeKEJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Universal Serial Bus (USB) Programming - $41: Operational Software/Calibration Set not Programmed" Name="DTC_MASK_B124F_41" References="GIS-621 Section 22.2.5" Usage="MID,HIGH,GLOBALA">
+    <CalID>_q-Q24JKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/16</Date>
+      <Description>CAL Description only update</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Universal Serial Bus (USB) Programming - FTB4 = $42:  Calibration Data Set not Programmed" Name="DTC_MASK_B124F_42" References="GIS-621 Section 22.2.5" Usage="MID,HIGH,GLOBALA">
+    <CalID>_pVrvgJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/16</Date>
+      <Description>CAL Description only update</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Universal Serial Bus (USB) Programming - Security Access not Activated" Name="DTC_MASK_B124F_44" References="GIS-621 Section 22.2.5" Usage="MID,HIGH,GLOBALA">
+    <CalID>_rr0gcJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/16</Date>
+      <Description>CAL Description only update</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Universal Serial Bus (USB) Programming - Checksum Error" Name="DTC_MASK_B124F_4A" References="GIS-621 Section 22.2.5" Usage="MID,HIGH,GLOBALA">
+    <CalID>_qNXlcJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/16</Date>
+      <Description>CAL Description only update</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1271_00_THEFT PROTECTION ACTIVE. Valid learned VIN in the CSM does not match the VIN broadcast on the vehicle communication bus" Name="DTC_MASK_B1271_00" References="GIS-621 Section 22.2.6" Usage="MID,HIGH,GLOBALA">
+    <CalID>_qLg5YJKIEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1025_01_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1025_01" References="GIS-621 Section 22.3.1" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_vkyzUJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1025_02_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1025_02" References="GIS-621 Section 22.3.1" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_yL7NoJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1025_04_LEFT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1025_04" References="GIS-621 Section 22.3.1" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_5mW-4JMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1035_01_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1035_01" References="GIS-621 Section 22.3.2" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_7EMO0JMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1035_02_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1035_02" References="GIS-621 Section 22.3.2" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_773dsJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1035_04_RIGHT_FRONT_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1035_04" References="GIS-621 Section 22.3.2" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_33jTsJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1045_01_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1045_01" References="GIS-621 Section 22.3.3" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_6Vk1UJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1045_02_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1045_02" References="GIS-621 Section 22.3.3" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_zDsjIJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1045_04_LEFT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1045_04" References="GIS-621 Section 22.3.3" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_4tSB0JMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1055_01_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1055_01" References="GIS-621 Section 22.3.4" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_3FhZ0JMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1055_02_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1055_02" References="GIS-621 Section 22.3.4" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_1fgeQJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1055_04_RIGHT_REAR_AUDIO_OUTPUT_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1055_04" References="GIS-621 Section 22.3.4" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_13klsJMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1277_02_MICROPHONE_1_INPUT_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B1277_02" References="GIS-621 Section 22.3.5" Usage="MID,HIGH,GLOBALA">
+    <CalID>_5DNbQJMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1277_04_MICROPHONE_1_INPUT_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B1277_04" References="GIS-621 Section 22.3.5" Usage="MID,HIGH,GLOBALA">
+    <CalID>_3fV0wJMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127B_2B_REAR CAMERA INPUT SIGNAL CIRCUIT - Missing Reference (No NTSC Sync Pulse Detected)" Name="DTC_MASK_B127B_2B" References="GIS-621 Section 22.3.6" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_T_7kcKYbEeSUf6i0Vy6YFQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127C_02_MICROPHONE_2_INPUT_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B127C_02" References="GIS-621 Section 22.3.7" Usage="MID,HIGH,GLOBALA">
+    <CalID>_8gjE0JMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B127C_04_MICROPHONE_2_INPUT_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B127C_04" References="GIS-621 Section 22.3.7" Usage="MID,HIGH,GLOBALA">
+    <CalID>_7xjQ0JMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125A_02_ANTENNA_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B125A_02" References="GIS-621 Section 22.3.9" Usage="MID,HIGH,GLOBALA">
+    <CalID>_6KFjwJMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125A_04_ANTENNA_SIGNAL_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B125A_04" References="GIS-621 Section 22.3.9" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_2p2-QJMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125B_02_ANTENNA_2_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B125B_02" References="GIS-621 Section 22.3.10" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_0_DCQJMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125B_04_ANTENNA_2_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B125B_04" References="GIS-621 Section 22.3.10" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_z5gJwJMZEeOhNKe0zA3AsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B125C_02_SATILLITE_ANTENNA_SIGNAL - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B125C_02" References="GIS-621 Section 22.3.11" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_zPMOMJMpEeOYeLJDBKsy1g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B125C &#x2013; SATELLITE ANTENNA CIRCUIT - FTB3 = $04: Open Circuit" Name="DTC_MASK_B125C_04" References="GIS-621 Section 22.3.11" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_EMSZELbQEeSqYowDGAuOkA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1325_03_CONTROL_MODULE_POWER_CIRCUIT - This sub type is used for failures where the ECU measures a voltage below a specified range but not necessarily a short to ground." Name="DTC_MASK_B1325_03" References="GIS-621 Section 22.3.14" Usage="MID,HIGH,GLOBALA">
+    <CalID>_v5hO4JNVEeOShrT54KgaCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/16/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B1325_07_CONTROL_MODULE_POWER_CIRCUIT - This sub type is used for failures where the ECU measures a voltage above a specified range but not necessarily a short to battery." Name="DTC_MASK_B1325_07" References="GIS-621 Section 22.3.14" Usage="MID,HIGH,GLOBALA">
+    <CalID>_ummOcJNVEeOShrT54KgaCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B2462_01_GLOBAL_POSITION_SYSTEM_CIRCUIT - This sub type is used for failures where the ECU measures vehicle system (battery positive) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B2462_01" References="GIS-621 Section 22.3.15" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_tsAOcJNVEeOShrT54KgaCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B2462_02_GLOBAL_POSITION_SYSTEM_CIRCUIT - This sub type is used for failures where the ECU measures ground (battery negative) potential for greater than a specified time period or when some other value is expected." Name="DTC_MASK_B2462_02" References="GIS-621 Section 22.3.15" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_suv8AJNVEeOShrT54KgaCQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/16/14</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B2462_04_GLOBAL_POSITION_SYSTEM_CIRCUIT - This sub type is used for failures where the ECU determines an open circuit via lack of bias voltage, low current flow, no change in state of an input in response to an output, etc." Name="DTC_MASK_B2462_04" References="GIS-621 Section 22.3.15" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_aUvFEJi2EeO1CY5JLlG9mw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B124C_00 - UNIVERSAL SERIAL BUS CIRCUIT 2. General Fault Condition can be a product of any one of the following: Bus Undervoltage Lockout, HVBUS Overvoltage Protection, HVBUS Short-to-Ground, FVBUS Overcurrent Protection, HVD+ and HVD- Overvoltage Protection." Name="DTC_MASK_B124C_00" References="GIS-621 Section 22.3.8" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_Oa0lkNy4EeWxIoU2Id3Z7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/26/2016</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/2016</Date>
+      <Description>CAL Description only update</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="B124B_00 - UNIVERSAL SERIAL BUS CIRCUIT 2. General Fault Condition can be a product of any one of the following: Bus Undervoltage Lockout, HVBUS Overvoltage Protection, HVBUS Short-to-Ground, FVBUS Overcurrent Protection, HVD+ and HVD- Overvoltage Protection." Name="DTC_MASK_B124B_00" References="GIS-621 Section 22.3.16" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_n2HlcJPfEeObkJNbevKUAw</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B127E &#x2013; Front Video Display Output Signal" Name="DTC_MASK_B127E_00" References="GIS-621 Section 22.3.16" Usage="MID,HIGH,GLOBALA">
+    <CalID>_lsGisBkcEea7AIJkEF5zSQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B127E &#x2013; Front Video Display Output Signal" Name="DTC_MASK_B127E_02" References="GIS-621 Section 22.3.16" Usage="MID,HIGH,GLOBALA">
+    <CalID>_Otn_URkdEea7AIJkEF5zSQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/16/16</Date>
+      <Description>Official release of DTC B127E_02</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B127E &#x2013; Front Video Display Output Signal" Name="DTC_MASK_B127E_04" References="GIS-621 Section 22.3.16" Usage="MID,HIGH,GLOBALA">
+    <CalID>_9pDrERkcEea7AIJkEF5zSQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC B0010 &#x2013; REVERSE GEAR SIGNAL CIRCUIT" Name="DTC_MASK_B0010_00" References="GIS-621 Section 22.3.15" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_47pKgFAKEeW9QY35mgYZ2w</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0020_00_LOW SPEED_CAN COMMUNICATION_BUS_PERFORMANCE - Upon handler notification that Source Id 0xFF has failed. Source Id 0xFF is used for all signals that have not yet been associated to a source Id. " Name="DTC_MASK_U0020_00" References="GIS-621 Section 22.4.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_kMtBkLbQEeSqYowDGAuOkA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0073_00_HIGH_SPEED_CAN_BUS_OFF - The handler notifies the application by using a callback function. This callback function is launched by the handler whenever a bus off condition is reported by the CAN-controller. A routine () checks every 1000ms if a Bus Off condition occurred. If the number of Bus Off events exceeds a Calibratable threshold of a calibratable number of consecutive tests, i.e. an X of Y algorithm, then the Bus Off fault code is set. The X of Y algorithm shall be started and the counter for Bus Off events shall go from 0 to 1 when the application is notified by the handler that a Bus Off has occurred. Setting of Lost Comm DTCs shall be inhibited while the counter for Bus Off events is greater than 0. The CSM Module shall make provisions for these 2 calibration variables. For high speed buses the default value for Bus Off events shall be 5, and the number of consecutive tests shall be set to 5, i.e. x=5 and y=5." Name="DTC_MASK_U0073_00" References="GIS-621 Section 22.4.2" Usage="MID,HIGH,GLOBALA">
+    <CalID>_F_6CYJVzEeO7UP4sq3M7sQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0078_00_CONTROL_MODULE_LOW_SPEED_COMMUNIATION" Name="DTC_MASK_U0078_00" References="GIS-621 Section 22.4.3" Usage="MID,HIGH,GLOBALA">
+    <CalID>_EgXiQJVzEeO7UP4sq3M7sQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U150F_00_TLIN_INTER_DEVICE_DEDICATED_BUS_DTC - The Master CSM shall wait 250ms after its first TLIN message to the Slave and then this DTC will be set after the Master has detected one of the following problems with 3 consecutive TLIN Transmission occurs:" Name="DTC_MASK_U150F_00" References="GIS-621 Section 22.4.4" Usage="MID,HIGH,GLOBALA">
+    <CalID>_FfJQ8JVuEeO7UP4sq3M7sQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U184C_00_LOST_COMMUNICATION_WITH_CLUSTER_ON_LOW_SPEED_CAN_BUS" Name="DTC_MASK_U184C_00" References="GIS-621 Section 22.5.3" Usage="MID,HIGH,GLOBALA">
+    <CalID>_ZxqIUJKDEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0196_00_LOST_COMMUNICATION_WITH_ENTERTAINMENT_CONTROL_MODULE_REAR_ON_LOW_SPEED_CAN_BUS" Name="DTC_MASK_U0196_00" References="GIS-621 Section 22.5.4" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_3Uc30ZKDEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0198_00_LOST_COMMUNICATION_WITH_TELEMATICS_COMMUNICATION_INTERFACE_CONTROL_MODULE_ON_LOW_SPEED_CAN_BUS" Name="DTC_MASK_U0198_00" References="GIS-621 Section 22.5.5" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_BHXjYJKEEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U0186_00_LOST_COMMUNICATION_WITH_AUDIO_AMPLIFIER" Name="DTC_MASK_U0186_00" References="GIS-621 Section 22.5.6" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_fkz9QZKEEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U184A &#x2013; LOST COMMUNICATION WITH BODY CONTROL MODULE ON LOW SPEED CAN BUS" Name="DTC_MASK_U184A_00" References="GIS-621 Section 22.5.1" Usage="MID,HIGH,GLOBALA">
+    <CalID>_zh-PQJKEEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>4/16/14</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/16</Date>
+      <Description>CAL Description only update</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U15F0_00_TLIN_LOST_COMMUNICATION_WITH_DEVICE_ICS_ON_SUB-BUS_TLIN - CSM detects 3 consecutive parity error of the transmitted headers" Name="DTC_MASK_U15F0_00" References="GIS-621 Section 22.5.8" Usage="MID,HIGH,GLOBALA">
+    <CalID>_7zojcJKEEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U151F_00_LIN BUS_(ILIN)_LOST_COMMUNICATION_WITH_DEVICE_(ICS) - CSM detects 3 consecutive parity errors of the transmitted headers" Name="DTC_MASK_U151F_00" References="GIS-621 Section 22.5.9" Usage="MID,HIGH,GLOBALA">
+    <CalID>_EU2WkJKFEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U183A_00_LOST_COMMUNICATION_WITH_TELEMATICS_COMMUNICATION_WITH_INTERFACE_CONTROL_MODULE - CSM detects Loss of 9 consecutive transmitted headers" Name="DTC_MASK_U183A_00" References="GIS-621 Section 22.5.10" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_L3PxAJKFEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U18AF_00_LOSS_OF_LINK_WITH_TELEMATICS_COMMUNICATION_INTERFACE_CONTROL_MODULE_ON_ETHERNET_BUS - The Ethernet switch is unable to establish a link up with the Navigation Control Module.  This generates a notification to the CSM application that a fault has occurred." Name="DTC_MASK_U18AF_00" References="GIS-621 Section 22.6.1" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_OQTdoJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of diagnostic trouble code U18AF_00</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Link with Telematics Communication Interface Control Module on Ethernet Bus (TCP) - ~MY18 - FTB: 02 &#x2013; Short to Ground" Name="DTC_MASK_U18AF_02" References="GIS-621 Section 22.6.1" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_P5wsoLarEeSIe_1Y0XRY-g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Loss of Link with Telematics Communication Interface Control Module on Ethernet Bus (TCP) - ~MY18 - FTB: 04 &#x2013; Open Circuit" Name="DTC_MASK_U18AF_04" References="GIS-621 Section 22.6.1" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_mUhCcLarEeSIe_1Y0XRY-g</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U18B0_00_LOSS_OF_LINK_WITH_INSTRUMENT_CLUSTER_ON_ETHERNET_BUS - The Ethernet switch is unable to establish a link up with the Instrument Cluster.  This generates a notification to the CSM application that a fault has occurred." Name="DTC_MASK_U18B0_00" References="GIS-621 Section 22.6.2" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_PEvLQJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U18B0 &#x2013; LOSS OF LINK WITH INSTRUMENT CLUSTER ON ETHERNET BUS - ~MY18 - FTB: 02 &#x2013; Short to Ground" Name="DTC_MASK_U18B0_02" References="GIS-621 Section 22.6.2" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_Hi2jsLa5EeSpA6W9o4B4Rg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of U18B0_04</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>5/13/16</Date>
+      <Description>Changed default value from False to True</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/30/2016</Date>
+      <Description>Changed default value from True to False.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U18B0 &#x2013; LOSS OF LINK WITH INSTRUMENT CLUSTER ON ETHERNET BUS - ~MY18 - FTB: 04 &#x2013; Open Circuit" Name="DTC_MASK_U18B0_04" References="GIS-621 Section 22.6.2" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_drNh8La5EeSpA6W9o4B4Rg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/13/14</Date>
+      <Description>Initial release of U18B0_04</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>05/13/16</Date>
+      <Description>Changed default value from False to True</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/30/2016</Date>
+      <Description>Changed default value from True to False.</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U18B1_00_LOSS_OF_LINK_WITH_AUDIO_AMPLIFIER_ON_ETHERNET_BUS - The Ethernet switch is unable to establish a link up with the Audio Amplifier.  This generates a notification to the CSM application that a fault has occurred." Name="DTC_MASK_U18B1_00" References="GIS-621 Section 22.6.3" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_P74OoJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U18B0 &#x2013; U18B1_02_LOSS_OF_LINK_WITH_AUDIO_AMPLIFIER_ON_ETHERNET_BUS  - ~MY18  FTB: 02 &#x2013; Short to Ground" Name="DTC_MASK_U18B1_02" References="GIS-621 Section 22.6.3" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_zT_y0La6EeSpA6W9o4B4Rg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Corrected the description reflected for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U18B0 &#x2013; U18B1_04_LOSS_OF_LINK_WITH_AUDIO_AMPLIFIER_ON_ETHERNET_BUS  - ~MY18 - FTB: 04 &#x2013; Open Circuit" Name="DTC_MASK_U18B1_04" References="GIS-621 Section 22.6.3" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_Or1GoLa7EeSpA6W9o4B4Rg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Corrected the description reflected for this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="U18B2_00_LOSS_OF_LINK_WITH_REAR_AUDIO_MODULE_ON_ETHERNET_BUS - The Ethernet switch is unable to establish a link up with the Rear Audio Control Module.  This generates a notification to the CSM application that a fault has occurred." Name="DTC_MASK_U18B2_00" References="GIS-621 Section 22.6.4" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_Q_2NEJKGEeOH48DtJo_c7Q</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U18B2 &#x2013; LOSS OF LINK WITH REAR AUDIO CONTROL MODULE ON ETHERNET BUS - ~MY18 - FTB: 02 &#x2013; Short to Ground" Name="DTC_MASK_U18B2_02" References="GIS-621 Section 22.6.4" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_-GB3YLbNEeSqYowDGAuOkA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DTC U18B2 &#x2013; LOSS OF LINK WITH REAR AUDIO CONTROL MODULE ON ETHERNET BUS - ~MY18 - FTB: 04 &#x2013; Open Circuit" Name="DTC_MASK_U18B2_04" References="GIS-621 Section 22.6.4" Usage="MID,HIGH,GLOBALA,VCU">
+    <CalID>_S4rm8LbOEeSqYowDGAuOkA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/13/16</Date>
+      <Description>Initial release of Diagnostic Trouble Code</Description>
+      <Author>David Bonello</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

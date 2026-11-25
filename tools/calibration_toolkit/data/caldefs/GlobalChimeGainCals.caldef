@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>1/27/2016</Date>
+    <Description>Added Global A Chime SSTS calibration for SINGLE_PULSE_ACTIVATION_TIME.</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GlobalAChimeGainCals.caldef file to GlobalChimeGainCals.caldef for this caldef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to not have any reference to GlobalA or GlobalB in the caldef/enumdef naming convention if calibrations contained in a caldef/enumdef file are not GlobalA or GlobalB specific.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GlobalChimeGainCals.caldef, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The chime producer module shall implement a boost/cut calibration for the beep and gong chime sounds within the Audio block that shall be applied as an offset to the ChimeSinkVolume signal." Name="GONG_750_CHIME_GAIN" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_0Hj08YOkEeOYAdh1BRO4Xw</CalID>
+    <Type>Float</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-20.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The chime producer module shall implement a boost/cut calibration for the beep and gong chime sounds within the Audio block that shall be applied as an offset to the ChimeSinkVolume signal." Name="GONG_2000_CHIME_GAIN" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_w-dWAYOkEeOYAdh1BRO4Xw</CalID>
+    <Type>Float</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-20.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="If a single pulse chime wins arbitration and can be performed, turn the Chime Active to TRUE, when chime begins.  After a minimum activation time, (currently calibrated to 50msec) turn Chime Active to False." Name="SINGLE_PULSE_ACTIVATION_TIME" References="Global A Chime SSTS - 3.7.2.3 Chime Arbitration" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_3RwKYMXQEeW_ocSyuQo-ew</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/27/2016</Date>
+      <Description>Inital release of Global A chime cal.</Description>
+      <Author>Dominic Colella</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>50</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The chime producer module shall implement a boost/cut calibration for the beep and gong chime sounds within the Audio block that shall be applied as an offset to the ChimeSinkVolume signal." Name="BEEP_2000_CHIME_GAIN" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_uTHxIYOkEeOYAdh1BRO4Xw</CalID>
+    <Type>Float</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-20.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The chime producer module shall implement a boost/cut calibration for the beep and gong chime sounds within the Audio block that shall be applied as an offset to the ChimeSinkVolume signal." Name="BEEP_750_CHIME_GAIN" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ZJE1QIOkEeOYAdh1BRO4Xw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <Float>
+      <Value>0.0</Value>
+      <MinValue>-20.0</MinValue>
+      <MaxValue>20.0</MaxValue>
+      <Units>dB</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

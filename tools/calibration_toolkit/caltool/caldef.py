@@ -1,11 +1,9 @@
 """Look up any of the ~215 GM CalDef calibration definitions by name, across every
 group defined on this platform -- not just the ones currently shipped in a slot.
 
-CalDef files (.caldef, XML) live outside this repo in the local GIS-646 CalDef
-database. Point GMINFO_REPO_ROOT at your checkout of this repo (the directory
-containing reference/GIS-646_CalDef_Database_.../caldefs/*.caldef), following the same
-env-var convention already used elsewhere in tools/ (see tools/mdi2_client/mdi2/dpdu_replay.py).
-Enum label resolution additionally reads the matching .enumdef files in the same directory.
+CalDef files (.caldef, XML) are bundled in data/caldefs/, a copy of the GIS-646 CalDef
+database (see sync_bundle.py). Set CALTOOL_CALDEF_DIR to read a different caldefs
+directory. Enum label resolution reads the matching .enumdef files in the same directory.
 
 This module is read-only reference lookup -- it does not touch the live radio, CalSets.db,
 or any override package.
@@ -17,9 +15,9 @@ import os
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from functools import lru_cache
+from pathlib import Path
 
-CALDEF_GLOB = "reference/GIS-646_CalDef_Database_*/caldefs/*.caldef"
-ENUMDEF_GLOB = "reference/GIS-646_CalDef_Database_*/caldefs/*.enumdef"
+BUNDLED_CALDEF_DIR = Path(__file__).resolve().parent.parent / "data" / "caldefs"
 
 
 class CalDefError(ValueError):
@@ -101,14 +99,8 @@ class CalDefEntry:
     enum_id: str | None = None
 
 
-def _repo_root() -> str:
-    root = os.environ.get("GMINFO_REPO_ROOT")
-    if not root:
-        raise CalDefError(
-            "GMINFO_REPO_ROOT is not set. Point it at your gminfo_resources checkout "
-            "(the directory containing reference/GIS-646_CalDef_Database_.../)."
-        )
-    return root
+def caldef_dir() -> str:
+    return os.environ.get("CALTOOL_CALDEF_DIR") or str(BUNDLED_CALDEF_DIR)
 
 
 def _local(tag: str) -> str:
@@ -124,11 +116,11 @@ def _load_all_entries() -> list[CalDefEntry]:
     than silently letting the alphabetically-last file win, which used to make 154 real,
     currently-shipped entries resolve to the wrong group's CalID. See `lookup()` and
     `lookup_in_group()` for how ambiguity is surfaced instead of silently resolved."""
-    root = _repo_root()
+    root = caldef_dir()
     entries: list[CalDefEntry] = []
-    files = sorted(glob.glob(os.path.join(root, CALDEF_GLOB)))
+    files = sorted(glob.glob(os.path.join(glob.escape(root), "*.caldef")))
     if not files:
-        raise CalDefError(f"no .caldef files found under {root}/{CALDEF_GLOB} -- check GMINFO_REPO_ROOT")
+        raise CalDefError(f"no .caldef files found in {root} -- check the bundle or CALTOOL_CALDEF_DIR")
     skipped_types = set()
     for path in files:
         group = os.path.splitext(os.path.basename(path))[0]
@@ -184,9 +176,8 @@ def _by_name() -> dict[str, list[CalDefEntry]]:
 @lru_cache(maxsize=1)
 def _load_enum_labels() -> dict[str, dict[str, str]]:
     """{EnumID: {value_str: label}}"""
-    root = _repo_root()
     out: dict[str, dict[str, str]] = {}
-    for path in sorted(glob.glob(os.path.join(root, ENUMDEF_GLOB))):
+    for path in sorted(glob.glob(os.path.join(glob.escape(caldef_dir()), "*.enumdef"))):
         try:
             tree = ET.parse(path)
         except ET.ParseError:

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ns1:EnumDefinitionFile xmlns:ns1="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="The AMFMTunerCommon defines the enums used in the GIS653_AMFMTunerCombined">
+  <EnumDefFileVersion>3</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>06Feb 2015</Date>
+    <Description>The following changes were made to the GIS-653AMFMTunerCommon.enum file for this release:  
+      1.  Added description to enums as they were previously just shown as GIS-324 references. Fixed enum references so that they correctly match those defined in GIS-324.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>3/19/2015</Date>
+    <Description>Changed the names for two enums in the FM_Antenna2_Type Cal that were both named Calibration Value Not Used to CalibrationValueNotUsed1 for one enum and CalibrationValueNotUsed2 for the other enum since the previous Cal name with a space and duplicated enum name can't be accepted by the Java compliler. Also, changed the names for three enums in FM_Antenna1_Type that were named Calibration Value Not Used to CalibrationValueNotUsed1 for first enum, CalibrationValueNotUsed2 for the second enum, and CalibrationValueNotUsed3 for the third enum since the previous Cal name with a space and duplicated enum name can't be accepted by the Java compliler.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This enum defines the antenna type that is connected to the secondary antenna port." Name="FM_Antenna2_Type">
+    <EnumID>_PkasUK13EeSmebqxYSJYLA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="This enum indicates a passive antenna is connected to the secondary antenna port." Name="Passive">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum is not used." Name="CalibrationValueNotUsed1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum indicates a active antenna is connected to the secondary antenna port." Name="ActiveWithPhantom">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum is not used." Name="CalibrationValueNotUsed2">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum indicates an antenna is not connected to the secondary port." Name="AntennaNotConnected">
+      <Value>4</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="This enum defines the antenna type that is connected to the primary antenna port." Name="AM_FM_Antenna1_Type">
+    <EnumID>_yGDnMKyBEeSmT8v2WsqOvA</EnumID>
+    <EnumDefinitionVersion>3</EnumDefinitionVersion>
+    <EnumValueDefinition Description="The enum value indicates a passive antenna is connected to the primary antenna port." Name="Passive">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum is not used." Name="CalibrationValueNotUsed1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum indicates an active antenna is connected to the antenna port and requires phantom power." Name="ActiveWithPhantom">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum is not used." Name="CalibrationValueNotUsed2">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum is not used." Name="CalibrationValueNotUsed3">
+      <Value>4</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</ns1:EnumDefinitionFile>

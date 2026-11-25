@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="">
+  <EnumDefFileVersion>3</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>7/1/2016</Date>
+    <Description>Add a enumeration called SR_ENABLE_STATIC_TEXT_DISPLAY in this enumdef file. </Description>
+    <Author>Xufang Zhao</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>1/3/2018</Date>
+    <Description>Per CR#: 1652991, updated the SR_ENABLE_STATIC_TEXT_DISPLAY enumeration calibration within the GIS582_Speech_Recognition_Screen_Flows.caldef and GIS582_Speech_Recognition_Screen_Flows.enumdef to add an enumeration (PORTUGUESE_BRAZILIAN) for the Brazilian Portuguese language, since Brazilian Portugese is a required Speech Rec. language for MY19 and beyond.</Description>
+    <Author>Xufang Zhao</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration values for the SR_ENABLE_STATIC_TEXT_DISPLAY EnumInterMap calibration." Name="SR_ENABLE_STATIC_TEXT_DISPLAY">
+    <EnumID>_Abrg8D-vEeaIX5pSk5aPDw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English; Locale = en-US" Name="ENGLISH_US">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = French; Locale = fr-CA" Name="FRENCH_CANADIAN">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Spanish; Locale = es-MX" Name="SPANISH_NORTH_AMERICAN">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DANISH">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = French; Locale = fr-FR" Name="FRENCH">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = German; Locale = de-DE" Name="GERMAN">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English; Locale = en-GB" Name="ENGLISH_UK">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Italian; Locale = it-IT" Name="ITALIAN">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Dutch; Locale = nl-NL" Name="DUTCH">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Polish; Locale = pl-PL" Name="POLISH">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Portuguese ; Locale = pt-PT" Name="PORTUGUESE">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Russian; Locale = ru-RU" Name="RUSSIAN">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Spanish; Locale = es-ES" Name="SPANISH">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Turkish; Locale = tr-TR" Name="TURKISH">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Arabic; Locale = ar-SA" Name="ARABIC">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Chinese (Sim.); Locale =  zh-CN" Name="CHINESE_SIMPLIFIED">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Korean ; Locale = ko-KP" Name="KOREAN">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = English (AU); Locale = en-AU" Name="ENGLISH_AUSTRALIAN">
+      <Value>40</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="From GIS-547: Target Language = Portuguese; Locale = pt-BR" Name="PORTUGUESE_BRAZILIAN">
+      <Value>24</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enable Full BargeIn - user can speak to barge in and stop any prompt at any time.  Enabled Early Speak - user may speak to barge in on a prompt only in the last N ms of TTS.  Voice Barge In Disabled - User cannot speak to barge in over a prompt at any time.  Disable = 0   EnableFull = 1   Early Speak = 2" Name="SR_ENABLE_VOICE_BARGE_IN">
+    <EnumID>_fkkHILPCEeS4cegre0A1WQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Disable" Name="Disable">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="EnableFull" Name="EnableFull">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="EarlySpeak" Name="EarlySpeak">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

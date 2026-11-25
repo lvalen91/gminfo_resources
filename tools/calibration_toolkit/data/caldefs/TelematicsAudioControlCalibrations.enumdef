@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>03/20/2018</Date>
+    <Description>Per CR# 1507853, added new enumeration value #3 (ERA_TELEMATICS_PRESENT) to the  TelematicsAudioTypeEnum enumeration calibration as required by the  GIS-616 to notify the Info 3.5c CSM that the telematics module is configured to support an ERA call using a speaker directly connected to the telematics module.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration Values for K_TELEMATICS_AUDIO_TYPE  calibration from GIS-616." Name="TelematicsAudioTypeEnum">
+    <EnumID>_xgnCwMY9EeOsIMxD3Xbm-Q</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Digital audo telematics control platform." Name="EAVB_TELEMATICS">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Analog audio telematics control platform." Name="ANALOG_TELEMATICS">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="TELEMATICS_MODULE_NOT_PRESENT">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enumeration value is used for Infotainment configurations that support Russian ECall (ERA).  This enumeration notifies the CSM that the telematics module shall directly connect to an external speaker outside the control of the CSM.  Since ECall audio is processed on a speaker controlled by the telematics module, the CSM shall disable any diagnosics on the TCP ethernet and analog ports as they are not used.  Further, while an ecall is in procees, as defined by audio arbitration granted to the telematics module, the CSM shall mute audio to prevent an conflicting audio from entering the user compartment during an ecall event." Name="ERA_TELEMATICS_PRESENT">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Includes enumerations for the enumeration calibrations from the GIS507_Settings_GlobalB.caldef that are Global B specific.">
+  <EnumDefFileVersion>3</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/24/2016</Date>
+    <Description>Initial release of this enumdef file</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>3/2/2017</Date>
+    <Description>Within the GIS507_Settings_GlobalB.enumdef file, added one additional enumeration selection needed for the DMCPercentCustomModePercentName enumeration calibration referenced in the latest version GIS-507.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/9/2017</Date>
+    <Description>Within the GIS507_Settings_GlobalB.enumdef made the following updates to match clarification updates made within the latest GIS-507 release: 1.) Removed MyMode as a enumeration value, and replaced it with the enumeration value of V_Mode_And_Z_Mode_Disabled instead within the enumeration values defined for the existing DMCPercentCustomModePercentName enumeration calibration. and 2.) Also added a new enumeration calibration called DMCPercentPersonalModePercentName.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Possible enumerations for the DMCPercentPersonalModePercentName calibration" Name="DMCPercentPersonalModePercentName">
+    <EnumID>_7AOakE4NEeep_Namk9CiEQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="MyMode Menu Enabled" Name="MyMode">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="MyMode Menu Disabled" Name="MyMode_Disabled">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Possible enumerations for the DMCPercentCustomModePercent calibration" Name="DMCPercentCustomModePercentName">
+    <EnumID>_2HIDkJ7HEea-Ao5FQchwtQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="V-Mode Menu Enabled" Name="V_Mode">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Z-Mode Menu Enabled" Name="Z_Mode">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="V-Mode and Z-Mode Menus Disabled" Name="V_Mode_And_Z_Mode_Disabled">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

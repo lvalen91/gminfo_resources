@@ -86,3 +86,37 @@ Entries are grouped by date, oldest first within each date, newest date at the b
   malformed export payloads return HTTP 500 instead of a clean 400; and `BinaryFile`
   `Length`/`Checksum` fields are never verified or recomputed on edit. See `README.md`'s
   Maintenance section for current status of each.
+
+## 2026-11-25 — self-contained folder and desktop UI
+
+- CalDef database, linked guides, a sample document Flask (pure Python) and PyObjC are bundled;
+  `sync_bundle.py` refreshes or checks the copies. `GMINFO_REPO_ROOT` is no longer read;
+  `CALTOOL_CALDEF_DIR` overrides the bundled database.
+- Added `run.py`, `tests/`, and a native AppKit desktop UI for macOS (`gui.py`).
+- Moved shared UI behaviour from `web/app.py` into `caltool/service.py`. As a result the
+  web UI now validates scalar/String values on export, caps zip member size, returns 400
+  for the malformed export payloads covered by the tests, shows a digest-mismatch badge,
+  and can add a CalDef name defined in two groups.
+- `fix, two independent review passes (core library; web + desktop UI):`
+  - `calovride.py`: an array value with an empty element now round-trips to XML this tool
+    can re-ingest (the gap the previous entry tracked as open); `validate_value("Float", …)`
+    rejects `inf`/`nan`; `Enumeration` values must now be integers (previously any string
+    validated and was written into a container bound for hardware).
+  - `web/app.py`: structured members (array/map/record) were never validated on export --
+    only scalar/String was. A new `_check_structured` runs every structured member through
+    the public `validate_value` at export time, closing the data-corruption gap the prior
+    entry's own "not yet fixed" list named. Also: the 8 MiB upload cap was wrongly applied
+    to export response bodies (a real container's export is ~26x larger than its on-disk
+    size); invalid JSON returned werkzeug's HTML error page instead of a clean JSON error.
+  - `editor.js`: ~154 CalDef names that exist in two different groups were matched by name
+    only, so the second group's entry showed as already-present and could not be added, and
+    "Show" jumped to the wrong row; now matched by name+group. CalDef search, the Add lookup,
+    and export all had no network-error handling (a failed request could fail silently, or
+    leave Add disabled forever). The structured-entry panel's "Reset to loaded value" just
+    closed the panel instead of restoring it.
+  - `gui.py`: `list.index()` compares dicts by value, so with two structurally-equal loaded
+    modules, editing then reverting one could silently switch the sidebar selection to the
+    other, and Remove Entry could delete the wrong duplicate -- now indexed by identity.
+    Quit/Open could replace the module underneath an open Add sheet. A typed-but-uncommitted
+    value could be lost on Quit/Open without being committed first.
+  - Two regression tests added (`tests/test_toolkit.py`); full suite green before and after.

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="">
+  <EnumDefFileVersion>6</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date></Date>
+    <Description></Description>
+    <Author>GIS-500</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>8/5/2015</Date>
+    <Description>Updated the enumeration values for the following enumeration CALs: VEHICLE_ANIMATION_STARTUP_TYPE, VEHICLE_ANIMATION_WELCOME_TYPE, VEHICLE_AUDIOCUE_SHUTDOWN_TYPE, VEHICLE_AUDIOCUE_STARTUP_TYPE, and VEHICLE_AUDIOCUE_WELCOME_TYPE to match what's shown in the GIS-500 Version 3.0 June 26, 2015 Spec.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/24/2016</Date>
+    <Description>Added VEHICLE_AUDIOCUE_STOP_TYPE and VEHICLE_AUDIOCUE_RUN_TYPE eumerations from the GIS-500, and the possible enumeration values for each enumeration. Also deleted the DEFAULT_CHEVY_GRAPHICAL_THEME calibration carried over from NGI that was confirmed not to be needed for Info3, and was never defined as a required calibration in any GIS.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2/13/2017</Date>
+    <Description>Within this enumdef file, for the VEHICLE_ANIMATION_STARTUP_TYPE and VEHICLE_ANIMATION_WELCOME_TYPE  enumeration calibraions added the additional CUE animation selection needed for MY19 and beyond.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>09/11/2018</Date>
+    <Description>Per CR#1765465, one update was made in the BrandAnimationsAudioCues.enumdef by adding CHINA_BUICK_EV = 10 value to the VEHICLE_ANIMATION_WELCOME_TYPE calibration.</Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>10/30/2018</Date>
+    <Description>Per CR#2020144, added CHINA_BUICK_EV value to the VEHICLE_ANIMATION_STARTUP_TYPE enumeration in the BrandAnimationsAudioCues.enumdef. </Description>
+    <Author>Ibnul Khan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="GIS-500" Name="VEHICLE_AUDIOCUE_STOP_TYPE">
+    <EnumID>_MB0AkJ54Eea-Ao5FQchwtQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="" Name="CADILLAC">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="CHEVY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="CHEVY_CORVETTE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="GMC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="GMC_DENALI">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="BUICK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="VAUXHALL">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="OPEL">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="HOLDEN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="GIS-500" Name="VEHICLE_AUDIOCUE_RUN_TYPE">
+    <EnumID>_AO7D8J4NEea-Ao5FQchwtQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="" Name="CADILLAC">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="CHEVY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="CHEVY_CORVETTE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="GMC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="GMC_DENALI">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="BUICK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="VAUXHALL">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="OPEL">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="HOLDEN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="GIS-500" Name="VEHICLE_ANIMATION_SHUTDOWN_TYPE">
+    <EnumID>_ysLaNE1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="FULL_BLACK">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FADE_TO_BLACK">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="PLAY_ANIMATION">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="GIS-500" Name="VEHICLE_ANIMATION_STARTUP_TYPE">
+    <EnumID>_ysLaNk1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="CADILLAC">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY_CORVETTE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC_DENALI">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BUICK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VAUXHALL">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="OPEL">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="HOLDEN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="CUE">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Enum for China Buick EV" Name="CHINA_BUICK_EV">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="GIS-500" Name="VEHICLE_ANIMATION_WELCOME_TYPE">
+    <EnumID>_ysMBMU1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="CADILLAC">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY_CORVETTE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC_DENALI">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BUICK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VAUXHALL">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="OPEL">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="HOLDEN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="CUE">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="CHINA_BUICK_EV">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Name="VEHICLE_AUDIOCUE_SHUTDOWN_TYPE">
+    <EnumID>_ysMBM01AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="CADILLAC">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY_CORVETTE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="GMC_DENALI">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BUICK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VAUXHALL">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="OPEL">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="HOLDEN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="GIS-500" Name="VEHICLE_AUDIOCUE_STARTUP_TYPE">
+    <EnumID>_ysMBNU1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="CADILLAC">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY_CORVETTE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC_DENALI">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BUICK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="VAUXHALL">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="OPEL">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="HOLDEN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="GIS-500" Name="VEHICLE_AUDIOCUE_WELCOME_TYPE">
+    <EnumID>_ysMoQU1AEeO3UM5MzM17kw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="CADILLAC">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CHEVY_CORVETTE">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GMC_DENALI">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BUICK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="VAUXHALL">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="OPEL">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="HOLDEN">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

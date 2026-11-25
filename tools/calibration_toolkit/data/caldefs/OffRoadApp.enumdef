@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>03/26/2020</Date>
+    <Description>Initial releae of this enumdef file to go along with the OffRoadApp.caldef file.</Description>
+    <Author>Tatiana R. Risovas</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="The purpose of the enumeration is to define suspension travel limits for Off Road App Contents." Name="OFF_ROAD_APP_SUSPENSION_TRAVEL">
+    <EnumID>_xNXCID0sEeq908-SMMOAGw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="This enum defines the provision for Air Suspension Long Travel." Name="OFF_ROAD_APP_SUSPENSION_LONG_TRAVEL">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum defines the provision for Air Suspension Short Travel." Name="OFF_ROAD_APP_SUSPENSION_SHORT_TRAVEL">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

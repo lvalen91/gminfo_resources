@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This CalDef contains calibrations with far reaching scope. These calibrations are defined here to avoid duplication since these will effect many different functions and features.">
+  <CalDefFileVersion>12</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>24APR14</Date>
+    <Description>Initial version. Moved in cals that were in different caldef files.</Description>
+    <Author>Jonathon Green</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29APR14</Date>
+    <Description>Created on Bhavna's behalf. Based on notes from 24APR14 meeting. Added booleans for different modules.</Description>
+    <Author>Jonathon Green</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>2/5/2015</Date>
+    <Description>Adding a Cal to this Caldef for enabling/disabling navigation within the CSM.</Description>
+    <Author>Thiep Nguyen</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/20/2015</Date>
+    <Description>Removed GM_VEHICLE_BRAND from Global_Info3 as the Brand cal is already being used in GIS500_UI. Also removed VehicleSoftwareArchitecture cal because it was confirmed not to be needed.  Added a description in for the TCP cal based on feedback from Jon Gerlach. Also, added a description in for  RearSeatOverEthernet, IPCOverEthernet, HUDEthernet and Fuel_Type cals based on feedback from Cody Hansen. Also, added VEHICLE_FUEL_TYPE_COMPRESSED_NATURAL_GAS cal on befalf of Cody Hansen. Note VEHICLE_FUEL_TYPE cals, will start being used in MY18. Also added description in for AMP cal based on feedback from Bhavna Mathur.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_COMPRESSED_NATURAL_GAS, VEHICLE_FUEL_TYPE_ETHANOL_BLEND, VEHICLE_FUEL_TYPE_ELECTRIC, VEHICLE_FUEL_TYPE_HYBRID, VEHICLE_FUEL_TYPE_DIESEL, VEHICLE_FUEL_TYPE_AUTOGAS, VEHICLE_FUEL_TYPE_BIODESEL, VEHICLE_FUEL_TYPE_PETROL, RearSeatOverEthernet, and IPCOverEthernet cals in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>6/30/2016</Date>
+    <Description>Made the following updates in the Global_Info3.caldef file: Made a CAL description update only for the RearSeatOverEthernet, IPCOverEthernet, and HUDEthernet calibrations to just remove reference to MOST since MOST is not being used anymore for Info3.0. Also removed the AMP calibration that was in this caldef since this is not the calibration being used for indicating AMP configuration type. The AmplifierType calibration in the AmpInterface.caldef file is what is being used for this.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>10/24/2016</Date>
+    <Description>Deleting the TCP calibration from the Global_Info3.caldef, and adding the TCP calibration to the GIS651_TimeOfDay.caldef file instead to make it clearer that this calibration is defined by the GIS-651. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>3/1/2017</Date>
+    <Description>Within the Global_Info3.caldef file, removed the AMP calibration since confirmed with Dominic Colella this calibration has no use case for Info3. As reference, the AmplifierType calibration within the AmpInterface.caldef file is already being used for the use case to configure for amplifier type.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>04/17/2020</Date>
+    <Description>Per CR 2623469 adding the following Calibrations: 1)ENABLE_REAR_SEAT_INFOTAINMENT, 2)ENABLE_BROWSER_CONTENT 3)ENABLE_BROWSER_CONTENT 4)ENABLE_EMBEDDED_CONTENT </Description>
+    <Author>Chalan Munasinghe</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>6/4/2021</Date>
+    <Description>Updating Descriptions only for ENABLE_EMBEDDED_CONTENT,  ENABLE_BROWSER_CONTENT, ENABLE_REAR_SEAT_INFOTAINMENT and ENABLE_FRONT_SEAT_INFOTAINMENT per email from Chalan Munasinghe</Description>
+    <Author>Greg Lindemann</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The following Boolean Parameter ENABLE_EMBEDDED_CONTENT tells the system that embedded content is available for consumption. This Boolean parameter Enables (i.e. when value = true)/Disables (i.e. when value = false). This is required because we want the ability to enable/disable embedded content sources. " Name="ENABLE_EMBEDDED_CONTENT" References="FNC 805741 Media Player Requirements in DNG" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_qURRMYDJEeqhy4P-28qx7w</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/17/2020</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Chalan Munasinghe</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/4/2021</Date>
+      <Description>Updating Description only, per email from Chalan Munasinghe</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The following Boolean Parameter ENABLE_BROWSER_CONTENT tells the system that browser content is available for consumption. This Boolean parameter Enables (i.e. when value = true)/Disables (i.e. when value = false) " Name="ENABLE_BROWSER_CONTENT" References="FNC 805741 Media Player Requirements in DNG" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_gmSI8YDJEeqhy4P-28qx7w</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/17/2020</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Chalan Munasinghe</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/4/2021</Date>
+      <Description>Updating Description only, per email from Chalan Munasinghe</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The following Boolean Parameter ENABLE_REAR_SEAT_INFOTAINMENT indicates that RSI is available in the vehicle. This Boolean parameter Enables (i.e. when value = true)/Disables (i.e. when value = false) " Name="ENABLE_REAR_SEAT_INFOTAINMENT" References="FNC 805741 Media Player Requirements in DNG" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_t19EsIDIEeqhy4P-28qx7w</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/17/2020</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Chalan Munasinghe</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/4/2021</Date>
+      <Description>Updating Description only, per email from Chalan Munasinghe</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The following Boolean Parameter ENABLE_FRONT_SEAT_INFOTAINMENT indicates that FSI is available in the vehicle. This Boolean parameter Enables (i.e. when value = true)/Disables (i.e. when value = false) " Name="ENABLE_FRONT_SEAT_INFOTAINMENT" References="FNC 805741 Media Player Requirements in DNG" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_YEavMIDBEeqhy4P-28qx7w</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>04/17/2020</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Chalan Munasinghe</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/4/2021</Date>
+      <Description>Updating Description only, per email from Chalan Munasinghe</Description>
+      <Author>Greg Lindemann</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type." Name="VEHICLE_FUEL_TYPE_COMPRESSED_NATURAL_GAS" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_4ftTgL0tEeSOH7Idfz1A2w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/25/2015</Date>
+      <Description>Intial release of VEHICLE_FUEL_TYPE_COMPRESSED_NATURAL_GAS cal on befalf of Cody Hansen. Note VEHICLE_FUEL_TYPE cals, will start being used in MY18. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_COMPRESSED_NATURAL_GAS cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This Cal is intended to enable/disable the navigation application on the Home Screen and related functions." Name="ENABLE_APPLICATION_NAVIGATION" References="GIS-504, GIS-620" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_oPGeYK1sEeSuYpxMzAN8ig</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/5/2015</Date>
+      <Description>Initial release of a Cal intended for enabling/disabling navigation within the CSM.</Description>
+      <Author>Thiep Nguyen</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This Cal is used to enable/disable rear seat entertainment." Name="ENABLE_APPLICATION_RSE" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_rWIgYHAZEeS9S8eQXLqvcA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type." Name="VEHICLE_FUEL_TYPE_ETHANOL_BLEND" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_CKWuMMpaEeOANccuh55kNA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>er request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_ETHANOL_BLEND cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type." Name="VEHICLE_FUEL_TYPE_ELECTRIC" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ZmO34MpcEeOANccuh55kNA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_ELECTRIC cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type." Name="VEHICLE_FUEL_TYPE_HYBRID" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_HS8YoMpaEeOANccuh55kNA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_HYBRID cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type." Name="VEHICLE_FUEL_TYPE_DIESEL" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_JkN3sMpaEeOANccuh55kNA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_DIESEL cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type." Name="VEHICLE_FUEL_TYPE_AUTOGAS" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_MrH-QMpaEeOANccuh55kNA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_AUTOGAS cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type." Name="VEHICLE_FUEL_TYPE_BIODESEL" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_PMMz4MpaEeOANccuh55kNA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_BIODESEL cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This cal is used by navigation as Points of Interest (POI) filter for gas stations having this fuel type. This includes ordinary, super unleaded and leaded four star. $1 means TRUE and $0 means FALSE." Name="VEHICLE_FUEL_TYPE_PETROL" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RP6YEMpaEeOANccuh55kNA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VEHICLE_FUEL_TYPE_PETROL cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CAL that tells if the CSM should talk over Ethernet to Rear Seat Entertainment." Name="RearSeatOverEthernet" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_a17VAM_JEeOFE7X7VkA4PA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated RearSeatOverEthernet cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/30/2016</Date>
+      <Description>Updated CAL description to just remove reference to MOST since MOST is not being used anymore for Info3.0.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CAL that tells if the CSM should talk over Ethernet to IPC." Name="IPCOverEthernet" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_jqLY4M_JEeOFE7X7VkA4PA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated IPCOverEthernet cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/30/2016</Date>
+      <Description>Updated CAL description to just remove reference to MOST since MOST is not being used anymore for Info3.0.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CAL that tells if the CSM should talk over Ethernet to Heads Up Display (HUD)." Name="HUDEthernet" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_s8iVEM_JEeOFE7X7VkA4PA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated HUDEthernet cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/30/2016</Date>
+      <Description>Updated CAL description to just remove reference to MOST since MOST is not being used anymore for Info3.0.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

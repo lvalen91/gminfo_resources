@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="VehicleTransmissionType">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11Apr18</Date>
+    <Description>VehicleTransmissionType cal enumerations related to the HMI display of an OTA SW update for OTA GB Phase 2 Architecture.  Reference GIS-887.</Description>
+    <Author>Pete Ansbro</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Vehicle transmission type" Name="GIS887_VehicleTransmissionType">
+    <EnumID>_SRbr4D1_EeibzvDXhCyGjg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Automatic Transmission" Name="Automatic">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Manual Transmission" Name="Manual">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

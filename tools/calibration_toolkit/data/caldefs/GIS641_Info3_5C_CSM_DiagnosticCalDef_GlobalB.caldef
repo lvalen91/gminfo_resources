@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef contains calibrations pertinent to the GIS-641 (Global B CSM Radio Component Diagnostic Specification) for Info3.5C CSM only">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/26/2018</Date>
+    <Description>For CR#: 1686594 within the GIS641_Info3.5C_CSM_DiagnosticCalDef_GlobalB.caldef file added the following DTC enable mask calibrations applicable to Info3.5C CSM only: DTC_MASK_B1B8C_13, DTC_MASK_B1B8C_11, DTC_MASK_B1B89_11, DTC_MASK_B1B89_13, DTC_MASK_B1B9D_02, DTC_MASK_B1B9D_4B, DTC_MASK_B1B9D_2F, DTC_MASK_B1B9D_11, DTC_MASK_B1B9D_13, DTC_MASK_B1B9D_26, DTC_MASK_B1B77_2B, DTC_MASK_B1B77_13, DTC_MASK_B1B77_12, DTC_MASK_B1B77_11, and DTC_MASK_B1B85_00.</Description>
+    <Author>Dany Kashat</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Center Stack Low Voltage Differential Signaling LVDS B 2 Signal  &#x2013; Open Circuit" Name="DTC_MASK_B1B8C_13" References="See ODX RTF for DTC B1B8C_13" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_C6wNUdkxEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Center Stack Low Voltage Differential Signaling LVDS B 2 Signal - Short to Ground" Name="DTC_MASK_B1B8C_11" References="See ODX RTF for DTC B1B8C_11" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_8blxgdkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Center Stack Low Voltage Differential Signaling LVDS 2 Signal - Short to Ground" Name="DTC_MASK_B1B89_11" References="See ODX RTF for DTC B1B89_11" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_2BjtUdkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Center Stack Low Voltage Differential Signaling LVDS 2 Signal  &#x2013; Open Circuit" Name="DTC_MASK_B1B89_13" References="See ODX RTF for DTC B1B89_13" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_rXD5gdkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Front Vision Camera Low Voltage Differential Signaling LVDS Signal - General Signal Failure" Name="DTC_MASK_B1B9D_02" References="See ODX RTF for DTC B1B9D_02" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_lLCcIdkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Front Vision Camera Low Voltage Differential Signaling LVDS Signal - Over Temperature" Name="DTC_MASK_B1B9D_4B" References="See ODX RTF for DTC B1B9D_4B" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_e8bk0dkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Front Vision Camera Low Voltage Differential Signaling LVDS Signal &#x2013; No Sub Type Information" Name="DTC_MASK_B1B9D_2F" References="See ODX RTF for DTC B1B9D_2F" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_YixUENkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Front Vision Camera Low Voltage Differential Signaling LVDS Signal - Short To Ground" Name="DTC_MASK_B1B9D_11" References="See ODX RTF for DTC B1B9D_11" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_Sqmm0dkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Front Vision Camera Low Voltage Differential Signaling LVDS Signal - Open Circuit" Name="DTC_MASK_B1B9D_13" References="See ODX RTF for DTC B1B9D_13" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_JN8fIdkwEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Front Vision Camera Low Voltage Differential Signaling LVDS Signal - Signal Rate of Change Below Threshold" Name="DTC_MASK_B1B9D_26" References="See ODX RTF for DTC B1B9D_26 " Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_4Jrs4dkvEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Infotainment Audio Serial Data Signal Cross Coupled" Name="DTC_MASK_B1B77_2B" References="See ODX RTF for DTC B1B77_2B" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_mtN2AdkvEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Infotainment Audio Serial Data Circuit Open" Name="DTC_MASK_B1B77_13" References="See ODX RTF for DTC B1B77_13" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ewrdQdkvEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Infotainment Audio Serial Data Circuit Short To Battery" Name="DTC_MASK_B1B77_12" References="See ODX RTF for DTC B1B77_12" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_OqMh4NkvEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Infotainment Audio Serial Data Circuit Short To Ground" Name="DTC_MASK_B1B77_11" References="See ODX RTF for DTC B1B77_11" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_lnqYoNkuEeipZZPcyOFmUA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Intial release</Description>
+      <Author>Dany KAshat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Infotainment Microphone Network Performance (which will have reversed wire and defective node)" Name="DTC_MASK_B1B85_00" References="See ODX RTF for DTC B1B85_00" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_k9eTgNkrEeib_JB6Nk31Ug</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/26/2018</Date>
+      <Description>Initial release </Description>
+      <Author>Dany Kashat</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

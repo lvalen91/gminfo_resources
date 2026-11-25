@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="Includes calibrations from the GIS-507 that are neither Global A or B specific.">
+  <CalDefFileVersion>15</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/19/15</Date>
+    <Description>Fixed some values and added driver workload. Also removed ValetLockCode and PressAndHoldTiming cals since there no longer needed.</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>8/13/2015</Date>
+    <Description>Per request from Dave Malkan, updated the default value for the DataServicesEnable CAL from True to False, because as Dave mentioned for MY18 Data Services: default = False (results in setting being hidden but not functionally off), will be applicable for all Regions. Also  updated the default value for the LocationServicesEnable CAL from True to False because as Dave mentions for MY18, this CAL needs to be set False for all Regions except Europe. So we'll have the default value for this CAL set to False, and just do release a CAL override to change the value to True for Europe only, and updated the descriptions for both of these CALs.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>9/3/2015</Date>
+    <Description>Within this CalDef file made the following updates: 1.) Removed the CAL called Name, confirmed with James Stefanovski and Cody Hansen this CAL has no intended function and could be removed. 2.) Per request from Sanghyun Ryu, updated CAL usage for the Audio_Feedback_Speed_settings_iText_To_Speech_Speech_Rates_Values CAL to not show Low Radio usage. 3.) Removed the CalID reference that was shown in the description field for the ValetMaskMenu CAL.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>11/6/2015</Date>
+    <Description>Per request from James Stefanovski updated the default value for the Audio_Feedback_Speed_settings_iText_To_Speech_Speech_Rates_Values CAL from 75 to 100 percent.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/26/2016</Date>
+    <Description>Per request from Eero Laansoo, GIS-507 Spec. Owner, updated the defined minimum value of the AudioVolumeTeenDriver CAL from 24 to 10. Eero also confirmed the update reflecting this new minimum value update for this CAL will also be reflected in the next GIS-507 Spec. release as well. Also, Cody Hansen and Eero Laansoo confirmed the TeenDriverSpeedLockout and ValetModeSpeedLockout CALs were both incorrectly defined as Integer type CALs. Both CALs should have been defined as Enumeration type CALs instead since both of these CALs are driver work load CALs,, and need to be assoissicated to the DriverWorkload.enumdef the same as how the other driver work load CALs are handled. In order to do this, deleting the TeenDriverSpeedLockout CAL(CalID: _Bl6HAHsXEeSBuspje1a-pg) that was defined as an Integer type CAL, and this previously existing CAL needs to be replaced by the newly added TeenDriverSpeedLockout CAL (CalID: _jONJIN1hEeW58O1OdVks4w) that is defined as an Enumeration type CAL.  Also for this, deleted the ValetModeSpeedLockout (CalID: _Lx3ksHsXEeSBuspje1a-pg) that was defined as an Integer type CAL, and this previously existing CAL needs to be replaced by the newly added ValetModeSpeedLockout (CalID: _pgM8kN1qEeW58O1OdVks4w) that is defined as an Enumeration type CAL.  This update to define the TeenDriverSpeedLockout and ValetModeSpeedLockout as Enumeration type CALs instead of as Integer type CALs are also reflected in the latest published GIS-507 Spec., version 3.3.  Also, updated the Teen Driver Speed Limiter CAL defintion for what the ON setting represented from 82 MPH/132 km/h to 85 MPH/ 136 km/h to reflect this update made in the latest published GIS-507 Spec., version 3.3.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>6/24/2016</Date>
+    <Description>Added a new calibration called TimeFormat that was added to the GIS-507 Spec. for configuring via a calibration the time format to be displayed in either a 12 hr or 24 hr format.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>10/24/2016</Date>
+    <Description>Within this caldef added the following calibrations: AmbientLightingInfoPageVersion, AmbientLightingEnable, and AmbientLightingInformationViewDriverWorkload from the GIS-507</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>1/25/2017</Date>
+    <Description>Within the GIS507_Settings.caldef file, added the following four new calibrations: 1.) TLAAlertAndBrakeInformationAvailable, 2.) AdjustablePedalspresent, 3.) AdjustableColumnpresent, and 4.) AdjustableMirrorsp.resent in the latest version of the GIS-507.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>2/13/2017</Date>
+    <Description>Within this caldef file, updated maximum speed limit shown in the description of the TeenDriverSpeedWarning calibration to show as 75 MPH instead of 70 MPH to align with what is shown in the function description of this calibration in the latest GIS-507. Also, corrected the typo shown for the equivalent km/h minumum and maximum speed values shown in the description of this calibration.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>3/3/2017</Date>
+    <Description>Within the GIS507_Settings.caldef to support RTC CR#: 1343166 added a new driver workload calibration called EnableNotificationReaderPopupDriverWorkload.  Also,  updated the default value of the TeenDriverSpeedLockout driver work load calibration from a value of NotParkedTeen = Trigger Level Value of 4  to Medium Speed = Trigger Level Value of 3 to reflect the default value this calibration has referenced in the latest version GIS-507. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>9/28/2017</Date>
+    <Description>Within the GIS507_Settings.caldef,  removed usage of the LocationServicesEnable calibration for CSM. Per team discussions with the GM and CSM supplier teams on this, the rationale for this is that it is now required for the CSM to always display the Location service menu item to be CTS compliant. Therefore, the CSM supplier has already removed the functionality in software to use the LocationServicesEnable calibration to be able to calibrate ON or OFF the Location Service menu itemin software. The Location Service menu item is now always hardcode in the CSM software to always show. Since the LocationServicesEnable calibration no longer has a use case for the CSM, removing usage of this calibration for CSM only, and leaving usage of this calibration for Low Radio since this calibration still has a calibration use case for the Low Radio. Also, Within the GIS507_Settings.caldef file, added GEM usage to all of the calibrations within this caldef, except for two calibrations{ (1.) NotificationReaderPopupDriverWorkload, and 2.) Audio_Feedback_Speed_settings_iText_To_Speech_Speech_Rates_Values. Note, did not add GEM usage for these two calibrations since both of these calibraions did not fall within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>1/25/2018</Date>
+    <Description>Within the GIS507_Settings.caldef file, removed usage of CSM (MID and HIGH) for the TeenDriverEnableDisable calibration since it was confirmed this calibration is not being used by the CSM. Instead of using this calibration to determine whether or not to display the Teen Driver menu item, the CSM uses the status of the Teen Driver available message from the BCM to determine whether or not to display the Teen Driver menu item.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>05/02/2018</Date>
+    <Description>Per CR# 1737940, added one new enumeration calibration called TRANSMITTER_POCKET_LOCATION along with the associated enumeration values within the GIS-507_Settings.enumdef file. Also, per CR# 1291582, Removed Touchscreen_Calibration and CalibrateTouchscreenDriverWorkload from the GIS507_Settings.caldef file.</Description>
+    <Author>Emmanuel Oleka</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This CAL is used to show the corresponding image on the radio display of the pocket location for a given vehicle the user will be instructed to put their keyless transmitter in for teen driver key transmitter learning. For more information on this CAL see Sec&#xac;tion 3.5.2.5.1 in the GIS-507. " Name="TRANSMITTER_POCKET_LOCATION" References="GIS-507 Section 3.5.2.6 MY21 REGISTERING KEYLESS TRANSMITTERS" Usage="MID,HIGH,GEM,GLOBALA,GLOBALB,VCU">
+    <CalID>_XtdusFIjEeibCblrVhJh5A</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>05/02/2018</Date>
+      <Description>Initial Release of this Calibration</Description>
+      <Author>Emmanuel Oleka</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_iDSUAFIYEeibCblrVhJh5A</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Used to update seating memory text." Name="AdjustableMirrorspresent" References="GIS-507 5.1.1.1* Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_AKmGEONEEeayQ7dTF1k6LA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/25/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Used to updated seating memory text." Name="AdjustableColumnpresent" References="GIS-507 5.1.1.1* Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_sgWwEONDEeayQ7dTF1k6LA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/25/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Used to specify if text specific to TLA (Alert &amp; Brake) is displayed." Name="TLAAlertAndBrakeInformationAvailable" References="GIS-507 5.1.1.1* Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-UutcOM_EeayQ7dTF1k6LA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/25/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Used to update seating memory text." Name="AdjustablePedalspresent" References="GIS-507 5.1.1.1* Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_c3lrcONDEeayQ7dTF1k6LA</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>1/25/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables the appropriate info screen for either Global A or B" Name="AmbientLightingInfoPageVersion" References="GIS507 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_y1p4UJ6yEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_b5CLkJ6yEea-Ao5FQchwtQ</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Enable ambient lighting feature in Settings app. screen. Default = False; True = ambient lighting enabled, False = disabled" Name="AmbientLightingEnable" References="GIS507 5.1.1.1*Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_iQGtQJ6wEea-Ao5FQchwtQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is used to configure the time format to be displayed in either a 12 or 24 hr format. When this calibration is set to a value of False, the time format displayed shall be a 12 hr format. When this calibration is set to a value of True, the time format displayed shall be a 24 hr format." Name="TimeFormat" References="GIS-507 Section 3.3.1.6 12/24 HR Selection" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_CKinkD0fEeaGEeA8k3J6-w</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/24/2016</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from viewing the Enable Notification Reader popup if they select an App within the Notification Access menu (Downloaded App Notification menu). If the user selects an App, the feature restricted popup (see GIS-500) is shown." Name="EnableNotificationReaderPopupDriverWorkload" References="GIS507 5.1.1.1*MY17 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_lJiuoABPEeeY5LtULEJdNA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/3/2017</Date>
+      <Description>Intial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="The valet mode speed lockout level" Name="ValetModeSpeedLockout" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_pgM8kN1qEeW58O1OdVks4w</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/26/2016</Date>
+      <Description>Initial release of this CAL as an Enumeration type CAL to replace the deleted ValetModeSpeedLockout CAL(CalID: _Lx3ksHsXEeSBuspje1a-pg) that was initially incorrectly defined in the GIS-507 as an Integer type CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="The teen driver speed lockout level" Name="TeenDriverSpeedLockout" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_jONJIN1hEeW58O1OdVks4w</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/26/2016</Date>
+      <Description>Initial release of this CAL as an Enumeration type CAL to replace the deleted TeenDriverSpeedLockout CAL(CalID: _Bl6HAHsXEeSBuspje1a-pg) that was initially incorrectly defined in the GIS-507 as an Integer type CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/1/2017</Date>
+      <Description>Per request from the GIS-507 Spec. owner, Kelly Comastro, updated the default value of TeenDriverSpeedLockout from a value of NotParkedTeen = Trigger Level Value of 4  to Medium Speed = Trigger Level Value of 3. Kelly confirmed the default value for the TeenDriverSpeedLockout calibration should match the default value of the ValetModeSpeedLockout calibration, which is already set to the intended default value of Medium Speed = Trigger Level Value of 3.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Vehicle - Specific Feature Support" Name="ValetMaskMenu" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_fYE0sGlPEeSUD4W2RgDvTg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="In the Audio Feedback Speed settings menu, the user is presented with the options Slow, Medium, and Fast. These settings correlate to the following iTextToSpeech SpeechRate values: Slow = 75% Medium = 100% Fast= 125%" Name="Audio_Feedback_Speed_settings_iText_To_Speech_Speech_Rates_Values" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_6k8GAG7eEeSssq_awwoZ3g</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/3/2015</Date>
+      <Description> Per request from Sanghyun Ryu, updated CAL usage for the Audio_Feedback_Speed_settings_iText_To_Speech_Speech_Rates_Values CAL to not show Low Radio usage.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>11/6/2015</Date>
+      <Description>Per request from James Stefanovski updated the default value from 75 to 100 percent.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>200</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="May have the ability to enable/disable Teen Driver Mode" Name="TeenDriverEnableDisable" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_F1Wy8GlQEeSUD4W2RgDvTg</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/25/2018</Date>
+      <Description>Removed usage of CSM (MID and HIGH) for the TeenDriverEnableDisable calibration since it was confirmed this calibration is not being used by the CSM. Instead of using this calibration to determine whether or not to display the Teen Driver menu item, the CSM uses the status of the Teen Driver available message from the BCM to determine whether or not to display the Teen Driver menu item.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="upon successfully entering a 4-digit code and tapping &#x201c;LOCK&#x201d;, the combination will flash the combination for 3 seconds at a 1 hertz rate" Name="Valet_Mode_Lock" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_cTDMAMWREeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="add 4 digit PIN, and flash until Teen Mode Set Complete, at 1hertz rate for a max of 3 sec (calibratable)" Name="TeenDriverPin" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_1B-f4GlQEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="default setting is ON 55MPH" Name="TeenDriverSpeedWarningDefault" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_S8OIAHsWEeSBuspje1a-pg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>55</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When setting is ON vehicle will be limited to 85 MPH/ 136 km/h (calibratable) Setting is updated immediately on user selection." Name="TeenDriverSpeedLimiter" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_9Nsf8GlXEeSUD4W2RgDvTg</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/26/2016</Date>
+      <Description>Updated the Teen Driver Speed Limiter CAL defintion for what the ON setting represented from 82 MPH/132 km/h to 85 MPH/ 136 km/h to reflect this update made in the latest published GIS-507 Spec., version 3.3.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Speed limit set between 40 MPH to 75 MPH (65 km/h to 105 km/h) can be set to have speed warning display to the teen driver speed increases or decreases at 1 MPH (1km/h) increments" Name="TeenDriverSpeedWarning" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_CEVewGlYEeSUD4W2RgDvTg</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/13/2017</Date>
+      <Description>Updated the maximum speed limit shown in the description of the TeenDriverSpeedWarning calibration to show as 75 MPH instead of 70 MPH to align with what is shown in the function description of this calibration in the latest GIS-507. Also, corrected the typo shown for the equivalent km/h minumum and maximum speed values shown in the description of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Some values can increase to 1000 counts or more. when hit, displays 1000+" Name="LaneDepartureWarnings" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_cr9doGlYEeSUD4W2RgDvTg</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue>1000+</StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="The Seatbelt Restrictions Mode popup wil auto dismiss after 20 seconds" Name="SeatbeltRestrictionMode" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_DVUJAGlZEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>-2147483648</MinValue>
+      <MaxValue>2147483647</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Audio volume lowest setting at 24... highest setting up to 63" Name="AudioVolumeTeenDriver" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Q4GYkGlZEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>2/26/2016</Date>
+      <Description>Per request from Eero Laansoo, GIS-507 Spec. Owner, updated the defined minimum value of the AudioVolumeTeenDriver CAL from 24 to 10. Eero also confirmed the update reflecting this new minimum value update for this CAL will also be reflected in the next GIS-507 Spec. release as well.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>24</Value>
+      <MinValue>10</MinValue>
+      <MaxValue>63</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable the teen driver speed lockout lockout level" Name="TeenDriverSpeedLockoutEnable" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_-3LP4HsWEeSBuspje1a-pg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable the valet mode speed lockout lockout level" Name="ValetModeSpeedLockoutEnable" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ExFCgHsXEeSBuspje1a-pg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Location Services: When the calibration is set to False, the setting is hidden and location services is on by default. When the calibration is set to True, the setting is shown and location services is on by default. Calibration default = False" Name="LocationServicesEnable" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_fhAzwLhrEeSmdeXBYRoUqg</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8/13/2015</Date>
+      <Description>Per request from Dave Malkan, updated the default value for the LocationServicesEnable CAL from True to False, and updated the description this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2017</Date>
+      <Description>Removed usage of the LocationServicesEnable calibration for CSM. Per team discussions with the GM and CSM supplier teams on this, the rationale for this is that it is now required for the CSM to always display the Location service menu item to be CTS compliant. Therefore, the CSM supplier has already removed the functionality in software to use the LocationServicesEnable calibration to be able to calibrate ON or OFF the Location Service menu itemin software. The Location Service menu item is now always hardcode in the CSM software to always show. Since the LocationServicesEnable calibration no longer has a use case for the CSM, removing usage of this calibration for CSM only, and leaving usage of this calibration for Low Radio since this calibration still has a calibration use case for the Low Radio. Also, updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Data Services: When the calibration is set to False, the setting is hidden and data services is on by default. When the calibration is set to True, the setting is shown and data services is on by default. Calibration default = False" Name="DataServicesEnable" References="Gis507 5.1.1.1*MY17 Calibration Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_lTOC8LhrEeSmdeXBYRoUqg</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8/13/2015</Date>
+      <Description>Per request from Dave Malkan, updated the default value for the DataServicesEnable CAL from True to False, and updated the description this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Setting information/description text is not shown while driving. The text &#x201c;This setting description is not available while driving.&#x201d;" Name="SettingDescriptionTextDriverWorkload" References="GIS 507 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_7G5u4bixEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from using the controls for setting the time. If the user selects Set Time from the menu, the feature restricted popup (see GIS-500) is shown." Name="SetTimeDriverWorkload" References="GIS 507 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_6wPiYbixEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from using the controls for setting the date. If the user selects Set Date from the menu, the feature restricted popup (see GIS-500) is shown" Name="SetDateDriverWorkload" References="GIS 507 5.5.1.1*MY17 Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_6l2QQbixEeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from accessing and reading the ambient lighting info. If the user selects the info button on the Ambient Lighting app view, the feature restricted popup (see GIS-500) is shown." Name="AmbientLightingInformationViewDriverWorkload" References="GIS 507 5.5.1.1*Driver Workload Restriction Items" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_eSlyAJ60Eea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/28/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

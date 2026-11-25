@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Intended to specify enumeration values needed for the enumeration calibrations in the GIS550_ClimateTouchScreenUI_GlobalA.caldef file.">
+  <EnumDefFileVersion>6</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>4-9-15</Date>
+    <Description>Added My18 cals</Description>
+    <Author>Samer Khatib</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>4/27/2015</Date>
+    <Description>Updated the NumberOfRearTempZones enum calibration within this enumdef file to correct the issue of duplicate values being used for this calibration. Two NumberofRearTempZones0 values were shown for the NumberOfRearTempZones enum calibration, changed one of these values to a value of NumberOfRearTempZones1 to correct the issue of duplicate values being used.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>7/10/2015</Date>
+    <Description>Updated the enumeration value for the RearAirDistributionMode enumeration CAL for enumeration value 1 from a value of RearAirDistributionMode_0 to CombiAirDistributionDisplayandAdjustment.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>7/28/2015</Date>
+    <Description>Removed the following two enumeration CALs : NumberOfRearTempZones and KeHVC_CNT_VCFGNumOfFrontZones as these CALs were confirmed by Andy Gellatly to only be needed for Global B. For MY18 we're only supporting Global A, not Global B, therefore these CALs are not needed for MY18. These CALs will be added in for MY19 which is the first year of usage of Global B.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS550_ClimateTouchScreenUI.enumdef file to GIS550_ClimateTouchScreenUI_GlobalA.enumdef that contains the GlobalA specific enumerations from the GIS-550 to distinquish it from the GIS-550 GlobalB enumdef file being added in this release that contains the GlobalB specific enumerations from the GIS-550. Also, added enumeration values for the Defrost_Label and Windshield_Symbol enumeration calibrations being added in this MY19 release for Global A.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>1/25/2017</Date>
+    <Description>Within GIS550_ClimateTouchScreenUI_GlobalA.enumdef for RTC CR#: 1171543,  updated the enumeration values and descriptions for these enumeration values for both the AirDistributionMode and RearAirDistributionMode enumerations to match what is reflected in the latest version GIS-550. Also, added a new third enumeration value for both of these enumerations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Enumeration values defined for the Windshield_Symbol enumeration calibration" Name="Windshield_Symbol">
+    <EnumID>_6FI3gEEgEeaX676o0O3GfQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Windshield_Symbol = $00" Name="Three_Squiggly_Arrows">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Windshield_Symbol = $01" Name="Single_Arrow">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration values defined for the Defrost_Label enumeration calibration" Name="Defrost_Label">
+    <EnumID>_c65c0EEeEeaX676o0O3GfQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Defrost_Label = $00" Name="ISO_Only">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Defrost_Label = $01" Name="Front_Plus_ISO">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Defrost_Label = $02" Name="Max_Plus_ISO">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Determines whether the Front Climate Screen displays the 4-Mode or Cambi Air Distribution display and adjustment: elements. " Name="AirDistributionMode">
+    <EnumID>_CpC2MLioEeSxl78x5qydAw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="ManMode = $00" Name="DisplayFourModeScheme">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ManMode = $01" Name="DisplayCombiScheme">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ManMode = $02" Name="DualZone_QuadZone">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Determines whether the Rear Climate Screen displays the 3-Mode or Cambi Air Distribution display and adjustment: elements." Name="RearAirDistributionMode">
+    <EnumID>_qspSALioEeSxl78x5qydAw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Rear_ManMode = $00" Name="DisplayThreeModeScheme">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Rear_ManMode = $01" Name="DisplayCombiScheme">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Rear_ManMode = $02" Name="DisplayThreeButtonCombiScheme_CombiPlusRoof">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>3/7/2017</Date>
+    <Description>Within the GIS517_SeatStatusPaneUI.enumdef file to support RTC CR#: 1172043, defined the enumeration values for the new enumeration calibration (SeatSwitch_DisplayType) added in the GIS517_SeatStatusPaneUI.caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Configures the CSM to show the correct Seat Switch Type for the specific program." Name="SeatSwitch_DisplayType">
+    <EnumID>_9vwncANlEeeY5LtULEJdNA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Not Applicable" Name="Not_Applicable">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Momentary Rocker Style" Name="Momentary_Rocker_Style">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Momentary Toggle Style" Name="Momentary_Toggle_Style">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="TODO" Name="Massage_On_Off_toggle">
+    <EnumID>_7xqooMWJEeOEzdA9o_rOxw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="If the Seat status pane is active Display Massage Screen Upon Activation" Name="Massage_On_Off_toggle_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="If the Seat status pane is not active do not Display Massage Screen Upon deactivation" Name="Massage_On_Off_toggle_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This enum file contains the enumeration defined to support the AM caldef file.">
+  <EnumDefFileVersion>4</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>December 1, 2014</Date>
+    <Description>Release File Change Log:  Cal Def File Version 2.  December 2, 2014
+Here is a summary of the changes for this release.
+
+1.  AM_AGC_Selection.  This enumeration defines the AM Band AGC thresholds for a specific region as defined in GMW16273.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>06Feb 2015</Date>
+    <Description>The following changes have been made in the release GIS653_AMTuner.enumdef to correct and clarify values and to add the reception performance values Harman has proposed.&#xD;
+&#xD;
+1.  AM_SoftMuteLevelMode.  The enum is defined to select a response level mode for AM soft mute conditions.
+
+2. Renumbered the enum values to remove 0 as the start value and instead use 1.  This aligns the descriptor number and the enum value to avoid confusion.  For example, AM_Mute1 = 0.  This means &quot;0&quot; has to be selected to pick mute level 1.  With this change AM_Mute1 = 1.  This renumbering was applied to AM_ACG_Selection, AM_SoftMuteLevels, AM_StepSize, AM_RangeDefinition, AM_SeekThreshold, and AM_AutostoreThreshold.</Description>
+    <Author>Alan Budyta</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>25-Jun-2015</Date>
+    <Description>Deleted these two enums: AM_StepSize and AM_Range_Definition</Description>
+    <Author>Kiran Soni</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>05/10/2018</Date>
+    <Description>GMW16273 related changes. Per CR#1768009 made the following changes in GIS653_AMTuner.enumdef, 1. Deleted AM_AutostoreThreshold, AM_AGC_Selection, and AM_SoftMuteLevels enumdefs - previous tables moified or no longer exists in updated version of GMW, 2.Update Seek Threshold 1-4 for future use, SeekC will remain</Description>
+    <Author>Christine Marzan</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="This enum defines which Level Mode should be selected for AM Soft Muting.  The default state shall be Slow." Name="AM_SoftMuteLevelMode">
+    <EnumID>_F8N8kK4zEeSPIs8u9gqkmw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="This enum indicates Slow Level Mode." Name="Slow">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="This enum indicates Fast Level Mode." Name="Fast">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enum that defines AM signal threshold to support Seek operations. The values for the enums 1-4 are no longer defined in GMW16273 May 2018 update. SeekC (SeekC_high and SeekC_low) is still valid." Name="AM_Seek_Threshold">
+    <EnumID>_EAyXMMsREeO1s9fQsZ57eg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="AM_Seek_Threshold_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="AM_Seek_Threshold_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="AM_Seek_Threshold_3">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved (Note: this enumeration is no longer needed per latest GMW16273)" Name="AM_Seek_Threshold_4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="AM_Seek_Threshold_C" Name="AM_Seek_Threshold_C">
+      <Value>5</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>6</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>5/31/2016</Date>
+    <Description>Updates to ChimeAudioSoundEnumeration .enumdef for Configurable Chime Subsystems and addition of new .enumdef &quot;StandardChimeProducerToneEnumerations&quot; for Standard Chime Subsystems.  MY19 Global B CRs 873829 and 761808.</Description>
+    <Author>Dominic Colella</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>7/1/2016</Date>
+    <Description>Changed the name of the GIS631_ChimeEnums.enumdef file to GIS631_ChimeEnums_GlobalB.enumdef for this enumdef file to be consistent with the specific naming convention being used starting in the initial MY19 CAL Database release to identify the caldef/enumdef files that conatin Global B specific calibrations.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/21/2016</Date>
+    <Description>MY19 Info 3 CR:  1218149 - 1)  Changed enumeration states in StandardChimeProducerToneEnumerations to be Tone then Frequence as opposed to Frequency then Tone.  2)  EnumIDs DefaultChimeThemeEnumeration and DriverPositionEnumerations were incorrectly removed from V3 of this enumdef file.  Added back for correct functionality.</Description>
+    <Author>Dominic Colella</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>12/7/2016</Date>
+    <Description>Updated ChimeAudioSoundEnumerations to add reserved states for upcoming Chime .wav file updates for Global B.</Description>
+    <Author>Dominic Colella</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>01-26-2018</Date>
+    <Description>CR1629546 Added new Enum Valid Chime Location</Description>
+    <Author>Srikanth Kolachalama</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Calibration parameter to ensure chime audio is heard by the available speakers in the vehicle" Name="ValidChimeLocationsEnumeration">
+    <EnumID>_Y99fMAB_EeilUYhcBNABVA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="DRIVER_FRONT_ONLY">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DRIVER_PASSENGER_FRONT_ONLY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="ALL_LOCATIONS">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="A calibration that specifies which Chime Theme location to use as the Chime Subsystem default theme. " Name="DefaultChimeThemeEnumeration">
+    <EnumID>_V6DEMDK1EeOTaf4sNtLf_w</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="THEME_0">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="THEME_1">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="THEME_2">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Determines which side of the vehicle the driver's seat is located on." Name="DriverPositionEnumeration">
+    <EnumID>_xkPIwDK0EeOTaf4sNtLf_w</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Indicates the vehicle's driver position is on the left side.  " Name="LEFT_HAND_DRIVE">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Indicates the vehicle's driver position is on the right side.  " Name="RIGHT_HAND_DRIVE">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of standard chime audio sounds" Name="ChimeAudioSoundEnumeration">
+    <EnumID>_a_27gErfEeOJOozbUmvE6A</EnumID>
+    <EnumDefinitionVersion>2</EnumDefinitionVersion>
+    <EnumValueDefinition Name="NONE">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0060MS">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0070MS">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0100MS">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0120MS">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0140MS">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0200MS">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0300MS">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0400MS">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0500MS">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0600MS">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_0800MS">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_1000MS">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_1010MS">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_1200MS">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_0750HZ_2000MS">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0060MS">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0070MS">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0100MS">
+      <Value>18</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0120MS">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0140MS">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0200MS">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0300MS">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0400MS">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0500MS">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0600MS">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_0800MS">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_1000MS">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_1010MS">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_1200MS">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_GONG_2000HZ_2000MS">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0060MS">
+      <Value>31</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0070MS">
+      <Value>32</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0100MS">
+      <Value>33</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0200MS">
+      <Value>34</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0300MS">
+      <Value>35</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0400MS">
+      <Value>36</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0500MS">
+      <Value>37</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_0750HZ_0600MS">
+      <Value>38</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0060MS">
+      <Value>39</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0070MS">
+      <Value>40</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0100MS">
+      <Value>41</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0200MS">
+      <Value>42</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0300MS">
+      <Value>43</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0400MS">
+      <Value>44</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0500MS">
+      <Value>45</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_BEEP_2000HZ_0600MS">
+      <Value>46</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_CLICK">
+      <Value>47</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CADILLAC_CLACK">
+      <Value>48</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0060MS">
+      <Value>49</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0070MS">
+      <Value>50</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0100MS">
+      <Value>51</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0120MS">
+      <Value>52</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0140MS">
+      <Value>53</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0200MS">
+      <Value>54</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0300MS">
+      <Value>55</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0400MS">
+      <Value>56</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0500MS">
+      <Value>57</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0600MS">
+      <Value>58</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_0800MS">
+      <Value>59</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_1000MS">
+      <Value>60</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_1010MS">
+      <Value>61</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_1200MS">
+      <Value>62</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_0750HZ_2000MS">
+      <Value>63</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0060MS">
+      <Value>64</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0070MS">
+      <Value>65</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0100MS">
+      <Value>66</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0120MS">
+      <Value>67</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0140MS">
+      <Value>68</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0200MS">
+      <Value>69</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0300MS">
+      <Value>70</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0400MS">
+      <Value>71</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0500MS">
+      <Value>72</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0600MS">
+      <Value>73</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_0800MS">
+      <Value>74</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_1000MS">
+      <Value>75</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_1010MS">
+      <Value>76</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_1200MS">
+      <Value>77</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_GONG_2000HZ_2000MS">
+      <Value>78</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0060MS">
+      <Value>79</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0070MS">
+      <Value>80</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0100MS">
+      <Value>81</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0200MS">
+      <Value>82</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0300MS">
+      <Value>83</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0400MS">
+      <Value>84</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0500MS">
+      <Value>85</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_0750HZ_0600MS">
+      <Value>86</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0060MS">
+      <Value>87</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0070MS">
+      <Value>88</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0100MS">
+      <Value>89</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0200MS">
+      <Value>90</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0300MS">
+      <Value>91</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0400MS">
+      <Value>92</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0500MS">
+      <Value>93</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_BEEP_2000HZ_0600MS">
+      <Value>94</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_CLICK">
+      <Value>95</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="STANDARD_CLACK">
+      <Value>96</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_FRNT_1">
+      <Value>97</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_REAR_1">
+      <Value>98</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_LEFT_1">
+      <Value>99</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_RGHT_1">
+      <Value>100</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_FRNT_2">
+      <Value>101</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_REAR_2">
+      <Value>102</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_LEFT_2">
+      <Value>103</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="COLL_RGHT_2">
+      <Value>104</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CS_FEEDBACK">
+      <Value>105</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CNTR_STCK_1">
+      <Value>106</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CNTR_STCK_2">
+      <Value>107</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CNTR_STCK_3">
+      <Value>108</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CNTR_STCK_4">
+      <Value>109</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FRNT_PARK_1">
+      <Value>110</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FRNT_PARK_2">
+      <Value>111</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FRNT_PARK_3">
+      <Value>112</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FRNT_PARK_4">
+      <Value>113</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GLBAL_CLICK">
+      <Value>114</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GLBAL_CLACK">
+      <Value>115</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GBL_NT_AVL1">
+      <Value>116</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GBL_NT_AVL2">
+      <Value>117</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SEAT_BELT_1">
+      <Value>118</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SEAT_BELT_2">
+      <Value>119</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SEAT_BELT_3">
+      <Value>120</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="SEAT_BELT_4">
+      <Value>121</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="IP_FEEDBACK">
+      <Value>122</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="IPCLUSTER_1">
+      <Value>123</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="IPCLUSTER_2">
+      <Value>124</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="IPCLUSTER_3">
+      <Value>125</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="IPCLUSTER_4">
+      <Value>126</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="NVD_FDBCK_1">
+      <Value>127</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="NVD_FDBCK_2">
+      <Value>128</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="PDSTRN_FRNT">
+      <Value>129</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="PDSTRN_REAR">
+      <Value>130</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="REAR_PARK_1">
+      <Value>131</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="REAR_PARK_2">
+      <Value>132</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="REAR_PARK_3">
+      <Value>133</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="REAR_PARK_4">
+      <Value>134</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="RESERVED_1">
+      <Value>135</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="RESERVED_2">
+      <Value>136</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="" Name="RESERVED_3">
+      <Value>137</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="RESERVED_4">
+      <Value>138</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of possible chime locations." Name="ChimeLocationEnumeration">
+    <EnumID>_bAChsErfEeOJOozbUmvE6A</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="DRIVER_FRONT">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FULL_FRONT">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FULL_LEFT">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FULL_RIGHT">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="FULL_REAR">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RIGHT_FRONT">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RIGHT_REAR">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="LEFT_FRONT">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="LEFT_REAR">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of possible Tone used in Standard Chime Producers." Name="StandardChimeProducerToneEnumerations">
+    <EnumID>_Pgs5wbkwEeWlrfA9YQnlrw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="BEEP_0750HZ">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="BEEP_2000HZ">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GONG_0750HZ">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="GONG_2000HZ">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CLICK">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="CLACK">
+      <Value>5</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

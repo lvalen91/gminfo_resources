@@ -1,5 +1,5 @@
 """Static per-slot reference data, condensed from
-research/eeprom-calibration/CALIBRATION_SLOT_MAP.md. Used to label a loaded module with
+docs/CALIBRATION_SLOT_MAP.md. Used to label a loaded module with
 what its slot is generally for, independent of which specific part number was loaded.
 Not a source of truth by itself -- read the slot map doc for citations and evidence."""
 from __future__ import annotations

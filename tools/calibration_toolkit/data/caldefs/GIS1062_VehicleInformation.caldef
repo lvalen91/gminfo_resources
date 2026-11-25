@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>3</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>09/17/2018</Date>
+    <Description>Per CR#: 1888368, Updated GIS1062_VehicleInforamtion.caldef with added IFE_DISPLAY_AUTO_STOP, and IDLE_METER_PRESENT.</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>01/04/2019</Date>
+    <Description>	Per CR#2082798, added VehicleInfoCard EnumIntegerMap calibration to the GIS1062_VehicleInformation.caldef file.</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The VehicleInfoCard calibration is used to enable or disable vehicle information cards from Vehicle Information apps. $1= Enable, or $0 = Disable" Name="VehicleInfoCard" References="GIS1062 Section 5.1.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_u19uMBA3Eem5b8vPZHHVFA</CalID>
+    <Type>EnumIntegerMap</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>01/04/2019</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <EnumIntegerMap>
+      <EnumID>_Uv1kwBA1Eem5b8vPZHHVFA</EnumID>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+      <Entry>
+        <Key>0</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>1</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>2</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>3</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>4</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>5</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>6</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>7</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>8</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>9</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>10</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>11</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>12</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>13</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>14</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>15</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>16</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>17</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>18</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>19</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>20</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>21</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>22</Key>
+        <Value>1</Value>
+      </Entry>
+      <Entry>
+        <Key>23</Key>
+        <Value>0</Value>
+      </Entry>
+    </EnumIntegerMap>
+  </CalDefinition>
+  <CalDefinition Description="Show &quot;AUTO STOP&quot; or &quot;EV&quot; text on IFE page in place of IFE digital values. $0 = Disabled, $1 = Enabled" Name="IFE_DISPLAY_AUTO_STOP" References="GIS1062 Section 5.1.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_eh5dELq0Eei-5bHnoORlAg</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>0</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Show Idle Hours information on Engine Hours Menu page, False = Don't show Idle Hours, True= Show Idle Hours" Name="IDLE_METER_PRESENT" References="GIS1062 Section 5.1.1.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_K5Ax8Lq0Eei-5bHnoORlAg</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration. </Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

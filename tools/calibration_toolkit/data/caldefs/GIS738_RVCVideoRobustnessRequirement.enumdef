@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="This EnumDef file contains enumeration CALs defined in the GIS-738 Spec. and GIS-742 Spec. (starting in MY19)">
+  <EnumDefFileVersion>3</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11/6/2015</Date>
+    <Description>Initial release of GIS738_RVCVideoRobustnessRequirement.enumdef file.</Description>
+    <Author>Manish Khadtare</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/8/2016</Date>
+    <Description>Add two addional enumeration value selections needed for 8in High Resolution (1280 X 768) and 10.2 in High Resolution (1920 X 1080).</Description>
+    <Author>Manish Khadtare</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>8/23/2019</Date>
+    <Description>For CR#: 2012316, updated the GIS738_RVCVideoRobustnessRequirement.enumdef file for the SCREEN_RESOLUTION eumeration calibration to include an enumeration screen resolution selection (2400 X 960) for the 13 inch ICS display.</Description>
+    <Author>Jason Heitman</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Number of distinct pixels in each dimension that can be displayed" Name="SCREEN_RESOLUTION">
+    <EnumID>_PWvKYIQHEeWHkIX-EVZFdA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Screen Resolution_0" Name="SIZE_800_BY_480">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Screen Resolution_1" Name="SIZE_1280_BY_720">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SCREEN_RESOLUTION_2" Name="SIZE_1280_BY_768">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SCREEN_RESOLUTION_3" Name="SIZE_1920_BY_1080">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SCREEN_RESOLUTION_4" Name="SIZE_2400_BY_960">
+      <Value>4</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

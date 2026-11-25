@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="">
+  <CalDefFileVersion>3</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>05/01/2018</Date>
+    <Description>Per CR# 1775795, adding GIS1007_Settings_GlobalB.caldef file to document calibrations pertaining to the GIS-1007.</Description>
+    <Author>Emmanuel Oleka</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>09/17/2018</Date>
+    <Description>Per CR#1912236, removed Help Cal from GIS1007_Settings_GlobalB.caldef, and added Help Cal redefined as EnumIntegerMap GIS1000_FrameworksWidgets.caldef and renamed P_DISPLAY_UNIT_MENU. Per CR#1912236, Updated GIS1007_Settings_GlobalB.caldef with added calibrations: PIXEL_REFRESHER_MENU, PIXEL_REFRESHER_TIMING, PIXEL_REFRESHER_TIMING_UNIT, RADIO_SCREEN_SAVER_TIME, RADIO_SCREEN_SAVER_TIME_UNIT, OPEN_SOURCE_SOFTWARE_RADIO, and TIRE_LOAD_TIMEOUT. Updated GIS1007_Settings_GlobalB.enumdef with added enumerations: PIXEL_REFRESHER_TIMING_UNIT and RADIO_SCREEN_SAVER_TIME_UNIT enums. </Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Unit for Radio Screen Saver" Name="RADIO_SCREEN_SAVER_TIME_UNIT" References="GIS1007 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_ENKKgLqfEeiqH4My0Pp0QQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_WKXo4LqdEei8LOtef1Wx4w</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Unit for Pixel Refresher timing." Name="PIXEL_REFRESHER_TIMING_UNIT" References="GIS1007 Section5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_sP9xkLqeEeiqH4My0Pp0QQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_HZf1kLqdEei8LOtef1Wx4w</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When HUD MAP cal is not set, hide the &#x201c;Navigation&#x201d; option from &#x201c;Head Up Display Contents&#x201d; menu. Note: False= Radio Button Unavailable; True= Radio Button Available" Name="P_HUD_MAP_MENU_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_SEbrAE2AEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When AR Camera cal is not set, hide &#x201c;AR CAMERA &#x201d; option from Layout menu. Note: False= Radio Button Unavailable; True= Radio Button Available" Name="P_IPC_AR_CAMERA_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_IG2AgE2AEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When MAP cal is not set, hide &#x201c;MAP&#x201d; option from Layout menu. Note: False= Radio Button Unavailable; True= Radio Button Available" Name="P_IPC_MAP_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_8l2CgE1_EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When Night Vision cal is not set, hide &#x201c;Night Vision&#x201d; option from Layout menu. Note: False= Radio Button Unavailable; True= Radio Button Available" Name="P_IPC_NIGHT_VISION_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_qj-_kE1_EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some markets, customers cannot disable Speed Sign in HUD, when this cal is set to 0, hide Speed Sign option from Head Up Display Contents menu. Note: False=Radio Button Unavailable; True= Radio Button Available" Name="P_HUD_SPEED_SIGN_MENU_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_cQP0ME1_EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Set when Vehicle is equipped with HUD. When not Set, hide &#x201c;Head Up Display&#x201d; menu under Display. Note: False= Menu Off; True=Menu ON" Name="P_HUD_MENU_AVAILABLE" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_yd3iYE1-EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some markets, customers cannot disable Speed Sign from IPC, when this cal is set to 0, hide Speed Sign option from Speed Information menu. Note: False=Radio Button Unavailable; True= Radio Button Available" Name="P_IPC_SPEED_SIGN_MENU_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_yDDEEE19EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Speed Sign available in the Vehicle from TSM or NAV. Note: False=Feature Unavailable; True= Feature Available" Name="P_SPEED_SIGN_AVAILABLE" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_6hjo0E16EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some vehicles, &#x201c;Adaptive Cruise Speed from Signs&#x201d; menu is not present under &#x201c;Collision/Detection Systems&#x201d; settings menu. Note: False= Menu Off; True= Menu ON" Name="P_ADAPTIVE_CRUISE_FROM_SIGN_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_CKeCUE14EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some vehicles, &#x201c;Tire Load&#x201d; menu is not present under &#x201c;Vehicle&#x201d; settings menu. Note: False= Menu Off; True= Menu ON" Name="P_TIRE_LOAD_MENU_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_oXUp0E12EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some markets, &#x201c;US&#x201d; option will not be displayed under Unit menu. Note: False=Radio Button Unavailable; True= Radio Button Available" Name="P_UNITS_ENGLISH_ENABLED" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_lpgOIE11EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some markets, &#x201c;Imperial&#x201d; option will not be displayed under Unit menu. Note: False= Menu Off; True= Menu ON" Name="P_UNITS_IMPERIAL_ENABLED" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_PvXSEE11EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some markets, &#x201c;Time, Date, and Unit menu&#x201d; will be shown as &#x201c;Time and Date&#x201d;. And Unit menu will not be displayed. Note: False= Menu Off; True= Menu ON" Name="P_DISPLAY_UNIT_MENU_PRESENT" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_17jVwE10EeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>09/17/2018</Date>
+      <Description>Renamed from P_DISPLAY_UNIT_MENU_ to P_DISPLAY_UNIT_MENU_PRESENT</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For some markets with specific languages, Search menu will not be available. Note: False= Menu Off; True= Menu ON" Name="Search" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_mewGAE1zEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The user is able to choose ringtone sound option. Note: Falso=Menu Off; True=Menu ON" Name="Ringtone_Sound_Change" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_WZK70E1uEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Cluster will be able to display open source software information in this menu. Note: False=Menu Off; True=Menu ON" Name="Open_Source_Software_Cluster" References="GIS-1007 Section 5.1 calibrations" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_CL_tIE1IEeibCblrVhJh5A</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Radio will be able to display open source software information in this menu." Name="OPEN_SOURCE_SOFTWARE_RADIO" References="GIS1007 Section 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_piaSQLhFEeiy6J8fC2ZRpA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial Release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Timeout value for locking Tire Load Menu" Name="TIRE_LOAD_TIMEOUT" References="GIS1007 Section 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_5ymDkLhCEeiy6J8fC2ZRpA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>7</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Radio display will be Updated to Screen Saver if there is no HMI inter" Name="RADIO_SCREEN_SAVER_TIME" References="GIS1007 Section 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_WLoQkLeREei_I8fAcof7OA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>90</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The amount of time in between &quot;IPC+ICS PIXEL Refresher update&quot; procedures. " Name="PIXEL_REFRESHER_TIMING" References="GIS1007 Section 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_XBvhkLeDEei_I8fAcof7OA</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>400</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description=" For every calibratable amount of time(PIXEL_REFRESER_TIMING) IPC/ICS display needs Pixel refreshed. Cal Used to show menu item in the settings limit, $TRUE = ON and $False = Off" Name="PIXEL_REFRESHER_MENU" References="GIS1007 Section 5.1" Usage="MID,HIGH,GLOBALB,VCU">
+    <CalID>_tu0y8LeCEei_I8fAcof7OA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/17/2018</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

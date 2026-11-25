@@ -1,0 +1,1240 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CalDefCategory="Tuner" Description="This cal file defines the DAB Tuner calibrations beginning in MY18.">
+  <CalDefFileVersion>21</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>May 09, 2014</Date>
+    <Description>The following changes have been made to this release.  Since DAB is My18 content, this file represents work in progress.  GME and Harman are reviewing this feature.  Updates will be made as necessary.  Deleted DAB_StationListUpdateRate, StationListUpdateRate, and StrongStationUpdateRate as they are not applicable for Info 3.  Changed cal names to CamelCase.  Deleted DAB Station List, StrongStationList and Details cals as they are not relevant for Info 3. </Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>18Aug2014</Date>
+    <Description>This change comprehends reallocation of some DAB related cals from the tunerHMI caldef file to this document to better align tuner and HMI cal functions.  These decisions were made based on joint GM/Harman reviews.Cals that have been moved are at the Rev 3 level in the individual cal change logs.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>December 1, 2014</Date>
+    <Description>Release File Change Log:  Cal Def File Version 5.  December 2, 2014
+Here is a summary of the changes for this release based on reviews with Harman:
+
+1.  DAB_DAB_LinkDABSearchStartTime.  Upper limit is incorrect at 255.  Should be 3500 so that it is within range for default setting of 3000.</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>2/26/2015</Date>
+    <Description>Confirmed with Alan Budyta the max value of DAB_DAB_LinkDABSearchStartTime cal within this caldef should be changed from 255 to 3500. Now the default value fits within the cal range.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>24.03.2015</Date>
+    <Description>The following calibration changes were made for the April 15th release:&#xD;
+&#xD;
+1.  Added enumdef file (GIS655_DABTuner.enumdef) to DABTuner caldef to support DAB Band III selection for world markets. And, as a result added the following three new enumeration type CALs to this CALDef file:  DAB_DABFrequencyBand, DAB_DefaultChannel, and DAB_UserSetting_AnnouncementFilter.&#xD;
+
+2.  Added cal params for DAB_EnableSlideShow.&#xD;
+
+3.  Added DAB_SlideshowMinDisplayTime to match requirements in GIS-502.&#xD;
+
+4.  Updated DAB_AnnouncementActive description to remove references to Intellitext as this feature is not supported in DAB.  Also clarified usage of this calibration in the tuner.
+
+5.  Removed the DAB_Intellitext_Active cal as the Info 3 Program will not be supporting Intellitext.
+
+The following cal decriptions have been modified to address Assembla Ticket #1708:
+
+6.  Modified the description for DAB to DAB linking to reference both the tuner enable/disable state with the associated HMI menu items required to support the feature.
+
+7.  Modified the description for DAB to FM linking to reference both the tuner enable/disable state with the associated HMI menu items required to support the feature.
+
+8.  Modified the description for DAB Announcements to reference both the tuner enable/disable state with the associated HMI menu items required to support the feature.
+
+
+
+</Description>
+    <Author>Christian Gross</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>26.05.2015</Date>
+    <Description>Deleted DAB_TuningMsgTime (moved to HMI side), deleted DAB_FastSeekTuneRate (moved to HMI side), deleted DisplayDABCategories (moved to HMI)</Description>
+    <Author>Christian Gro&#xdf;</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>08.06.2015</Date>
+    <Description>Readded &quot;DAB_FastSeekTuneRate&quot; cal based on feedback given by Alan Budyta.</Description>
+    <Author>Christian Gro&#xdf;</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>24JUN2015</Date>
+    <Description>The following changes have been implemented in this release:&#xD;
+1. Added DAB_EnableAlbumArt cal as both DAB Slideshow and DAB Album Art need to be treated separatetly.  As such, the description for DAB_Slideshow changed to reflect the slideshow feature and DAB_EnableAlbumArt added to support the DAB Album Art feature.&#xD;
+&#xD;
+2.  Clarified the descriptions for DAB_EnableDAB, DAB_EnableSlideShow, DAB_EnableAlbumArt, DAB_EnableEPG, and DAB_EnableTPEG to clarify tuner and HMI expected behavior based on the status of these cals.  Specifically, disabling any of these cals means the tuner shall no longer process the feature AND any associated HMI menu items shall be removed to effectively eliminate the feature from the vehicle.  This helps balance system resources in the tuner and the overall system.  Alternatively, enabling the calibrations means the tuner shall perform the associated processing to enable the feature and HMI shall provide the associated menu items for the end user.  This implies once the HMI  menu item is enabled, HMI menu item cals in GIS-502 caldef determine the associated default state (on/off, enable/disable,etc).</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>2015-July-21</Date>
+    <Description>Adding Mute and Fade Cals back in per 2015-July-20 memo from Alan and Sanghyun Ryu.  These cals are supplier specific and required to support the LOW radio when seamless DAB linking is not supported. These are the calibrations that were added:
+
+SS_MuteFadeInEFCThreshold_EEPxB
+SS_MuteFadeInEFCThreshold_EEPxA
+SS_MuteFadeOutEFCThreshold_EEPxB
+SS_MuteFadeOutEFCThreshold_EEPxA
+SS_MuteFadeInEFCThreshold_UEPX
+SS_MuteFadeOutEFCThreshold_UEPX
+SS_MuteBERAverageFactor
+</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>3/8/2016</Date>
+    <Description>Within this caldef file added a new calibration called DAB_OK_TrafficNGo for Low Radio usage only. This calibration is being added per final email correspondence request from GMK, GME, and GMNA teams on 3/2/2016 for the following reason: New request for this calibration from LGE regarding DAB-FM linking scenario based on PRTS/ESIMS issue in their BYOM2 project. The background is: Opel validation engineer requested wheel speed calibration to make stay in FM at traffic condition(No significant signal change) to minimize audio mute during DAB-FM transition. Info3.0 support seamless linking so we expect less audio mute than BYOM2. However, it`s not verified in field test yet so LGE wants this calibration as a prevention in case they have same issue.  </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>3/18/2016</Date>
+    <Description>This release includes the following changes.  The impact is for High/Mid only:&#xD;
+      1.  The following calibrations are deleted as they are not required for the High/Mid and had no usage on the LOW:  &#xD;
+      DAB_FM_LinkingFMQualityAvgFactor&#xD;
+      DAB_FM_LinkingFMQualityHysteresis&#xD;
+&#xD;
+      2.  The following calibrations have Usage changes from High Mid Low to Low Only:    DAB_DAB_LinkDABSignalGoodTime&#xD;
+      DAB_SLFM_Link_DABOkThreshold&#xD;
+      DAB_SLFM_Link_DABSignalGoodTime&#xD;
+&#xD;
+      3.  The following calibrations have been added as supplier specific (SS_) calibrations specific for High Mid Usage only:&#xD;
+      DAB_DAB_LinkDABOkAltThreshold&#xD;
+      DAB_SLFM_Link_DABOkAltThreshold&#xD;
+      FM_DAB_Hysteresis_Timer&#xD;
+      FM_DAB_PI_Lost_Hysterisis&#xD;
+&#xD;
+&#xD;
+    </Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>03/22/2016</Date>
+    <Description>The following DAB.caldef changes are defined for Version 14 as Harman SS_ (supplier specific) calibrations for linking hysteresis:
+   SS_DAB_DAB_Ensemble_Quality_Threshold_Current
+   SS_DAB_DAB_Ensemble_Quality_Threshold_Alternative
+   SS_DAB_FM_Ensemble_Quality_Threshold_Current
+   SS_DAB_FM_Audio_Quality_Threshold_Alternative
+   SS_FM_DAB_Audio_Quality_Threshold_Current
+   SS_FM_DAB_Ensemble_Quality_Threshold_Alternative</Description>
+    <Author>Christian Gross</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>15</Version>
+    <Date>2016-Jun-07</Date>
+    <Description>As per CR# 1053505 removed Non-seamless linking cals. removed CAL_NSLFMLink_DABWeakThreshold,CAL_NSLFMLink_DABOkThreshold,CAL_NSLFMLink_DABSignalGoodTime. As these are not needed for DAB radios due to all DAB radios have implemented seamless linking. </Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>16</Version>
+    <Date>Dec. 06, 2016</Date>
+    <Description>Deleted SS_DAB_SLFM_Link_DABOkAltThreshold, SS_DAB_DAB_LinkDABOkAltThreshold, DAB_FM_LinkingFMQualityThreshold; changed usage to mid/high for following parameters: DAB_DAB_LinkDABOkThreshold, DAB_SLFM_Link_DABWeakThreshold; changed default value of DAB_SeekStopBIII to 50.999 based on Harman recommendation; Changed type DAB_UserSetting_AnnouncementFilter cal from enum to Integer Array to have the possibility to select more than one filter category. Per default, all filters are set to 1=true. </Description>
+    <Author>Christian Gro&#xdf;</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>17</Version>
+    <Date>2017-Feb-08</Date>
+    <Description>Removing the Interger Array : DAB_UserSetting_AnnouncementFilter. Adding back Enum (same as what was in Ver 15) : DAB_UserSetting_AnnouncementFilter</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>18</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>19</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the GIS655_DABTuner.caldef file, added GEM usage to all of the calibrations within this caldef, except for the following ten calibrations within this caldef file: 1.) SS_FM_DAB_Ensemble_Quality_Threshold_Alternative, 2.) SS_FM_DAB_Audio_Quality_Threshold_Current, 3.) SS_DAB_FM_Audio_Quality_Threshold_Alternative, 4.) SS_DAB_FM_Ensemble_Quality_Threshold_Current, 5.) SS_DAB_DAB_Ensemble_Quality_Threshold_Alternative, 6.) SS_DAB_DAB_Ensemble_Quality_Threshold_Current, 7.) SS_FM_DAB_PI_Lost_Hysteresis, 8.) SS_FM_DAB_Hysteresis_Timer, 9.) DAB_EnableEPG, and 10.) DAB_EnableTPEG.  Note, did not add GEM usage for these  ten calibrations since these ten calibraions did not fall within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>20</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>21</Version>
+    <Date>6/19/2019</Date>
+    <Description>Per CR# 2303128 AOSP transition, in MY22 GIS-646 Cal DB V6.0.3 deprecating the following cals: DAB_SlideShowMinDisplayTime, DAB_EnableAlbumArt, DAB_EnableSlideShow, DAB_EnableEPG, DAB_EnableTPEG, DAB_FastSeekTuneRate.</Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="When it is in FM linking, if wheel speed is under this value, DAB fallback is not conducted but also it stays in FM linking." Name="DAB_OK_TrafficNGo" References="GIS-655" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_6_kcEOaiEeWS6bElCetEBg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/8/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the minimum ensemble quality of alternative station." Name="SS_FM_DAB_Ensemble_Quality_Threshold_Alternative" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_in008fBBEeWzPo51r3fk_w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/22/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Christian Gross</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>25</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the minimum FM audio quality of current FM station." Name="SS_FM_DAB_Audio_Quality_Threshold_Current" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_JNJxYfBBEeWzPo51r3fk_w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/22/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Christian Gross</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the minimum audio quality of alternative FM station." Name="SS_DAB_FM_Audio_Quality_Threshold_Alternative" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_j_AfwfBAEeWzPo51r3fk_w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/22/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Christian Gross</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the minimum ensemble quality of current station." Name="SS_DAB_FM_Ensemble_Quality_Threshold_Current" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_JHRBQfBAEeWzPo51r3fk_w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/22/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Christian Gross</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the minimum ensemble quality of alternative station." Name="SS_DAB_DAB_Ensemble_Quality_Threshold_Alternative" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_0CGlYfA_EeWzPo51r3fk_w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/22/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Christian Gross</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the minimum ensemble quality of current station." Name="SS_DAB_DAB_Ensemble_Quality_Threshold_Current" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_gLJCAfA_EeWzPo51r3fk_w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/22/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Christian Gross</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>100</MaxValue>
+      <Units>percent</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the maximum time after a PI code is lost to stay on FM when a DAB station is not available." Name="SS_FM_DAB_PI_Lost_Hysteresis" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_XpGYoe1DEeWsNe9td9pBoA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/18/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Alan Budyta</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3000</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines a hysteresis timer representing the minimum time to stay on FM during FM to DAB linking conditions." Name="SS_FM_DAB_Hysteresis_Timer" References="GIS-316" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_KWEcUe1DEeWsNe9td9pBoA</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>3/18/2016</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Alan Budyta</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The percentage of the MSC_EFC value relative to the FadeIn_EFC_Threshold for judging if the signal is good enough to switch back to DAB." Name="DAB_DAB_LinkDABOkThreshold" References="GIS-316-5400 DAB-DAB Linking under weak signal / No signal condition" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ypkLAE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Dec. 06, 2016</Date>
+      <Description>Changed usage to Mid/High only.</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The minimal time after exceeding the DABDABLink_DABWeakThreshold before starting the DAB search algorithm." Name="DAB_DAB_LinkDABSearchStartTime" References="GIS-699-032005 Seamless DAB-DAB Linking under weak signal / No signal condition" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ypkLAU1AEeO3UM5MzM17kw</CalID>
+    <Type>Float</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/26/2015</Date>
+      <Description>Confirmed with Alan Budyta the max value of this cal should be changed from 255 to 3500. Now the default value fits within the cal range.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>26.05.2015</Date>
+      <Description>Changed usage to LOW as this parameter is only applicable in single tuner designs.</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>3000.0</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>3500.0</MaxValue>
+      <Resolution>0.01</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="MSC_EFC is below  DABDABLink_DABOkThreshold for n seconds" Name="DAB_DAB_LinkDABSignalGoodTime" References="GIS-699-032005 Seamless DAB-DAB Linking under weak signal / No signal condition" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ypkLAk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/18/2016</Date>
+      <Description>CAL usage update from High, Mid, Low to Low Only.</Description>
+      <Author>Alan Budyta</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The percentage of the MSC_EFC value relative to the FadeOut_EFC_Threshold for judging if the signal is weak enough to start DAB search." Name="DAB_DAB_LinkDABWeakThreshold" References="GIS-699-032005 Seamless DAB-DAB Linking under weak signal / No signal condition" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ypkLA01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26.05.2015</Date>
+      <Description>Changed usage to LOW because this cal param is only applicable for single tuner designs.</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>150</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The percentage of the MSC_EFC value relative to the FadeIn_EFC_Threshold for judging if the signal is good enough to stop seamless FM linking." Name="DAB_SLFM_Link_DABOkThreshold" References="GIS-699-032004 DAB-FM Linking under weak signal / No signal condition" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ypmnSE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>27.05.2015</Date>
+      <Description>Added prefix &quot;DAB_&quot;</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/18/2016</Date>
+      <Description>CAL usage update from High, Mid, Low to Low Only.</Description>
+      <Author>Alan Budyta</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>80</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="MSC_EFC is below  SLFMLink_DABOkThreshold for n seconds " Name="DAB_SLFM_Link_DABSignalGoodTime" References="GIS-699-032004 DAB-FM Linking under weak signal / No signal condition" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ypmnSU1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>27.05.2015</Date>
+      <Description>Added prefix &quot;DAB_&quot;.</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/18/2016</Date>
+      <Description>CAL usage update from High, Mid, Low to Low Only.</Description>
+      <Author>Alan Budyta</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The percentage of the MSC_EFC value relative to the FadeOut_EFC_Threshold for judging if the signal is weak enough to start seamless FM linking." Name="DAB_SLFM_Link_DABWeakThreshold" References="GIS-699-032004 DAB-FM Linking under weak signal / No signal condition" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ypmnSk1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>27.05.2015</Date>
+      <Description>Added prefix &quot;DAB_&quot;.</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>90</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>200</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="defines the total timing of the muting process" Name="SS_FaderPeriod" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_WUk20S-zEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="defines the level to which the audio is reduced by the muting algorithm" Name="SS_MuteMinimumVolume" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_INlG8S-zEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="defines the speed of fading in" Name="SS_MuteFadeInStepsize" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_--aBoS-yEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="defines the speed of fading out" Name="SS_MuteFadeOutStepsize" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_1dUF4S-yEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the MSC-EFC when the volume will be increases for UEP protection level X" Name="SS_MuteFadeInEFCThreshold_UEPX" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_IzshMS-yEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>5</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the MSC-EFC when the volume will be increases for protection level EEPxB" Name="SS_MuteFadeInEFCThreshold_EEPxB" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_c9s8YS-yEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the MSC-EFC when the volume will be increases for protection level EEPxA" Name="SS_MuteFadeInEFCThreshold_EEPxA" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_UNnm0S-yEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the MSC-EFC when the volume will be decreased for protection level EEPxB" Name="SS_MuteFadeOutEFCThreshold_EEPxB" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_1qXcsS-tEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the MSC-EFC when the volume will be decreased for protection level EEPxA" Name="SS_MuteFadeOutEFCThreshold_EEPxA" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_fd2XMS-tEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Defines the MSC-EFC when the volume will be decreased for UEP protection level X" Name="SS_MuteFadeOutEFCThreshold_UEPX" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_Aqn6kS-tEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>5</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="defines the Characteristics of the averaging of MSC-EFC (OldAverageFactor = 1-NewAveragFactor)" Name="SS_MuteBERAverageFactor" References="GIS-316-5210 Mute function at low Signal Quality (high MSC-EFC )" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_LUDM0S-sEeWli4Ay-gIqmg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The cal_SlideShowMinDisplayTime shall establish a miniumum display time for an image within the HMI display." Name="DAB_SlideShowMinDisplayTime" References="GIS-316-3115 Album Art and Station Logos (Slideshow), GIS-502-4.1.68.1*MY18 Slideshow" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_GocLYNK8EeS7moXKCsUKKg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_DAB_LinkingActive cal defines whether DAB to DAB linking shall be enabled in the tuner and whether or not the associated HMI menu item(s) associated with this feature should be displayed. TRUE means enable DAB to DAB linking in the tuner and display the associated DAB to DAB Linking menu item(s). FALSE means disable DAB to DAB linking in the tuner and disable HMI display of the associated DAB to DAB Linking menu item(s). The default value is TRUE. The tuner shall also take appropriate action to support/not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on activated features for a given market." Name="DAB_DAB_LinkingActive" References="GIS-699-031900 DAB Default Settings" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_94SNIScAEeSmb8tw1ZVRMw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_FM_LinkingActive cal defines whether DAB to FM linking shall be enabled in the tuner and whether or not the associated HMI menu item(s) associated with this feature should be displayed. TRUE means enable DAB to FM linking in the tuner and display the associated DAB to FM Linking menu item(s). FALSE means disable DAB to FM linking in the tuner and disable HMI display of the associated DAB to FM Linking menu item(s). The default value is TRUE. The tuner shall also take appropriate action to support/not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on activated features for a given market." Name="DAB_FM_LinkingActive" References="GIS-699-031900 DAB Default Settings" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_5AkQQScAEeSmb8tw1ZVRMw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_AnnouncementsActive cal defines whether the HMI menu items associated with DAB Announcements and the associated tuner processing should be enabled/disabled for a specific region. TRUE means display the DAB announcements HMI menu item(s) and activate DAB announcement processing in the Tuner. FALSE means do not display the DAB announcements HMI menu item(s) and do not activate DAB announcement processing in the tuner. The default value is TRUE. This helps balance and optimize system resources based on features activated for a given market." Name="DAB_AnnouncementsActive" References="GIS-699-031900 DAB Default Settings" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_v_sEcSbmEeSmb8tw1ZVRMw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_EnableDAB calibration defines whether all HMI menu items associated with DAB and the associated DAB tuner processing should be enabled/disabled for a specific region. TRUE means display enabled DAB HMI menu item(s) and activate DAB processing in the Tuner. FALSE means do not display any DAB related HMI menu item(s) and do not activate DAB processing in the tuner. The default value is TRUE. The tuner shall also take appropriate action to support/not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on activated features for a given market." Name="DAB_EnableDAB" References="GIS-699-031000 DAB Activation" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yqq-RU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>27.05.2015</Date>
+      <Description>Added prefix &quot;DAB_&quot;.</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_EnableAlbumArt calibration defines whether the HMI menu item associated with DAB_EnableAlbumArt and the associated tuner processing should be enabled/disabled for a specific region. TRUE means display the DAB_EnableAlbumArt HMI menu item(s) and activate DAB_EnableAlbumArt processing in the Tuner. FALSE means do not display the DAB_EnableAlbumArt HMI menu item(s) and do not activate DAB_EnableAlbumArt processing in the tuner. The default value is TRUE. The tuner shall also take appropriate action to support/not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on activated features for a given market." Name="DAB_EnableAlbumArt" References="GIS-699-030810 Album Art and Station Logos (Slideshow)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_AcMSYRp3EeWoercuE1M_bg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_EnableSlideShow calibration defines whether the HMI menu item associated with DAB_EnableSlideShow and the associated tuner processing should be enabled/disabled for a specific region. TRUE means display the DAB_EnableSlideShow HMI menu item(s) and activate DAB_EnableSlideShow processing in the Tuner. FALSE means do not display the DAB_EnableSlideShow HMI menu item(s) and do not activate DAB_EnableSlideShow processing in the tuner. The default value is TRUE. A False setting helps balance system resources by removing tuner processing of this feature and the associated HMI." Name="DAB_EnableSlideShow" References="GIS-699-030810 Album Art and Station Logos (Slideshow)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_XWpDgNK7EeS7moXKCsUKKg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Calibration parameter for selecting the DAB frequency band." Name="DAB_DABFrequencyBand" References="GIS-313-1410 Frequency Bands" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_TxhEANLIEeS7moXKCsUKKg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_EdTK8NI3EeS7moXKCsUKKg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_EnableEPG calibration defines whether HMI menu items associated with DAB EPG and the associated DAB EPG tuner processing should be enabled/disabled for a specific region. TRUE means display enabled DAB EPG HMI menu item(s) and activate DAB EPG processing in the Tuner. FALSE means do not display any DAB EPG related HMI menu item(s) and do not activate DAB EPG processing in the tuner. The default value is FALSE. The tuner shall also take appropriate action to support/not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on activated features for a given market." Name="DAB_EnableEPG" References="GIS-316-3300 Electronic Program Guide " Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_krjc8NbeEeSNzKzbjZ2dbQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_EnableTPEG calibration defines whether HMI menu items associated with DAB TPEG and the associated DAB TPEG tuner processing should be enabled/disabled for a specific region. TRUE means display enabled DAB TPEG HMI menu item(s) and activate DAB TPEG processing in the Tuner. FALSE means do not display any DAB TPEG related HMI menu item(s) and do not activate DAB TPEG processing in the tuner. The default value is TRUE. The tuner shall also take appropriate action to support/not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on activated features for a given market." Name="DAB_EnableTPEG" References="GIS-316-7600 TPEG Real Time Traffic Services" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_v8XX8NbgEeSNzKzbjZ2dbQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The default T-DAB Channel is 5A. This value can be calibrated by the parameter DAB_DefaultChannel. " Name="DAB_DefaultChannel" References="GIS-316-3511 Initial activation (default settings)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_DdNjcNOWEeSPn-nUOvTPiQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_GYEAcNOVEeSPn-nUOvTPiQ</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="To improve the User Experience, a calibration defined as cal_DABMuteOn and cal_DABMuteOff will be used to create a mute/unmute ramp time when a DAB signal is acquired." Name="DAB_DABMuteOff" References="GIS-313-1920 Acquisition time after changing preset memory" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_NDtVIdL9EeSPn-nUOvTPiQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>2000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="To improve the User Experience, a calibration defined as cal_DABMuteOn and cal_DABMuteOff will be used to create a mute/unmute ramp time when a DAB signal is acquired." Name="DAB_DABMuteOn" References="GIS-313-1920 Acquisition time after changing preset memory" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_9-Gn8NL8EeSPn-nUOvTPiQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>100</MinValue>
+      <MaxValue>2000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="After switching off the antenna in case of overcurrent protection, the antenna supply shall switch back on again within an antenna fail recheck interval.  This interval shall be set by the cal_DABAntennaFailCheckInterval defined in the DABTuner.caldef file in GIS-646. " Name="DAB_DABAntennaFailCheckInterval" References="GIS-313-1300 Active Antenna Power Supply (Phantom supply)" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_uky4cNL4EeSPn-nUOvTPiQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>30</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The following parameters define the FIC-EFC (or FIC-BIR) which has to be reached to judge &#x2018;sufficient DAB signal available&#x2019; in DAB software. It shall be used for any kind of seeking to ultimately add an ensemble to a station list.  A calibration defined as CAL_SeekStopBIII shall be used to define Tuning Stop Sensitivity." Name="DAB_SeekStopBIII" References="GIS-313-1510 Tuning Stop Sensitivity" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_q-N94NL5EeSPn-nUOvTPiQ</CalID>
+    <Type>Float</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>Dec. 06, 2016</Date>
+      <Description>Changed default value to 50.999 based on Harman recommendation.</Description>
+      <Author>Christian Gro&#xdf;</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>50.999</Value>
+      <MinValue>5.0</MinValue>
+      <MaxValue>255.0</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.001</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_FastSeekTuneRate is a combined Seek/Tune cal that defines the Fast Seek/Tune Rate in steps per second for DAB tuning operations. This calibration is used when the User executes an DAB Fast Seek/Tune operation. The default value is 3 steps/sec." Name="DAB_FastSeekTuneRate" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_4IlYUNeAEeOGn-iEWDtkAA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/3/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>10</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This function can be configured by selecting the corresponding Announcement type in the AnnouncementFilter flag field parameter.  The default value can be calibrated by the CAL_UserSetting_AnnouncementFilter. Alarm Announcements are always enabled and cannot be deactivated by user settings." Name="DAB_UserSetting_AnnouncementFilter" References="GIS-316-4830 User Setting &#x2013; Announcement Filter" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_5hcEkNOaEeSDguH-pictGw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_1t7zMNOZEeSDguH-pictGw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

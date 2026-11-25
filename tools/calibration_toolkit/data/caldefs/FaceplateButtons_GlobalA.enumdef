@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>13OCT14</Date>
+    <Description>Removed invalid characters from EnumValue names in order to allow code generation.</Description>
+    <Author>Scott Rush</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>06FEB15</Date>
+    <Description>Replaced RepeatSwitch with StorageUnlockSwitch.</Description>
+    <Author>John Edens</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="ILIN_FaceplateEncoder_Slider">
+    <EnumID>_poF_ELwQEeOyXOVcUhYQJA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Unused">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="VolumeEncoder">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TuneEncoder">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="MultifunctionEncoder_2KnobFaceplate">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="AudioEncoder">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SecondaryMultifunctionEncoder">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="MultifunctionEncoder_3KnobFaceplate">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="VolumeSlider">
+      <Value>7</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="TODO" Name="ILIN_FaceplateSwitch">
+    <EnumID>_064WQLsxEeOx5ZUxylTSrA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Unused">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="FavoritesUpSwitch">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="FavoritesDownSwitch">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Tag1Switch">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Tag2Switch">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Tag3Switch">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Tag4Switch">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Tag5Switch">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="HomeSwitch">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="BandSwitch">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="BackSwitch">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="StorageUnlockSwitch">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DiscAuxSwitch">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="AudioSwitch">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="NextSwitch">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="PreviousSwitch">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="EjectSwitch">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="MuteSwitch">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="VolumeUpSwitch">
+      <Value>18</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="VolumeDownSwitch">
+      <Value>19</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TuneUpSwitch">
+      <Value>20</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="TuneDownSwitch">
+      <Value>21</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SourceAdvanceSwitch">
+      <Value>22</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="PowerSwitch">
+      <Value>23</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="SelectSwitch">
+      <Value>24</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="PlayPauseSwitch">
+      <Value>25</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="PopupDisplayControlSwitch">
+      <Value>26</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="BenchSwitchID">
+      <Value>27</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="ToneSwitch">
+      <Value>28</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="FavoritesSwitch">
+      <Value>29</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="DiagnosticScreenRequestSwitch">
+      <Value>30</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="MenuSwitch">
+      <Value>31</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>6</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>2/19/2015</Date>
+    <Description>Removed VehicleAudioRunType and Vehicle AudioStopType cals as they are already covered in the BrandAnimationsAudioCues caldef and enumdef files</Description>
+    <Author>Samer Khatib</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>1/20/2017</Date>
+    <Description>Within GIS500_UI.enumdef file, added WCS_WARNING_SCREEN_ENABLED enumeration selections for the WCS_WARNING_SCREEN_ENABLED enumeration calibration added in GIS500_UI.caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/3/2019</Date>
+    <Description>Within GIS500_UI.enumdef file, added GMModel enumeration selections for the GMModel enumeration calibration added in GIS500_UI.caldef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>5/15/2020</Date>
+    <Description>Per CR#: 2358737, updated GIS500_UI.enumdef file to add two additional enumeration values (1. BT1FG and 2. BT1UG) to the existing GMModel enumeration calibration defined. Also, added one enumertion value (GM_Brand_M_Brand) to the existing GM_Brand enumeration calibration defined. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>10/29/2020</Date>
+    <Description>Per CR#2748484 made the following updates within the GIS500_UI.enumdef file:  Added the following 9 new enum values for new enum GMTrim: 1.) None 2.) HighCountry and 3.) TrailBoss and 4.) Z71 and 4.) AT4 and 6.) Denali and 7.) UltimateDenali and 8.) Reserved1 and 9.) Reserved2</Description>
+    <Author>Greg Lindemann</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>3/31/2021</Date>
+    <Description>Per CR#2901697 made the following updates within the GIS500_UI.enumdef file: Added the following new enum value for new enum GM_Brand: Brightdrop</Description>
+    <Author>Greg Lindemann</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>3/31/2021</Date>
+    <Description>Per CR#2901697 made the following updates within the GIS500_UI.enumdef file: Added the following new enum value for new enum GMModel: EV600, CorvetteC8</Description>
+    <Author>Greg Lindemann</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>3/31/2021</Date>
+    <Description>Per CR#2901697 made the following updates within the GIS500_UI.enumdef file: Added the following 10 new enum values to enum GMTrim: Stingray, Z06, ERay, ZR1, ZORA, WT, LT, LTZ, SLE, SLT</Description>
+    <Author>Greg Lindemann</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Trim calibration required for unique welcome animation" Name="GMTrim">
+    <EnumID>_Qk-HoBzsEeumObnnB0oIhw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="None" Name="None">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="HighCountry" Name="HighCountry">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TrailBoss" Name="TrailBoss">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Z71" Name="Z71">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="AT4" Name="AT4">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Denali" Name="Denali">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="UltimateDenali" Name="UltimateDenali">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved1" Name="Reserved1">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Reserved2" Name="Reserved2">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Stingray" Name="Stingray">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Z06" Name="Z06">
+      <Value>10</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="eRay" Name="ERay">
+      <Value>11</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ZR1" Name="ZR1">
+      <Value>12</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ZORA" Name="ZORA">
+      <Value>13</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="WT" Name="WT">
+      <Value>14</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LT" Name="LT">
+      <Value>15</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="LTZ" Name="LTZ">
+      <Value>16</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SLE" Name="SLE">
+      <Value>17</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="SLT" Name="SLT">
+      <Value>18</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Model calibration required for GAS integration." Name="GMModel">
+    <EnumID>_Afo6AP_PEemcM4o___siSA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="None" Name="None">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Sierra" Name="Sierra">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Yukon" Name="Yukon">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="YukonXL" Name="YukonXL">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Silverado" Name="Silverado">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Suburban" Name="Suburban">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Tahoe" Name="Tahoe">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BT1FG" Name="BT1FG">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="BT1UG" Name="BT1UG">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="EV600" Name="EV600">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Corvette C8" Name="CorvetteC8">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Possible enumeration values for the WCS_WARNING_SCREEN_ENABLE calibration." Name="WCS_WARNING_SCREEN_ENABLED">
+    <EnumID>_3SojAN92EeaeKuvvdmMijg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Disabled enumeration selection" Name="Disabled">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Pocket Style enumeration selection" Name="Pocket_Style">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Brand calibration that define which graphics and highlighting will be utilized" Name="GM_Brand">
+    <EnumID>_rGWsUGXDEeSgh9VY6ZvAyA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="None" Name="GM_Brand_None">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Buick" Name="GM_Brand_Buick">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Cadillac" Name="GM_Brand_Cadillac">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Chevrolet" Name="GM_Brand_Chevrolet">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GMC" Name="GM_Brand_GMC">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Holden" Name="GM_Brand_Holden">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Opel" Name="GM_Brand_Opel">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Vauxhaull" Name="GM_Brand_Vauxhaull">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Other(s)" Name="GM_Brand_Other">
+      <Value>8</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="GM_Brand_M_Brand" Name="GM_Brand_M_Brand">
+      <Value>9</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Brightdrop" Name="Brightdrop">
+      <Value>10</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>03/26/2020</Date>
+    <Description>Initial Release of the calibration based on CRs 2287852, 2331035, and 2425907.</Description>
+    <Author>Tatiana R. Risovas</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>04/09/2020</Date>
+    <Description>Initial Release of the calibration based on CRs 2287852, 2331035, and 2425907. Review Cal Descriptions as per Ginnard and Greg recommendations.</Description>
+    <Author>Tatiana R. Risovas</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>05/18/2020</Date>
+    <Description>Add Trip Page Cal, Story 213188</Description>
+    <Author>Tatiana R. Risovas</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>09/22/2020</Date>
+    <Description>Change the cal change for: Side Slip angle (degrees) cals and Max torque. Specifically made the following updates: Changed the cal datatype from FLOAT to an Integer for the following cals as well updated minimum and maximum ranges as required for these cals: OFF_ROAD_APP_TILT_PEAK_PITCH_ANGLE, OFF_ROAD_APP_TILT_PEAK_ROLL_ANGLE, and OFF_ROAD_APP_SIDE_SLIP_ANGLE_MIN_RETENTION_VALUE. Also, updated the range for the min and maximum range for the following cals: OFF_ROAD_APP_G_FORCE_FRICTION_CIRCLE_RANGE, OFF_ROAD_APP_MAX_TORQUE, OFF_ROAD_APP_SIDE_SLIP_ANGLE_ABSOLUTE_SLIP_LAT_ACCEL_TEST, OFF_ROAD_APP_SIDE_SLIP_ANGLE_ABSOLUTE_SLIP_SPEED_TEST, OFF_ROAD_APP_SIDE_SLIP_ANGLE_MAX_DRIFT_ANGLE_VALUE, OFF_ROAD_APP_SIDE_SLIP_ANGLE_MAX_GAUGE_VALUE to be to more realistic ranges required. </Description>
+    <Author>Tatiana R. Risovas</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>10/14/2020</Date>
+    <Description>Delete OFF_ROAD_APP_STANDARD_ECUS_PRESENT calibration, add the OFF_ROAD_APP_TCCM_PRESENT cal.</Description>
+    <Author>Tatiana R. Risovas</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The purpose of the calibration is to enable the TILT Peak Pitch Angle Information for Off Road App Content." Name="OFF_ROAD_APP_TILT_PEAK_PITCH_ANGLE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_AI1IYWI3EeqZFuyo2712Fg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>-45</MinValue>
+      <MaxValue>45</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the TILT Peak Roll Angle Information for Off Road App Content." Name="OFF_ROAD_APP_TILT_PEAK_ROLL_ANGLE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_IQ9NAWI4EeqZFuyo2712Fg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>-45</MinValue>
+      <MaxValue>45</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the Onboard Tire Inflate Deflate Assist information for Off Road App Content. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_ONBOARD_TIRE_INFLATE_DEFLATE_ASSIST_ENABLE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_pNJU4G9hEeq7F-e-ojCHsQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to choose the vehicle body style enumeration for Off Road App Contents based on Vehicle Model Codes. $1 = SUT (Truck), or $0 = SUV" Name="OFF_ROAD_APP_VEHICLE_BODY_STYLE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_iXE2YH_zEeqyj509qsbTkg</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the G Force Friction Circle Range Information for Off Road App Content. The unit for this calibratable value is gravity 'g'." Name="OFF_ROAD_APP_G_FORCE_FRICTION_CIRCLE_RANGE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_Rc57EGI1EeqZFuyo2712Fg</CalID>
+    <Type>Float</Type>
+    <Version>4</Version>
+    <Float>
+      <Value>0.75</Value>
+      <MinValue>-3.263092</MinValue>
+      <MaxValue>3.261499</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the Auxiliary Switches information for Off Road App Contents based on Vehicle Model Codes. $1 = Enable, or $0 = Disable" Name="OFF_ROAD_APP_AUX_SWITCHES_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_AsIlwH_zEeqyj509qsbTkg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the Max Torque Information for Off Road App Content. The unit for this calibratable value is N-m." Name="OFF_ROAD_APP_MAX_TORQUE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_K_OX4HqdEequWqVkey7uNg</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>65535</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the Torque Vectoring Information for Off Road App Content. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_ECP_E_SYSTEM_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_wRgt4Tx8EeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the rear steering angle for Off Road App Content. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_ARS_MODULE_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_DZaHoTyEEeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the Camera Display launch app for Off Road App Content. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_CAMERA_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_S58FADx-EeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the side slip angle for Off Road App Content." Name="OFF_ROAD_APP_SIDE_SLIP_ANGLE_VEHICLE_SPEED_LIMIT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_WtRacTyDEeqKT9Yx6vkU8w</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>km_per_hour</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the side slip angle for Off Road App Content." Name="OFF_ROAD_APP_SIDE_SLIP_ANGLE_ABSOLUTE_SLIP_LAT_ACCEL_TEST" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_iCkQoFmAEeqcNKA-j_64Jw</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>16</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>360</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the side slip angle for Off Road App Content." Name="OFF_ROAD_APP_SIDE_SLIP_ANGLE_ABSOLUTE_SLIP_SPEED_TEST" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_KyFa0TyDEeqKT9Yx6vkU8w</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>17</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>360</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the side slip angle for Off Road App Content. " Name="OFF_ROAD_APP_SIDE_SLIP_ANGLE_MAX_DRIFT_ANGLE_VALUE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_B-KHETyDEeqKT9Yx6vkU8w</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>90</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>360</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the side slip angle for Off Road App Content." Name="OFF_ROAD_APP_SIDE_SLIP_ANGLE_MIN_RETENTION_VALUE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_iKZagTyCEeqKT9Yx6vkU8w</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>360</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the side slip angle for Off Road App Content. " Name="OFF_ROAD_APP_SIDE_SLIP_ANGLE_MAX_GAUGE_VALUE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_ecNjcDyAEeqKT9Yx6vkU8w</CalID>
+    <Type>Integer</Type>
+    <Version>4</Version>
+    <Integer>
+      <Value>45</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>360</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the side slip angle for Off Road App Content.  When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled.  " Name="OFF_ROAD_APP_SIDE_SLIP_ANGLE_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_7zO9QTx_EeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the compass Information for Off Road App Contents. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_ONSTAR_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_tBHMwTx_EeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is used to calculate the G-Force Longitudinal Acceleration Information for Off Road App Content." Name="OFF_ROAD_APP_LONGITUDINAL_ACCELERATION_FIRST_ORDER_K" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_gYPAsTx_EeqKT9Yx6vkU8w</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <Float>
+      <Value>0.23436</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>0.99603</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.003906</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is used to calculate the G-Force Lateral Acceleration Information for Off Road App Content. " Name="OFF_ROAD_APP_LATERAL_ACCELERATION_FIRST_ORDER_K" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_ZP5hgDx-EeqKT9Yx6vkU8w</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <Float>
+      <Value>0.23436</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>0.99603</MaxValue>
+      <Units>none</Units>
+      <Resolution>0.003906</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the Transfer Case for Off Road App Content. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_TCCM_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_CmuTkRiYEeuQLpWj1Ltxcw</CalID>
+    <Type>Boolean</Type>
+    <Version>5</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the e-locker for Off Road App Content. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_ICCM_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_QnHfEDyEEeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to provide limits for Rear Axle Short Suspension Travel for Off Road App Content." Name="OFF_ROAD_APP_REAR_AXLE_SHORT_TRAVEL" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_mp7W8Fl4EeqcNKA-j_64Jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>1</Version>
+    <IntegerArray>
+      <ArrayLength>2</ArrayLength>
+      <MinValue>-500</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>mm</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>-140</ArrayValue>
+      <ArrayValue>100</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to provide limits for Rear Axle Long Suspension Travel for Off Road App Content." Name="OFF_ROAD_APP_REAR_AXLE_LONG_TRAVEL" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>__ACmMFl4EeqcNKA-j_64Jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>1</Version>
+    <IntegerArray>
+      <ArrayLength>2</ArrayLength>
+      <MinValue>-500</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>mm</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>-180</ArrayValue>
+      <ArrayValue>150</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to provide limits for Front Axle Short Suspension Travel for Off Road App Content." Name="OFF_ROAD_APP_FRONT_AXLE_SHORT_TRAVEL" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_-1O50Fl3EeqcNKA-j_64Jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>1</Version>
+    <IntegerArray>
+      <ArrayLength>2</ArrayLength>
+      <MinValue>-500</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>mm</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>-130</ArrayValue>
+      <ArrayValue>93</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to provide limits for Front Axle Long Suspension Travel for Off Road App Content. " Name="OFF_ROAD_APP_FRONT_AXLE_LONG_TRAVEL" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_zVMvsFl4EeqcNKA-j_64Jw</CalID>
+    <Type>IntegerArray</Type>
+    <Version>1</Version>
+    <IntegerArray>
+      <ArrayLength>2</ArrayLength>
+      <MinValue>-500</MinValue>
+      <MaxValue>500</MaxValue>
+      <Units>mm</Units>
+      <Resolution>1.0</Resolution>
+      <ArrayValue>-170</ArrayValue>
+      <ArrayValue>160</ArrayValue>
+    </IntegerArray>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to choose the ride height and wheel suspension articulation enumeration for Off Road App Content. " Name="OFF_ROAD_APP_SUSPENSION_TRAVEL" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_05FwMD0wEeq908-SMMOAGw</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <Enumeration>
+      <EnumID>_xNXCID0sEeq908-SMMOAGw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the ride height and wheel articulation for Off Road App Content.  When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_SADS_CONTINUOUS_DAMPING_CONTROL_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_veWR8TyEEeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the ride height and wheel suspension articulation for Off Road App Content. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled. " Name="OFF_ROAD_APP_VLM_AIR_SUSPENSION_PRESENT" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_a-4kITyEEeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to update the pages every calibratable time for Off Road App Content." Name="OFF_ROAD_APP_REFRESH_PERIOD" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_MeeWETyBEeqKT9Yx6vkU8w</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <Float>
+      <Value>0.2</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>2.0</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>0.1</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="The purpose of the calibration is to enable the Off Road App Contents. When this calibration is set to True ($1) = Enabled, when set to False ($0) = Disabled." Name="OFF_ROAD_APP_FEATURE_ENABLE" References="Off Road App STS, Off Road App FNC" Usage="MID,HIGH,VCU,ENTRY_VCU,GLOBALB">
+    <CalID>_ldwG0DxwEeqKT9Yx6vkU8w</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

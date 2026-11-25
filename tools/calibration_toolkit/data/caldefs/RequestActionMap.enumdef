@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Contains the RequestActionEnum used in the AudioRequestActionMap calibration.">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="Enumeration of possible actions within the AudioRequestActionMap cells." Name="RequestActionEnum">
+    <EnumID>_KlI70GQVEeOAt5g1mMAiWA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Name="RA_DENY">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RA_GRANT">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RA_GRANT_CHANGE">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RA_GRANT_DEACT">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RA_GRANT_SUSPEND">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RA_SUSPEND">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Name="RA_GRANT_TRAFFIC_SUSPEND">
+      <Value>7</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

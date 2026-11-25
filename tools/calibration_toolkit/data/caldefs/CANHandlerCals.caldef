@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="This file contains configuration parameters required by the Vector LSGMLAN handler and the Autsar (Global B) ICAN handler">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>2/24/2015</Date>
+    <Description>Updated to show correct values for NODE_COMM_ACTIVE_PERIODIC_RATE and VNMF_PERIODIC_RATE cals</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated HS_BUS_OFF_DTC_FAILURE_CRITERIA_X and HS_BUS_OFF_DTC_FAILURE_CRITERIA_Y cals  in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>9/29/2017</Date>
+    <Description>Within the CANHandlerCals.caldef file, added GEM usage to the following calibrations within this caldef: (1.) BUS_WAKEUP_DELAY_TIME,  (2. ) COMM_ENABLED_TIMEOUT, (3.) NODE_COMM_ACTIVE_PERIODIC_RATE, and (4.) VNMF_PERIODIC_RATE. Since these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="The suppliers shall copy the calibration definitions in the GMLCal.c file into their calibration files that have the application defined calibrations. The calibration program editor shall feed these files into the applicable calibration program. The GMLAN Handler is capable of using the new value that was programmed into the flash memory instead of the hard coded default value in the GMLAN Hander." Name="BUS_WAKEUP_DELAY_TIME" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yphuwE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>250</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the LSGMLAN Vector handler's comm enabled timeout " Name="COMM_ENABLED_TIMEOUT" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yprfw01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=NA</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>0.1</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The handler notifies the application by using a callback function. This callback function is launched by the handler whenever a bus off condition is reported by the CAN-controller. A routine () checks every 1000ms if a Bus Off condition occurred. If the number of Bus Off events exceeds a Calibratable threshold of a calibratable number of consecutive tests  i.e. an X of Y algorithm  then the Bus Off fault code is set. The X of Y algorithm shall be started and the counter for Bus Off events shall go from 0 to 1 when the application is notified by the handler that a Bus Off has occurred. Setting of Lost Comm DTCs shall be inhibited while the counter for Bus Off events is greater than 0. The HMI Module shall make provisions for these 2 calibration variables. For high speed buses the default value for Bus Off events shall be 5  and the number of consecutive tests shall be set to 5  i.e. x=5 and y=5." Name="HS_BUS_OFF_DTC_FAILURE_CRITERIA_X" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yq5ny01AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated HS_BUS_OFF_DTC_FAILURE_CRITERIA_X to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The handler notifies the application by using a callback function. This callback function is launched by the handler whenever a bus off condition is reported by the CAN-controller. A routine () checks every 1000ms if a Bus Off condition occurred. If the number of Bus Off events exceeds a Calibratable threshold of a calibratable number of consecutive tests  i.e. an X of Y algorithm  then the Bus Off fault code is set. The X of Y algorithm shall be started and the counter for Bus Off events shall go from 0 to 1 when the application is notified by the handler that a Bus Off has occurred. Setting of Lost Comm DTCs shall be inhibited while the counter for Bus Off events is greater than 0. The HMI Module shall make provisions for these 2 calibration variables. For high speed buses the default value for Bus Off events shall be 5  and the number of consecutive tests shall be set to 5  i.e. x=5 and y=5." Name="HS_BUS_OFF_DTC_FAILURE_CRITERIA_Y" Usage="MID,HIGH,GLOBALA,GLOBALB">
+    <CalID>_yq5nzE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated HS_BUS_OFF_DTC_FAILURE_CRITERIA_Y cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="no description provided" Name="NODE_COMM_ACTIVE_PERIODIC_RATE" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_yrT3c01AEeO3UM5MzM17kw</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=NA</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>1200.0</Value>
+      <MinValue>1200.0</MinValue>
+      <MaxValue>1200.0</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Float>
+  </CalDefinition>
+  <CalDefinition Description="Serial Data Comm Spec  (0ms-2550ms in 100ms increments)" Name="VNMF_PERIODIC_RATE" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB">
+    <CalID>_ysMoS01AEeO3UM5MzM17kw</CalID>
+    <Type>Float</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=diag</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>3000.0</Value>
+      <MinValue>3000.0</MinValue>
+      <MaxValue>3000.0</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Float>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

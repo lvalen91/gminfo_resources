@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="System" Description="">
+  <CalDefFileVersion>2</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>10/28/2019</Date>
+    <Description>In support of CR#:2186233, added this new caldef file (PartnerAppsCals.caldef) within this Cal Database release to include a new calibration(PCMSpeedThreshold).</Description>
+    <Author>Dominic Colella</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>10/12/2020</Date>
+    <Description>With agreement from requirements owner, Dominic Colella, updated the minimum and maximum range of the PCMSpeedThreshold calibration to a more suitable realistic range required.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Calibration used to define the speed threshold that gates when the Passenger Override Consent Notice is displayed to the user.  " Name="PCMSpeedThreshold" References="FH.09.02.02 Determine and Provide UxRestriction Values" Usage="MID,HIGH,VCU,GLOBALB">
+    <CalID>_UqV_4MXTEems0aAO7CVVCg</CalID>
+    <Type>Float</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date></Date>
+      <Description>With agreement from requirements owner, Dominic Colella, updated the minimum and maximum range of the PCMSpeedThreshold calibration to a more suitable realistic range required.</Description>
+      <Author></Author>
+    </CalDefChangeRecord>
+    <Float>
+      <Value>2.2309027</Value>
+      <MinValue>0.0</MinValue>
+      <MaxValue>100.0</MaxValue>
+      <Units>m_per_sec</Units>
+      <Resolution>0.004340278</Resolution>
+    </Float>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

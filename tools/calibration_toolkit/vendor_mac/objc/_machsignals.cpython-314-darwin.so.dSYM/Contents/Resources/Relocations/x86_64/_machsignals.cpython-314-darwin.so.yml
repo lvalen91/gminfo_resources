@@ -1,0 +1,20 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     'build/lib.macosx-10.15-universal2-cpython-314/objc/_machsignals.cpython-314-darwin.so'
+relocations:
+  - { offset: 0x27, size: 0x8, addend: 0x0, symName: _PyInit__machsignals, symObjAddr: 0x0, symBinAddr: 0x730, symSize: 0x20 }
+  - { offset: 0x4E, size: 0x8, addend: 0x0, symName: _mod_module, symObjAddr: 0x300, symBinAddr: 0x20A0, symSize: 0x0 }
+  - { offset: 0xDA0, size: 0x8, addend: 0x0, symName: _machsignals_doc, symObjAddr: 0x4C0, symBinAddr: 0xBA0, symSize: 0x0 }
+  - { offset: 0xDC2, size: 0x8, addend: 0x0, symName: _mod_methods, symObjAddr: 0x370, symBinAddr: 0x2110, symSize: 0x0 }
+  - { offset: 0xDD7, size: 0x8, addend: 0x0, symName: _machsignals_handleSignal, symObjAddr: 0x20, symBinAddr: 0x750, symSize: 0x70 }
+  - { offset: 0xDFC, size: 0x8, addend: 0x0, symName: _machsignals_handleSignal.keywords, symObjAddr: 0x3B0, symBinAddr: 0x2150, symSize: 0x0 }
+  - { offset: 0xEAC, size: 0x8, addend: 0x0, symName: _exit_m_port, symObjAddr: 0x57B0, symBinAddr: 0x21A8, symSize: 0x0 }
+  - { offset: 0xEED, size: 0x8, addend: 0x0, symName: _machsignals_handleSignal_doc, symObjAddr: 0x5E0, symBinAddr: 0xCC0, symSize: 0x0 }
+  - { offset: 0xF0E, size: 0x8, addend: 0x0, symName: _mod_slots, symObjAddr: 0x3C0, symBinAddr: 0x2160, symSize: 0x0 }
+  - { offset: 0xF2F, size: 0x8, addend: 0x0, symName: _PyObjC_API, symObjAddr: 0x57C0, symBinAddr: 0x21B8, symSize: 0x0 }
+  - { offset: 0x145A, size: 0x8, addend: 0x0, symName: _signalmapping, symObjAddr: 0x57B8, symBinAddr: 0x21B0, symSize: 0x0 }
+  - { offset: 0x150B, size: 0x8, addend: 0x0, symName: _PyInit__machsignals, symObjAddr: 0x0, symBinAddr: 0x730, symSize: 0x20 }
+  - { offset: 0x15C1, size: 0x8, addend: 0x0, symName: _HandleSIG, symObjAddr: 0x90, symBinAddr: 0x7C0, symSize: 0x40 }
+  - { offset: 0x1648, size: 0x8, addend: 0x0, symName: _mod_exec_module, symObjAddr: 0xD0, symBinAddr: 0x800, symSize: 0x110 }
+  - { offset: 0x19D1, size: 0x8, addend: 0x0, symName: _SIGCallback, symObjAddr: 0x1E0, symBinAddr: 0x910, symSize: 0xFA }
+...

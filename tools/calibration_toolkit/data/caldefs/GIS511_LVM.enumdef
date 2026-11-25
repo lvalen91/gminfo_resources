@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnumDefFileVersion>2</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/20/2015</Date>
+    <Description>Removed LVNEnableType and replaced with LVM_1, LVM_2, and LVM_3 cals to identify the configurations for each of these cals as described in GIS-511.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>8/13/2015</Date>
+    <Description>Starting for MY18 as agreed to by Cody Hansen and Harman team, condensed the number of enumeration CALs used in this enumdef file down from three enumeration CALs (LVM_1, LVM_2, and LVM_3) to one enumeration CAL (LVM_X) since the enumeration values that were used for all three enumeration CALs are the same. As reference this is also noted in Assembla ticket#: 1957.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="TODO" Name="LVM_X">
+    <EnumID>_QGGO8EIVEeW1KJbfjB0QJg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Disable LVM" Name="LVM_DISABLED">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Configure LVM_NAV" Name="LVM_NAV">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Configure LVM_DMB" Name="LVM_DMB">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Configure LVM_PERFORMANCE_COMPUTER" Name="LVM_PERFORMANCE_COMPUTER">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

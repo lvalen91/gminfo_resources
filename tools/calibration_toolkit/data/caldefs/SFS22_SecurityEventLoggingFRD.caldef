@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef describes part of requirement for Security Event Logging feature. The other requirement of BackOffice Server name and Port are defined in RemoteServerSettings.caldef.  ">
+  <CalDefFileVersion>3</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>5/8/2017</Date>
+    <Description>Inital release of this caldef file under the authorization of RTC CR#: 833667.</Description>
+    <Author>Xueying Hou</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/18/2017</Date>
+    <Description>Updated the usage field for the one calibration (SECURITY_EVENT_LOGGING_ENABLED) within this caldef to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Indicate if SecurityEventLogging feature is enabled or not." Name="SECURITY_EVENT_LOGGING_ENABLED" References="SFS-22, section 5.4.6" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_5Il6IDHrEee-HtU3O-MeFQ</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/8/2017</Date>
+      <Description>Intial release of this calbiration</Description>
+      <Author>Xueying Hou</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

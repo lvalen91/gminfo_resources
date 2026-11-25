@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Enumerations for AmplifierType calibration.">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="The CSM/Low Radio shall use the AmplifierType calibration to determine the type of amplifier within the vehicle.  When no premium remote amplifier is present, this calibration notifies the CSM/Low Radio of whether a discrete amplifier or remote ANC module are present." Name="AmplifierTypeEnum">
+    <EnumID>_o7s18MWOEeOaCvydzCgwdA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="InternalAmplifier">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Low Radio shall disable the Vehicle Specific Equalization feature by setting all VSE filters to unity gain pass-through.  In other words, the Low Radio shall bypass the currently loaded EQ calibration block values.  All other audio requirements are identical to the internally amplified configuration." Name="AnalogRemoteAmplifier">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="The Low Radio shall implement all Vehicle Specific Equalization and tuning requirements that are followed for internally amplified configurations and pass the equalized audio out to the remote ANC module for processing.  " Name="RemoteANCModule">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="BosePremiumAmplifier">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

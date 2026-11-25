@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>10</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>23APR14</Date>
+    <Description></Description>
+    <Author>Andrew Gellatly</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>29SEP14</Date>
+    <Description>Add Usage on all components</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated CHAUFFEUR_MODE_ENABLE cal in this caldef file to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>11/6/2015</Date>
+    <Description>Made the following updates based on input from Andrew Gellatly within the DrivingRestrictions.caldef: Removed usage of CSM for the following CALs: LOCKOUT_PRNDL_SPEED, DWL_Limit_Video_Playback, LOCKOUT_SPEED, LOCKOUT_SPEED_THRESHOLD, UNLOCK_DWL_DRIVER_SEATBELT_ATTACHED, UNLOCK_DWL_FRONT_PASSENGER_OPERATION, UNLOCK_DWL_FRONT_SEAT_PASS_AOS_DETECTED, UNLOCK_DWL_OPERATION_WITH_WARNING_ACCEPTED, UNLOCK_DWL_PASS_SEATBELT_ATTACHED, UNLOCK_DWL_VIDEO_LOCKOUT, and VIDEO_IMAGE_DISPLAY_OUT_OF_PARK.  Also, deleted the following CALs that were confirmed to be legacy CALs that are no longer needed for Info3.0: DWL_Limit_Alpha_Num_Keyboard and DWL_Limit_Num_Keypad </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>2/29/2016</Date>
+    <Description>Within this caldef file, removed the LOCKOUT_SPEED, LOCKOUT_PRNDL_SPEED, and LOCKOUT_SPEED_THRESHOLD CALs since CALs already existed in the GIS500_UI.caldef file for the same functions as what these CALs were defined for.. Andrew Gellaty confirmed these CALs are not needed since CALs were already defined in the GIS-500 for the same functions. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>1/20/2017</Date>
+    <Description>Within DrivingRestrictions.caldef file deleted the following eight calibrations that were confirmed not to be needed for Info3.x by Derek Fraser (GIS-500 Specificiation) and Kelly Comastro (GIS-507 Specification owner): 1.) CHAUFFEUR_MODE_ENABLE, 2.) DWL_Limit_Video_Playback, 3.) UNLOCK_DWL_DRIVER_SEATBELT_ATTACHED, 4.) UNLOCK_DWL_FRONT_PASSENGER_OPERATION, 5.) UNLOCK_DWL_OPERATION_WITH_WARNING_ACCEPTED, 6.) UNLOCK_DWL_PASS_SEATBELT_ATTACHED, 7.) UNLOCK_DWL_VIDEO_LOCKOUT, and 8.) VIDEO_IMAGE_DISPLAY_OUT_OF_PARK.  Also, these calibration are not documented in any of the GIS-5xx Form and Behavior specifications as required calibrations that need to be implemented.  Description only update for the WARNING_SCREEN_FREQUENCY calibration to correspond to the description shown in GIS-500 of this calibration. Added usage of CSM for the UNLOCK_DWL_FRONT_SEAT_PASS_AOS_DETECTED calibration to have this calibration accessible in the CAL Database if this calibration is confirmed to be needed since discussions are pending that this calibration could be needed. If the UNLOCK_DWL_FRONT_SEAT_PASS_AOS_DETECTED calibration is confirmed to be needed it will be added to the relevant GIS-5xx specification to have this calibration functionally implmented in software.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>6/10/2017</Date>
+    <Description>Within the DrivingRestrictions.caldef  file added back in the following four NGI legacy calibrations deleted in a prior release: 1.) UNLOCK_DWL_DRIVER_SEATBELT_ATTACHED, 2.) UNLOCK_DWL_FRONT_PASSENGER_OPERATION, 3.) UNLOCK_DWL_OPERATION_WITH_WARNING_ACCEPTED, and 4.) UNLOCK_DWL_PASS_SEATBELT_ATTACHED. Note, these four calibrations are for F-Ten Info3 Low Radio use only since these legacy calibrations are still being used by F-Ten in software for the F-Ten Info3.0 Low Radio only. Also, updated the usage field for all of the calibrations in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>9/30/2017</Date>
+    <Description>Within the DrivingRestrictions.caldef file, added GEM usage to the WARNING_SCREEN_FREQUENCY calibration within this caldef. Since these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application. Note, excluded adding GEM usage to the F-Ten Low Radio only specific legacy calibrations within this caldef since these calibrations are only be used for the F-Ten Radio supplier, which does support the GEM.</Description>
+    <Author>Gnnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="MY2014:  Modified calibration for Driver Workload to accommodate driver and passenger seatbelt status per FCAT 2.3&#xD;&#xA;Lockouts could be disabled when the following condi&#xad;tions are true or have occurred. The system must ac&#xad;count for these conditions through calibrations.  (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)  " Name="UNLOCK_DWL_DRIVER_SEATBELT_ATTACHED" References="" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ysKzKk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=dwl</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/6/2015</Date>
+      <Description>Removed usage of this CAL for CSM. This CAL is only needed for Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/20/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lockouts could be disabled when the following condi&#xad;tions are true or have occurred. The system must ac&#xad;count for these conditions through calibrations.  &#xD;&#xA;NOTE:  BIT 3 and BIT 2 are mutually exclusive and only one of these bits can be enabled.  Both zero is also allowed per design.  (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)  " Name="UNLOCK_DWL_FRONT_PASSENGER_OPERATION" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ysKzK01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=dwl</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/6/2015</Date>
+      <Description>Removed usage of this CAL for CSM. This CAL is only needed for Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/20/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lockouts could be disabled when the following condi&#xad;tions are true or have occurred. The system must ac&#xad;count for these conditions through calibrations." Name="UNLOCK_DWL_FRONT_SEAT_PASS_AOS_DETECTED" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ysLaIE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=dwl</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/6/2015</Date>
+      <Description>Removed usage of this CAL for CSM. This CAL is only needed for Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Lockouts could be disabled when the following condi&#xad;tions are true or have occurred. The system must ac&#xad;count for these conditions through calibrations.&#xD;&#xA;NOTE:  BIT 3 and BIT 2 are mutually exclusive and only one of these bits can be enabled.  Both zero is also allowed per design.  (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)  " Name="UNLOCK_DWL_OPERATION_WITH_WARNING_ACCEPTED" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ysLaIU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=dwl</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/6/2015</Date>
+      <Description>Removed usage of this CAL for CSM. This CAL is only needed for Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/20/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="MY2014:  Modified calibration for Driver Workload to accommodate driver and passenger seatbelt status per FCAT 2.3&#xD;&#xA;Lockouts could be disabled when the following condi&#xad;tions are true or have occurred. The system must ac&#xad;count for these conditions through calibrations.  (Note: This calibration is only be used by the F-Ten Info3.0 Low Radio supplier)  " Name="UNLOCK_DWL_PASS_SEATBELT_ATTACHED" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ysLaIk1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>11/6/2015</Date>
+      <Description>Removed usage of this CAL for CSM. This CAL is only needed for Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=dwl</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/20/2017</Date>
+      <Description>NGI Legacy calibration deleted from this caldef file because it had no intended use case for Info3.0 and beyond</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>6/10/2017</Date>
+      <Description>This legacy NGI calibration is being added back into this caldef for F-Ten Low Radio use only since this calibration is currently still being used by F-Ten for Info3.0 Low Radio only. Also, updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Nav Warning Screen&#xA;How many ignition cycles before the display is shown again.  Differs by country." Name="WARNING_SCREEN_FREQUENCY" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysN2gE1AEeO3UM5MzM17kw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_nav_sys_caln</Description>
+      <Author>GIS-344 GIS-343</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/30/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Gnnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>50</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

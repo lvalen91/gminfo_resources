@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef">
+  <CalDefFileVersion>5</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>2/19/15</Date>
+    <Description>Initial Release</Description>
+    <Author>Samer Khatib</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>4/17/2015</Date>
+    <Description>Per request from Sanghyun Ryu updated AppShopLaunchDriverWorkload, AppTabAccessDriverWorkload,ServiceTabAccessDriverWorkload, MyAppsTabAccessDriverWorkload, and ServicePurchaseIntentFromOtherAppDriverWorkload  cals in this caldef to remove usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>1/13/2017</Date>
+    <Description>Within the GIS521_AppshowUIWorkflow.caldef  file updated the default value and calibration description for the AppShopLaunchDriverWorkload, AppTabAccessDriverWorkload, and MyAppsTabAccessDriverWorkload, and  ServiceTabAccessDriverWorkload, MyAppsTabAccessDriverWorkload calibrations and just the default value for the ServicePurchaseIntentFromOtherAppDriverWorkload calibration to reflect updates being made for GIS-521 V4.3 by the GIS-521 specification owner for RTC CR#: 1264103 (Change DD lockout in Appshop from Level 1 to Level 3).</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="When triggered, the user is prohibited from launching the AppShop app views (e.g. Home Screen / AppTray / Notification drawer, when applicable). The feature restricted quick notice should be shown in this case (reference GIS&#x2010;500) if the user is already in the Appshop show quick notice and go to the home screen." Name="AppShopLaunchDriverWorkload" References="GIS 521 DRIVER WORKLOAD RESTRICTIONS OVERVIEW" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_MNNLsLi2EeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated AppShopLaunchDriverWorkload cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value and calibration description for the AppShopLaunchDriverWorkload calibration to reflect updates for GIS-521 V4.3 per RTC CR#: 1264103 (Change DD lockout in Appshop from Level 1 to Level 3) being made by GIS-521 specification owner.</Description>
+      <Author>Ginnard Kimbrough </Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from accessing the App tab. If the App tab is pressed, the feature restricted quick notice (reference GIS&#x2010;500) is shown. If the user is already in the App tab, the quick notice is shown and the system should switch to the homescreen." Name="AppTabAccessDriverWorkload" References="GIS 521 DRIVER WORKLOAD RESTRICTIONS OVERVIEW" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_MAC5cbi2EeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated AppTabAccessDriverWorkload cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value and calibration description for the AppTabAccessDriverWorkload calibration to reflect updates for GIS-521 V4.3 per RTC CR#: 1264103 (Change DD lockout in Appshop from Level 1 to Level 3) being made by GIS-521 specification owner.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from accessing the MyApps tab. If the MyApps tab is pressed, the feature restricted quick notice (reference GIS&#x2010;500) is shown and the system should exit the AppShop. If the user is already in the MyApps tab, show quick notice and go to the home screen." Name="MyAppsTabAccessDriverWorkload" References="GIS 521 DRIVER WORKLOAD RESTRICTIONS OVERVIEW" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Ll9lgbi2EeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MyAppsTabAccessDriverWorkload cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value and calibration description for the MyAppsTabAccessDriverWorkload calibration to reflect updates for GIS-521 V4.3 per RTC CR#: 1264103 (Change DD lockout in Appshop from Level 1 to Level 3) being made by GIS-521 specification owner.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from accessing the Services tab. If the Services tab is pressed, the feature restricted quick notice (reference GIS&#x2010;500) is shown. If the user is already in the Services tab, the quick notice is shown and the system should go to the home screen." Name="ServiceTabAccessDriverWorkload" References="GIS 521 DRIVER WORKLOAD RESTRICTIONS OVERVIEW" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LxQPgbi2EeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ServiceTabAccessDriverWorkload cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value and calibration description for the ServiceTabAccessDriverWorkload calibration to reflect updates for GIS-521 V4.3 per RTC CR#: 1264103 (Change DD lockout in Appshop from Level 1 to Level 3) being made by GIS-521 specification owner.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="When triggered, the user is prohibited from accessing the AppShop view. The feature restricted quick notice should be shown (reference GIS&#x2010;500)" Name="ServicePurchaseIntentFromOtherAppDriverWorkload" References="GIS 521 DRIVER WORKLOAD RESTRICTIONS OVERVIEW" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_EbSukLi2EeSxl78x5qydAw</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ServicePurchaseIntentFromOtherAppDriverWorkload cal to remove usage of Low Radio</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the default value for the ServicePurchaseIntentFromOtherAppDriverWorkload calibration to reflect updates for GIS-521 V4.3 per RTC CR#: 1264103 (Change DD lockout in Appshop from Level 1 to Level 3) being made by GIS-521 specification owner.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>3</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

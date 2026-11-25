@@ -6,7 +6,7 @@ every subcommand that takes an edit takes it as plain arguments -- no interactiv
 prompts, nothing is required that can't be scripted.
 
 Signature/live-hardware acceptance is explicitly OUT OF SCOPE (see caltool/container.py
-and research/eeprom-calibration/CALIBRATION_CUSTOMIZATION_GUIDE.md). This tool produces
+and docs/CALIBRATION_CUSTOMIZATION_GUIDE.md). This tool produces
 correctly-formatted, correctly-digested calibration payloads; getting a modified one
 accepted by real hardware is a separate, already-documented, live-bench procedure.
 """

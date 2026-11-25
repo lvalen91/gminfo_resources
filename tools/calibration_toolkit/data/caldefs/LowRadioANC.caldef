@@ -1,0 +1,1060 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="Audio" Description="This CalDef contains the parameters for configuring and tuning the Active Noise Cancellation System">
+  <CalDefFileVersion>4</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>5/26/2015</Date>
+    <Description>Delete DTC control Cal Parameters as these are included in the GIS-643 CalDef</Description>
+    <Author>Daniel Schroeder</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the LowRadioANC.caldef, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Unique Serial Number for the tuning set" Name="ANC_TUNINGSET_COEF_SERIAL_NUMBER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_amwaYALUEeWhetwCpvIaHA</CalID>
+    <Type>String</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <String>
+      <Encoding>UTF8</Encoding>
+      <MaxLength>100</MaxLength>
+      <StringValue></StringValue>
+    </String>
+  </CalDefinition>
+  <CalDefinition Description="For Development Use" Name="IGNORE_ANC_DATASET_SERIAL_NUMBER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_G6rQAL11EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Number of Microphonse used for ANC" Name="ANC_MIC_NUMBER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_aRXX4L11EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>4</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable ANC Mircophone Input 1" Name="ANC_MIC_INPUT_1_ENABLE" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_M8vgIL11EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable ANC Mircophone Input 2" Name="ANC_MIC_INPUT_2_ENABLE" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_Rnn64L11EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable ANC Mircophone Input 3" Name="ANC_MIC_INPUT_3_ENABLE" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_U515kL11EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enable ANC Mircophone Input 4" Name="ANC_MIC_INPUT_4_ENABLE" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_Wjxr0L11EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="RPM level at which ANC will switch On/Off with engine On/Off" Name="ANC_ENGINE_REVOLUTION_PER_MINUTE_LOW" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_esoCQL11EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2000</MaxValue>
+      <Units>none</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Indicates if package includes tuning for AFM modes" Name="ANC_AFM_TUNING_AVAILABLE" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_wDhcoL11EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Number of Cylinders Active in Default Mode" Name="ANC_DEFAULT_ENGINE_CYLINDER_NUMBER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_1EIPwL11EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>4</Value>
+      <MinValue>1</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Temperature where interior temp is considered high" Name="ANC_OCCUPANT_BULK_INTERIOR_TEMP_HIGH" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_5_q8sL11EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Temperature at which interior temp is considered Low" Name="ANC_OCCUPANT_BULK_INTERIOR_TEMP_LOW" References="" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>___XOQL11EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Temperature at which interior temp is considered Medium" Name="ANC_OCCUPANT_BULK_INTERIOR_TEMP_MID" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_LVmGsL12EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>40</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time to hold at Mid temp" Name="ANC_OCCUPANT_BULK_INTERIOR_TEMP_MID_TIME" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ZCBacL12EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2400</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Temperature where interior temp is considered low" Name="ANC_OCCUPANT_ROOF_SURFACE_TEMP_HIGH" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_lpgLAMB5EeSUrcSb_MJobw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>60</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Temperature where interior temp is considered low" Name="ANC_OCCUPANT_ROOF_SURFACE_TEMP_LOW" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_hZmwcL12EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>30</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Temperature where interior temp is considered mid" Name="ANC_OCCUPANT_ROOF_SURFACE_TEMP_MID" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_jmyZsL12EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>40</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time to hold at Mid temp" Name="ANC_OCCUPANT_ROOF_SURFACE_TEMP_MID_TIME" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_-FQvQMB5EeSUrcSb_MJobw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>2400</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Temperature when it is really cold" Name="ANC_OCCUPANT_COMP_TEMP_COLD" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_oy2O4L12EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>-39</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Limit of Hysterisis for Cold Occupant" Name="ANC_OCCUPANT_COMP_TEMP_COLD_HYST" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_voGPcL12EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>-34</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="TODO - Add a description" Name="ANC_AMBIENT_TEMP" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_yvdB8L12EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>-40</MinValue>
+      <MaxValue>120</MaxValue>
+      <Units>degrees</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Does this ANC tuning include support for Convertible Top states" Name="ANC_CONVERTIBLE_TOP_STATUS_TUNING_AVAILABLE" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_4dlpcL12EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Does this ANC tuning include support for Targa Top States" Name="ANC_TARGA_TOP_STATUS_TUNING_AVAILABLE" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_9XMcsL12EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="MUTE ramp time for status change" Name="ANC_STATUS_CHANGE_MUTE_RAMP" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_CQz3AL13EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/25/2015</Date>
+      <Description>Updated units seconds to milliseconds and range</Description>
+      <Author>Daniel Schroeder</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="UNMUTE ramp time for status change" Name="ANC_STATUS_CHANGE_UNMUTE_RAMP" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_HxsssL13EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>5/25/2015</Date>
+      <Description>Updated units seconds to milliseconds and range</Description>
+      <Author>Daniel Schroeder</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>100</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>3000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Enable/Disable ANC function" Name="ENABLE_ANC_FUNCTION" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_QDVywL13EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="TODO - Add a description" Name="ANC_DISABLE_IGNITION_CYCLE_NUMBER" References="ANC SSTS 1.1.1.3.6" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_S-WLUL13EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>30</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Maximum RPM condition to be handled by ANC" Name="ANC_ENGINE_REVOLUTIONS_PER_MINUTE_HIGH" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_Y5kMkL13EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>9000</Value>
+      <MinValue>1000</MinValue>
+      <MaxValue>15000</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="RHD ANC tuning is target (False means vehicle is LHD)" Name="ANC_VEHICLE_LHD_OR_RHD" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_8jmnIL13EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Short Delay to Retry ANC system functionality" Name="ANC_RETRY_CYCLE_TIME_1" References="SSTS 1.1.1.9.6a" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_TpOe4L14EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>24000</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Short Delay to Retry ANC system functionality Medium" Name="ANC_RETRY_CYCLE_TIME_2" References="SSTS 1.1.9.6c" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_YPDagL14EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>300</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>24000</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Short Delay to Retry ANC system functionality - Long" Name="ANC_RETRY_CYCLE_TIME_3" References="SSTS 1.1.1.9.6b" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_cXIDIL14EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>600</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>24000</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="MUTE ramp when ANC fails to recover from diverence" Name="ANC_RETRY_CYCLE_MUTE_RAMP" References="SSTS 1.1.1.9.6d" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_fSbWoL14EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>60</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Time after ANC recovery to reset back to normal conditions" Name="ANC_RETRY_CYCLE_RETURN_NORMAL_TIME" References="SSTS 1.1.1.9.6e" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_ilr3IL14EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>12000</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>24000</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Use Left Front Door CAN signal" Name="ANC_FRONT_LEFT_DOOR_OPEN_SWITCH_CONTROL" References="" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_nZzGYL14EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use Right Front Door CAN signal" Name="ANC_FRONT_RIGHT_DOOR_OPEN_SWITCH_CONTROL" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_nY9FsMCVEeSUrcSb_MJobw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use Left Rear Door CAN signal" Name="ANC_REAR_LEFT_DOOR_OPEN_SWITCH_CONTROL" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_vq-5cL14EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use Right Rear Door CAN signal" Name="ANC_REAR_RIGHT_DOOR_OPEN_SWITCH_CONTROL" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_HgcmkMCWEeSUrcSb_MJobw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Use Rear Closure CAN signal" Name="ANC_REAR_CLOSURE_OPEN_SWITCH_CONTROL" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_1T6Q0L14EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Time to switch between AFM Tunings" Name="ANC_AFM_MODE_TRANSITION_TIMING" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_-SeHQL14EeSiv5275p6rkg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="True means the speaker is a ANC Woofer" Name="ANC_AUDIO_OUTPUT_1_SPEAKER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_C4cz4L15EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="True means the speaker is a ANC Woofer" Name="ANC_AUDIO_OUTPUT_2_SPEAKER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_H2rBYL15EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="True means the speaker is a ANC Woofer" Name="ANC_AUDIO_OUTPUT_3_SPEAKER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_JmG-sL15EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="True means the speaker is a ANC Woofer" Name="ANC_AUDIO_OUTPUT_4_SPEAKER" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_LGz8cL15EeSiv5275p6rkg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Integer for tracking the RPM input signal type for Global A vehicles.  Default value of 1 represents standard gas engine." Name="ANC_GA_RPM_REFERENCE_SIGNAL" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_Lyp3cALVEeWhetwCpvIaHA</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This is the tuning data binary for the ANC system." Name="ANC_BINARY_TUNING_DATA" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_xdrSUALVEeWhetwCpvIaHA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>PAR0xac150514000000084444555566667777.bin</Filename>
+      <Data>AEAAEAAAAADQBwAAMwAAADMAAAAzAAAAAAAAAAAAAAB4VjQSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZARggEAAAAEAAAABAAAAA8AAABJTEFDFAUVrAgAAABVVUREd3dmZgMAAAAIFuFLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAMAAFscAABbHAAAWAIAAKMRAABbHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD/////AAD//wAA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAAAAAABdG8AAAAEAAJapVQAAAQAAfiQoAAABAAC0nhsAAAEAAJLXDQAAAQAAkxwHANZD0gOvAQcAje7gAygNDAAAAQAADaUTAAABAACk1BQAAAEAAPVaEAAAAQAATj8QAAABAACpKxMA8rEPAEqrFQDysQ8Am2oRAAABAAABGg0AAAEAABvKCQAAAQAAybUJAAABAACsVQkAAAEAAAvoBQAAAQAAYhEEAAABAADZBgQAAAEAAOo2BAAAAQAAzZAFAAABAAAaOgcAAAEAALOcBgAAAQAAg3YGAAABAACKeQYAAAEAAEydBwAAAQAApXUJAAABAAD8FAwAAAEAANpRDAAAAQAA/q4LAAABAACQBgoAAAEAABA0CQAAAQAA5gAJAAABAACjDQkAAAEAAMJgCQAAAQAA+3wKAAABAACfEQwAAAEAABdnDQAAAQAA1RsPAAABAAA+Hg8AAAEAADzGDAAAAQAATd4LAAABAABx1AsAAAEAACgtDAAAAQAAdtwKANFUFgBlfggA0VQWAA4vBwAAAQAAzfwGAAABAABw+gYAAAEAAJhyBwAAAQAAiXgIAAABAABB0AkAAAEAAICzCgAAAQAAq08LAAABAABjSQwAAAEAACw4DAAAAQAAtZ0KAAABAACqxQkAAAEAAHL5CAAAAQAAkz4JAAABAACwDgkAAAEAAK0+CQAAAQAA5+oJAAABAADjUgoAAAEAAMulCQAAAQAAHZwIAAABAACSaQcAAAEAAA+2BgAAAQAA+kkGAAABAABV9gUAS6YCADezBQA9QQYAYI4FAHukAgDbkAUAhz0PAKiOBQB7igcAiY8FACZBDwAbywUAD8EHAKUxBgAXvQsA2bUGAGQuCQAxhQcAGekbANZbCADbShoA1eYIALiTJgAhTQkA1W0yANRZCQCaIDIAgiwJALNyMgDQ8ggApOoxAHmVCADLoh0AGQsIAE96GABcMQcAkckRAN2CBgAyJiAAGSUGAFDZEQAwKgYAMi8gANQpBgDRQQUAvzEGAAABAABWZwYAAAEAAP7GBgAAAQAA7kIHAAABAADx5gcAAAEAACt0CAAAAQAA8rwIAAABAADdJAYB3SQGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHUwdTB1MHWFAgEFfQf5CXYM8g5uEeoTZhbiGF4b2h1WINIiTiXKJ0cqwyw/L7sxNzSzNi85qzsnPqNAH0OcRRhIlEoQTYxPCFKEVABXfFn4W3Re8GBtY+llZWjhal1t2W9VctF0TXfJeUV8wX7/f8F+RXzJeU130XRVctlvXW3hamVo6WVtY/BgdF74W3xZAFeEVAhSjE8QTZRKGEicRR9Do0AnPqs7LzmzNjc0uzE/L8MsRyrKJ04l0iJWINodXhviGGYW6hNuEfIOdgz5CX0HAQWFAv9/Dw+TExgYnBwhIaUlKiquLjMztzc8PMBARUXJSU5O0lJXV9tbYGDkZGlp7W1ycvZ2e3v/f3t79nZycu1taWnkZGBg21tXV9JSTk7JSUVFwEA8PLc3MzOuLioqpSUhIZwcGBiTEw8P/38AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMzNzMjMzczIzM3MyMzNzxQoAAAQAAAAAAAAgAAAAIAAAACAAAAAgqu2yfZcWE38AAAAK61G4futRuH7rUbh+61G4fgEAAABOcnB7AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</Data>
+      <Length>65540</Length>
+      <Checksum>3378622800</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

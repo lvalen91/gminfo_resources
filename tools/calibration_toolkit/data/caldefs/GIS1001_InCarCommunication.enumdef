@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>4/30/2018</Date>
+    <Description>Per CR 950215 Initial Release of enumeration Calibration within new GIS1001_InCarCommunication.enumdef file.</Description>
+    <Author>Bassam Shahmurad</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="The amplification preference as selected by the user." Name="ICC_GAIN_MODE">
+    <EnumID>_dUr9gEyfEeiQRvFV6_uePw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="ICC_Gain_Mode_Normal" Name="ICC_Gain_Mode_Normal">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="ICC_Gain_Mode_High" Name="ICC_Gain_Mode_High">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

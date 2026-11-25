@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>24APR14</Date>
+    <Description>Initial Version.</Description>
+    <Author>Eray Yasan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on MID and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>3/7/2017</Date>
+    <Description>Within the GNSS_DR.caldef file, calibration description update only: Updated the calibration description shown for the GNSS_DR_SRC calibration in the GNSS_DR.caldef file. There was no calibration description shown for the GNSS_DR_SRC calibration in the GNSS_DR.caldef file. Just updated to reflect the same description already shown for the GNSS_DR_SRC enumeration in the GNSS_DR.enumdef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>03/26/2019</Date>
+    <Description>Per CR#2175139, the following updates are being made to the GNSS_DR.caldef: Deletion of SENS_AVAIL_GNSS calibration; default value changed to FALSE for SENS_AVAIL_VEHYAW, SENS_UTIL_VEHYAW calibrations; and default value changed to TRUE for SENS_AVAIL_CSMGYR, SENS_AVAIL_CSMACCL, SENS_UTIL_CSMGYR, SENS_UTIL_CSMACCL, SENS_UTIL_PRNDL, SENS_UTIL_TOSS calibrations</Description>
+    <Author>Ibnul Khan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="GPS constellation to be used or not" Name="GNSS_CONST_GPS" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_sBUgYMufEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="GLONASS constellation to be used or not" Name="GNSS_CONST_GLO" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_II09oMugEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="BEIDOU constellation to be used or not " Name="GNSS_CONST_BEI" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_wzI0IMugEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="GALILEO constelaltion to be used or not" Name="GNSS_CONST_GAL" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_d8408MuiEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="To use map matching or not if GNSS/DR solution is by CSM " Name="MAP_MATCH" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_QdrhAMumEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Differential wheel speed sensor availbility if GNSS/DR solution is by CSM " Name="SENS_AVAIL_DWS" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_44ZcUMumEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Vehicle gyro sensor availibility if GNSS/DR solution is by CSM " Name="SENS_AVAIL_VEHYAW" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-dFM4MumEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to False</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CSM gyro sensor availibility if GNSS/DR solution is by CSM " Name="SENS_AVAIL_CSMGYR" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_7aJVcMuoEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to True</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CSM accelerometer availibility if GNSS/DR solution is by CSM " Name="SENS_AVAIL_CSMACCL" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_2T_egMupEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to True</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Gearshift availibility if GNSS/DR solution is by CSM " Name="SENS_AVAIL_GEARSHFT" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_w44EMMuqEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="PRNDL availability if GNSS/DR solution is by CSM " Name="SENS_AVAIL_PRNDL" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_8XdnYMuqEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="TOSS availibility if GNSS/DR solution is by CSM " Name="SENS_AVAIL_TOSS" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_9UBWQMuqEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If enabled, shifts the location solution per government mandates in China" Name="LOC_SHFT" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_g4UfwMusEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Utilization of vehicle gyro sensor if GNSS/DR solution is by CSM " Name="SENS_UTIL_VEHYAW" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_oVdU0MuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to False</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Utilization of GNSS receiver if GNSS/DR solution is by CSM " Name="SENS_UTIL_GNSS" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_movUUMuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Differential wheel speed sensor utilization if GNSS/DR solution is by CSM " Name="SENS_UTIL_DWS" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_namPEMuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Utilization of CSM gyro sensor if GNSS/DR solution is by CSM " Name="SENS_UTIL_CSMGYR" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_o5BU4MuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to True</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Utilization of CSM accelerometer if GNSS/DR solution is by CSM " Name="SENS_UTIL_CSMACCL" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_ptL8wMuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to True</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Utilization of gearshift if GNSS/DR solution is by CSM " Name="SENS_UTIL_GEARSHFT" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_qYfjkMuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Utilization of PRNDL if GNSS/DR solution is by CSM " Name="SENS_UTIL_PRNDL" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_rIqcQMuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to True</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Utilization of TOSS if GNSS/DR solution is by CSM " Name="SENS_UTIL_TOSS" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_-AKGsMuuEeOxhJoxe5r3YA</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>03/26/2019</Date>
+      <Description>Per CR#2175139, default value changed to True</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Defines whether TCP or CSM is the source of location solution generation" Name="GNSS_DR_SRC" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_FAkHAMuyEeOxhJoxe5r3YA</CalID>
+    <Type>Enumeration</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>3/7/2017</Date>
+      <Description>There was no calibration description shown for the GNSS_DR_SRC calibration in the GNSS_DR.caldef file. Updated with the same description already shown for the GNSS_DR_SRC calibration in the GNSS_DR.enumdef file.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ZogfkMurEeOxhJoxe5r3YA</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Determines which SBAS DGPS constelaltion to be used " Name="SBAS_DGPS" References="GIS-622-B.009" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_e48aQMuyEeOxhJoxe5r3YA</CalID>
+    <Type>Enumeration</Type>
+    <Version>1</Version>
+    <Enumeration>
+      <EnumID>_ub_8oMurEeOxhJoxe5r3YA</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

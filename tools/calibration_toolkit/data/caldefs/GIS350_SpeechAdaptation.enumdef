@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ASCII"?>
+<enumdef:EnumDefinitionFile xmlns:enumdef="http://www.caltools.gm.com/enumdef" Description="Add Enum definitions for all necessary EnumIntegerMaps fo the GIS 350_SpeechAdaptation.caldef file">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>6/19/2015</Date>
+    <Description>Removed the two enum files GIS350_Expertisetimewindows.enumdef and GIS350_Ignoreactionforfactor.enumdef files included in the last MY17 CAL database release that were not set up correctly. For this CAL database release, both of these enum files are being replaced by the intial release of this GIS350_SpeechAdaption.enum file.</Description>
+    <Author>Ute Winter</Author>
+  </EnumDefFileChangeRecord>
+  <EnumDefinition Description="Completed tasks per domain for which the informative prompts switch to short prompts for a given time window" Name="Domain_Tasks">
+    <EnumID>_eFXo8A9OEeWwaaRaR87fAw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Domain_Mymedia">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Domain_Radio">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Domain_Phone">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Domain_Navigation">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Action paths to be ignored in the normalization of scores" Name="Ignore_Action_for_Factor">
+    <EnumID>_-uSjQA9LEeWwaaRaR87fAw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_XM_Category">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_XM_ChannelNumber">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_XM_ChannelName">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_AM_Frequency">
+      <Value>3</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_FM_Frequency">
+      <Value>4</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_AM_ShortName_HD">
+      <Value>5</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_AM_Frequency_HD">
+      <Value>6</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_FM_ShortName_HD">
+      <Value>7</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Audio_Radio_FM_Frequency_HD">
+      <Value>8</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration of time windows per domain for expertise level adaptation" Name="Expertise_Time_Windows">
+    <EnumID>_oOXQAA8_EeWoP-wCPdsxpQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="Time_Window_Mymedia">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Time_Window_Radio">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Time_Window_Phone">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="Time_Window_Navigation">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CalDefFileVersion>14</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>11APR14</Date>
+    <Description>4/7/2014 BrandAnimationsAudioCue Calibration Updates. Deleted CHEVY_ECO_THEME_AVAILABLE. Deleted CHEVY_MODERN_FAMILY_THEME_AVAILABLE. Deleted CHEVY_PERFORMANCE_THEME_AVAILABLE. Deleted CHEVY_TRUCK_THEME_AVAILABLE. Deleted CHEVY_YOUTH_THEME_AVAILABLE. Deleted DEFAULT_CHEVY_GRAPHICAL_THEME. Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>Matthew Highstrom</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>24APR14</Date>
+    <Description>Moved GM_VEHICLE_BRAND cal into the Global_Info3.caldef.</Description>
+    <Author>Jonathon Green</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on Mid and High</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>2/24/2015</Date>
+    <Description>Just revised change history on these cals to show these cals are applicable to GIS-500</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>4/20/2015</Date>
+    <Description>Per agreement with Sanghyun Ryu updated AUDIO_CUE_ACUE_RUN, AUDIO_CUE_ACUE_STOP, AUDIO_CUE_SHUTDOWN_ENABLE, AUDIO_CUE_STARTUP_ENABLE, AUDIO_CUE_WELCOME_ENABLE, GOODBYE_ANIMATION_ENABLED, VEHICLE_ANIMATION_SHUTDOWN_TYPE, VEHICLE_ANIMATION_WELCOME_TYPE, VEHICLE_AUDIOCUE_SHUTDOWN_TYPE,  VEHICLE_AUDIOCUE_SHUTDOWN_TYPE, VEHICLE_AUDIOCUE_STARTUP_TYPE, VEHICLE_AUDIOCUE_WELCOME_TYPE, and WELCOME_ANIMATION_ENABLED cals in this caldef to include usage of Low Radio.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>7/7/2015</Date>
+    <Description>Updated the default value for the AUDIO_CUE_WELCOME_ENABLE CAL from False to True, updated the default value for GOODBYE_ANIMATION_ENABLED from False to True, updated the default value for the VEHICLE_ANIMATION_SHUTDOWN_TYPE CAL from FULL_BLACK  to FADE_TO_BLACK, and updated the default value for the WELCOME_ANIMATION_ENABLED CAL from False to True based on feedback from Cody Hansen. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>8/5/2015</Date>
+    <Description>Updated the default values for the following CALs: VEHICLE_ANIMATION_STARTUP_TYPE, VEHICLE_ANIMATION_WELCOME_TYPE, VEHICLE_AUDIOCUE_SHUTDOWN_TYPE, VEHICLE_AUDIOCUE_STARTUP_TYPE, and VEHICLE_AUDIOCUE_WELCOME_TYPE in this CalDef file as needed due to the enumeration values updates made in BrandAnimationsAudioCues.enumdef file.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>12/1/2015</Date>
+    <Description>Based on feedback from Cody Hansen updated the description for three CALs ( 1.)  AUDIO_CUE_ACUE_STOP, 2.) AUDIO_CUE_ACUE_RUN, and 3.) AUDIO_CUE_WELCOME_ENABLE) previously released in the BrandAnimationsAudioCues.caldef file to just clarify the intended function of these CALs. The GIS-500 Spec. will also be updated to reflect the updated description here in the CAL Database. for these CALs. Also with confirmation feedback received from Jideok Son, made usage correction to add Low Radio usage for the following calibrations within this CalDef file: VEHICLE_AUDIOCUE_SHUTDOWN_TYPE, VEHICLE_AUDIOCUE_STARTUP_TYPE, VEHICLE_AUDIOCUE_WELCOME_TYPE, and WELCOME_ANIMATION_ENABLED.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>1/13/2017</Date>
+    <Description>Within the BrandAnimationsAudioCues.caldef file made the following updates: Updated the calibration description for the WELCOME_ANIMATION_ENABLED calibration to correspond to how this is reflected in latest version GIS-500. Updated the calibration description and default value for the AUDIO_CUE_WELCOME_ENABLE calibration to correspond to how this is reflected in latest version GIS-500. Changed the name of the AUDIO_CUE_ACUE_RUN calibration to AUDIO_CUE_ACUE_RUN_ENABLED, and updated the description of this calibration to match how this calibration is defined in the latest version GIS-500.  Changed the name of the AUDIO_CUE_ACUE_STOP calibration to AUDIO_CUE_ACUE_STOP_ENABLED, and updated the description of this calibration to match how this calibration is defined in the latest version GIS-500. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>2/28/2017</Date>
+    <Description>Within the BrandAnimationsAudioCues.caldef file, deleted the GOODBYE_ANIMATION_ENABLED calibration since the GM User Interface Team (Cody Hansen and Derek Fraser) confirmed this specific calibration was a legacy calibration used for NGI that is not intended to be used for Info3.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>6/14/2017</Date>
+    <Description>Updated the usage field for all of the calibration in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>13</Version>
+    <Date>9/29/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the BrandAnimationsAudioCues.caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>14</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="This calibration controls whether or not a Run Audio Cue is played or not. This is reserved only for Electric/Hybrid vehicles. As long as any of the three Audio Cue CALs (Stop, Run, Welcome) are enabled, ‘Audio Cues’ and ‘Set Audio Cue Volume’ menus are available. If all three Audio Cue CALs are set to False, then the menu items should be hidden. " Name="AUDIO_CUE_ACUE_RUN_ENABLED" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypM-oE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_navn_map_database_graphics_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>Per agreement with Sanghyun Ryu updated AUDIO_CUE_ACUE_RUN cal to include usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>11/10/2015</Date>
+      <Description>Based on feedback from Cody Hansen updated the description for this CAL to clarify the intended function of this CAL. The GIS-500 Spec. will also be updated to reflect the updated description here in the CAL Database. for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/13/2017</Date>
+      <Description>Changed the name of the AUDIO_CUE_ACUE_RUN calibration to AUDIO_CUE_ACUE_RUN_ENABLED, and updated the description of this calibration to match how this calibration is defined in the latest version GIS-500. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration controls whether or not a Stop Audio Cue is played or not. This is reserved only for Electric/Hybrid vehicles. As long as any of the three Audio Cue CALs (Stop, Run, Welcome) are enabled, ‘Audio Cues’ and ‘Set Audio Cue Volume’ menus are available. If all three Audio Cue CALs are set to False, then the menu items should be hidden. " Name="AUDIO_CUE_ACUE_STOP_ENABLED" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypM-oU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_navn_map_database_graphics_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>Per agreement with Sanghyun Ryu updated AUDIO_CUE_ACUE_STOP cal to include usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>11/10/2015</Date>
+      <Description>Based on feedback from Cody Hansen updated the description for this CAL to clarify the intended function of this CAL. The GIS-500 Spec. will also be updated to reflect the updated description here in the CAL Database. for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/13/2017</Date>
+      <Description>Changed the name of the AUDIO_CUE_ACUE_STOP calibration to AUDIO_CUE_ACUE_STOP_ENABLED, and updated the description of this calibration to match how this calibration is defined in the latest version GIS-500. </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CueCalibrations [CueType] These are the boolean calibration flags for each of the cues defined within the AudioCues Fblock. There are currently 11 Cues defined. The CueType takes values from 0x01 - 0x0B.&#xA;&#xA;The diagram below defines the processing within the AudioCue FBlock for generating AudioCues relative to vehicle and system state changes&#xA;&#xA;All vehicles will have a Welcome Animation&#xA;Only Hybrid vehicles would have Startup/Run and Shutdown/Goodbye AudioCues enabled.  " Name="AUDIO_CUE_SHUTDOWN_ENABLE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypM-o01AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_navn_map_database_graphics_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>Per agreement with Sanghyun Ryu updated AUDIO_CUE_SHUTDOWN_ENABLE cal to include usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CueCalibrations [CueType] These are the boolean calibration flags for each of the cues defined within the AudioCues Fblock. There are currently 11 Cues defined. The CueType takes values from 0x01 - 0x0B.&#xA;&#xA;The diagram below defines the processing within the AudioCue FBlock for generating AudioCues relative to vehicle and system state changes&#xA;&#xA;All vehicles will have a Welcome Animation&#xA;Only Hybrid vehicles would have Startup/Run and Shutdown/Goodbye AudioCues enabled.  " Name="AUDIO_CUE_STARTUP_ENABLE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypM-pE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_navn_map_database_graphics_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>Per agreement with Sanghyun Ryu updated AUDIO_CUE_STARTUP_ENABLE cal to include usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="See section 5.6.1.2 in GIS. When enabled, an audio cue will play when welcome animation is played. As long as any of the three Audio Cue CALs (Stop, Run, Welcome) are enabled, ‘Audio Cues’ and ‘Set Audio Cue Volume’ menus are available. If all three Audio Cue CALs are set to False, then the menu items should be hidden." Name="AUDIO_CUE_WELCOME_ENABLE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ypNlsE1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>6</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_navn_map_database_graphics_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>eement with Sanghyun Ryu updated AUDIO_CUE_WELCOME_ENABLE cal to include usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>7/7/2015</Date>
+      <Description>Updated the default value for the AUDIO_CUE_WELCOME_ENABLE CAL from False to True based on feedback from Cody Hansen </Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>11/10/2015</Date>
+      <Description>Based on feedback from Cody Hansen updated the description for this CAL to clarify the intended function of this CAL. The GIS-500 Spec. will also be updated to reflect the updated description here in the CAL Database. for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the calibration description and default value for the AUDIO_CUE_WELCOME_ENABLE calibration to correspond to how this is reflected in the latest version GIS-500.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>6</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Shutdown Animation type&#xA;The shutdown animation shall be defined by a calibration setting as shown below&#xA;" Name="VEHICLE_ANIMATION_SHUTDOWN_TYPE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysLaM01AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>Per agreement with Sanghyun Ryu updated VEHICLE_ANIMATION_SHUTDOWN_TYPE cal to include usage of Low Radio.</Description>
+      <Author>Gnnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>7/7/2015</Date>
+      <Description>Updated the default value for the VEHICLE_ANIMATION_SHUTDOWN_TYPE CAL from FULL_BLACK  to FADE_TO_BLACK .</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ysLaNE1AEeO3UM5MzM17kw</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Start-up Audio Cues type&#xA;The Start-up Audio Cues shall be defined by a calibration setting as shown below&#xA;" Name="VEHICLE_ANIMATION_STARTUP_TYPE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysLaNU1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>Per agreement with Sanghyun Ryu updated VEHICLE_AUDIOCUE_STARTUP_TYPE cal to include usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8/5/2015</Date>
+      <Description>Updated the enumeration default value as needed  due to the enumeration values updates made in BrandAnimationsAudioCues.enumdef file.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ysLaNk1AEeO3UM5MzM17kw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="After powerup  the silverbox shall display a Welcome Animation which is specific to the brand of the vehicle.&#xA;The welcome animation shall be defined by a calibration setting as shown below&#xA;" Name="VEHICLE_ANIMATION_WELCOME_TYPE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysMBME1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/20/2015</Date>
+      <Description>Per agreement with Sanghyun Ryu updated VEHICLE_AUDIOCUE_WELCOME_TYPE cal to include usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>8/5/2015</Date>
+      <Description>Updated the enumeration default value as needed  due to the enumeration values updates made in BrandAnimationsAudioCues.enumdef file.</Description>
+      <Author>Ginanrd Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ysMBMU1AEeO3UM5MzM17kw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Shutdown Audio Cues type&#xA;The Shutdown  Cues shall be defined by a calibration setting as shown below&#xA;" Name="VEHICLE_AUDIOCUE_SHUTDOWN_TYPE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysMBMk1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8/5/2015</Date>
+      <Description>Updated the enumeration default value as needed  due to the enumeration values updates made in BrandAnimationsAudioCues.enumdef file.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to add Low Radio usage for this CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ysMBM01AEeO3UM5MzM17kw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Start-up Audio Cues type&#xA;The Start-up Audio Cues shall be defined by a calibration setting as shown below&#xA;" Name="VEHICLE_AUDIOCUE_STARTUP_TYPE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysMBNE1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8/5/2015</Date>
+      <Description>Updated the enumeration default value as needed  due to the enumeration values updates made in BrandAnimationsAudioCues.enumdef file.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to add Low Radio usage for this CAL</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ysMBNU1AEeO3UM5MzM17kw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Welcome Audio Cues type&#xA;The welcome Audio Cues shall be defined by a calibration setting as shown below&#xA;" Name="VEHICLE_AUDIOCUE_WELCOME_TYPE" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysMoQE1AEeO3UM5MzM17kw</CalID>
+    <Type>Enumeration</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=hmi_brand_caln</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>8/5/2015</Date>
+      <Description>Updated the enumeration default value as needed  due to the enumeration values updates made in BrandAnimationsAudioCues.enumdef file.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to add Low Radio usage for this CAL</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_ysMoQU1AEeO3UM5MzM17kw</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="This calibration controls whether or not a Welcome Animation is played or not." Name="WELCOME_ANIMATION_ENABLED" References="GIS-500" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ysN2gU1AEeO3UM5MzM17kw</CalID>
+    <Type>Boolean</Type>
+    <Version>5</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>26AUG2013</Date>
+      <Description>Initial import on from GIS-344 derived CSV file.  Original CALDS block=NA</Description>
+      <Author>GIS-500</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>7/7/2015</Date>
+      <Description>Updated the default value for the WELCOME_ANIMATION_ENABLED CAL from False to True.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>12/1/2015</Date>
+      <Description>Usage correction to add Low Radio usage for this CAL</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>1/13/2017</Date>
+      <Description>Updated the calibration description for the WELCOME_ANIMATION_ENABLED calibration to correspond to how this is reflected in the latest version GIS-500.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>5</Version>
+      <Date>9/29/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

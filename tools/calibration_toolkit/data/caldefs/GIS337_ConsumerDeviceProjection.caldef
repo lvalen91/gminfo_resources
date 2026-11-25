@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" CalDefCategory="DriverWorkload" Description="Calibration Definition for GIS-337 Driver Workload Based Lockouts and Touchscreen fidelity configuration  ">
+  <CalDefFileVersion>7</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>5/20/2015</Date>
+    <Description>Initial release of Calibration Definition includes Driver Workload Lockouts for Apple CarPlay and Android Auto. The values represented here for each binary caldef reflect the default calibration as described in GIS-337 Appendix C</Description>
+    <Author>Nikhil Neti</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>11/19/2015</Date>
+    <Description>Added Apple_CarPlay_japanMaps &amp; Apple_CarPlay_touchFidelity cals for Apple CarPlay. The values represented here for each caldef reflect the default calibration as described in GIS-337 Appendix C.</Description>
+    <Author>Nikhil Neti</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/10/2017</Date>
+    <Description>Within the GIS337_ConsumerDeviceProjection.caldef file, added Apple_CarPlay_enableWireless calibration for the CarPlay over Wireless feature to support to support RTC CR#: 1431345. Also, added AndroidAuto_enableWireless calibration to protect for the calibration that will be needed for model year TBD when wireless Android Auto feature will be implemented. Also, updated the usage field for all of the calibrations in this caldef file to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/1/2017</Date>
+    <Description>Added GEM usage to all of the calibrations in the GIS337_ConsumerDeviceProjection.caldef file. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>11/17/2017</Date>
+    <Description>For CR#: 1635297 within the GIS337_ConsumerDeviceProjection.caldef file, added one new calibration (Apple_CarPlay_Location) for use by the F-Ten Info3 Low Radio supplier.</Description>
+    <Author>Shanmukh Kandala</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>09/14/2018</Date>
+    <Description>Per CR#1582808, updated GIS337_ConsumerDeviceProjection.caldef by adding Android.Auto_VEC_Whitelist calibration.</Description>
+    <Author>Shanmukh Kandala</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Adding VIP support for Android Auto MyBrand Application." Name="Android_Auto_VEC_Whitelist" References="GIS-337-5432 Whitelisted Vendor Channel Service Package Name for VIP Protocol Support" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ubM9QLgxEei_I8fAcof7OA</CalID>
+    <Type>StringArray</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>09/18/2018</Date>
+      <Description>Initial Release of this calibration</Description>
+      <Author>Ibnul Khan</Author>
+    </CalDefChangeRecord>
+    <StringArray>
+      <ArrayLength>29</ArrayLength>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.vipclient</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gme.opel.owner.android</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gme.opel.owner.android.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gme.opel.owner.android.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>uk.co.vauxhall.myvauxhall</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>uk.co.vauxhall.myvauxhall.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>uk.co.vauxhall.myvauxhall.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.chevrolet.nomad.ownership</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.chevrolet.nomad.ownership.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.chevrolet.nomad.ownership.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.cadillac.nomad.ownership</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.cadillac.nomad.ownership.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.cadillac.nomad.ownership.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.buick.nomad.ownership</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.buick.nomad.ownership.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.buick.nomad.ownership.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.gmc.nomad.ownership</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.gmc.nomad.ownership.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.gmc.nomad.ownership.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.onstar.mobile.mylink</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.onstar.mobile.mylink.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.onstar.mobile.mylink.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.holden.nomad.ownership</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.holden.nomad.ownership.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.holden.nomad.ownership.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.commerciallink</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.commerciallink.debug</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.commerciallink.validation</StringValue>
+      </ArrayValue>
+      <ArrayValue>
+        <Encoding>UTF8</Encoding>
+        <MaxLength>100</MaxLength>
+        <StringValue>com.gm.vcatestapp</StringValue>
+      </ArrayValue>
+    </StringArray>
+  </CalDefinition>
+  <CalDefinition Description="Enable CarPlay location Services. Value is set to be true by default.  When this calibration is set to True, it means that  location shall be shared with CarPlay. Otherwise when this calibration is set to False, Location shall not be set to CarPlay. (Note: This calibration is currently only needed for the F-Ten Info3 Low Radio supplier) " Name="Apple_CarPlay_Location" References="GIS 337-4100, added from CR 1635297" Usage="LOW,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_kxu2EMu3EeeTONb8lpYsfA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>11/17/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Shanmukh Kandala</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables connectivity of an Android Auto Client and Server over wireless (Wi-Fi and BT), and also enables Wireless Android Auto feature and related HMI menu items." Name="AndroidAuto_enableWireless" References="GIS-337" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_VcEOEE78Eeep_Namk9CiEQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/10/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Enables connectivity of an Apple CarPlay Client and Server over wireless (Wi-Fi and BT), and also enables Apple Wireless Car Play feature and related HMI menu items." Name="Apple_CarPlay_enableWireless" References="GIS-337-4120: Wireless Connectivity " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_NHD9kBVhEeaENsovshIOVg</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/10/2017</Date>
+      <Description>Initial release of this calibration</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This enumeration defines the touchscreen fidelity configuration in Apple CarPlay as set in the Display feature bitfield in the Info message" Name="Apple_CarPlay_touchFidelity" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_p93HYE9sEeW60K_zy5B5uQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_SAg6QE9oEeW60K_zy5B5uQ</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="disables the use of the soft phone keypad for dialing phone numbers/digit entry" Name="Apple_CarPlay_softKeypad" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_nWlLQAM9EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="disables the use of the soft keyboard for search fields" Name="Apple_CarPlay_softKeyboard" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_aH-mgQM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="limits the length of lists containing non-media content" Name="Apple_CarPlay_nonMusicLists" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_l7eCsAM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="limits the length of lists containing media content" Name="Apple_CarPlay_MusicLists" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_zWEmoQM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="hides minor roads in maps for Japan" Name="Apple_CarPlay_japanMaps" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_95xgYE9lEeW60K_zy5B5uQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="no video playback allowed (movie media, YouTube, etc&#x2026;,)" Name="Android_Auto_no_video_playback" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_zG6JQQM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="no text input allowed (on-screen keyboard, rotary controller speller, touchpad text entry, etc&#x2026;)" Name="Android_Auto_no_text_input" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yyOSsQM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="no voice input allowed (no Google Now usage, etc...)" Name="Android_Auto_no_voice_input" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yhZocQM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="no setup/configuration allowed (Android Auto application consent/download, tutorials, etc&#x2026;)" Name="Android_Auto_no_setup_config" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_yRsYgQM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="limit displayed message length (sms messages, notifications, etc&#x2026;)" Name="Android_Auto_limit_disp_msg_length" References="GIS-337 Appendix C: Device Projection Regional Restriction Calibrations " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_xbo6QAM-EeW_PbmA_ENxzw</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/10/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

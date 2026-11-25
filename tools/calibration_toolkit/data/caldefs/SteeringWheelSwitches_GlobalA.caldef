@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Description="">
+  <CalDefFileVersion>6</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>1</Version>
+    <Date>11APR14</Date>
+    <Description>Reviewed for compliance to CalDef Guidelines. - Jon G</Description>
+    <Author>Robert H Lake</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>29SEP14</Date>
+    <Description>Added Usage on LOW, MID, and HIGH</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>06FEB15</Date>
+    <Description>Removed Low Radio from usage for SWC_SW5 through SWC_SW9, per Youngbin Lee request 23JAN2015.</Description>
+    <Author>John Edens</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>13MAY16</Date>
+    <Description>Added &quot;Source&quot; mapping specifically for Low Radio CR1017179</Description>
+    <Author>Borce Dilevski</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $1 = Function #1." Name="SWC_SW1_FAVORITES_UP" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_fLxngL_9EeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>17</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $2 = Function #2." Name="SWC_SW2_FAVORITES_DOWN" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_tXbYcL_-EeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>18</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $3 = Function #3." Name="SWC_SW3_VOLUME_UP" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_-5F4YL_-EeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>19</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $4 = Function #4." Name="SWC_SW4_VOLUME_DOWN" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_HoppgL__EeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>20</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $2 = Steering Wheel Unit #2. Lower Nibble = signal data byte $1 = Function #1." Name="SWC_SW5_UP" References="" Usage="MID,HIGH,GLOBALA">
+    <CalID>_UA-REL__EeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06FEB15</Date>
+      <Description>Removed Low Radio from usage for SWC_SW5 through SWC_SW9, per Youngbin Lee request 23JAN2015.</Description>
+      <Author>John Edens</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>33</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $2 = Steering Wheel Unit #2. Lower Nibble = signal data byte $2 = Function #2." Name="SWC_SW6_DOWN" Usage="MID,HIGH,GLOBALA">
+    <CalID>_VJT8sMAAEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06FEB15</Date>
+      <Description>Removed Low Radio from usage for SWC_SW5 through SWC_SW9, per Youngbin Lee request 23JAN2015.</Description>
+      <Author>John Edens</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>34</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $7 = Function #7." Name="SWC_SW7_LEFT" Usage="MID,HIGH,GLOBALA">
+    <CalID>_oA3RgMAAEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06FEB15</Date>
+      <Description>Removed Low Radio from usage for SWC_SW5 through SWC_SW9, per Youngbin Lee request 23JAN2015.</Description>
+      <Author>John Edens</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>23</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $8 = Function #8." Name="SWC_SW8_RIGHT" Usage="MID,HIGH,GLOBALA">
+    <CalID>_3S-JoMAAEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06FEB15</Date>
+      <Description>Removed Low Radio from usage for SWC_SW5 through SWC_SW9, per Youngbin Lee request 23JAN2015.</Description>
+      <Author>John Edens</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>24</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $9 = Function #9." Name="SWC_SW9_SELECT" Usage="MID,HIGH,GLOBALA">
+    <CalID>_oqE0UMAFEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>06FEB15</Date>
+      <Description>Removed Low Radio from usage for SWC_SW5 through SWC_SW9, per Youngbin Lee request 23JAN2015.</Description>
+      <Author>John Edens</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>25</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $5 = Function #5." Name="SWC_SW10_SPEECH" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_wc0X4MAFEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>21</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $1 = Steering Wheel Unit #1. Lower Nibble = signal data byte $6 = Function #6." Name="SWC_SW11_MUTE" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_ECQGYMAGEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>22</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $2 = Steering Wheel Unit #2. Lower Nibble = signal data byte $3 = Function #3." Name="SWC_SW12" References="" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_OlYG4MAGEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>35</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $2 = Steering Wheel Unit #2. Lower Nibble = signal data byte $4 = Function #4." Name="SWC_SW13" Usage="LOW,MID,HIGH,GLOBALA">
+    <CalID>_lVEK4MAGEeOV2KW0e9ssOw</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <Integer>
+      <Value>36</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Upper Nibble = GMLAN signal used $2 = Steering Wheel Unit #2. Lower Nibble = signal data byte $5 = Function #5." Name="SWC_SW14_SOURCE" Usage="LOW,GLOBALA,ENTRY_VCU">
+    <CalID>_VnRQgBlFEea1qfppV73fww</CalID>
+    <Type>Integer</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>13MAY16</Date>
+      <Description>Added &quot;Source&quot; specifically for Low Radio CR1017179</Description>
+      <Author>Borce Dilevski</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>37</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>255</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

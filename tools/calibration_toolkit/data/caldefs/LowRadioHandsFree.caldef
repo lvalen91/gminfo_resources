@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="This caldef was extracted from the use cases defined in GIS-380 Handsfree Specification.">
+  <CalDefFileVersion>5</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>6/9/16</Date>
+    <Description>This caldef was extracted and updated to match the use cases defined in GIS-380 Handsfree Specification v2_4. Please see the comments noted in the Description field in the Change History log for each of the calibrations in this CalDef file for the specific details of the updates made to each of the calibrations within this CalDef file.  </Description>
+    <Author>Rafael Hernandez</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>10/2/2017</Date>
+    <Description>Within the LowRadioHandsFree.caldef file, added GEM usage to all of the calibrations within this caldef. Since all of these calibrations fell within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description="ADC Configuration to support different Mic sensitivity levels " Name="ADC_HF_MIC_CONFIG" References="GIS 681-2200 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_X6MJ4C6EEeagOIUA_sAOZg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/9/2016</Date>
+      <Description>Initial Release of this enumeration calibration.</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_RrtD0C6DEeagOIUA_sAOZg</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for BT Narrow Band calls " Name="BluetoothTelNB" References="GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_0-UPgAAMEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: BluetoothTelNB. 2) Description has changed to: Tuning Parameter for BT Narrow Band calls . 3) Filename changed to: BluetoothTelNB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>BluetoothTelNB.qcf</Filename>
+      <Data>UUFDRgEADABgAapOU1dDSDIACgJXAQwCGQJKAjkCYwEWAk0BWAEJAlkCQQEnAjwCSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNIgE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAQBgQTIAQgBBrA1kAEQAAAAAAAAAAAMAQQIABVxFSPQ4/zj/kAEZABowQQAADzBBUgIAMEFe+wJwQiT6fPwBcEMM/pABpAYDcEI1BRsGAHRBGQABdEEyAAYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQUAfHwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBBBf4DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>431952664</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for BT Wide Band calls GIS-380-701 " Name="BluetoothTelWB" References=" GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_rzH10AANEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: BluetoothTelWB. 2) Description has changed to: Tuning Parameter for BT Wide Band calls GIS-380-701 . 3) Filename changed to: BluetoothTelWB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>BluetoothTelWB.qcf</Filename>
+      <Data>UUFDRgEADABgAcFOU1dDSDIACgJXAQwCGQJKAjkBYwEWAk0BWAEJAlkCQQEnAjwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNIgE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAQBgQTIAQgBBWBtkAEQAAAAAAAAAAAMAQQIABVxFSPQ4/zj/kAEZABowQQAADzBBUgIAMEFe+wJwQiT6fPwBcEMM/pABpAYDcEI1BRsGAHRBGQABdEEyAAYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBBBf4DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>1277676632</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for Carplay Narrow Band calls " Name="CarPlayTelNB" References=" GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>__yHT0AANEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: CarplayTelNB. 2) Description has changed to: Tuning Parameter for Carplay Narrow Band calls . 3) Filename changed to: CarplayTelNB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>CarPlayTelNB.qcf</Filename>
+      <Data>UUFDRgEADABRAc9LU1dDSDIACgJXAQwCGQJKAjkBYwIWAk0BWAEJAlkCQQEnAjwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFTAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ6QGKArYDgNIQjUFGwYeAEEAAUIAQawNZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDCAfECaAPA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAtAH0AcAAAQAQQEACBRBAAAFFEH/f0cAQUAfHwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>3843257232</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for CarPlay Wide Band calls GIS-380-701 " Name="CarPlayTelWB" References=" GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_G19KAAAOEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: CarplayTelWB. 2) Description has changed to: Tuning Parameter for Carplay Wide Band calls . 3) Filename changed to: CarplayTelWB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>CarPlayTelWB.qcf</Filename>
+      <Data>UUFDRgEADABRAX1MU1dDSDIACgJXAQwCGQJKAjkBYwEWAk0BWAEJAlkCQQEnAjwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFTAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ6QGKArYDgNIQjUFGwYeAEEAAUIAQUAfZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBXvsCcEIk+nz8AXBDNAjECaAPA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAlwS0Af0AQQAQQEACBRB6wMFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBBBf4DEEH/fw==</Data>
+      <Length>420</Length>
+      <Checksum>4138620672</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for CarPlay Facetime  calls " Name="CarPlayFacetimeSWB" References="GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_PsXKAAAOEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: CarPlayFacetimeSWB. 2) Description has changed to: Tuning Parameter for Carplay Facetime calls . 3) Filename changed to: CarPlayTelSWBFacetime.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>CarPlayTelSWBFacetime.qcf</Filename>
+      <Data>UUFDRgEADABRAclOU1dDSDIACgJXAQwCGQJKAjkBYwEWAk0BWAEJAlkCQQEnAjwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFTAAAAAwyBVQAAAEYAQcBdAkhCJPp8/AFIQ6QGKArYDgNIQjUFGwYeAEGAAUIAQeAuZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBXvsCcEIk+nz8AXBDNAjECaAPA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAlwS0Af0AQQAQQEACBRB6wMFFEH/f0cAQcBdHwBBwF0REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBBBf4DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>109992365</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for BT Narrow Band VR calls" Name="BluetoothSiriWB" References="GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_9ZMfMAAOEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: BluetoothSiriWB. 2) Description has changed to: Tuning Parameter for BT Narrow Band VR calls . 3) Filename changed to: BluetoothSiriWB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>BluetoothSiriWB.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for CarPlay Siri  calls " Name="CarPlaySiriSWB" References="GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_e8G1MAAPEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: CarPlaySiriSWB. 2) Description has changed to: Tuning Parameter for CarPlay Siri calls . 3) Filename changed to: CarPlaySiriSWB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>CarPlaySiriSWB.qcf</Filename>
+      <Data>UUFDRgEADABRAcdPU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkDQQEnAzwBSwFVAVYBJgI1AUMBUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFTAAAAAwyBVQAAAEYAQcBdAkhCJPp8/AFIQ6QGKArYDgNIQjUFGwYeAEGAAUIAQeAuZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBZvsCcEIk+nz8AXBDNAjECaAPA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAlwS0Af0AQQAQQEACBRB6wMFFEH/f0cAQcBdHwBBwF0REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBB+f0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>765924525</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for BT Narrow Band V.R. calls" Name="BluetoothGoogleNowNB" References="GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_att-oAAOEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: BluetoothGoogleNowNB. 2) Description has changed to: Tuning Parameter for BT Narrow Band V.R. calls . 3) Filename changed to: BluetoothGoogleNowNB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>BluetoothGoogleNowNB.qcf</Filename>
+      <Data>UUFDRgEADABgAWdIU1dDSDIACgNXAQwDGQNKAjkDYwEWAk0BWAEJA1kDQQEnAzwCSwFVAVYBJgI1AUMBUwM0ARgBKQFQQVJNIgE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAQBgQTIAQgBBrA1kAEQAAAAAAAAAAAMAQQIABVxFSPQ4/zj/kAEZABowQQAADzBBUgIAMEFp+wJwQiT6fPwBcEMM/pABpAYDcEI1BRsGAHRBGQABdEEyAAYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBbv8FFEH/f0cAQUAfHwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPOwKWAAAAdgTkAAAAsQZWAQAA7AjIAQAAJws6AgAACRBBWwADEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>3985279172</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for BT Wide Band V.R. calls " Name="BluetoothGoogleNowWB" References="GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_h9wdwAAOEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: BluetoothGoogleNowWB. 2) Description has changed to: Tuning Parameter for BT Wide Band V.R. calls . 3) Filename changed to: BluetoothGoogleNowWB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>BluetoothGoogleNowWB.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for AA Wide Band V.R. calls" Name="AndroidAutoGoogleNowWB" References="GIS-380-701 " Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_4pN-gAANEeW4IvKwjs_JlA</CalID>
+    <Type>BinaryFile</Type>
+    <Version>4</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/9/16</Date>
+      <Description>Made the following updates: 1) Name has been changed to: AndroidAutoGoogleNowWB. 2) Description has changed to: Tuning Parameter for AA Wide Band V.R. calls . 3) Filename changed to: AndroidAutoGoogleNowWB.qcf</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>4</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>AndroidAutoGoogleNowWB.qcf</Filename>
+      <Data>UUFDRgEADABRASlHU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkCQQEnAzwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFRAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ9AHuAugDwNIQjUFGwYeAEEAAUIAQVgbZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBYvsCcEIk+nz8AXBDDP6QAaQGA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAsgA0AcAAAQAQQEACBRBAAAFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA7AjIAQAAYg2sAgAA2BGQAwAAThZ2BAAACRBB//0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>979466443</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter for TCP Emergency calls " Name="OnStar_Digital_Ecall" References="GIS-601-3014-1" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_aBwycR0BEea4V_kcQE00Dw</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/9/16</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>OnStar_Digital_Ecall.qcf</Filename>
+      <Data>UUFDRgEADABRAX1MU1dDSDIACgJXAQwCGQJKAjkBYwEWAk0BWAEJAlkCQQEnAjwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFTAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ6QGKArYDgNIQjUFGwYeAEEAAUIAQUAfZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBXvsCcEIk+nz8AXBDNAjECaAPA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAlwS0Af0AQQAQQEACBRB6wMFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBBBf4DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>4138620672</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Tuning Parameter forTCP WB Advisor calls " Name="OnStar_Digital_Advisor" References="GIS-601-3014-1" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_mDfAECkDEeaJhNxyv4QlKQ</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/9/16</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>OnStar_Digital_Advisor.qcf</Filename>
+      <Data>UUFDRgEADABRAcdPU1dDSDIACgJXAQwDGQNKAjkBYwEWAk0BWAEJAlkDQQEnAzwBSwFVAVYBJgI1AUMBUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFTAAAAAwyBVQAAAEYAQcBdAkhCJPp8/AFIQ6QGKArYDgNIQjUFGwYeAEGAAUIAQeAuZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBZvsCcEIk+nz8AXBDNAjECaAPA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAlwS0Af0AQQAQQEACBRB6wMFFEH/f0cAQcBdHwBBwF0REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBB+f0DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>765924525</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+  <CalDefinition Description="Please NOTE this isTuning Parameter for ERA E calls not supplied by FTEN" Name="OnStar_Analog_Ecall" References="GIS-601-3014-2" Usage="LOW,GEM,GLOBALA,GLOBALB,ENTRY_VCU">
+    <CalID>_pkDREB0AEea4V_kcQE00Dw</CalID>
+    <Type>BinaryFile</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/9/16</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Rafael Hernandez</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/2/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <BinaryFile>
+      <Filename>OnStar_Analog_Ecall.qcf</Filename>
+      <Data>UUFDRgEADABRAX1MU1dDSDIACgJXAQwCGQJKAjkBYwEWAk0BWAEJAlkCQQEnAjwBSwFVAVYBJgI1AUMCUwM0ARgBKQFQQVJNEwE9AEEoAAMYQToAATBBLQACDIFTAAAAAwyBVQAAAEYAQYA+AkhCJPp8/AFIQ6QGKArYDgNIQjUFGwYeAEEAAUIAQUAfZABEAAAAAAAAAAADAEECAAVcRUj0OP84/5ABGQAaMEEAAA8wQVICADBBXvsCcEIk+nz8AXBDNAjECaAPA3BCNQUbBgYUT8gA0AfU/rgBzAGQARoEewIY/HcGdgJYAlwS0Af0AQQAQQEACBRB6wMFFEH/f0cAQYA+HwBBgD4REELQB6APDhBPAACWAAAAAACWAAAAAACWAAAAAACWAAAAAACWAAAABxBPdgTkAAAA2wEsAZABTASYCNT+mQLcANT+0AfQB9T+CRBBBf4DEEH/fw==</Data>
+      <Length>512</Length>
+      <Checksum>4138620672</Checksum>
+    </BinaryFile>
+  </CalDefinition>
+</caldef:CalDefinitionFile>

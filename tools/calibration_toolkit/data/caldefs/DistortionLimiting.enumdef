@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="Enumeration of possible configurations for the amplifier hardware clip detection signal" Name="AmplifierHardwareClipSignalEnum">
+    <EnumID>__drVoHxyEeOvGYtg-Dwcrw</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Only the front (LF and RF) channels shall trigger the amplifier hardware clip signal" Name="FrontOutputsOnly">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Only the rear (LR and RR) channels shall trigger the amplifier hardware clip signal" Name="RearOutputsOnly">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Hardware Clip signal is triggered on clipping of any of the speakers outputs" Name="AllOutputs">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Enumeration for Front and RearClipSignalSection calibrations in DistortionLimiting.caldef" Name="ClipSignalSelectionEnum">
+    <EnumID>_3219gH-bEeOTAM8ORqTgOg</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Software cliip detection disabled" Name="Off">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trigger on software clip detection only" Name="SoftwareClipDetector">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trigger on AmplifierHardwareClipSignal only." Name="AmplifierHardwareClipSignal">
+      <Value>2</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Trigger on SoftwareClipDetector OR Amplifier HardwareClipSignal." Name="SoftwareClipDetectorOrAmplifierHardwareClipSignal">
+      <Value>3</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="GIS-604-240 Dynamic Distortion Limiting (DDL)" Name="FrontRearLimiterCombinationEnum">
+    <EnumID>_wAubUDLQEeSm0acW-cA1AQ</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="Front and Rear limiter working independently" Name="FrontRearIndependent">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="Front and Rear limiter are combined (Front and Rear selected Clip Signals are OR combined)" Name="FrontRearCombined">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

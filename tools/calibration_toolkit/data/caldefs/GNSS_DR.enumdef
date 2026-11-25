@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumdef:EnumDefinitionFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:enumdef="http://www.caltools.gm.com/enumdef">
+  <EnumDefFileVersion>1</EnumDefFileVersion>
+  <EnumDefinition Description="Which SBAS DGPS is to be used if GNSS/DR solution is by CSM " Name="SBAS_DGPS">
+    <EnumID>_ub_8oMurEeOxhJoxe5r3YA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="No SBAS DGPS is used" Name="NONE">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="WAAS " Name="WAAS">
+      <Value>1</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="EGNOS">
+      <Value>2</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+  <EnumDefinition Description="Defines whether TCP or CSM is the source of location solution generation" Name="GNSSDR_SRC">
+    <EnumID>_ZogfkMurEeOxhJoxe5r3YA</EnumID>
+    <EnumDefinitionVersion>1</EnumDefinitionVersion>
+    <EnumValueDefinition Description="TODO" Name="TCP">
+      <Value>0</Value>
+    </EnumValueDefinition>
+    <EnumValueDefinition Description="TODO" Name="CSM">
+      <Value>1</Value>
+    </EnumValueDefinition>
+  </EnumDefinition>
+</enumdef:EnumDefinitionFile>

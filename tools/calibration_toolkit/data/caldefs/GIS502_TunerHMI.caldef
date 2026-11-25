@@ -1,0 +1,1294 @@
+<?xml version="1.0" encoding="ASCII"?>
+<caldef:CalDefinitionFile xmlns:caldef="http://www.caltools.gm.com/caldef" Description="The GIS502TunerHMI.caldef file defines the calibrations to support user HMI settings primarily for tuner functionality.  This includes default menu settings and other UI specific settings used to tailor the HMI experience.  ">
+  <CalDefFileVersion>12</CalDefFileVersion>
+  <CalDefFileChangeRecord>
+    <Version>2</Version>
+    <Date>20Feb2015</Date>
+    <Description>&#xD;
+&#xD;
+GIS502TunerHMI.caldef change log for Feb 20 2015 release:&#xD;
+&#xD;
+1.  Deleted AM FM Fast Seek and AM FM Fast Tune as they are already defined in the GIS653AMFMTunerCommon.caldef file.&#xD;
+&#xD;
+2.  Changed DeviceFriendlyName default value from 2 secs to 3 seconds.&#xD;
+&#xD;
+3.  Deleted DAB_FastSeekTune as it is already defined in GIS-655DABTuner.caldef.&#xD;
+&#xD;
+4.  Changed limits of DirectTuneSXM_Message as they were not defined to match GIS-502.&#xD;
+&#xD;
+5.  Added the RDS_Radio_Menu_Item_On calibration to control the default setting for RDS information in the HMI.&#xD;
+&#xD;
+6.  Deleted HDRadio as it is not required.  Replaced with HD_Radio_Menu_Item_On to control the default setting for HD On/Off in the HMI.&#xD;
+&#xD;
+7.  Added the following new calibrations to set the HMI menu item state for various tuner functions:&#xD;
+RDS_Radio_Menu_Item_On&#xD;
+Album_Art_Menu_Item_On&#xD;
+HD_Radio_Menu_Item_On&#xD;
+Explicit_Content_Menu_Item_On&#xD;
+MetadataCorrector_Menu_Item_On&#xD;
+&#xD;
+8.  Added SXM Source Mode cal as defined in GIS-502.&#xD;
+&#xD;
+9.  Added Set_Number_Display_Favorites as an enumerated value as defined in GIS-502.&#xD;
+&#xD;
+10. Added driver workload cals:  MediaBrowseLockout, StationChannelListLockout, and SlideShow_AlbumArt_LockOut as defined in GIS-502/GIS-500. &#xD;
+&#xD;
+11. Added Metadata_Paging_Rates as defined in GIS-502.&#xD;
+
+12. Changed the description for the SplashScreen to apply only for 3rd party apps.&#xD;  
+
+13. Added new cal called 3rdPartyAppLaunchTime to define a timer used to determine if the SplashScreen should be displayed.  When a 3rd party app is launched this cal establishes a timer that, if expires prior to the 3rd party app running, will trigger the display of the SplashScreen to provide a form of system feedback to the user.  This calibration is used in tandem with the SplashScreen calibration.&#xD;
+</Description>
+    <Author>Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>3</Version>
+    <Date>3/19/2015</Date>
+    <Description>Changed name of the Cal 3rdPartyAppLaunchTime to ThirdPartyAppLaunchTime because the previous naming convention with this Cal starting with a number is an invalid cal name that the Java compliler doesn't accept.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>4</Version>
+    <Date>April 15, 2015</Date>
+    <Description>The following changes were added to the April 15th release of calibrations.  &#xD;
+1. Added cal parameters: Slideshow_DAB_Band_Image_Display_Time, SlideShowAlphaBlend, SlideShow_TransitionTime,SlideShow_TimeOut.
+
+2. Added the Audio_Now_Playing_Layout cal to specify the Now Playing layout view for the North American and other markets.
+
+3.  Added DAB_Station_Not_Available cal to provide a time-out for display of DAB metadata in the presence of DAB signal loss.
+
+4. Reviewed and corrected the GIS-502 reference paragraphs shown for each calibration.
+
+5. Added the Album_Art_Menu_Item_On calibration to specify in the menu the default state for displaying Album Art images.
+
+6. Added the DAB_Announcement_Menu_Item_On calibration to define the HMI menu item default state for DAB Announcements. 
+
+7. Added the DAB_DAB_Linking_Menu_Item_On calibration to define the HMI menu item default state for DAB to DAB Linking. 
+
+8. Added the Traffic_Program_Menu_Item_On calibration to define the HMI menu item default state for Traffic Program Announcements.  
+
+9. Added the DAB_FM_Linking_Menu_Item_On calibration to define the HMI menu item default state for DAB to FM Linking. 
+
+10. Deleted the DirectTune calibration as it is not required for DAB direct tuning.
+
+11. Added the Tune_Mix_Menu_Item_On calibration to define the HMI menu item default state for SXM Tune Mix. 
+
+12. Added the Tune_Start_Menu_Item_On calibration to define the HMI menu item default state for SXM Tune Start. 
+
+13. Added the Instant_Replay_Menu_Item_On calibration to define the HMI menu item default state for SXM Instant Replay. 
+
+14. Added the Sports_Flash_Menu_Item_On calibration to define the HMI menu item default state for SXM Sports Flash. 
+
+15. Added the Traffic_Information_Menu_Item_on cal for the Japan Traffic Information.
+
+16. Changed usage of MetadataCorrectorLogo to Mid/High only as it is not applicable for Low Radio.
+
+17. Changed FavDely range to 500 to 2000 msec as an valid range was not originally defined.
+
+18. Changed FavWidgetRemoval range to 2 to 6 seconds as a valid range was not originally defined.
+
+19. Changed HUD Audio update range to 2 to 10 seconds as a valid range was not originally defined.
+
+20. Changed name on MetadataCorrector to MetadataCorrector Menu Item On to be consistent with the other &quot;Menu_Item_On cals.
+
+21.  Delete CategoriesByRegion as it is already defined in tuner cal def files. Also,per request from Sanghyun Ryu updated VideoLockOut, HDMulticast, ThirdPartyAppLaunchTime, Splashscreens, MetadataCorrectorLogo, HUDAudioUpdate, and MetadataCorrector cals in this caldef file to remove usage of Low Radio.
+</Description>
+    <Author>Christian Gross/Alan Budyta</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>5</Version>
+    <Date>7/30/2015</Date>
+    <Description>Per discussion with Al Budyta, deleted the Metadata_Corrector_Menu_Item_On CAL (CalID: _6MRh4GlNEeSUD4W2RgDvTg) from this CalDef file as it has a duplicate function to the MetadataCorrector_Menu_Item_On CAL (CalID: _LvV2oblIEeSMLcx9-dghJQ ) that already existed in this file. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>6</Version>
+    <Date>2/26/2016</Date>
+    <Description>Within this caldef file deleted the ToneSettingsDescription CAL, as it was confirmed in discussions with James Stefanovski, Cody Hansen, and Dominic Colella this CAL does not have any needed use for Info3.0. Also the DirectTuneLockout CAL was incorrectly defined as a Boolean type CAL initially in the GIS-502. This CAL should have been defined as Enumeration type CALs instead since this CAL is a driver work load CAL,, and needs to be assoissicated to the DriverWorkload.enumdef the same as how the other driver work load CALs are handled. In order to do this, deleting the DirectTuneLockout CAL(CalID: _sBLxoGlMEeSUD4W2RgDvTg) that was defined as a Boolean type CAL, and this previously existing CAL needs to be replaced by the newly added DirectTuneLockout CAL (CalID: _itkrkN4BEeW58O1OdVks4w) that is defined as an Enumeration type CAL. This update to define the DirectTuneLockout as an Enumeration type CALs instead of a Boolean type CALs are also reflected in the latest published GIS-502 Spec., version 3.3. </Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>7</Version>
+    <Date>2016-Jun-17</Date>
+    <Description>Clean-up and clarification of cals as per CR 1096165. Added cals to match with GIS-502 for following parameters. HD_Radio_Multicast_Tuning,DAB_DisplayDABCategories,DAB_Slide_Show_Menu_Item_On,MetadataCorrector,CategoriesByRegion.Corrected description of DAB_Source_Mode.Revised SlideShow_Transition_Time as: units to Seconds from milliseconds,range to 5-20 seconds,  Revised default to 15 seconds. Deleted Tune_Mix_Menu_Item_On.Deleted Slideshow_Transition_Time because the DAB radio stream has built in time delay in audio stream.</Description>
+    <Author>Kiran Soni</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>8</Version>
+    <Date>10/24/2016</Date>
+    <Description>Added two enumeration type calibrations (DAB_EPG_Length_EventDescriptionDetailedViewInDrivingMode and DAB_EPG_Length_EventDescriptionDetailedViewInParkingMode) shown as needed in the GIS-502 Audio UI starting for MY19.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>9</Version>
+    <Date>6/15/2017</Date>
+    <Description>Updated the usage field for all of the calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>10</Version>
+    <Date>10/1/2017</Date>
+    <Description>Within the GIS502_TunerHMI.caldef file, added GEM usage to all of the calibrations within this caldef, except for the following calibrations within this caldef file: 1.) HDMulticast, 2.) HD_Radio_Multicast_Tuning, 3.) HUDAudioUpdate, 4.) MetadataCorrector, 5.) MetadataCorrector_Menu_Item_On, Splashscreens, 6.) ThirdPartyAppLaunchTime, and 7.) VideoLockOut. Note, did not add GEM usage for these seven calibrations since these seven calibraions did not fall within the current criteria of requiring GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+    <Author>Ginnard Kimbrough</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>11</Version>
+    <Date>27MAR2019</Date>
+    <Description>Added 'ENTRY_VCU' and 'VCU' tags for initial creation of VCS compatible CalDefDatabase for version GIS-646 V6.0.0 release.</Description>
+    <Author>Scott Rush</Author>
+  </CalDefFileChangeRecord>
+  <CalDefFileChangeRecord>
+    <Version>12</Version>
+    <Date>6/20/2019</Date>
+    <Description>Per CR# 2303176, create new calibration RDS_PTY_Radio_Menu_Item_On to meet RDS regulatory reqs. Per CR# 2303176, 2303157, 2303128, 2303019: AOSP transition in MY22 GIS-646 Cal DB V6.0.3, deprecating the following cals for AOSP transition and decontent: Explicit_Content_Menu_Item_On, DAB_EPG_LengthEventDescriptionDetailedViewInDrivingMode, DAB_EPG_LengthEventDescriptionDetailedViewInParkingMode, DAB_Slide_Show_Menu_Item_On, DeviceFriendlyName,  HD_Radio_Menu_Item_On, HD_Radio_Multicast_Tuning, HDMulticast, Instant_Replay_Menu_Item_On, Slideshow_AlbumArt_LockOut, SlideShow_Alpha_Blend, Slideshow_DAB_Band_Image_Display_Time, SlideShow_TimeOut, Sports_Flash_Menu_Item_On, and Tune_Start_Menu_Item_On. </Description>
+    <Author>Christine Marzan</Author>
+  </CalDefFileChangeRecord>
+  <CalDefinition Description=" Defines number of characters to show in parking mode." Name="DAB_EPG_LengthEventDescriptionDetailedViewInParkingMode" References="GIS-502" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_gP7QkJlSEea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Gnnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_nYvqMJlOEea-Ao5FQchwtQ</EnumID>
+      <Value>2</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Defines number of characters to show in driving mode." Name="DAB_EPG_LengthEventDescriptionDetailedViewInDrivingMode" References="GIS-502" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_xosIoJlREea-Ao5FQchwtQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>10/24/2016</Date>
+      <Description>Initial release of this calibration.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_nYvqMJlOEea-Ao5FQchwtQ</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="The Album_Art_Menu_Item_On calibration defines the HMI menu item default state for Album Art.  When TRUE, Album Art images are displayed.  When FALSE, Album Art images are not displayed.  The default setting is TRUE. (On)" Name="Album_Art_Menu_Item_On" References="GIS-502 4.1.28.2, 4.1.28.3" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_UK-wwblJEeSMLcx9-dghJQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Audio_Now_Playing_Layout calibration defines the now playing screen layout for a region. When TRUE, display the North American layout.  When FALSE, display the other region layout.  The default setting is always true for North America.  Other regions will set the desired state using a cal override." Name="Audio_Now_Playing_Layout" References="GIS-502-4.1.3.3, 4.1.3.4, 4.1.3.18" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_GKlEQN08EeSvBMdbuIN9qg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="CategoriesByRegion controls when categories will be shown for stations in the FM band. When True, display the Categories and associated stations in the HMI Display. When False, do not display the Categories and associated stations in the HMI Display. The default state is True. Note: The tuner cal FM_RDS_PTY_enabled must also be set to True to enable Categories." Name="CategoriesByRegion" References="GIS-502 " Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_uPQegTDhEeaCKJy9kX4aow</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_Announcement_Menu_Item_On calibration defines the HMI menu item default state for DAB Announcements.  When TRUE, DAB Announcements are enabled.  When FALSE, DAB Announcements are disabled.  The default setting is TRUE. (On)" Name="DAB_Announcement_Menu_Item_On" References="GIS-502 4.1.28.2" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_GYHVod4bEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_DAB_Linking_Menu_Item_On calibration defines the HMI menu item default state for DAB to DAB Linking.  When TRUE, DAB to DAB linking is enabled.  When FALSE, DAB to DAB linking is disabled.  The default setting is TRUE. (On)" Name="DAB_DAB_Linking_Menu_Item_On" References="GIS-502 4.1.28.3" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_9wjGEd4eEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="DAB_DisplayDABCategories cal defines whether the DAB category menu item (and associated DAB stations) should be displayed for DAB stations in a specific region. True means display a DAB category and any associated stations. False means do not display the DAB category as DAB stations cannot be accurately defined or should not be displayed for a given region. The default value is True. The tuner shall also monitor this cal and provide appropriate action to either support or not support the processing of this feature based on the cal setting. This helps balance and optimize system resources based on required features for a given market. When True, show DAB_DisplayDABCategories. When False, do not show DAB_DisplayDABCategories." Name="DAB_DisplayDABCategories" References="GIS-502" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Ea5MgTDdEeaCKJy9kX4aow</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_FM_Linking_Menu_Item_On calibration defines the HMI menu item default state for DAB to FM Linking.  When TRUE, DAB to FM linking is enabled.  When FALSE, DAB to FM linking is disabled.  The default setting is TRUE. (On)" Name="DAB_FM_Linking_Menu_Item_On" References="GIS-502-4.1.28.2" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_4Jm3Ad6zEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If the station cannot be acquired after 2s the DAB/RDS tuning message will be shown in the metadata" Name="DAB_RDS_Tuning" References="GIS-502-4.2.10.6, 4.1.14.6" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_X67cwGlGEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>5</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="DAB_Slide_Show_Menu_Item_On calibration defines the HMI menu item default state for DAB slide show images. When True, DAB slide show images are displayed. When False, DAB slide show images are not shown and the static default image is shown." Name="DAB_Slide_Show_Menu_Item_On" References="GIS-502" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_HWFgYTDfEeaCKJy9kX4aow</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration determines if the DAB source mode icon will be displayed as a source in the radio screen.  The default value is FALSE which means do not display the Source Mode icon." Name="DAB_Source_Mode" References="GIS-502 4.1.3.4" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_EyCukd09EeSvBMdbuIN9qg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The DAB_Station_Not_Available calibration is a timer used to delay the display of the DAB Station Not Available message in cases where the DAB signal drops below an acceptable receive signal threshold in the tuner. While the timer is active (i.e., not expired) HMI shall continue to display the current metadata for the existing broadcast even if the signal is lost and audio is now longer present.  This prevents undesirable toggling of DAB HMI messages (i.e., metadata) should the DAB signal be intermittent.  Once the timer expires, HMI shall display the DAB Station Not Available message if the current DAB station signal strength does not return to an acceptable receive threshold." Name="DAB_Station_Not_Available" References="GIS-502-4.1.21.6" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_YeMfMd-lEeSfuIbaAz9ajg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>15</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Device friendly name will be shown for 2s after sourcing before being populated with metadata." Name="DeviceFriendlyName" References="GIS-502-4.1.3.8" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_CbfqQGlHEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>5</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When enabled the user will no longer be able to launch direct tune. This item will appear grayed out and when selected the user will get the quick notice action unavailable while driving. Should user be in direct tune window when this calibration is enabled the user will be presented with the notification action unavailable while driving and when this notification is dismissed the user will be returned to the now playing screen." Name="DirectTuneLockout" References="GIS-502 6.4" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_itkrkN4BEeW58O1OdVks4w</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>2/26/2016</Date>
+      <Description>Initial release of this CAL as an Enumeration type CAL to replace the deleted DirectTuneLockout CAL(CalID: _sBLxoGlMEeSUD4W2RgDvTg)  that was initially incorrectly defined in the GIS-502 as a Boolean type CAL.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="After an valid frequency in SXM the radio will tune after 2500 ms without a GO press" Name="DirectTuneSXM" References="GIS-502-4.1.16" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_xnI8QGlGEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2500</Value>
+      <MinValue>2000</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Channel Unavailable and other messages will be shown for 2s in the metadata/ Channels not broadcast will have same behavior" Name="DirectTuneSXMMessage" References="GIS-502-4.1.16.6" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_x3mycGlMEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>5</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Explicit_Content_Menu_Item_On calibration defines the default HMI menu state for SXM explicit channel filtering.   When set to (TRUE) explicit content is filtered as determined by the explicit content filter flag in the X65 module. When FALSE, explicit channels are not filtered.  The default state for this calibration is FALSE (Off).  This means all SXM channels shall be shown with no explicit channel filtering.  When TRUE, HMI shall not allow explicit channels to be tuned." Name="Explicit_Content_Menu_Item_On" References="GIS-502 6.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_QI7igblHEeSMLcx9-dghJQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="After a press of the FAV+ or FAV- buttons, there is a delay of 1100ms before the broadcast audio favorite is selected and the source begins playing." Name="FAVDelay" References="GIS-502-6.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_U4S8wGlHEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1100</Value>
+      <MinValue>500</MinValue>
+      <MaxValue>2000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Favorite Widget will auto-dismiss after 3 seconds of inactivity with the FAV+ or FAV- buttons." Name="FAVWidgetRemoval" References="GIS-502-5.7.3.15" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_ezYs4GlHEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>6</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="This calibration defines the sort parameter for the FM Station List view.  This cal is defined as an enumeration with the option to sort by PI, PSN, or frequency.  The default value for this cal is PI code for EU markets." Name="FMStationListViewSort" References="GIS-502-4.1.20.10" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_WyZ8kN7FEeSfuIbaAz9ajg</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_X4a-4N7EEeSfuIbaAz9ajg</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Press and hold the media will FF at a rate of 10x normal playback" Name="FastForward" References="GIS-502 4.1.14.13" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_c0ECgLXnEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Press and hold the media will REW at a rate of 10x the normal playback" Name="FastRewind" References="GIS-502 4.1.14.14" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_oeTvgGlGEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>10</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="HD will hold the metadata for 15s before showing the HD acquiring signal message after message is lost" Name="HDMulticast" References="GIS-502-4.1.32" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_RvorwLXnEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated HDMulticast cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The HD_Radio_Menu_Item_On determines the HMI menu default state (HD On or HD Off) when HD Radio is activated in the tuner.  If HD Radio is not active in the tuner, the state of this calibration shall be set to FALSE via a cal override.  The default state for this calibration is TRUE (On).  This means the HMI menu item default setting for HD Radio is &quot;ON&quot; and the user can select and listen to HD stations and see the HD icon/metadata in the now playing screen and the station list view.  When set to OFF, HD Radio is disabled and therefore the tuner will not process HD stations.  In addition, the user will not see the HD icon and associated metadata in the now playing screen and the station list view." Name="HD_Radio_Menu_Item_On" References="GIS-502 4.1.28.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_LfgVwblGEeSMLcx9-dghJQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="If tuning to a multicast station takes longer than 250ms (default) the tuning message will be shown in the metadata." Name="HD_Radio_Multicast_Tuning" References="GIS-502" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LGMcUTDcEeaCKJy9kX4aow</CalID>
+    <Type>Integer</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>250</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>1000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Instant_Replay_Menu_Item_On calibration defines the HMI menu item default state for the SXM Instant Replay feature.  When TRUE, Instant Replay is enabled.  When FALSE, Instant Replay is disabled.  The default setting is TRUE. (On)" Name="Instant_Replay_Menu_Item_On" References="GIS-502-4.1.28.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_r-wF4d7CEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="When the driver interacts with Steering Wheel controls and changes the Audio Information displayed in the cluster, the audio information is also temporarily displayed in the HUD. When the driver stops interacting with the steering wheel control for 5 seconds, the HUD reverts to the previously displayed HUD page." Name="HUDAudioUpdate" References="GIS-502-6.1.1.1" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_IueZUGlJEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated HUDAudioUpdate cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>10</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="For the enumerated value selected, the feature is locked out when the enumerated state is TRUE and for all enumerated states greater that the selected default." Name="MediaBrowseLockOut" References="GIS-502-6.4" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_7vwOgL1aEeSOH7Idfz1A2w</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="MetadataCorrector cal- Based on presence of metadata corrector service. If true, show meta- data corrector in settings. If False, do not show metadata corrector in settings." Name="MetadataCorrector" References="GIS-502 " Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_Ij8lMTDgEeaCKJy9kX4aow</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Length of time to show the metadata corrector logo in the now playing and list view screens" Name="MetadataCorrectorLogo" References="GIS-502-4.2.5.1" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LzDPgGlHEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated MetadataCorrectorLogo cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>5</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="When the MetadataCorrector calibration is set to TRUE, the MetadataCorrector_Menu_Item_On calibration shall be used to set the default state for the feature in the HMI menu. When TRUE, the metadata corrector function shall be active.  When FALSE, the metadata corrector function shall be inactive.  The default state for this cal is FALSE.  This cal is not valid if the MetadataCorrector cal is set to FALSE." Name="MetadataCorrector_Menu_Item_On" References="GIS-502 4.1.28.1, 4.1.28.2, 4.1.28.3" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_LvV2oblIEeSMLcx9-dghJQ</CalID>
+    <Type>Boolean</Type>
+    <Version>2</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Metadata_Paging_Rate calibration controls the paging rate of metadata when the metadata does not fit within the defined HMI metadata field size.  The default value is 5 seconds.  This means when paged metadata is available, each page displays for 5 seconds before moving to the next page of metadata." Name="Metadata_Paging_Rate" References="GIS-502 4.1.3" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_BhMVsblKEeSMLcx9-dghJQ</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>5</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The RDS_Radio_Menu_Item_On determines the HMI menu default state (RDS Info On/Off) when RDS is active in the tuner.  If RDS is not active in the tuner, this calibration is not used.  The default state for this calibration is TRUE (On).  This means the HMI menu item default setting for RDS is &quot;ON&quot; and RDS information is displayed for the currently tuned station.  When set to OFF, RDS information is not displayed for the currently tuned station." Name="RDS_Radio_Menu_Item_On" References="GIS-502 6.1.1.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_w-9rwLlEEeSMLcx9-dghJQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration is required to support RDS regulatory requirements in certain markets. The RDS_PTY_Menu_Item_On determines the HMI menu default state (RDS PTY On/Off) when FM_RDS_PTY_enabled is activated in the tuner. If FM_RDS_PTY_enabled is not active in the tuner, the state of this calibration shall be set to FALSE. The default state for this calibration is FALSE(Off). This means the HMI menu item default setting for RDS PTY is &quot;OFF&quot; and the user will not see RDS PTY (categories) information. When the cal is TRUE (ON), RDS PTY (categories) will be displayed." Name="RDS_PTY_Menu_Item_On" References="" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_B5zXYJKhEem0sOY-d8MlZA</CalID>
+    <Type>Boolean</Type>
+    <Version>1</Version>
+    <CalDefChangeRecord>
+      <Version>1</Version>
+      <Date>6/15/2019</Date>
+      <Description>Per CR# 2303176. Create new calibration RDS_PTY_Radio_Menu_Item_On to meet RDS regulatory reqs.</Description>
+      <Author>Christine Marzan</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Region_Setting_Menu_Item_On determines the HMI menu default state (Region Setting On or Off) for markets that support this FM feature. The default state for this calibration is TRUE (On).  This means the HMI menu item default setting for Region setting is On and the tuner shall support Region switching where available.  When set to OFF, Region switching will not be active in the tuner even in areas that support the feature." Name="Region_Setting_Menu_Item_On" References="GIS-502-4.1.28.2" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_TGpnEd7GEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration determines if the SXM source mode icon will be displayed as a source in the radio screen.  The default value is TRUE which means display the Source Mode icon." Name="SXM_Source_Mode" References="GIS-502-4.1.3.5" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_1UgdwblGEeSMLcx9-dghJQ</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="This calibration provides an HMI menu selection of values the user can select to define the quantity of favorites to be displayed.  The default state is AUTO (e.g., quantity limited by Infotainment System)" Name="Set_Number_Display_Favorites" References="GIS-502 4.1.31.8" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_MkVLoLlNEeSMLcx9-dghJQ</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_OiXQgLlLEeSMLcx9-dghJQ</EnumID>
+      <Value>0</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="For the transition between the slides a blending (alpha-blend of 1.5s (calibratable)) that can be calibrated. The DAB tuner internally buffers the slides to achieve the calibrated interval.  A special case of 0 seconds is defined to indicate that no transition interval shall be applied (i.e., transition immediately from one slide to the next)." Name="SlideShow_Alpha_Blend" References="GIS-502-4.1.68.1*MY18 Slideshow" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_AIaXcNK9EeS7moXKCsUKKg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1500</Value>
+      <MinValue>0</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="In case of a DAB signal loss, the DAB Band default image will be shown after a timeout of 10 min (calibratable by SlideShow_TimeOut)." Name="SlideShow_TimeOut" References="GIS-502-4.1.68.5*MY18 Slideshow unavailable" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_5uZ2gNK-EeS7moXKCsUKKg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="For the enumerated value selected, the feature is locked out when the enumerated state is TRUE and for all enumerated states greater that the selected default." Name="Slideshow_AlbumArt_LockOut" References="GIS-502-6.4" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_AHqNcL1cEeSOH7Idfz1A2w</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="To provide a consistent user experience, the HMI module shall always display the DAB band image for a 2 second period (calibrateable) after the user selects a DAB channel, even if HMI has received the DAB Album Art." Name="Slideshow_DAB_Band_Image_Display_Time" References="GIS-502-4.1.68*MY18 Dab Album Art/Slideshow" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Ncc5ANLAEeS7moXKCsUKKg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2000</Value>
+      <MinValue>1000</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The splash screen shall be shown for the time defined in this calibration when the 3rdPartyAppLaunchTime timer expires.  This calibration only apply in the presence of 3rd Party Apps. The default rate of this calibration is 2500ms." Name="Splashscreens" References="GIS-502-4.2.14.9" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_65bnAGlGEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated Splashscreens cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>2500</Value>
+      <MinValue>1500</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Sports_Flash_Menu_Item_On calibration defines the HMI menu item default state for SXM Sports Flash feature.  When TRUE, Sports Flash is enabled.  When FALSE, Sports Flash is disabled.  The default setting is TRUE. (On)" Name="Sports_Flash_Menu_Item_On" References="GIS-502-4.1.72" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_uao5gd7CEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="For the enumerated value selected, the feature is locked out when the enumerated state is TRUE and for all enumerated states greater that the selected default." Name="StationChannelListLockOut" References="GIS-502-6.4" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_VKkcAL1bEeSOH7Idfz1A2w</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>4</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="3rd Party Apps that take longer than this cal time to load will require a splash screen to be shown. Splash screens should be shown for at least default value selected in the SplashScreen cal.  The default value for this calibration is 1500 msec." Name="ThirdPartyAppLaunchTime" References="GIS-502-4.2.14.9" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_HEVXYb0qEeS9WKKVTwo_cg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated ThirdPartyAppLaunchTime cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1500</Value>
+      <MinValue>1000</MinValue>
+      <MaxValue>5000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="Press and hold on up/down for tone settings will increase or decrease the value at a slew rate of 3 values per second" Name="ToneSettings" References="GIS-502-4.1.29" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_PK0loLXnEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>3</Value>
+      <MinValue>2</MinValue>
+      <MaxValue>5</MaxValue>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="The Traffic_Information_Menu_Item_On calibration defines the HMI menu item default state for Traffic Information in Japan.  When TRUE, Traffic Information  is enabled.  When FALSE, Traffic Information is disabled.  The default setting is False (Off)." Name="Traffic_Information_Menu_Item_On" References="GIS-502 4.1.28.3" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_4zhOgd7mEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>false</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Traffic_Program_Menu_Item_On calibration defines the HMI menu item default state for Traffic Program Announcements.  When TRUE, Traffic Program Announcements are enabled.  When FALSE, Traffic Program Announcements are disabled.  The default setting is TRUE. (On)" Name="Traffic_Program_Menu_Item_On" References="GIS-502 4.1.28.2" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Z3Sm8d4iEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="The Tune_Start_Menu_Item_On calibration defines the HMI menu item default state for the SXM Tune Start feature.  When TRUE, Tune Start is enabled.  When FALSE, Tune Start is disabled.  The default setting is TRUE. (On)" Name="Tune_Start_Menu_Item_On" References="GIS-502-4.1.28.1" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_nXXEAd7CEeSfuIbaAz9ajg</CalID>
+    <Type>Boolean</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Boolean>
+      <Value>true</Value>
+    </Boolean>
+  </CalDefinition>
+  <CalDefinition Description="Controls will timeout to non reveal state 15s after last interaction" Name="VideoInParkTimeout" References="GIS-502 6.4" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Lsl-AGlOEeSUD4W2RgDvTg</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>15</Value>
+      <MinValue>5</MinValue>
+      <MaxValue>20</MaxValue>
+      <Units>seconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+  <CalDefinition Description="For the enumerated value selected, the feature is locked out when the enumerated state is TRUE and for     enumerated states greater that the selected default." Name="VideoLockOut" References="GIS-502-6.4" Usage="MID,HIGH,GLOBALA,GLOBALB,VCU">
+    <CalID>_jLF7AL1cEeSOH7Idfz1A2w</CalID>
+    <Type>Enumeration</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>4/17/2015</Date>
+      <Description>Per request from Sanghyun Ryu updated VideoLockOut cal to remove usage of Low Radio.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Enumeration>
+      <EnumID>_aUCPYLipEeSxl78x5qydAw</EnumID>
+      <Value>1</Value>
+    </Enumeration>
+  </CalDefinition>
+  <CalDefinition Description="Zoom bubble will remain up for 1000ms after the user stops interacting with the scroll bar" Name="ZoomBubble" References="GIS-502-4.2.7" Usage="LOW,MID,HIGH,GEM,GLOBALA,GLOBALB,ENTRY_VCU,VCU">
+    <CalID>_Ne0W0LXnEeOEzdA9o_rOxw</CalID>
+    <Type>Integer</Type>
+    <Version>3</Version>
+    <CalDefChangeRecord>
+      <Version>2</Version>
+      <Date>6/15/2017</Date>
+      <Description>Updated the usage field for this calibration to support the new &quot;Global A/B&quot; categorization in the CalDef tool.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <CalDefChangeRecord>
+      <Version>3</Version>
+      <Date>10/1/2017</Date>
+      <Description>Updated vehicle architectural usage to add GEM usage for this calibration because it fell within the current criteria of calibrations that require GEM usage, which are any calibrations that would be used for Low Radio Global B application.</Description>
+      <Author>Ginnard Kimbrough</Author>
+    </CalDefChangeRecord>
+    <Integer>
+      <Value>1000</Value>
+      <MinValue>500</MinValue>
+      <MaxValue>2000</MaxValue>
+      <Units>milliseconds</Units>
+      <Resolution>1.0</Resolution>
+    </Integer>
+  </CalDefinition>
+</caldef:CalDefinitionFile>
