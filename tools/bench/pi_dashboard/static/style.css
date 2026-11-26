@@ -132,6 +132,19 @@ main {
 }
 .grid2 .card { margin-bottom: 0; }
 
+/* A plain collapsible card (default collapsed): the <h2> becomes the <summary>, same
+   look as an always-open card's heading, just clickable with a disclosure arrow. Not
+   the danger-zone pattern above -- this is for "fine to hide, nothing risky about it". */
+details.card { padding: 0; }
+details.card > summary { padding: 16px 18px; cursor: pointer; list-style: none;
+  font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary::before { content: "\25B8"; display: inline-block; margin-right: 7px;
+  color: var(--muted); transition: transform .1s; }
+details.card[open] > summary::before { transform: rotate(90deg); }
+details.card > summary small { color: var(--muted); font-weight: 400; font-size: 12px; }
+details.card > .card-body { padding: 0 18px 16px; }
+
 /* inset grouped rows, like a Settings.app list */
 .group-list { border: 1px solid var(--border); border-radius: var(--radius-sm);
   overflow: hidden; background: var(--panel2); margin: 10px 0; }
@@ -362,3 +375,60 @@ button.seq-run.running { opacity: .85; }
   border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12.5px; cursor: pointer; }
 .cal-slot-row input { flex: none; }
 .muted { color: var(--muted); font-size: 11.5px; }
+
+/* ===== Raspberry Pi tab: stat rows with a meter, interface table, Wi-Fi join form ===== */
+.tab > h1.tab-title small { font-size: 12px; font-weight: 400; margin-left: 8px; letter-spacing: 0; }
+/* label | meter | value on one line, the detail line underneath */
+.group-row.pi-stat { display: grid; grid-template-columns: 150px minmax(60px, 1fr) auto;
+  grid-template-areas: "label meter val" "sub sub sub"; gap: 2px 12px; justify-content: stretch; }
+.pi-stat .row-label { grid-area: label; }
+.pi-stat .pi-meter { grid-area: meter; display: flex; align-items: center; }
+.pi-stat .pi-val { grid-area: val; font-family: var(--mono); font-size: 12.5px; text-align: right; white-space: nowrap; }
+.pi-stat .pi-val b { font-weight: 600; }
+.pi-stat .row-sub { grid-area: sub; margin-top: 0; }
+.seq-bar.meter { width: 64px; vertical-align: middle; }
+.pi-stat .pi-meter .seq-bar.meter { width: 100%; max-width: 260px; }
+.state-pill { white-space: nowrap; }
+.pi-table-wrap { overflow-x: auto; }
+.pi-table-wrap td .mono { word-break: break-all; }
+.pi-table-wrap td .mono.nowrap { white-space: nowrap; word-break: normal; }
+.seq-bar-fill.warn { background: var(--warn); }
+.seq-bar-fill.bad { background: var(--bad); }
+.pi-units { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.pi-units .state-pill { margin-left: 0; font-family: var(--mono); font-weight: 500; }
+#piWifiSaved .seq-main { flex-wrap: wrap; }
+form.wifi-join input[type="password"] {
+  display: block; margin-top: 4px; background: var(--panel); color: var(--fg);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 6px 9px;
+  font-size: 13px; font-family: var(--mono); width: 100%; max-width: 420px;
+}
+form.wifi-join label.switch-label { display: inline-flex; margin: 4px 0; }
+
+/* ===== CAN tab: read-only decoded-signals panel (/api/can/decode) ===== */
+#canDecodeMeta { font-size: 11.5px; margin: 2px 0 10px; }
+.decode-msg { border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--panel2); margin: 8px 0; padding: 8px 11px; }
+.decode-msg.unseen { opacity: .55; }
+.decode-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.decode-head .decode-id { font-weight: 600; font-size: 12.5px; }
+.decode-head .decode-name { font-weight: 600; }
+.decode-head .row-sub { color: var(--muted); font-size: 11.5px; }
+.decode-info { margin-left: auto; }
+table.decode-sigs { border-collapse: collapse; margin-top: 7px; width: auto; }
+table.decode-sigs td { padding: 3px 18px 3px 0; border: none; vertical-align: middle; }
+table.decode-sigs td:first-child { color: var(--muted); cursor: help; }
+table.decode-sigs .state-pill { margin-left: 0; }
+
+/* ===== Field capture tab ===== */
+.cap-safe { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
+.cap-safe .cap-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; background: var(--muted); }
+.cap-safe.yes .cap-dot { background: var(--ok); }
+.cap-safe.no .cap-dot { background: var(--warn); }
+.cap-safe.rec .cap-dot { background: var(--bad); animation: loading-pulse 1.6s ease-in-out infinite; }
+.cap-safe.yes { color: var(--ok); } .cap-safe.rec { color: var(--bad); } .cap-safe.no { color: var(--warn); }
+.cap-safe small { font-weight: 400; color: var(--muted); font-size: 12px; display: block; }
+.cap-pick label { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12.8px; }
+.cap-vol { cursor: pointer; }
+.cap-vol.selected { border-color: var(--accent); }
+.cap-vol .seq-main { flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) { .cap-safe.rec .cap-dot { animation: none; } }

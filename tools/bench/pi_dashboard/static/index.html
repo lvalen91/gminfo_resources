@@ -26,22 +26,23 @@
   <button data-tab="uart"><span class="nav-icon">&#128225;</span>UART</button>
   <button data-tab="t1"><span class="nav-icon">&#128241;</span>T1 / adb</button>
   <button data-tab="term"><span class="nav-icon">&#8250;_</span>Terminals</button>
+  <button data-tab="capture"><span class="nav-icon">&#9210;</span>Field capture</button>
+  <div class="nav-group-label">Host</div>
+  <button data-tab="pi"><span class="nav-icon">&#128421;</span>Raspberry Pi</button>
 </nav>
 
 <main>
   <!-- ======================= CAN ======================= -->
   <section id="tab-can" class="tab active">
     <h1 class="tab-title">CAN</h1>
-    <div class="grid2">
-      <div class="card">
-        <h2>can0 stats</h2>
+    <details class="card">
+      <summary>can0 stats <small>&amp; top CAN IDs</small></summary>
+      <div class="card-body">
         <div class="statrow" id="canStatRow"><span class="loading">connecting to /ws/can…</span></div>
-      </div>
-      <div class="card">
-        <h2>Top CAN IDs</h2>
+        <h3>Top CAN IDs</h3>
         <div class="chart-wrap"><canvas id="canIdChart" height="160"></canvas><div id="canIdChartEmpty" class="chart-empty loading">waiting for CAN stats…</div></div>
       </div>
-    </div>
+    </details>
     <div class="card">
       <h2>Engine power mode &amp; gear position <small>(verified CAN signals only)</small></h2>
       <p class="hint">Off/Run are wired to a directly-verified CAN <code>0x284</code> frame
@@ -65,8 +66,8 @@
         <h2>Sequences <small>(frame bytes come from the pinned profile)</small></h2>
         <p class="hint">One-shot sequences run once with a <b>RUN</b> control and a live progress/elapsed
         readout; while one runs, the other rows grey out. Continuous sequences have an <b>ON/OFF</b>
-        toggle. Click the <span class="mono">&#9432;</span> on a row for what it does.</p>
-        <label class="switch-label"><input type="checkbox" id="seqDryRun"> dry-run (validate only, send nothing)</label>
+        toggle. Click the <span class="mono">&#9432;</span> on a row for what it does. Full
+        results go to the bench log (see "Export logs" above), not a dump here.</p>
         <div id="seqList" class="seq-list"><span class="loading">loading sequences…</span></div>
       </div>
       <div class="card">
@@ -74,6 +75,17 @@
         <label class="switch-label"><input type="checkbox" id="canLiveToggle"> show live frames <small>(off by default -- avoids an excessive scrolling list; stats above keep updating either way)</small></label>
         <pre id="canLog" class="out tall"></pre>
       </div>
+    </div>
+    <div class="card">
+      <h2>Decoded signals <small>(read-only — <code>opendbc</code> CANParser vs <code>gm_bench.dbc</code>)</small></h2>
+      <p class="hint">Named signals decoded live from the <b>same passive observer</b> above — this never
+      transmits. The stub DBC holds <b>bench-verified signals only</b> (each row cites its evidence on
+      hover); firmware-traced-only or unconfirmed candidates (the <code>0x40B/0x264</code> PRNDL path,
+      the unresolved time-sync message, Accessory/Service power modes) are deliberately left out rather
+      than decoded as a guess. A greyed row has not been seen on the bus yet. The <code>0x529</code>
+      keepalive updates continuously; <code>0x284</code> appears when a power-mode frame is sent.</p>
+      <div id="canDecodeMeta" class="muted"></div>
+      <div id="canDecode"><span class="loading">waiting for /api/can/decode…</span></div>
     </div>
   </section>
 
@@ -245,6 +257,97 @@
         <div id="adbTerm" class="term term-interactive"></div>
       </div>
     </div>
+  </section>
+
+  <!-- ======================= Field capture (USB) ======================= -->
+  <section id="tab-capture" class="tab">
+    <h1 class="tab-title">Field capture <small class="muted">raw T1 + CAN + UART to a USB drive</small></h1>
+    <p class="hint">Total, unfiltered capture for in-vehicle sessions: every Ethernet frame on the physical
+    <span class="mono">eth0</span> (all VLANs and untagged), every <span class="mono">can0</span> frame
+    (plus error frames, with RX/TX marked) and the raw VIP console byte stream. It runs alongside
+    everything else &mdash; the CAN observer, decoder, keepalive, UDS and the live UART view are not
+    touched. Files go <b>only</b> to an external USB drive, one timestamped folder per session.
+    <b>Stop</b> closes every file, syncs and unmounts the drive.</p>
+    <div class="card cap-safe-card"><div id="capSafe"><span class="loading">waiting for /api/capture/status…</span></div></div>
+    <div class="grid2">
+      <div class="card">
+        <h2>USB storage <small>(detected by polling lsblk every 2 s while this tab is open)</small></h2>
+        <div id="capVolumes" class="seq-list"><span class="loading">looking for USB drives…</span></div>
+      </div>
+      <div class="card">
+        <h2>Session <small>(all selected streams start and stop together)</small></h2>
+        <div id="capStreamPick" class="cap-pick"></div>
+        <div class="btnrow">
+          <button type="button" id="btnCapStart" class="primary">Start capture&hellip;</button>
+          <button type="button" id="btnCapStop">Stop &amp; unmount</button>
+        </div>
+        <div id="capOut" class="exec-line"></div>
+        <div id="capSession"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Streams <small id="capStreamsWhich"></small></h2>
+      <div id="capStreams" class="pi-table-wrap"><span class="muted">no session yet</span></div>
+    </div>
+    <div class="card">
+      <h2>Session events <small>(also written to events.log in the session folder)</small></h2>
+      <pre id="capEvents" class="out"></pre>
+    </div>
+  </section>
+
+  <!-- ======================= Raspberry Pi (the bench host itself) ======================= -->
+  <section id="tab-pi" class="tab">
+    <h1 class="tab-title">Raspberry Pi <small class="muted" id="piIdent"></small></h1>
+    <div class="grid2">
+      <div class="card">
+        <h2>Resources <small>(live, every 4 s while this tab is open)</small></h2>
+        <div id="piResources"><span class="loading">waiting for /api/pi/status…</span></div>
+      </div>
+      <div class="card">
+        <h2>Network interfaces</h2>
+        <div id="piIfaces"><span class="loading">waiting for /api/pi/status…</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Bench services <small>(restart for a stuck state; each restart is Tier-2 confirmed)</small></h2>
+      <p class="hint">Click the <span class="mono">&#9432;</span> on a row for exactly what its restart does.
+      Restarting the dashboard or nginx keeps this page loaded and reconnects by itself; open terminals
+      and the UART stream must be reopened afterwards.</p>
+      <div id="piServices" class="seq-list"><span class="loading">loading services…</span></div>
+    </div>
+    <div class="card">
+      <h2>Wi-Fi <small>(NetworkManager)</small></h2>
+      <div id="piWifiState"><span class="loading">loading Wi-Fi state…</span></div>
+      <h3>Saved networks</h3>
+      <div id="piWifiSaved" class="seq-list"></div>
+      <h3>Join a network</h3>
+      <form id="piWifiJoin" class="wifi-join" autocomplete="off">
+        <label>Network (SSID)
+          <input type="text" id="piWifiSsid" list="piWifiVisible" maxlength="32" spellcheck="false" autocomplete="off" placeholder="pick from the scan or type a name">
+          <datalist id="piWifiVisible"></datalist>
+        </label>
+        <label>Password <small>(goes only to NetworkManager; leave empty for an open or already-saved network)</small>
+          <input type="password" id="piWifiPass" maxlength="64" autocomplete="new-password" spellcheck="false">
+        </label>
+        <label class="switch-label"><input type="checkbox" id="piWifiHidden"> hidden network (not in the scan)</label>
+        <div class="btnrow">
+          <button type="submit" id="btnPiWifiJoin" class="primary">Connect…</button>
+          <button type="button" id="btnPiWifiRescan">Rescan</button>
+          <span id="piWifiRescanOut"></span>
+        </div>
+      </form>
+      <div id="piWifiVisibleList"></div>
+      <div id="piWifiOut" class="exec-line"></div>
+    </div>
+    <details class="danger-zone" id="piRebootZone">
+      <summary>&#9888; Danger zone — reboot the Raspberry Pi (Tier 2)</summary>
+      <div class="card danger-card">
+        <p class="warn">Reboots the bench host. The dashboard, CAN keepalive, UART bridge and all
+        terminals go down until it is back; this page waits and reconnects by itself.</p>
+        <button type="button" id="btnPiRebootPlan">1. Plan reboot</button>
+        <div id="piRebootOut"></div>
+      </div>
+    </details>
   </section>
 </main>
 </div>

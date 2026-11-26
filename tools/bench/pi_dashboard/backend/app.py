@@ -17,12 +17,13 @@ import time
 import zipfile
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
+from fastapi import (FastAPI, File, Form, HTTPException, Request, UploadFile, WebSocket,
+                     WebSocketDisconnect)
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 
-from . import (calibration, canbus, config, diagdata, elk, ltz_ref, sequences,
-               system_status, terminals, tier2, uart, vehicle_state)
+from . import (calibration, canbus, candecode, capture, config, diagdata, elk, ltz_ref,
+               pi_host, sequences, system_status, terminals, tier2, uart, vehicle_state)
 from .uds import UDSClient, UDSError
 
 app = FastAPI(title="GM Info 3.7 Bench Dashboard", version="1.0",
@@ -31,18 +32,27 @@ app = FastAPI(title="GM Info 3.7 Bench Dashboard", version="1.0",
                           "Reads are safe; destructive ECU/calibration actions require an explicit confirm phrase.")
 
 CAN = canbus.CanObserver()
+# Read-only signal decoder: a second consumer of CAN's existing subscriber fan-out (it
+# never opens a socket and never transmits). See candecode.py.
+CAN_DECODER = candecode.CanDecoder(CAN)
 UART = uart.UartHub()
+# Field capture (raw T1 pcap + raw CAN log + UART tap to a USB drive). Independent: its
+# own dumpcap/candump processes, a read-only tap of UART's existing fan-out. capture.py.
+CAPTURE = capture.CaptureManager(UART)
 config.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @app.on_event("startup")
 async def _startup():
     await CAN.start()
+    await CAN_DECODER.start()
 
 
 @app.on_event("shutdown")
 async def _shutdown():
+    await CAPTURE.shutdown()   # clean stop + unmount first; bounded, never raises
     await sequences.shutdown()
+    await CAN_DECODER.stop()
     await CAN.stop()
 
 
@@ -58,6 +68,7 @@ async def api_status():
         "t1": t1,
         "uart": uart_probe,
         "adb": {"devices": adb, "count": len(adb)},
+        "capture": CAPTURE.brief(),
     }
 
 
@@ -67,7 +78,10 @@ async def api_meta():
     return {
         "bench": "GM Info 3.7 (gminfo37) infotainment, owner's licensed research bench, LAN-only",
         "can": {"iface": config.CAN_IFACE, "transport": "SocketCAN 500kbit/s",
-                "keepalive": "0x529 @ 0.320270s via systemd", "sequences": list(sequences.SEQUENCES)},
+                "keepalive": "0x529 @ 0.320270s via systemd", "sequences": list(sequences.SEQUENCES),
+                "decode": "GET /api/can/decode decodes already-flowing frames through a vendored "
+                          "opendbc CANParser against backend/gm_bench.dbc (BENCH-VERIFIED signals "
+                          "only); read-only, never transmits."},
         "uds": {"endpoint": f"{config.DIAG_HOST}:{config.DIAG_PORT}", "transport": "custom GM 8-byte header (not DoIP)",
                 "tester": f"{config.UDS_TESTER:04X}", "ecu": f"{config.UDS_ECU:04X}", "vlan": "vlan4 via eth0.4"},
         "safety": "reads are safe/live; every destructive action (CAN sequences, UDS routines, "
@@ -83,6 +97,10 @@ async def api_meta():
                               "(RX path firmware-traced only). Scaffolding only -- never "
                               "transmits.",
         },
+        "pi_host": "GET /api/pi/status (CPU/RAM/disk/interfaces/services) and GET /api/pi/wifi "
+                   "are read-only; reboot, service restarts and Wi-Fi connect/disconnect are "
+                   "Tier-2 (/api/pi/.../plan then .../execute). A Wi-Fi password is accepted "
+                   "only in the connect execute body and is never returned.",
         "docs": "/api/docs",
     }
 
@@ -114,6 +132,15 @@ async def ws_can(ws: WebSocket):
         pass
     finally:
         CAN.unsubscribe(q)
+
+
+@app.get("/api/can/decode", tags=["can"])
+async def can_decode():
+    """Read-only: the latest decoded named signals from the passive observer, run through
+    a vendored opendbc CANParser against backend/gm_bench.dbc. Every signal is BENCH-
+    VERIFIED (each carries its platform/can_network.md citation); this never transmits and
+    only reads frames already flowing. Poll it for a live view (the UI refreshes it)."""
+    return CAN_DECODER.snapshot()
 
 
 @app.get("/api/can/sequences", tags=["can"])
@@ -913,9 +940,308 @@ async def elk_boot_execute(body: ExecuteBody):
     return await elk.image_boot(Path(plan.payload["path"]))
 
 
+# ============================ Pi host (the Raspberry Pi itself) ================
+# Reads are live and safe. Reboot, service restarts and Wi-Fi connect/disconnect are
+# Tier-2 plan->execute, exactly like every destructive action above. See pi_host.py for
+# the commands, the self-restart timer, and the Wi-Fi password handling.
+@app.get("/api/pi/status", tags=["pi"])
+async def pi_status():
+    """Pi-side analog of /api/status: CPU, RAM, disks, interfaces, restartable services."""
+    return await pi_host.status()
+
+
+@app.post("/api/pi/reboot/plan", tags=["pi"])
+async def pi_reboot_plan():
+    allowed = await pi_host.sudo_allows(pi_host.REBOOT_ARGV)
+    if not allowed:
+        raise HTTPException(409, "sudo does not allow this user to run "
+                                 f"'{' '.join(pi_host.REBOOT_ARGV)}' without a password")
+    return {**tier2.REGISTRY.plan("pi-reboot", literal="REBOOT PI"),
+            "command": f"sudo -n {' '.join(pi_host.REBOOT_ARGV)} "
+                       f"(via a {pi_host.REBOOT_DELAY_S} s systemd-run timer)",
+            "sudo_preflight": "allowed (sudo -n -l)",
+            "will_do": f"Reboot the Raspberry Pi {pi_host.REBOOT_DELAY_S} s after confirming. "
+                       "The dashboard, CAN keepalive, UART bridge and every terminal stop until "
+                       "it is back (typically under a minute); this page waits and reconnects.",
+            "risk": "DISRUPTIVE: the whole bench host goes offline; the radio loses its CAN "
+                    "keepalive for the duration of the reboot."}
+
+
+@app.post("/api/pi/reboot/execute", tags=["pi"])
+async def pi_reboot_execute(body: ExecuteBody):
+    try:
+        tier2.REGISTRY.take("pi-reboot", body.token, body.literal)
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e))
+    return await pi_host.reboot()
+
+
+@app.post("/api/pi/restart/{target}/plan", tags=["pi"])
+async def pi_restart_plan(target: str):
+    spec = pi_host.TARGETS.get(target)
+    if spec is None:
+        raise HTTPException(404, f"unknown restart target {target!r}; one of {list(pi_host.TARGETS)}")
+    extra = {}
+    if target == "nginx":
+        ok, msg = await pi_host.nginx_config_ok()
+        if not ok:
+            raise HTTPException(409, f"nginx -t fails, refusing to plan a restart: {msg}")
+        extra["config_test"] = "nginx -t passed"
+    return {**tier2.REGISTRY.plan("pi-restart", literal=f"RESTART {target.upper()}",
+                                  payload={"target": target}),
+            "target": spec["label"], "units": ", ".join(spec["units"]), **extra,
+            "will_do": spec["desc"],
+            "risk": "DISRUPTIVE: interrupts a running bench service."}
+
+
+@app.post("/api/pi/restart/{target}/execute", tags=["pi"])
+async def pi_restart_execute(target: str, body: ExecuteBody):
+    try:
+        plan = tier2.REGISTRY.take("pi-restart", body.token, body.literal)
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e))
+    if plan.payload.get("target") != target:
+        raise HTTPException(400, "token was issued for a different restart target")
+    return await pi_host.restart(target)
+
+
+@app.get("/api/pi/wifi", tags=["pi"])
+async def pi_wifi():
+    """NetworkManager Wi-Fi view: radio, Wi-Fi devices, saved profiles, visible networks
+    (cached scan). Never returns a secret."""
+    return await pi_host.wifi_state()
+
+
+@app.post("/api/pi/wifi/rescan", tags=["pi"])
+async def pi_wifi_rescan():
+    """Non-destructive: ask NetworkManager for a fresh scan (it rate-limits)."""
+    return await pi_host.rescan((await pi_host.wifi_state())["device"])
+
+
+class WifiPlanBody(BaseModel):
+    uuid: str | None = None        # connect a saved profile
+    ssid: str | None = None        # or join by SSID
+    hidden: bool = False
+    with_password: bool = False    # the password itself is only sent to .../execute
+    device: str | None = None
+
+
+def _viewing_via(request: Request, ipv4: list[str]) -> bool:
+    host = (request.headers.get("host") or "").rsplit(":", 1)[0].strip("[]")
+    return any(a.split("/")[0] == host for a in ipv4)
+
+
+async def _wifi_device(want: str | None) -> dict:
+    st = await pi_host.wifi_state()
+    devs = st["devices"]
+    if not devs:
+        raise HTTPException(409, "NetworkManager reports no Wi-Fi device on this Pi")
+    dev = next((d for d in devs if d["device"] == want), None) if want else devs[0]
+    if dev is None:
+        raise HTTPException(404, f"no Wi-Fi device {want!r}")
+    if st["radio"] != "enabled":
+        raise HTTPException(409, f"the Wi-Fi radio is {st['radio']} (nmcli radio wifi)")
+    return dev
+
+
+@app.post("/api/pi/wifi/connect/plan", tags=["pi"])
+async def pi_wifi_connect_plan(body: WifiPlanBody, request: Request):
+    dev = await _wifi_device(body.device)
+    device = dev["device"]
+    if body.uuid:
+        saved = await pi_host.find_saved(uuid=body.uuid)
+        if saved is None:
+            raise HTTPException(404, "no saved Wi-Fi profile with that id")
+        payload = {"mode": "saved", "uuid": saved["uuid"], "ssid": saved["ssid"], "device": device}
+        will = (f"Connect {device} to saved network \"{saved['ssid']}\" (profile "
+                f"\"{saved['name']}\", using the password NetworkManager already stores).")
+        ssid, password_rule = saved["ssid"], "none"
+    elif body.ssid is not None:
+        try:
+            ssid = pi_host.validate_ssid(body.ssid)
+        except pi_host.WifiInputError as e:
+            raise HTTPException(400, str(e))
+        seen = await pi_host.visible_entry(ssid, device)
+        kind = seen["kind"] if seen else "wpa-psk"
+        if kind == "enterprise":
+            raise HTTPException(409, f"\"{ssid}\" uses 802.1X (enterprise) authentication, "
+                                     "which this control does not set up")
+        if seen is None and not body.hidden:
+            raise HTTPException(404, f"\"{ssid}\" is not in the current scan; rescan, or tick "
+                                     "'hidden network' to join it anyway")
+        existing = await pi_host.find_saved(ssid=ssid)
+        if kind == "open" and body.with_password:
+            raise HTTPException(400, f"\"{ssid}\" is an open network; leave the password empty")
+        if kind != "open" and not body.with_password and existing is None:
+            raise HTTPException(400, f"\"{ssid}\" is secured ({seen['security'] if seen else 'WPA'}); "
+                                     "a password is required")
+        payload = {"mode": "join", "ssid": ssid, "device": device, "kind": kind,
+                   "hidden": body.hidden, "with_password": body.with_password,
+                   "existing_uuid": existing["uuid"] if existing else None}
+        if existing:
+            will = (f"Connect {device} to \"{ssid}\" using its existing saved profile "
+                    f"\"{existing['name']}\"" + (", replacing the password NetworkManager stores "
+                                                 "for it with the one you entered." if body.with_password else "."))
+        else:
+            will = (f"Create a NetworkManager profile \"{ssid}\" ({kind}, autoconnect on"
+                    + (", hidden" if body.hidden else "") + f") and connect {device} to it"
+                    + (". The password goes only to NetworkManager, which stores it in its own "
+                       "root-only profile" if body.with_password else "")
+                    + ". If the connection fails, the new profile is removed again.")
+    else:
+        raise HTTPException(400, "give either uuid (a saved profile) or ssid")
+    risk = "Changes the Pi's network state (Wi-Fi only; the wired links are not touched)."
+    if dev.get("connected") and dev.get("ssid") and dev["ssid"] != ssid:
+        risk += f" {device} is currently on \"{dev['ssid']}\"; that link is dropped."
+        if _viewing_via(request, dev.get("ipv4", [])):
+            risk += " You are viewing this page through that Wi-Fi link and will lose it."
+    return {**tier2.REGISTRY.plan("pi-wifi-connect", literal=f"CONNECT {ssid}", payload=payload),
+            "network": ssid, "device": device,
+            "password": "entered, sent with Execute only" if payload.get("with_password") else "not needed",
+            "will_do": will, "risk": risk}
+
+
+@app.post("/api/pi/wifi/connect/execute", tags=["pi"])
+async def pi_wifi_connect_execute(request: Request):
+    """Body: {token, literal, password?}. Parsed by hand, not by a pydantic model: FastAPI's
+    422 validation error echoes the request body back (it would echo the password), so
+    every error from this endpoint is a fixed message that never contains a value."""
+    try:
+        data = json.loads(await request.body() or b"{}")
+    except ValueError:
+        raise HTTPException(400, "body must be JSON: {token, literal, password?}")
+    if not isinstance(data, dict) or not isinstance(data.get("token"), str) \
+            or not isinstance(data.get("literal"), str):
+        raise HTTPException(400, "body must be JSON: {token, literal, password?}")
+    password = data.pop("password", None)
+    if password == "":
+        password = None
+    try:
+        if password is not None:
+            pi_host.validate_psk(password)
+        plan = tier2.REGISTRY.take("pi-wifi-connect", data["token"], data["literal"])
+    except pi_host.WifiInputError as e:
+        raise HTTPException(400, str(e))
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e))
+    p = plan.payload
+    if p["mode"] == "saved" and password is not None:
+        raise HTTPException(400, "a saved profile connects with its stored password; none may be sent")
+    if p["mode"] == "join" and bool(p.get("with_password")) != (password is not None):
+        raise HTTPException(400, "the plan was made " + ("with" if p.get("with_password") else "without")
+                                 + " a password; plan again")
+    try:
+        return await pi_host.connect(p, password)
+    finally:
+        password = None
+        data.clear()
+
+
+class WifiDisconnectBody(BaseModel):
+    device: str | None = None
+
+
+@app.post("/api/pi/wifi/disconnect/plan", tags=["pi"])
+async def pi_wifi_disconnect_plan(body: WifiDisconnectBody, request: Request):
+    dev = await _wifi_device(body.device)
+    if not dev.get("connected"):
+        raise HTTPException(409, f"{dev['device']} is not connected")
+    risk = "Changes the Pi's network state (Wi-Fi only; the wired links are not touched)."
+    if _viewing_via(request, dev.get("ipv4", [])):
+        risk += " You are viewing this page through this Wi-Fi link and will lose it."
+    return {**tier2.REGISTRY.plan("pi-wifi-disconnect", literal=f"DISCONNECT {dev['device']}",
+                                  payload={"device": dev["device"]}),
+            "device": dev["device"], "network": dev.get("ssid") or "?",
+            "will_do": f"Disconnect {dev['device']} from \"{dev.get('ssid') or '?'}\" "
+                       "(nmcli device disconnect). The saved profile is kept.",
+            "risk": risk}
+
+
+@app.post("/api/pi/wifi/disconnect/execute", tags=["pi"])
+async def pi_wifi_disconnect_execute(body: ExecuteBody):
+    try:
+        plan = tier2.REGISTRY.take("pi-wifi-disconnect", body.token, body.literal)
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e))
+    return await pi_host.disconnect(plan.payload["device"])
+
+
+# ============================ Field capture (USB) ==============================
+# Total raw capture of T1 (eth0), can0 and the VIP UART to a USB drive; see capture.py.
+# Start is Tier-2 (it mounts a drive with sudo and opens raw/promiscuous capture sockets);
+# Stop and Unmount are plain actions, like stopping a continuous CAN sequence: they only
+# end and flush things and must be reachable instantly before pulling the drive.
+class CaptureStartBody(BaseModel):
+    volume: str | None = None       # USB volume id (UUID or kernel name) from /status
+    streams: list[str] = ["t1", "can", "uart"]
+
+
+class CaptureUnmountBody(BaseModel):
+    volume: str
+
+
+@app.get("/api/capture/status", tags=["capture"])
+async def capture_status():
+    return await CAPTURE.status()
+
+
+@app.post("/api/capture/start/plan", tags=["capture"])
+async def capture_start_plan(body: CaptureStartBody):
+    try:
+        pre = await CAPTURE.preflight(body.volume, body.streams)
+    except (ValueError, RuntimeError) as e:
+        raise HTTPException(409, str(e))
+    v = pre["volume"]
+    where = capture.mount_target(v)
+    files = {"t1": "t1.pcap", "can": f"{capture.CAN_IFACE}.log", "uart": "uart.log + uart.timing.tsv"}
+    return {**tier2.REGISTRY.plan("capture-start", literal="START CAPTURE",
+                                  payload={"volume": v["id"], "streams": pre["streams"]}),
+            "drive": f"{v['label'] or v['name']} ({v['path']}, {v['fstype']}, "
+                     f"{(v['disk'].get('vendor') + ' ' + v['disk'].get('model')).strip() or 'USB'})",
+            "free": f"{v['free'] >> 20:,} MiB" if v.get("free") is not None else "checked after mount",
+            "mount": "already mounted" if v["mountpoint"] else "mounted now (sudo mount)",
+            "on_stop": "files closed, synced, drive unmounted -> safe to unplug",
+            "writes_to": f"{where}/{capture.CAPTURE_DIRNAME}/<YYYYmmdd-HHMMSS>/",
+            "streams": ", ".join(capture.STREAMS[k]["label"] for k in pre["streams"]),
+            "files": ", ".join(files[k] for k in pre["streams"]) + ", session.json, events.log",
+            "will_do": "Mount the USB volume if needed, create one session folder and start raw, "
+                       "unfiltered capture of the selected streams until you press Stop (or the "
+                       "drive fills / is removed). Nothing is transmitted; the CAN observer, "
+                       "decoder, keepalive, UDS and the live UART view keep running unchanged.",
+            "risk": "Opens a promiscuous raw capture on eth0 and a raw CAN socket, and mounts a "
+                    "drive with sudo. Captured files contain everything on the links."}
+
+
+@app.post("/api/capture/start/execute", tags=["capture"])
+async def capture_start_execute(body: ExecuteBody):
+    try:
+        plan = tier2.REGISTRY.take("capture-start", body.token, body.literal)
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e))
+    try:
+        return await CAPTURE.start(plan.payload["volume"], plan.payload["streams"])
+    except (ValueError, RuntimeError, OSError, asyncio.TimeoutError) as e:
+        return {"ok": False, "error": f"{type(e).__name__}: {e}"}
+
+
+@app.post("/api/capture/stop", tags=["capture"])
+async def capture_stop():
+    """Stop every capture stream, flush, write session.json, sync and unmount the drive."""
+    return await CAPTURE.stop()
+
+
+@app.post("/api/capture/unmount", tags=["capture"])
+async def capture_unmount(body: CaptureUnmountBody):
+    try:
+        return await CAPTURE.unmount_volume(body.volume)
+    except ValueError as e:
+        raise HTTPException(409, str(e))
+
+
 # ============================ OpenAPI risk tiers ===============================
 _RISK_TIER = {
     "status": 0, "can": 0, "uart": 0, "t1": 0, "adb": 1, "uds": 1, "calibration": 2, "elk": 2,
+    "pi": 0, "capture": 0,
 }
 _TIER2_PATH_HINTS = ("/plan", "/execute", "/routine/", "/sequence/", "/write", "/enter", "/boot")
 

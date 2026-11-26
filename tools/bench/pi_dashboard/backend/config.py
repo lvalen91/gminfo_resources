@@ -28,6 +28,12 @@ ELK_IMAGE_DIR = Path(os.environ.get("ELK_IMAGE_DIR", "/var/lib/pibench/elk_image
 CAN_IFACE = os.environ.get("CAN_IFACE", "can0")
 KEEPALIVE_UNIT = "pibench-can-keepalive.service"
 CAN0_UNIT = "pibench-can0.service"
+CAN0_SETUP = os.environ.get("CAN0_SETUP", "/opt/pibench/bin/can0-setup")  # deploy/can0-setup
+
+# --- Pi host (System tab): units the dashboard may restart, all via `sudo -n` ----
+DASHBOARD_UNIT = "pibench-dashboard.service"
+SER2NET_UNIT = "ser2net.service"
+NGINX_UNIT = "nginx.service"
 
 # --- diagnosticsd UDS-over-TCP (vlan4) ------------------------------------------
 # Custom GM 8-byte big-endian header: [SRC:2][TGT:2][LEN:4] + raw UDS (NOT DoIP).

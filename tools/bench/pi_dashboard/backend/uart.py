@@ -40,8 +40,9 @@ class UartPort:
     def streaming(self) -> bool:
         return self._task is not None and not self._task.done()
 
-    def subscribe(self) -> asyncio.Queue:
-        q: asyncio.Queue = asyncio.Queue(maxsize=1000)
+    def subscribe(self, maxsize: int = 1000) -> asyncio.Queue:
+        # maxsize: the field-capture tap (capture.py) asks for a deeper queue than a browser
+        q: asyncio.Queue = asyncio.Queue(maxsize=maxsize)
         self._subs.add(q)
         if not self.streaming:
             self._task = asyncio.create_task(self._run())

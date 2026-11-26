@@ -54,6 +54,9 @@ $$("#tabs button").forEach(b => b.onclick = () => {
   $$(".tab").forEach(t => t.classList.toggle("active", t.id === "tab-" + b.dataset.tab));
   if (b.dataset.tab === "uart") initUart();
   if (b.dataset.tab === "t1") refreshT1();
+  if (b.dataset.tab === "pi") startPiPoll(); else stopPiPoll();
+  if (b.dataset.tab === "can") startCanDecodePoll(); else stopCanDecodePoll();
+  if (b.dataset.tab === "capture") startCapPoll(); else stopCapPoll();
   // a terminal opened (or the window resized) while its tab was hidden has a stale size
   if (b.dataset.tab === "term") {
     piFit && piFit.fit(); adbFit && adbFit.fit();
@@ -112,6 +115,7 @@ async function refreshStatus() {
     parts.push(ind("can", "can0", canDot,
       `observer=${obs.state} controller=${can.state || "?"} errors=${obs.errors ?? "?"} keepalive=${can.keepalive_active}`));
     parts.push(ind("ka", "keepalive", can.keepalive_active ? "ok" : "bad", "0x529 sender (systemd)"));
+    applyKeepaliveToggle(can.keepalive_active);
     parts.push(ind("v5", "T1 vlan5", dotFor(t1.vlan5.state),
       `${t1.vlan5.state}: ${t1.vlan5.addr} radio_ping=${t1.vlan5.radio_ping}`));
     parts.push(ind("v4", "vlan4 diag", dotFor(t1.vlan4.state),
@@ -122,6 +126,10 @@ async function refreshStatus() {
     const uok = s.uart.filter(u => u.state === "ok").length;
     parts.push(ind("uart", `UART ${uok}/${s.uart.length}`, uok ? "ok" : "warn",
       s.uart.map(u => `${u.id}: ${u.state} (${u.note})`).join("\n")));
+    // field capture: shown only while recording, or after a session was aborted
+    const cap = s.capture || {};
+    if (cap.state === "capturing") parts.push(ind("cap", "REC", "bad", `field capture running: ${cap.id}`));
+    else if (cap.state === "aborted") parts.push(ind("cap", "capture aborted", "warn", `${cap.id}: ${cap.reason}`));
     $("#indicators").innerHTML = parts.join("");
   } catch (e) {
     // Before the first successful reply this is still "connecting" (amber, says it is
@@ -219,18 +227,85 @@ function startCanWS() {
     setTimeout(startCanWS, 2000);
   };
 }
+
+/* ---- decoded signals (read-only: /api/can/decode) ----
+// Polls the backend decoder, which runs the same passive observer's frames through a
+// vendored opendbc CANParser against backend/gm_bench.dbc. Nothing here transmits. The
+// poll runs only while the CAN tab is on screen (started at boot, since CAN is default). */
+let canDecodePoll = null, canDecodeBusy = false, canDecodeEver = false;
+async function refreshCanDecode() {
+  if (canDecodeBusy) return;
+  canDecodeBusy = true;
+  try { renderCanDecode(await api("/can/decode", { timeout: 10000 })); canDecodeEver = true; }
+  catch (e) {
+    if (!canDecodeEver) $("#canDecode").innerHTML = loadingHTML(`couldn't load (${e.message}) — retrying…`, true);
+  } finally { canDecodeBusy = false; }
+}
+function renderCanDecode(d) {
+  $("#canDecodeMeta").innerHTML =
+    `DBC <span class="mono">${esc(d.dbc)}</span> · ${d.message_count} messages · ` +
+    `<b>${d.frames_decoded}</b> frames decoded`;
+  const blocks = d.messages.map(m => {
+    const pill = m.seen ? statePill("ok", `seen ×${m.count}`) : statePill("stale", "not seen yet");
+    const age = m.seen && m.age_s != null ? `<span class="row-sub">${m.age_s}s ago</span>` : "";
+    const raw = m.seen ? `<span class="mono muted">${esc(m.raw_hex)}</span>` : "";
+    const sigRows = m.signals.map(s => {
+      const isEnum = s.has_enum && typeof s.value === "string";
+      const val = isEnum
+        ? `<span class="state-pill state-ok">${esc(s.value)}</span> <span class="muted mono">(${s.raw})</span>`
+        : `<b class="mono">${esc(s.value)}</b>`;
+      const note = s.note ? ` title="${esc(s.note)}"` : "";
+      return `<tr><td class="mono"${note}>${esc(s.name)}${s.note ? ' <span class="muted">&#9432;</span>' : ""}</td>
+        <td>${val}</td></tr>`;
+    }).join("");
+    return `<div class="decode-msg${m.seen ? "" : " unseen"}">
+      <div class="decode-head">
+        <span class="mono decode-id">0x${esc(m.id)}</span>
+        <span class="decode-name">${esc(m.name)}</span>
+        <span class="muted">DLC ${m.dlc}</span>
+        ${pill} ${age} ${raw}
+        <button class="seq-info decode-info" type="button" aria-label="about this message" title="${esc(m.note)}">&#9432;</button>
+      </div>
+      <table class="decode-sigs">${sigRows}</table>
+    </div>`;
+  }).join("");
+  $("#canDecode").innerHTML = blocks;
+}
+function startCanDecodePoll() {
+  refreshCanDecode();
+  if (!canDecodePoll) canDecodePoll = setInterval(refreshCanDecode, 1000);
+}
+function stopCanDecodePoll() { clearInterval(canDecodePoll); canDecodePoll = null; }
+
 // A sequence is one of two UI shapes, decided by the backend `kind` (sequences.py):
 //   continuous (full, startup-keepalive) -> an ON/OFF toggle; the run transmits until
 //     stopped (SIGTERM via /can/sequence/stop).
-//   one-shot (startup, vip-reset, keepalive-start/stop) -> a RUN control with a live
-//     progress/elapsed readout; the process exits on its own. `duration_s` (when the code
-//     knows it) drives a determinate bar; otherwise an indeterminate spinner + elapsed.
+//   one-shot (startup, vip-reset) -> a RUN control with a live progress/elapsed readout;
+//     the process exits on its own. `duration_s` (when the code knows it) drives a
+//     determinate bar; otherwise an indeterminate spinner + elapsed.
 // While a one-shot is mid-run every row greys out (one-shots own the bus exclusively, so
 // a continuous schedule is itself stopped by the backend's exclusive_bus takeover).
+//
+// keepalive-start/keepalive-stop (kind service-start/service-stop) are a long-running
+// systemd service, not a one-shot or a continuous CAN-frame loop -- they get the same
+// ON/OFF toggle affordance as "continuous" (one real control, not two separate buttons),
+// but its on/off state comes from can.keepalive_active (/api/status, already polled by
+// refreshStatus()), never from continuous_status() -- that endpoint only knows about the
+// true continuous sequences and has no idea the keepalive service exists.
 let _seqSpecs = [];
 let _seqBusyOneshot = false;
 const seqRow = (name) => $(`#seqList .seq-row[data-seq="${CSS.escape(name)}"]`);
 const seqIsContinuous = (s) => s.kind === "continuous";
+const KEEPALIVE_START = "keepalive-start", KEEPALIVE_STOP = "keepalive-stop";
+// No-dry-run-left raw results aren't worth a permanent JSON box on every row; the full
+// result still goes somewhere -- the bench log ("Export logs" above), via LogCapture.
+const seqLog = LogCapture.register("sequences", "CAN sequences");
+function renderSeqResult(name, statusEl, result) {
+  renderExecResult(statusEl, null, result);
+  const isErr = result instanceof Error;
+  const body = isErr ? String(result) : JSON.stringify(result, null, 2);
+  seqLog.push(`[${new Date().toISOString()}] ${name}\n${body}\n\n`);
+}
 
 async function loadSequences() {
   let sequences, continuous;
@@ -243,7 +318,24 @@ async function loadSequences() {
   applyContinuous(continuous);
 }
 function renderSequences(sequences) {
-  $("#seqList").innerHTML = sequences.map(s => {
+  // keepalive-start/-stop render as one merged toggle row (see the comment above
+  // seqIsContinuous); everything else keeps its existing continuous-toggle/oneshot-run shape.
+  const shown = sequences.filter(s => s.name !== KEEPALIVE_START && s.name !== KEEPALIVE_STOP);
+  const hasKeepalivePair = sequences.some(s => s.name === KEEPALIVE_START)
+    && sequences.some(s => s.name === KEEPALIVE_STOP);
+  const keepaliveRow = hasKeepalivePair ? `<div class="seq-row" data-seq="keepalive" data-kind="keepalive">
+      <div class="seq-main">
+        <span class="seq-name">keepalive</span>
+        <button class="seq-info" data-seq="${esc(KEEPALIVE_START)}" aria-label="what this sequence does" title="what this does">&#9432;</button>
+      </div>
+      <div class="seq-control">
+        <label class="seq-toggle" title="turn the 0x529 keepalive service on/off">
+          <input type="checkbox" class="seq-switch seq-switch-keepalive">
+          <span class="seq-slider"></span><span class="seq-toggle-txt">OFF</span></label>
+      </div>
+      <div class="seq-status"><div class="exec-status"></div></div>
+    </div>` : "";
+  $("#seqList").innerHTML = keepaliveRow + shown.map(s => {
     const control = seqIsContinuous(s)
       ? `<label class="seq-toggle" title="turn this sequence on/off">
            <input type="checkbox" class="seq-switch" data-seq="${esc(s.name)}">
@@ -256,7 +348,7 @@ function renderSequences(sequences) {
         <button class="seq-info" data-seq="${esc(s.name)}" aria-label="what this sequence does" title="what this does">&#9432;</button>
       </div>
       <div class="seq-control">${control}</div>
-      <div class="seq-status"><div class="exec-status"></div><div class="exec-more"></div></div>
+      <div class="seq-status"><div class="exec-status"></div></div>
     </div>`;
   }).join("");
   $$("#seqList .seq-info").forEach(b => b.onclick = (e) => {
@@ -266,18 +358,23 @@ function renderSequences(sequences) {
   });
   $$("#seqList .seq-run").forEach(b => b.onclick = () => {
     const s = _seqSpecs.find(x => x.name === b.dataset.seq);
-    if (s.destructive && !$("#seqDryRun").checked) runSeqDestructive(s, b);
+    if (s.destructive) runSeqDestructive(s, b);
     else runSeqOneshot(s);
   });
-  $$("#seqList .seq-switch").forEach(c => c.onchange = () => {
+  $$("#seqList .seq-switch:not(.seq-switch-keepalive)").forEach(c => c.onchange = () => {
     const s = _seqSpecs.find(x => x.name === c.dataset.seq);
     toggleContinuous(s, c);
   });
+  const kaBox = $("#seqList .seq-switch-keepalive");
+  if (kaBox) kaBox.onchange = () => toggleKeepalive(kaBox);
+  applyKeepaliveToggle(lastKeepaliveActive);
 }
 // Reflect which continuous sequence (if any) is running, and the global one-shot lock.
+// Excludes the keepalive toggle: that one reflects can.keepalive_active, not this endpoint,
+// which has no idea the keepalive service exists (see the comment above seqIsContinuous).
 function applyContinuous(continuous) {
   const running = continuous && continuous.running ? continuous.sequence : null;
-  $$("#seqList .seq-switch").forEach(c => {
+  $$("#seqList .seq-switch:not(.seq-switch-keepalive)").forEach(c => {
     const on = c.dataset.seq === running;
     c.checked = on;
     const row = c.closest(".seq-row");
@@ -286,6 +383,39 @@ function applyContinuous(continuous) {
     if (txt) txt.textContent = on ? "ON" : "OFF";
   });
   updateSeqLock();
+}
+// Reflect the keepalive systemd service's real state, sourced only from can.keepalive_active
+// (refreshStatus(), below) -- never from continuous_status(). Cached in lastKeepaliveActive
+// so a re-render (tab reopen, a toggle's own result refresh) doesn't flash "OFF" before the
+// next status poll lands.
+let lastKeepaliveActive = null;
+function applyKeepaliveToggle(active) {
+  if (active == null) return;
+  lastKeepaliveActive = active;
+  const cb = $("#seqList .seq-switch-keepalive");
+  if (!cb) return;
+  cb.checked = !!active;
+  const row = cb.closest(".seq-row");
+  row.classList.toggle("seq-on", !!active);
+  const txt = row.querySelector(".seq-toggle-txt");
+  if (txt) txt.textContent = active ? "ON" : "OFF";
+}
+async function toggleKeepalive(cb) {
+  if (_seqBusyOneshot) { cb.checked = !cb.checked; return; }
+  const row = cb.closest(".seq-row");
+  const status = row.querySelector(".exec-status");
+  const name = cb.checked ? KEEPALIVE_START : KEEPALIVE_STOP;
+  _seqBusyOneshot = true; updateSeqLock();
+  renderExecPending(status);
+  let result;
+  try {
+    result = await api("/can/sequence/" + name, { method: "POST",
+      headers: { "content-type": "application/json" }, body: JSON.stringify({ dry_run: false }) });
+  } catch (e) { result = e; }
+  renderSeqResult(name, status, result);
+  _seqBusyOneshot = false; updateSeqLock();
+  await refreshContinuous();  // keepalive-stop also stops any running continuous (exclusive bus)
+  await refreshStatus();      // reconcile the toggle with the real keepalive_active state
 }
 function updateSeqLock() {
   $("#seqList").classList.toggle("seq-locked", _seqBusyOneshot);
@@ -317,57 +447,61 @@ async function refreshContinuous() {
 }
 async function runSeqOneshot(s) {
   if (_seqBusyOneshot) return;
-  const dry = $("#seqDryRun").checked;
   _seqBusyOneshot = true; updateSeqLock();
   const row = seqRow(s.name);
-  const status = row.querySelector(".exec-status"), more = row.querySelector(".exec-more");
-  renderExecPending(status, more);
-  const stop = startSeqProgress(s.name, dry ? 0 : s.duration_s);
+  const status = row.querySelector(".exec-status");
+  renderExecPending(status);
+  const stop = startSeqProgress(s.name, s.duration_s);
   let result;
   try {
     result = await api("/can/sequence/" + s.name, { method: "POST",
-      headers: { "content-type": "application/json" }, body: JSON.stringify({ dry_run: dry }) });
+      headers: { "content-type": "application/json" }, body: JSON.stringify({ dry_run: false }) });
   } catch (e) { result = e; }
   stop();
-  renderExecResult(status, more, result);
+  renderSeqResult(s.name, status, result);
   _seqBusyOneshot = false; updateSeqLock();
   await refreshContinuous();  // a one-shot may have stopped a running continuous (exclusive bus)
 }
 function runSeqDestructive(s, btn) {
-  // Destructive one-shot (vip-reset): keep the Tier-2 plan->execute confirm; drive the row
-  // lock + progress ring around the execute via the popover's exec hooks.
+  // Destructive one-shot (vip-reset): keep the Tier-2 plan->execute confirm (that's the
+  // real server-side gate, not UI friction) -- drive the row lock + progress ring, and
+  // also mirror the result into the bench log like every other sequence (the popover's
+  // own exec-more detail box is a one-time confirm aid, not something we duplicate here).
   let stop;
   tier2Popover(btn,
     () => api("/can/sequence/" + s.name + "/plan", { method: "POST" }),
     "/can/sequence/" + s.name + "/execute",
     seqRow(s.name).querySelector(".seq-status"),
     { onExecStart: () => { _seqBusyOneshot = true; updateSeqLock(); stop = startSeqProgress(s.name, s.duration_s); },
-      onExecEnd: async () => { if (stop) stop(); _seqBusyOneshot = false; updateSeqLock(); await refreshContinuous(); } });
+      onExecEnd: async (result) => {
+        if (stop) stop(); _seqBusyOneshot = false; updateSeqLock();
+        seqLog.push(`[${new Date().toISOString()}] ${s.name}\n${result instanceof Error ? String(result) : JSON.stringify(result, null, 2)}\n\n`);
+        await refreshContinuous();
+      } });
 }
 async function toggleContinuous(s, cb) {
   if (_seqBusyOneshot) { cb.checked = !cb.checked; return; }
-  const dry = $("#seqDryRun").checked;
   const row = seqRow(s.name);
-  const status = row.querySelector(".exec-status"), more = row.querySelector(".exec-more");
+  const status = row.querySelector(".exec-status");
   const turningOn = cb.checked;
-  if (turningOn && s.destructive && !dry) {
+  if (turningOn && s.destructive) {
     // A destructive continuous keeps the confirm gate; don't latch until confirmed.
     cb.checked = false;
     runSeqDestructive(s, cb.closest(".seq-toggle"));
     return;
   }
   cb.disabled = true;
-  renderExecPending(status, more);
+  renderExecPending(status);
   let result;
   try {
     result = turningOn
       ? await api("/can/sequence/" + s.name, { method: "POST",
-          headers: { "content-type": "application/json" }, body: JSON.stringify({ dry_run: dry }) })
+          headers: { "content-type": "application/json" }, body: JSON.stringify({ dry_run: false }) })
       : await api("/can/sequence/stop", { method: "POST" });
   } catch (e) { result = e; }
-  renderExecResult(status, more, result);
+  renderSeqResult(s.name, status, result);
   cb.disabled = false;
-  await refreshContinuous();  // reflect the real running state (dry-run ON never actually starts)
+  await refreshContinuous();  // reflect the real running state
 }
 let _seqPoll = null;
 let seqPollBusy = false;  // overlap guard, same pattern as refreshStatus()'s statusBusy
@@ -402,15 +536,29 @@ async function loadVehiclePowerModes() {
     }).join("");
     $$("#vehiclePowerModes button[data-mode]").forEach(b => {
       if (b.disabled) return;
-      // Anchored popover (see tier2Popover above), not the inline tier2Flow: picking a
-      // mode must stay a simple, compact control -- it must not expand the card into a
-      // new page area. The plan->type-the-literal->execute Tier-2 gate is identical.
-      b.onclick = () => tier2Popover(b,
-        () => api(`/vehicle/power-mode/${b.dataset.mode}/plan`, { method: "POST" }),
-        `/vehicle/power-mode/${b.dataset.mode}/execute`,
-        $("#vehicleOut"));
+      // Not destructive (owner call): picking a power mode is a plain select-and-highlight,
+      // no confirmation step. The backend still requires a real plan->token->execute
+      // round-trip (that's the server's actual security gate, not UI friction), so this
+      // still calls both -- it just never shows the user a popup to click through.
+      b.onclick = () => selectPowerMode(b);
     });
   } catch (e) { wrap.innerHTML = "error: " + esc(String(e)); }
+}
+async function selectPowerMode(b) {
+  const buttons = $$("#vehiclePowerModes button[data-mode]");
+  buttons.forEach(x => x.disabled = true);
+  renderExecPending($("#vehicleOut"));
+  let result;
+  try {
+    const plan = await api(`/vehicle/power-mode/${b.dataset.mode}/plan`, { method: "POST" });
+    result = await api(`/vehicle/power-mode/${b.dataset.mode}/execute`, { method: "POST",
+      headers: { "content-type": "application/json" }, body: execBodyOf(plan, {}) });
+  } catch (e) { result = e; }
+  buttons.forEach(x => x.disabled = false);
+  if (!(result instanceof Error) && execOutcome(result).ok) {
+    buttons.forEach(x => x.classList.toggle("sel", x === b));
+  }
+  renderExecResult($("#vehicleOut"), null, result);
 }
 async function loadVehicleGearPositions() {
   const wrap = $("#vehicleGearPositions");
@@ -727,6 +875,9 @@ function execOutcome(r) {
     return { ok: false, text: "Failed: " + reason };
   }
   if (r.status === "running") return { ok: true, text: `Running in background${r.pid ? ` (pid ${r.pid})` : ""}` };
+  // an action may name its own one-line outcome (Pi tab: "Connected to X on wlan0 (ip)",
+  // "Reboot scheduled in 3 s"); otherwise the generic "Done"
+  if (typeof r.summary === "string" && r.summary) return { ok: true, text: r.summary };
   return { ok: true, text: "Done" };
 }
 // statusEl gets the pill; detailsEl (may be the same element's sibling) gets the
@@ -745,7 +896,12 @@ const renderExecPending = (statusEl, detailsEl) => {
 };
 
 // Generic Tier-2 plan->execute flow with literal confirmation + optional cooldown.
-async function tier2Flow(outEl, planFn, execPath, { cooldown = 0 } = {}) {
+// Both Tier-2 helpers take the same optional hooks: execBody() returns extra execute-body
+// fields read at the moment Execute is clicked (the Wi-Fi password -- it never goes into
+// the plan request), onExecStart() / onExecEnd(result) bracket the execute call.
+const execBodyOf = (plan, opts) => JSON.stringify({ token: plan.token, literal: plan.literal,
+  ...(opts.execBody ? opts.execBody() : {}) });
+async function tier2Flow(outEl, planFn, execPath, { cooldown = 0, ...opts } = {}) {
   outEl.textContent = "planning...";
   let plan;
   try { plan = await planFn(); } catch (e) { outEl.textContent = "plan error: " + e; return; }
@@ -781,11 +937,14 @@ async function tier2Flow(outEl, planFn, execPath, { cooldown = 0 } = {}) {
   }
   btn.onclick = async () => {
     btn.disabled = true; cd.textContent = ""; renderExecPending(execStatus, execMore);
+    if (opts.onExecStart) { try { opts.onExecStart(); } catch { /* caller UI only */ } }
+    let result;
     try {
-      const r = await api(execPath, { method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token: plan.token, literal: plan.literal }) });
-      renderExecResult(execStatus, execMore, r);
-    } catch (e) { renderExecResult(execStatus, execMore, e); }
+      result = await api(execPath, { method: "POST", headers: { "content-type": "application/json" },
+        body: execBodyOf(plan, opts) });
+    } catch (e) { result = e; }
+    renderExecResult(execStatus, execMore, result);
+    if (opts.onExecEnd) { try { await opts.onExecEnd(result, execStatus); } catch { /* caller UI only */ } }
   };
 }
 
@@ -885,7 +1044,7 @@ function tier2Popover(anchorBtn, planFn, execPath, statusEl, opts = {}) {
       let result;
       try {
         result = await api(execPath, { method: "POST", headers: { "content-type": "application/json" },
-          body: JSON.stringify({ token: plan.token, literal: plan.literal }) });
+          body: execBodyOf(plan, opts) });
       } catch (e) { result = e; }
       if (opts.onExecEnd) { try { await opts.onExecEnd(result); } catch { /* caller UI only */ } }
       renderExecResult(execStatus, execMore, result);
@@ -1006,6 +1165,377 @@ $("#btnElkBootPlan").onclick = () => {
   }, "/elk/boot/execute", { cooldown: 5 });  // mandatory cooldown before a custom-image boot
 };
 
+/* ================= Raspberry Pi (the bench host itself) =================
+ * Read-only stats poll /api/pi/status every 4 s, only while this tab is open. Every
+ * state change (service restart, reboot, Wi-Fi connect/disconnect) is the same Tier-2
+ * plan -> token -> execute flow as the rest of the dashboard (tier2Popover / tier2Flow).
+ * Self-disruptive actions are scheduled server-side a few seconds out; afterwards this
+ * page polls until the restarted unit (or, for a reboot, a new boot id) is back. */
+const fmtBytes = (n) => {
+  if (n == null) return "?";
+  const u = ["B", "KB", "MB", "GB", "TB"]; let i = 0;
+  while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+  return `${n >= 100 || i === 0 ? n.toFixed(0) : n.toFixed(1)} ${u[i]}`;
+};
+const fmtDur = (s) => {
+  if (s == null) return "?";
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  return d ? `${d} d ${h} h` : h ? `${h} h ${m} m` : `${m} m ${Math.floor(s % 60)} s`;
+};
+const meter = (pct) => {
+  const p = Math.max(0, Math.min(100, pct || 0));
+  const cls = p >= 90 ? "bad" : p >= 75 ? "warn" : "";
+  return `<span class="seq-bar meter"><span class="seq-bar-fill ${cls}" style="width:${p}%"></span></span>`;
+};
+const statePill = (cls, text) => `<span class="state-pill state-${cls}">${esc(text)}</span>`;
+const pillOnly = (el, ok, text) => {   // the renderExecResult pill, for a follow-up outcome
+  if (el) el.innerHTML = `<span class="exec-pill ${ok === null ? "pending" : ok ? "ok" : "bad"}" title="${esc(text)}">${ok === null ? "" : ok ? "✓ " : "✗ "}${esc(text)}</span>`;
+};
+let piLast = null, piPoll = null, piBusy = false, piWifiLoaded = false, piSvcRendered = false;
+
+function unitPill(u) {
+  const a = u.active || "unknown";
+  const cls = a === "active" ? "ok" : (a === "activating" || a === "reloading" || a === "deactivating") ? "zero"
+    : a === "failed" ? "error" : "stale";
+  return statePill(cls, `${u.unit.replace(/\.service$/, "")}: ${a}${u.sub && u.sub !== "running" && a === "active" ? ` (${u.sub})` : ""}`);
+}
+function renderPiStatus(s) {
+  $("#piIdent").textContent = [s.hostname, s.model, s.kernel].filter(Boolean).join(" · ");
+  const c = s.cpu || {}, m = s.memory || {};
+  const rows = [];
+  rows.push(["CPU", meter(c.percent), `<b>${c.percent ?? "?"}%</b>`,
+    `load ${(c.load || []).map(x => x.toFixed(2)).join(" / ") || "?"} · ${c.cores ?? "?"} cores${c.temp_c != null ? ` · ${c.temp_c} °C` : ""}`]);
+  rows.push(["Memory", meter(m.percent), `<b>${m.percent ?? "?"}%</b>`,
+    `${fmtBytes(m.used)} of ${fmtBytes(m.total)} used · ${fmtBytes(m.available)} available` +
+    (m.swap_total ? ` · swap ${fmtBytes(m.swap_used)} / ${fmtBytes(m.swap_total)}` : "")]);
+  for (const d of s.disks || []) {
+    rows.push([`Disk <span class="mono">${esc(d.mount)}</span>`, meter(d.percent), `<b>${d.percent ?? "?"}%</b>`,
+      `${fmtBytes(d.free)} free of ${fmtBytes(d.total)}`]);
+  }
+  rows.push(["Uptime", "", `<b>${fmtDur(s.uptime_s)}</b>`, `dashboard up ${fmtDur(s.time - s.dashboard.started)}`]);
+  $("#piResources").innerHTML = `<div class="group-list">${rows.map(([k, bar, val, sub]) =>
+    `<div class="group-row pi-stat"><span class="row-label">${k}</span><span class="pi-meter">${bar}</span>
+      <span class="pi-val">${val}</span><span class="row-sub">${sub}</span></div>`).join("")}</div>`;
+
+  const ifRows = (s.interfaces || []).map(i => {
+    const up = i.admin_up && (i.operstate === "UP" || (i.operstate === "UNKNOWN" && i.carrier));
+    const pill = up ? statePill("ok", "up") : i.admin_up ? statePill("zero", "no link") : statePill("stale", "down");
+    const addrs = [...i.ipv4.map(a => `<div class="mono nowrap">${esc(a)}</div>`),
+      ...i.ipv6.map(a => `<div class="mono">${esc(a)}</div>`)].join("") || `<span class="muted">—</span>`;
+    return `<tr><td class="mono">${esc(i.name)}</td><td>${esc(i.type || "")}</td><td>${pill}</td><td>${addrs}</td>
+      <td>${i.connection ? esc(i.connection) : `<span class="muted">${esc(i.nm_state || "")}</span>`}</td></tr>`;
+  }).join("");
+  $("#piIfaces").innerHTML = `<div class="pi-table-wrap"><table><tr><th>Name</th><th>Type</th><th>State</th><th>Addresses</th><th>NM connection</th></tr>${ifRows}</table></div>`;
+  renderPiServices(s.services || []);
+}
+function renderPiServices(svcs) {
+  const wrap = $("#piServices");
+  if (!piSvcRendered) {
+    // built once (so a pending status pill under a row survives the 4 s refresh);
+    // only the unit-state pills are refreshed afterwards
+    wrap.innerHTML = svcs.map(t => `<div class="seq-row" data-target="${esc(t.target)}">
+      <div class="seq-main"><span class="seq-name">${esc(t.label)}</span>
+        <button class="seq-info" data-target="${esc(t.target)}" aria-label="what this restart does" title="what this does">&#9432;</button>
+        <span class="pi-units"></span></div>
+      <div class="seq-control"><button class="destructive pi-restart" data-target="${esc(t.target)}">Restart&hellip;</button></div>
+      <div class="seq-status"><div class="exec-status"></div><div class="exec-more"></div></div>
+    </div>`).join("");
+    $$("#piServices .seq-info").forEach(b => b.onclick = (e) => {
+      e.stopPropagation();
+      const t = (piLast.services || []).find(x => x.target === b.dataset.target);
+      infoPopover(b, (t && t.desc) || b.dataset.target);
+    });
+    $$("#piServices .pi-restart").forEach(b => b.onclick = () => piRestart(b.dataset.target, b));
+    piSvcRendered = true;
+  }
+  for (const t of svcs) {
+    const row = $(`#piServices .seq-row[data-target="${CSS.escape(t.target)}"] .pi-units`);
+    if (row) row.innerHTML = t.units.map(unitPill).join("");
+  }
+}
+async function refreshPiStatus() {
+  if (piBusy) return;
+  piBusy = true;
+  try { piLast = await api("/pi/status", { timeout: 10000 }); renderPiStatus(piLast); }
+  catch (e) {
+    if (!piLast) $("#piResources").innerHTML = loadingHTML(`couldn't load (${e.message}) -- retrying…`, true);
+    else $("#piIdent").innerHTML = `<span style="color:var(--bad)">/api/pi/status unreachable — retrying</span>`;
+  } finally { piBusy = false; }
+}
+function startPiPoll() {
+  refreshPiStatus();
+  if (!piWifiLoaded) { piWifiLoaded = true; refreshPiWifi(); }
+  if (!piPoll) piPoll = setInterval(refreshPiStatus, 4000);
+}
+function stopPiPoll() { clearInterval(piPoll); piPoll = null; }
+
+// After a scheduled self-restart / reboot: poll until `done(status)` is true, then report.
+async function waitForPi(statusEl, done, { what, timeoutS = 120, firstDelayMs = 1500 } = {}) {
+  const t0 = Date.now();
+  pillOnly(statusEl, null, `waiting for ${what} to come back…`);
+  await sleep(firstDelayMs);
+  while ((Date.now() - t0) / 1000 < timeoutS) {
+    try {
+      const s = await api("/pi/status", { timeout: 4000 });
+      if (done(s)) {
+        piLast = s; renderPiStatus(s);
+        pillOnly(statusEl, true, `${what} back up after ${((Date.now() - t0) / 1000).toFixed(1)} s`);
+        return true;
+      }
+    } catch { /* expected while it is down */ }
+    pillOnly(statusEl, null, `waiting for ${what} to come back… ${((Date.now() - t0) / 1000).toFixed(0)} s`);
+    await sleep(1500);
+  }
+  pillOnly(statusEl, false, `Failed: ${what} not back after ${timeoutS} s -- check the Pi`);
+  return false;
+}
+const unitSince = (s, unit) => {
+  for (const t of (s && s.services) || []) for (const u of t.units) if (u.unit === unit) return u;
+  return null;
+};
+
+function piRestart(target, btn) {
+  const row = $(`#piServices .seq-row[data-target="${CSS.escape(target)}"]`);
+  const spec = ((piLast && piLast.services) || []).find(t => t.target === target);
+  const unit = spec && spec.units[0].unit;
+  let before = null;
+  tier2Popover(btn, () => api(`/pi/restart/${target}/plan`, { method: "POST" }),
+    `/pi/restart/${target}/execute`, row.querySelector(".seq-status"), {
+      onExecStart: () => { before = unitSince(piLast, unit); },
+      onExecEnd: (r) => {
+        if (r instanceof Error || !r || r.ok === false) return;
+        if (r.status === "scheduled") {
+          // runs after the popover has written its pill into the row's status line
+          setTimeout(() => waitForPi(row.querySelector(".seq-status .exec-status"), (s) => {
+            const u = unitSince(s, unit);
+            return u && u.active === "active" && (!before || u.since_mono !== before.since_mono);
+          }, { what: spec.label, firstDelayMs: 2500 }), 50);
+        } else setTimeout(refreshPiStatus, 300);
+      } });
+}
+
+/* ---- Wi-Fi ---- */
+let piWifi = null;
+async function refreshPiWifi() {
+  try { piWifi = await api("/pi/wifi", { timeout: 15000 }); renderPiWifi(piWifi); }
+  catch (e) { $("#piWifiState").innerHTML = loadingHTML(`couldn't read Wi-Fi state (${e.message})`, true); }
+}
+function renderPiWifi(w) {
+  const dev = (w.devices || [])[0];
+  let head;
+  if (!dev) head = `<p>${statePill("error", "no Wi-Fi device")} NetworkManager reports no Wi-Fi interface.</p>`;
+  else {
+    const conn = dev.connected
+      ? `${statePill("ok", "connected")} <b>${esc(dev.ssid || dev.connection || "?")}</b> on <span class="mono">${esc(dev.device)}</span>${dev.ipv4.length ? ` · <span class="mono">${esc(dev.ipv4.join(", "))}</span>` : ""}`
+      : `${statePill("stale", dev.nm_state || "disconnected")} <span class="mono">${esc(dev.device)}</span> is not connected`;
+    head = `<div class="btnrow"><span>${conn}</span>
+      <span class="muted">radio ${esc(w.radio)}</span>
+      ${dev.connected ? `<button type="button" class="destructive" id="btnPiWifiDisc">Disconnect…</button>` : ""}
+      <button type="button" id="btnPiWifiRefresh">Refresh</button></div>`;
+  }
+  $("#piWifiState").innerHTML = head;
+  const disc = $("#btnPiWifiDisc");
+  if (disc) disc.onclick = () => tier2Popover(disc,
+    () => api("/pi/wifi/disconnect/plan", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" }),
+    "/pi/wifi/disconnect/execute", $("#piWifiOut"), { onExecEnd: () => setTimeout(refreshPiWifi, 300) });
+  const rf = $("#btnPiWifiRefresh"); if (rf) rf.onclick = refreshPiWifi;
+
+  $("#piWifiSaved").innerHTML = (w.saved || []).length ? w.saved.map(c => `<div class="seq-row" data-uuid="${esc(c.uuid)}">
+      <div class="seq-main"><span class="seq-name">${esc(c.ssid)}</span>
+        ${c.name !== c.ssid ? `<span class="muted">profile ${esc(c.name)}</span>` : ""}
+        <span class="tag na">${esc(c.security)}</span>
+        <span class="tag na">autoconnect ${c.autoconnect ? "on" : "off"}</span>
+        ${c.active ? statePill("ok", "active") : ""}</div>
+      <div class="seq-control"><button class="pi-wifi-saved" data-uuid="${esc(c.uuid)}" ${c.active ? "disabled title='already connected'" : ""}>Connect…</button></div>
+      <div class="seq-status"></div></div>`).join("")
+    : `<p class="hint">No saved Wi-Fi networks.</p>`;
+  $$("#piWifiSaved .pi-wifi-saved").forEach(b => b.onclick = () => {
+    const status = b.closest(".seq-row").querySelector(".seq-status");
+    tier2Popover(b, () => api("/pi/wifi/connect/plan", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ uuid: b.dataset.uuid }) }), "/pi/wifi/connect/execute", status,
+      { onExecEnd: () => setTimeout(refreshPiWifi, 300) });
+  });
+
+  const vis = w.visible || [];
+  $("#piWifiVisible").innerHTML = vis.map(v => `<option value="${esc(v.ssid)}">`).join("");
+  $("#piWifiVisibleList").innerHTML = vis.length
+    ? `<details class="exec-details"><summary>${vis.length} network(s) in the last scan</summary><table>
+        <tr><th>SSID</th><th>Signal</th><th>Security</th><th></th></tr>${vis.map(v => `<tr>
+        <td>${esc(v.ssid)}${v.in_use ? " " + statePill("ok", "in use") : ""}${v.saved ? ' <span class="tag na">saved</span>' : ""}</td>
+        <td><span class="pi-meter">${meter(v.signal)}</span> <span class="mono">${v.signal}</span></td>
+        <td>${esc(v.security)}</td>
+        <td><button type="button" class="pi-wifi-use" data-ssid="${esc(v.ssid)}">Use</button></td></tr>`).join("")}</table></details>`
+    : `<p class="hint">No networks in the cached scan -- press Rescan.</p>`;
+  $$("#piWifiVisibleList .pi-wifi-use").forEach(b => b.onclick = () => {
+    $("#piWifiSsid").value = b.dataset.ssid; $("#piWifiHidden").checked = false; $("#piWifiPass").focus();
+  });
+}
+$("#piWifiJoin").onsubmit = (e) => {
+  e.preventDefault();
+  const ssid = $("#piWifiSsid").value;
+  if (!ssid) { pillOnly($("#piWifiOut"), false, "Failed: enter or pick a network name"); return; }
+  const withPw = $("#piWifiPass").value.length > 0;
+  tier2Popover($("#btnPiWifiJoin"),
+    () => api("/pi/wifi/connect/plan", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ssid, hidden: $("#piWifiHidden").checked, with_password: withPw }) }),
+    "/pi/wifi/connect/execute", $("#piWifiOut"), {
+      // the password is read only now, sent only in this execute body, then cleared from
+      // the field; it never goes into the plan request, a URL, a log or a response
+      execBody: () => {
+        const pw = $("#piWifiPass").value;
+        $("#piWifiPass").value = "";
+        return pw ? { password: pw } : {};
+      },
+      onExecEnd: () => setTimeout(refreshPiWifi, 300) });
+};
+$("#btnPiWifiRescan").onclick = async () => {
+  const b = $("#btnPiWifiRescan"), out = $("#piWifiRescanOut");
+  b.disabled = true; out.innerHTML = `<span class="exec-pill pending">scanning…</span>`;
+  let r;
+  try { r = await api("/pi/wifi/rescan", { method: "POST" }); } catch (e) { r = e; }
+  renderExecResult(out, null, r);
+  b.disabled = false;
+  await refreshPiWifi();
+};
+
+/* ---- reboot (danger zone) ---- */
+$("#btnPiRebootPlan").onclick = () => {
+  const bootBefore = piLast && piLast.boot_id;
+  tier2Flow($("#piRebootOut"), () => api("/pi/reboot/plan", { method: "POST" }), "/pi/reboot/execute", {
+    onExecEnd: (r, statusEl) => {
+      if (r instanceof Error || !r || r.ok === false) return;
+      const prev = r.previous_boot_id || bootBefore;
+      return waitForPi(statusEl, (s) => s.boot_id && s.boot_id !== prev,
+        { what: "the Pi", timeoutS: 300, firstDelayMs: 8000 });
+    } });
+};
+
+/* ================= Field capture (raw T1 + CAN + UART to USB) =================
+ * Polls /api/capture/status every 2 s while this tab is open (the backend's own monitor
+ * runs regardless). Start is the Tier-2 popover like every other action that opens raw
+ * sockets / runs sudo; Stop and Unmount are plain actions (they only end and flush). */
+let capPoll = null, capBusy = false, capLast = null, capSelVol = null, capPickBuilt = false;
+const capKeys = () => $$("#capStreamPick input:checked").map(i => i.value);
+const CAP_STATE = { capturing: "ok", restarting: "zero", stopping: "zero", pending: "stale",
+  stopped: "stale", failed: "error", killed: "error" };
+function capVolName(v) {
+  const d = v.disk || {};
+  return `${v.label || v.name}${(d.vendor || d.model) ? ` — ${[d.vendor, d.model].filter(Boolean).join(" ")}` : ""}`;
+}
+function renderCapture(s) {
+  capLast = s;
+  const sess = s.session, active = !!(sess && sess.active);
+  // ---- safe-to-unplug banner ----
+  const safe = s.safe_to_unplug || {};
+  let cls, head;
+  if (active) { cls = "rec"; head = "Recording — do NOT unplug the drive"; }
+  else if (sess && sess.state === "stopping") { cls = "no"; head = "Stopping — flushing files…"; }
+  else if (safe.safe === true) { cls = "yes"; head = "Safe to unplug"; }
+  else if (safe.safe === false) { cls = "no"; head = "Not safe to unplug yet"; }
+  else { cls = ""; head = "No USB drive"; }
+  $("#capSafe").innerHTML = `<div class="cap-safe ${cls}"><span class="cap-dot"></span>
+    <div>${esc(head)}<small>${esc(active ? `session ${sess.id} on ${sess.mountpoint}` : safe.reason || "")}</small></div></div>`;
+
+  // ---- stream picker (built once) ----
+  if (!capPickBuilt) {
+    $("#capStreamPick").innerHTML = (s.streams || []).map(x =>
+      `<label><input type="checkbox" value="${esc(x.key)}" checked> ${esc(x.label)}</label>`).join("");
+    capPickBuilt = true;
+  }
+  $$("#capStreamPick input").forEach(i => i.disabled = active);
+
+  // ---- volumes ----
+  const vols = s.volumes || [];
+  const usable = vols.filter(v => v.supported || v.mountpoint);
+  if (!vols.find(v => v.id === capSelVol)) capSelVol = usable.length === 1 ? usable[0].id : null;
+  if (active) capSelVol = sess.volume.id;
+  $("#capVolumes").innerHTML = s.volumes_error ? loadingHTML(`couldn't list drives: ${s.volumes_error}`, true)
+    : !vols.length ? `<p class="hint">No USB drive detected. Plug one in (FAT32, exFAT, NTFS or ext4); it appears here within a couple of seconds.</p>`
+    : vols.map(v => {
+      const used = v.total ? 100 * (1 - v.free / v.total) : null;
+      const mnt = v.mountpoint
+        ? `${statePill(v.ours ? "ok" : "zero", v.ours ? "mounted" : "mounted (not by the dashboard)")} <span class="mono">${esc(v.mountpoint)}</span>
+           ${v.total ? `<span class="pi-meter">${meter(used)}</span> <span class="muted">${fmtBytes(v.free)} free of ${fmtBytes(v.total)}</span>` : ""}`
+        : statePill("stale", "not mounted");
+      const sel = v.id === capSelVol;
+      return `<div class="seq-row cap-vol${sel ? " selected" : ""}" data-vol="${esc(v.id)}">
+        <div class="seq-main"><input type="radio" name="capVol" ${sel ? "checked" : ""} ${active || !(v.supported || v.mountpoint) ? "disabled" : ""}>
+          <span class="seq-name">${esc(capVolName(v))}</span>
+          <span class="tag ${v.supported ? "na" : "avoid"}">${esc(v.fstype || "no filesystem")}${v.supported ? "" : " (unsupported)"}</span>
+          <span class="muted mono">${esc(v.path)} · ${fmtBytes(v.size)}</span></div>
+        <div class="seq-control">${v.mountpoint && !active ? `<button type="button" class="cap-unmount" data-vol="${esc(v.id)}">Unmount</button>` : ""}</div>
+        <div class="seq-status">${mnt}</div></div>`;
+    }).join("");
+  $$("#capVolumes .cap-vol").forEach(r => r.onclick = (e) => {
+    if (active || e.target.closest("button")) return;
+    const v = vols.find(x => x.id === r.dataset.vol);
+    if (v && (v.supported || v.mountpoint)) { capSelVol = v.id; renderCapture(capLast); }
+  });
+  $$("#capVolumes .cap-unmount").forEach(b => b.onclick = async (e) => {
+    e.stopPropagation(); b.disabled = true; pillOnly($("#capOut"), null, "unmounting…");
+    let r; try { r = await api("/capture/unmount", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ volume: b.dataset.vol }) }); } catch (err) { r = err; }
+    renderExecResult($("#capOut"), null, r); refreshCapture();
+  });
+
+  // ---- buttons ----
+  $("#btnCapStart").disabled = active || !vols.length;
+  $("#btnCapStart").title = !vols.length ? "plug in a USB drive first" : active ? "a session is running" : "";
+  $("#btnCapStop").disabled = !active;
+  $("#btnCapStop").className = active ? "primary" : "";
+
+  // ---- session / streams / events ----
+  const show = sess || s.last;
+  if (!show) { $("#capSession").innerHTML = ""; $("#capStreamsWhich").textContent = ""; $("#capEvents").textContent = ""; return; }
+  const dur = ((show.stopped || s.time) - show.started);
+  const used = show.total ? 100 * (1 - show.free / show.total) : null;
+  $("#capSession").innerHTML = `<div class="group-list">
+    <div class="group-row"><span class="row-label">${sess ? "Current session" : "Last session"}</span>
+      <span>${statePill(show.state === "capturing" ? "ok" : show.state === "aborted" ? "error" : "stale", show.state)}
+      <span class="mono">${esc(show.id)}</span> · ${fmtDur(dur)}</span></div>
+    <div class="group-row"><span class="row-label">Folder</span><span class="mono">${esc(show.dir)}</span></div>
+    ${show.total ? `<div class="group-row"><span class="row-label">Drive space</span><span><span class="pi-meter">${meter(used)}</span>
+      ${fmtBytes(show.free)} free of ${fmtBytes(show.total)}${show.low_space ? " " + statePill("zero", "low") : ""}</span></div>` : ""}
+    ${show.end_reason ? `<div class="group-row"><span class="row-label">Ended</span><span>${esc(show.end_reason)}${
+      show.unmount ? ` · unmount ${show.unmount.ok ? "ok" : "FAILED: " + esc(show.unmount.error || "")}` : ""}</span></div>` : ""}
+  </div>`;
+  $("#capStreamsWhich").textContent = sess ? `(session ${show.id}, live)` : `(last session ${show.id})`;
+  $("#capStreams").innerHTML = `<table><tr><th>Stream</th><th>State</th><th>Current file</th><th>Size</th><th>Rate</th><th>Segments</th><th>Restarts</th><th>Last error</th></tr>${
+    (show.streams || []).map(x => `<tr><td>${esc(x.label)}</td><td>${statePill(CAP_STATE[x.state] || "stale", x.state)}</td>
+      <td class="mono">${esc(x.file || "—")}</td><td class="mono nowrap">${fmtBytes(x.bytes)}</td>
+      <td class="mono nowrap">${x.rate_bps ? fmtBytes(x.rate_bps) + "/s" : "—"}</td><td>${x.segments}</td><td>${x.restarts}</td>
+      <td>${x.last_error ? `<span style="color:var(--bad)">${esc(x.last_error)}</span>` : (x.dropped_bytes ? `<span class="muted">${x.dropped_bytes} B dropped</span>` : "")}</td></tr>`).join("")}</table>`;
+  $("#capEvents").textContent = (show.events || []).slice().reverse().join("\n");
+}
+async function refreshCapture() {
+  if (capBusy) return;
+  capBusy = true;
+  try { renderCapture(await api("/capture/status", { timeout: 10000 })); }
+  catch (e) { $("#capSafe").innerHTML = loadingHTML(`/api/capture/status unreachable (${e.message}) -- retrying…`, true); }
+  finally { capBusy = false; }
+}
+function startCapPoll() { refreshCapture(); if (!capPoll) capPoll = setInterval(refreshCapture, 2000); }
+function stopCapPoll() { clearInterval(capPoll); capPoll = null; }
+$("#btnCapStart").onclick = () => {
+  const streams = capKeys();
+  if (!streams.length) { pillOnly($("#capOut"), false, "Failed: pick at least one stream"); return; }
+  // inline plan -> Execute (tier2Flow, like the Pi reboot): this plan is longer than the
+  // anchored popover comfortably fits on a small in-car screen
+  tier2Flow($("#capOut"), () => api("/capture/start/plan", { method: "POST",
+    headers: { "content-type": "application/json" }, body: JSON.stringify({ volume: capSelVol, streams }) }),
+    "/capture/start/execute", { onExecEnd: () => setTimeout(refreshCapture, 300) });
+};
+$("#btnCapStop").onclick = async () => {
+  const b = $("#btnCapStop"); b.disabled = true;
+  const step = $("#capOut").nextElementSibling;   // a leftover start plan/Execute block
+  if (step && step.classList.contains("danger-step2")) step.remove();
+  pillOnly($("#capOut"), null, "stopping: closing files, syncing, unmounting…");
+  let r; try { r = await api("/capture/stop", { method: "POST" }); } catch (e) { r = e; }
+  $("#capOut").innerHTML = `<div class="exec-status"></div><div class="exec-more"></div>`;
+  renderExecResult($("#capOut .exec-status"), $("#capOut .exec-more"), r);
+  refreshCapture();
+};
+
 /* ================= boot ================= */
 $("#btnReadSafe").onclick = readSafe;
 $("#btnReadCal").onclick = readCal;
@@ -1029,6 +1559,7 @@ function boot(name, fn) {
 // the browser's 6 per-host connections.
 boot("can chart", initCanCharts);
 boot("can ws", startCanWS);
+boot("can decode", startCanDecodePoll);  // CAN is the default tab, so start its poll now
 boot("power modes", loadVehiclePowerModes);
 boot("gear positions", loadVehicleGearPositions);
 boot("sequences", loadSequences);

@@ -1,0 +1,41 @@
+VERSION "gminfo37-bench stub -- confirmed bench-verified signals only"
+
+NS_ :
+
+BS_:
+
+BU_ TESTER RADIO VIP
+
+
+BO_ 644 GM_SysPowerModeAuth: 6 TESTER
+ SG_ SysPwrModeAuth : 35|3@1+ (1,0) [0|7] "" RADIO
+ SG_ SysPwrModeValidity : 34|1@1+ (1,0) [0|1] "" RADIO
+
+BO_ 1321 GM_PowerModeKeepalive: 6 TESTER
+ SG_ PowerModeSelector : 15|1@1+ (1,0) [0|1] "" RADIO
+ SG_ IpcHmiReady : 9|1@1+ (1,0) [0|1] "" RADIO
+ SG_ AnimationStatus : 5|3@1+ (1,0) [0|7] "" RADIO
+
+BO_ 1242 GM_DoorAndTop: 8 TESTER
+ SG_ DriverDoorOpen : 56|1@1+ (1,0) [0|1] "" RADIO
+ SG_ FoldingTopState : 51|3@1+ (1,0) [0|7] "" RADIO
+
+BO_ 1339 GM_InfotainmentActivation: 8 TESTER
+ SG_ InfotainmentActivationReq : 59|1@1+ (1,0) [0|1] "" RADIO
+
+BO_ 1214 GM_KeyAndValet: 8 TESTER
+ SG_ KeyDevicePresent : 59|1@1+ (1,0) [0|1] "" RADIO
+ SG_ ValetModeResponse : 54|2@1+ (1,0) [0|3] "" RADIO
+
+BO_ 1318 GM_AudioInputs: 8 TESTER
+ SG_ MuteHoldReset : 47|1@1+ (1,0) [0|1] "" RADIO
+ SG_ VolumeDown : 43|1@1+ (1,0) [0|1] "" RADIO
+ SG_ VolumeUp : 42|1@1+ (1,0) [0|1] "" RADIO
+
+BO_ 525 GM_RemoteProgramming: 6 TESTER
+ SG_ RemoteProgrammingActive : 47|1@1+ (1,0) [0|1] "" RADIO
+
+
+VAL_ 644 SysPwrModeAuth 0 "Off" 2 "Run" ;
+VAL_ 1321 PowerModeSelector 0 "Off" 1 "On" ;
+VAL_ 1242 DriverDoorOpen 0 "Closed" 1 "Open" ;
