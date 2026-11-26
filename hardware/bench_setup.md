@@ -50,6 +50,13 @@ The working host configuration is **VLAN 5 on en12**, exposed as `vlan0`, with
 a static host address in the radio's service subnet. Keep the native adapter's
 existing configuration; do not add an Internet default route for this bench link.
 
+**Static-address finding (2026-11-25):** A Pi bench-hub `eth0` connection had
+carrier and observed ARP/DHCP control traffic, but did not receive a DHCP lease.
+Treat this segment as static-addressed. Do not select an address by probing or
+guesswork: configure only the approved `<BENCH_HOST_IP>` and
+`<BENCH_NETMASK>`, retain Wi-Fi as the management default route, and verify the
+specific T1 peer traffic after configuration.
+
 Supply these values privately, in memory:
 
 | Placeholder | Meaning |

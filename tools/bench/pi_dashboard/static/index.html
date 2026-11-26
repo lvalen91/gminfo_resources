@@ -10,7 +10,7 @@
 <body>
 <header id="topbar">
   <div class="brand">GM&nbsp;Info&nbsp;3.7 <span>bench</span></div>
-  <div id="indicators" class="indicators"></div>
+  <div id="indicators" class="indicators"><div class="ind" title="waiting for the first /api/status reply"><span class="dot stale"></span><span class="loading">connecting…</span></div></div>
   <button id="btnExportLogs" title="Download everything captured so far (UART, CAN, terminals) as a .tar -- browser memory only, nothing is written to the Pi">Export logs</button>
   <div class="clock" id="clock"></div>
 </header>
@@ -35,11 +35,11 @@
     <div class="grid2">
       <div class="card">
         <h2>can0 stats</h2>
-        <div class="statrow" id="canStatRow"></div>
+        <div class="statrow" id="canStatRow"><span class="loading">connecting to /ws/can…</span></div>
       </div>
       <div class="card">
         <h2>Top CAN IDs</h2>
-        <canvas id="canIdChart" height="160"></canvas>
+        <div class="chart-wrap"><canvas id="canIdChart" height="160"></canvas><div id="canIdChartEmpty" class="chart-empty loading">waiting for CAN stats…</div></div>
       </div>
     </div>
     <div class="card">
@@ -52,27 +52,26 @@
       until a firmware trace or captured frame confirms them. Hover a disabled control for why.</p>
       <div class="field-row">
         <span class="field-label">Power mode</span>
-        <div class="segmented" id="vehiclePowerModes"></div>
+        <div class="segmented" id="vehiclePowerModes"><span class="seg-loading loading">loading…</span></div>
       </div>
       <div class="field-row">
         <span class="field-label">Gear position</span>
-        <div class="segmented" id="vehicleGearPositions"></div>
+        <div class="segmented" id="vehicleGearPositions"><span class="seg-loading loading">loading…</span></div>
       </div>
-      <pre id="vehicleOut" class="out"></pre>
+      <div id="vehicleOut" class="exec-line"></div>
     </div>
     <div class="grid2">
       <div class="card">
         <h2>Sequences <small>(frame bytes come from the pinned profile)</small></h2>
-        <label class="switch-label"><input type="checkbox" id="seqDryRun" checked> dry-run (validate only, send nothing)</label>
-        <div id="seqButtons" class="btnrow"></div>
-        <div id="seqContinuousRow" class="btnrow" style="display:none">
-          <span id="seqContinuousStatus"></span>
-          <button id="btnSeqStop" class="destructive-ish">Stop running sequence</button>
-        </div>
-        <pre id="seqOut" class="out"></pre>
+        <p class="hint">One-shot sequences run once with a <b>RUN</b> control and a live progress/elapsed
+        readout; while one runs, the other rows grey out. Continuous sequences have an <b>ON/OFF</b>
+        toggle. Click the <span class="mono">&#9432;</span> on a row for what it does.</p>
+        <label class="switch-label"><input type="checkbox" id="seqDryRun"> dry-run (validate only, send nothing)</label>
+        <div id="seqList" class="seq-list"><span class="loading">loading sequences…</span></div>
       </div>
       <div class="card">
         <h2>Live frames <small>(newest first)</small></h2>
+        <label class="switch-label"><input type="checkbox" id="canLiveToggle"> show live frames <small>(off by default -- avoids an excessive scrolling list; stats above keep updating either way)</small></label>
         <pre id="canLog" class="out tall"></pre>
       </div>
     </div>
@@ -93,8 +92,8 @@
     </div>
     <div class="card">
       <h2>Reset / recovery routines <small>($31 RoutineControl)</small></h2>
-      <label class="switch-label"><input type="checkbox" id="rtnDryRun" checked> dry-run (show exact bytes, send nothing)</label>
-      <div id="routineButtons" class="btnrow"></div>
+      <label class="switch-label"><input type="checkbox" id="rtnDryRun"> dry-run (show exact bytes, send nothing)</label>
+      <div id="routineButtons" class="btnrow"><span class="loading">loading routines…</span></div>
       <pre id="routineOut" class="out"></pre>
     </div>
   </section>
@@ -115,38 +114,30 @@
     <div class="card">
       <h2>613/614 VIP dev-interface test <small>(Tier 1, live, non-destructive)</small></h2>
       <p class="hint">Connects the CAN 613/614 VIP development interface and saves + verify-reads the two
-      verifier words (<span class="mono">FEBF0BF8 / FEBF0BFC</span>). This is the exact connect/readback the
-      calibration write performs — run it to confirm the link is live without touching calibration data.</p>
+      verifier words (<span class="mono">FEBF0BF8 / FEBF0BFC</span>) to confirm the link is live without touching
+      calibration data. A genuine/stock calibration write does not use 613/614 at all.</p>
       <button id="btn613Test">Run 613/614 connect + save + verify</button>
       <pre id="dev613Out" class="out"></pre>
     </div>
-    <div class="card">
-      <h2>Offline container validation <small>(caltool digest)</small></h2>
-      <form id="calValidateForm">
-        <label>Candidate container <input type="file" name="container" required></label>
-        <label>Genuine template (optional, for reseal+digest) <input type="file" name="template"></label>
-        <button type="submit" class="primary">Validate offline (dry-run)</button>
-      </form>
-      <pre id="calValidateOut" class="out"></pre>
-    </div>
-
     <details class="danger-zone" id="calWriteZone">
       <summary>&#9888; Danger zone — live calibration write (Tier 2, destructive)</summary>
       <div class="card danger-card">
-        <p class="warn">Overwrites verified stock calibration on the real ECU.</p>
-        <form id="calWriteForm">
-          <label>Scope
-            <select name="scope" id="calWriteScope">
-              <option value="slot">individual slot</option>
-              <option value="package">full package (all slots)</option>
-            </select>
-          </label>
-          <label id="calWriteSlotLabel">Slot <select name="slot" id="calWriteSlot"></select></label>
-          <label>Package .zip <small>(optional; verified stock only)</small>
-            <input type="file" name="package" id="calWritePackage" accept=".zip"></label>
-          <button type="button" id="btnCalWritePlan">1. Plan write (offline-validate + token)</button>
-        </form>
-        <pre id="calWriteOut" class="out"></pre>
+        <p class="warn">Writes calibration modules to the real ECU over CAN. The action runs the
+        613/614 VIP link pre-flight check, then one UDS programming session, then an F182 verify.</p>
+        <div class="cal-upload">
+          <p class="hint">Upload a full package <span class="mono">.zip</span> of part-number-named
+          modules, or one or more individual module files (each named by its GM part number). The
+          slots present in the upload are detected below. A module whose bytes match the stock
+          reference writes genuine; a modified module writes through the 613/614 override path.</p>
+          <label>Package .zip <input type="file" id="calWritePackage" accept=".zip"></label>
+          <label>or individual module files <input type="file" id="calWriteModules" multiple></label>
+          <div class="btnrow">
+            <button type="button" id="btnCalDetect" class="primary">Detect slots from upload</button>
+            <button type="button" id="btnCalUseStock">Use stock reference set</button>
+          </div>
+        </div>
+        <div id="calDetectWrap"></div>
+        <div id="calWritePlanOut"></div>
       </div>
     </details>
   </section>

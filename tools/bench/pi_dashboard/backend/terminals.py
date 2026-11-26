@@ -13,6 +13,7 @@ import pty
 import signal
 import struct
 import termios
+import threading
 
 from . import config
 
@@ -84,14 +85,28 @@ class PtySession:
                         pass
             self.sid = -1
         if self.pid > 0:
+            pid = self.pid
             try:
-                os.kill(self.pid, signal.SIGKILL)
+                os.kill(pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
+            # close() runs on the event loop (pump's finally). A blocking waitpid(pid, 0)
+            # here would freeze the WHOLE dashboard if the child is in uninterruptible
+            # sleep (e.g. `adb shell` stuck on a wedged USB transport ignores SIGKILL
+            # until the kernel call returns). Reap without blocking; if it is not gone
+            # yet, hand the final waitpid to a daemon thread so no zombie is left.
+            reaped = False
             try:
-                os.waitpid(self.pid, 0)
+                reaped = os.waitpid(pid, os.WNOHANG)[0] == pid
             except ChildProcessError:
-                pass
+                reaped = True
+            if not reaped:
+                def _reap(p=pid):
+                    try:
+                        os.waitpid(p, 0)
+                    except ChildProcessError:
+                        pass
+                threading.Thread(target=_reap, name=f"pty-reap-{pid}", daemon=True).start()
             self.pid = -1
         if self.fd >= 0:
             try:

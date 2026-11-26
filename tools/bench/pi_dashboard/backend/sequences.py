@@ -17,6 +17,7 @@ any later sequence terminate a running continuous schedule first.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import signal
 
@@ -40,18 +41,24 @@ _last_continuous: dict | None = None
 
 # Modes exposed as dashboard/LLM actions. "continuous" modes keep the radio alive;
 # "oneshot" modes play once. keepalive_* map to the systemd unit.
+# `kind` drives the control the dashboard renders:
+#   service-start/service-stop -> an instant one-shot (systemctl, sub-second);
+#   oneshot                    -> a RUN control with an elapsed/progress indicator;
+#   continuous                 -> an ON/OFF toggle (the run keeps transmitting until stopped).
+# `duration_s` is the code-known bounded run length of a one-shot (drives a determinate
+# progress ring); continuous modes have none (they run until SIGTERM).
 SEQUENCES = {
     "keepalive-start": {"kind": "service-start", "destructive": False,
                         "desc": "Start the supervised 0x529 keepalive on can0 (systemd); stops a running continuous sequence first."},
     "keepalive-stop": {"kind": "service-stop", "destructive": False,
                        "desc": "Stop the keepalive sender and any running continuous sequence (radio tolerates ~694 s TX gap)."},
-    "startup": {"kind": "oneshot", "mode": "startup", "destructive": False,
+    "startup": {"kind": "oneshot", "mode": "startup", "destructive": False, "duration_s": 40,
                 "desc": "126-frame power-on startup window (40 s), then returns to keepalive."},
     "startup-keepalive": {"kind": "continuous", "mode": "startup-keepalive", "destructive": False,
                           "desc": "Startup window then continuous keepalive (replaces the service keepalive until keepalive-start/stop)."},
     "full": {"kind": "continuous", "mode": "full", "destructive": False,
              "desc": "Full 32-frame captured cycle, repeated (replaces the service keepalive until keepalive-start/stop)."},
-    "vip-reset": {"kind": "oneshot", "mode": "vip-reset", "destructive": True,
+    "vip-reset": {"kind": "oneshot", "mode": "vip-reset", "destructive": True, "duration_s": 10.5,
                   "desc": "VIP reset: 10.5 s synthetic 526 hold then release, then back to keepalive."},
 }
 
@@ -287,6 +294,16 @@ async def send_vehicle_power_mode(mode: str, data: bytes, can_id: int) -> dict:
         else:
             result["note"] = "keepalive was not running; left stopped"
         return result
+
+
+@contextlib.asynccontextmanager
+async def exclusive_bus():
+    """Own the dashboard's CAN bus lock for an external can0 owner that manages the
+    keepalive service itself (calibration_write_can0.py stops it and restarts it in a
+    finally). Stops any continuous schedule this dashboard started, so it never holds the
+    can0 schedule lock against that owner. Yields the stop record (or None)."""
+    async with _lock:
+        yield await _stop_continuous()
 
 
 async def stop_current() -> dict:

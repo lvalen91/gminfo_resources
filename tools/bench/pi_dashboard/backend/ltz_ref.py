@@ -76,6 +76,25 @@ def expected_sha_for_part(part: str) -> str | None:
     return None
 
 
+def slot_for_part(part: str) -> str | None:
+    """Map a GM part number to its calibration slot (hex string like '08'), if known.
+    This is the reverse of SLOT_PARTS: an uploaded module is identified by its part-number
+    filename, and that part number pins the slot it belongs to."""
+    for slot, (p, _sha) in LTZ_REFERENCE.items():
+        if p == part:
+            return f"{slot:02X}"
+    return None
+
+
+def is_stock_bytes(part: str, raw: bytes) -> bool:
+    """True iff `raw` (an outer-gzip container's bytes) unwraps to the exact stock CSM
+    payload the manifest pins for `part`. A True result means the module is genuine/stock
+    and is written with the ordinary genuine path; a False result means it is a modified
+    container that must go through the 0x613/0x614 VIP override path (genuine=False)."""
+    exp = expected_sha_for_part(part)
+    return exp is not None and _unwrapped_sha256(raw) == exp
+
+
 def full_package() -> list[dict]:
     """Every present+matching stock slot, ordered by slot, for a full-package write."""
     pkg = []

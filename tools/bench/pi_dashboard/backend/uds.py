@@ -130,8 +130,23 @@ class UDSClient:
             self.connect()
         assert self._sock is not None
         start = time.monotonic()
+        try:
+            return self._request(payload, raise_on_negative, start, start + pending_deadline)
+        except OSError as e:
+            # socket.timeout / ECONNRESET / EPIPE are plain OSErrors, which every route
+            # catches only as UDSError. Unwrapped they surface as a bare 500 with no
+            # detail -- and they are the EXPECTED outcome of a routine that reboots the
+            # unit (0247 factory reset, F0008180 ELK reboot) and drops diagnosticsd.
+            self.close()
+            raise UDSError(f"diagnosticsd link lost during {payload[:4].hex()} after "
+                           f"{(time.monotonic() - start) * 1000:.0f} ms: "
+                           f"{type(e).__name__}: {e} (a rebooting routine drops the "
+                           "connection; that is not by itself a failure)") from e
+
+    def _request(self, payload: bytes, raise_on_negative: bool, start: float,
+                 deadline: float) -> UDSResult:
+        assert self._sock is not None
         self._sock.sendall(HEADER.pack(self.tester, self.ecu, len(payload)) + payload)
-        deadline = start + pending_deadline
         while True:
             body = self._recv_frame()
             if len(body) >= 3 and body[0] == 0x7F and body[2] == NRC_RESPONSE_PENDING:

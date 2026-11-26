@@ -1,10 +1,13 @@
 """Calibration + APK operations.
 
 - APK install over a chosen adb transport.
-- Offline caltool validation (ingest / pack --template) as the dry-run for a write.
-- The DPS Type4 custom-calibration WRITE workflow, exposed as a documented, ordered
-  step list the UI/LLM can see and (behind explicit confirm) drive. The backend never
-  fires the live write itself; the "validate" path uses caltool offline only.
+- The 0x613/0x614 VIP dev-link health check (cal_write_test) -- non-destructive.
+- The live calibration write + F182 verify (run_can0_cal), delegated to the single proven
+  implementation, tools/bench/bench_can/calibration_write_can0.py. A genuine (hash-matched
+  stock) package writes with the ordinary genuine path; a modified package (any member that
+  does not hash-match its stock reference) writes with the 0x613/0x614 VIP override path
+  (genuine=False). The upload's own bytes decide which -- there is no user-facing toggle.
+- The DPS Type4 custom-calibration workflow as a documented step list (reference only).
 """
 from __future__ import annotations
 
@@ -51,41 +54,7 @@ async def adb_install(serial: str, apk_path: Path, reinstall: bool = True) -> di
             "success": rc == 0 and "Success" in (out + err)}
 
 
-# --- caltool offline validation (the write dry-run) -----------------------------
-async def caltool_ingest(path: Path) -> dict:
-    """Parse a container/.calovride to JSON and report its payload digest_ok."""
-    cli = str(config.CALTOOL_DIR / "cli.py")
-    rc, out, err = await _run(config.BENCH_PYTHON, cli, "ingest", str(path),
-                              timeout=60, cwd=str(config.CALTOOL_DIR))
-    import json
-    parsed = None
-    try:
-        parsed = json.loads(out)
-    except ValueError:
-        pass
-    return {"exit_code": rc, "stderr": err.strip(),
-            "meta": (parsed or {}).get("meta"),
-            "entry_count": (parsed or {}).get("entry_count"),
-            "digest_ok": (parsed or {}).get("meta", {}).get("digest_ok") if parsed else None}
-
-
-async def caltool_pack_validate(entries_json: Path, template: Path, out_path: Path) -> dict:
-    """Reseal entries under a genuine template header; caltool recomputes + verifies the
-    payload digest. The RSA signature stays STALE (by design) - hardware acceptance still
-    needs the live CAN613/614 VIP-RAM step, which this does NOT perform."""
-    cli = str(config.CALTOOL_DIR / "cli.py")
-    rc, out, err = await _run(config.BENCH_PYTHON, cli, "pack", str(entries_json),
-                              "-o", str(out_path), "--template", str(template),
-                              timeout=60, cwd=str(config.CALTOOL_DIR))
-    text = out + err
-    return {"exit_code": rc, "output": text.strip(),
-            "digest_ok": "digest OK" in text,
-            "signature_stale": True,
-            "note": "Payload digest validated offline. RSA signature is stale; real-hardware "
-                    "acceptance requires the live CAN613/614 VIP-RAM bypass (not performed)."}
-
-
-# --- CAN613/614 VIP-RAM step (auto-run inside the calibration write + its test) --
+# --- CAN613/614 VIP dev-link TEST (read-only; never part of a genuine write) ------
 def _dev():
     import can0_dev
     return can0_dev
@@ -116,42 +85,119 @@ def cal_write_test() -> dict:
                 "note": "613/614 link unavailable (bus/VIP asleep, or radio power-cycling)"}
 
 
-def cal_write_execute(container_path: Path, slot: int, transfer) -> dict:
-    """LIVE calibration write (destructive, confirm-gated by the caller). Runs the exact
-    documented order: 613/614 connect -> save verifier words -> override with markers ->
-    `transfer()` (the UDS RequestDownload/TransferData/TransferExit) -> RESTORE the words
-    in a finally so a failed/err'd write never leaves them overridden -> disconnect.
+# --- LIVE calibration write: ONE implementation, shared with the CLI ---------------
+# The write and its F182 verify are NOT implemented here. They run the live-verified
+# tools/bench/bench_can/calibration_write_can0.py (SocketCAN port of calibration_write_
+# can5.py's CalDiagnostics / write_package / verify_package), so the dashboard and the
+# bench CLI can never drift apart again. That script:
+#   * opens the UDS programming session ONCE (10 01/10 03/27/FF01/021E/85 02/28 03 01/
+#     10 02), transfers every slot inside it, and closes it ONCE;
+#   * uses TransferData blocks of 0x0FFF - 2 = 4093 bytes (the ECU's 0x0FFF includes the
+#     0x36 SID + block counter) on the decompressed CSM container;
+#   * never touches CAN 0x613/0x614 for genuine/stock containers (only --modified does,
+#     which the dashboard never passes: every container it can plan is digest-matched to
+#     the stock reference set);
+#   * owns the can0 bus for the duration: stops pibench-can-keepalive, replays the
+#     profile minus native 0x20D plus the 0x284/0x20D precondition stream, and restarts
+#     the keepalive in a finally.
+# It runs as a SUBPROCESS (not in-process): its replay/injector/RX threads then never
+# share the uvicorn process's GIL or event loop, and a hang can be interrupted cleanly.
+CAL_WRITE_SCRIPT = config.BENCH_CAN_DIR / "calibration_write_can0.py"
+CAL_WRITE_TIMEOUT_S = 300.0   # proven package write is ~15-20 s of UDS + bus setup
+CAL_VERIFY_TIMEOUT_S = 120.0
 
-    `transfer(dev_log)` is supplied by the caller (it performs the UDS programming prep +
-    34/36/37 over diagnosticsd) and returns its own structured result. (Blocking.)"""
-    can0_dev = _dev()
-    dev = can0_dev.VipDevInterface()
-    result = {"mode": "execute", "slot": f"{slot:02X}", "container": container_path.name,
-              "overridden": False, "restored": False}
-    saved = {}
+
+async def run_can0_cal(mode: str, package_dir: Path, slots: list[str] | None = None,
+                       timeout: float = CAL_WRITE_TIMEOUT_S, genuine: bool = True) -> dict:
+    """Run calibration_write_can0.py `mode` ("package" = write, "verify" = F182 readback)
+    against `package_dir` (part-number-named containers), optionally restricted to `slots`
+    (hex, e.g. ["02","0A"]). Non-blocking for the event loop.
+
+    `genuine` selects the write path for mode="package": True (default) is the ordinary
+    stock path (no 0x613/0x614, 4093-byte blocks); False passes --modified to the script,
+    which first sets the header-verifier words over the 0x613/0x614 VIP dev interface and
+    writes 1022-byte blocks. The caller decides this from the upload's own bytes (stock
+    hash-match => genuine), never from a UI toggle. Ignored for mode="verify".
+
+    The caller must hold the dashboard's CAN bus lock (sequences.exclusive_bus) so no
+    dashboard sequence competes for the can0 schedule lock."""
+    import json
+    import os
+    import signal
+    import tempfile
+    import time as _time
+
+    if mode not in ("package", "verify"):
+        raise ValueError(f"unsupported calibration mode {mode!r}")
+    fd, out_name = tempfile.mkstemp(prefix=f"calwrite_{mode}_", suffix=".json")
+    os.close(fd)
+    out_path = Path(out_name)
+    args = [config.BENCH_PYTHON, str(CAL_WRITE_SCRIPT), mode,
+            "--package-dir", str(package_dir), "--profile", str(config.HARNESS_PROFILE),
+            "--json-out", str(out_path)]
+    if slots:
+        args += ["--only", ",".join(s.upper() for s in slots)]
+    if mode == "package" and not genuine:
+        # Modified/custom container: route through the 0x613/0x614 VIP override path.
+        args.append("--modified")
+    # A dashboard restart must never kill a write mid-package (observed: SIGTERM 39 s in,
+    # no finally -> session not closed, keepalive not restarted). So the script runs in
+    # its own transient systemd scope, outside pibench-dashboard's cgroup (a unit stop
+    # cannot reach it), under `trap '' TERM` (sudo relays a TERM it receives; an ignored
+    # disposition survives exec). Output goes to a persistent log, not a pipe, so it
+    # survives the dashboard too. The timeout path uses SIGINT, which unwinds the
+    # script's finally blocks (session close, keepalive restart).
+    log_dir = config.UPLOAD_DIR.parent / "cal_write_logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    stamp = _time.strftime("%Y%m%d-%H%M%S")
+    log_path = log_dir / f"{stamp}_{mode}.log"
+    inner = "trap '' TERM; exec \"$@\""
+    wrapped = ["sudo", "-n", "systemd-run", "--scope", "--quiet", "--collect",
+               f"--unit=pibench-calwrite-{mode}-{stamp}", f"--uid={os.getuid()}",
+               f"--gid={os.getgid()}", "--", "/bin/sh", "-c", inner, "calwrite", *args]
+    started = _time.monotonic()
+    with open(log_path, "wb") as log_fh:
+        proc = await asyncio.create_subprocess_exec(
+            *wrapped, stdin=asyncio.subprocess.DEVNULL, stdout=log_fh,
+            stderr=asyncio.subprocess.STDOUT, cwd=str(config.BENCH_CAN_DIR))
+    timed_out = False
     try:
-        with dev:
-            saved = can0_dev.connect_and_save(dev)             # connect + save
-            result["saved_words"] = {f"{a:08X}": w.hex() for a, w in saved.items()}
-            try:
-                for addr in can0_dev.VERIFIER_WORDS:            # override with markers
-                    dev.write_verify(addr, can0_dev.MARKER_VALUES[addr])
-                result["overridden"] = True
-                result["transfer"] = transfer(dev.log)          # UDS write
-            finally:
-                # GUARANTEED restore, even if the transfer raised.
-                for addr, original in saved.items():
-                    dev.write_verify(addr, original)
-                result["restored"] = True
-                dev.disconnect()
-        result["ok"] = result.get("transfer", {}).get("ok", False)
-        result["log"] = dev.log
-        return result
-    except Exception as e:  # noqa: BLE001
-        result["ok"] = False
-        result["error"] = f"{type(e).__name__}: {e}"
-        result["log"] = dev.log
-        return result
+        await asyncio.wait_for(proc.wait(), timeout=timeout)
+    except asyncio.TimeoutError:
+        timed_out = True
+        with contextlib.suppress(ProcessLookupError):
+            proc.send_signal(signal.SIGINT)   # sudo relays it to the script
+        try:
+            await asyncio.wait_for(proc.wait(), timeout=20)
+        except asyncio.TimeoutError:
+            with contextlib.suppress(ProcessLookupError):
+                proc.kill()
+            await proc.wait()
+    elapsed = round(_time.monotonic() - started, 1)
+    try:
+        out = log_path.read_bytes()
+    except OSError:
+        out = b""
+    result = None
+    try:
+        text = out_path.read_text()
+        result = json.loads(text) if text.strip() else None
+    except (OSError, ValueError):
+        result = None
+    finally:
+        with contextlib.suppress(OSError):
+            out_path.unlink()
+    output = out.decode(errors="replace") if out else ""
+    ok = (not timed_out) and proc.returncode == 0 and bool(result and result.get("ok"))
+    r = {"mode": mode, "ok": ok, "exit_code": proc.returncode, "elapsed_s": elapsed,
+         "package_dir": str(package_dir), "slots": slots, "result": result,
+         "write_path": ("genuine" if genuine else "modified (0x613/0x614 override)") if mode == "package" else None,
+         "log": str(log_path), "output_tail": output[-4000:]}
+    if timed_out:
+        r["error"] = f"calibration_write_can0.py {mode} exceeded {timeout:.0f} s and was interrupted"
+    elif not ok:
+        r["error"] = (result or {}).get("error") or f"calibration_write_can0.py {mode} exited {proc.returncode}"
+    return r
 
 
 # --- DPS Type4 write workflow descriptor (doc-grounded, never auto-fired) --------

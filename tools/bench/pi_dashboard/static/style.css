@@ -114,7 +114,9 @@ code { font-family: var(--mono); background: var(--panel2); border-radius: 4px;
 #tabs button.active .nav-icon { background: color-mix(in srgb, white 25%, transparent); }
 
 main {
-  flex: 1; min-width: 0; padding: 22px 26px 60px; max-width: 1280px;
+  /* was 60px of bottom padding -- a conspicuously large dead strip below the last card
+     on every tab; 32px keeps a sane bottom margin without the extra empty space. */
+  flex: 1; min-width: 0; padding: 22px 26px 32px; max-width: 1280px;
 }
 .tab { display: none; } .tab.active { display: block; }
 .tab > h1.tab-title { font-size: 22px; font-weight: 700; letter-spacing: -0.015em;
@@ -197,6 +199,23 @@ select { min-width: 200px; }
   padding: 10px 12px; font-family: var(--mono); font-size: 12px; white-space: pre-wrap; word-break: break-all;
   max-height: 240px; overflow: auto; margin: 10px 0 0; color: var(--fg); }
 .out.tall { max-height: 420px; }
+/* An untouched output/status box (no action run yet) must never render as a bare empty
+   gray rectangle -- show a muted placeholder instead, same idea as the paused live-frames
+   message. This is pure CSS so it applies to every `.out` box site-wide and disappears by
+   itself the instant JS sets real text (or clears back to "" -- :empty matches that too). */
+.out:empty::before { content: "no output yet"; color: var(--muted); font-style: italic; }
+/* Loading / connecting placeholders: same muted-italic voice as `.out:empty`, with a slow
+   pulse so a pending first load reads as "working", never as a broken blank card. Present
+   in index.html from the first paint; JS replaces them as each section's data arrives. */
+.loading { color: var(--muted); font-style: italic; font-size: 12.5px; animation: loading-pulse 1.6s ease-in-out infinite; }
+.loading.failed { color: var(--warn); animation: none; }
+@keyframes loading-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .loading { animation: none; } }
+.segmented .seg-loading { padding: 6px 13px; }
+.chart-wrap { position: relative; }
+.chart-empty { position: absolute; inset: 0 0 24px 40px; display: flex; align-items: center;
+  justify-content: center; pointer-events: none; }
+.chart-empty[hidden] { display: none; }
 .statrow { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
 .statrow b { color: var(--fg); font-family: var(--mono); }
 .warn { color: var(--warn); font-size: 12px; background: color-mix(in srgb, var(--warn) 14%, var(--panel));
@@ -250,8 +269,96 @@ td.mono, .mono { font-family: var(--mono); }
   border-color: var(--bad); color: var(--bad); }
 .danger-step2 { margin-top: 10px; padding-top: 10px; border-top: 1px dashed color-mix(in srgb, var(--bad) 55%, var(--border)); }
 .danger-step2 input { font-family: var(--mono); }
+/* ---------------------------- Tier-2 plan summary (human-formatted, no raw JSON) ---------------------------- */
+.plan-summary { margin: 2px 0 0; }
+.plan-will-do { margin: 0 0 8px; font-size: 13px; line-height: 1.45; }
+.plan-risk { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 14%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--bad) 45%, var(--border)); border-radius: var(--radius-sm);
+  padding: 7px 10px; }
+.plan-rows { margin: 0 0 4px; font-size: 12px; }
+.plan-row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0;
+  border-bottom: 1px solid var(--border); color: var(--muted); }
+.plan-row:last-child { border-bottom: none; }
+.plan-row .plan-key { text-transform: capitalize; }
+.plan-row .plan-val { color: var(--fg); font-family: var(--mono); text-align: right; }
+
+/* ---------------------------- compact anchored Tier-2 popover (mode/gear controls) ---------------------------- */
+.plan-popover { position: fixed; z-index: 60; min-width: 280px; max-width: 360px;
+  background: var(--panel); border: 1px solid var(--border-strong); border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.12); }
+.plan-popover-body { padding: 14px 16px; font-size: 12.8px; }
+.plan-popover .plan-confirm-label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0; }
+.plan-popover .plan-confirm-label code { font-family: var(--mono); color: var(--fg); }
+.plan-popover .plan-confirm-input { width: 100%; margin-top: 4px; padding: 6px 9px; box-sizing: border-box;
+  border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: var(--panel2);
+  color: var(--fg); font-family: var(--mono); font-size: 12.5px; }
+.plan-popover .plan-execout { margin-top: 10px; max-height: 180px; }
+
 .state-pill { font-size: 10.5px; padding: 1px 8px; border-radius: 10px; margin-left: 6px; font-weight: 600; }
 .state-ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
 .state-zero { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
 .state-error { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
 .state-stale { background: var(--panel2); color: var(--muted); }
+
+/* Tier-2 execute result: compact status pill by the Execute control; the full response
+   is collapsed under "details" (never the default view). */
+.exec-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.exec-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px;
+  font-size: 12.5px; font-weight: 600; max-width: 100%; overflow-wrap: anywhere; }
+.exec-pill.ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.exec-pill.bad { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }
+.exec-pill.pending { color: var(--muted); font-style: italic; font-weight: 400; padding-left: 0; }
+.exec-details { margin-top: 6px; font-size: 12px; }
+.exec-details summary { cursor: pointer; color: var(--muted); user-select: none; width: max-content; }
+.exec-details pre.out { margin-top: 6px; max-height: 200px; }
+.exec-line { margin-top: 10px; }
+.exec-line:empty { display: none; }
+
+/* ===== CAN Sequences: per-row controls (one-shot RUN + progress, continuous ON/OFF) ===== */
+.seq-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.seq-row { display: grid; grid-template-columns: minmax(150px, 1fr) auto;
+  grid-template-areas: "main control" "status status"; gap: 4px 12px; align-items: center;
+  padding: 9px 11px; background: var(--panel2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.seq-row .seq-main { grid-area: main; display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
+.seq-name { font-weight: 600; font-size: 13px; }
+.seq-control { grid-area: control; display: inline-flex; align-items: center; gap: 10px; justify-self: end; flex-wrap: wrap; }
+.seq-status { grid-area: status; }
+.seq-info { appearance: none; -webkit-appearance: none; border: none; background: transparent; color: var(--muted);
+  cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; flex: none; }
+.seq-info:hover { color: var(--accent); }
+.seq-locked .seq-row { opacity: .5; transition: opacity .1s; }
+.seq-locked .seq-row:has(.seq-progress:not(:empty)) { opacity: 1; }
+button.seq-run { min-width: 92px; }
+button.seq-run.running { opacity: .85; }
+.seq-progress { display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); font-family: var(--mono); }
+.seq-progress:empty { display: none; }
+.seq-bar { display: inline-block; width: 92px; height: 6px; background: var(--border-strong); border-radius: 4px; overflow: hidden; }
+.seq-bar-fill { display: block; height: 100%; background: var(--accent); border-radius: 4px; transition: width .15s linear; }
+.seq-spin { width: 13px; height: 13px; border: 2px solid var(--border-strong); border-top-color: var(--accent);
+  border-radius: 50%; animation: seq-spin .7s linear infinite; flex: none; }
+@keyframes seq-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .seq-spin { animation: none; } }
+.seq-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.seq-toggle .seq-slider { display: none; }
+.seq-switch { appearance: none; -webkit-appearance: none; position: relative; width: 34px; height: 20px;
+  border-radius: 11px; background: var(--border-strong); cursor: pointer; transition: background .15s; flex: none; }
+.seq-switch::before { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+  border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.seq-switch:checked { background: var(--ok); }
+.seq-switch:checked::before { transform: translateX(14px); }
+.seq-switch:disabled { opacity: .45; cursor: not-allowed; }
+.seq-toggle-txt { font-size: 11px; font-weight: 600; color: var(--muted); width: 26px; }
+.seq-row.seq-on { border-color: color-mix(in srgb, var(--ok) 45%, var(--border)); }
+.seq-row.seq-on .seq-toggle-txt { color: var(--ok); }
+
+/* read-only info popover (shares the Tier-2 popover frame) */
+.info-popover .plan-popover-body { font-size: 12.5px; color: var(--fg); line-height: 1.5; }
+
+/* ===== Calibration: upload -> detected slots ===== */
+.cal-upload label { display: block; margin: 8px 0; font-size: 12.5px; }
+.cal-slot-list { display: flex; flex-direction: column; gap: 5px; margin: 8px 0; }
+.cal-slot-row { display: inline-flex; align-items: center; gap: 10px; padding: 7px 10px; background: var(--panel2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12.5px; cursor: pointer; }
+.cal-slot-row input { flex: none; }
+.muted { color: var(--muted); font-size: 11.5px; }

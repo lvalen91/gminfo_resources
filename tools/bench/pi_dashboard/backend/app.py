@@ -10,8 +10,11 @@ never fire without an explicit confirm phrase; everything defaults to dry-run.
 from __future__ import annotations
 
 import asyncio
+import io
 import json
+import secrets
 import time
+import zipfile
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
@@ -312,7 +315,8 @@ async def adb_install(serial: str = Form(...), reinstall: bool = Form(True),
         raise HTTPException(400, "expected a .apk file")
     dest = config.UPLOAD_DIR / f"{int(time.time())}_{name}"
     data = await apk.read()
-    dest.write_bytes(data)
+    # Up to client_max_body_size (128 MB) onto the Pi's SD card: off the event loop.
+    await asyncio.to_thread(dest.write_bytes, data)
     try:
         return await calibration.adb_install(serial, dest, reinstall=reinstall)
     finally:
@@ -577,49 +581,14 @@ async def cal_workflow():
     return calibration.DPS_WRITE_WORKFLOW
 
 
-@app.post("/api/cal/validate", tags=["calibration"])
-async def cal_validate(container: UploadFile = File(...),
-                       template: UploadFile | None = File(None)):
-    """Offline dry-run for a calibration write: ingest the container (digest_ok) and,
-    if a genuine template is supplied, reseal + verify the payload digest via caltool.
-    Never touches hardware; the RSA signature stays stale by design."""
-    cpath = config.UPLOAD_DIR / f"{int(time.time())}_container.bin"
-    cpath.write_bytes(await container.read())
-    out = {"container": Path(container.filename or "container").name}
-    try:
-        out["ingest"] = await calibration.caltool_ingest(cpath)
-        if template is not None:
-            tpath = config.UPLOAD_DIR / f"{int(time.time())}_template.bin"
-            tpath.write_bytes(await template.read())
-            import json as _j
-            entries = {"meta": out["ingest"].get("meta") or {}, "entries": []}
-            # Re-ingest to JSON entries for packing round-trip
-            ejson = config.UPLOAD_DIR / f"{int(time.time())}_entries.json"
-            cli = str(config.CALTOOL_DIR / "cli.py")
-            proc = await asyncio.create_subprocess_exec(
-                config.BENCH_PYTHON, cli, "ingest", str(cpath),
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
-                cwd=str(config.CALTOOL_DIR))
-            data, _ = await proc.communicate()
-            ejson.write_bytes(data)
-            packed = config.UPLOAD_DIR / f"{int(time.time())}_packed.bin"
-            out["pack"] = await calibration.caltool_pack_validate(ejson, tpath, packed)
-            for p in (tpath, ejson, packed):
-                try:
-                    p.unlink()
-                except OSError:
-                    pass
-        return out
-    finally:
-        try:
-            cpath.unlink()
-        except OSError:
-            pass
-
-
 # ============================ calibration write (Tier 2, token-gated) ==========
-# The write auto-runs the CAN613/614 VIP-RAM step (save -> override -> UDS write ->
-# restore in a finally). The TEST path runs only connect + save + verify-readback.
+# The live write and its F182 verify are delegated to the single proven implementation,
+# bench_can/calibration_write_can0.py (see calibration.run_can0_cal): one programming
+# session for the whole package, 4093-byte TransferData blocks for a genuine/stock write
+# (no CAN 0x613/0x614), or the 0x613/0x614 VIP override path for a modified container. The
+# write path is decided from the uploaded bytes (stock hash-match => genuine), never a UI
+# toggle. The 613/614 TEST endpoint below is a separate, read-only link check, and also
+# runs as the write's own pre-flight health check.
 @app.get("/api/cal/ltz-reference", tags=["calibration"])
 async def cal_ltz_reference():
     """Verify the stock LTZ reference set against the manifest SHA-256s (ground truth)."""
@@ -633,169 +602,166 @@ async def cal_write_test():
     return await asyncio.to_thread(calibration.cal_write_test)
 
 
-def _uds_cal_transfer(container_bytes: bytes, slot: int):
-    """Build the UDS programming-transfer step for a calibration write (the part that
-    runs between the 613/614 override and restore). Faithful to the DPS Type4 doc order;
-    exact RequestDownload addressing per slot must be confirmed by the operator."""
-    def transfer(dev_log: list) -> dict:
-        steps = []
-
-        def rec(entry: dict) -> None:
-            # Contract (see calibration.cal_write_execute): thread each UDS step into
-            # dev_log so the CAN 613/614 steps and these UDS steps form ONE ordered
-            # cross-bus timeline, while still returning the structured UDS steps here.
-            steps.append(entry)
-            dev_log.append({"bus": "uds", **entry})
-
-        with UDSClient() as c:
-            for name, payload in (("10 03", b"\x10\x03"), ("27 01", b"\x27\x01")):
-                rec({name: c.request(payload).as_dict()})
-            # SecurityAccess key (27 02 + degenerate key). Its result MUST be checked:
-            # if the ECU rejects the unlock, abort before any 34/36/37 download so we
-            # never stream a container to a still-locked ECU, and log the outcome.
-            key = c.security_send_key(0x02, diagdata.DEGENERATE_KEY)
-            rec({"27 02 (key)": key.as_dict()})
-            if not key.ok:
-                return {"ok": False, "steps": steps,
-                        "error": f"SecurityAccess key rejected (27 02 -> NRC "
-                                 f"{key.as_dict().get('nrc', '?')}); aborted before "
-                                 "any 34/36/37 write"}
-            # Each precondition/session step MUST be checked: a rejection here (e.g.
-            # conditionsNotCorrect on 021E/10 02 -- a vehicle/CAN-state precondition,
-            # not a security-level problem) must abort before RequestDownload, never
-            # fall through to a PEC read that can look clean for an unrelated reason
-            # (PEC0000 just means "no pending programming error", which is also true
-            # when nothing was ever attempted -- it is not proof a transfer happened).
-            for name, payload in (("31 01 FF01", b"\x31\x01\xff\x01"),
-                                  ("31 01 021E", b"\x31\x01\x02\x1e"),
-                                  ("10 02", b"\x10\x02")):
-                step = c.request(payload)
-                rec({name: step.as_dict()})
-                if not step.ok:
-                    return {"ok": False, "steps": steps,
-                            "error": f"{name} rejected (NRC {step.as_dict().get('nrc', '?')} "
-                                     f"{step.as_dict().get('nrc_name', '')}); aborted before "
-                                     "RequestDownload -- no container bytes were sent"}
-            # RequestDownload / TransferData / RequestTransferExit of the container.
-            rd = c.request(b"\x34\x00\x44" + b"\x00\x00\x00\x00" +
-                           len(container_bytes).to_bytes(4, "big"))
-            rec({"34 RequestDownload": rd.as_dict()})
-            if not rd.ok:
-                return {"ok": False, "steps": steps,
-                        "error": f"RequestDownload rejected (NRC {rd.as_dict().get('nrc', '?')} "
-                                 f"{rd.as_dict().get('nrc_name', '')}); no container bytes were sent"}
-            block, idx = 0x0FFF, 1
-            all_blocks_ok = True
-            for off in range(0, len(container_bytes), block):
-                td = c.request(bytes([0x36, idx & 0xFF]) + container_bytes[off:off + block])
-                # Log EVERY block (not just failures), labeled with the index that was
-                # actually sent (before the increment).
-                rec({f"36 block {idx}": td.as_dict()})
-                idx += 1
-                if not td.ok:
-                    all_blocks_ok = False
-                    break
-            exit_ = c.request(b"\x37")
-            rec({"37 TransferExit": exit_.as_dict()})
-            pec = c.read_did(0xF0F1)
-            rec({"22 F0F1 (PEC)": pec.as_dict()})
-            # Success requires every stage to have actually gone through -- not just a
-            # clean-looking final PEC, which can be clean because nothing was sent.
-            ok = all_blocks_ok and exit_.ok and pec.ok and pec.response.endswith(b"\x00\x00")
-        return {"ok": ok, "steps": steps}
-    return transfer
+# --- upload staging: the write's primary input is an upload (a .zip or individual module
+# files), each identified by its GM part-number filename. Detection cross-references the
+# part number -> slot map (ltz_ref.slot_for_part); the file's own bytes decide genuine
+# (hash-matches the stock reference) vs modified (does not, -> 0x613/0x614 override path).
+# Staged packages live in-memory keyed by a stage id until a plan consumes them.
+_CAL_STAGES: dict[str, dict] = {}
+CAL_STAGE_TTL = 1800.0  # seconds
 
 
-async def _package_from_zip(upload: UploadFile) -> list[dict]:
-    """Ingest an uploaded calibration-package .zip into an ordered write list.
+def _gc_cal_stages() -> None:
+    now = time.time()
+    for sid in [s for s, v in _CAL_STAGES.items() if now - v["created"] > CAL_STAGE_TTL]:
+        _CAL_STAGES.pop(sid, None)
 
-    Every member is matched BY CONTENT to the verified stock reference set (unwrapped
-    SHA-256 vs the manifest); anything that is not a byte-identical known-stock container
-    is rejected. The zip is only a carrier for the same verified containers - it can never
-    introduce custom calibration bytes (custom cal is not a supported option)."""
-    import zipfile
+
+def _detect_module(name: str, data: bytes, pkg_dir: Path) -> dict:
+    """Classify one uploaded module by its part-number filename and its bytes, writing it
+    into pkg_dir under its bare part number (the --package-dir layout the writer reads)."""
+    base = Path(name).name
+    # The file is named by its GM part number; accept a bare part or one with an extension.
+    part = base if ltz_ref.slot_for_part(base) else (
+        Path(base).stem if ltz_ref.slot_for_part(Path(base).stem) else None)
+    if part is None:
+        return {"filename": base, "recognized": False, "slot": None, "part": None,
+                "reason": "filename is not a known GM calibration part number"}
+    slot = ltz_ref.slot_for_part(part)
+    genuine = ltz_ref.is_stock_bytes(part, data)
+    out = pkg_dir / part
+    out.write_bytes(data)
+    return {"filename": base, "recognized": True, "slot": slot, "part": part,
+            "genuine": genuine, "bytes": len(data), "path": str(out)}
+
+
+@app.post("/api/cal/write/stage", tags=["calibration"])
+async def cal_write_stage(package: UploadFile | None = File(None),
+                          modules: list[UploadFile] = File(default=[])):
+    """Stage a calibration-write upload and report which slots it populates.
+
+    Input is a full package `.zip` (part-number-named members) and/or one or more
+    individual module files (each named by its GM part number). Each module is mapped to a
+    slot via the part number and classified genuine (bytes hash-match the stock reference)
+    or modified. With no upload at all, the pinned verified stock reference set is staged
+    instead, so a stock-recovery write needs no file. Returns a stage id the plan step
+    consumes plus the detected entries - nothing is written to the ECU here."""
+    import tempfile
     config.PKG_STAGE_DIR.mkdir(parents=True, exist_ok=True)
-    raw = await upload.read()
-    stage = config.PKG_STAGE_DIR / f"{int(time.time())}_{Path(upload.filename or 'pkg.zip').name}"
-    stage.write_bytes(raw)
-    by_slot: dict[int, dict] = {}
-    try:
-        with zipfile.ZipFile(stage) as zf:
-            for info in zf.infolist():
-                if info.is_dir():
-                    continue
-                data = zf.read(info)
-                sha = ltz_ref._unwrapped_sha256(data)
-                match = next(((slot, part) for slot, (part, exp) in ltz_ref.LTZ_REFERENCE.items()
-                             if exp == sha), None)
-                if match is None:
-                    raise HTTPException(422, f"zip member {info.filename!r} does not match any "
-                                             "verified stock container (custom cal is not allowed)")
-                slot, part = match
-                out = config.PKG_STAGE_DIR / f"{int(time.time())}_{part}"
-                out.write_bytes(data)
-                by_slot[slot] = {"slot": f"{slot:02X}", "part": part, "path": str(out)}
-    except zipfile.BadZipFile:
-        raise HTTPException(400, "not a valid .zip archive")
-    finally:
+    _gc_cal_stages()
+    pkg_dir = Path(tempfile.mkdtemp(prefix="pkg_", dir=config.PKG_STAGE_DIR))
+    entries: list[dict] = []
+    unrecognized: list[dict] = []
+
+    have_upload = bool((package and package.filename) or any(m.filename for m in modules))
+    if package is not None and package.filename:
+        raw = await package.read()
         try:
-            stage.unlink()
-        except OSError:
-            pass
-    if not by_slot:
-        raise HTTPException(422, "zip contained no verified stock calibration containers")
-    return [by_slot[s] for s in sorted(by_slot)]
+            with zipfile.ZipFile(io.BytesIO(raw)) as zf:
+                for info in zf.infolist():
+                    if info.is_dir():
+                        continue
+                    d = _detect_module(info.filename, zf.read(info), pkg_dir)
+                    (entries if d["recognized"] else unrecognized).append(d)
+        except zipfile.BadZipFile:
+            raise HTTPException(400, "not a valid .zip archive")
+    for m in modules:
+        if not m.filename:
+            continue
+        d = _detect_module(m.filename, await m.read(), pkg_dir)
+        (entries if d["recognized"] else unrecognized).append(d)
+
+    if not have_upload:
+        # No upload: stage the pinned verified stock reference set (a genuine recovery write).
+        for e in ltz_ref.full_package():
+            entries.append({"filename": e["part"], "recognized": True, "slot": e["slot"],
+                            "part": e["part"], "genuine": True,
+                            "bytes": Path(e["path"]).stat().st_size, "path": e["path"]})
+
+    # Collapse duplicate slots (last wins), keep slot order.
+    by_slot: dict[str, dict] = {}
+    for e in entries:
+        by_slot[e["slot"]] = e
+    ordered = [by_slot[s] for s in sorted(by_slot)]
+    if not ordered:
+        raise HTTPException(422, "no recognizable calibration modules in the upload "
+                                 "(each file must be named by a known GM part number)")
+
+    source = ("pinned stock reference set" if not have_upload
+              else "uploaded package" if package and package.filename and not modules
+              else "uploaded modules" if not (package and package.filename)
+              else "uploaded package + modules")
+    sid = secrets.token_urlsafe(18)
+    _CAL_STAGES[sid] = {"created": time.time(), "dir": str(pkg_dir),
+                        "entries": ordered, "source": source}
+    return {"stage_id": sid, "source": source,
+            "package_genuine": all(e["genuine"] for e in ordered),
+            "entries": [{"slot": e["slot"], "part": e["part"], "genuine": e["genuine"],
+                         "bytes": e["bytes"], "recognized": True} for e in ordered],
+            "unrecognized": [{"filename": u["filename"], "reason": u["reason"]} for u in unrecognized]}
+
+
+class CalPlanBody(BaseModel):
+    stage_id: str
+    slots: list[str] | None = None  # None/[] -> every detected slot
 
 
 @app.post("/api/cal/write/plan", tags=["calibration"])
-async def cal_write_plan(scope: str = Form("slot"), slot: str = Form(None),
-                         package: UploadFile | None = File(None)):
-    """Plan a Tier-2 calibration write in ONE flow.
+async def cal_write_plan(body: CalPlanBody):
+    """Plan a Tier-2 calibration write from a previously staged upload.
 
-    `scope` is "slot" (one slot) or "package" (every verified stock slot, in order). The
-    bytes come either from the pinned verified stock reference set, or from an uploaded
-    `package` .zip whose members must each match a known-stock container by digest. There
-    is no custom-calibration source - unverified bytes are never planned."""
-    if scope not in ("slot", "package"):
-        raise HTTPException(400, 'scope must be "slot" or "package"')
-
-    if package is not None and package.filename:
-        entries = await _package_from_zip(package)          # verified-stock zip carrier
-        if scope == "slot":
-            if not slot:
-                raise HTTPException(400, "scope=slot needs a slot")
-            entries = [e for e in entries if e["slot"].upper() == slot.upper()]
-            if not entries:
-                raise HTTPException(404, f"uploaded zip has no verified container for slot {slot}")
-    elif scope == "package":
-        entries = ltz_ref.full_package()                    # pinned verified stock set
-        if not entries:
-            raise HTTPException(404, "no verified stock reference set present (use /api/cal/ltz-reference)")
+    `slots` restricts the write to a subset of the detected slots (omit for all). The write
+    path (genuine stock vs 0x613/0x614 modified) is decided by the staged bytes, not here -
+    if any selected module is modified the whole package write uses the override path."""
+    _gc_cal_stages()
+    stage = _CAL_STAGES.get(body.stage_id)
+    if stage is None:
+        raise HTTPException(400, "unknown or expired stage - re-detect the upload")
+    detected = {e["slot"].upper(): e for e in stage["entries"]}
+    if body.slots:
+        want = [s.upper() for s in body.slots]
+        missing = [s for s in want if s not in detected]
+        if missing:
+            raise HTTPException(404, f"staged upload has no module for slot(s) {', '.join(missing)}")
+        entries = [detected[s] for s in sorted(want)]
     else:
-        if not slot:
-            raise HTTPException(400, "scope=slot needs a slot")
-        part = ltz_ref.part_for_slot(slot)
-        if part is None:
-            raise HTTPException(404, f"slot {slot} is not a known calibration slot")
-        path = ltz_ref.container_path(part)
-        if path is None:
-            raise HTTPException(404, f"no stock container for slot {slot} / part {part} (use /api/cal/ltz-reference)")
-        entries = [{"slot": slot.upper(), "part": part, "path": str(path)}]
+        entries = [detected[s] for s in sorted(detected)]
+    if not entries:
+        raise HTTPException(422, "no slots selected to write")
 
-    # Validate every planned container offline before issuing a token.
-    validations = []
-    for e in entries:
-        ingest = await calibration.caltool_ingest(Path(e["path"]))
-        validations.append({"slot": e["slot"], "part": e["part"], "ingest": ingest})
-    literal = entries[0]["part"] if scope == "slot" else f"PACKAGE {len(entries)}"
+    package_genuine = all(e["genuine"] for e in entries)
+    plan_entries = [{"slot": e["slot"], "part": e["part"], "path": e["path"]} for e in entries]
+    literal = entries[0]["part"] if len(entries) == 1 else f"PACKAGE {len(entries)}"
+    path_desc = ("genuine stock path (no CAN 0x613/0x614, 4093-byte blocks)" if package_genuine
+                 else "MODIFIED path: sets the header-verifier words over the CAN 0x613/0x614 "
+                      "VIP dev interface first, 1022-byte blocks")
     return {**tier2.REGISTRY.plan("cal-write", literal=literal,
-                                  payload={"scope": scope, "entries": entries}),
-            "scope": scope, "entries": [{"slot": e["slot"], "part": e["part"]} for e in entries],
-            "offline_validation": validations,
-            "will_do": "per slot: 613/614 connect -> save words -> override markers -> "
-                       "UDS 10/27/FF01/021E/10 02/34/36/37 -> restore words (finally) -> disconnect",
-            "risk": "DESTRUCTIVE: overwrites the calibration slot(s) on the real ECU. Restore of the "
-                    "two verifier words is guaranteed even on failure."}
+                                  payload={"entries": plan_entries, "genuine": package_genuine}),
+            "entries": [{"slot": e["slot"], "part": e["part"],
+                         "kind": "stock" if e["genuine"] else "modified"} for e in entries],
+            "write_path": "genuine" if package_genuine else "modified (0x613/0x614 override)",
+            "will_do": (f"613/614 VIP link pre-flight check, then one programming session for all "
+                        f"{len(entries)} slot(s): 10 01/10 03/27 01/27 02/31 01 FF01/31 01 021E/"
+                        f"85 02/28 03 01/10 02 once -> per slot 34/36/37/22 F0F1 ({path_desc}) -> "
+                        "close once -> F182 verify against the stock reference. Runs "
+                        "bench_can/calibration_write_can0.py (pauses the can0 keepalive service, "
+                        "restarts it after)."),
+            "risk": "DESTRUCTIVE: overwrites the calibration slot(s) on the real ECU."}
+
+
+CAL_VERIFY_SETTLE_S = 15.0
+CAL_VERIFY_ATTEMPTS = 4
+
+
+def _package_args(entries: list[dict]) -> tuple[Path, list[str]]:
+    """The planned entries as calibration_write_can0.py's (--package-dir, --only)."""
+    dirs = {Path(e["path"]).parent for e in entries}
+    if len(dirs) != 1:
+        raise HTTPException(500, f"planned containers span several directories: {sorted(map(str, dirs))}")
+    for e in entries:
+        if Path(e["path"]).name != e["part"]:
+            raise HTTPException(500, f"planned container {e['path']} is not named by its part {e['part']}")
+    return dirs.pop(), [e["slot"].upper() for e in entries]
 
 
 @app.post("/api/cal/write/execute", tags=["calibration"])
@@ -805,22 +771,66 @@ async def cal_write_execute(body: ExecuteBody):
     except (KeyError, ValueError) as e:
         raise HTTPException(400, str(e))
     entries = plan.payload["entries"]
+    genuine = plan.payload.get("genuine", True)
+    package_dir, slots = _package_args(entries)
+    # Serialized against every other dashboard CAN action; the script owns the bus and the
+    # keepalive service for its run. Subprocess + await: the event loop stays free, so
+    # /api/status and every other request keep being served during the write.
+    async with sequences.exclusive_bus() as stopped:
+        # Pre-flight: the non-destructive 0x613/0x614 VIP dev-link health check (the same
+        # connect + save + verify-readback the standalone test runs), while the keepalive is
+        # still up. Informational for a genuine write (which never touches 0x613/0x614) and a
+        # link pre-check for a modified write (whose override path does). It does NOT gate the
+        # write - the write script does its own 0x613/0x614 handling when genuine=False.
+        preflight = await asyncio.to_thread(calibration.cal_write_test)
+        write = await calibration.run_can0_cal("package", package_dir, slots, genuine=genuine)
+        # After a reprogram the module stays in the programming session and then reboots
+        # (observed: 10 03 -> 7F 10 7E ~3 s after, then F182 timeout and ~15-30 s off the
+        # bus). Let it settle, then retry the F182 verify a few times.
+        verify, verify_attempts = None, 0
+        for verify_attempts in range(1, CAL_VERIFY_ATTEMPTS + 1):
+            await asyncio.sleep(CAL_VERIFY_SETTLE_S)
+            verify = await calibration.run_can0_cal("verify", package_dir, slots,
+                                                    timeout=calibration.CAL_VERIFY_TIMEOUT_S)
+            if verify["ok"]:
+                break
+    wres = write.get("result") or {}
+    vres = verify.get("result") or {}
+    return {"ok": bool(write["ok"] and verify["ok"]),
+            "write_path": write.get("write_path"),
+            "preflight_613_614_ok": bool(preflight.get("ok")),
+            "write_ok": write["ok"], "verify_ok": verify["ok"],
+            "write_elapsed_s": write["elapsed_s"], "verify_elapsed_s": verify["elapsed_s"],
+            "verify_attempts": verify_attempts,
+            "slots_planned": len(entries),
+            "slots": [{"slot": r.get("slot"), "part": r.get("part"), "ok": r.get("ok"),
+                       "error": r.get("error")} for r in wres.get("results", [])],
+            "f182_verify": vres.get("slots"),
+            "error": write.get("error") or verify.get("error"),
+            "stopped_continuous": stopped,
+            "preflight": preflight, "write": write, "verify": verify}
 
-    def run_all() -> dict:
-        results, ok = [], True
-        for e in entries:
-            path = Path(e["path"])
-            slot = int(e["slot"], 16)
-            transfer = _uds_cal_transfer(path.read_bytes(), slot)
-            r = calibration.cal_write_execute(path, slot, transfer)
-            results.append(r)
-            if not r.get("ok"):
-                ok = False
-                break  # abort the package on the first failed slot; do not keep writing
-        return {"scope": plan.payload["scope"], "ok": ok, "slots_written": len(results),
-                "slots_planned": len(entries), "results": results}
 
-    return await asyncio.to_thread(run_all)
+@app.post("/api/cal/verify", tags=["calibration"])
+async def cal_verify(scope: str = Form("package"), slot: str = Form(None)):
+    """Non-destructive: read live F182 and compare each slot to the stock reference set,
+    via the same calibration_write_can0.py (pauses the can0 keepalive for ~10 s)."""
+    if scope == "package":
+        entries = ltz_ref.full_package()
+    else:
+        part = ltz_ref.part_for_slot(slot or "")
+        path = ltz_ref.container_path(part) if part else None
+        if path is None:
+            raise HTTPException(404, f"no stock container for slot {slot}")
+        entries = [{"slot": slot.upper(), "part": part, "path": str(path)}]
+    if not entries:
+        raise HTTPException(404, "no verified stock reference set present")
+    package_dir, slots = _package_args(entries)
+    async with sequences.exclusive_bus():
+        verify = await calibration.run_can0_cal("verify", package_dir, slots,
+                                                timeout=calibration.CAL_VERIFY_TIMEOUT_S)
+    return {"ok": verify["ok"], "f182_verify": (verify.get("result") or {}).get("slots"),
+            "error": verify.get("error"), "verify": verify}
 
 
 # ============================ ELK recovery =====================================
@@ -863,7 +873,8 @@ async def elk_image_upload(image: UploadFile = File(...)):
     config.ELK_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     name = Path(image.filename or "custom.img").name
     dest = config.ELK_IMAGE_DIR / name
-    dest.write_bytes(await image.read())
+    # A RAM-boot image is tens of MB: write it off the event loop.
+    await asyncio.to_thread(dest.write_bytes, await image.read())
     validate = await elk.image_validate(dest)
     return {"stored": name, "path": str(dest), "validate": validate,
             "boot_how": "POST /api/elk/boot/plan then /execute with this filename",
