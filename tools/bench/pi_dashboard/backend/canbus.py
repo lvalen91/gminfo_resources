@@ -33,12 +33,24 @@ class CanObserver:
         self.id_counts: dict[int, int] = defaultdict(int)
         self.total = 0
         self.errors = 0
-        self._recent = deque(maxlen=4000)  # (monotonic, is_error)
+        self._recent = deque(maxlen=4000)  # (monotonic, is_error) -- rate/error-rate stats only
+        # Replay backlog for a brand-new subscriber: ~22 fps steady state measured on this
+        # bench (2026-11-25), so 3000 frames is ~2-3 min of backlog -- enough that a fresh
+        # page load (or the decode panel reopening) isn't empty while new frames trickle in,
+        # without holding more than a bus-cycle or two's worth of history.
+        self._replay: deque[str] = deque(maxlen=3000)
         self.last_error: str | None = None
         self.up = False
 
     def subscribe(self) -> asyncio.Queue:
-        q: asyncio.Queue = asyncio.Queue(maxsize=2000)
+        # maxsize comfortably covers the full replay seed plus live frames arriving while a
+        # slow consumer (a laggy browser tab) drains it.
+        q: asyncio.Queue = asyncio.Queue(maxsize=3500)
+        for msg in self._replay:
+            try:
+                q.put_nowait(msg)
+            except asyncio.QueueFull:
+                break
         self._subs.add(q)
         return q
 
@@ -121,6 +133,7 @@ class CanObserver:
                         "ext": bool(ident & CAN_EFF_FLAG), "rtr": bool(ident & CAN_RTR_FLAG),
                         "data": data[:dlc].hex(),
                     })
+                    self._replay.append(msg)
                     for q in list(self._subs):
                         try:
                             q.put_nowait(msg)

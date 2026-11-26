@@ -462,7 +462,7 @@ class UartStream(_Stream):
         await _verified_off_sd(str(self.sess.dir))
         self._thread = threading.Thread(target=self._writer, name="capture-uart", daemon=True)
         self._thread.start()
-        self._q = self.port.subscribe(maxsize=4000)
+        self._q = self.port.subscribe(maxsize=4000, replay=False)
         self._fwd = asyncio.create_task(self._forward())
         self.state = "capturing"
         self.sess.event(f"uart: tapping dashboard ser2net link ({self.port.spec['host']}:{self.port.spec['port']}) -> uart.log")

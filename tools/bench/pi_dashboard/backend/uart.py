@@ -19,6 +19,11 @@ import asyncio
 from . import config
 
 BACKOFF_MIN, BACKOFF_MAX = 2.0, 30.0
+# Replay backlog for a brand-new live-view subscriber. Steady-state VIP console output is
+# near nothing (a couple of lines every 30-60s), but a power-cycle/reset produces dense
+# bursts (tens of lines in under two seconds, measured on this bench 2026-11-25) -- this is
+# sized for "a reboot just happened right before someone opened the tab", not steady state.
+REPLAY_CAP_BYTES = 96 * 1024
 
 
 def _is_open_fail(text: str) -> bool:
@@ -35,14 +40,19 @@ class UartPort:
         self.connected = False
         self.last_line: str = ""
         self.status_note: str = ""
+        self._replay: str = ""
 
     @property
     def streaming(self) -> bool:
         return self._task is not None and not self._task.done()
 
-    def subscribe(self, maxsize: int = 1000) -> asyncio.Queue:
-        # maxsize: the field-capture tap (capture.py) asks for a deeper queue than a browser
+    def subscribe(self, maxsize: int = 1000, replay: bool = True) -> asyncio.Queue:
+        # maxsize: the field-capture tap (capture.py) asks for a deeper queue than a browser.
+        # replay=False for that same tap: it writes a forward-only log from the moment it
+        # starts, so backfilling it with older backlog would misrepresent its own file.
         q: asyncio.Queue = asyncio.Queue(maxsize=maxsize)
+        if replay and self._replay:
+            q.put_nowait(self._replay)  # one item regardless of its length; maxsize counts items
         self._subs.add(q)
         if not self.streaming:
             self._task = asyncio.create_task(self._run())
@@ -54,6 +64,9 @@ class UartPort:
             self._task.cancel()  # release the ser2net port (and its device lock) now
 
     def _fanout(self, text: str) -> None:
+        self._replay += text
+        if len(self._replay) > REPLAY_CAP_BYTES:
+            self._replay = self._replay[-REPLAY_CAP_BYTES:]
         for q in list(self._subs):
             try:
                 q.put_nowait(text)
