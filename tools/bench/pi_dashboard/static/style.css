@@ -85,6 +85,10 @@ code { font-family: var(--mono); background: var(--panel2); border-radius: 4px;
 .dot.bad { background: var(--bad); }
 .dot.warn { background: var(--warn); }
 .dot.stale { background: transparent; border: 1px solid var(--muted); }
+/* The state classes (ok/warn/bad/stale) collide by name with utility classes -- notably
+   `.warn` (a warning message-box style with padding + border). Scope the dot so a utility
+   can't inflate the 8x8 circle into a padded, square-cornered blob. */
+.ind .dot { padding: 0; border-radius: 50%; }
 .clock { color: var(--muted); font-family: var(--mono); font-size: 12px; white-space: nowrap; }
 #btnExportLogs { flex: none; font-size: 11.5px; padding: 4px 10px; }
 
@@ -252,7 +256,8 @@ td.mono, .mono { font-family: var(--mono); }
 #uartTermWrap .term { height: 360px; }
 
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: flex;
-  align-items: center; justify-content: center; z-index: 50; backdrop-filter: blur(3px); }
+  align-items: center; justify-content: center; z-index: 50;
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
 .modal.hidden { display: none; }
 .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
   padding: 20px; max-width: 460px; width: 90%; box-shadow: 0 12px 40px rgba(0,0,0,.25); }
@@ -445,3 +450,128 @@ table.decode-sigs .state-pill { margin-left: 0; }
 .cap-vol.selected { border-color: var(--accent); }
 .cap-vol .seq-main { flex-wrap: wrap; }
 @media (prefers-reduced-motion: reduce) { .cap-safe.rec .cap-dot { animation: none; } }
+
+/* ============================================================================
+   LIQUID GLASS  (Apple-style translucent material: frosted blur + specular rim
+   + layered depth, applied to the chrome/card layer only so dense text, tables
+   and terminals stay crisp). Glass is gated behind @supports(backdrop-filter)
+   and dropped for prefers-reduced-transparency. Presentation only.
+   ============================================================================ */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.62);     /* card surface */
+  --glass-tint: rgba(255, 255, 255, 0.45);   /* small controls */
+  --glass-chrome: rgba(248, 248, 250, 0.60); /* topbar + sidebar */
+  --glass-rim: inset 1px 1px 0 rgba(255, 255, 255, 0.90);   /* top-left light edge */
+  --glass-rim-soft: inset 0 0 0 1px rgba(255, 255, 255, 0.30);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --glass-blur: blur(22px) saturate(180%);
+  --radius: 15px;
+  --radius-sm: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-bg: rgba(40, 41, 47, 0.55);
+    --glass-tint: rgba(78, 80, 90, 0.36);
+    --glass-chrome: rgba(26, 27, 32, 0.60);
+    --glass-rim: inset 1px 1px 0 rgba(255, 255, 255, 0.15);
+    --glass-rim-soft: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 12px 36px rgba(0, 0, 0, 0.50), 0 2px 8px rgba(0, 0, 0, 0.38);
+  }
+}
+
+/* A soft, accent-tinted field behind everything so the glass has real content to
+   refract/blur (flat backgrounds make backdrop-filter look like plain opacity). */
+body {
+  background:
+    radial-gradient(1100px 760px at 6% -10%, color-mix(in srgb, var(--accent) 17%, transparent), transparent 58%),
+    radial-gradient(900px 680px at 104% 0%, color-mix(in srgb, var(--ok) 13%, transparent), transparent 55%),
+    radial-gradient(820px 820px at 52% 120%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 60%),
+    var(--content-bg);
+  background-attachment: fixed;
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card, details.card {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-rim), var(--glass-rim-soft), var(--glass-shadow);
+  }
+  #topbar, #tabs {
+    background: var(--glass-chrome);
+    -webkit-backdrop-filter: blur(26px) saturate(185%);
+    backdrop-filter: blur(26px) saturate(185%);
+    box-shadow: var(--glass-rim);
+  }
+  .modal { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .modal-box, .plan-popover {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(30px) saturate(185%);
+    backdrop-filter: blur(30px) saturate(185%);
+    box-shadow: var(--glass-rim), var(--glass-rim-soft), 0 24px 70px rgba(0, 0, 0, 0.45);
+  }
+  /* Standalone action buttons become frosted glass; semantic (primary/danger/
+     armed) and special-purpose buttons (segmented, info, uninstall, nav) keep
+     their own look. */
+  button:not(.primary):not(.danger):not(.destructive):not(.armed):not(.seg-btn):not(.seq-info):not(.card-info):not(.pkg-uninstall) {
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(8px) saturate(160%);
+    backdrop-filter: blur(8px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.30);
+    border-radius: 9px;
+  }
+  .segmented, .ind {
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(10px) saturate(160%);
+    backdrop-filter: blur(10px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .segmented { border-radius: 11px; }
+}
+
+/* Premium press/sheen feedback (works regardless of glass support). */
+button { transition: background .15s ease, border-color .12s ease, transform .08s ease, box-shadow .12s ease; }
+button:not(:disabled):active { transform: scale(0.975); }
+button.primary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 9px color-mix(in srgb, var(--accent) 35%, transparent); }
+#tabs button.active { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.30), 0 2px 10px color-mix(in srgb, var(--accent) 40%, transparent); }
+
+/* Accessibility: drop translucency/blur when the viewer asks for it. */
+@media (prefers-reduced-transparency: reduce) {
+  .card, details.card, #topbar, #tabs, .modal-box, .plan-popover,
+  button, .segmented, .ind {
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  .card, details.card, #topbar, #tabs, .modal-box, .plan-popover { background: var(--panel); }
+  button:not(.primary):not(.danger):not(.destructive):not(.armed):not(.seg-btn):not(.seq-info):not(.card-info):not(.pkg-uninstall),
+  .segmented, .ind { background: var(--panel2); }
+  body { background: var(--content-bg); }
+}
+@media (prefers-reduced-motion: reduce) { button:not(:disabled):active { transform: none; } }
+
+/* ---- Specular edge: a 1px gradient rim that reads as light catching the glass edge
+   (the signature Liquid Glass highlight). Drawn with a masked ::before so only the border
+   paints, never over content. WebKit-prefixed mask for Safari/WebKit. This is the "control
+   layer floats above content" cue kept even with the frosted (less-transparent) material. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card, details.card, .modal-box, .plan-popover { position: relative; }
+  .card::before, details.card::before, .modal-box::before, .plan-popover::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.08) 34%,
+      rgba(255,255,255,0) 60%, rgba(255,255,255,0.22));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    .card::before, details.card::before, .modal-box::before, .plan-popover::before {
+      background: linear-gradient(135deg, rgba(255,255,255,0.26), rgba(255,255,255,0.03) 34%,
+        rgba(255,255,255,0) 60%, rgba(255,255,255,0.08));
+    }
+  }
+}
+/* Drop the specular rim when the viewer asks for reduced transparency. */
+@media (prefers-reduced-transparency: reduce) {
+  .card::before, details.card::before, .modal-box::before, .plan-popover::before { display: none; }
+}
