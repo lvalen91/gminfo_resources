@@ -1225,6 +1225,65 @@ wake mechanism.** Next candidate worth trying: a *held/repeated* `529` (not one-
 genuine sleep, matching the same "hold, don't edge" lesson the keepalive bisection above
 already established for `53B`.
 
+## Gear/PRNDL: CAN-side send confirmed correct, no observable AAOS reaction found (2026-11-26)
+
+Following the PRNDL bit-layout correction above, swept all documented raw values
+(0,1,2,3,4) on `0x40B` (byte4 bits5-7) with `0x264`'s validity bit forced (byte3 bit6=1),
+both while idle (`InfotainmentActive`) and while held in `Run`/`Propulsion` via a
+sustained `0x529`, checking three independent observation channels:
+
+1. **UART**: zero new lines of any kind during the sweep windows (confirmed the unit was
+   genuinely awake and logging normally immediately before/after, so this is a real
+   negative, not a sleep artifact) — consistent with the earlier finding that no
+   PRNDL/gear/transmission module tag exists anywhere in the firmware's UART logging.
+2. **Screen capture**: the visible display (`com.gm.homescreen` center-stack UI) shows no
+   gear indicator; no separate cluster/gauge display was found on this unit (single
+   physical display, 2400x960, one `HWC display 0`). `com.gm.cluster` is a running
+   process but produces no observable output (logcat filtered to its PID: silent).
+3. **UDS `C0xx` telemetry block** (raw-CAN5, `diagnostics/GM_CAN_UDS_REFERENCE.md` §13):
+   read `C002,C003,C004,C005,C007,C008,C009,C00E,C00F` at gear raw=0 and raw=4 (held in
+   `Run`). **Every value was byte-for-byte identical** between the two gear states except
+   `C00F`, which drifted by 3 in its last data byte (`A4`→`A1`) — far more consistent with
+   ordinary sensor/counter noise than a categorical gear encoding.
+
+**Conclusion: the CAN send itself is confirmed correct** (matches the firmware's own
+decode-function remap exactly, per the bit-layout correction), but no AAOS-visible,
+UART-visible, or UDS-visible reaction to a gear change has been found despite exhausting
+every readily-available observation channel on this bench. This may mean gear requires an
+AAOS-side permission this bench can't exercise (same `signature|privileged`-class wall as
+`CAR_POWERTRAIN` elsewhere in this investigation), requires a precondition not met here
+(no real wheel-speed/engine signals on this isolated harness), or genuinely isn't consumed
+the way expected. `vehicle_state.py`'s `GEAR_POSITIONS` stays unverified scaffolding.
+
+## Power-mode Accessory/Propulsion resolved via live CAN + UDS cross-check (2026-11-26)
+
+The long-standing "raw 1 and 4 on CAN 0x284 are not independently confirmed" gap
+(`platform/can_network.md`'s `284` row; `vehicle_state.py`'s `accessory`/`service`
+scaffolding) is now closed for 1 and 4, using the newly-proven raw-CAN5 UDS DID `F085`
+(`diagnostics/GM_CAN_UDS_REFERENCE.md` §13) as a cross-check against direct UART
+evidence — not either signal alone.
+
+Swept all four known raw values on `0x284` byte4 bits3-5 (`00`/`08`/`10`/`20` = raw
+0/1/2/4), each held briefly then immediately read back via both channels:
+
+| Raw | CAN 0x284 data | UART (`[SS_LOG]`) | UDS `F085` readback |
+|---:|---|---|---|
+| 0 | `00 00 00 00 00 00` | `evt=evPowerModeOff` → `SystemState=LocalInfotainment (0x8)` → `st=VehicleInitiated` | `00` |
+| 1 | `00 00 00 00 08 00` | `evt=evPowerModeOn` → **`SystemState=Accessory (0x7)`** → `st=Accessory` | `01` |
+| 2 | `00 00 00 00 10 00` | `evt=evPowerModeOn` → `SystemState=Run (0x5)` → `st=Run` | `02` |
+| 4 | `00 00 00 00 20 00` | `evt=evPowerModeOn` → **`SystemState=Propulsion (0x6)`** → `st=Propulsion` | `04` |
+
+The UART `SystemState=` line is the firmware naming its own state — independent of, and
+stronger than, F085's readback (which merely proved earlier that raw values are retained
+distinctly, not what they mean). **Result: raw 1 = Accessory (confirmed), raw 4 =
+Propulsion (a distinct, newly-identified named state — not "Service Mode" as a historical
+BCM `F085` note from a different bench/context had suggested; that note is now understood
+to describe something else, since raw 2 here independently produces both `F085=02` and
+UART `SystemState=Run`, directly contradicting a "02=Service Mode" reading for this
+platform).** `vehicle_state.py`'s `POWER_MODES` now marks `off`/`run`/`accessory`/
+`propulsion` verified; `service` remains the only unconfirmed raw value — no distinct
+Service/Technician HMI state has been observed on any tested raw value.
+
 ## Display backlight: not a CAN/UDS-reachable mechanism (2026-11-26)
 
 Observed live: physical display backlight off while the SoC was confirmed fully awake
