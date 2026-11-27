@@ -22,8 +22,8 @@ from fastapi import (FastAPI, File, Form, HTTPException, Request, UploadFile, We
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 
-from . import (calibration, canbus, candecode, capture, config, diagdata, elk, ltz_ref,
-               pi_host, sequences, system_status, terminals, tier2, uart, vehicle_state)
+from . import (calibration, canbus, candecode, capture, config, controls, diagdata, elk,
+               ltz_ref, pi_host, sequences, system_status, terminals, tier2, uart, vehicle_state)
 from .uds import UDSClient, UDSError
 
 app = FastAPI(title="GM Info 3.7 Bench Dashboard", version="1.0",
@@ -98,6 +98,12 @@ async def api_meta():
                               "Drive; NONE has a verified CAN frame on this platform yet "
                               "(RX path firmware-traced only). Scaffolding only -- never "
                               "transmits.",
+            "controls": "GET /api/vehicle/controls lists steering-wheel/media controls "
+                       "(Volume Up/Down, Mute, Media Previous/Next, Voice Assist); each "
+                       "verified one sends via UDS IOControlByIdentifier (0x2F) over T1. "
+                       "POST /api/vehicle/control/<name>/press executes a momentary "
+                       "press-and-release. Call/Answer is scaffolding only -- no verified "
+                       "IOCID exists for it.",
         },
         "pi_host": "GET /api/pi/status (CPU/RAM/disk/interfaces/services) and GET /api/pi/wifi "
                    "are read-only; reboot, service restarts and Wi-Fi connect/disconnect are "
@@ -283,6 +289,48 @@ async def vehicle_gear_position_plan(position: str):
                              f"this platform ({spec['reason']}) -- this control is UI/API "
                              "scaffolding only and will never transmit until a verified "
                              "signal exists. See /api/vehicle/gear-positions.")
+
+
+# ============================ Steering-wheel / media controls (UDS IOCID) ======
+@app.get("/api/vehicle/controls", tags=["uds"])
+async def vehicle_controls():
+    return {"controls": [{"name": k, **v} for k, v in controls.STEERING_WHEEL_CONTROLS.items()]}
+
+
+@app.post("/api/vehicle/control/{name}/press", tags=["uds"])
+async def vehicle_control_press(name: str):
+    """Momentary press-and-release of a verified steering-wheel/media IOCID: extended
+    session + the bench-confirmed degenerate SecurityAccess level-01 grant, then
+    `2F <IOCID> 03 <param>` immediately followed by `2F <IOCID> 00`. Non-destructive
+    (a single button press); refuses outright for any control with no verified IOCID."""
+    spec = controls.STEERING_WHEEL_CONTROLS.get(name)
+    if spec is None:
+        raise HTTPException(404, f"unknown control {name!r}")
+    if not spec["verified"]:
+        raise HTTPException(409, f"control {name!r} has no verified IOCID on this platform "
+                                 f"({spec['reason']}) -- refusing to send. See "
+                                 "/api/vehicle/controls.")
+
+    def work():
+        with UDSClient() as c:
+            sess = c.session(0x03).as_dict()
+            seed = c.security_request_seed(0x01)
+            if not seed.ok:
+                return {"ok": False, "step": "security_seed", "extended_session": sess,
+                        "seed": seed.as_dict()}
+            grant = c.security_send_key(0x02, diagdata.DEGENERATE_KEY)
+            if not grant.ok:
+                return {"ok": False, "step": "security_grant", "seed": seed.as_dict(),
+                        "grant": grant.as_dict()}
+            press = c.request(controls.iocid_press_request(spec["iocid"], spec["param"]))
+            release = c.request(controls.iocid_release_request(spec["iocid"]))
+            return {"ok": press.ok, "control": name, "press": press.as_dict(),
+                    "release": release.as_dict()}
+
+    try:
+        return await asyncio.to_thread(work)
+    except UDSError as e:
+        raise HTTPException(502, str(e))
 
 
 # ============================ UART =============================================

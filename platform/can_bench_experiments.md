@@ -1249,11 +1249,27 @@ sustained `0x529`, checking three independent observation channels:
 **Conclusion: the CAN send itself is confirmed correct** (matches the firmware's own
 decode-function remap exactly, per the bit-layout correction), but no AAOS-visible,
 UART-visible, or UDS-visible reaction to a gear change has been found despite exhausting
-every readily-available observation channel on this bench. This may mean gear requires an
-AAOS-side permission this bench can't exercise (same `signature|privileged`-class wall as
-`CAR_POWERTRAIN` elsewhere in this investigation), requires a precondition not met here
-(no real wheel-speed/engine signals on this isolated harness), or genuinely isn't consumed
-the way expected. `vehicle_state.py`'s `GEAR_POSITIONS` stays unverified scaffolding.
+every readily-available observation channel on this bench. `vehicle_state.py`'s
+`GEAR_POSITIONS` stays unverified scaffolding.
+
+**Why UDS can never show this (firmware RE, 2026-11-26, confirms the negative result
+architecturally, not just empirically):** the gear decode writes to SRAM `0xfebd3434`
+(setter `FUN_0008c79c`, file `0x8c79c`, sole caller `0x4dd9c` — directly after the PRNDL
+decode call). Its only reader is `FUN_0005c30e`, which packages it as an **internal
+VIP→SoC HDLC IPC record (channel 4, record type `0x0C`, sub-id `0x05`)** — **not a CAN
+frame at all**. An exhaustive reference search of the entire UDS/DCM config block
+(file `0x1CC40–0x1D400`, the same region holding the 220-entry DID table) found **zero
+pointers to this SRAM page** — no DID handler on either transport can reach it, by
+construction. So the `C0xx` UDS sweep above was guaranteed to find nothing; this isn't a
+transport-reachability gap, it's that gear never touches the diagnostic responder at all.
+
+This also reframes the open question: the VIP *does* correctly decode and package gear
+for the SoC (per the firmware trace) — whether AAOS actually consumes that IPC record is
+now the real unknown, not whether the CAN-side decode works. Next test, if pursued: trace
+the VIP↔SoC HDLC link itself (channel 4, type `0x0C`, sub `0x05`) while driving the
+already-verified gear RX frames, watching for that specific record to change in lockstep
+— this would show directly whether the gap is SoC-side (record changes, AAOS ignores it)
+or still VIP-side (record never changes).
 
 ## Power-mode Accessory/Propulsion resolved via live CAN + UDS cross-check (2026-11-26)
 

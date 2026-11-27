@@ -570,6 +570,36 @@ async function loadVehicleGearPositions() {
   } catch (e) { wrap.innerHTML = "error: " + esc(String(e)); }
 }
 
+/* ================= Steering wheel / media controls (UDS IOCID) ================= */
+async function loadSteeringControls() {
+  const wrap = $("#steeringControls");
+  try {
+    const { controls } = await loadUntilOk(() => api("/vehicle/controls", { timeout: INIT_TIMEOUT }),
+      (e, d) => wrap.innerHTML = `<span class="seg-loading">${loadingHTML(`couldn't load (${e.message}) -- retrying in ${d / 1000}s…`, true)}</span>`);
+    const groups = [...new Set(controls.map(c => c.group))];
+    wrap.innerHTML = groups.map(g => {
+      const rows = controls.filter(c => c.group === g).map(c => c.verified
+        ? `<button class="seg-btn" data-control="${esc(c.name)}" title="${esc(c.evidence)}">${esc(c.label)}</button>`
+        : `<button class="seg-btn" disabled title="${esc('No verified IOCID -- scaffold only: ' + c.reason)}">${esc(c.label)} — unverified</button>`
+      ).join("");
+      return `<div class="field-row"><span class="field-label">${esc(g)}</span><div class="segmented">${rows}</div></div>`;
+    }).join("");
+    $$("#steeringControls button[data-control]").forEach(b => b.onclick = () => pressControl(b));
+  } catch (e) { wrap.innerHTML = "error: " + esc(String(e)); }
+}
+async function pressControl(b) {
+  const buttons = $$("#steeringControls button[data-control]");
+  buttons.forEach(x => x.disabled = true);
+  const out = $("#controlsOut");
+  renderExecPending(out);
+  let result;
+  try {
+    result = await api(`/vehicle/control/${b.dataset.control}/press`, { method: "POST" });
+  } catch (e) { result = e; }
+  buttons.forEach(x => x.disabled = false);
+  renderExecResult(out, null, result);
+}
+
 /* ================= Diagnostics (UDS) ================= */
 async function readSafe() {
   const wrap = $("#didTableWrap"); wrap.innerHTML = "reading...";
@@ -1573,6 +1603,7 @@ boot("can ws", startCanWS);
 boot("can decode", startCanDecodePoll);  // CAN is the default tab, so start its poll now
 boot("power modes", loadVehiclePowerModes);
 boot("gear positions", loadVehicleGearPositions);
+boot("steering controls", loadSteeringControls);
 boot("sequences", loadSequences);
 boot("sequence poll", startSeqPoll);
 setTimeout(() => {

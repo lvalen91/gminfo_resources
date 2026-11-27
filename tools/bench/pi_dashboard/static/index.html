@@ -19,6 +19,7 @@
 <nav id="tabs">
   <div class="nav-group-label">Bench</div>
   <button data-tab="can" class="active"><span class="nav-icon">&#128225;</span>CAN</button>
+  <button data-tab="controls"><span class="nav-icon">&#9635;</span>Controls</button>
   <button data-tab="diag"><span class="nav-icon">&#129534;</span>Diagnostics</button>
   <button data-tab="cal"><span class="nav-icon">&#128190;</span>Calibration</button>
   <button data-tab="elk"><span class="nav-icon">&#9888;</span>ELK</button>
@@ -43,24 +44,6 @@
         <div class="chart-wrap"><canvas id="canIdChart" height="160"></canvas><div id="canIdChartEmpty" class="chart-empty loading">waiting for CAN stats…</div></div>
       </div>
     </details>
-    <div class="card">
-      <h2>Engine power mode &amp; gear position <small>(verified CAN signals only)</small></h2>
-      <p class="hint">Off/Run are wired to a directly-verified CAN <code>0x284</code> frame
-      (owner's bench observation, <code>platform/ota_update_stack.md</code>, 2026-11-17 — UART
-      confirmed <code>PowerModeOff</code> / <code>SystemPowerMode RUN</code> for the exact bytes
-      sent). Accessory, Service, and every gear position have <b>no verified CAN signal</b> on
-      this platform yet — per this project's zero-guessing rule they stay disabled scaffolding
-      until a firmware trace or captured frame confirms them. Hover a disabled control for why.</p>
-      <div class="field-row">
-        <span class="field-label">Power mode</span>
-        <div class="segmented" id="vehiclePowerModes"><span class="seg-loading loading">loading…</span></div>
-      </div>
-      <div class="field-row">
-        <span class="field-label">Gear position</span>
-        <div class="segmented" id="vehicleGearPositions"><span class="seg-loading loading">loading…</span></div>
-      </div>
-      <div id="vehicleOut" class="exec-line"></div>
-    </div>
     <div class="grid2">
       <div class="card">
         <h2>Sequences <small>(frame bytes come from the pinned profile)</small></h2>
@@ -81,11 +64,47 @@
       <p class="hint">Named signals decoded live from the <b>same passive observer</b> above — this never
       transmits. The stub DBC holds <b>bench-verified signals only</b> (each row cites its evidence on
       hover); firmware-traced-only or unconfirmed candidates (the <code>0x40B/0x264</code> PRNDL path,
-      the unresolved time-sync message, Accessory/Service power modes) are deliberately left out rather
-      than decoded as a guess. A greyed row has not been seen on the bus yet. The <code>0x529</code>
-      keepalive updates continuously; <code>0x284</code> appears when a power-mode frame is sent.</p>
+      the unresolved time-sync message, the Service power mode) are deliberately left out rather
+      than decoded as a guess. A greyed row has not been seen on the bus yet. The <code>0x53B</code>
+      keepalive updates continuously; <code>0x284</code> appears when a power-mode frame is sent (see
+      the Controls tab).</p>
       <div id="canDecodeMeta" class="muted"></div>
       <div id="canDecode"><span class="loading">waiting for /api/can/decode…</span></div>
+    </div>
+  </section>
+
+  <!-- ======================= Controls ======================= -->
+  <section id="tab-controls" class="tab">
+    <h1 class="tab-title">Controls</h1>
+    <div class="card">
+      <h2>Engine power mode &amp; gear position <small>(verified CAN signals only)</small></h2>
+      <p class="hint">Off/Run/Accessory/Propulsion are each wired to a directly-verified CAN
+      <code>0x284</code> frame — UART independently reports a distinct, named
+      <code>SystemState=</code> for each (<code>platform/can_bench_experiments.md</code>,
+      2026-11-26), cross-checked against UDS DID <code>F085</code>. Service and every gear
+      position have <b>no verified CAN signal</b> on this platform yet — per this project's
+      zero-guessing rule they stay disabled scaffolding until a firmware trace or captured
+      frame confirms them. Hover a disabled control for why.</p>
+      <div class="field-row">
+        <span class="field-label">Power mode</span>
+        <div class="segmented" id="vehiclePowerModes"><span class="seg-loading loading">loading…</span></div>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Gear position</span>
+        <div class="segmented" id="vehicleGearPositions"><span class="seg-loading loading">loading…</span></div>
+      </div>
+      <div id="vehicleOut" class="exec-line"></div>
+    </div>
+    <div class="card">
+      <h2>Steering wheel &amp; media <small>(UDS IOControlByIdentifier over T1)</small></h2>
+      <p class="hint">Each verified control is a momentary press-and-release of a catalogued
+      IOCID (<code>diagnostics/GM_CAN_UDS_REFERENCE.md</code> sec 6/11e): extended session +
+      the bench-confirmed degenerate SecurityAccess level-01 grant, then
+      <code>2F &lt;IOCID&gt; 03 &lt;param&gt;</code> immediately followed by
+      <code>2F &lt;IOCID&gt; 00</code>. Non-destructive -- a single button press. Answer/End
+      Call has no verified IOCID on this platform and stays disabled scaffolding.</p>
+      <div id="steeringControls"><span class="loading">loading…</span></div>
+      <div id="controlsOut" class="exec-line"></div>
     </div>
   </section>
 

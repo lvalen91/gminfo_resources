@@ -161,9 +161,15 @@ GEAR_RX_NOTE = (
     "but no reaction was found across three independent channels (UART, which has no "
     "gear/PRNDL log tag at all; the visible display and the com.gm.cluster process, both "
     "silent; and a UDS C0xx telemetry sweep over raw-CAN5, which read identical values "
-    "across gear states). Which internal value is Park vs. Reverse vs. Neutral vs. Drive "
-    "remains unestablished. No verified CAN frame exists for any gear position; every "
-    "control below is scaffolding only."
+    "across gear states). Firmware RE (2026-11-26) explains why the UDS sweep was always "
+    "going to find nothing: the decoded gear value (SRAM 0xfebd3434) is relayed to the SoC "
+    "only via an internal VIP IPC record (channel 4, type 0x0C, sub 0x05), never a CAN "
+    "frame or a UDS-reachable DID -- confirmed by an exhaustive reference search of the "
+    "entire DID table's config block, which holds zero pointers to that SRAM page. Which "
+    "internal value is Park vs. Reverse vs. Neutral vs. Drive remains unestablished, and "
+    "whether AAOS actually consumes that IPC record is now the open question (not whether "
+    "the CAN-side decode works, which is confirmed). No verified CAN frame exists for any "
+    "gear position; every control below is scaffolding only."
 )
 
 GEAR_POSITIONS: dict[str, dict] = {
