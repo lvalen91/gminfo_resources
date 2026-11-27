@@ -46,8 +46,10 @@ CATALOG: dict[int, dict] = {
     },
     0x529: {
         "name": "GM_PowerModeKeepalive", "dlc": 6,
-        "note": "The 0x529 keepalive frame -- transmitted continuously on this bench, so "
-                "these signals update live whenever the keepalive/radio is running.",
+        "note": "Sent whenever PowerModeSelector is deliberately asserted to hold the "
+                "radio in Run (e.g. the power-mode control above) -- NOT continuously: "
+                "the bench's own keepalive is now CAN 0x53B, which does not touch this "
+                "frame. These signals only update while 0x529 is actually on the bus.",
         "signals": {
             "PowerModeSelector": "b1 bit7. BENCH-VERIFIED: 1->PowerModeOn/internal mode 2, "
                                  "0->Off/internal mode 0 (can_network.md:66,490).",
