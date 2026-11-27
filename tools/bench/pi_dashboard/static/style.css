@@ -579,3 +579,9 @@ button.primary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 9px 
 @media (prefers-reduced-transparency: reduce) {
   .card::before, details.card::before, .modal-box::before, .plan-popover::before { display: none; }
 }
+
+/* Danger-zone cards stay flat (see .danger-card above): the Liquid Glass `.card` surface,
+   blur, shadow and specular rim come later in source order and would otherwise win.
+   Two-class selector so this beats every `.card` / `details.card` rule regardless of order. */
+.card.danger-card { background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+.card.danger-card::before { display: none; }

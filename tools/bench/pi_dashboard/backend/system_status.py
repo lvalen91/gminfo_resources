@@ -5,7 +5,7 @@ import asyncio
 import contextlib
 import re
 
-from . import config
+from . import config, sequences
 
 
 async def _run(*args: str, timeout: float = 8.0) -> tuple[int, str, str]:
@@ -168,5 +168,5 @@ async def can_link_status() -> dict:
         "up": "UP" in link.get("flags", []),
         "state": info.get("state"), "bitrate": bt.get("bitrate"),
         "sample_point": bt.get("sample-point"),
-        "keepalive_active": actout.strip() == "active",
+        "keepalive_active": actout.strip() in sequences._RUNNING_STATES,
     }

@@ -15,6 +15,10 @@ ECUReset evidence (2026-11-27, live bench, platform/can_bench_experiments.md "EC
 
 The keepalive schedule is deliberately left running: these frames use their own IDs, and
 the VIP needs the keepalive to stay awake after it reboots.
+
+Locking: both entry points are blocking and are run by app.py under sequences.bus_lock()
+(the same lock every sequence / calibration run takes), so an exchange never interleaves
+with those; the periodic F085 poll skips ("busy") instead of waiting when the lock is held.
 """
 from __future__ import annotations
 
@@ -65,6 +69,12 @@ def _exchange(s: socket.socket, payload: bytes, timeout_s: float = 1.0) -> dict:
                        error="not a single-frame ISO-TP response")
             return out
         resp = raw[1:1 + n]
+        # Only a response to THIS request counts: positive (SID+0x40) or a negative
+        # response (7F <SID> <NRC>). Any other frame on the response ID is a stray (e.g. a
+        # late answer to an earlier request) -- skip it and keep waiting.
+        sid = payload[0]
+        if resp[0] != sid + 0x40 and not (resp[0] == 0x7F and (len(resp) < 2 or resp[1] == sid)):
+            continue
         if len(resp) == 3 and resp[0] == 0x7F and resp[2] == 0x78:
             deadline = time.monotonic() + _P2_STAR_S   # responsePending: wait P2*
             continue

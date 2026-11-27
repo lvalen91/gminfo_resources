@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import gzip
 import hashlib
+import zlib
 from pathlib import Path
 
 from . import config
@@ -38,7 +39,7 @@ SPS_UTILITY_PART = "85577468"
 def _unwrapped_sha256(raw: bytes) -> str:
     try:
         inner = gzip.decompress(raw)
-    except (OSError, EOFError):
+    except (OSError, EOFError, zlib.error):
         inner = raw
     return hashlib.sha256(inner).hexdigest()
 

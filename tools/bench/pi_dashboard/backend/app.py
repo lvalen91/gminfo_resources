@@ -10,10 +10,12 @@ never fire without an explicit confirm phrase; everything defaults to dry-run.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import io
 import json
 import re
 import secrets
+import shutil
 import time
 import zipfile
 from pathlib import Path
@@ -276,11 +278,18 @@ async def vehicle_power_modes():
 async def vehicle_power_mode_active():
     """Live power mode read back from UDS DID F085 on raw CAN5 (00=Off, 01=Accessory,
     02=Run, 04=Propulsion; bench-verified against UART SystemState). NOTE: this TRANSMITS
-    a UDS request on can0 each call -- an active poll, not passive observation."""
-    try:
-        return await asyncio.to_thread(can_uds.read_active_power_mode)
-    except OSError as e:
-        raise HTTPException(502, f"{type(e).__name__}: {e}")
+    a UDS request on can0 each call -- an active poll, not passive observation.
+    Runs under the shared bus lock; when a sequence / calibration run / other exchange
+    holds it, nothing is transmitted and `busy: true` is returned instead."""
+    if sequences.bus_busy():
+        return {"did": "F085", "ok": False, "busy": True, "mode": None,
+                "error": "CAN bus busy (a sequence or other exchange holds the bus lock); poll skipped"}
+    # Not locked and no await since the check: this acquire cannot block.
+    async with sequences.bus_lock():
+        try:
+            return await asyncio.to_thread(can_uds.read_active_power_mode)
+        except OSError as e:
+            raise HTTPException(502, f"{type(e).__name__}: {e}")
 
 
 @app.get("/api/vehicle/doors", tags=["can"])
@@ -412,12 +421,23 @@ async def can5_ecu_reset_execute(body: ExecuteBody):
         plan = tier2.REGISTRY.take("can5-ecu-reset", body.token, body.literal)
     except (KeyError, ValueError) as e:
         raise HTTPException(400, str(e))
-    try:
-        result = await asyncio.to_thread(can_uds.ecu_reset_hard)
-    except OSError as e:
-        raise HTTPException(502, f"{type(e).__name__}: {e}")
+    # Same lock the sequences take (released before run_sequence below re-takes it).
+    async with sequences.bus_lock():
+        try:
+            result = await asyncio.to_thread(can_uds.ecu_reset_hard)
+        except OSError as e:
+            raise HTTPException(502, f"{type(e).__name__}: {e}")
     if result["ok"] and plan.payload.get("follow_startup"):
-        result["startup"] = await sequences.run_sequence("startup-keepalive", dry_run=False)
+        # The reset has already fired: report a failed follow-up in the body, never a 500,
+        # and never as success.
+        try:
+            result["startup"] = await sequences.run_sequence("startup-keepalive", dry_run=False)
+        except Exception as e:
+            result["startup"] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
+        result["ok"] = bool(result["ok"] and result["startup"].get("ok"))
+        if not result["ok"]:
+            result["error"] = ("ECU reset succeeded but the startup-keepalive follow-up failed: "
+                               f"{result['startup'].get('error') or 'see startup'}")
     return result
 
 
@@ -526,7 +546,7 @@ _PKG_RE = re.compile(r"[A-Za-z0-9._]+")
 
 
 @app.post("/api/adb/install", tags=["adb"])
-async def adb_install(serial: str = Form(...), reinstall: bool = Form(True),
+async def adb_install(serial: str = Form(...), reinstall: bool = Form(False),
                       grant: bool = Form(False), downgrade: bool = Form(False),
                       installer: str = Form(""), apk: UploadFile = File(...)):
     name = Path(apk.filename or "upload.apk").name
@@ -727,11 +747,28 @@ class RoutineBody(BaseModel):
     dry_run: bool = True
 
 
+def _routine_payload(spec: dict, control: str, params: str) -> bytes:
+    """routine_request_bytes with caller-input errors (non-hex / out-of-range control or
+    params) reported as a 400 instead of an unhandled ValueError."""
+    try:
+        return diagdata.routine_request_bytes(control, spec["rid"], params or spec["params"])
+    except ValueError:
+        raise HTTPException(400, "control must be one hex byte (e.g. '01') and params must be "
+                                 "hex bytes (e.g. '0011')")
+
+
+def _check_unlock_level(unlock_level: int | None) -> None:
+    # The key is sent at level+1, and both are single bytes.
+    if unlock_level is not None and not 0 <= unlock_level <= 254:
+        raise HTTPException(400, "unlock_level must be 0..254")
+
+
 def _routine_work(spec: dict, control: str, params: str, unlock_level: int | None):
     """Build the blocking UDS worker that actually fires routine `spec` (session ->
     optional unlock -> 31 request). Shared by the direct non-destructive path and the
     Tier-2 execute path so there is exactly one implementation of the send."""
-    payload = diagdata.routine_request_bytes(control, spec["rid"], params or spec["params"])
+    _check_unlock_level(unlock_level)
+    payload = _routine_payload(spec, control, params)
 
     def work():
         with UDSClient() as c:
@@ -752,7 +789,8 @@ async def uds_routine(rid: str, body: RoutineBody):
     spec = next((r for r in diagdata.ROUTINES if r["rid"] == rid.upper()), None)
     if spec is None:
         raise HTTPException(404, f"unknown routine {rid}")
-    payload = diagdata.routine_request_bytes(body.control, spec["rid"], body.params or spec["params"])
+    payload = _routine_payload(spec, body.control, body.params)
+    _check_unlock_level(body.unlock_level)
     if body.dry_run:
         from .uds import build_request
         return {"routine": spec["name"], "rid": spec["rid"], "dry_run": True,
@@ -786,7 +824,8 @@ async def uds_routine_plan(rid: str, body: RoutinePlanBody):
     if not spec["destructive"]:
         raise HTTPException(400, f"routine {spec['rid']} is not destructive; "
                                  f"POST /api/uds/routine/{spec['rid']} with dry_run=false")
-    payload = diagdata.routine_request_bytes(body.control, spec["rid"], body.params or spec["params"])
+    payload = _routine_payload(spec, body.control, body.params)
+    _check_unlock_level(body.unlock_level)
     from .uds import build_request
     return {**tier2.REGISTRY.plan("uds-routine", literal=f"EXECUTE {spec['rid']}",
                                   payload={"rid": spec["rid"], "control": body.control,
@@ -903,14 +942,15 @@ async def cal_write_stage(package: UploadFile | None = File(None),
                 for info in zf.infolist():
                     if info.is_dir():
                         continue
-                    d = _detect_module(info.filename, zf.read(info), pkg_dir)
+                    d = await asyncio.to_thread(_detect_module, info.filename, zf.read(info), pkg_dir)
                     (entries if d["recognized"] else unrecognized).append(d)
         except zipfile.BadZipFile:
+            shutil.rmtree(pkg_dir, ignore_errors=True)
             raise HTTPException(400, "not a valid .zip archive")
     for m in modules:
         if not m.filename:
             continue
-        d = _detect_module(m.filename, await m.read(), pkg_dir)
+        d = await asyncio.to_thread(_detect_module, m.filename, await m.read(), pkg_dir)
         (entries if d["recognized"] else unrecognized).append(d)
 
     if not have_upload:
@@ -926,6 +966,7 @@ async def cal_write_stage(package: UploadFile | None = File(None),
         by_slot[e["slot"]] = e
     ordered = [by_slot[s] for s in sorted(by_slot)]
     if not ordered:
+        shutil.rmtree(pkg_dir, ignore_errors=True)
         raise HTTPException(422, "no recognizable calibration modules in the upload "
                                  "(each file must be named by a known GM part number)")
 
@@ -1114,6 +1155,8 @@ async def elk_image_upload(image: UploadFile = File(...)):
     """Store a custom .img for ELK RAM boot and validate it offline (hash/size). Does NOT boot."""
     config.ELK_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     name = Path(image.filename or "custom.img").name
+    if name in ("", ".", ".."):  # Path("..").name == "..": would resolve to a directory
+        raise HTTPException(400, "invalid image filename")
     dest = config.ELK_IMAGE_DIR / name
     # A RAM-boot image is tens of MB: write it off the event loop.
     await asyncio.to_thread(dest.write_bytes, await image.read())
@@ -1131,14 +1174,27 @@ async def elk_images():
                        for p in sorted(config.ELK_IMAGE_DIR.glob("*")) if p.is_file()]}
 
 
+def _file_sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 @app.post("/api/elk/boot/plan", tags=["elk"])
 async def elk_boot_plan(image: str = Form(...)):
     path = config.ELK_IMAGE_DIR / Path(image).name
     if not path.is_file():
         raise HTTPException(404, f"no uploaded image {image!r} (upload it first)")
+    # Bind the exact bytes that were validated into the single-use token: /execute
+    # re-hashes the file and refuses if it was re-uploaded/changed after this plan.
+    sha256 = await asyncio.to_thread(_file_sha256, path)
     validate = await elk.image_validate(path)
     return {**tier2.REGISTRY.plan("elk-boot", literal=f"BOOT {path.name}",
-                                  payload={"path": str(path)}, min_delay_seconds=5),
+                                  payload={"path": str(path), "sha256": sha256},
+                                  min_delay_seconds=5),
+            "image_sha256": sha256,
             "image_validation": validate,
             "will_do": f"VOLATILE RAM download + boot of {path.name} via ELK fastboot (no flash).",
             "risk": "DESTRUCTIVE-tier: booting an arbitrary/unsigned image is a real risk. RAM boot "
@@ -1152,7 +1208,15 @@ async def elk_boot_execute(body: ExecuteBody):
         plan = tier2.REGISTRY.take("elk-boot", body.token, body.literal)
     except (KeyError, ValueError) as e:
         raise HTTPException(400, str(e))
-    return await elk.image_boot(Path(plan.payload["path"]))
+    path = Path(plan.payload["path"])
+    try:
+        sha256 = await asyncio.to_thread(_file_sha256, path)
+    except OSError as e:
+        raise HTTPException(409, f"planned image is no longer readable ({type(e).__name__}); re-plan")
+    if sha256 != plan.payload.get("sha256"):
+        raise HTTPException(409, f"image {path.name} changed since it was planned "
+                                 "(SHA-256 mismatch); not booting -- re-plan")
+    return await elk.image_boot(path)
 
 
 # ============================ Pi host (the Raspberry Pi itself) ================
@@ -1449,7 +1513,7 @@ async def capture_stop():
 async def capture_unmount(body: CaptureUnmountBody):
     try:
         return await CAPTURE.unmount_volume(body.volume)
-    except ValueError as e:
+    except (ValueError, RuntimeError) as e:
         raise HTTPException(409, str(e))
 
 

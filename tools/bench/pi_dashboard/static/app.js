@@ -30,7 +30,7 @@ async function api(path, opts = {}) {
   }
   return j;
 }
-const esc = (s) => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const INIT_TIMEOUT = 8000;  // page-load reads all answer in <0.2 s when the Pi is reachable
 const loadingHTML = (text, failed = false) => `<span class="loading${failed ? " failed" : ""}">${esc(text)}</span>`;
@@ -556,17 +556,20 @@ async function selectPowerMode(b) {
   const buttons = $$("#vehiclePowerModes button[data-mode]");
   buttons.forEach(x => x.disabled = true);
   renderExecPending($("#vehicleOut"));
-  let result;
+  let result, frame = null;
   try {
     const plan = await api(`/vehicle/power-mode/${mode}/plan`, { method: "POST" });
-    _pmRepeatFrame = { can_id: plan.can_id, data: plan.data_hex };
+    frame = { can_id: plan.can_id, data: plan.data_hex };
     result = await api(`/vehicle/power-mode/${mode}/execute`, { method: "POST",
       headers: { "content-type": "application/json" }, body: execBodyOf(plan, {}) });
   } catch (e) { result = e; }
   buttons.forEach(x => x.disabled = false);
-  if (!(result instanceof Error) && execOutcome(result).ok) buttons.forEach(x => x.classList.toggle("sel", x === b));
+  const ok = !(result instanceof Error) && execOutcome(result).ok;
+  if (ok) buttons.forEach(x => x.classList.toggle("sel", x === b));
   renderExecResult($("#vehicleOut"), null, result);
-  restartPmRepeat();
+  // Arm the repeat only for a mode that was actually set: a failed execute must not
+  // start re-asserting a frame that never took (the previous repeat, if any, carries on).
+  if (ok) { _pmRepeatFrame = frame; restartPmRepeat(); }
 }
 function restartPmRepeat() {
   clearInterval(_pmRepeatTimer); _pmRepeatTimer = null;
@@ -589,6 +592,10 @@ async function pollActivePowerMode() {
   const clear = () => $$("#vehiclePowerModes button[data-mode]").forEach(x => x.classList.remove("live-active"));
   try {
     const r = await api("/vehicle/power-mode/active", { timeout: 4000 });
+    if (r.busy) {  // bus lock held (sequence / write running): nothing was sent; keep the last highlight
+      badge.textContent = "live: bus busy"; badge.classList.add("muted");
+      return;
+    }
     const mode = r.ok ? r.mode : null;
     badge.textContent = r.ok ? `live: ${mode || "0x" + r.value_hex}` : "live: no response";
     badge.classList.toggle("muted", !r.ok || !mode);
@@ -849,7 +856,11 @@ $("#apkForm").onsubmit = async (e) => {
   e.preventDefault();
   $("#apkOut").textContent = "uploading + installing (may take a while)...";
   try {
-    const r = await api("/adb/install", { method: "POST", body: new FormData(e.target) });
+    // An unchecked checkbox is omitted from FormData; always send the real state so the
+    // box (not a server default) decides -r.
+    const fd = new FormData(e.target);
+    fd.set("reinstall", e.target.elements.reinstall.checked ? "true" : "false");
+    const r = await api("/adb/install", { method: "POST", body: fd });
     $("#apkOut").textContent = JSON.stringify(r, null, 2);
     if (r.success && $("#pkgSerial").value === r.serial) loadPkgs();
   } catch (err) { $("#apkOut").textContent = "error: " + err; }
@@ -1117,6 +1128,19 @@ function closePlanPopover() {
   document.removeEventListener("mousedown", _popoverOutside, true);
 }
 
+// Viewport-clamped placement for a position:fixed popover against its anchor's bounding
+// rect `r` (already viewport-relative -- no scroll offsets). Below the anchor if it fits,
+// else above it; never past the viewport edges; scrolls internally if taller than the
+// viewport. Shared by the Tier-2 popover and the info popovers.
+function placePopover(pop, r) {
+  pop.style.maxHeight = `${window.innerHeight - 24}px`;
+  pop.style.overflowY = "auto";
+  const w = pop.offsetWidth, h = pop.offsetHeight;
+  let top = r.bottom + 8;
+  if (top + h > window.innerHeight - 12) top = Math.max(12, Math.min(r.top - h - 8, window.innerHeight - h - 12));
+  pop.style.top = `${top}px`;
+  pop.style.left = `${Math.max(12, Math.min(r.left, window.innerWidth - w - 12))}px`;
+}
 // Lightweight read-only info popover (the (i) on a sequence row). Positioned like the
 // Tier-2 popover but carries only text and dismisses on Escape / outside click.
 let _infoPopover = null;
@@ -1134,13 +1158,7 @@ function infoPopover(anchor, text) {
   pop.innerHTML = `<div class="plan-popover-body">${esc(text)}</div>`;
   document.body.appendChild(pop);
   _infoPopover = pop;
-  const r = anchor.getBoundingClientRect();
-  pop.style.top = `${Math.min(r.bottom + 8, window.innerHeight - 40)}px`;
-  pop.style.left = `${r.left}px`;
-  requestAnimationFrame(() => {
-    const w = pop.offsetWidth, left = parseFloat(pop.style.left);
-    if (left + w > window.innerWidth - 12) pop.style.left = `${Math.max(12, window.innerWidth - w - 12)}px`;
-  });
+  placePopover(pop, anchor.getBoundingClientRect());
   setTimeout(() => {
     document.addEventListener("keydown", _infoEsc);
     document.addEventListener("mousedown", _infoOutside, true);
@@ -1155,13 +1173,7 @@ function infoPopoverHTML(anchor, html) {
   pop.innerHTML = `<div class="plan-popover-body">${html}</div>`;
   document.body.appendChild(pop);
   _infoPopover = pop;
-  const r = anchor.getBoundingClientRect();
-  pop.style.top = `${Math.min(r.bottom + 8, window.innerHeight - 40)}px`;
-  pop.style.left = `${r.left}px`;
-  requestAnimationFrame(() => {
-    const w = pop.offsetWidth, left = parseFloat(pop.style.left);
-    if (left + w > window.innerWidth - 12) pop.style.left = `${Math.max(12, window.innerWidth - w - 12)}px`;
-  });
+  placePopover(pop, anchor.getBoundingClientRect());
   setTimeout(() => {
     document.addEventListener("keydown", _infoEsc);
     document.addEventListener("mousedown", _infoOutside, true);
@@ -1185,15 +1197,7 @@ function tier2Popover(anchorBtn, planFn, execPath, statusEl, opts = {}) {
   const r = anchorBtn.getBoundingClientRect();
   // Re-run after every content change: the plan text arrives async and sets the height.
   // Below the anchor if it fits, else above it; never past the viewport edges.
-  const place = () => {
-    pop.style.maxHeight = `${window.innerHeight - 24}px`;
-    pop.style.overflowY = "auto";
-    const w = pop.offsetWidth, h = pop.offsetHeight;
-    let top = r.bottom + 8;
-    if (top + h > window.innerHeight - 12) top = Math.max(12, Math.min(r.top - h - 8, window.innerHeight - h - 12));
-    pop.style.top = `${top}px`;
-    pop.style.left = `${Math.max(12, Math.min(r.left, window.innerWidth - w - 12))}px`;
-  };
+  const place = () => placePopover(pop, r);
   place();
   setTimeout(() => {  // avoid catching the click that opened this popover
     document.addEventListener("keydown", _popoverEsc);
@@ -1237,6 +1241,7 @@ function tier2Popover(anchorBtn, planFn, execPath, statusEl, opts = {}) {
       } catch (e) { result = e; }
       if (opts.onExecEnd) { try { await opts.onExecEnd(result); } catch { /* caller UI only */ } }
       renderExecResult(execStatus, execMore, result);
+      place();  // the result (and its details disclosure) changes the height
       // the popover is transient: also leave the result (with its own details toggle)
       // in the card's status line under the control, so it survives closing the sheet
       if (statusEl) {

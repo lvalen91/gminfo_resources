@@ -190,7 +190,9 @@ async def list_volumes() -> list[dict]:
 
 
 def _safe_dirname(s: str) -> str:
-    return re.sub(r"[^A-Za-z0-9._-]", "_", s)[:48] or "usb"
+    name = re.sub(r"[^A-Za-z0-9._-]", "_", s)[:48]
+    # A label of "." / ".." (or only dots) would resolve to MOUNT_BASE itself or its parent.
+    return name if name.strip(".") else "usb"
 
 
 async def _verified_off_sd(path: str) -> None:
@@ -216,6 +218,9 @@ async def mount_volume(vol: dict) -> tuple[str, bool]:
                            f"(supported: {', '.join(sorted(FS_MOUNT))})")
     fstype, opts = FS_MOUNT[vol["fstype"]]
     mnt = mount_target(vol)
+    base = os.path.normpath(str(MOUNT_BASE))
+    if not os.path.normpath(mnt).startswith(base + os.sep):
+        raise RuntimeError(f"refusing to mount at {mnt}: not strictly under {MOUNT_BASE}")
     rc, _, err = await _run(["sudo", "-n", "mkdir", "-p", mnt], timeout=5)
     if rc:
         raise RuntimeError(f"mkdir {mnt}: {_last_line(err)}")

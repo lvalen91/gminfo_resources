@@ -31,6 +31,10 @@ _lock = asyncio.Lock()
 # a continuous schedule "running".
 _CONTINUOUS_GRACE_S = 3.5
 _STOP_TIMEOUT_S = 10.0
+# Hard ceiling for a one-shot / dry-run can0_radio.py run (longest bounded schedule is the
+# 40 s startup window). It runs while holding _lock, so a hung child must not hold the bus
+# lock forever.
+_ONESHOT_TIMEOUT_S = 120.0
 # systemd states in which the keepalive unit is (or is about to be) on the bus. With
 # Restart=always and no radio ACK the unit cycles active -> auto-restart ("activating"),
 # so checking only "active" misses it and the sequence then races it for the schedule lock.
@@ -96,7 +100,17 @@ def _parse(mode: str, dry_run: bool, code: int | None, out: bytes, err: bytes) -
 async def _run_can0_radio(mode: str, dry_run: bool) -> dict:
     proc = await asyncio.create_subprocess_exec(
         *_args(mode, dry_run), stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-    out, err = await proc.communicate()
+    try:
+        out, err = await asyncio.wait_for(proc.communicate(), timeout=_ONESHOT_TIMEOUT_S)
+    except asyncio.TimeoutError:
+        try:
+            proc.kill()
+        except ProcessLookupError:
+            pass  # exited between the timeout and the kill
+        with contextlib.suppress(Exception):
+            await proc.wait()
+        return {"mode": mode, "dry_run": dry_run, "exit_code": 124, "stderr": "", "ok": False,
+                "error": f"can0_radio.py {mode} did not finish within {_ONESHOT_TIMEOUT_S:.0f} s; killed"}
     return _parse(mode, dry_run, proc.returncode, out, err)
 
 
@@ -274,17 +288,20 @@ async def send_one_frame(label: str, can_id: int, data: bytes, extended: bool = 
     (CAN arbitration handles it) without stopping/restarting the keepalive service -- which
     matters because the keepalive unit reconfigures (down/up) can0 on start, so pausing it
     repeatedly thrashes the interface. Co-send is the right mode for a periodic re-assert."""
+    if not pause_keepalive:
+        # Co-send: no bus lock and no _stop_continuous() -- it must not end a running
+        # continuous sequence (which would also leave the keepalive un-resumed); the one
+        # frame simply goes out alongside whatever is transmitting.
+        ok, err = await asyncio.to_thread(_tx_one_frame, can_id, data, extended)
+        result = {"label": label, "can_id": f"{can_id:08X}" if extended else f"{can_id:03X}",
+                  "extended": extended, "data_hex": data.hex(), "dlc": len(data),
+                  "dry_run": False, "ok": ok, "stopped_continuous": None,
+                  "note": "co-sent alongside the keepalive (keepalive not paused)"}
+        if not ok:
+            result["error"] = err
+        return result
     async with _lock:
         stopped = await _stop_continuous()
-        if not pause_keepalive:
-            ok, err = await asyncio.to_thread(_tx_one_frame, can_id, data, extended)
-            result = {"label": label, "can_id": f"{can_id:08X}" if extended else f"{can_id:03X}",
-                      "extended": extended, "data_hex": data.hex(), "dlc": len(data),
-                      "dry_run": False, "ok": ok, "stopped_continuous": stopped,
-                      "note": "co-sent alongside the keepalive (keepalive not paused)"}
-            if not ok:
-                result["error"] = err
-            return result
         ka_running = await keepalive_active()
         resume = ka_running or bool(stopped and stopped["resume_keepalive"])
         if ka_running:
@@ -308,6 +325,30 @@ async def send_one_frame(label: str, can_id: int, data: bytes, extended: bool = 
         else:
             result["note"] = "keepalive was not running; left stopped"
         return result
+
+
+def bus_lock() -> asyncio.Lock:
+    """The shared bus-ownership lock itself, for a short raw exchange that must not
+    interleave with a sequence/calibration run but does NOT take over the schedule (the
+    raw-CAN5 UDS in can_uds.py: its own IDs, keepalive and any continuous run left as is).
+    Unlike exclusive_bus() this stops nothing."""
+    return _lock
+
+
+def bus_busy() -> bool:
+    """True while a sequence, single-owner frame send, calibration run or raw UDS exchange
+    holds the bus lock. A periodic poll checks this and skips instead of queueing.
+
+    Also True when the lock is momentarily free but a woken waiter has not yet resumed to
+    re-take it (asyncio.Lock.release() clears _locked before the next waiter runs). In that
+    window locked() is False yet a fresh acquire() would queue behind the pending waiter and
+    block -- so a caller that gates on bus_busy() and then acquires with no await in between
+    (the F085 poll) would otherwise still queue behind a long op and transmit late. Reporting
+    a live waiter as busy keeps that acquire on asyncio.Lock's synchronous fast path."""
+    if _lock.locked():
+        return True
+    waiters = getattr(_lock, "_waiters", None)
+    return bool(waiters) and any(not w.cancelled() for w in waiters)
 
 
 @contextlib.asynccontextmanager

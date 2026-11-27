@@ -335,13 +335,16 @@ async def restart(target: str) -> dict:
             if ka_was:
                 steps["keepalive_stop"] = await _sudo([SYSTEMCTL, "stop", config.KEEPALIVE_UNIT])
             steps["can0_bounce"] = await _sudo([config.CAN0_SETUP, "bounce"])
-            if ka_was:
+            # Also when a continuous sequence had replaced the keepalive (it was stopped
+            # by exclusive_bus and owed a keepalive resume), else the bus is left silent.
+            ka_restart = ka_was or bool(stopped and stopped.get("resume_keepalive"))
+            if ka_restart:
                 steps["keepalive_start"] = await _sudo([SYSTEMCTL, "start", config.KEEPALIVE_UNIT])
         bad = next(((k, v) for k, v in steps.items() if not v["ok"]), None)
         return {"ok": bad is None, "target": target, "steps": steps,
                 "keepalive_was_running": ka_was, "stopped_continuous": stopped,
                 "error": f"{bad[0].replace('_', ' ')}: {bad[1]['error']}" if bad else None,
-                "summary": "can0 bounced" + ("; keepalive restarted" if ka_was else
+                "summary": "can0 bounced" + ("; keepalive restarted" if ka_restart else
                                              "; keepalive was not running, left stopped")}
     raise KeyError(target)
 
