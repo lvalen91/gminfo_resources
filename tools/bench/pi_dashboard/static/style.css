@@ -553,7 +553,11 @@ button.primary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 9px 
    paints, never over content. WebKit-prefixed mask for Safari/WebKit. This is the "control
    layer floats above content" cue kept even with the frosted (less-transparent) material. */
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .card, details.card, .modal-box, .plan-popover { position: relative; }
+  /* .plan-popover is intentionally excluded: it is position:fixed (line ~305) and its
+     JS placement (place() in app.js) depends on fixed/viewport-relative top/left. fixed
+     already establishes a containing block for the ::before rim, so forcing relative here
+     broke placement -- the popover rendered far below the viewport. */
+  .card, details.card, .modal-box { position: relative; }
   .card::before, details.card::before, .modal-box::before, .plan-popover::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
     background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.08) 34%,
