@@ -218,9 +218,11 @@
         <h2>T1 / VLAN status</h2>
         <div id="t1Status"></div>
         <div class="btnrow">
-          <button id="btnConnectT1" class="primary">adb connect T1 (VLAN5)</button>
+          <button id="btnEnableT1" class="primary" title="adb tcpip over USB, then adb connect over T1 -- needs a USB adb device already connected">Enable ADB over T1</button>
+          <button id="btnConnectT1">adb connect T1 (VLAN5)</button>
           <button id="btnRefreshT1">Refresh</button>
         </div>
+        <pre id="enableT1Out" class="out"></pre>
       </div>
       <div class="card">
         <h2>adb devices</h2>

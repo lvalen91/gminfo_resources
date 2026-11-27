@@ -336,6 +336,14 @@ async def adb_connect_t1():
     return await system_status.adb_connect_t1()
 
 
+@app.post("/api/adb/enable-t1", tags=["adb"])
+async def adb_enable_t1():
+    """Switch the USB-connected device's adbd into TCP mode, then connect over T1.
+    Non-destructive (adb's own standard tcpip switch); requires an already-authorized
+    USB adb connection to issue it from."""
+    return await system_status.adb_enable_t1()
+
+
 @app.post("/api/adb/install", tags=["adb"])
 async def adb_install(serial: str = Form(...), reinstall: bool = Form(True),
                       apk: UploadFile = File(...)):

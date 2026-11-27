@@ -728,6 +728,17 @@ $("#btnConnectT1").onclick = async () => {
   catch (e) { $("#adbDevices").textContent = "connect-t1 error: " + e; }
   refreshT1();
 };
+$("#btnEnableT1").onclick = async () => {
+  const btn = $("#btnEnableT1"), out = $("#enableT1Out");
+  btn.disabled = true;
+  out.textContent = "enabling (adb tcpip over USB, then connecting over T1)...";
+  try {
+    const r = await api("/adb/enable-t1", { method: "POST" });
+    out.textContent = JSON.stringify(r, null, 2);
+  } catch (e) { out.textContent = "error: " + e; }
+  btn.disabled = false;
+  refreshT1();
+};
 $("#btnRefreshT1").onclick = refreshT1;
 $("#apkForm").onsubmit = async (e) => {
   e.preventDefault();

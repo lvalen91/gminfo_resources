@@ -53,6 +53,28 @@ async def adb_connect_t1() -> dict:
     return {"exit_code": rc, "output": (out + err).strip()}
 
 
+async def adb_enable_t1() -> dict:
+    """Switch the USB-connected device's adbd into TCP mode, then connect over T1.
+    `adb tcpip` must be issued over an already-authorized transport (USB here) --
+    there is no way to enable this from a cold T1-only state. Known-safe, non-destructive:
+    this is the exact sequence confirmed live on this bench (2026-11-26)."""
+    devices = await adb_devices()
+    usb = next((d for d in devices if d["transport"] == "usb" and d["state"] == "device"), None)
+    if usb is None:
+        return {"ok": False, "error": "no USB adb device in 'device' state -- connect over "
+                                      "USB first (adb tcpip requires an existing authorized "
+                                      "transport, it cannot be bootstrapped over T1 alone)"}
+    port = config.T1_ADB_ENDPOINT.rsplit(":", 1)[1]
+    rc, out, err = await _run(config.ADB, "-s", usb["serial"], "tcpip", port)
+    tcpip_result = {"exit_code": rc, "output": (out + err).strip()}
+    if rc != 0:
+        return {"ok": False, "step": "tcpip", "usb_serial": usb["serial"], "tcpip": tcpip_result}
+    await asyncio.sleep(2.0)  # adbd restart time, bench-observed
+    connect_result = await adb_connect_t1()
+    return {"ok": connect_result["exit_code"] == 0, "usb_serial": usb["serial"],
+            "tcpip": tcpip_result, "connect": connect_result}
+
+
 async def iface_up(iface: str) -> tuple[bool, str | None]:
     rc, out, _ = await _run("ip", "-br", "addr", "show", iface, timeout=4)
     if rc != 0:
