@@ -590,6 +590,32 @@ async function loadVehicleGearPositions() {
   } catch (e) { wrap.innerHTML = "error: " + esc(String(e)); }
 }
 
+/* ================= Driver door (verified CAN 0x4DA, send-only) ================= */
+async function loadVehicleDoors() {
+  const wrap = $("#vehicleDoors");
+  try {
+    const { doors } = await loadUntilOk(() => api("/vehicle/doors", { timeout: INIT_TIMEOUT }),
+      (e, d) => wrap.innerHTML = `<span class="seg-loading">${loadingHTML(`couldn't load (${e.message}) -- retrying in ${d / 1000}s…`, true)}</span>`);
+    wrap.innerHTML = doors.map(m =>
+      `<button class="seg-btn" data-door="${esc(m.name)}" title="${esc(m.evidence)}">${esc(m.label)}</button>`).join("");
+    $$("#vehicleDoors button[data-door]").forEach(b => b.onclick = () => selectDoor(b));
+  } catch (e) { wrap.innerHTML = "error: " + esc(String(e)); }
+}
+async function selectDoor(b) {
+  const buttons = $$("#vehicleDoors button[data-door]");
+  buttons.forEach(x => x.disabled = true);
+  renderExecPending($("#doorOut"));
+  let result;
+  try {
+    const plan = await api(`/vehicle/door/${b.dataset.door}/plan`, { method: "POST" });
+    result = await api(`/vehicle/door/${b.dataset.door}/execute`, { method: "POST",
+      headers: { "content-type": "application/json" }, body: execBodyOf(plan, {}) });
+  } catch (e) { result = e; }
+  buttons.forEach(x => x.disabled = false);
+  if (!(result instanceof Error) && execOutcome(result).ok) buttons.forEach(x => x.classList.toggle("sel", x === b));
+  renderExecResult($("#doorOut"), null, result);
+}
+
 /* ================= Steering wheel / media controls (UDS IOCID) ================= */
 async function loadSteeringControls() {
   const wrap = $("#steeringControls");
@@ -1693,6 +1719,7 @@ boot("can ws", startCanWS);
 boot("can decode", startCanDecodePoll);  // CAN is the default tab, so start its poll now
 boot("power modes", loadVehiclePowerModes);
 boot("gear positions", loadVehicleGearPositions);
+boot("doors", loadVehicleDoors);
 boot("steering controls", loadSteeringControls);
 boot("sequences", loadSequences);
 boot("sequence poll", startSeqPoll);

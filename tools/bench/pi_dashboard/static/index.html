@@ -97,6 +97,19 @@
       <div id="vehicleOut" class="exec-line"></div>
     </div>
     <div class="card">
+      <h2>Driver door <small>(simulated BCM input — CAN 0x4DA)</small> <button class="seq-info card-info" type="button" aria-label="about driver door">&#9432;</button></h2>
+      <div class="card-info-body" hidden>Transmits the bench-verified DriverDoorOpen signal
+      (CAN <code>0x4DA</code> byte7 bit0, 1=open / 0=closed). A door-open edge <b>after PowerMode Off</b>
+      drives display-off → HmiInactive → Sleep → SoC-off; in Run/Propulsion it has no shutdown effect.
+      Send-only: a 2026-11-27 sweep of F085/F086/F087/F08C/F095 found no UDS DID mirrors door state,
+      so there is no live readback (the <code>0x4DA</code> value does decode in the CAN tab when sent).</div>
+      <div class="field-row">
+        <span class="field-label">Driver door</span>
+        <div class="segmented" id="vehicleDoors"><span class="seg-loading loading">loading…</span></div>
+      </div>
+      <div id="doorOut" class="exec-line"></div>
+    </div>
+    <div class="card">
       <h2>Steering wheel &amp; media <small>(UDS IOControlByIdentifier over T1)</small> <button class="seq-info card-info" type="button" aria-label="about steering-wheel controls">&#9432;</button></h2>
       <div class="card-info-body" hidden>Each verified control is a momentary press-and-release of a catalogued
       IOCID (<code>diagnostics/GM_CAN_UDS_REFERENCE.md</code> sec 6/11e): extended session +

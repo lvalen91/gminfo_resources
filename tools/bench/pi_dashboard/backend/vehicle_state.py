@@ -181,3 +181,31 @@ GEAR_POSITIONS: dict[str, dict] = {
         ("drive", "Drive"),
     )
 }
+
+# --- Driver door (CAN 0x4DA GM_DoorAndTop) --------------------------------------
+# VERIFIED, unlike gear: the DriverDoorOpen bit is a directly bench-confirmed signal.
+DOOR_CAN_ID = 0x4DA
+DOOR_DLC = 8
+DOOR_NOTE = (
+    "CAN 0x4DA (GM_DoorAndTop), DriverDoorOpen at bit 56 (byte7 bit0), 1=open / 0=closed -- "
+    "BENCH-VERIFIED (platform/can_network.md:493, platform/can_bench_experiments.md:622): live "
+    "open/close drove the RH850 DriverDoorOpen (event 15) / DriverDoorClosed (event 14) events. "
+    "The behavioural effect is power-mode-gated: a door-open edge in Run/Propulsion caused no "
+    "shutdown, but a door-open edge after PowerModeOff ended LocalInfotainment and drove "
+    "display-off -> HmiInactive -> Sleep -> SoC-off. No UDS DID mirrors door state -- a live "
+    "sweep (2026-11-27) of F085/F086/F087/F08C/F095 found none changed across open/closed -- so "
+    "this control is send-only; the 0x4DA value still decodes in the CAN tab's Decoded signals "
+    "when a frame is on the bus."
+)
+DOOR_STATES: dict[str, dict] = {
+    "open": {
+        "label": "Open", "verified": True, "can_id": DOOR_CAN_ID, "dlc": DOOR_DLC,
+        "data_hex": "0000000000000001",
+        "evidence": "CAN 0x4DA byte7 bit0 = 1 (DriverDoorOpen). " + DOOR_NOTE,
+    },
+    "closed": {
+        "label": "Closed", "verified": True, "can_id": DOOR_CAN_ID, "dlc": DOOR_DLC,
+        "data_hex": "0000000000000000",
+        "evidence": "CAN 0x4DA byte7 bit0 = 0 (DriverDoorClosed). " + DOOR_NOTE,
+    },
+}

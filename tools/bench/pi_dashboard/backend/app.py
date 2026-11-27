@@ -246,6 +246,48 @@ async def vehicle_power_mode_active():
         raise HTTPException(502, f"{type(e).__name__}: {e}")
 
 
+@app.get("/api/vehicle/doors", tags=["can"])
+async def vehicle_doors():
+    return {"doors": [{"name": k, **v} for k, v in vehicle_state.DOOR_STATES.items()],
+            "note": vehicle_state.DOOR_NOTE}
+
+
+@app.post("/api/vehicle/door/{state}/plan", tags=["can"])
+async def vehicle_door_plan(state: str):
+    """Plan a Tier-2 DriverDoor frame send (verified CAN 0x4DA byte7 bit0)."""
+    spec = vehicle_state.DOOR_STATES.get(state)
+    if spec is None:
+        raise HTTPException(404, f"unknown door state {state!r}")
+    return {**tier2.REGISTRY.plan("vehicle-door", literal=f"DRIVER DOOR {state.upper()}",
+                                  payload={"state": state}),
+            "state": state, "can_id": f"{spec['can_id']:03X}", "dlc": spec["dlc"],
+            "data_hex": spec["data_hex"], "evidence": spec["evidence"],
+            "will_do": f"transmit one CAN {spec['can_id']:03X} frame (DLC {spec['dlc']}, "
+                       f"data {spec['data_hex']}) on {config.CAN_IFACE}; the keepalive is "
+                       "paused for the send and resumed immediately after.",
+            "risk": "Transmits a DriverDoor signal on the vehicle bus. A door-open edge while "
+                    "the power mode is Off drives display-off -> HmiInactive -> Sleep -> SoC off "
+                    "(bench-observed); no shutdown in Run/Propulsion."}
+
+
+@app.post("/api/vehicle/door/{state}/execute", tags=["can"])
+async def vehicle_door_execute(state: str, body: ExecuteBody):
+    try:
+        plan = tier2.REGISTRY.take("vehicle-door", body.token, body.literal)
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e))
+    if plan.payload.get("state") != state:
+        raise HTTPException(400, "token was issued for a different door state")
+    spec = vehicle_state.DOOR_STATES.get(state)
+    if spec is None or not spec["verified"]:
+        raise HTTPException(409, f"door state {state!r} is not verified; refusing to transmit")
+    try:
+        return await sequences.send_vehicle_power_mode(
+            f"door-{state}", bytes.fromhex(spec["data_hex"]), spec["can_id"])
+    except Exception as e:
+        raise HTTPException(500, f"{type(e).__name__}: {e}")
+
+
 @app.get("/api/vehicle/gear-positions", tags=["can"])
 async def vehicle_gear_positions():
     return {"positions": [{"name": k, **v} for k, v in vehicle_state.GEAR_POSITIONS.items()],
