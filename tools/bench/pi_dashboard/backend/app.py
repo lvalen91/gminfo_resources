@@ -226,6 +226,43 @@ async def run_sequence_execute(name: str, body: ExecuteBody):
         raise HTTPException(500, f"{type(e).__name__}: {e}")
 
 
+class CanSendBody(BaseModel):
+    can_id: str           # hex, e.g. "284" or "14DA80F1"
+    data: str = ""        # hex bytes, e.g. "00 00 00 00 00 00 00 01" (<=8)
+    extended: bool | None = None  # None = auto (id > 0x7FF -> 29-bit extended)
+    pause_keepalive: bool = True  # False = co-send alongside the keepalive (for periodic re-assert)
+
+
+@app.post("/api/can/send", tags=["can"])
+async def can_send(body: CanSendBody):
+    """Transmit ONE arbitrary classic-CAN frame on can0. One-shot: pauses the keepalive,
+    sends the frame, resumes it (shared bus lock -- coexists with the passive observer, does
+    not take over the bus). Max 8 data bytes. 11-bit id by default; 29-bit when the id
+    exceeds 0x7FF or extended=true. This is a raw send with no verified-signal check -- the
+    caller is responsible for what it puts on the bus."""
+    try:
+        cid = int(body.can_id.strip().lower().removeprefix("0x"), 16)
+    except ValueError:
+        raise HTTPException(400, "can_id must be hex, e.g. '284' or '14DA80F1'")
+    if cid < 0:
+        raise HTTPException(400, "can_id must be non-negative")
+    try:
+        data = bytes.fromhex(body.data.replace(" ", "").replace(",", ""))
+    except ValueError:
+        raise HTTPException(400, "data must be hex bytes, e.g. '00 11 22' (max 8)")
+    if len(data) > 8:
+        raise HTTPException(400, "classic CAN frame carries at most 8 data bytes")
+    extended = body.extended if body.extended is not None else cid > 0x7FF
+    if extended and cid > 0x1FFFFFFF:
+        raise HTTPException(400, "extended (29-bit) id must be <= 0x1FFFFFFF")
+    if not extended and cid > 0x7FF:
+        raise HTTPException(400, "standard (11-bit) id must be <= 0x7FF; set extended=true for 29-bit")
+    try:
+        return await sequences.send_one_frame("raw", cid, data, extended, body.pause_keepalive)
+    except Exception as e:
+        raise HTTPException(500, f"{type(e).__name__}: {e}")
+
+
 # ============================ Vehicle state (engine power mode / gear) ========
 # Zero-guessing: see backend/vehicle_state.py's module docstring for the exact evidence
 # behind every verified value here, and why Accessory/Service and every gear position
@@ -282,8 +319,8 @@ async def vehicle_door_execute(state: str, body: ExecuteBody):
     if spec is None or not spec["verified"]:
         raise HTTPException(409, f"door state {state!r} is not verified; refusing to transmit")
     try:
-        return await sequences.send_vehicle_power_mode(
-            f"door-{state}", bytes.fromhex(spec["data_hex"]), spec["can_id"])
+        return await sequences.send_one_frame(
+            f"door-{state}", spec["can_id"], bytes.fromhex(spec["data_hex"]))
     except Exception as e:
         raise HTTPException(500, f"{type(e).__name__}: {e}")
 
@@ -329,7 +366,7 @@ async def vehicle_power_mode_execute(mode: str, body: ExecuteBody):
     if spec is None or not spec["verified"]:
         raise HTTPException(409, f"power mode {mode!r} is not verified; refusing to transmit")
     try:
-        return await sequences.send_vehicle_power_mode(mode, bytes.fromhex(spec["data_hex"]), spec["can_id"])
+        return await sequences.send_one_frame(mode, spec["can_id"], bytes.fromhex(spec["data_hex"]))
     except Exception as e:
         raise HTTPException(500, f"{type(e).__name__}: {e}")
 

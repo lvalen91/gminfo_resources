@@ -350,6 +350,9 @@ td.mono, .mono { font-family: var(--mono); }
 .pkg-uninstall:disabled { opacity: .4; cursor: default; }
 .live-badge { font-size: 11px; align-self: center; }
 .seg-btn.live-active { box-shadow: inset 0 0 0 2px var(--ok); border-color: var(--ok); }
+.can-send { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; }
+.can-send label:not(.switch-label) { display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.can-send #canSendId { width: 130px; } .can-send #canSendData { width: 210px; }
 .seq-locked .seq-row { opacity: .5; transition: opacity .1s; }
 .seq-locked .seq-row:has(.seq-progress:not(:empty)) { opacity: 1; }
 button.seq-run { min-width: 92px; }

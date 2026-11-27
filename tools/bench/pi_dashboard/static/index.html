@@ -60,6 +60,21 @@
       </div>
     </div>
     <div class="card">
+      <h2>Send raw frame <small>(one-shot — pauses keepalive, sends, resumes)</small> <button class="seq-info card-info" type="button" aria-label="about raw send">&#9432;</button></h2>
+      <div class="card-info-body" hidden>Transmits <b>one</b> classic-CAN frame on <code>can0</code> via
+      <code>POST /api/can/send</code>. The keepalive is paused for the single frame and resumed — this does
+      <b>not</b> take over the bus, and it coexists with the passive reader. Raw send with <b>no
+      verified-signal check</b>: you are responsible for what goes on the bus. Max 8 data bytes. 11-bit id
+      by default; 29-bit is auto-detected when the id &gt; <code>0x7FF</code> or when you tick 29-bit.</div>
+      <form id="canSendForm" class="can-send">
+        <label>ID (hex) <input id="canSendId" placeholder="284 or 14DA80F1" spellcheck="false" autocomplete="off" required></label>
+        <label>Data (hex) <input id="canSendData" placeholder="00 11 22 … (≤8 bytes)" spellcheck="false" autocomplete="off"></label>
+        <label class="switch-label"><input type="checkbox" id="canSendExt"> 29-bit</label>
+        <button type="submit" class="primary">Send</button>
+      </form>
+      <div id="canSendOut" class="exec-line"></div>
+    </div>
+    <div class="card">
       <h2>Decoded signals <small>(read-only — <code>opendbc</code> CANParser vs <code>gm_bench.dbc</code>)</small> <button class="seq-info card-info" type="button" aria-label="about decoded signals">&#9432;</button></h2>
       <div class="card-info-body" hidden>Named signals decoded live from the <b>same passive observer</b> above — this never
       transmits. The stub DBC holds <b>bench-verified signals only</b> (each row cites its evidence on
@@ -93,6 +108,15 @@
       <div class="field-row">
         <span class="field-label">Gear position</span>
         <div class="segmented" id="vehicleGearPositions"><span class="seg-loading loading">loading…</span></div>
+      </div>
+      <div class="field-row">
+        <span class="field-label" title="Re-send the selected power mode on this interval to hold the mode. Gear has no verified CAN frame, so there is nothing to repeat for it.">Repeat send</span>
+        <div class="segmented" id="pmRepeat">
+          <button class="seg-btn sel" data-repeat="0">No</button>
+          <button class="seg-btn" data-repeat="5">5s</button>
+          <button class="seg-btn" data-repeat="10">10s</button>
+          <button class="seg-btn" data-repeat="15">15s</button>
+        </div>
       </div>
       <div id="vehicleOut" class="exec-line"></div>
     </div>

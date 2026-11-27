@@ -545,21 +545,41 @@ async function loadVehiclePowerModes() {
     });
   } catch (e) { wrap.innerHTML = "error: " + esc(String(e)); }
 }
+// Repeat-send: hold the selected power mode by CO-SENDING its frame on an interval
+// (No/5/10/15 s). The initial select goes through the verified plan->execute (pauses the
+// keepalive once); each repeat co-sends the same frame via /api/can/send with
+// pause_keepalive=false, so it never cycles the keepalive/interface (which would thrash
+// the bus and drop frames).
+let _pmRepeatSecs = 0, _pmRepeatFrame = null, _pmRepeatTimer = null;
 async function selectPowerMode(b) {
+  const mode = b.dataset.mode;
   const buttons = $$("#vehiclePowerModes button[data-mode]");
   buttons.forEach(x => x.disabled = true);
   renderExecPending($("#vehicleOut"));
   let result;
   try {
-    const plan = await api(`/vehicle/power-mode/${b.dataset.mode}/plan`, { method: "POST" });
-    result = await api(`/vehicle/power-mode/${b.dataset.mode}/execute`, { method: "POST",
+    const plan = await api(`/vehicle/power-mode/${mode}/plan`, { method: "POST" });
+    _pmRepeatFrame = { can_id: plan.can_id, data: plan.data_hex };
+    result = await api(`/vehicle/power-mode/${mode}/execute`, { method: "POST",
       headers: { "content-type": "application/json" }, body: execBodyOf(plan, {}) });
   } catch (e) { result = e; }
   buttons.forEach(x => x.disabled = false);
-  if (!(result instanceof Error) && execOutcome(result).ok) {
-    buttons.forEach(x => x.classList.toggle("sel", x === b));
-  }
+  if (!(result instanceof Error) && execOutcome(result).ok) buttons.forEach(x => x.classList.toggle("sel", x === b));
   renderExecResult($("#vehicleOut"), null, result);
+  restartPmRepeat();
+}
+function restartPmRepeat() {
+  clearInterval(_pmRepeatTimer); _pmRepeatTimer = null;
+  if (_pmRepeatSecs > 0 && _pmRepeatFrame)
+    _pmRepeatTimer = setInterval(() => {
+      api("/can/send", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ..._pmRepeatFrame, pause_keepalive: false }) }).catch(() => {});
+    }, _pmRepeatSecs * 1000);
+}
+function setPmRepeat(secs) {
+  _pmRepeatSecs = secs;
+  $$("#pmRepeat button[data-repeat]").forEach(x => x.classList.toggle("sel", +x.dataset.repeat === secs));
+  restartPmRepeat();
 }
 // Live power-mode readback (UDS DID F085 on raw CAN5). This POLL TRANSMITS a UDS request
 // on can0 every 3 s while the Controls tab is open -- active, not passive observation.
@@ -860,6 +880,18 @@ async function uninstallPkg(serial, pkg, btn) {
   loadPkgs();
 }
 $("#btnLoadPkgs").onclick = loadPkgs;
+$("#canSendForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const out = $("#canSendOut"); renderExecPending(out);
+  const payload = { can_id: $("#canSendId").value.trim(), data: $("#canSendData").value.trim() };
+  if ($("#canSendExt").checked) payload.extended = true;
+  let result;
+  try {
+    result = await api("/can/send", { method: "POST",
+      headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+  } catch (err) { result = err; }
+  renderExecResult(out, null, result);
+};
 
 /* ================= Terminals ================= */
 let piTerm, piFit, piWS, adbT, adbFit, adbWS;
@@ -1718,6 +1750,7 @@ boot("can chart", initCanCharts);
 boot("can ws", startCanWS);
 boot("can decode", startCanDecodePoll);  // CAN is the default tab, so start its poll now
 boot("power modes", loadVehiclePowerModes);
+boot("pm repeat", () => $$("#pmRepeat button[data-repeat]").forEach(b => b.onclick = () => setPmRepeat(+b.dataset.repeat)));
 boot("gear positions", loadVehicleGearPositions);
 boot("doors", loadVehicleDoors);
 boot("steering controls", loadSteeringControls);

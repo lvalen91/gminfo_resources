@@ -242,12 +242,12 @@ async def run_sequence(name: str, dry_run: bool = True) -> dict:
         return r
 
 
-def _tx_one_frame(can_id: int, data: bytes) -> tuple[bool, str | None]:
+def _tx_one_frame(can_id: int, data: bytes, extended: bool = False) -> tuple[bool, str | None]:
     """Blocking: one raw SocketCAN CAN_RAW send on config.CAN_IFACE, using the exact same
     wire layout canbus.py's observer reads (struct '=IB3x8s': native uint32 id, uint8 dlc,
     3 pad bytes, 8-byte data -- the standard Linux struct can_frame). Classic (non-FD)
-    data frame, 11-bit id. Opens and closes its own socket; never touches the passive
-    observer's own socket."""
+    data frame; 11-bit id, or 29-bit when extended=True (CAN_EFF_FLAG set). Opens and
+    closes its own socket; never touches the passive observer's own socket."""
     import socket as _s
     import struct as _struct
     frame_struct = _struct.Struct("=IB3x8s")
@@ -256,7 +256,8 @@ def _tx_one_frame(can_id: int, data: bytes) -> tuple[bool, str | None]:
         sock = _s.socket(_s.PF_CAN, _s.SOCK_RAW, _s.CAN_RAW)
         sock.bind((config.CAN_IFACE,))
         sock.settimeout(2.0)
-        sock.send(frame_struct.pack(can_id, len(data), data.ljust(8, b"\x00")))
+        cid = (can_id | 0x80000000) if extended else can_id  # 0x80000000 = CAN_EFF_FLAG
+        sock.send(frame_struct.pack(cid, len(data), data.ljust(8, b"\x00")))
         return True, None
     except OSError as e:
         return False, f"{type(e).__name__}: {e}"
@@ -265,28 +266,39 @@ def _tx_one_frame(can_id: int, data: bytes) -> tuple[bool, str | None]:
             sock.close()
 
 
-async def send_vehicle_power_mode(mode: str, data: bytes, can_id: int) -> dict:
-    """Transmit ONE verified engine/ignition power-mode frame on can0. Tier-2 execute
-    path only -- the caller (app.py) must already have taken a single-use plan token for
-    this exact mode before calling this. Shares the bus-ownership lock and keepalive
-    pause/resume with every other live CAN action in this module (same discipline as the
-    live-oneshot branch of run_sequence above) so this can never race a running sequence
-    or stop_current() for the schedule."""
+async def send_one_frame(label: str, can_id: int, data: bytes, extended: bool = False,
+                         pause_keepalive: bool = True) -> dict:
+    """Transmit ONE raw frame on can0 under the shared bus-ownership lock. By default it
+    pauses the keepalive for the frame and resumes it (clean single-owner send). With
+    pause_keepalive=False it CO-SENDS: one extra frame alongside the running keepalive
+    (CAN arbitration handles it) without stopping/restarting the keepalive service -- which
+    matters because the keepalive unit reconfigures (down/up) can0 on start, so pausing it
+    repeatedly thrashes the interface. Co-send is the right mode for a periodic re-assert."""
     async with _lock:
         stopped = await _stop_continuous()
+        if not pause_keepalive:
+            ok, err = await asyncio.to_thread(_tx_one_frame, can_id, data, extended)
+            result = {"label": label, "can_id": f"{can_id:08X}" if extended else f"{can_id:03X}",
+                      "extended": extended, "data_hex": data.hex(), "dlc": len(data),
+                      "dry_run": False, "ok": ok, "stopped_continuous": stopped,
+                      "note": "co-sent alongside the keepalive (keepalive not paused)"}
+            if not ok:
+                result["error"] = err
+            return result
         ka_running = await keepalive_active()
         resume = ka_running or bool(stopped and stopped["resume_keepalive"])
         if ka_running:
             stop = await _systemctl("stop", config.KEEPALIVE_UNIT)
             if not stop["ok"]:
-                return {"mode": mode, "ok": False,
+                return {"label": label, "ok": False,
                         "error": f"could not stop {config.KEEPALIVE_UNIT}: {stop['stderr'] or stop['exit_code']}",
                         "keepalive_stop": stop, "stopped_continuous": stopped}
         try:
-            ok, err = await asyncio.to_thread(_tx_one_frame, can_id, data)
+            ok, err = await asyncio.to_thread(_tx_one_frame, can_id, data, extended)
         finally:
             resumed = await _resume_keepalive() if resume else None
-        result = {"mode": mode, "can_id": f"{can_id:03X}", "data_hex": data.hex(),
+        result = {"label": label, "can_id": f"{can_id:08X}" if extended else f"{can_id:03X}",
+                  "extended": extended, "data_hex": data.hex(), "dlc": len(data),
                   "dry_run": False, "ok": ok, "stopped_continuous": stopped}
         if not ok:
             result["error"] = err
