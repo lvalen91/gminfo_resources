@@ -114,7 +114,7 @@ async function refreshStatus() {
     else if (can.state === "ERROR-PASSIVE" && canDot === "ok") canDot = "warn";
     parts.push(ind("can", "can0", canDot,
       `observer=${obs.state} controller=${can.state || "?"} errors=${obs.errors ?? "?"} keepalive=${can.keepalive_active}`));
-    parts.push(ind("ka", "keepalive", can.keepalive_active ? "ok" : "bad", "0x529 sender (systemd)"));
+    parts.push(ind("ka", "keepalive", can.keepalive_active ? "ok" : "bad", "0x53B sender (systemd)"));
     applyKeepaliveToggle(can.keepalive_active);
     parts.push(ind("v5", "T1 vlan5", dotFor(t1.vlan5.state),
       `${t1.vlan5.state}: ${t1.vlan5.addr} radio_ping=${t1.vlan5.radio_ping}`));
@@ -329,7 +329,7 @@ function renderSequences(sequences) {
         <button class="seq-info" data-seq="${esc(KEEPALIVE_START)}" aria-label="what this sequence does" title="what this does">&#9432;</button>
       </div>
       <div class="seq-control">
-        <label class="seq-toggle" title="turn the 0x529 keepalive service on/off">
+        <label class="seq-toggle" title="turn the 0x53B keepalive service on/off">
           <input type="checkbox" class="seq-switch seq-switch-keepalive">
           <span class="seq-slider"></span><span class="seq-toggle-txt">OFF</span></label>
       </div>

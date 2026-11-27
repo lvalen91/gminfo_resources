@@ -11,7 +11,7 @@ Additive and independent of every other feature:
            sudo. Promiscuous (dumpcap default), full snaplen.
   * CAN -- its own `candump` process: a SECOND, independent CAN_RAW socket on can0 with no
            ID filter (every frame), all error-frame classes, RX/TX direction marker (-x: "T" =
-           sent by this Pi, e.g. the 0x529 keepalive; "R" = from the bus), log-file format,
+           sent by this Pi, e.g. the 0x53B keepalive; "R" = from the bus), log-file format,
            -D so a can0 bounce does not end it. canbus.py's observer and candecode.py are
            not touched; this never transmits.
   * UART -- ser2net's port 4000 has kickolduser=true: a second TCP client KICKS the first

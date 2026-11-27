@@ -49,9 +49,11 @@ _last_continuous: dict | None = None
 # progress ring); continuous modes have none (they run until SIGTERM).
 SEQUENCES = {
     "keepalive-start": {"kind": "service-start", "destructive": False,
-                        "desc": "Start the supervised 0x529 keepalive on can0 (systemd); stops a running continuous sequence first."},
+                        "desc": "Start the supervised 0x53B keepalive on can0 (systemd); stops a running continuous sequence first."},
     "keepalive-stop": {"kind": "service-stop", "destructive": False,
-                       "desc": "Stop the keepalive sender and any running continuous sequence (radio tolerates ~694 s TX gap)."},
+                       "desc": "Stop the keepalive sender and any running continuous sequence (radio sleeps after "
+                               "~608-630s of total silence -- bench-measured, see platform/can_bench_experiments.md "
+                               "'Keepalive-content bisection')."},
     "startup": {"kind": "oneshot", "mode": "startup", "destructive": False, "duration_s": 40,
                 "desc": "126-frame power-on startup window (40 s), then returns to keepalive."},
     "startup-keepalive": {"kind": "continuous", "mode": "startup-keepalive", "destructive": False,

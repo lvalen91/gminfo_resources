@@ -78,7 +78,9 @@ async def api_meta():
     return {
         "bench": "GM Info 3.7 (gminfo37) infotainment, owner's licensed research bench, LAN-only",
         "can": {"iface": config.CAN_IFACE, "transport": "SocketCAN 500kbit/s",
-                "keepalive": "0x529 @ 0.320270s via systemd", "sequences": list(sequences.SEQUENCES),
+                "keepalive": "0x53B @ 2.0s via systemd (InfotainmentActivationRequest, held "
+                             "statically; does not force Run -- see "
+                             "tools/bench/bench_can/replay_can_keepalive.py)", "sequences": list(sequences.SEQUENCES),
                 "decode": "GET /api/can/decode decodes already-flowing frames through a vendored "
                           "opendbc CANParser against backend/gm_bench.dbc (BENCH-VERIFIED signals "
                           "only); read-only, never transmits."},
@@ -88,10 +90,10 @@ async def api_meta():
                   "calibration writes, ELK enter/boot, vehicle power-mode frames) requires a "
                   "Tier-2 plan->execute single-use token",
         "vehicle_state": {
-            "power_modes": "GET /api/vehicle/power-modes lists Off/Run/Accessory/Service; "
-                           "only Off and Run have a verified CAN 0x284 frame and can be "
-                           "planned/executed (Tier-2). Accessory/Service are scaffolding "
-                           "only -- planning them is refused (409) with the reason why.",
+            "power_modes": "GET /api/vehicle/power-modes lists Off/Run/Accessory/Propulsion/"
+                           "Service; Off, Run, Accessory and Propulsion each have a verified "
+                           "CAN 0x284 frame and can be planned/executed (Tier-2). Service is "
+                           "scaffolding only -- planning it is refused (409) with the reason why.",
             "gear_positions": "GET /api/vehicle/gear-positions lists Park/Reverse/Neutral/"
                               "Drive; NONE has a verified CAN frame on this platform yet "
                               "(RX path firmware-traced only). Scaffolding only -- never "

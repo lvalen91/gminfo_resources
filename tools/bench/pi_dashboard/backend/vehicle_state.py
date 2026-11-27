@@ -152,14 +152,18 @@ POWER_MODES: dict[str, dict] = {
 
 # --- Transmission / gear position (PRNDL) ---------------------------------------
 GEAR_RX_NOTE = (
-    "CAN 0x40B (primary, DLC 5, 2-bit field @ start-bit 35) and 0x264 (fallback, DLC 8, "
-    "4-bit field @ start-bit 45) are the firmware-traced PRNDL receive path "
-    "(platform/can_network.md, 'PRNDL/gear receive path', 2026-11-21), but this is "
-    "FIRMWARE-TRACED only -- not bench-verified by transmitting either id live and "
-    "observing AAOS react -- and the decode function's raw-code-to-gear-letter mapping "
-    "is not established (only a partial internal remap is known, not which value is "
-    "which gear). No verified CAN frame exists for any gear position; every control "
-    "below is scaffolding only."
+    "CAN 0x40B (primary, DLC 5, byte4 bits5-7, 3-bit) and 0x264 (validity: byte3 bit6; "
+    "fallback value: byte3 bit7 + byte4 bits0-2) are the firmware-traced PRNDL receive "
+    "path (platform/can_network.md, 'PRNDL/gear receive path', corrected 2026-11-26). "
+    "Live-tested 2026-11-26 (platform/can_bench_experiments.md, 'Gear/PRNDL: CAN-side "
+    "send confirmed correct, no observable AAOS reaction found'): the CAN send itself is "
+    "confirmed correct -- it matches the firmware's own decode-function remap exactly -- "
+    "but no reaction was found across three independent channels (UART, which has no "
+    "gear/PRNDL log tag at all; the visible display and the com.gm.cluster process, both "
+    "silent; and a UDS C0xx telemetry sweep over raw-CAN5, which read identical values "
+    "across gear states). Which internal value is Park vs. Reverse vs. Neutral vs. Drive "
+    "remains unestablished. No verified CAN frame exists for any gear position; every "
+    "control below is scaffolding only."
 )
 
 GEAR_POSITIONS: dict[str, dict] = {
