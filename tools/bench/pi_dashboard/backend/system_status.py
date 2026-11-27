@@ -75,6 +75,31 @@ async def adb_enable_t1() -> dict:
             "tcpip": tcpip_result, "connect": connect_result}
 
 
+_PKG_LINE = re.compile(r"^package:(\S+?)(?:\s+installer=(\S+))?$")
+
+
+async def adb_list_packages(serial: str) -> list[dict]:
+    """Third-party (user-installed) packages on `serial`, with the installer that put
+    each there. `pm list packages -3 -i` -- read-only."""
+    rc, out, _ = await _run(config.ADB, "-s", serial, "shell",
+                            "pm", "list", "packages", "-3", "-i", timeout=15)
+    pkgs = []
+    for line in out.splitlines():
+        m = _PKG_LINE.match(line.strip())
+        if m:
+            inst = m.group(2) or ""
+            pkgs.append({"package": m.group(1),
+                         "installer": "" if inst in ("null", "") else inst})
+    return sorted(pkgs, key=lambda p: p["package"])
+
+
+async def adb_uninstall(serial: str, package: str) -> dict:
+    rc, out, err = await _run(config.ADB, "-s", serial, "uninstall", package, timeout=60)
+    body = (out + err).strip()
+    return {"serial": serial, "package": package, "exit_code": rc,
+            "output": body, "success": rc == 0 and "Success" in body}
+
+
 async def iface_up(iface: str) -> tuple[bool, str | None]:
     rc, out, _ = await _run("ip", "-br", "addr", "show", iface, timeout=4)
     if rc != 0:

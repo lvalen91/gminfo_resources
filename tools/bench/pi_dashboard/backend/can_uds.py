@@ -88,3 +88,29 @@ def ecu_reset_hard() -> dict:
         steps["ecu_reset"] = _exchange(s, b"\x11\x01")
     return {"ok": steps["ecu_reset"]["ok"], "steps": steps,
             "transport": f"raw ISO-TP on {config.CAN_IFACE}, {REQ_ID:08X} -> {RESP_ID:08X}"}
+
+
+# Live power-mode mirror. Bench-verified 2026-11-26 (platform/can_bench_experiments.md,
+# "Power-mode Accessory/Propulsion resolved via live CAN + UDS cross-check"): DID F085 read
+# over raw CAN5 returns 00/01/02/04 for Off/Accessory/Run/Propulsion, matching the UART
+# SystemState= for each. Default-session read (no 10 03 needed on this transport).
+POWER_MODE_DID = 0xF085
+POWER_MODE_NAMES = {0x00: "off", 0x01: "accessory", 0x02: "run", 0x04: "propulsion"}
+
+
+def read_active_power_mode() -> dict:
+    """Blocking: read DID F085 (22 F0 85) on raw CAN5 and map it to a power-mode name.
+    This TRANSMITS a UDS request on can0 -- an active poll, not passive observation."""
+    with _open() as s:
+        r = _exchange(s, bytes([0x22, 0xF0, 0x85]))
+    out = {"did": "F085", "transport": f"{REQ_ID:08X}->{RESP_ID:08X}", "uds": r}
+    if not r.get("ok"):
+        return {**out, "ok": False, "mode": None,
+                "error": r.get("error") or f"NRC {r.get('nrc')} ({r.get('nrc_name')})"}
+    resp = bytes.fromhex(r["response_hex"].replace(" ", ""))
+    if len(resp) >= 4 and resp[0] == 0x62 and resp[1] == 0xF0 and resp[2] == 0x85:
+        val = resp[3]
+        return {**out, "ok": True, "value": val, "value_hex": f"{val:02X}",
+                "mode": POWER_MODE_NAMES.get(val),
+                **({} if val in POWER_MODE_NAMES else {"note": "unmapped F085 value"})}
+    return {**out, "ok": False, "mode": None, "error": "unexpected F085 response shape"}

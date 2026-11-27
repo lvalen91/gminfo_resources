@@ -53,10 +53,11 @@ $$("#tabs button").forEach(b => b.onclick = () => {
   $$("#tabs button").forEach(x => x.classList.toggle("active", x === b));
   $$(".tab").forEach(t => t.classList.toggle("active", t.id === "tab-" + b.dataset.tab));
   if (b.dataset.tab === "uart") initUart();
-  if (b.dataset.tab === "t1") refreshT1();
-  if (b.dataset.tab === "pi") startPiPoll(); else stopPiPoll();
+  if (b.dataset.tab === "t1") refreshAdb();
+  if (b.dataset.tab === "pi") { startPiPoll(); refreshT1(); } else stopPiPoll();
   if (b.dataset.tab === "can") startCanDecodePoll(); else stopCanDecodePoll();
   if (b.dataset.tab === "capture") startCapPoll(); else stopCapPoll();
+  if (b.dataset.tab === "controls") startPowerModePoll(); else stopPowerModePoll();
   // a terminal opened (or the window resized) while its tab was hidden has a stale size
   if (b.dataset.tab === "term") {
     piFit && piFit.fit(); adbFit && adbFit.fit();
@@ -560,6 +561,25 @@ async function selectPowerMode(b) {
   }
   renderExecResult($("#vehicleOut"), null, result);
 }
+// Live power-mode readback (UDS DID F085 on raw CAN5). This POLL TRANSMITS a UDS request
+// on can0 every 3 s while the Controls tab is open -- active, not passive observation.
+let _pmPoll = null;
+async function pollActivePowerMode() {
+  const badge = $("#activePowerMode"); if (!badge) return;
+  const clear = () => $$("#vehiclePowerModes button[data-mode]").forEach(x => x.classList.remove("live-active"));
+  try {
+    const r = await api("/vehicle/power-mode/active", { timeout: 4000 });
+    const mode = r.ok ? r.mode : null;
+    badge.textContent = r.ok ? `live: ${mode || "0x" + r.value_hex}` : "live: no response";
+    badge.classList.toggle("muted", !r.ok || !mode);
+    $$("#vehiclePowerModes button[data-mode]").forEach(x =>
+      x.classList.toggle("live-active", !!mode && x.dataset.mode === mode));
+  } catch (e) {
+    badge.textContent = "live: error"; badge.classList.add("muted"); clear();
+  }
+}
+function startPowerModePoll() { pollActivePowerMode(); if (!_pmPoll) _pmPoll = setInterval(pollActivePowerMode, 3000); }
+function stopPowerModePoll() { clearInterval(_pmPoll); _pmPoll = null; }
 async function loadVehicleGearPositions() {
   const wrap = $("#vehicleGearPositions");
   try {
@@ -738,16 +758,21 @@ async function refreshT1() {
 async function refreshAdb() {
   try {
     const { devices } = await api("/adb/devices");
-    $("#adbDevices").innerHTML = devices.length ? `<table><tr><th>Serial</th><th>State</th><th>Transport</th><th>Product</th></tr>` +
-      devices.map(d => `<tr><td class="mono">${esc(d.serial)}</td><td>${esc(d.state)}</td><td><span class="tag ${d.transport === 'usb' ? 'ok' : 'mixed'}">${esc(d.transport)}</span></td><td>${esc(d.product || "")}</td></tr>`).join("") + "</table>"
-      : "<p>no devices</p>";
+    $("#adbDevices").innerHTML = devices.length
+      ? `<ul class="dev-list">` + devices.map(d =>
+          `<li><span class="tag ${d.transport === 'usb' ? 'ok' : 'mixed'}">${esc(d.transport)}</span> `
+          + `<span class="mono">${esc(d.serial)}</span> `
+          + `<span class="muted">${esc(d.state)}${d.product ? " · " + esc(d.product) : ""}</span></li>`).join("")
+        + `</ul>`
+      : `<span class="muted">no devices</span>`;
     const opts = devices.map(d => `<option value="${esc(d.serial)}">${esc(d.serial)} (${esc(d.transport)})</option>`).join("");
     // Preserve the current selection across a refresh (e.g. re-polling while a
     // terminal is already open against one serial shouldn't silently reselect another).
-    const prevApk = $("#apkSerial").value, prevShell = $("#adbShellSerial").value;
-    $("#apkSerial").innerHTML = opts; $("#adbShellSerial").innerHTML = opts;
-    if (devices.some(d => d.serial === prevApk)) $("#apkSerial").value = prevApk;
-    if (devices.some(d => d.serial === prevShell)) $("#adbShellSerial").value = prevShell;
+    for (const id of ["#apkSerial", "#adbShellSerial", "#pkgSerial"]) {
+      const el = $(id); if (!el) continue;
+      const prev = el.value; el.innerHTML = opts;
+      if (devices.some(d => d.serial === prev)) el.value = prev;
+    }
   } catch (e) { $("#adbDevices").textContent = "error: " + e; }
 }
 let _adbPoll = null;
@@ -780,8 +805,35 @@ $("#apkForm").onsubmit = async (e) => {
   try {
     const r = await api("/adb/install", { method: "POST", body: new FormData(e.target) });
     $("#apkOut").textContent = JSON.stringify(r, null, 2);
+    if (r.success && $("#pkgSerial").value === r.serial) loadPkgs();
   } catch (err) { $("#apkOut").textContent = "error: " + err; }
 };
+async function loadPkgs() {
+  const serial = $("#pkgSerial").value, wrap = $("#pkgList");
+  if (!serial) { wrap.innerHTML = `<span class="muted">no device selected</span>`; return; }
+  wrap.innerHTML = `<span class="loading">loading…</span>`;
+  try {
+    const { packages } = await api(`/adb/packages?serial=${encodeURIComponent(serial)}`);
+    if (!packages.length) { wrap.innerHTML = `<span class="muted">no third-party apps installed</span>`; return; }
+    wrap.innerHTML = `<ul class="dev-list">` + packages.map(p =>
+      `<li><button class="pkg-uninstall" data-pkg="${esc(p.package)}" title="uninstall">&times;</button> `
+      + `<span class="mono">${esc(p.package)}</span>`
+      + (p.installer ? ` <span class="muted">via ${esc(p.installer)}</span>` : "") + `</li>`).join("") + `</ul>`;
+    $$("#pkgList .pkg-uninstall").forEach(b => b.onclick = () => uninstallPkg(serial, b.dataset.pkg, b));
+  } catch (e) { wrap.innerHTML = "error: " + esc(String(e)); }
+}
+async function uninstallPkg(serial, pkg, btn) {
+  if (!confirm(`Uninstall ${pkg} from ${serial}?`)) return;
+  btn.disabled = true;
+  $("#pkgOut").textContent = `uninstalling ${pkg}…`;
+  try {
+    const r = await api("/adb/uninstall", { method: "POST",
+      headers: { "content-type": "application/json" }, body: JSON.stringify({ serial, package: pkg }) });
+    $("#pkgOut").textContent = r.success ? `uninstalled ${pkg}` : `failed: ${r.output || ("exit " + r.exit_code)}`;
+  } catch (e) { $("#pkgOut").textContent = "error: " + e; }
+  loadPkgs();
+}
+$("#btnLoadPkgs").onclick = loadPkgs;
 
 /* ================= Terminals ================= */
 let piTerm, piFit, piWS, adbT, adbFit, adbWS;
@@ -1036,6 +1088,32 @@ function infoPopover(anchor, text) {
     document.addEventListener("mousedown", _infoOutside, true);
   }, 0);
 }
+// HTML variant of the info popover: the card (i) buttons carry trusted static markup
+// (code/bold) moved out of the card body, so this sets innerHTML rather than esc-ing.
+function infoPopoverHTML(anchor, html) {
+  closeInfoPopover();
+  const pop = document.createElement("div");
+  pop.className = "plan-popover info-popover";
+  pop.innerHTML = `<div class="plan-popover-body">${html}</div>`;
+  document.body.appendChild(pop);
+  _infoPopover = pop;
+  const r = anchor.getBoundingClientRect();
+  pop.style.top = `${Math.min(r.bottom + 8, window.innerHeight - 40)}px`;
+  pop.style.left = `${r.left}px`;
+  requestAnimationFrame(() => {
+    const w = pop.offsetWidth, left = parseFloat(pop.style.left);
+    if (left + w > window.innerWidth - 12) pop.style.left = `${Math.max(12, window.innerWidth - w - 12)}px`;
+  });
+  setTimeout(() => {
+    document.addEventListener("keydown", _infoEsc);
+    document.addEventListener("mousedown", _infoOutside, true);
+  }, 0);
+}
+$$(".card-info").forEach(b => b.onclick = (e) => {
+  e.stopPropagation();
+  const body = b.closest(".card").querySelector(".card-info-body");
+  infoPopoverHTML(e.currentTarget, body ? body.innerHTML : "");
+});
 function tier2Popover(anchorBtn, planFn, execPath, statusEl, opts = {}) {
   closePlanPopover();
   const pop = document.createElement("div");

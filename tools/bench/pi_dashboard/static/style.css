@@ -340,6 +340,16 @@ td.mono, .mono { font-family: var(--mono); }
 .seq-info { appearance: none; -webkit-appearance: none; border: none; background: transparent; color: var(--muted);
   cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; flex: none; }
 .seq-info:hover { color: var(--accent); }
+.card-info { font-size: 14px; vertical-align: middle; }
+.dev-list { list-style: none; margin: 0; padding: 0; }
+.dev-list li { display: flex; align-items: center; gap: 7px; padding: 3px 0; }
+.pkg-uninstall { appearance: none; -webkit-appearance: none; border: none; cursor: pointer; flex: none;
+  width: 18px; height: 18px; border-radius: 4px; font-weight: 700; line-height: 1;
+  background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.pkg-uninstall:hover { background: color-mix(in srgb, var(--bad) 30%, transparent); }
+.pkg-uninstall:disabled { opacity: .4; cursor: default; }
+.live-badge { font-size: 11px; align-self: center; }
+.seg-btn.live-active { box-shadow: inset 0 0 0 2px var(--ok); border-color: var(--ok); }
 .seq-locked .seq-row { opacity: .5; transition: opacity .1s; }
 .seq-locked .seq-row:has(.seq-progress:not(:empty)) { opacity: 1; }
 button.seq-run { min-width: 92px; }

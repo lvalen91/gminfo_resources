@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import io
 import json
+import re
 import secrets
 import time
 import zipfile
@@ -234,6 +235,17 @@ async def vehicle_power_modes():
     return {"modes": [{"name": k, **v} for k, v in vehicle_state.POWER_MODES.items()]}
 
 
+@app.get("/api/vehicle/power-mode/active", tags=["can"])
+async def vehicle_power_mode_active():
+    """Live power mode read back from UDS DID F085 on raw CAN5 (00=Off, 01=Accessory,
+    02=Run, 04=Propulsion; bench-verified against UART SystemState). NOTE: this TRANSMITS
+    a UDS request on can0 each call -- an active poll, not passive observation."""
+    try:
+        return await asyncio.to_thread(can_uds.read_active_power_mode)
+    except OSError as e:
+        raise HTTPException(502, f"{type(e).__name__}: {e}")
+
+
 @app.get("/api/vehicle/gear-positions", tags=["can"])
 async def vehicle_gear_positions():
     return {"positions": [{"name": k, **v} for k, v in vehicle_state.GEAR_POSITIONS.items()],
@@ -431,23 +443,50 @@ async def adb_enable_t1():
     return await system_status.adb_enable_t1()
 
 
+_PKG_RE = re.compile(r"[A-Za-z0-9._]+")
+
+
 @app.post("/api/adb/install", tags=["adb"])
 async def adb_install(serial: str = Form(...), reinstall: bool = Form(True),
-                      apk: UploadFile = File(...)):
+                      grant: bool = Form(False), downgrade: bool = Form(False),
+                      installer: str = Form(""), apk: UploadFile = File(...)):
     name = Path(apk.filename or "upload.apk").name
     if not name.lower().endswith(".apk"):
         raise HTTPException(400, "expected a .apk file")
+    installer = installer.strip()
+    if installer and not _PKG_RE.fullmatch(installer):
+        raise HTTPException(400, "installer must be a package name (letters, digits, dots)")
     dest = config.UPLOAD_DIR / f"{int(time.time())}_{name}"
     data = await apk.read()
     # Up to client_max_body_size (128 MB) onto the Pi's SD card: off the event loop.
     await asyncio.to_thread(dest.write_bytes, data)
     try:
-        return await calibration.adb_install(serial, dest, reinstall=reinstall)
+        return await calibration.adb_install(serial, dest, reinstall=reinstall,
+                                             grant=grant, downgrade=downgrade,
+                                             installer=installer)
     finally:
         try:
             dest.unlink()
         except OSError:
             pass
+
+
+@app.get("/api/adb/packages", tags=["adb"])
+async def adb_packages(serial: str):
+    """List third-party (user-installed) packages on a device, with their installer."""
+    return {"serial": serial, "packages": await system_status.adb_list_packages(serial)}
+
+
+class UninstallBody(BaseModel):
+    serial: str
+    package: str
+
+
+@app.post("/api/adb/uninstall", tags=["adb"])
+async def adb_uninstall(body: UninstallBody):
+    if not _PKG_RE.fullmatch(body.package):
+        raise HTTPException(400, "invalid package name")
+    return await system_status.adb_uninstall(body.serial, body.package)
 
 
 # ============================ terminals (pty) =================================

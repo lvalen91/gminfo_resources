@@ -24,8 +24,8 @@
   <button data-tab="cal"><span class="nav-icon">&#128190;</span>Calibration</button>
   <button data-tab="elk"><span class="nav-icon">&#9888;</span>ELK</button>
   <div class="nav-group-label">Connectivity</div>
-  <button data-tab="uart"><span class="nav-icon">&#128225;</span>UART</button>
-  <button data-tab="t1"><span class="nav-icon">&#128241;</span>T1 / adb</button>
+  <button data-tab="uart"><span class="nav-icon">&#128225;</span>VIP Log</button>
+  <button data-tab="t1"><span class="nav-icon">&#128241;</span>ADB</button>
   <button data-tab="term"><span class="nav-icon">&#8250;_</span>Terminals</button>
   <button data-tab="capture"><span class="nav-icon">&#9210;</span>Field capture</button>
   <div class="nav-group-label">Host</div>
@@ -60,14 +60,14 @@
       </div>
     </div>
     <div class="card">
-      <h2>Decoded signals <small>(read-only — <code>opendbc</code> CANParser vs <code>gm_bench.dbc</code>)</small></h2>
-      <p class="hint">Named signals decoded live from the <b>same passive observer</b> above — this never
+      <h2>Decoded signals <small>(read-only — <code>opendbc</code> CANParser vs <code>gm_bench.dbc</code>)</small> <button class="seq-info card-info" type="button" aria-label="about decoded signals">&#9432;</button></h2>
+      <div class="card-info-body" hidden>Named signals decoded live from the <b>same passive observer</b> above — this never
       transmits. The stub DBC holds <b>bench-verified signals only</b> (each row cites its evidence on
       hover); firmware-traced-only or unconfirmed candidates (the <code>0x40B/0x264</code> PRNDL path,
       the unresolved time-sync message, the Service power mode) are deliberately left out rather
       than decoded as a guess. A greyed row has not been seen on the bus yet. The <code>0x53B</code>
       keepalive updates continuously; <code>0x284</code> appears when a power-mode frame is sent (see
-      the Controls tab).</p>
+      the Controls tab).</div>
       <div id="canDecodeMeta" class="muted"></div>
       <div id="canDecode"><span class="loading">waiting for /api/can/decode…</span></div>
     </div>
@@ -77,17 +77,18 @@
   <section id="tab-controls" class="tab">
     <h1 class="tab-title">Controls</h1>
     <div class="card">
-      <h2>Engine power mode &amp; gear position <small>(verified CAN signals only)</small></h2>
-      <p class="hint">Off/Run/Accessory/Propulsion are each wired to a directly-verified CAN
+      <h2>Engine power mode &amp; gear position <small>(verified CAN signals only)</small> <button class="seq-info card-info" type="button" aria-label="about power mode and gear">&#9432;</button></h2>
+      <div class="card-info-body" hidden>Off/Run/Accessory/Propulsion are each wired to a directly-verified CAN
       <code>0x284</code> frame — UART independently reports a distinct, named
       <code>SystemState=</code> for each (<code>platform/can_bench_experiments.md</code>,
       2026-11-26), cross-checked against UDS DID <code>F085</code>. Service and every gear
       position have <b>no verified CAN signal</b> on this platform yet — per this project's
       zero-guessing rule they stay disabled scaffolding until a firmware trace or captured
-      frame confirms them. Hover a disabled control for why.</p>
+      frame confirms them. Hover a disabled control for why.</div>
       <div class="field-row">
         <span class="field-label">Power mode</span>
         <div class="segmented" id="vehiclePowerModes"><span class="seg-loading loading">loading…</span></div>
+        <span id="activePowerMode" class="live-badge muted" title="live read from UDS DID F085 on raw CAN5 — active poll, transmits a request every 3 s while this tab is open">live: —</span>
       </div>
       <div class="field-row">
         <span class="field-label">Gear position</span>
@@ -96,19 +97,19 @@
       <div id="vehicleOut" class="exec-line"></div>
     </div>
     <div class="card">
-      <h2>Steering wheel &amp; media <small>(UDS IOControlByIdentifier over T1)</small></h2>
-      <p class="hint">Each verified control is a momentary press-and-release of a catalogued
+      <h2>Steering wheel &amp; media <small>(UDS IOControlByIdentifier over T1)</small> <button class="seq-info card-info" type="button" aria-label="about steering-wheel controls">&#9432;</button></h2>
+      <div class="card-info-body" hidden>Each verified control is a momentary press-and-release of a catalogued
       IOCID (<code>diagnostics/GM_CAN_UDS_REFERENCE.md</code> sec 6/11e): extended session +
       the bench-confirmed degenerate SecurityAccess level-01 grant, then
       <code>2F &lt;IOCID&gt; 03 &lt;param&gt;</code> immediately followed by
       <code>2F &lt;IOCID&gt; 00</code>. Non-destructive -- a single button press. Answer/End
-      Call has no verified IOCID on this platform and stays disabled scaffolding.</p>
+      Call has no verified IOCID on this platform and stays disabled scaffolding.</div>
       <div id="steeringControls"><span class="loading">loading…</span></div>
       <div id="controlsOut" class="exec-line"></div>
     </div>
     <div class="card">
-      <h2>ECU reset <small>(UDS 0x11 over raw CAN5, ECU 0x80)</small></h2>
-      <p class="hint">Sends <code>10 03</code> (extended session) then <code>11 01</code>
+      <h2>ECU reset <small>(UDS 0x11 over raw CAN5, ECU 0x80)</small> <button class="seq-info card-info" type="button" aria-label="about ECU reset">&#9432;</button></h2>
+      <div class="card-info-body" hidden>Sends <code>10 03</code> (extended session) then <code>11 01</code>
       (ECUReset hardReset) as single ISO-TP frames, <code>14DA80F1</code> &rarr;
       <code>14DAF180</code>. Bench-verified 2026-11-27: positive response
       <code>51 01</code> and the VIP UART tick counter restarted with
@@ -116,7 +117,7 @@
       (<code>7F 11 7F</code>). After a positive <code>51 01</code> the
       <code>startup-keepalive</code> sequence starts automatically: without a fresh startup
       window the rebooted VIP enters <code>BackgroundSleepTimeout</code> and sleeps about
-      21.5 s later. Needs the VIP awake on can0. Destructive -- confirm step.</p>
+      21.5 s later. Needs the VIP awake on can0. Destructive -- confirm step.</div>
       <div class="btnrow"><button id="btnEcuReset" class="danger">ECU Reset (11 01)</button></div>
       <div id="ecuResetOut" class="exec-line"></div>
     </div>
@@ -235,25 +236,23 @@
 
   <!-- ======================= UART ======================= -->
   <section id="tab-uart" class="tab">
-    <h1 class="tab-title">UART</h1>
+    <h1 class="tab-title">VIP Log</h1>
     <div class="card">
-      <h2>UART tail <small>(client of ser2net loopback ports)</small></h2>
+      <h2>VIP log tail <small>(ser2net loopback client — VIP console UART)</small></h2>
       <div class="btnrow" id="uartButtons"></div>
       <div id="uartTermWrap"><div id="uartTerm" class="term"></div></div>
     </div>
   </section>
 
-  <!-- ======================= T1 / adb ======================= -->
+  <!-- ======================= ADB ======================= -->
   <section id="tab-t1" class="tab">
-    <h1 class="tab-title">T1 / adb</h1>
+    <h1 class="tab-title">ADB</h1>
     <div class="grid2">
       <div class="card">
-        <h2>T1 / VLAN status</h2>
-        <div id="t1Status"></div>
+        <h2>ADB over T1</h2>
         <div class="btnrow">
           <button id="btnEnableT1" class="primary" title="adb tcpip over USB, then adb connect over T1 -- needs a USB adb device already connected">Enable ADB over T1</button>
           <button id="btnConnectT1">adb connect T1 (VLAN5)</button>
-          <button id="btnRefreshT1">Refresh</button>
         </div>
         <pre id="enableT1Out" class="out"></pre>
       </div>
@@ -262,15 +261,35 @@
         <div id="adbDevices"></div>
       </div>
     </div>
-    <div class="card">
-      <h2>Install APK</h2>
-      <form id="apkForm">
-        <label>Target <select name="serial" id="apkSerial"></select></label>
-        <label class="switch-label"><input type="checkbox" name="reinstall" checked> reinstall (-r)</label>
-        <label>APK <input type="file" name="apk" accept=".apk" required></label>
-        <button type="submit" class="primary">Upload &amp; install</button>
-      </form>
-      <pre id="apkOut" class="out"></pre>
+    <div class="grid2">
+      <div class="card">
+        <h2>Install APK</h2>
+        <form id="apkForm">
+          <label>Target <select name="serial" id="apkSerial"></select></label>
+          <div class="field-row">
+            <label class="switch-label"><input type="checkbox" name="reinstall" checked> reinstall (-r)</label>
+            <label class="switch-label"><input type="checkbox" name="grant"> grant all perms (-g)</label>
+            <label class="switch-label"><input type="checkbox" name="downgrade"> allow downgrade (-d)</label>
+          </div>
+          <label>installer (-i)
+            <input type="text" name="installer" id="apkInstaller" list="apkInstallers"
+                   placeholder="(none)" spellcheck="false" autocomplete="off">
+            <datalist id="apkInstallers"><option value="com.android.vending"></datalist>
+          </label>
+          <label>APK <input type="file" name="apk" accept=".apk" required></label>
+          <button type="submit" class="primary">Upload &amp; install</button>
+        </form>
+        <pre id="apkOut" class="out"></pre>
+      </div>
+      <div class="card">
+        <h2>Installed apps <small>(third-party)</small></h2>
+        <div class="btnrow">
+          <select id="pkgSerial"></select>
+          <button id="btnLoadPkgs">Load</button>
+        </div>
+        <div id="pkgList"><span class="muted">pick a device and Load</span></div>
+        <div id="pkgOut" class="exec-line"></div>
+      </div>
     </div>
   </section>
 
@@ -342,6 +361,11 @@
         <h2>Network interfaces</h2>
         <div id="piIfaces"><span class="loading">waiting for /api/pi/status…</span></div>
       </div>
+    </div>
+    <div class="card">
+      <h2>T1 / VLAN status</h2>
+      <div id="t1Status"><span class="loading">loading…</span></div>
+      <div class="btnrow"><button id="btnRefreshT1">Refresh</button></div>
     </div>
     <div class="card">
       <h2>Bench services <small>(restart for a stuck state; each restart is Tier-2 confirmed)</small></h2>

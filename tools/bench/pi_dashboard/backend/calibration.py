@@ -43,13 +43,21 @@ async def _run(*args: str, timeout: float = 120.0, cwd: str | None = None) -> tu
 
 
 # --- APK install ----------------------------------------------------------------
-async def adb_install(serial: str, apk_path: Path, reinstall: bool = True) -> dict:
+async def adb_install(serial: str, apk_path: Path, reinstall: bool = True,
+                      grant: bool = False, downgrade: bool = False,
+                      installer: str = "") -> dict:
     args = [config.ADB, "-s", serial, "install"]
     if reinstall:
         args.append("-r")
+    if grant:
+        args.append("-g")
+    if downgrade:
+        args.append("-d")
+    if installer:
+        args += ["-i", installer]
     args.append(str(apk_path))
     rc, out, err = await _run(*args, timeout=300)
-    return {"serial": serial, "apk": apk_path.name, "exit_code": rc,
+    return {"serial": serial, "apk": apk_path.name, "flags": args[3:-1], "exit_code": rc,
             "stdout": out.strip(), "stderr": err.strip(),
             "success": rc == 0 and "Success" in (out + err)}
 
