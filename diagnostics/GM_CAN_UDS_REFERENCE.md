@@ -10,7 +10,7 @@
 > **Coverage:** A11 infotainment (Y175/Y181B) Ethernet UDS endpoint + Global A powertrain/chassis CAN buses.  
 > Values confirmed live on the T1 endpoint are marked **[live]**; spec-only entries **[spec]**; CAN-capture only **[CAN]**.
 >
-> **Maintenance note:** The `diagnosticsd` content in this file (principally §1, §3, §4, §6, §8, §9, §11, and the diagnosticsd-related parts of §2, §5 and §10; the rest of §2, §5 and §10 draws on other sources) is a condensed restatement derived from the following `diagnostics/` documents: `ethernet_uds_diagnosticsd.md`, `diagnosticsd_protocol.md`, `diagnosticsd_security_access.md`, `diagnosticsd_dids_and_dtc.md`, `diagnosticsd_routines_and_recovery.md`, `diagnosticsd_network_topology.md`, `diagnosticsd_dos.md`. It is not generated from them and has no automatic sync; it must be updated manually whenever those documents change. On any discrepancy, the source documents are authoritative.
+> **Maintenance note:** The `diagnosticsd` content in this file (principally §1, §3, §4, §6, §8, §9, §11, and the diagnosticsd-related parts of §2, §5 and §10; the rest of §2, §5 and §10 draws on other sources) is a condensed restatement derived from the following `diagnostics/` documents: `ethernet_uds_diagnosticsd.md`, `diagnosticsd_protocol.md`, `diagnosticsd_security_access.md`, `diagnosticsd_dids_and_dtc.md`, `diagnosticsd_routines_and_recovery.md`, `diagnosticsd_network_topology.md`, `diagnosticsd_dos.md`. It is not generated from them and has no automatic sync; it must be updated manually whenever those documents change. On any discrepancy, the source documents are authoritative. **§13 is an exception**: it covers the separate raw-CAN5/ECU-`0x80` transport, is original work (firmware RE + live bench testing, 2026-11-26), and has no `diagnostics/` source document to stay in sync with — see `platform/can_bench_experiments.md` for the live-test methodology it shares with this repo's other bench investigations.
 
 ---
 
@@ -437,7 +437,7 @@ Tester address: `0xF1`. Request pattern: `0x14DAxxF1` (xx = ECU addr). Response 
 | `0x68` | HVAC | 14DA68F1 | 145AF168 |
 | `0x6D` | TCCM | 14DA6DF1 | 141AF16D |
 | `0x75` | SDM (airbag) | 14DA75F1 | 144AF175 |
-| `0x80` | Radio / A11 (infotainment) | 14DA80F1 | 145AF180 |
+| `0x80` | Radio / A11 (infotainment) | 14DA80F1 | **14DAF180** (corrected 2026-11-26; see note below) |
 | `0x81` | AMP | 14DA81F1 | 145AF181 |
 | `0x97` | HUD | 14DA97F1 | 145AF197 |
 | `0xA4` | TPMS | 14DAA4F1 | 144AF1A4 |
@@ -448,7 +448,7 @@ Tester address: `0xF1`. Request pattern: `0x14DAxxF1` (xx = ECU addr). Response 
 | `0xBE` | VGRS | 14DABEF1 | 145AF1BE |
 | `0xBF` | PLGM | 14DABFF1 | 142AF1BF |
 
-**Note:** The Y175 Ethernet endpoint uses a different transport than ISO-TP CAN. On T1 Ethernet (port 49156), tester `0x00F4`, ECU `0x0084`. CAN5 direct: request `0x14DA80F2`, response `0x145AF280`.
+**Note:** The Y175 Ethernet endpoint uses a different transport than ISO-TP CAN. On T1 Ethernet (port 49156), tester `0x00F4`, ECU `0x0084`. The table's earlier `0x14DA80F2`/`0x145AF280` CAN5-direct entry was unconfirmed; **confirmed live 2026-11-26** (see §13): request `0x14DA80F1`, response `0x14DAF180` — matching `tools/bench/bench_can/boot_radio_elk.py`'s already-implemented `CanDiagnostics` constants exactly (tester `0xF1`, GMLAN standard response-swap convention, not the `14xAF1xx` pattern the rest of this table's entries use for other ECU classes).
 
 ---
 
@@ -656,4 +656,87 @@ The `gminfo_resources` local files (this repo) are the most complete publicly un
 
 ---
 
-*Last updated: 2026-11-21 (v3 — source attribution pass). DBC files © comma.ai contributors, MIT License (https://github.com/commaai/opendbc). GateKeeperESP_services.h © 2018 Surreal Development LLC, GPL-3.0. All other analysis and live-sweep results are original work documented in this repository.*
+## 13. Raw ISO-TP UDS on CAN5 (ECU `0x80`) — firmware DCM architecture + live findings (2026-11-26)
+
+Everything in §§1-12 above concerns the **T1 Ethernet/diagnosticsd transport** (tester
+`0x00F4`, ECU `0x0084`). This section covers the **separate raw-CAN5 ISO-TP transport**
+(tester `0xF1`, ECU `0x80`, request `0x14DA80F1` / response `0x14DAF180` — see §7d
+correction above), reachable with nothing more than the bench's own CANable adapter
+already on CAN5 (no MDI2 hardware needed — MDI2 is itself just a combined CAN
+adapter + T1 adapter routed to the same two channels this bench already has direct
+access to).
+
+### 13a. Firmware architecture: VIP_APP is a real AUTOSAR DCM
+
+Static V850 RE (image `86331656`, same addressing convention as the rest of this repo's
+firmware work: `file_offset + 0x27A7A = runtime`) found one central diagnostic
+configuration block at file `0x1CC40–0x1D400` (runtime `0x446BA+`):
+
+- **Supported UDS service (SID) list**, file `0x1CCA8` (runtime `0x44722`): count byte
+  `0x12` (18) then `10 11 14 19 22 23 27 28 2A 2C 2E 2F 31 34 36 37 3E 85` — notably
+  includes `0x23`/`0x2A`/`0x2C` (ReadMemoryByAddress, periodic-DID read, dynamically-define
+  DID), which the T1/diagnosticsd converter's 13-pair native bimap does **not** map —
+  one piece of evidence the two transports are separate code paths, not one shared handler.
+- **DID table** (service `0x22`/`0x2E`), file `0x1CCE0–0x1CE96` (runtime
+  `0x4475A–0x44910`), 220 entries, sorted ascending for binary search. A second,
+  independently-extracted 77-entry page of this same table sits at file `0x1CE00`
+  (runtime `0x4487A`) and matches live raw-CAN results 1:1, including every gap
+  (e.g. `F082/F083/F088/F08A/F08E-F094/F096-F099` all return NRC `0x31` live, exactly as
+  their absence from the table predicts).
+- **Routine (RID) table**, file `0x1CAA2` (runtime `0x4451C`): count `0x0F` (15),
+  `0209 021E 0247 0248 0249 0254 0260 0272 0300 039B 03D8 0405 F000 FF00 FF01` — a superset
+  of, and consistent with, §5/§11d's Java/native RID catalog (already-documented
+  destructive flags there apply unchanged: `0247`/`0248`/`0249`/`F000`/`FF00`/`FF01`).
+- **`[INT_DID]` NvM-backed identity DIDs** (served directly from VIP NVM, not live-computed):
+  `41EB, 4782, 4787, F09A, F0AB, F0B4, F0F3, F0F4, F190, F198, F199, F1CB, F1CC, F1DB, F1DC`.
+  **`F085`, `F086`, `F087`, `F095` are absent from this NvM set** — i.e. they are
+  live-computed from RAM/signals, not stored, which is exactly why they are reactive.
+
+### 13b. The T1-vs-CAN5 divergence, resolved
+
+The two transports are **not one shared handler with identical exposure** — confirmed
+two independent ways: (1) live, a full sweep of all 220 firmware DIDs over T1 (2026-11-26,
+using the dashboard's existing `/api/uds/read`) got 139 positive / 63 `NRC 31` / 13
+`NRC 22` / 4 `NRC 11` / 1 `NRC 33`, with **`F085` and `C019-C01C` specifically in the
+rejected set** — exactly matching this section's raw-CAN results below, and consistent
+with the 2026-11-14 exhaustive 65536-DID T1 sweep in §4 (which also never lists `F085` as
+positive); (2) identity/NvM-backed DIDs (`F180/F181/F182/F190/F0F0-F0F3/F198/F199`) read
+**identically on both transports** (same backing store), while live-computed
+vehicle-state DIDs (`F085`, `F095`, the `C0xx` telemetry block) are **raw-CAN/`0x80`
+only** and return `NRC 31` on T1/`0x0084`. **Practical rule: identity-DID findings
+transfer between transports; live-state-DID findings do not — always re-verify a
+live-state DID on the transport you actually intend to use.**
+
+### 13c. Live-reactive DIDs found on raw-CAN (new; not in §4/§11b, which cover T1 only)
+
+All reads: `22 <DID>` on `14DA80F1`, response on `14DAF180`. Reactivity confirmed by
+changing a known CAN input and re-reading, same method as this doc's existing UART
+correlation tests.
+
+| DID | Response | Meaning | Reactivity evidence |
+|---|---|---|---|
+| **`F085`** | `62 F085 00` (CAN `284`=`000000000000`, documented Off) / `62 F085 02` (CAN `284`=`000000001000`, documented Run, held via sustained `529`) | Power-mode mirror. **Certain, live-confirmed both directions.** | Changed `284` Off→Run→Off, re-read each time, value tracked it exactly |
+| **`F095`** | `00` immediately after power-Off; recovers to `01` only ~5s after Run resumes | A **second, new** power-correlated DID with hysteresis — not a pure `F085` mirror, likely a derived accessory/ready sub-state | Confirmed reactive with a timer-delayed recovery, distinct from F085's instant response |
+| `F086`/`F087`/`F08C` | `01`/`00`/`01`, unchanged across the same Off/Run test | Live-computed (near the power block) but **do not track power mode** — some other input (candidates: door `4DA` b7 bit0, reset-gate `20D` byte4) | Confirmed power-*invariant*; not yet characterized |
+| `C007`/`C008`/`C009` | 6×BE16 words (`100`s / `999`s, sensor-default-looking) | Previously-unswept live telemetry block | Values read, not yet correlated to a specific input |
+| `C019`-`C01C` | `01` each | 1-byte status flags, new | Not yet correlated |
+| `F129` | `00 00 0C 0E DE` | Counter-like (odometer/runtime candidate) | Not yet confirmed by re-reading over time |
+
+**Caution carried over unchanged from §9/§11d**: the destructive-routine list there
+applies identically on this transport — `0247`/`0248`/`0249`/`F000`/`FF00`/`FF01` were
+**not** sent in the course of this investigation; only `0x22` reads, `0x3E`, `0x10`
+session-entry, and the already-documented degenerate `0x27 0D/0E` SecurityAccess grant
+(§3) were used.
+
+### 13d. Display backlight is not reachable via UDS either
+
+See `platform/can_bench_experiments.md`'s "Display backlight: not a CAN/UDS-reachable
+mechanism" section for the full writeup — display-on/off is a one-way SoC→VIP IPC flag
+(`RequestDisplayOnOff`, VIP RAM `0xFEBD3675`), not a UDS DID, RID, or CAN message on
+either transport. No DID in the §13a table, and no routine in its RID list, controls it.
+
+---
+
+*Last updated: 2026-11-26 (v4 — added §13, raw-CAN5/ECU-0x80 DCM architecture and
+live findings; corrected the §7d response-ID entry for ECU `0x80`). Earlier note,
+v3 2026-11-21 (source attribution pass). DBC files © comma.ai contributors, MIT License (https://github.com/commaai/opendbc). GateKeeperESP_services.h © 2018 Surreal Development LLC, GPL-3.0. All other analysis and live-sweep results are original work documented in this repository.*

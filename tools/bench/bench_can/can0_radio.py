@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Transmit the fixed captured radio schedules through SocketCAN (can0).
 
-This is the shared-bus counterpart of radio_on.py. Frame bytes, offsets and
-periods come only from the digest-pinned harness profile through the existing
-schedule builders (radio_on.scheduled_events, replay_can_power_on_keepalive,
-replay_can_keepalive, reset_vip_can). Only the I/O layer differs: a CAN_RAW
-socket on a kernel interface, so observers and other senders may share the bus.
+This is the shared-bus counterpart of radio_on.py. Frame bytes, offsets and periods
+come from the digest-pinned harness profile through the existing schedule builders
+(radio_on.scheduled_events, replay_can_power_on_keepalive, reset_vip_can) -- except
+`keepalive` mode, whose frame (CAN 0x53B) is independently bench-verified and not
+present in that capture at all; see replay_can_keepalive.py's module docstring. Only
+the I/O layer differs: a CAN_RAW socket on a kernel interface, so observers and other
+senders may share the bus.
 
 Modes: full, startup, startup-keepalive, keepalive (as radio_on.py) and
 vip-reset (the reset_vip_can.py plan). Every mode supports --dry-run.

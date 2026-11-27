@@ -533,18 +533,41 @@ firmware tracing has now identified the real PRNDL/gear receive path, and it is 
 Traced by static firmware analysis (2026-11-21), not by DBC name-matching. Chain: SRAM
 `_DAT_febd3434`/`_DAT_febd3438` (already read by the gear-status transmitter, see TX
 catalog below) ← setter `FUN_0008c6d4` (`0x8c6d4`) ← Com-RX unpack function at `0x4da62`
-← PRNDL decode `FUN_0004d7dc` (`0x4d7dc`: raw code 1→3, 3→1, 4→4, else Park-default via
-`DAT_0002922f`) ← two Com signal descriptors (`0x28112 + signalID*0x18`):
+← PRNDL decode `FUN_0004d7dc` (`0x4d7dc`) ← two Com signal descriptors, base **`0x2812A`**
+(`+signalID*0x18`, 24-byte records; calibrated 2026-11-26 against the already-verified
+`0x529` HmiReady/AnimationStatus bit positions, so the field offsets below are read from
+the live descriptor bytes, not the AUTOSAR start-bit numbers originally quoted here):
 
 | CAN ID | DLC | Com signal | Bit field | Role | Status |
 |---|---:|---|---|---|---|
-| `40B` | 5 | `0xDC6` | 2-bit @ start-bit 35 | Primary PRNDL input | `FIRMWARE-TRACED` |
-| `264` | 8 | `0xCA5` | 4-bit @ start-bit 45 | Fallback (used when `0xDC6`'s validity byte reads 0) | `FIRMWARE-TRACED` |
+| `40B` | 5 | `0xDCB` | **byte4 bits5-7 (3-bit, mask 0xE0)** | Primary PRNDL input | `FIRMWARE-TRACED`, bench-live-confirmed reactive 2026-11-26 |
+| `264` | 8 | `0xCAC` (validity) / `0xCAD` (value) | validity: byte3 bit6 (mask 0x40); value: byte3 bit7 + byte4 bits0-2, 4-bit | Validity gate + fallback (used when `40B`'s own byte3-bit6-equivalent validity reads 0) | `FIRMWARE-TRACED`; fallback field offset not bench-confirmed |
 
-`FIRMWARE-TRACED` = two independent exact ComIPdu-handle matches (`0x10d`, `0x31`), DLC and
-bit-position consistent — not yet bench-verified by driving `40B`/`264` live and observing
-AAOS react. Assumes ComIPdu handle routes 1:1 to the CanIf PDU field; no separate PduR
-indirection table was independently checked. No RX-side string exists for either signal.
+**Correction, 2026-11-26:** the original "2-bit @ start-bit 35" / "4-bit @ start-bit 45"
+notation above (quoting the AUTOSAR ComSignal descriptor's own start-bit numbering
+literally) was wrong about field width and conflated two different signals in the same
+PDU — `0xDC8` (2-bit, byte4 bits3-4) is a *different*, still-unidentified signal in the
+`40B` frame, not the gear value. The real gear VALUE field is `0xDCB`, 3-bit, byte4
+bits5-7 — this is why the decode function's own remap table (`raw0→2, raw1→3, raw2→0,
+raw3→1, raw4→4`, catch-all 0 for raw5-7) made no sense against a 2-bit field (max raw
+value 3) but fits a 3-bit field cleanly. The `264`-side validity bit that gates
+primary-vs-fallback is NOT inside `40B` itself (as the original wording implied); it is
+`264` byte3 bit6.
+
+Bench-confirmed live (2026-11-26, `platform/can_bench_experiments.md`): holding `40B` =
+`00 00 00 00 <raw<<5>>` together with `264` = `00 00 00 40 00 00 00 00` (forcing
+validity=1) is correctly received and decoded — the internal remap fires as predicted.
+**What remains unconfirmed:** the mapping from the firmware's internal enum {0,1,2,3,4}
+to the AAOS-side `android.car.VehicleGear` bitmask (Park=4/Reverse=2/Neutral=1/Drive=8,
+confirmed present and consumed on this unit via `dumpsys car_service`'s
+`propId 0x11400400` registration and "Supported gears" list) — no observable AAOS-side
+reaction (logcat, screen, `com.gm.cluster` process output) was found during live testing,
+so which raw value is which gear letter is still open. `FIRMWARE-TRACED` for the bit
+positions above = two independent exact ComIPdu-handle matches (`0x10d`, `0x31`), DLC and
+byte-offset consistent, now cross-calibrated against a known-good signal and bench-tested
+live — not yet AAOS-reaction-verified. Assumes ComIPdu handle routes 1:1 to the CanIf PDU
+field; no separate PduR indirection table was independently checked. No RX-side string
+exists for either signal.
 
 This explains why `1F5`/`ECMPRDNL2` had no slot-3 match: that was an external public-DBC
 name for a different vehicle's signal layout, not this firmware's real (unnamed,

@@ -32,12 +32,16 @@ def summary(mode, bench, profile):
     if mode == 'keepalive':
         keepalive = keepalive_profile(bench, profile)
         return f'one keepalive per {keepalive.period:.6f} s until stopped'
-    startup, _, keepalive = build_plan(bench, profile)
+    startup, _, _ = build_plan(bench, profile)
     # The old Desktop builder adds a 5 s bridge while reopening USB. The archive
     # linked by platform/can_network.md ends the startup sequence at 40 s.
     count = sum(offset < 40.0 for offset in startup.offsets)
     message = f'{count} startup frames in one 40 s window'
     if mode == 'startup-keepalive':
+        # The real trailing keepalive (what scheduled_events() below actually sends) is
+        # keepalive_profile()'s, not build_plan()'s own internal 0x529 Profile -- that one
+        # is build_plan()'s legacy return value, unused past this function.
+        keepalive = keepalive_profile(bench, profile)
         message += f', followed by one keepalive per {keepalive.period:.6f} s'
     return message
 

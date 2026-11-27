@@ -1138,6 +1138,117 @@ mechanisms remain untested on CAN5. See
 [SecurityAccess validation](../diagnostics/diagnosticsd_security_access.md#live-direct-can5-securityaccess-validation-2026-11-15)
 and [MDI2 raw UDS bypass guide](../research/mdi2-bench-sessions/MDI2_RAW_UDS_BYPASS_GUIDE.md).
 
+## Keepalive-content bisection (2026-11-26)
+
+The bench's long-standing "keepalive" (continuous replay of the harness profile's one
+`0x529` frame, `PowerModeSelector=On`) was never shown to be a true keepalive — only
+that it worked. It forces `evPowerModeOn` → `RunPropulsionAccessory`, which is an
+unwanted side effect for an idle bench (Run should be a deliberate choice, not a
+byproduct of staying awake). Live bench testing, cross-checked against VIP_APP firmware
+RE (static decompiled-source analysis; see [the 0x529/0x53B rows](can_network.md#known-meaning-rows)
+for the underlying bit mappings), established the actual mechanism and a working
+alternative. All sleep/wake detection below is ADB-independent: the authoritative
+signal is VIP UART text (`GoToSleep`/`CSM_Sleep`/`evt=evBACKGROUND_SLEEP_TIMEOUT` =
+asleep; `SystemState=Propulsion`/`HmiInit`/`InfotainmentActive` = awake), with T1
+(`eth0.5`) `rx_packets` deltas logged as a cross-check (it tracked UART closely: flat
+≥60s shortly before each confirmed sleep).
+
+Firmware model (static RE, V850 disassembly of the decompiled VIP_APP image): the
+background-sleep timeout (`cal_background_sleep_timeout_sec`, calibration param 0x9b,
+firmware default 10s, EEPROM-provisioned in the 0-1800s range, observed ~608-630s on
+this unit) is a 16-slot software-timer-service dwell timer scoped to state `HMIInactive`
+— it only runs while the HSM is in that state, and it is armed/reset only by HSM
+transition actions (`ss_start_timer`, ~22 call sites, all inside the HSM action cluster),
+never by raw CAN reception of any ID. `PowerModeSelector=On` (`evPowerModeOn`) escapes
+`HMIInactive` into `RunPropulsionAccessory`; `InfotainmentActivationRequest=1`
+(`evInfoActivationRequest`, CAN `0x53B` byte7 bit3) escapes it into `LocalInfotainment`/
+`InfotainmentActive` instead, with no Run/Propulsion transition. No generic
+`evComm*`/`evNetwork*`/`evKeepAlive*` input exists anywhere in the firmware.
+
+Live trials (each run until a UART sleep marker or an 803s cap; recovery via the
+dashboard's `startup` oneshot sequence + 40s + UART awake confirmation):
+
+| Candidate | Content | Period | Result |
+|---|---|---|---|
+| Real keepalive (control) | `529` `38 82 00 00 00 00` (PowerModeSelector=On, HmiReady=1, Animation=1) | 0.32027s | NO_SLEEP (803s) |
+| PowerModeSelector cleared | `529` `38 02 00 00 00 00` (HmiReady=1, Animation=1, PMS=0) | 0.32027s | SLEPT @ 613s |
+| InfoActivationRequest toggled | `53B` alternating `...08`/`...00` | 90s half-cycle | SLEPT @ 311s — toggling to inactive is *worse* than nothing (fast fault/exit path) |
+| Negative control (unmapped id) | `016` `00 00 00 00 00 00 00 00` | 0.32027s | SLEPT @ 608s — matches doing nothing, confirms no generic-traffic effect |
+| InfoActivationRequest held static | `53B` `00 00 00 00 00 00 00 08` | 0.32027s | NO_SLEEP (803s), state stayed `InfotainmentActive`, never Run |
+| same, interval bisection | `53B` `00 00 00 00 00 00 00 08` | 1s / 2s / 3s | NO_SLEEP (803s each) |
+| same | `53B` `00 00 00 00 00 00 00 08` | 5s | SLEPT @ 673s |
+
+Required repeat interval is bounded between 3s (confirmed working) and 5s (confirmed
+failing); `tools/bench/bench_can/replay_can_keepalive.py` uses 2s for margin. The bench's
+keepalive is now this verified `0x53B` static hold, not the old `0x529`-derived frame —
+see that module's docstring for the implementation and `can0_radio.py`'s module
+docstring for the one exception this makes to "frame bytes come from the pinned
+harness profile."
+
+## Power-on/wake-trigger minimal-sequence bisection (2026-11-26) — negative result
+
+The bench's `startup` sequence (126 captured frames over a 40s window, IDs `145`/`457`/
+`458`/`529`) reliably wakes the SoC from genuine deep sleep (`CSM_Sleep`/`SoC power level
+0`), but had never been reduced — it is "a known-working captured recording," not an
+understood minimal trigger. Firmware RE (static V850 analysis) established the wake
+architecture is layered: (1) NM/bus-wake, ID-agnostic within the `0x100-0x1FF` range,
+(2) SoC rail re-power + boot, gated on battery voltage with **no vehicle-CAN-state
+precondition when cold** (CAN is a wake *factor*, not a requirement, for a genuinely cold
+unit) via CSM/PLC events `evPNActivated`/`evStartupRequest`, (3) Run/Propulsion via
+`evPowerModeOn` — an unwanted side effect for a plain wake, not part of the actual
+power-on step.
+
+Live bisection from **genuine, fully-settled sleep** (confirmed via UART `GoToSleep`→
+`CSM_Sleep`→`evt=evBACKGROUND_SLEEP_TIMEOUT`, not the T1-flat heuristic alone), each
+candidate watched up to 90s for wake evidence (`AnimationInit`/`HmiInactive`/`HmiInit`/
+`SystemState=Propulsion`/`InfotainmentActive`/`SoC power level` climb):
+
+| Candidate | Content | Result |
+|---|---|---|
+| `53B` edge alone (InfoActivationRequest 0→1, one-shot) | `00 00 00 00 00 00 00 08` | **NO_WAKE** (90s) |
+| `145` prewake (3 frames) then `53B` edge | real captured `145` bytes `45 40 F2 80 00 00 00 0C` ×3, then `53B` edge | **NO_WAKE** (90s) |
+| `145` repeated for 10s, no `53B` | same `145` bytes, 0.32s period, 31 frames | **NO_WAKE** (90s) |
+| `145` one-shot only | single frame | **NO_WAKE** (90s) |
+| `529` alone (PowerModeSelector edge, one-shot) | `00 80 00 00 00 00` | **NO_WAKE** (90s) |
+
+All five single/few-frame candidates failed, including a bare `0x529` edge — surprising,
+since `0x529` is what forces Run once already awake. **Sanity-checked, not assumed**: the
+full 126-frame `startup` sequence was sent immediately after (same sleep state) and
+confirmed both the adapter (TX counter +126, zero `tx_errors`) and the wake itself
+(normal J6_CDD/RTC telemetry resumed) — ruling out an adapter/methodology problem as the
+explanation. Conclusion: from a long, fully-settled sleep, the real wake trigger needs
+either sustained/repeated presence beyond a single edge (the `startup` sequence sends
+`529` 16 times across its own window, not once), multiple distinct frame types together,
+or something the 126-frame capture carries that none of the five reduced candidates
+isolated. **Not yet found; the blunt full-sequence replay remains the only known-working
+wake mechanism.** Next candidate worth trying: a *held/repeated* `529` (not one-shot) from
+genuine sleep, matching the same "hold, don't edge" lesson the keepalive bisection above
+already established for `53B`.
+
+## Display backlight: not a CAN/UDS-reachable mechanism (2026-11-26)
+
+Observed live: physical display backlight off while the SoC was confirmed fully awake
+(Android `mWakefulness=Awake`, `boot_completed=1`, actively compositing a normal,
+live-updating UI per `screencap`) and the VIP's own last logged backlight command was
+`on` — ruling out the VIP simply having turned it off. Firmware RE (two independent
+passes, cross-checked against each other) found display-on/off is **not driven by any CAN
+message or UDS DID at all**: it is a one-way **SoC→VIP IPC flag**
+(`RequestDisplayOnOff`/"Display On/Off Request - True/False", written to VIP RAM
+`0xFEBD3675`), consumed by the firmware's own `SS_SWC`/`BCTL` backlight state machine
+(physical setter take 0/1/2 = off/on/local, logged as `[SS_SWC] backlight cfg = `). A
+specific predicted trigger (`evRemoteReflashStatusDisplayOff`, a programming-session
+display-off path) was checked directly against the real UART log and does **not** appear
+anywhere in this bench's session history — ruled out, not confirmed.
+
+**Conclusion: there is no CAN-side fix for this.** "Display off while SoC stays on" is an
+Android/AAOS display-policy decision (most plausibly a plain screen-timeout, same as a
+phone going to sleep) relayed to the VIP over IPC, not something any CAN keepalive
+message — current or undiscovered — can address. If the display needs to stay lit through
+a long bench session, the lever is Android-side (a wake lock, or disabling AAOS's
+display/screen timeout), not CAN protocol work. This closes the "does the keepalive need
+a paired display-on CAN message" question raised during this investigation: no such
+message exists to find.
+
 ## Open conflicts
 
 None identified within this document's own ranges. Two cross-doc items are
