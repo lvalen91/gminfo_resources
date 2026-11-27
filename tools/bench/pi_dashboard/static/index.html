@@ -106,6 +106,20 @@
       <div id="steeringControls"><span class="loading">loading…</span></div>
       <div id="controlsOut" class="exec-line"></div>
     </div>
+    <div class="card">
+      <h2>ECU reset <small>(UDS 0x11 over raw CAN5, ECU 0x80)</small></h2>
+      <p class="hint">Sends <code>10 03</code> (extended session) then <code>11 01</code>
+      (ECUReset hardReset) as single ISO-TP frames, <code>14DA80F1</code> &rarr;
+      <code>14DAF180</code>. Bench-verified 2026-11-27: positive response
+      <code>51 01</code> and the VIP UART tick counter restarted with
+      <code>BRR_RESET_REASON_VIP_SOFTWARE</code>. In the default session the VIP refuses it
+      (<code>7F 11 7F</code>). After a positive <code>51 01</code> the
+      <code>startup-keepalive</code> sequence starts automatically: without a fresh startup
+      window the rebooted VIP enters <code>BackgroundSleepTimeout</code> and sleeps about
+      21.5 s later. Needs the VIP awake on can0. Destructive -- confirm step.</p>
+      <div class="btnrow"><button id="btnEcuReset" class="danger">ECU Reset (11 01)</button></div>
+      <div id="ecuResetOut" class="exec-line"></div>
+    </div>
   </section>
 
   <!-- ======================= Diagnostics (UDS) ======================= -->

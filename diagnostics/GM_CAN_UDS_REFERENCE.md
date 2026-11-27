@@ -61,7 +61,7 @@
 | SID | Rsp SID | Service | Live T1 result |
 |-----|---------|---------|---------------|
 | `0x10` | `0x50` | DiagnosticSessionControl | **[live]** `01` default ✓, `03` extended ✓, `02` → NRC 22, `04` → NRC 12 |
-| `0x11` | `0x51` | ECUReset | **[live]** `11 01` → NRC 25 (no subnet response) |
+| `0x11` | `0x51` | ECUReset | **[live]** `11 01` → NRC 25 (no subnet response). On raw CAN5 it works: §13e |
 | `0x14` | `0x54` | ClearDiagnosticInformation | mapped |
 | `0x19` | `0x59` | ReadDTCInformation | **[live]** all 128 subfunctions positive (stub — zero-filled) |
 | `0x22` | `0x62` | ReadDataByIdentifier | **[live]** 135 DIDs positive (see §4) |
@@ -735,8 +735,21 @@ mechanism" section for the full writeup — display-on/off is a one-way SoC→VI
 (`RequestDisplayOnOff`, VIP RAM `0xFEBD3675`), not a UDS DID, RID, or CAN message on
 either transport. No DID in the §13a table, and no routine in its RID list, controls it.
 
+### 13e. ECUReset `11 01` on raw CAN5 (live, 2026-11-27)
+
+| Session | Request | Response |
+|---|---|---|
+| default | `02 11 01` | `03 7F 11 7F` serviceNotSupportedInActiveSession; no reset |
+| extended (`02 10 03` → `06 50 03 00 64 01 F4`) | `02 11 01` | `02 51 01`; VIP reboots (UART tick restart, `BRR_RESET_REASON_VIP_SOFTWARE`) |
+
+The rebooted VIP enters `BackgroundSleepTimeout` and sleeps about 21.5 s later unless a
+startup frame window follows. Full evidence: `platform/can_bench_experiments.md`,
+"ECUReset 11 01 over raw CAN5". Dashboard: `POST /api/uds/can5/ecu-reset/plan` then
+`/execute` (Tier-2), Controls tab "ECU reset" card; it starts `startup-keepalive` after a
+positive `51 01` by default.
+
 ---
 
-*Last updated: 2026-11-26 (v4 — added §13, raw-CAN5/ECU-0x80 DCM architecture and
+*Last updated: 2026-11-27 (v5 — added §13e, ECUReset on raw CAN5). Earlier v4 2026-11-26 (added §13, raw-CAN5/ECU-0x80 DCM architecture and
 live findings; corrected the §7d response-ID entry for ECU `0x80`). Earlier note,
 v3 2026-11-21 (source attribution pass). DBC files © comma.ai contributors, MIT License (https://github.com/commaai/opendbc). GateKeeperESP_services.h © 2018 Surreal Development LLC, GPL-3.0. All other analysis and live-sweep results are original work documented in this repository.*

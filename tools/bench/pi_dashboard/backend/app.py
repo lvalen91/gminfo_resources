@@ -22,7 +22,7 @@ from fastapi import (FastAPI, File, Form, HTTPException, Request, UploadFile, We
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 
-from . import (calibration, canbus, candecode, capture, config, controls, diagdata, elk,
+from . import (calibration, can_uds, canbus, candecode, capture, config, controls, diagdata, elk,
                ltz_ref, pi_host, sequences, system_status, terminals, tier2, uart, vehicle_state)
 from .uds import UDSClient, UDSError
 
@@ -85,7 +85,10 @@ async def api_meta():
                           "opendbc CANParser against backend/gm_bench.dbc (BENCH-VERIFIED signals "
                           "only); read-only, never transmits."},
         "uds": {"endpoint": f"{config.DIAG_HOST}:{config.DIAG_PORT}", "transport": "custom GM 8-byte header (not DoIP)",
-                "tester": f"{config.UDS_TESTER:04X}", "ecu": f"{config.UDS_ECU:04X}", "vlan": "vlan4 via eth0.4"},
+                "tester": f"{config.UDS_TESTER:04X}", "ecu": f"{config.UDS_ECU:04X}", "vlan": "vlan4 via eth0.4",
+                "can5": f"raw ISO-TP on {config.CAN_IFACE} to ECU 0x80 ({can_uds.REQ_ID:08X} -> "
+                        f"{can_uds.RESP_ID:08X}): POST /api/uds/can5/ecu-reset/plan then /execute "
+                        "sends 10 03 + 11 01 (hard reset, Tier-2; reboots the VIP)."},
         "safety": "reads are safe/live; every destructive action (CAN sequences, UDS routines, "
                   "calibration writes, ELK enter/boot, vehicle power-mode frames) requires a "
                   "Tier-2 plan->execute single-use token",
@@ -289,6 +292,42 @@ async def vehicle_gear_position_plan(position: str):
                              f"this platform ({spec['reason']}) -- this control is UI/API "
                              "scaffolding only and will never transmit until a verified "
                              "signal exists. See /api/vehicle/gear-positions.")
+
+
+# ============================ ECUReset over raw CAN5 (ECU 0x80) ===============
+@app.post("/api/uds/can5/ecu-reset/plan", tags=["uds"])
+async def can5_ecu_reset_plan(follow_startup: bool = True):
+    """Plan a Tier-2 VIP hard reset: UDS 10 03 then 11 01 on raw CAN5 (see can_uds.py
+    for the bench evidence). 11 01 is refused in the default session (7F 11 7F).
+    follow_startup (default true) starts the startup-keepalive sequence right after a
+    positive 51 01: without a fresh startup window the rebooted VIP enters
+    BackgroundSleepTimeout and sleeps ~21.5 s later (platform/can_bench_experiments.md)."""
+    then = ("then start the startup-keepalive sequence (126-frame startup window + "
+            "continuous keepalive) so the rebooted VIP stays awake" if follow_startup else
+            "and leave the bus as is (the VIP is bench-observed to sleep ~21.5 s later)")
+    return {**tier2.REGISTRY.plan("can5-ecu-reset", literal="ECU RESET 11 01",
+                                  payload={"follow_startup": follow_startup}),
+            "follow_startup": follow_startup,
+            "will_do": f"send UDS 10 03 (extended session) then 11 01 (ECUReset hardReset) as "
+                       f"single ISO-TP frames on {config.CAN_IFACE}: {can_uds.REQ_ID:08X} -> "
+                       f"{can_uds.RESP_ID:08X}, {then}.",
+            "risk": "DESTRUCTIVE: reboots the VIP (bench-observed UART tick restart). Effect on "
+                    "the SoC/AAOS side is not yet characterized."}
+
+
+@app.post("/api/uds/can5/ecu-reset/execute", tags=["uds"])
+async def can5_ecu_reset_execute(body: ExecuteBody):
+    try:
+        plan = tier2.REGISTRY.take("can5-ecu-reset", body.token, body.literal)
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e))
+    try:
+        result = await asyncio.to_thread(can_uds.ecu_reset_hard)
+    except OSError as e:
+        raise HTTPException(502, f"{type(e).__name__}: {e}")
+    if result["ok"] and plan.payload.get("follow_startup"):
+        result["startup"] = await sequences.run_sequence("startup-keepalive", dry_run=False)
+    return result
 
 
 # ============================ Steering-wheel / media controls (UDS IOCID) ======

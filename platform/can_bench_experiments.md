@@ -1324,6 +1324,40 @@ display/screen timeout), not CAN protocol work. This closes the "does the keepal
 a paired display-on CAN message" question raised during this investigation: no such
 message exists to find.
 
+## ECUReset 11 01 over raw CAN5 (2026-11-27)
+
+UDS ECUReset hardReset to ECU `0x80` as single ISO-TP frames on can0, request
+`14DA80F1`, response `14DAF180` (`diagnostics/GM_CAN_UDS_REFERENCE.md` §13e). All times
+AKST; UART ticks are the VIP console `[tick_ms]`.
+
+| Time | Condition | Request | Response | VIP UART |
+|---|---|---|---|---|
+| 01:33:57 | VIP asleep (no frames on can0) | `02 11 01` | none; can0 went ERROR-PASSIVE (no ACK) | no output |
+| 01:35:30 | VIP awake, default session | `02 11 01` | `03 7F 11 7F` (serviceNotSupportedInActiveSession) | ticks continued (040129 -> 051595): no reset |
+| 01:35:58 | VIP awake | `02 10 03` then `02 11 01` | `06 50 03 00 64 01 F4`, then `02 51 01` | `[000119]` restart, banner `2B.175.1.5`, `BRR_RESET_REASON_VIP_SOFTWARE updated to 109`, `reset_factor = 0x1`, `Unique_Boot_Counteris :434` |
+
+**After the reset the VIP goes back to sleep unless a startup window follows.**
+- 01:43:20, reset via the dashboard API, keepalive frames still sent: boot counter 438,
+  `[000150] st=BackgroundSleepTimeout`, `[010148] st=Shutdown` (9998 ms later; the same
+  boot's calibration dump prints `cal_background_sleep_timeout_sec = 10`),
+  `[021477] ... CSM_Sleep`, `Sending EnableShutdown`. Same `[021477] GoToSleep` after the
+  01:35:58 reset.
+- 01:45:06, reset then `startup-keepalive` started immediately: boot counter 440,
+  `[001537] st=NormalInit`, `[009739] st=FullOperationStartup`, then `st=Propulsion`;
+  still awake at `[041132]`, no `GoToSleep`.
+- 01:48:35, dashboard Controls-tab button (reset + automatic `startup-keepalive`): boot
+  counter 441, `[001738] st=NormalInit`, `[009706] st=FullOperationStartup`,
+  `st=Propulsion`; still awake at `[042077]`.
+
+Related: the 2026-11-27 01:22 keepalive A/B "Phase A" run (after a `vip-reset` sequence,
+0x53B keepalive only) shows the same `[021477] GoToSleep` at 01:22:29, and the keepalive
+journal reports `bus_rx=0` from its first run at 01:22:30. That run never had an awake
+VIP and is not a valid keepalive result.
+
+Unknown: the effect of `11 01` on the SoC/AAOS side (not observed: T1/ADB were down
+during these runs), and why the boot counter advanced by more than one between runs
+(wakes from sleep are a candidate, not checked).
+
 ## Open conflicts
 
 None identified within this document's own ranges. Two cross-doc items are

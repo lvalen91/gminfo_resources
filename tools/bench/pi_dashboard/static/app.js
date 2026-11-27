@@ -600,6 +600,10 @@ async function pressControl(b) {
   renderExecResult(out, null, result);
 }
 
+$("#btnEcuReset").onclick = (ev) => tier2Popover(ev.currentTarget,
+  () => api("/uds/can5/ecu-reset/plan", { method: "POST" }),
+  "/uds/can5/ecu-reset/execute", $("#ecuResetOut"));
+
 /* ================= Diagnostics (UDS) ================= */
 async function readSafe() {
   const wrap = $("#didTableWrap"); wrap.innerHTML = "reading...";
@@ -1043,12 +1047,18 @@ function tier2Popover(anchorBtn, planFn, execPath, statusEl, opts = {}) {
   // directly -- no window.scrollX/scrollY offset (that would double-count scroll and
   // push the popover away from the control on a scrolled page).
   const r = anchorBtn.getBoundingClientRect();
-  pop.style.top = `${Math.min(r.bottom + 8, window.innerHeight - 40)}px`;
-  pop.style.left = `${r.left}px`;
-  requestAnimationFrame(() => {  // clamp to viewport once it has a real width
-    const w = pop.offsetWidth, left = parseFloat(pop.style.left);
-    if (left + w > window.innerWidth - 12) pop.style.left = `${Math.max(12, window.innerWidth - w - 12)}px`;
-  });
+  // Re-run after every content change: the plan text arrives async and sets the height.
+  // Below the anchor if it fits, else above it; never past the viewport edges.
+  const place = () => {
+    pop.style.maxHeight = `${window.innerHeight - 24}px`;
+    pop.style.overflowY = "auto";
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    let top = r.bottom + 8;
+    if (top + h > window.innerHeight - 12) top = Math.max(12, Math.min(r.top - h - 8, window.innerHeight - h - 12));
+    pop.style.top = `${top}px`;
+    pop.style.left = `${Math.max(12, Math.min(r.left, window.innerWidth - w - 12))}px`;
+  };
+  place();
   setTimeout(() => {  // avoid catching the click that opened this popover
     document.addEventListener("keydown", _popoverEsc);
     document.addEventListener("mousedown", _popoverOutside, true);
@@ -1062,6 +1072,7 @@ function tier2Popover(anchorBtn, planFn, execPath, statusEl, opts = {}) {
       body.innerHTML = `<p class="plan-risk">plan error: ${esc(String(e))}</p>
         <div class="btnrow"><button type="button" class="plan-cancel">Close</button></div>`;
       body.querySelector(".plan-cancel").onclick = closePlanPopover;
+      place();
       return;
     }
     if (_planPopover !== pop) return;  // closed while planning
@@ -1074,6 +1085,7 @@ function tier2Popover(anchorBtn, planFn, execPath, statusEl, opts = {}) {
         <span class="exec-status"></span>
       </div>
       <div class="exec-more"></div>`;
+    place();
     const execBtn = body.querySelector(".plan-execute");
     const execStatus = body.querySelector(".exec-status"), execMore = body.querySelector(".exec-more");
     body.querySelector(".plan-cancel").onclick = closePlanPopover;
