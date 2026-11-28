@@ -857,6 +857,37 @@ which shares the slot-5 part but belongs to `SFS1_PERSONALIZATIONFRD`, not `REMO
 | `OVER_THE_AIR_REFLASH_SERVER_NAME` | `GIS668_REMOTEOMADMSERVERINTERFACE_GLOBALA` | `vtmpub.oboservices.mobi` | **no reader** | OMA-DM/reflash client is not on the Android image (native/other controller). `OMADM_CERT_SUBJECT` / `OMADM_CERT_ISSUER` pin the expected server cert DN |
 | `OVER_THE_AIR_REFLASH_SERVER_HOST_PORT` | `GIS668_REMOTEOMADMSERVERINTERFACE_GLOBALA` | `443` | **no reader** | — |
 
+### Transport binding (does the traffic reach Wi-Fi at all?)
+
+Separate from the certificate check: no confirmed-live client pins its socket or process to the cellular/telematics
+transport. A grep for `addTransportType(0)` / `TRANSPORT_CELLULAR` across every reader package finds it only in the
+Android framework's own `services.jar` and in GMAlexa's network-*monitoring* companion, never in a GM back-office client's
+request path. What the clients actually do:
+
+- **No binding — default/active network** (`GMTrailer`, `GMRegistrationService`, `GMAuthTokenService`, `GMAPIManager`):
+  they read `ConnectivityManager.getActiveNetworkInfo()` only (`TrailerNetworkConnectionManager.java:372`,
+  `RegistrationService.java:533`; `GMConnectionManager.java`) or, for the auth-token service, touch no
+  `ConnectivityManager` at all. The HTTPS request goes out over whatever network is the process/system default — which, on
+  a vehicle connected to Wi-Fi with the telematics data link down, is Wi-Fi.
+- **`bindProcessToNetwork`, no transport type** (`GMSubscriptionManager`
+  `network/connectionmanager/impl/Connectivity.java`; `GMTCPS` `t2/g.java` + `t2/b.java`; `GMAnalytics` `e1/a.java`):
+  SDK ≥ 28 they `requestNetwork(new NetworkRequest.Builder().addCapability(12).removeCapability(13).build(), …)` —
+  `NET_CAPABILITY_INTERNET`, restricted allowed, **no `addTransportType`** — then `bindProcessToNetwork(network)` to
+  whatever the OS picks as the best INTERNET network. Wi-Fi (transport 1) is eligible; nothing forces cellular.
+- **ETHERNET (telematics) preferred, Wi-Fi as fallback** (`GMSubscriptionManager`'s bundled
+  `info3_app_connectivity_lib/Connectivity.java` `buildNetworkRequest`, and the pre-P legacy branch of its own
+  `Connectivity.java`): the request adds transport 3 (`TRANSPORT_ETHERNET` — the telematics module is bridged to the head
+  unit as an Ethernet-transport network, not as `TRANSPORT_CELLULAR`) and, unless a `tcpOnly` flag is set, also transport
+  1 (Wi-Fi). A `tcpOnly` call requests ETHERNET only, excluding Wi-Fi; `GMAnalytics` `e1/a.java` goes further and returns
+  "not online" when Wi-Fi is the active transport on a `tcpOnly` upload.
+
+So transport routing does **not** independently block a Wi-Fi redirect the way a hard cellular pin would: for the
+non-binding clients and the no-transport binders, when Wi-Fi is the default INTERNET network the traffic routes over it
+(and is then rejected by the TLS pinning above). The caveat is runtime default-network ranking, which static files cannot
+settle: when both the telematics Ethernet link and Wi-Fi are up, a binder that lists ETHERNET first — or any `tcpOnly`
+path — may bind to the telematics link instead of Wi-Fi. Forcing Wi-Fi to be the only, or the default, INTERNET network
+(telematics data inactive) is the reliable way to keep these connections on the observable path.
+
 ### Bottom line for the redirect
 
 Every confirmed-live destination reached by code that is present on the image is behind the GM-root-pinned TLS stack, so
