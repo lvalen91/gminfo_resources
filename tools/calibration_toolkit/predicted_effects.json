@@ -5,15 +5,17 @@
   "predictions": {
     "GPS_DATA_SOURCE": {
       "kind": "prediction",
-      "text": "In com.gm.server.timeofday.TimeofDayService (package CriticalWKSApp), value 2 selects a vehicle-property time source (VendorProperty.UTC, telematics-fed) and value 1 selects the location-fix time of GMLocationClient, a separate GM system service (IGMLocationService), not the standard Android LocationManager. Prediction: with the telematics/OnStar module disconnected, setting this to 1 may let the clock auto-correct from a location fix instead of the stale vehicle property.",
+      "text": "In com.gm.server.timeofday.TimeofDayService (package CriticalWKSApp), value 2 selects a vehicle-property time source (VendorProperty.UTC, telematics-fed) and value 1 selects the location-fix time of GMLocationClient, a separate GM system service (IGMLocationService), not the standard Android LocationManager. Prediction: with the telematics/OnStar module disconnected, setting this to 1 may let the clock auto-correct from a location fix instead of the stale vehicle property. Prediction for the two BACK_OFFICE_SERVER_ENABLED cases, built on map rules settings.time.auto_datetime_row and time.trusted_clock_sync: (a) left at its bench value 1, Settings hides the Automatic Date / Time row and writes auto_time = 0 at its start-up, and the service still applies the trusted time but as trusted time minus the stored persist.sys.clockOffset, so the clock comes out right only if that offset is 0; (b) set to 0 as well, the row stays, auto_time can remain 1 and the service resets the offset to 0, so the clock follows trusted time directly. Neither case is blocked by the service itself: it does not read BACK_OFFICE_SERVER_ENABLED and no auto_time branch skips the clock write.",
       "uncertainties": [
-        "Not run on hardware. Whether any location provider delivers fixes to GMLocationClient with value 1 on this bench is unknown; the calibration map lists the same question as unknown.",
+        "Not run on hardware, in either combination. Whether any location provider delivers fixes to GMLocationClient with value 1 on this bench is unknown; the calibration map lists the same question as unknown. Without a fix neither combination corrects anything.",
         "Architectural: GMLocationClient / IGMLocationService is a GM-specific path, separate from the standard Android location stack. A working position in another app does not show that this path has a fix. See GNSS_DR_SRC.",
-        "Settings applies a stricter condition than the service (map rule settings.time.auto_datetime_row). With BACK_OFFICE_SERVER_ENABLED left at its bench value 1, value 1 here makes that rule's condition false; the rule records the Automatic Date / Time row as GONE and auto_time written to 0 for that case. How that interacts with this prediction has not been tested.",
+        "Case (a) depends on runtime state the map does not hold: the stored persist.sys.clockOffset. A manual time entry made while no trusted time was available stores an offset against the remote real-time clock, and that offset stays applied when trusted time arrives. A new manual entry, or one switch of auto_time to 1, replaces it.",
+        "Case (b) changes every other rule that has BACK_OFFICE_SERVER_ENABLED as a term (Wi-Fi station, Settings rows); those side effects are not part of this prediction.",
+        "Whether the AOSP time detectors also write the clock is recorded in the calibration map as unknown.",
         "That the vehicle property UTC is fed by the telematics module is recorded in the calibration map as inferred, not traced."
       ],
-      "suggested_test": "Bench, telematics module disconnected: set to 1, reboot, watch for a clock correction and the TimeofDayService log lines; record the Settings date/time rows and 'settings get global auto_time' before and after.",
-      "see_map_rules": ["settings.time.auto_datetime_row", "settings.time.auto_timezone_row"]
+      "suggested_test": "Bench, telematics module disconnected: record 'getprop persist.sys.clockOffset' and 'settings get global auto_time', set to 1, reboot, watch for 'VehicleTime: Trusted time verified and locked' and 'VehicleTime: Setting time to'; record the Settings date/time rows, the clock, the offset property and auto_time again. Repeat with BACK_OFFICE_SERVER_ENABLED = 0.",
+      "see_map_rules": ["settings.time.auto_datetime_row", "settings.time.auto_timezone_row", "time.trusted_clock_sync"]
     },
     "GNSS_DR_SRC": {
       "kind": "prediction",
@@ -39,9 +41,10 @@
     },
     "BACK_OFFICE_SERVER_ENABLED": {
       "kind": "prediction",
-      "text": "In the Settings app's own eligibility check, isInternalGPSAvailable() requires this calibration to be OFF before 'Automatic date & time' is offered through the internal-GPS branch (GPS_DATA_SOURCE = 1). That is a different, stricter condition than TimeofDayService itself applies, which uses GPS_DATA_SOURCE alone. The Settings condition is already encoded in the map's traced rules for the two date/time rows; the Wi-Fi and other Settings effects of this calibration are the map rules listed for it and are not restated here. Untested consequence: at the bench value 1, changing GPS_DATA_SOURCE to 1 fails the Settings condition.",
+      "text": "In the Settings app's own eligibility check, isInternalGPSAvailable() requires this calibration to be OFF before 'Automatic date & time' is offered through the internal-GPS branch (GPS_DATA_SOURCE = 1). That is a different, stricter condition than TimeofDayService itself applies, which uses GPS_DATA_SOURCE alone and does not read this calibration. The Settings condition is already encoded in the map's traced rules for the two date/time rows; the Wi-Fi and other Settings effects of this calibration are the map rules listed for it and are not restated here. Untested consequence: at the bench value 1, changing GPS_DATA_SOURCE to 1 fails the Settings condition, so Settings writes auto_time = 0 at its start-up. Per map rule time.trusted_clock_sync that does not stop the service correcting the clock; it makes the service keep the stored persist.sys.clockOffset instead of resetting it to 0. Setting this calibration to 0 together with GPS_DATA_SOURCE = 1 keeps the condition true and is the combination predicted to follow trusted time with no stored offset. See the GPS_DATA_SOURCE note.",
       "uncertainties": [
-        "Not run on hardware. What the user-visible result is when Settings and the service disagree has not been observed."
+        "Not run on hardware. What the user-visible result is when Settings and the service disagree has not been observed.",
+        "The stored offset on the bench is unknown, and so is whether a location fix reaches the service with GPS_DATA_SOURCE = 1."
       ],
       "suggested_test": null,
       "see_map_rules": ["settings.time.auto_datetime_row", "settings.time.auto_timezone_row", "wifi.station_allowed", "ui.settings_wifi_networks"]

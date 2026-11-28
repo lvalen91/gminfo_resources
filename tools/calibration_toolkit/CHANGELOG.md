@@ -142,3 +142,14 @@ Entries are grouped by date, oldest first within each date, newest date at the b
   were not changed.
 - Six tests added for the lookup and its CLI surfacing, one for the desktop inspector;
   full suite green before and after.
+
+## 2026-11-28 — known-effect snapshot refreshed
+
+- `data/known_effects.json` regenerated from the calibration map: still 155 names, now
+  85 rules. New traced rule `time.trusted_clock_sync` (attached to `GPS_DATA_SOURCE`):
+  the time-of-day service applies trusted time in both `auto_time` modes; the mode
+  selects only whether the stored clock offset is kept or reset.
+- `predicted_effects.json`: the `GPS_DATA_SOURCE` and `BACK_OFFICE_SERVER_ENABLED` notes
+  now state what that rule implies for the two `BACK_OFFICE_SERVER_ENABLED` cases. Still
+  `predicted, untested`.
+- No code change; full suite green before and after.

@@ -267,7 +267,9 @@ RULES += [
          [(SET, TDR, "return isTCPGPSAvailable() || isInternalGPSAvailable();"), (SET, TDR, "setAutomaticTimeAndDateStatus(false);"),
           (SET, SET_RL, "ObservableBoolean observableBooleanL2 = this.f3564f.l2();"), (SET, TDB, "observableBooleanL3 = iVar2.l2();")],
          note="Visibility read in smali (V/o1): available -> 0, else 8, applied to the row's switch, two labels and dividers. "
-              "FM_RDS_Clocktime_enabled is not a term. Manual time and date entry is ignored while auto_time is 1 and this is true."),
+              "FM_RDS_Clocktime_enabled is not a term. Manual time and date entry is ignored while auto_time is 1 and this is true. "
+              "The write happens in ExecConfig.configHmiClient (SetupAutomaticTimeAndDateUseCase) for every HMI client except "
+              "GMConnections. auto_time = 0 does not stop the time-of-day service applying trusted time: time.trusted_clock_sync."),
     rule("settings.time.auto_timezone_row", "Settings > Date and time: Automatic Time Zone row",
          f"{GPS_OK} and ((BACK_OFFICE_SERVER_ENABLED and onstar_subscription_valid and APPLICATION_HOMESCREEN_ONSTAR_ENABLED) "
          "or FM_RDS_Clocktime_enabled)",
@@ -296,6 +298,38 @@ RULES += [
               "RdsClockTime, sendRdsTime, updateRdsTime; not decompiled). Accepted only when two successive values lie "
               "within 180 s and either bit <country code> of PI_CODE_CONFIGURATION is set or it is within "
               "RDS_CLOCK_TIME_MAX_DIFF minutes of the system's local clock. Image and bench value: 0."),
+    rule("time.trusted_clock_sync", "Time-of-day service: trusted time applied to the system clock",
+         "GPS_DATA_SOURCE in (1, 2)",
+         "TimeofDayService starts trusted-time updates and, once a value is verified, sets the remote real-time clock and the "
+         "system clock from it in BOTH auto_time modes. Settings.Global auto_time (read at service start and on every change) "
+         "selects only the offset: 1 = the clock is set to trusted time and persist.sys.clockOffset is reset to 0; 0 = the "
+         "clock is set to trusted time minus persist.sys.clockOffset. false: no trusted-time updates; the clock comes from the "
+         "remote real-time clock (else 2020-01-01) under the same offset rule",
+         "log 'VehicleTime: Trusted time verified and locked' / 'VehicleTime: Setting time to'; adb shell getprop "
+         "persist.sys.clockOffset; adb shell settings get global auto_time",
+         [(CRIT, TOD + "TimeofDayService.java", 'return Settings.Global.getInt(this.mContext.getContentResolver(), "auto_time", 0);'),
+          (CRIT, TOD + "TimeofDayService.java", 'this.TIME_MODE_URI = Settings.Global.getUriFor("auto_time");'),
+          (CRIT, TOD + "TimeofDayService.java", "localTimeMillis -= offset;"),
+          (CRIT, TOD + "TimeofDayService.java", "} else if (this.mTimeUpdateMode == 1) {"),
+          (CRIT, TOD + "TimeofDayService.java", 'PROP_CLOCK_OFFSET = "persist.sys.clockOffset";'),
+          (CRIT, TOD + "TimeofDayService.java", "this.mAlarmManager.setRepeating(3, start, 1800000L, pendingDriftIntent);"),
+          (CRIT, TOD + "SystemTimeHandler.java", "VehicleTime: Trusted time source is not available"),
+          (CRIT, TOD + "calibrations/TimeOfDayCalibrations.java", "timeSource = TrustedTimeSourceType.NONE;")],
+         note="No branch on mTimeUpdateMode skips a clock write. updateSystemClock() subtracts the offset in manual mode and "
+              "sets the clock when it is more than 1.5 s from the target; syncClocks() (first verified trusted time) and "
+              "calculateDrift() call it in both modes. In manual mode the offset is recomputed at every TIME_SET / "
+              "DATE_CHANGED as (trusted time, or the remote real-time clock when there is none) minus the system clock, so a "
+              "manual entry survives later corrections; an offset taken against a wrong remote clock is kept when trusted time "
+              "arrives. Switching auto_time to 1 sets the clock to trusted time and zeroes the offset; a time set from "
+              "elsewhere in automatic mode is undone by the next drift check. Drift monitor: a repeating alarm every "
+              "30 minutes (1800000 ms; started at boot-completed and resume, stopped on suspend) runs calculateDrift(), which "
+              "re-sets both clocks when the remote clock is more than 1.5 s or the system clock more than 0.5 s from the "
+              "expected value. That is a re-check period, not a limit on the size of a correction: this service has no "
+              "upper bound on how far a trusted time may move the clock. It is unrelated to RDS_CLOCK_TIME_MAX_DIFF (minutes, "
+              "RDS local time only) and to the half-hour rounding of the time-zone offset (time.rds_local_source). A trusted "
+              "value is accepted after five further values each within 3 s of the one before, or at once when the first "
+              "value is within 3 s of the remote clock. BACK_OFFICE_SERVER_ENABLED is not read by this service. Whether a location provider delivers "
+              "fixes for value 1 on this hardware is unknown."),
     # GMSettings: sounds, privacy, vehicle
     rule("settings.sounds.audible_touch_row", "Settings > Sounds: audible touch feedback row",
          "ENABLE_MENU_AUDIO_TOUCH_FEEDBACK",

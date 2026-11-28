@@ -7,7 +7,8 @@ on disk can show. Written 2026-11-28. Three passes share one status ladder:
 - **Wide pass** (all 2573 image rows plus one bench-only row): automated classification of every name, with hand-traced
   rules added only where the code was read (framework launcher icons and icon ordering).
 - **Settings pass** (the three packages that draw Settings, plus the time-of-day service): 25 hand-traced rules, 11
-  value effects, 5 first-slice rules revised. See [Settings](#settings).
+  value effects, 5 first-slice rules revised; one time-of-day rule added afterwards (`time.trusted_clock_sync`).
+  See [Settings](#settings).
 
 | File | Content |
 |---|---|
@@ -619,6 +620,18 @@ Answers, with their basis:
   `GPS_DATA_SOURCE` 2 with `BACK_OFFICE_SERVER_ENABLED`, or 1 without it, and forces `auto_time` to 0 otherwise. The
   service looks at `GPS_DATA_SOURCE` alone and applies trusted time in both modes (in manual mode it keeps the user's
   offset in `persist.sys.clockOffset`).
+- **`auto_time` selects the offset, not whether the clock is corrected** (verified in code, rule
+  `time.trusted_clock_sync`). No branch on the mode skips a clock write. With `auto_time` = 1 the clock is set to
+  trusted time and the offset is reset to 0. With 0 the clock is set to trusted time minus the stored offset, and
+  the offset is recomputed at every time set as (trusted time, or the remote real-time clock when there is none)
+  minus the system clock. A forced `auto_time` = 0 therefore leaves the correction running; the result is right only
+  if the stored offset is 0. An offset taken from a manual entry made against a wrong remote clock stays applied
+  when trusted time arrives, until the next manual entry or a switch to automatic.
+- **Three unrelated numbers.** The drift monitor is a repeating alarm every 30 minutes (`startDriftMonitor()`,
+  1800000 ms) that re-runs the clock comparison in both modes and re-sets the clocks when the remote clock is more
+  than 1.5 s, or the system clock more than 0.5 s, from the expected value. It is a re-check period: the service has
+  no upper bound on how far trusted time may move the clock. `RDS_CLOCK_TIME_MAX_DIFF` (5 minutes) limits RDS local
+  time only (step 3). The half-hour step is the rounding of the time-zone offset (step 5).
 - **Unknown:** whether a location provider delivers fixes with `GPS_DATA_SOURCE` = 1 on this hardware; whether the HAL
   emits `com.gm.rds_time` when the calibration is 0; the zone id actually chosen for a given offset (a fixed-offset
   `GMT` zone has no daylight-saving rule); whether the AOSP time detectors also run (`services.jar` contains them and
@@ -723,6 +736,13 @@ tools/java_sites.py   DB sites.json SRC...      # classified Java sites (uses ru
 tools/log_mentions.py DB logs.json LOGDIR...    # names in saved runtime text
 ./build_map.py scope.json values.json reads.json SRC --root SRC2 --db DB --sites sites.json \
     --packages packages.json --native native.json --config config.json --logs logs.json --groups-md groups.md
+```
+
+After a rebuild, regenerate the snapshot the calibration toolkit bundles (`data/known_effects.json`), which is built
+from `map.json` and `rules.py`:
+
+```bash
+python3 ../../tools/calibration_toolkit/build_known_effects.py ../..
 ```
 
 `scope.json`, `values.json` and `reads.json` are the first-slice inputs (name list, merged image/override/bench
