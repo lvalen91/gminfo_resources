@@ -176,6 +176,14 @@ const canCapture = LogCapture.register("can0", "CAN0 monitor");
 // or silently resume appending).
 const canLog = $("#canLog");
 let showLiveFrames = false;
+// Format a Pi wall-clock epoch (seconds) as "YYYY-MM-DD HH:MM:SS.mmm". The instant is the
+// Pi's clock (stamped server-side); it is displayed in the browser's local timezone, which
+// on this bench matches the Pi's.
+function fmtFrameTs(wt) {
+  const d = new Date(wt * 1000), p = (n, w = 2) => String(n).padStart(w, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ` +
+    `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.${p(d.getMilliseconds(), 3)}`;
+}
 let canFrameLines = [];
 function renderCanLog() {
   canLog.textContent = showLiveFrames
@@ -199,7 +207,12 @@ function startCanWS() {
     const m = JSON.parse(ev.data);
     if (m.type === "frame") {
       const f = m.data;
-      const line = `${f.t.toFixed(3)}  ${f.id.padEnd(4)} [${f.dlc}] ${f.data}`;
+      // Pi wall-clock (PiOS time, stamped on the Pi -- f.wt is epoch seconds) and direction:
+      // [T] = bench sent it on CAN, [R] = received from the radio. Fall back to the monotonic
+      // counter for any pre-upgrade replay frame that lacks wt/dir.
+      const ts = f.wt ? fmtFrameTs(f.wt) : f.t.toFixed(3);
+      const dir = f.dir || "?";
+      const line = `${ts} [${dir}] ${f.id.padEnd(4)} [${f.dlc}] ${f.data}`;
       canFrameLines.unshift(line);
       if (canFrameLines.length > 200) canFrameLines.pop();
       if (showLiveFrames) canLog.textContent = canFrameLines.join("\n");

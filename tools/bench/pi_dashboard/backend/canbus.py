@@ -22,6 +22,26 @@ CAN_RTR_FLAG = 0x40000000
 CAN_EFF_FLAG = 0x80000000
 
 
+async def _recvmsg(loop, sock, bufsize):
+    """await-able recvmsg on a non-blocking socket. asyncio has no sock_recvmsg, and
+    loop.sock_recv() drops msg_flags -- but msg_flags is exactly what tells TX from RX:
+    SocketCAN local loopback (on by default) delivers frames other local sockets sent (the
+    keepalive / sequence senders) to this passive reader with MSG_DONTROUTE set, while
+    frames from the radio on the wire arrive with flags 0. Verified on the bench
+    (2026-11-27): self-sent 0x53B -> flags 0x4; radio 0x180/0x267 -> flags 0x0.
+    Returns (data, ancdata, msg_flags, address)."""
+    while True:
+        try:
+            return sock.recvmsg(bufsize)
+        except BlockingIOError:
+            fut = loop.create_future()
+            loop.add_reader(sock.fileno(), fut.set_result, None)
+            try:
+                await fut
+            finally:
+                loop.remove_reader(sock.fileno())
+
+
 class CanObserver:
     """Single reader task on can0, fanning frames out to subscriber queues and keeping
     rolling per-ID counts and a 1-second frame-rate / error estimate."""
@@ -115,7 +135,7 @@ class CanObserver:
                 self.up = True
                 self.last_error = None
                 while True:
-                    raw = await loop.sock_recv(sock, 16)
+                    raw, _anc, msg_flags, _addr = await _recvmsg(loop, sock, 16)
                     if len(raw) < 16:
                         continue
                     ident, dlc, data = CAN_FRAME.unpack(raw)
@@ -129,7 +149,10 @@ class CanObserver:
                     cid = ident & (0x1FFFFFFF if ident & CAN_EFF_FLAG else 0x7FF)
                     self.id_counts[cid] += 1
                     msg = json.dumps({
-                        "t": round(now, 4), "id": f"{cid:03X}", "dlc": dlc,
+                        "t": round(now, 4),               # monotonic, for age/stats
+                        "wt": round(time.time(), 3),      # Pi wall-clock epoch (PiOS time)
+                        "dir": "T" if (msg_flags & _s.MSG_DONTROUTE) else "R",  # bench TX vs radio RX
+                        "id": f"{cid:03X}", "dlc": dlc,
                         "ext": bool(ident & CAN_EFF_FLAG), "rtr": bool(ident & CAN_RTR_FLAG),
                         "data": data[:dlc].hex(),
                     })
