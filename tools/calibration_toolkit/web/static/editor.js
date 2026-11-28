@@ -475,6 +475,22 @@ function renderEntryRow(mod, entryIdx) {
     });
   }
 
+  if (e.known_effect && e.known_effect.text) {
+    // Calibration-map findings: a separate, labelled block under GM's own description.
+    const known = document.createElement("div");
+    known.className = "entry-desc entry-known";
+    known.textContent = e.known_effect.text;
+    identity.appendChild(known);
+    const toggle = document.createElement("button");
+    toggle.className = "entry-desc-toggle";
+    toggle.textContent = "more";
+    toggle.onclick = () => {
+      const expanded = known.classList.toggle("expanded");
+      toggle.textContent = expanded ? "less" : "more";
+    };
+    identity.appendChild(toggle);
+  }
+
   const valueCell = document.createElement("div");
   valueCell.className = "entry-value";
   renderValueControl(valueCell, e, mod, entryIdx, row);

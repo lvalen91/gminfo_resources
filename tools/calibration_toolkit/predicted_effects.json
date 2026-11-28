@@ -1,0 +1,80 @@
+{
+  "_about": "Hand-maintained input to build_known_effects.py. Predictions and test plans reasoned from code reading in one chat session (2026-11-28). They are NOT part of research/calibration-map and have NOT been run on hardware. Every item carries evidence 'predicted, untested' and is kept apart from the map's own traced/observed rules. Edit this file, then regenerate data/known_effects.json (README section 7).",
+  "evidence": "predicted, untested",
+  "source": "chat-session code reading, 2026-11-28; cross-checked against research/calibration-map/map.json; not in that map; not bench-tested",
+  "predictions": {
+    "GPS_DATA_SOURCE": {
+      "kind": "prediction",
+      "text": "In com.gm.server.timeofday.TimeofDayService (package CriticalWKSApp), value 2 selects a vehicle-property time source (VendorProperty.UTC, telematics-fed) and value 1 selects the location-fix time of GMLocationClient, a separate GM system service (IGMLocationService), not the standard Android LocationManager. Prediction: with the telematics/OnStar module disconnected, setting this to 1 may let the clock auto-correct from a location fix instead of the stale vehicle property.",
+      "uncertainties": [
+        "Not run on hardware. Whether any location provider delivers fixes to GMLocationClient with value 1 on this bench is unknown; the calibration map lists the same question as unknown.",
+        "Architectural: GMLocationClient / IGMLocationService is a GM-specific path, separate from the standard Android location stack. A working position in another app does not show that this path has a fix. See GNSS_DR_SRC.",
+        "Settings applies a stricter condition than the service (map rule settings.time.auto_datetime_row). With BACK_OFFICE_SERVER_ENABLED left at its bench value 1, value 1 here makes that rule's condition false; the rule records the Automatic Date / Time row as GONE and auto_time written to 0 for that case. How that interacts with this prediction has not been tested.",
+        "That the vehicle property UTC is fed by the telematics module is recorded in the calibration map as inferred, not traced."
+      ],
+      "suggested_test": "Bench, telematics module disconnected: set to 1, reboot, watch for a clock correction and the TimeofDayService log lines; record the Settings date/time rows and 'settings get global auto_time' before and after.",
+      "see_map_rules": ["settings.time.auto_datetime_row", "settings.time.auto_timezone_row"]
+    },
+    "GNSS_DR_SRC": {
+      "kind": "prediction",
+      "text": "Selects which hardware the GM location / dead-reckoning subsystem sources from. Value 0 (bench and image) is 'TCP'. Value 1 was read in this session's decompiled code as 'ADR', explicitly named there for a u-blox GNSS chip.",
+      "uncertainties": [
+        "Open question, not a finding: whether source 1 is the same physical GPS antenna leg that Google Maps already reads correctly on this bench. Maps uses the standard Android location stack; GNSS_DR_SRC and GMLocationClient govern a separate, GM-specific service.",
+        "GM's own CalDef enumeration labels value 1 'CSM', not 'ADR'; the 'ADR' / u-blox naming comes from the session's code reading only.",
+        "The calibration map has only established that this name is read (status 'read, effect not traced'); it records no effect for it.",
+        "Not run on hardware."
+      ],
+      "suggested_test": null,
+      "see_map_rules": []
+    },
+    "FM_RDS_Clocktime_enabled": {
+      "kind": "prediction",
+      "text": "Does NOT set the clock. Per LocalTimeHandler it is a fallback local-time source feeding automatic time zone detection only (that much is already the map's traced rule time.rds_local_source). Session additions: the fallback is itself gated behind a GPS-availability precondition, and the RDS path (vendor parameter com.gm.rds_time, read through GMTunerService from the tuner HAL) was never confirmed to decode on this hardware. Prediction: setting this to 1 will not by itself correct a wrong clock.",
+      "uncertainties": [
+        "RDS decode on this hardware is unconfirmed: strings and symbols only, the HAL binary was not decompiled.",
+        "Not run on hardware; bench and image value is 0."
+      ],
+      "suggested_test": null,
+      "see_map_rules": ["time.rds_local_source", "settings.time.auto_timezone_row"]
+    },
+    "BACK_OFFICE_SERVER_ENABLED": {
+      "kind": "prediction",
+      "text": "In the Settings app's own eligibility check, isInternalGPSAvailable() requires this calibration to be OFF before 'Automatic date & time' is offered through the internal-GPS branch (GPS_DATA_SOURCE = 1). That is a different, stricter condition than TimeofDayService itself applies, which uses GPS_DATA_SOURCE alone. The Settings condition is already encoded in the map's traced rules for the two date/time rows; the Wi-Fi and other Settings effects of this calibration are the map rules listed for it and are not restated here. Untested consequence: at the bench value 1, changing GPS_DATA_SOURCE to 1 fails the Settings condition.",
+      "uncertainties": [
+        "Not run on hardware. What the user-visible result is when Settings and the service disagree has not been observed."
+      ],
+      "suggested_test": null,
+      "see_map_rules": ["settings.time.auto_datetime_row", "settings.time.auto_timezone_row", "wifi.station_allowed", "ui.settings_wifi_networks"]
+    },
+    "Apple_CarPlay_enableWireless": {
+      "kind": "prediction",
+      "text": "Turning BOTH Apple_CarPlay_enableWireless and AndroidAuto_enableWireless off should reveal the otherwise hidden 'Wi-Fi Services' manual hotspot control row. The visibility condition is already a traced map rule (ui.settings_wifi_services_menu); what is predicted and untested is the on-bench result of changing both from their bench value 1.",
+      "uncertainties": [
+        "Not run on hardware.",
+        "Map rule wifi.hotspot_allowed (observed, true branch only) has the same two calibrations as terms: with both off its condition depends on hmi_hotspot_disable_status == 0."
+      ],
+      "suggested_test": "Set both wireless calibrations to 0, open Settings > Connections > Wi-Fi hotspot and look for the Wi-Fi Services row.",
+      "see_map_rules": ["ui.settings_wifi_services_menu", "wifi.hotspot_allowed"]
+    },
+    "AndroidAuto_enableWireless": {
+      "kind": "prediction",
+      "text": "Turning BOTH Apple_CarPlay_enableWireless and AndroidAuto_enableWireless off should reveal the otherwise hidden 'Wi-Fi Services' manual hotspot control row. The visibility condition is already a traced map rule (ui.settings_wifi_services_menu); what is predicted and untested is the on-bench result of changing both from their bench value 1.",
+      "uncertainties": [
+        "Not run on hardware.",
+        "Map rule wifi.hotspot_allowed (observed, true branch only) has the same two calibrations as terms: with both off its condition depends on hmi_hotspot_disable_status == 0."
+      ],
+      "suggested_test": "Set both wireless calibrations to 0, open Settings > Connections > Wi-Fi hotspot and look for the Wi-Fi Services row.",
+      "see_map_rules": ["ui.settings_wifi_services_menu", "wifi.hotspot_allowed"]
+    },
+    "Enable_Application_Apple_Carplay": {
+      "kind": "test plan",
+      "text": "No new effect is predicted. The wired-attach gating through RDMSAppleStateMachine is the map's traced rule usb.apple_state_machine. Suggested bench test only: compare wired iPhone attach with this calibration on and off while both wireless calibrations are off, to separate GM's own wired handling from a kernel-level NCM claim.",
+      "uncertainties": [
+        "A test plan, not a finding. The map notes that the effect on a kernel NCM driver is not shown by the code it traced.",
+        "Not run on hardware."
+      ],
+      "suggested_test": "With Apple_CarPlay_enableWireless and AndroidAuto_enableWireless both 0, attach an iPhone by USB with this calibration 1, then 0; compare the 'ATTACH to AppleStateMachine sent' / 'RDMSAppleStateMachine disabled' log lines with what the kernel does with the NCM interface.",
+      "see_map_rules": ["usb.apple_state_machine"]
+    }
+  }
+}

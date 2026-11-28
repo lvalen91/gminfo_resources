@@ -3,7 +3,9 @@ desktop UI. Uses only files inside the toolkit."""
 from __future__ import annotations
 
 import base64
+import contextlib
 import io
+import json
 import sys
 import unittest
 import zipfile
@@ -56,6 +58,104 @@ class Bundle(unittest.TestCase):
                 calovride.validate_value(t, v)
         for t, v in [("Float", "1.5"), ("Enumeration", "3"), ("Integer", "-7")]:
             calovride.validate_value(t, v)  # must not raise
+
+
+MAP_STATUSES = {"effect traced", "read, effect not traced",
+                "mentioned in decompiled Java, read not established",
+                "name only", "not found outside bulk lists"}
+PREDICTED = {"GPS_DATA_SOURCE", "GNSS_DR_SRC", "FM_RDS_Clocktime_enabled",
+             "BACK_OFFICE_SERVER_ENABLED", "Apple_CarPlay_enableWireless",
+             "AndroidAuto_enableWireless", "Enable_Application_Apple_Carplay"}
+
+
+def run_cli(*argv):
+    import cli
+    out = io.StringIO()
+    old = sys.argv
+    sys.argv = ["caltool", *argv]
+    try:
+        with contextlib.redirect_stdout(out):
+            cli.main()
+    finally:
+        sys.argv = old
+    return json.loads(out.getvalue())
+
+
+class KnownEffects(unittest.TestCase):
+    def test_snapshot_is_bundled_and_never_invents(self):
+        doc = caldef._load_known_effects()
+        self.assertEqual(len(doc["entries"]), 155)
+        for name, row in doc["entries"].items():
+            self.assertIn(row["status"], MAP_STATUSES, name)
+            # every bundled row has something behind it, and every rule resolves
+            self.assertTrue(row["rules"] or row["value_effect"] or "predicted" in row, name)
+            self.assertTrue(all(r in doc["rules"] for r in row["rules"]), name)
+            # only an "effect traced" row may carry effect text from the map
+            if row["status"] != "effect traced":
+                self.assertEqual((row["rules"], row["value_effect"]), ([], None), name)
+        self.assertEqual({r["level"] for r in doc["rules"].values()}, {"traced", "observed"})
+        self.assertEqual({n for n, r in doc["entries"].items() if "predicted" in r}, PREDICTED)
+
+    def test_lookup(self):
+        ke = caldef.known_effect("Apple_CarPlay_enableWireless")
+        self.assertEqual((ke["status"], ke["image"], ke["bench"]), ("effect traced", "0", "1"))
+        levels = {r["id"]: r["level"] for r in ke["rules"]}
+        self.assertEqual((levels["bt.carplay_listener"], levels["wifi.hotspot_allowed"]), ("traced", "observed"))
+        self.assertTrue(all(r["effect"] for r in ke["rules"]))
+        self.assertEqual(ke["predicted"]["evidence"], "predicted, untested")
+        ke["rules"].clear()  # a caller cannot damage the cache
+        self.assertTrue(caldef.known_effect("Apple_CarPlay_enableWireless")["rules"])
+        # value effect only, no prediction
+        ke = caldef.known_effect("Apple_CarPlay_softKeyboard")
+        self.assertTrue(ke["value_effect"])
+        self.assertEqual((ke["rules"], ke["predicted"]), ([], None))
+
+    def test_prediction_never_upgrades_the_map_status(self):
+        ke = caldef.known_effect("GNSS_DR_SRC")
+        self.assertEqual((ke["status"], ke["rules"], ke["value_effect"]), ("read, effect not traced", [], None))
+        self.assertEqual(ke["predicted"]["evidence"], "predicted, untested")
+        self.assertEqual(caldef.known_effect_summary("GNSS_DR_SRC"),
+                         "read, effect not traced + predicted, untested note")
+        self.assertIn("PREDICTED, UNTESTED", caldef.known_effect_text(ke))
+
+    def test_unknown_stays_unknown(self):
+        # a "read, effect not traced" row, a "name only" row, and a name in neither database
+        for name in ("SXM_Enabled", "AA_VR_DL", "no such calibration"):
+            self.assertIsNone(caldef.known_effect(name), name)
+            self.assertIsNone(caldef.known_effect_summary(name), name)
+        self.assertIsNone(caldef.known_effect_text(None))
+        # the map records a row under one CalDef group; another group gets nothing
+        self.assertIsNone(caldef.known_effect("GPS_DATA_SOURCE", "GNSS_DR"))
+        self.assertIsNotNone(caldef.known_effect("GPS_DATA_SOURCE", "GIS651_TimeOfDay"))
+
+    def test_cli_explain_search_group(self):
+        out = run_cli("explain", "GPS_DATA_SOURCE")
+        self.assertEqual(out["description"], caldef.lookup("GPS_DATA_SOURCE").description)
+        self.assertEqual(out["known_effect"], caldef.known_effect("GPS_DATA_SOURCE"))
+        self.assertEqual(out["known_effect"]["predicted"]["evidence"], "predicted, untested")
+        out = run_cli("explain", "SXM_Enabled")
+        self.assertIn("known_effect", out)
+        self.assertIsNone(out["known_effect"])
+        found = {r["name"]: r["known_effect_status"] for r in run_cli("search", "carplay")}
+        self.assertEqual(found["Apple_CarPlay_softKeyboard"], "effect traced")
+        self.assertEqual(found["Enable_Application_Apple_Carplay"], "effect traced + predicted, untested note")
+        self.assertIn(None, found.values())
+        group = {r["name"]: r["known_effect_status"] for r in run_cli("group", "GNSS_DR")}
+        self.assertEqual(group.pop("GNSS_DR_SRC"), "read, effect not traced + predicted, untested note")
+        self.assertEqual(set(group.values()), {None})
+
+    def test_views_carry_it_and_export_ignores_it(self):
+        m = module()
+        with_effect = [e for e in m["entries"] if e["known_effect"]]
+        self.assertGreater(len(with_effect), 0)
+        self.assertLess(len(with_effect), len(m["entries"]))
+        e = with_effect[0]
+        self.assertEqual(e["description"], caldef.lookup_by_id(e["cal_id"]).description)
+        self.assertIn("not GM's description", e["known_effect"]["text"])
+        self.assertEqual(service.export_module(m["entries"], safety_ack=True), SAMPLE)
+        d = service.caldef_detail("GNSS_DR_SRC")
+        self.assertEqual(d["known_effect"]["status"], "read, effect not traced")
+        self.assertIsNone(service.caldef_detail("SXM_Enabled")["known_effect"])
 
 
 class Backend(unittest.TestCase):
@@ -225,6 +325,15 @@ class Desktop(unittest.TestCase):
         c.set_current_value("not a number")
         self.assertFalse(c.error_label.isHidden())
         self.assertEqual(number["value_raw"], before)
+
+    def test_inspector_shows_known_effect_apart_from_description(self):
+        c = self.load()
+        _, e = self.pick(lambda e: e["known_effect"])
+        shown = str(c.about.string())
+        self.assertTrue(shown.startswith(e["description"]))
+        self.assertIn("Calibration map", shown)
+        _, e = self.pick(lambda e: e["editable"] and e["description"] and not e["known_effect"])
+        self.assertEqual(str(c.about.string()), e["description"])
 
     def test_add_sheet_and_help(self):
         c = self.load()

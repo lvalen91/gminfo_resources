@@ -6,6 +6,8 @@ the place to edit them.
 
     python3 sync_bundle.py /path/to/gminfo_resources           # rewrite the copies
     python3 sync_bundle.py /path/to/gminfo_resources --check   # report drift, exit 1
+
+data/known_effects.json is generated, not copied: see build_known_effects.py.
 """
 from __future__ import annotations
 
@@ -14,6 +16,8 @@ import posixpath
 import re
 import sys
 from pathlib import Path
+
+import build_known_effects
 
 HERE = Path(__file__).resolve().parent
 RESEARCH = "research/eeprom-calibration"
@@ -53,6 +57,7 @@ def expected_files(repo: Path) -> dict[Path, bytes]:
         for src in sorted(dbs[0].glob(pattern)):
             out[Path("data/caldefs") / src.name] = src.read_bytes()
     out[Path("data/CALDEF_SOURCE.txt")] = (dbs[0].parent.name + "\n").encode()
+    out[build_known_effects.OUT] = build_known_effects.build(repo)
     for name in DOCS:
         src = repo / RESEARCH / name
         out[Path("docs") / name] = _localize(src.read_text(encoding="utf-8")).encode("utf-8")

@@ -858,6 +858,9 @@ class Controller(NSObject):
                 f"Originally {labels[old]} ({old})" if old in labels else f"Originally {old}")
             self.revert_button.setTitle_("Remove Entry" if e["is_new"] else "Revert")
         text = e["description"] or "The CalDef database has no description for this entry."
+        known = e.get("known_effect")
+        if known:
+            text += "\n\n" + known["text"]
         if not e["editable"]:
             shown = raw
             if e["type"] == "BinaryFile":

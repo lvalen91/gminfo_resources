@@ -26,6 +26,11 @@ The folder is self-contained: copy it anywhere and run it, with nothing to `pip 
 - **CalDef** — GM's reference database of ~3,000 known calibration definitions across
   ~145 groups (name, type, default, description); `caltool/caldef.py` loads the copy
   bundled in `data/caldefs/`.
+- **Known effect** — what a separate research pass over decompiled firmware (the
+  "calibration map", `research/calibration-map` in a `gminfo_resources` checkout) has
+  traced about a calibration's behaviour on the device. A snapshot is bundled in
+  `data/known_effects.json` and shown beside, never in place of, the CalDef text. See
+  [§3](#3-component-descriptions) for its evidence labels.
 - **Safety gate** — a deliberate friction control (not a security boundary) that
   requires explicit acknowledgment before editing an entry from a CalDef group this
   toolkit treats as elevated-caution. See [§3](#3-component-descriptions).
@@ -39,6 +44,12 @@ and
 Read both before using this tool's output on anything you intend to write to real
 hardware — this toolkit produces correctly-formatted payloads, it does not tell you
 what a given change actually does.
+
+The bundled known-effect snapshot narrows that gap without closing it. For 155 of the
+~3,000 calibrations a lookup also reports what the calibration map traced, with its
+evidence label; for every other name it reports nothing, because nothing is known. It
+is reference text on the read side only: it never validates, blocks or alters an edit,
+and a traced rule in decompiled code is not a bench result.
 
 ## 2. System overview
 
@@ -58,7 +69,8 @@ the same in each:
                  └───────────────┬─────────────────┴───────────────┘
                                  ▼
         calovride.py (XML)   container.py (CSM wrapper)   caldef.py (lookups, gate)
-                                                          └── data/caldefs/
+                                                          ├── data/caldefs/
+                                                          └── data/known_effects.json
 ```
 
 Every surface reads and writes the same canonical JSON shape for an `Override`
@@ -90,6 +102,26 @@ edited by hand, by an agent, or re-uploaded to the web UI interchangeably.
   anyone editing the JSON by hand can always bypass it, same as the CLI flag can always
   just be passed. Its only job is making sure nobody lands in that territory by
   accident.
+  The same module serves the read-only known-effect lookup:
+  `known_effect(name, group=None)` returns the bundled calibration-map record for a
+  name, or `None` (the usual answer). It is separate from `CalDefEntry` and from the
+  gate. A record keeps three kinds of evidence apart:
+  - **`status`** — the map's own label for the row, copied verbatim: `effect traced`,
+    `read, effect not traced`, `mentioned in decompiled Java, read not established`,
+    `name only`, `not found outside bulk lists`. Only rows with something to show are
+    bundled, so in practice `effect traced`, plus one `read, effect not traced` row
+    that carries a prediction.
+  - **`rules[].level`** and **`value_effect`** — the map's findings. A rule is `traced`
+    (code connects the setting to the effect) or `observed` (a saved log or owner
+    record shows it); `expr` is the condition, over calibration and runtime-state
+    names, under which `effect` holds. `image` and `bench` are the values the map
+    recorded for firmware Y175 and the bench unit, not values from a file you loaded.
+  - **`predicted`** — `predicted, untested`: reasoning from one code-reading session
+    that is not in the map and has not been run on hardware, with its uncertainties
+    listed. Seven names carry one (`predicted_effects.json`). A prediction never
+    changes a row's `status`.
+- **`build_known_effects.py`, `predicted_effects.json`** — the generator of
+  `data/known_effects.json` and its hand-maintained input; see [§7](#7-maintenance-procedures).
 - **`caltool/service.py`** — the shared backend of the two interactive UIs. Put
   behaviour here, not in a front end.
 - **`gui.py`** — the native desktop UI (AppKit via PyObjC, macOS only). No server and no browser.
@@ -141,6 +173,10 @@ python3 run.py cli search carplay
 python3 run.py cli groups
 python3 run.py cli group GIS513_DeviceProjection
 
+# explain adds a "known_effect" object (null when nothing is traced) after the CalDef
+# fields; search and group add a one-line "known_effect_status" per entry
+python3 run.py cli explain Apple_CarPlay_enableWireless
+
 # Edit an existing entry, or add one that isn't present in the loaded file yet
 python3 run.py cli set slot0c.json SXM_Enabled false
 python3 run.py cli add slot0c.json Enable_Application_Apple_Carplay false
@@ -175,6 +211,7 @@ light or dark appearance:
 - **Inspector:** a switch for booleans, a pop-up for enumerations (with Custom Value…),
   a field for other scalars. Changes apply immediately and are validated; errors appear
   beside the control. Revert restores the loaded value. Structured types are read-only.
+  Below the CalDef description, the known effect (if any) is shown as labelled text.
 - **Add Entry** (toolbar or ⇧⌘N) is a sheet that searches the whole CalDef reference.
 - **Export** (toolbar or File menu): container (⌘E), XML (⇧⌘E) or all as zip (⌥⌘E).
 
@@ -196,7 +233,8 @@ python3 run.py web                       # --port N to change it
   one in from the whole CalDef reference, scoped to that module — never a page-level
   search with a hidden target). Download the result as plain XML or a full container
   (borrowing the uploaded file's header; digest recomputed, signature stays stale,
-  exactly like the CLI).
+  exactly like the CLI). An entry with a known effect shows it as a second, bordered
+  block under the CalDef description ("more" expands it).
 - **`/help`** — the 14-slot table, the elevated-caution safety-group list, the
   proven-trial summary, and the verified type schema, condensed from
   `CALIBRATION_SLOT_MAP.md` and `CALIBRATION_CUSTOMIZATION_GUIDE.md`. Read those two
@@ -250,6 +288,24 @@ python3 sync_bundle.py /path/to/gminfo_resources --check
 Links in the copied guides that point outside the bundle become plain repo paths.
 `slotinfo.py` and the web help page remain hand-condensed from the slot map.
 
+**Known-effect snapshot:** `data/known_effects.json` is generated, not copied, from
+`research/calibration-map/map.json` and `rules.py` plus this folder's
+`predicted_effects.json`. `sync_bundle.py` above rebuilds and checks it with the rest;
+to do only this file:
+
+```sh
+python3 build_known_effects.py /path/to/gminfo_resources
+python3 build_known_effects.py /path/to/gminfo_resources --check
+```
+
+Regenerate after the map changes (the snapshot records the SHA-256 of both inputs) or
+after editing `predicted_effects.json`. The generator copies statuses, rule text and
+levels verbatim, bundles a row only if the map attaches a rule or value effect to it or
+a prediction names it, and stops if `map.json` and `rules.py` disagree. Findings belong
+in the calibration map; `predicted_effects.json` is only for reasoning not yet checked
+there or on a bench, and an item should leave it once the map covers it. Update the
+entry count in `tests/test_toolkit.py` and in §1 when the snapshot grows.
+
 **Tests:** `python3 run.py selftest` runs offline. It uses an unsigned synthetic
 container built around the bundled sample document, so it does not replace the
 real-container round-trip above.
@@ -287,5 +343,7 @@ self-closing root when empty, and the twelve override value types listed in
   — the full per-slot content catalog this toolkit's `/help` page condenses.
 - [`CALIBRATION_CUSTOMIZATION_GUIDE.md`](docs/CALIBRATION_CUSTOMIZATION_GUIDE.md)
   — the safe-to-try/avoid risk triage; read before writing anything to real hardware.
+- `research/calibration-map/README.md` (not bundled) — the method, per-group counts and
+  limits behind the known-effect snapshot.
 - [`CHANGELOG.md`](CHANGELOG.md) — the frozen, dated history of reviews and fixes to
   this toolkit itself.

@@ -10,7 +10,9 @@ or any override package.
 """
 from __future__ import annotations
 
+import copy
 import glob
+import json
 import os
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -18,6 +20,7 @@ from functools import lru_cache
 from pathlib import Path
 
 BUNDLED_CALDEF_DIR = Path(__file__).resolve().parent.parent / "data" / "caldefs"
+KNOWN_EFFECTS_FILE = Path(__file__).resolve().parent.parent / "data" / "known_effects.json"
 
 
 class CalDefError(ValueError):
@@ -255,3 +258,98 @@ def enum_label(enum_id: str | None, value: str) -> str | None:
     if not enum_id:
         return None
     return _load_enum_labels().get(enum_id, {}).get(value)
+
+
+# ------------------------------------------------------------------ known effects ---
+# Reverse-engineered findings about what a calibration does on the device. This is a
+# separate source from the CalDef database above (GM's own definitions) and is never
+# merged into a CalDefEntry. Read-only; nothing here is consulted by the safety gate or
+# by any edit or export path.
+
+@lru_cache(maxsize=1)
+def _load_known_effects() -> dict:
+    """The bundled snapshot of research/calibration-map (see build_known_effects.py).
+    A missing or unreadable snapshot yields no findings rather than an error: lookups,
+    loading and export must keep working without it."""
+    try:
+        doc = json.loads(KNOWN_EFFECTS_FILE.read_text(encoding="utf-8"))
+        doc["entries"], doc["rules"], doc["source"]  # noqa: B018 -- shape check
+    except (OSError, ValueError, KeyError, TypeError):
+        return {"entries": {}, "rules": {}, "source": {}}
+    return doc
+
+
+def _group_key(group: str) -> str:
+    # The map spells CalDef groups upper-case with every non-alphanumeric as "_"
+    # ("GIS604 SafetyRelatedVolumeGroupOverrides" -> "GIS604_SAFETYRELATEDVOLUMEGROUPOVERRIDES").
+    return "".join(c if c.isalnum() else "_" for c in group.upper())
+
+
+def known_effect(name: str, group: str | None = None) -> dict | None:
+    """What the calibration-map research records about `name`, or None.
+
+    None is the normal answer: most calibrations have no traced behaviour, and nothing
+    is made up for them. `group` (a CalDefEntry.group) guards names defined in two
+    groups: the map keys rows by name, so a row is returned only for the group it
+    was recorded under.
+
+    The result keeps three kinds of evidence apart:
+      status / rules[].level / value_effect  -- from the calibration map: `status` is the
+          row's map status verbatim; each rule's `level` is "traced" (code connects the
+          setting to the effect) or "observed" (a saved log or owner record shows it)
+      predicted                              -- "predicted, untested": reasoned in one chat
+          session, not part of the map, not run on hardware. None for most entries.
+    `image` and `bench` are the values the map recorded, not values from any loaded file.
+    """
+    doc = _load_known_effects()
+    row = doc["entries"].get(name)
+    if row is None:
+        return None
+    if group is not None and row.get("caldef") and _group_key(group) != row["caldef"]:
+        return None
+    rules = [{"id": rid, **doc["rules"][rid]} for rid in row.get("rules", []) if rid in doc["rules"]]
+    return copy.deepcopy({
+        "name": name,
+        "source": "calibration map (reverse-engineered; not GM's CalDef description)",
+        "firmware": doc["source"].get("firmware"),
+        "status": row["status"],
+        "basis": row.get("basis"),
+        "caldef_group": row.get("caldef"),
+        "image": row.get("image"),
+        "bench": row.get("bench"),
+        "bench_slot": row.get("bench_slot"),
+        "bench_part": row.get("bench_part"),
+        "rules": rules,
+        "value_effect": row.get("value_effect"),
+        "predicted": row.get("predicted"),
+    })
+
+
+def known_effect_summary(name: str, group: str | None = None) -> str | None:
+    """One line for listings: the map status, plus a marker when a predicted/untested
+    note exists. None when known_effect() is None."""
+    ke = known_effect(name, group)
+    if ke is None:
+        return None
+    return ke["status"] + (f" + {ke['predicted']['evidence']} note" if ke["predicted"] else "")
+
+
+def known_effect_text(ke: dict | None) -> str | None:
+    """Plain-text rendering of a known_effect() result for the detail views of the
+    interactive UIs. Every block is labelled with its evidence."""
+    if ke is None:
+        return None
+    lines = [f"Calibration map ({ke['firmware']}) -- reverse-engineered, not GM's description.",
+             f"Map status: {ke['status']}. Recorded values: image {ke['image']}, bench {ke['bench']}."]
+    if ke["value_effect"]:
+        lines.append(f"Value effect: {ke['value_effect']}")
+    for r in ke["rules"]:
+        lines.append(f"[{r['level']}] {r['feature']} ({r['id']}): {r['effect']}. When: {r['expr']}"
+                     + (f" Note: {r['note']}" if r["note"] else ""))
+    p = ke["predicted"]
+    if p:
+        lines.append(f"[{p['evidence'].upper()} -- {p['kind']}; not from the calibration map] {p['text']}")
+        lines += [f"  Uncertain: {u}" for u in p["uncertainties"]]
+        if p["suggested_test"]:
+            lines.append(f"  Suggested test: {p['suggested_test']}")
+    return "\n".join(lines)

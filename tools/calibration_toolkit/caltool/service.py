@@ -55,6 +55,15 @@ def is_editable(type_: str) -> bool:
     return type_ in calovride.SCALAR_TYPES or type_ == "String"
 
 
+def known_effect_view(de) -> dict | None:
+    """caldef.known_effect() plus a ready-to-show `text`, or None. For detail views
+    only; export never reads it."""
+    ke = caldef.known_effect(de.name, de.group) if de else None
+    if ke is not None:
+        ke["text"] = caldef.known_effect_text(ke)
+    return ke
+
+
 def entry_view(ov: calovride.Override) -> dict:
     de = caldef.lookup_by_id(ov.cal_id)
     value_raw = calovride.to_jsonable(ov)["value"]
@@ -70,6 +79,8 @@ def entry_view(ov: calovride.Override) -> dict:
         "description": de.description if de else None,
         "enum_options": enum_options(de),
         "safety_restricted": caldef.is_safety_restricted(de) if de else False,
+        # Display only: calibration-map findings, separate from GM's `description`.
+        "known_effect": known_effect_view(de),
     }
 
 
@@ -131,7 +142,8 @@ def search_caldefs(query: str, limit: int = 50) -> list[dict]:
     if len(query) < 2:
         return []
     return [{"name": e.name, "group": e.group, "type": e.type_, "default": e.default_value,
-             "description": e.description, "safety_restricted": caldef.is_safety_restricted(e)}
+             "description": e.description, "safety_restricted": caldef.is_safety_restricted(e),
+             "known_effect_status": caldef.known_effect_summary(e.name, e.group)}
             for e in caldef.search(query)[:limit]]
 
 
@@ -145,6 +157,7 @@ def caldef_detail(name: str, group: str | None = None) -> dict:
         "enum_options": enum_options(e),
         "safety_restricted": restricted,
         "safety_warning": caldef.SAFETY_WARNING.format(name=e.name, group=e.group) if restricted else None,
+        "known_effect": known_effect_view(e),
     }
 
 

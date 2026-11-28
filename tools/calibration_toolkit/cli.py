@@ -55,12 +55,16 @@ def cmd_explain(args):
         out["safety_warning"] = caldef.SAFETY_WARNING.format(name=e.name, group=e.group)
     if e.type_ == "Enumeration" and e.enum_id:
         out["enum_labels"] = caldef._load_enum_labels().get(e.enum_id, {})
+    # Kept under its own key: everything above is GM's CalDef text, this is the
+    # calibration-map research (null when it has traced nothing for this name).
+    out["known_effect"] = caldef.known_effect(e.name, e.group)
     print(json.dumps(out, indent=2))
 
 
 def cmd_search(args):
     results = caldef.search(args.substring)
-    print(json.dumps([{"name": e.name, "group": e.group, "type": e.type_, "default": e.default_value}
+    print(json.dumps([{"name": e.name, "group": e.group, "type": e.type_, "default": e.default_value,
+                        "known_effect_status": caldef.known_effect_summary(e.name, e.group)}
                        for e in results], indent=2))
 
 
@@ -75,7 +79,9 @@ def cmd_group(args):
               f"this will print an empty list; run 'caltool groups' to see valid names", file=sys.stderr)
     entries = caldef.entries_in_group(args.name)
     print(json.dumps([{"name": e.name, "type": e.type_, "default": e.default_value,
-                        "description": e.description} for e in entries], indent=2))
+                        "description": e.description,
+                        "known_effect_status": caldef.known_effect_summary(e.name, e.group)}
+                       for e in entries], indent=2))
 
 
 def _resolve_existing_entry(entries: list, name: str):
