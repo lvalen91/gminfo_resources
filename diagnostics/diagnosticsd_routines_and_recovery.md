@@ -181,7 +181,7 @@ dispatch; this is not proof of a missing daemon or a working UID-0 shell.
 
 **LLDB runtime validation:** the NDK-30 server crashed with exit 139 during an
 attach attempt; the Android Studio server (23.0.1) then worked with the installed
-LLDB client. It successfully attached to an owned disposable UID-2000 sleep
+LLDB client. It attached to an owned disposable UID-2000 sleep
 process and detached. The same path against the identified root-owned
 diagnosticsd returned `Operation not permitted`. The target daemon retained its
 PID and sleeping state. Uploaded servers and temporary USB forwards were

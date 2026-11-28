@@ -1,11 +1,32 @@
 # DPS Type4 Calibration Workflow
 
+**Title note:** "DPS" and "Type4" name a *concept*, not the tool used for the live work
+below. DPS (GM's Developer Programming System) is a Windows tool; a Type4 application is
+one kind of program DPS can load (§1). Neither DPS nor a Type4 application is used to
+produce any result in this document — the live record below is entirely CAN-bench work
+over raw CAN613/614, run from the Canable bench (see "Tool-chain history," next). The
+Type4/DPS background in §1 exists only to establish that a Type4 workflow file and a
+calibration value are different artifacts, a distinction load-bearing for interpreting
+the trial log.
+
 **Scope:** the live CAN-bench record of what actually happens when a hand-edited Type4/
 calibration payload is sent to the gminfo37 A11 CSM radio (`0x80`, Silverado gminfo37 /
 Y17x / Y181/B) — the Type4-vs-calibration-value distinction, the chronological trial/
 supersession log (2026-11-07 → 2026-11-25), and the one documented successful custom-write
 path (a scoped temporary VIP-RAM write over CAN613/614). This is the workflow/evidence
 record, not the crypto or protocol reference.
+
+**Tool-chain history (owner-stated):** DPS reverse-engineering attempts did not produce a
+working direct-DPS custom-calibration path; that RE work instead became the
+[`mdi2_client`](../../tools/mdi2_client/README.md) Python tool. Using the MDI2 adapter
+directly (through `mdi2_client`) also ran into issues, and work moved to a CANable adapter
+on raw CAN5/CAN613-614 instead — the mechanism this document records. The CANable bench has
+carried the large majority of calibration-write progress since; MDI2 evidence in this repo
+(stock-LTZ writes, protocol captures) is the historical record of that earlier phase, not
+the current tool. See [`hardware/bench/current_bench.md`](../../hardware/bench/current_bench.md)
+for the current bench hardware (now a Raspberry Pi host) and
+[`hardware/bench/bench_setup.md`](../../hardware/bench/bench_setup.md) for the superseded
+macOS-host/direct-adapter phase.
 
 **Does NOT live here:** seed/key exchange, CMAC, the signed-container RSA/SHA verification
 trace (Ghidra function/address level) and the SBA-ticket NVM-storage trace — all owned by
@@ -351,9 +372,8 @@ repeated-cycle reliability.
 
 ### 2026-11-16: CarPlay and Android Auto custom calibration accepted
 
-Following the owner-confirmed SXM cold-cycle result, slot0C was rebuilt again. The SXM-false
-override was retained and two previously absent feature-enable Boolean overrides were added,
-each at version 3:
+Slot0C was rebuilt: the SXM-false override was retained, and two previously absent
+feature-enable Boolean overrides were added, each at version 3:
 
 | Feature | Calibration name / ID | Requested value |
 |---|---|---|
@@ -622,9 +642,9 @@ a genuine power-on reset, not internal sleep/wake) to rule out stale session sta
 the day's several back-to-back attempts. Repeated the slot03 zero-edit-repack write from
 that clean boot: byte-for-byte identical result (`7F 36 72`, PEC `0015`).
 
-**Exact reproduction, independent of `caltool`.** At the owner's request, assumed
-`tools/calibration_toolkit` itself might be producing a wrong/corrupt module and bypassed
-it entirely: a from-scratch, standalone script (no import of any `caltool` module) read
+**Exact reproduction, independent of `caltool`.** To rule out `tools/calibration_toolkit`
+itself as producing a wrong or corrupt module, a from-scratch, standalone script (no
+import of any `caltool` module) read
 the genuine stock slot 0C container, located `CalID` `_ysOddU1AEeO3UM5MzM17kw`
 (`SXM_Enabled`, confirmed present with `<Value>true</Value>`, matching the 2026-11-16
 record exactly), flipped only that one value to `false`, recompressed with
@@ -656,11 +676,8 @@ disassembly — not established here.
 
 ### 2026-11-25: resolved — the driver was sending the marker-pair VALUES byte-swapped
 
-**Correction to "Status: unresolved" immediately above.** Three agents were set loose on
-this in parallel: one re-deriving the exact 2026-11-16 procedure from the docs/code, one
-disassembling the marker-pair exemption's firmware logic, and one searching raw local
-Codex session transcripts for the literal byte-level log of the original successful
-write. The transcript search found it:
+**Correction to "Status: unresolved" immediately above.** The byte-level log of the
+original successful write was located in local session transcripts:
 `~/.codex/sessions/2026/11/16/rollout-2026-11-16T22-54-24-01a1e87f-fc2c-7100-a170-80ccb6790305.jsonl`,
 line 914 (the success) and line 712 (an earlier failing control in the same session,
 useful as a direct contrast).

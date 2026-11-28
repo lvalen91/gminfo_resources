@@ -10,6 +10,7 @@ Generated from the move manifest; every moved file is listed in the second table
 | `codecs/media_codecs.md` | `video/media_codecs.md` | The file is itself an archival/superseded document (its own banner names `video/video_codecs.md` as successor); no reason for it to anchor its own top-level folder. |
 | `mdi2_client/` (stub README only) | removed | Held nothing but a one-line "moved to `tools/mdi2_client/`" pointer created during the main restructure; redundant with this file and `INDEX.md`. |
 | `enumeration/` (stub README only) | removed | Same as above; pointer to `evidence/enumeration/` and `tools/enumeration/` now lives only here and in `INDEX.md`. |
+| `hardware/bench_setup.md` | `hardware/bench/bench_setup.md` (2026-11-27) | Grouped under a dedicated `hardware/bench/` subfolder alongside the new current-bench doc, rather than sitting loose among unrelated `hardware/` files; the document now also carries a superseded-by banner pointing to `hardware/bench/current_bench.md` (the bench moved from a macOS host to a Raspberry Pi host). |
 
 ## Directory-level moves
 

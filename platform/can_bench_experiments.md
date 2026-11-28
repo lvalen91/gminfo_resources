@@ -10,8 +10,9 @@ Evidence notation (`B:n`/`H:n`/`R`/`A`/`W`/conflict) is defined once in
 [CAN network](can_network.md#evidence-and-capture-notation) — not repeated here.
 [CAN network](can_network.md) owns the message dictionary and publishes every
 verified signal surfaced by an experiment below. [Vehicle network](vehicle_network.md)
-owns topology/diagnostic transport; [bench setup](../hardware/bench_setup.md)
-owns wiring/adapter configuration/physical power control.
+owns topology/diagnostic transport; [current bench](../hardware/bench/current_bench.md)
+owns the live wiring (Pi host, CANable, T1 converter); [bench setup](../hardware/bench/bench_setup.md)
+owns the superseded macOS-host adapter configuration/physical power control.
 
 **Related:** [CAN network](can_network.md) (dictionary) ·
 [DPS Type4 custom calibration workflow](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md)
@@ -167,12 +168,12 @@ FEBF0BFC  <-  F0 04 D6 C7 E9 5A      (0x5AE9C7D6, little-endian)
 ```
 
 **Not** the naive big-endian encoding you'd get from `bytes.fromhex("A5163829")` directly
-(`F0 04 A5 16 38 29`). A prior version of this driver sent the big-endian bytes, which put
-the wrong 32-bit value in RAM (`0x29381 6A5`) — but because the write-then-read-back
-verification check compared the readback against that same wrong big-endian constant, it
-*always* printed "override+verify" success even though the real RAM value was never
-correct. This made the bug invisible to live testing for most of a day; it was only found
-by recovering the raw byte-level transcript of the one historically-successful write (see
+(`F0 04 A5 16 38 29`). A prior version of this driver sent the big-endian bytes, putting
+the wrong 32-bit value in RAM (`0x29381 6A5`); the write-then-read-back verification check
+compared the readback against that same wrong big-endian constant, so it *always* printed
+"override+verify" success even though the real RAM value was never correct — invisible to
+live testing for most of a day, until recovery of the raw byte-level transcript of the one
+historically-successful write (see
 [the 2026-11-25 resolution](../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md#2026-11-25-resolved--the-driver-was-sending-the-marker-pair-values-byte-swapped)).
 Current code (`MARKER_VALUES` in `calibration_write_can5.py`) packs both words with
 `struct.pack('<I', ...)` — do not revert this to a direct hex-string decode.
@@ -420,9 +421,9 @@ this document.
 
 **Goal:** repeat the full genuine LTZ rewrite (all 14 slots) from the
 [2026-11-16 campaign](#full-genuine-ltzhc-rewrite-through-canable--2026-11-16) over
-CAN5/CANable, after the owner reported a repeating success/fail pattern across slots
-on this bench that the prior campaign did not show, and asked whether the per-slot
-process itself was correct.
+CAN5/CANable, to resolve a repeating success/fail pattern across slots on this bench,
+not present in the prior campaign, and confirm whether the per-slot process itself was
+correct.
 
 **Driver:** [`tools/bench/bench_can/calibration_write_can5.py`](../tools/bench/bench_can/calibration_write_can5.py),
 a mechanical adaptation of `boot_radio_elk.py`'s `CanDiagnostics`/keepalive-replay
@@ -803,7 +804,7 @@ every phase retained only the same 32 IDs; zero new/changed RX payloads vs
 the H baseline. Median per-ID periods 320.405/320.363/320.315/320.354 ms —
 consistent with a fixed cyclic emulator, not proof of receiver-free
 firmware. No EEPROM/reset/security/programming request used. See
-[bench baseline](../hardware/bench_setup.md#harness-replacement-candidate)
+[bench baseline](../hardware/bench/bench_setup.md#harness-replacement-candidate)
 for the later ground/termination fix.
 
 ### Radio-only single-cycle result

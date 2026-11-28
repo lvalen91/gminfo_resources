@@ -1,5 +1,15 @@
 # macOS MDI2 client
 
+**Status (owner-stated):** superseded as the primary bench tool. This client grew out of
+earlier DPS reverse-engineering work; using the MDI2 adapter directly through this client
+also ran into issues, and bench work moved to a CANable adapter on raw CAN5/CAN613-614
+instead (see the current bench at
+[`../../hardware/bench/current_bench.md`](../../hardware/bench/current_bench.md), and the
+tool-chain history in
+[`DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md`](../../research/eeprom-calibration/DPS_TYPE4_CUSTOM_CALIBRATION_WORKFLOW.md)).
+Everything below documents that earlier phase; it is the historical record of what this
+client validated, not the current tool.
+
 Native, Windows-free Python client for the GM/Bosch **MDI2** adapter, used on an owner's **bench
 radio**. The MDI2 sits on a direct USB RNDIS link to the Mac and reaches the radio ECU (`0x80`)
 through its D-PDU CAN tunnel (TCP/10123). It is not connected to a vehicle OBD2 port. No

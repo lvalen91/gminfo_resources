@@ -1,11 +1,32 @@
 # DPS Type4 Calibration Workflow
 
+**Title note:** "DPS" and "Type4" name a *concept*, not the tool used for the live work
+below. DPS (GM's Developer Programming System) is a Windows tool; a Type4 application is
+one kind of program DPS can load (§1). Neither DPS nor a Type4 application is used to
+produce any result in this document — the live record below is entirely CAN-bench work
+over raw CAN613/614, run from the Canable bench (see "Tool-chain history," next). The
+Type4/DPS background in §1 exists only to establish that a Type4 workflow file and a
+calibration value are different artifacts, a distinction load-bearing for interpreting
+the trial log.
+
 **Scope:** the live CAN-bench record of what actually happens when a hand-edited Type4/
 calibration payload is sent to the gminfo37 A11 CSM radio (`0x80`, Silverado gminfo37 /
 Y17x / Y181/B) — the Type4-vs-calibration-value distinction, the chronological trial/
-supersession log (2026-11-07 → 2026-11-17), and the one documented successful custom-write
+supersession log (2026-11-07 → 2026-11-25), and the one documented successful custom-write
 path (a scoped temporary VIP-RAM write over CAN613/614). This is the workflow/evidence
 record, not the crypto or protocol reference.
+
+**Tool-chain history (owner-stated):** DPS reverse-engineering attempts did not produce a
+working direct-DPS custom-calibration path; that RE work instead became the
+`mdi2_client` (not bundled: `tools/mdi2_client/README.md`) Python tool. Using the MDI2 adapter
+directly (through `mdi2_client`) also ran into issues, and work moved to a CANable adapter
+on raw CAN5/CAN613-614 instead — the mechanism this document records. The CANable bench has
+carried the large majority of calibration-write progress since; MDI2 evidence in this repo
+(stock-LTZ writes, protocol captures) is the historical record of that earlier phase, not
+the current tool. See `hardware/bench/current_bench.md` (not bundled: `hardware/bench/current_bench.md`)
+for the current bench hardware (now a Raspberry Pi host) and
+`hardware/bench/bench_setup.md` (not bundled: `hardware/bench/bench_setup.md`) for the superseded
+macOS-host/direct-adapter phase.
 
 **Does NOT live here:** seed/key exchange, CMAC, the signed-container RSA/SHA verification
 trace (Ghidra function/address level) and the SBA-ticket NVM-storage trace — all owned by
@@ -27,10 +48,17 @@ of this doc; nothing from it is restated here.
 
 ## Current state and correction history
 
-**Current installed custom slot (2026-11-17):** SXM disabled plus Apple CarPlay/Android
-Auto feature-enable overrides disabled; the owner independently confirmed both projection
-entries disappeared from the UI. The SXM-only predecessor survived a cold power cycle;
-projection persistence under a cold cycle has not yet been tested.
+**Current installed custom slot (2026-11-25):** slot 0C has `SXM_Enabled` disabled
+(true→false) via the now-fixed CAN613/614 driver, exactly reproducing the original
+2026-11-16 edit; all other 13 slots are stock LTZ (restored 2026-11-17 and confirmed
+unchanged by this same 2026-11-25 session's pre-test `F182` byte-for-byte readback and by
+every intervening rejected test, none of which wrote anything). This supersedes the
+2026-11-17 CarPlay/Android-Auto-also-disabled candidate, which was itself already
+superseded by the 2026-11-17 full stock LTZ restoration and has not been reapplied. The
+owner independently confirmed the SXM entry is again gone from AAOS Radio; a dedicated
+cold-power-cycle test of this specific rewrite has not yet been run (the 2026-11-16
+SXM-only candidate's cold-cycle persistence was verified previously, but today's write is
+a new transfer through a corrected driver).
 
 **History:**
 - **2026-11-10:** stock LTZ write succeeded under the SBI-dependent all-FF seed; same-day
@@ -52,6 +80,27 @@ projection persistence under a cold cycle has not yet been tested.
   change, a full stock LTZ restoration, and several further calibration trials (screen
   resolution, Google-app visibility, recorder, porch-view) — see the chronological log below
   for the full supersession chain.
+- **2026-11-25:** a full 14-slot custom-package test, run through a new driver
+  (`tools/bench/bench_can/calibration_write_can5.py`, which did not exist before this date),
+  was rejected on every slot; isolation work briefly implicated the CalSetsDB repack
+  toolkit and then a production-CA-signer-record theory, both subsequently withdrawn in the
+  same day's log. The real cause, found by recovering and diffing the raw on-wire bytes of
+  the one historically-successful 2026-11-16 write against today's driver: `calibration_write_can5.py`
+  sent the CAN613/614 marker-pair override values (`0xA5163829`/`0x5AE9C7D6`) big-endian
+  instead of the RH850 core's native little-endian, so the wrong 32-bit value landed in VIP
+  RAM; every write-then-readback check still reported success because it compared only
+  against that same wrong constant, silently self-verifying a broken write all day. The bug
+  is now fixed (marker values packed little-endian) and independently verified: the exact
+  2026-11-16 SXM-disable edit (slot 0C, `_ysOddU1AEeO3UM5MzM17kw` true→false) was rewritten
+  through the fixed driver, the UDS transfer was accepted cleanly (`34 → 74 20 0F FF`;
+  `36 01 → 76 01`; `36 02 → 76 02`; `37 → 77`; PEC `0000`), and the owner has now visually
+  confirmed the SXM feature is gone from AAOS Radio. This does not change the original
+  2026-11-16 entry's own record (its restart-pending portion was already superseded there by
+  the same day's cold-cycle entry) — it independently reproduces that entry's result end to
+  end, fresh owner visual confirmation included, through the now-corrected driver, closing
+  the question today's byte-order bug had reopened over whether CAN613/614 custom writes
+  work at all. See the chronological log's final three 2026-11-25 entries for the full
+  investigation.
 
 This page keeps the Type4/calibration-value distinction and the CAN-bench trial record; GSK
 owns the seed/key/signature/certificate evidence.
@@ -323,9 +372,8 @@ repeated-cycle reliability.
 
 ### 2026-11-16: CarPlay and Android Auto custom calibration accepted
 
-Following the owner-confirmed SXM cold-cycle result, slot0C was rebuilt again. The SXM-false
-override was retained and two previously absent feature-enable Boolean overrides were added,
-each at version 3:
+Slot0C was rebuilt: the SXM-false override was retained, and two previously absent
+feature-enable Boolean overrides were added, each at version 3:
 
 | Feature | Calibration name / ID | Requested value |
 |---|---|---|
@@ -468,6 +516,205 @@ separate display-support check: `T/C0129w.java:a` allows only `SIZE_1920_BY_1080
 `SIZE_1280_BY_768`, and `T/A.java:b` derives that enum from `SCREEN_RESOLUTION`. Source slot08
 specifies 2400×960 — a concrete additional gate that can make a true override ineffective;
 live provider readback remains necessary to confirm running values.
+
+### 2026-11-25: full 14-slot custom package rejected (first full-package custom test)
+
+**Input:** owner-supplied `LTZ_CustomCAL.zip`, 14 files named by part number (same
+`SLOT_PARTS` mapping as the stock package). All 14 decompress to valid CSM containers with
+correct slot bytes, and all 14 differ byte-for-byte from the pinned stock LTZ containers
+(confirmed by direct comparison, not just size) — this is a genuinely modified package, not a
+mislabeled stock copy:
+
+| Slot | Part | Stock decompressed length | Custom decompressed length | Custom SHA-256 |
+|---|---|---|---|---|
+| 02 | 87863250 | 1421 | 1415 | `8e47a6507b4f9b1f6dd5734498d73c0dfa4966d69ba8512ee9e166b562bcabd0` |
+| 03 | 84517309 | 989 | 989 | `d446168131bc095ac6276cce93a333cf497cb167550b192897f057a707d89d8a` |
+| 04 | 85045371 | 15284 | 13242 | `6ddf00208fe3e3141d87300817c19bf948fbd1dc7cc0ab15ce4305c6306eee5a` |
+| 05 | 87846416 | 3740 | 3597 | `f1b12418f9ad4fb9175717cfa4ed8edfc224ff18e54e11883cec5cfbe1fd67fe` |
+| 06 | 87846371 | 7895 | 7637 | `464bd9daade0834eaf5997ca3948f6fc169014a378653e947d49f542990c29a1` |
+| 07 | 85783460 | 4285 | 4197 | `bc3fee02939c21a48b11c22c28be9b5129c172184c4a6985517e7a14854e539d` |
+| 08 | 87846432 | 1563 | 1545 | `4516a83c0b578b9fbbe07f1a7eaeaec0419371d105f9e54ba20ceaea19b2c186` |
+| 09 | 87846376 | 1725 | 1714 | `7827078dbfdc63b28970821890b77a73e3b51b17f36eca74892020a6d2e9b39e` |
+| 0A | 87846368 | 1421 | 1411 | `9171474a3d79b5d25d4554e7910e50bea064015a58873ca9a4227a5c53baeea9` |
+| 0B | 86292118 | 1724 | 1712 | `aac06dedbcffa0c41bbbb861d2f2dbd6d4d9139f599a2b1ca223c27c9f26f262` |
+| 0C | 85102312 | 1457 | 1445 | `966d96bc1833eb37890906d3253e55897bccf7f54a5f1aaec3b3a28c09377061` |
+| 0D | 87846384 | 1434 | 1423 | `cb70efcce940bcabf821d2c0bda800bb17da484c10bd6623db15896af9194b40` |
+| 0E | 84517418 | 989 | 989 | `3f31886155e795206e404d97d65b2248db58b8555dbe169c27449c65f7f7f1f4` |
+| 0F | 87846380 | 2235 | 2187 | `bf8b6eaf0b7bc44d262e372960f738d2470b29a05b24c7c31cbf98d0a884f6d0` |
+
+**Method:** `tools/bench/bench_can/calibration_write_can5.py` (not bundled: `tools/bench/bench_can/calibration_write_can5.py`)
+package mode with `--modified` (the full CAN613/614 scoped-RAM-override path, §4
+2026-11-16 above), driven through the just-fixed single-session structure (one
+`enter_programming_session(genuine=False)` for the whole batch, `transfer_one()` looped over
+all 14 slots, one `exit_programming_session()` at the end — see
+CAN campaign, 2026-11-25 (not bundled: `platform/can_bench_experiments.md`)
+for that fix). The override was applied and verified by readback exactly once, before slot 02,
+and restored exactly once, after slot 0F — not re-applied per slot.
+
+**Result: rejected on every slot.** `34` negotiated normally (`74 20 0F FF`) for all 14, but
+every slot's first `36` block returned `7F 36 72` — no custom transfer exit was ever sent, and
+no slot's data was written. This is new: every previously-documented successful custom write
+through this same CAN613/614 mechanism (SXM, CarPlay/AA, GMBrand3, screen-resolution, Google
+visibility/navigation/recorder, porch-view) was a single slot with one small field changed
+(stock-vs-candidate deltas of a few bytes); this package changes all 14 slots at once with
+much larger per-slot deltas (up to 2042 bytes on slot04). Whether the rejection is driven by
+the all-14-at-once scope, the larger per-slot edit size, some other content property of this
+specific candidate, or a combination, is not established by this test alone — do not treat
+this as proof that CAN613/614 only works for single-field edits in general; it is proof only
+that this specific 14-slot candidate was rejected on every slot.
+
+**Safety:** confirmed clean. Live `F182` readback immediately after (same driver, `verify`
+mode) matched all 14 slots against the pinned stock LTZ containers byte-for-byte, with the
+identical `22 F1 82` response bytes as the pre-attempt baseline — the rejected attempt wrote
+nothing and left the ECU's calibration state unchanged.
+
+### 2026-11-25: root-cause isolated — recompression alone triggers rejection, not the edit
+
+Two follow-up diagnostics on the rejection above, both against slot03/`84517309` (the
+simplest candidate: 989-byte container, empty `<calovride:CalOvrideFile/>` override, no
+entries at all):
+
+**1. The override survives session-open.** Added a non-destructive read-back of
+`FEBF0BF8`/`FEBF0BFC` immediately after the full `10 01`→`10 02` session-open sequence,
+before any custom `34`/`36`. Both words still held the marker pair
+(`A5163829`/`5AE9C7D6`) exactly — nothing in `10 03`/SecurityAccess/`FF01`/`021E`/`85
+02`/`28 03 01`/`10 02` resets them. The override is genuinely active at the moment of the
+rejected transfer, not silently cleared beforehand.
+
+**2. PEC at the moment of failure is `0015`** — the same programming-error code the
+2026-11-16 entries above trace to signed-header verification failure. Captured
+immediately (a later `22 F0F1` read, after other bus activity, no longer reflects it: the
+PEC register does not persist usefully past subsequent session activity, which is why the
+first full-package attempt's PEC was not recorded there).
+
+**3. Decisive isolation — a zero-edit repack is rejected identically.** Diffed the
+"custom" slot03 against pinned stock slot03 at the `caltool/container.py` level: the
+decompressed XML is **byte-for-byte identical** to stock (both the same empty override
+file) — slot03 in `LTZ_CustomCAL.zip` carries no actual calibration edit at all. The only
+difference is in the header's digest field (bytes 30–61, expected: digest covers
+`container[858:]`, which differs because the **inner gzip stream itself differs byte-for-
+byte** despite identical decompressed content — stock's inner-gzip header is `1f 8b 08 00
+00 00 00 00 00 00` (`XFL=00`, `OS=00`/FAT); the repacked version is `1f 8b 08 00 00 00 00
+00 02 ff` (`XFL=02`, `OS=0xFF`/unknown) — Python's `gzip` module's fixed header fingerprint,
+not GM's own tooling's.
+
+To isolate "recompression artifact" from "edit content," `caltool/container.reseal()` was
+called on the **genuine, unedited** stock slot03 header+XML — same bytes, same header
+outside the digest field, zero content change — producing a container that is functionally
+identical to stock but was pushed through this toolkit's gzip repack. That pure-repack
+container was written through the same CAN613/614 override path (override applied and
+verified both before and after session-open, as in point 1 above): **rejected identically**
+— `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; PEC `0015`.
+
+**Conclusion:** the full-package rejection above is not about edit size or
+all-14-slots-at-once scope — a single slot with literally zero calibration change, whose
+only difference from the accepted stock original is a different gzip encoding of identical
+bytes, fails the same way. The CAN613/614 marker-pair exemption (§3) covers a failed
+**header-signature** check, but whatever is rejecting these containers is evidently a
+**separate** check that the marker pair does not exempt — most likely the "production-CA
+signer record" §3 mentions as a distinct field from the header RSA, since the 2026-11-16
+successful SXM candidate's trace explicitly reports that record as having verified
+successfully for that edit, unlike this toolkit's current repack output. Every historically
+successful custom write through this mechanism predates `caltool/container.py` (2026-11-22)
+and was produced by a different process; this is the first test of containers produced by
+`caltool/container.reseal()`+`pack_outer()` specifically. Root-causing the second check
+itself (its byte range, what it actually validates, whether a different repack strategy —
+e.g. preserving the original inner-gzip bytes when no edit changes it, or matching GM's
+observed `OS`/`XFL` header fingerprint) requires binary-level tracing of that verifier
+function, not established here.
+
+### 2026-11-25: exact reproduction of the 2026-11-16 SXM success also rejected — toolkit ruled out, root cause still open
+
+**Correction to the "Conclusion" immediately above:** the production-CA-signer-record
+theory is withdrawn. Checked against
+[GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md §7](GM_SEED_KEY_AND_CALIBRATION_SIGNATURES.md#7-csm-calibration-format-c)'s
+exact byte-range table: the signer record `[62:344]` and the CA signature over it
+`[344:600]` are both completely untouched by the zero-edit repack test (only `[30:62]`,
+the digest, differs) — that check's own inputs are provably unchanged from stock, so it
+cannot be what's failing. Measuring the actual bytes further: the repacked inner gzip
+stream differs from stock by exactly 2 bytes (the `XFL`/`OS` gzip-header metadata fields);
+the compressed payload data, CRC32 trailer, and size trailer are all byte-identical,
+because this XML happens to compress identically under both encoders.
+
+**Clean-power-cycle control.** Physically power-cycled the bench (HomeKit-outlet toggle,
+confirmed by a fresh `RstRsn=0x33`/incremented boot-counter line in the VIP console UART —
+a genuine power-on reset, not internal sleep/wake) to rule out stale session state from
+the day's several back-to-back attempts. Repeated the slot03 zero-edit-repack write from
+that clean boot: byte-for-byte identical result (`7F 36 72`, PEC `0015`).
+
+**Exact reproduction, independent of `caltool`.** To rule out `tools/calibration_toolkit`
+itself as producing a wrong or corrupt module, a from-scratch, standalone script (no
+import of any `caltool` module) read
+the genuine stock slot 0C container, located `CalID` `_ysOddU1AEeO3UM5MzM17kw`
+(`SXM_Enabled`, confirmed present with `<Value>true</Value>`, matching the 2026-11-16
+record exactly), flipped only that one value to `false`, recompressed with
+`gzip.compress(..., mtime=0)`, and recomputed only the digest field — asserting
+byte-for-byte that every other header byte stayed identical to stock. This is the exact
+edit, exact slot, and exact CalID the 2026-11-16 success used. Written through the same
+CAN613/614 path (override applied and verified present both before and after
+session-open): **rejected identically** — `34 → 74 20 0F FF`; `36 01 → 7F 36 72`; PEC
+`0015`.
+
+**Firmware identity cross-check.** Live `F181` read during this same session:
+`01 05 1c 96 6f 43 4a` → module 01, part `85759599`, alpha `CJ` — an exact match to the
+pinned reference the 2026-11-16 success and its Ghidra disassembly were both recorded
+against. The firmware build has not changed.
+
+**Status: every bench-side variable has now been tested and ruled out** — override
+presence/timing (confirmed live, both before and after session-open), edit content and
+size (down to a byte-identical zero-edit repack), full-package scope, session/latched
+state (fresh power-on reset), toolkit involvement (independent from-scratch script), and
+firmware build (identity-matched). The exact documented 2026-11-16 recipe, reproduced as
+faithfully as live testing allows, does not reproduce its own result on this bench today.
+This points to either an unrecorded precondition from the original 2026-11-16 session that
+none of the existing documentation captures, or a stateful/one-time aspect of the
+marker-pair exemption (an NVM-backed flag, a counter, a latch set once and not since
+reset) that a live CAN-side test cannot observe. Resolving which requires binary-level
+tracing of the exemption's real trigger condition (the verifier at file offset `56D50`,
+PEC-setter at `86302`) — comparable in scope to the existing 021E-precondition
+disassembly — not established here.
+
+### 2026-11-25: resolved — the driver was sending the marker-pair VALUES byte-swapped
+
+**Correction to "Status: unresolved" immediately above.** The byte-level log of the
+original successful write was located in local session transcripts:
+`~/.codex/sessions/2026/11/16/rollout-2026-11-16T22-54-24-01a1e87f-fc2c-7100-a170-80ccb6790305.jsonl`,
+line 914 (the success) and line 712 (an earlier failing control in the same session,
+useful as a direct contrast).
+
+**The actual bug, found by comparing the real on-wire bytes:** the successful transcript's
+inline tool writes the marker pair via CAN613 `DOWNLOAD` (`F0`) as
+`F0 04 29 38 16 A5` (for `FEBF0BF8`) and `F0 04 D6 C7 E9 5A` (for `FEBF0BFC`) — i.e. the
+32-bit values `0xA5163829`/`0x5AE9C7D6` encoded **little-endian** (RH850 is a little-endian
+core, and the verifier does a native 32-bit load of these words). `calibration_write_can5.py`'s
+`MARKER_VALUES` instead held `bytes.fromhex("A5163829")`/`bytes.fromhex("5AE9C7D6")` — natural
+(big-endian) byte order — so `write_word()` sent `F0 04 A5 16 38 29` instead: the *wrong*
+32-bit value landed in RAM (`0x29381 6A5`, not `0xA5163829`). Every "override+verify" check
+in every attempt this session reported success anyway, because `read_word()` reads back
+the same raw bytes it wrote and the comparison was against that same wrong constant — a
+self-consistent-but-wrong check that could never catch its own error. This is why the
+override's live presence was confirmed correct at every checkpoint (including right before
+the rejected `34`/`36` calls) while the actual RAM content was never the value the
+verifier was checking for.
+
+The same transcript also showed two other real (but non-causal, confirmed by the control
+run at line 712 using the same values anyway) procedural differences, now matched for
+fidelity: the marker override was written **after** `10 02` (profile-01 grant → `FF01` →
+`021E` → `85 02` → `28 03 01` → `10 02` → **then** override), not before the whole
+sequence; and `TransferData` used a hardcoded **1022-byte** chunk regardless of the ECU's
+advertised `0x0FFF`, not the near-maximal 4093-byte chunk this driver used for genuine
+writes.
+
+**Fixed and verified live.** `tools/bench/bench_can/calibration_write_can5.py`: `MARKER_VALUES`
+now packs both words little-endian (`struct.pack('<I', ...)`); the override moved to after
+`10 02`; `transfer_one()` takes a `block` parameter (1022 for `genuine=False`, unchanged
+4093 for `genuine=True`, which was already proven against all 14 stock slots and is left
+alone). Rewriting the exact same SXM-disable candidate (slot 0C,
+`_ysOddU1AEeO3UM5MzM17kw` true→false) through the fixed driver: **accepted** —
+`34 → 74 20 0F FF`; `36 01 → 76 01`; `36 02 → 76 02`; `37 → 77`; PEC `62 F0 F1 00 00`. The
+on-wire override bytes read back as `29 38 16 A5`/`D6 C7 E9 5A`, matching the 2026-11-16
+transcript exactly. This reproduces the one documented successful custom write, this time
+through this repo's own driver rather than a lost inline one-liner.
 
 ## 5. Other paths and unresolved questions
 

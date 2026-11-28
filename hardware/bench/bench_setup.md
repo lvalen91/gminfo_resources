@@ -1,9 +1,18 @@
-# Bench hardware setup baseline
+# Bench hardware setup baseline (macOS host, direct-adapter phase)
 
-Validated 2026-11-15. This is the owning reference for bench hardware configuration
-and access acceptance checks. Private addresses, device serials and host identities
-are intentionally represented by placeholders. No packet, Android logcat, UART-event
-or CAN-payload recording is required to establish this baseline.
+**Superseded as the current bench, 2026-11-27:** this baseline documents the
+macOS-host phase (Mac + CANable/CP2102/Realtek adapters attached directly to
+the host). The current bench runs from a Raspberry Pi 4 (PiOS) instead of a
+Mac; see [current_bench.md](current_bench.md) for that configuration. This
+document's wiring, adapter, and acceptance-check content is kept as the
+historical record for the macOS-host phase and is not the current process
+state.
+
+Validated 2026-11-15. This is the owning reference for the macOS-host bench
+hardware configuration and access acceptance checks from that phase. Private
+addresses, device serials and host identities are intentionally represented
+by placeholders. No packet, Android logcat, UART-event or CAN-payload
+recording is required to establish this baseline.
 
 **Current runtime override (2026-11-17):** the radio is running native
 `7.3.5-probe-stable02`, with USB ACM shell and volatile T1/VLAN-5 root SSH,
@@ -30,18 +39,17 @@ separate T1 bench connection is additional to that harness. The exact T1 media
 converter make/model and current radio-end tap pins have not been established
 by this baseline. Do not infer the automotive bus number from host interface `en12`.
 
-`[X]` A separate Y175 Bus 2 bench (BUELEC 100/1000Base-T1-TX-L converter) found that the converter must be forced to 100M, because its 1000BASE-T1 mode does not interoperate with this 100BASE-T1-only link; the polarity-swap and tap details are in `../VERIFICATION.md` and `../platform/vehicle_network.md`. Host NIC: a plain gigabit USB NIC (RTL8153) on a native USB port worked; an RTL8156 2.5G adapter and an onboard Aquantia 10G port were reported flaky at 100M. This does not establish the converter, tap pins or NIC used by this baseline. Source: an external bench note, §0a.
+`[X]` On a separate Y175 Bus 2 bench (BUELEC 100/1000Base-T1-TX-L converter), the converter must be forced to 100M: its 1000BASE-T1 mode does not interoperate with this 100BASE-T1-only link. Polarity-swap and tap details are in `../VERIFICATION.md` and `../platform/vehicle_network.md`. Host NIC: a plain gigabit USB NIC (RTL8153) on a native USB port worked; an RTL8156 2.5G adapter and an onboard Aquantia 10G port were flaky at 100M. This does not establish the converter, tap pins or NIC used by this baseline. Source: an external bench note, §0a.
 
 CAN 5 is the X6 p9/p10 pair, also called SER DATA 5; see
 [vehicle_network.md](../platform/vehicle_network.md#plane-1--can-from-the-dps-scan).
 Connect CAN H, CAN L and **CANable GND directly to radio X5 pin 3 (Signal GND)**.
-The owner reported successful script-driven radio operation with that signal-ground
-connection after trying other ground points; chassis ground is not a substitute
-for establishing this bench reference. The owner measured **60 ohms across H/L
-with the CANable termination switch at E**. Resistance checks require power off;
-60 ohms is consistent with two 120-ohm terminators in parallel. The complete
-termination topology has not been independently traced. An already terminated
-bus should not acquire a third terminator.
+Script-driven radio operation succeeded with that signal-ground connection;
+chassis ground is not a substitute for this bench reference. Measured **60 ohms
+across H/L with the CANable termination switch at E**. Resistance checks require
+power off; 60 ohms is consistent with two 120-ohm terminators in parallel. The
+complete termination topology has not been independently traced. An already
+terminated bus should not acquire a third terminator.
 See the [CANable wiring guide](https://canable.io/getting-started.html).
 
 ## T1 Ethernet and ADB
@@ -189,8 +197,8 @@ Do not treat it as proof of a missing route or a USB driver permission failure.
 
 **Baseline decision, 2026-11-15:** retain sudo for T1 configuration and the
 source-bound relay. Adding the signed Codex executable through Local Network's
-add button produced no error but no visible list entry, as reported by the owner.
-An effective permission grant was not established. Further Local Network
+add button produced no error but no visible list entry. An effective permission
+grant was not established. Further Local Network
 permission troubleshooting is deferred; sudo-free T1 access is not an acceptance
 requirement for this baseline. CANable, UART and USB ADB remain unprivileged.
 

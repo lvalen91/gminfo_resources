@@ -669,7 +669,7 @@ access to).
 ### 13a. Firmware architecture: VIP_APP is a real AUTOSAR DCM
 
 Static V850 RE (image `86331656`, same addressing convention as the rest of this repo's
-firmware work: `file_offset + 0x27A7A = runtime`) found one central diagnostic
+firmware work: `file_offset + 0x27A7A = runtime`) identifies one central diagnostic
 configuration block at file `0x1CC40–0x1D400` (runtime `0x446BA+`):
 
 - **Supported UDS service (SID) list**, file `0x1CCA8` (runtime `0x44722`): count byte

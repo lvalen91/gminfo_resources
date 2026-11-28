@@ -6,7 +6,7 @@ Out of scope (pointers only): AVB/gPTP/AAF audio transport, ELK RAM-Linux networ
 
 Evidence legend: `[C]` confirmed against a capture/artifact; `[?]` open or inference; `[read]` read from a dump rather than a live shell. "Y175" = bench radio build `W213E-Y175.5.2-SIHM22B-383.1` (live captures dated 2026-10-05/06); "Y181" = `W231E-Y181.3.2-SIHM22B-499.3`. Content dates run to 2026-11-17.
 
-Related: [hardware_specs.md](../hardware/specs.md), [vehicle_network.md](vehicle_network.md), [avb_audio_transport.md](avb_audio_transport.md), [fsa_protocol.md](fsa_protocol.md), [elk_recovery.md](elk_recovery.md), [security.md](security.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vip_ipc_ghs.md](vip_ipc_ghs.md). Bench host-side VLAN/ADB setup baseline (owns the repeatable host configuration and acceptance checks): [../hardware/bench_setup.md](../hardware/bench_setup.md). This document owns the radio's network architecture.
+Related: [hardware_specs.md](../hardware/specs.md), [vehicle_network.md](vehicle_network.md), [avb_audio_transport.md](avb_audio_transport.md), [fsa_protocol.md](fsa_protocol.md), [elk_recovery.md](elk_recovery.md), [security.md](security.md), [firmware_versions.md](firmware_versions.md), [ota_programming_roles.md](ota_programming_roles.md), [vip_ipc_ghs.md](vip_ipc_ghs.md). Bench host-side VLAN/ADB setup: current bench (Pi host) is [../hardware/bench/current_bench.md](../hardware/bench/current_bench.md); the superseded macOS-host baseline (repeatable host configuration and acceptance checks from that phase) is [../hardware/bench/bench_setup.md](../hardware/bench/bench_setup.md). This document owns the radio's network architecture.
 
 ---
 

@@ -42,7 +42,8 @@ Routing page for the whole repository. Paths are the current layout (restructure
 | Which calibration parameters are safe to customize vs. avoid | [research/eeprom-calibration/CALIBRATION_CUSTOMIZATION_GUIDE.md](research/eeprom-calibration/CALIBRATION_CUSTOMIZATION_GUIDE.md) |
 | Full 404-key slot04 calibration catalog | [research/eeprom-calibration/calibration_glossary.md](research/eeprom-calibration/calibration_glossary.md) |
 | MDI2 protocol and client | [research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md](research/mdi2-bench-sessions/MDI2_DPDU_API_PROTOCOL_AUG2026.md), [tools/mdi2_client/README.md](tools/mdi2_client/README.md) |
-| Bench setup (OPU harness, T1/VLAN, CAN, UART) | [hardware/bench_setup.md](hardware/bench_setup.md) |
+| Bench setup — current (Pi host, CANable, T1 converter, UART, ADB) | [hardware/bench/current_bench.md](hardware/bench/current_bench.md) |
+| Bench setup — superseded macOS-host phase (OPU harness, T1/VLAN, CAN, UART acceptance checks) | [hardware/bench/bench_setup.md](hardware/bench/bench_setup.md) |
 | Connectors, teardown, board map | [hardware/teardown.md](hardware/teardown.md), [hardware/interfaces/connectors.md](hardware/interfaces/connectors.md), [hardware/schematics/board_map/README.md](hardware/schematics/board_map/README.md) |
 | CVEs, attack surface, escalation | [research/security/CVE_ATTACK_SURFACE_ANALYSIS.md](research/security/CVE_ATTACK_SURFACE_ANALYSIS.md), [research/security/KERNEL_CVE_ANALYSIS.txt](research/security/KERNEL_CVE_ANALYSIS.txt), [research/security/SHELL_ACCESS_ESCALATION_Jun2026.md](research/security/SHELL_ACCESS_ESCALATION_Jun2026.md) |
 | CarPlay video decode | [video/carplay_video_pipeline.md](video/carplay_video_pipeline.md) |
@@ -81,14 +82,13 @@ Method notes: 16 of the 30 read documents were rated from content because they u
 
 ## External sources, not included in this repository
 
-The owner keeps a separate, external working directory of raw captures, vendor installers/tools,
-in-progress RE workspaces and other project material that predates or feeds this repo. It is not
-mirrored here and its internal layout isn't repeated in this doc — a path on someone else's drive
-tells another reader nothing useful and risks surfacing identifying detail, so this section
-describes categories and conclusions only. This repo is the clean, organized distillation of that
-material, not a copy of it: most of it is either superseded by a more-refined repo doc here,
-vendor/licensed material kept out on purpose, or working material too raw to summarize. Surveyed
-2026-11-21.
+A separate, external working directory holds raw captures, vendor installers/tools, in-progress
+RE workspaces and other project material that predates or feeds this repo. It is not mirrored
+here, and its internal layout is not repeated in this doc — a path on another drive is not useful
+to a reader and risks surfacing identifying detail, so this section lists categories and
+conclusions only. This repo is the clean, organized distillation of that material, not a copy of
+it: most of it is superseded by a more-refined repo doc here, is vendor/licensed material kept out
+on purpose, or is working material too raw to summarize. Surveyed 2026-11-21.
 
 | Category | Distilled into (this repo) |
 |---|---|

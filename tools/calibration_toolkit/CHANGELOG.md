@@ -32,9 +32,9 @@ Entries are grouped by date, oldest first within each date, newest date at the b
   - The safety gate was enforced only client-side on add, never at export time — an
     already-loaded restricted entry could be edited with no gate at all. Added
     server-side enforcement in `/api/export` and `/api/export_zip`.
-  - **The gate's own premise was found to be false and corrected**: its restricted
-    groups were documented as "never shipped"; direct verification found 162 real
-    entries from these groups already present in stock slot 04 alone. Renamed
+  - **The gate's own premise was incorrect; corrected**: its restricted groups were
+    documented as "never shipped"; direct verification found 162 real entries from
+    these groups already present in stock slot 04 alone. Renamed
     `NEVER_SHIPPED_SAFETY_GROUPS` → `SAFETY_RESTRICTED_GROUPS` (old name kept as a
     deprecated alias) and corrected the warning text.
   - 154 real CalDef names collide across two different `.caldef` groups with
@@ -49,8 +49,8 @@ Entries are grouped by date, oldest first within each date, newest date at the b
   - Flask no longer runs with `debug=True`.
 - `6477e3f` **redesign:** full editor UI redesign (grouped entry rows, elastic identity
   column, Boolean segmented toggle, coupled enum number+select, structured-type expand
-  panels, light/dark theming), driven by two independent human-interface design research
-  passes after a reported Name-column truncation bug.
+  panels, light/dark theming), based on two independent human-interface design reviews;
+  addresses a Name-column truncation bug.
 - `a3b23d3` **fix, critical regression:** the above redesign broke every module after one
   edit or one collapse/expand — `renderModuleList()` destroyed and recreated each
   module's body `<div>` on every call, while the body-builder's lazy-render guard
@@ -64,11 +64,10 @@ Entries are grouped by date, oldest first within each date, newest date at the b
   pattern already used for entry rows.
 - `655c4bc` **redesign:** replaced the global "look up any calibration" section (which
   only worked if some module happened to already be expanded, tracked by a hidden
-  `expandedIndex` global with no visible UI connection to it — reported as "detached and
-  disorganized") with a per-module "+ Add entry…" control, scoped to its own module by
-  JS closure instead of a global pointer. Design grounded in a researched spec citing
-  real prior art (GitHub Projects' "Add item" row, Airtable/Notion's per-table
-  "+ add field", Xcode's target-scoped "+ Capability").
+  `expandedIndex` global with no visible UI connection to it) with a per-module
+  "+ Add entry…" control, scoped to its own module by JS closure instead of a global
+  pointer. Follows prior art: GitHub Projects' "Add item" row, Airtable/Notion's
+  per-table "+ add field", Xcode's target-scoped "+ Capability".
 - `aea5fb7` **fix:** a Fable-agent review of the above redesign found four regressions,
   confirmed live and fixed: a failed Add (e.g. one of the 154 ambiguous CalDef names)
   still marked the row "Added"; the add-time safety dialog showed no real warning text

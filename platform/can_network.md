@@ -28,9 +28,8 @@ bit-numbering, which is noted separately where external sources are compared.
 line `n` in the isolated-harness capture `can5-harness-only.jsonl`. These are local
 capture-file roles, not machine paths; raw captures/payloads are not repository
 attachments. **H** = observed from the isolated harness; **R** = received from the radio
-with the harness MCU disconnected. All 40 originally provisional radio IDs were
-subsequently confirmed in `radio-only-rx.can.jsonl` (TX echoes excluded; no missing or
-extra IDs). `radio-only-rx.uart.jsonl` supplies Mac-clock-correlated UART events. **A** =
+with the harness MCU disconnected. All 40 provisional radio IDs were confirmed in
+`radio-only-rx.can.jsonl` (TX echoes excluded; no missing or extra IDs). `radio-only-rx.uart.jsonl` supplies Mac-clock-correlated UART events. **A** =
 external ID+DLC match; **W** = name-only lead; **conflict** = format mismatch. An alias
 does not by itself establish an A11 sender, recipient, scale, checksum, or wake/keep-alive
 function — unknown entries remain unknown.
@@ -390,11 +389,12 @@ dictionary was found in these inspected sources — not a claim that none exists
 
 The [2008 Impala notebook][I08] and its [DBC][I08DBC] label `4F1` as PCM fuel rail
 pressure, whereas GMLanDebug calls it powertrain configuration data; the notebook leaves
-the pressure formula unconfirmed. Our `4F1` sender is the radio on the isolated bench, not
-an identified PCM — both external names remain unresolved leads.
+the pressure formula unconfirmed. The `4F1` sender here is the radio on the isolated
+bench, not an identified PCM — both external names remain unresolved leads.
 
 For `4E9`, l77rodeo's two examples are each **five bytes** (matches the existing
-length-conflict entry); the Impala notebook lists **two bytes**; our radio emits **eight**.
+length-conflict entry); the Impala notebook lists **two bytes**; the radio here emits
+**eight**.
 These platform differences are reasons to reject automatic ID-based label transfer.
 
 Surreal Development's [Cadillac Part 1][S1] explicitly excludes Intel Silverado/Sierra
@@ -421,7 +421,9 @@ unavailable; the article sources are not a complete DBC or replay package.
 ## Related
 - [`vehicle_network.md`](vehicle_network.md) — topology, ECU census, diagnostic transport, gateway addressing.
 - [`can_bench_experiments.md`](can_bench_experiments.md) — lab-notebook: calibration/LTZ trial narrative, adapter status/startup-reduction/keep-alive timing, ADB-enable sweeps, animation/door-sequence test logs.
-- [`../hardware/bench_setup.md`](../hardware/bench_setup.md) — wiring and adapter configuration.
+- [`../hardware/bench/current_bench.md`](../hardware/bench/current_bench.md) — current bench wiring
+  (Pi host, CANable, T1 converter); [`../hardware/bench/bench_setup.md`](../hardware/bench/bench_setup.md)
+  — superseded macOS-host phase, still the record for adapter protocol/acceptance parameters.
 - [`ota_update_stack.md`](ota_update_stack.md) — OTA/USB-update bit-level frame confirmations (284/526/529/4DA) in context.
 - [`security.md`](security.md) — ProtoKey/seed validator trace.
 - [`ethernet_networking.md`](ethernet_networking.md) — VIP MCU as CAN↔IPC bridge, CSM address.
@@ -536,7 +538,7 @@ catalog below) ← setter `FUN_0008c6d4` (`0x8c6d4`) ← Com-RX unpack function 
 ← PRNDL decode `FUN_0004d7dc` (`0x4d7dc`) ← two Com signal descriptors, base **`0x2812A`**
 (`+signalID*0x18`, 24-byte records; calibrated 2026-11-26 against the already-verified
 `0x529` HmiReady/AnimationStatus bit positions, so the field offsets below are read from
-the live descriptor bytes, not the AUTOSAR start-bit numbers originally quoted here):
+the live descriptor bytes, not the AUTOSAR start-bit numbers previously quoted here):
 
 | CAN ID | DLC | Com signal | Bit field | Role | Status |
 |---|---:|---|---|---|---|

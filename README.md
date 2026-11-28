@@ -48,8 +48,11 @@ gminfo_resources/
 Full specs (RAM, storage, display, GPU, audio, kernel, firmware-build table):
 [hardware/specs.md](hardware/specs.md), [platform/firmware_versions.md](platform/firmware_versions.md).
 
-The [bench hardware setup baseline](hardware/bench_setup.md) owns the current OPU harness, VLAN/ADB access
-and macOS privilege requirements. The [CAN message reference](platform/can_network.md) catalogs captured IDs.
+The [current bench](hardware/bench/current_bench.md) (Raspberry Pi host, CANable, T1 media
+converter, UART, ADB) is the live hardware configuration; the
+[macOS-host bench baseline](hardware/bench/bench_setup.md) (OPU harness, VLAN/ADB access, adapter
+acceptance checks) is the superseded prior phase. The [CAN message reference](platform/can_network.md)
+catalogs captured IDs.
 
 ---
 
