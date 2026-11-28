@@ -11,6 +11,10 @@ on disk can show. Written 2026-11-28. Four passes share one status ladder:
   See [Settings](#settings).
 - **Bench pass** (30 candidate names: logging, diagnostics, hidden menu rows): 5 hand-traced rules, 2 value effects, and
   a list of what stayed unresolved. See [Bench and development value](#bench-and-development-value).
+- **Network-destinations pass** (every row naming an external server host, IP, URL or its port): full inventory, a
+  reader/no-reader verdict per destination, and a per-destination TLS/certificate-validation check of whether redirecting
+  the address to an owner-controlled host would work. 1 rule and 6 value effects added. See
+  [Network destinations](#network-destinations).
 
 | File | Content |
 |---|---|
@@ -30,14 +34,14 @@ on disk can show. Written 2026-11-28. Four passes share one status ladder:
 
 | Status | All rows | First slice | Bench rows with an override slot | Bench value differs from image |
 |---|---|---|---|---|
-| effect traced | 160 | 27 | 79 | 19 |
-| read, effect not traced | 178 | 1 | 102 | 40 |
+| effect traced | 167 | 27 | 86 | 24 |
+| read, effect not traced | 171 | 1 | 95 | 35 |
 | mentioned in decompiled Java, read not established | 43 | 0 | 14 | 6 |
 | name only | 853 | 43 | 538 | 350 |
 | not found outside bulk lists | 1340 | 29 | 249 | 90 |
 | Total | 2574 | 100 | 982 | 505 |
 
-Of the 178 "read" rows, 173 have a typed getter call in decompiled Java and 5 rest only on the native read-set check
+Of the 171 "read" rows, 166 have a typed getter call in decompiled Java and 5 rest only on the native read-set check
 (`animengine`, `vehiclepanel`).
 
 ## Value layers
@@ -400,13 +404,13 @@ are a `GHSCalibrations` entry (`P_IPC_AR_CAMERA_PRESENT`) and the generic word `
 
 ### Connected services and updates
 
-13 groups, 101 rows: 5 traced, 30 read, 3 mentioned, 3 name only, 60 bulk lists only.
+13 groups, 101 rows: 11 traced, 24 read, 3 mentioned, 3 name only, 60 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
 | `GIS668_REMOTEOMADMSERVERINTERFACE_GLOBALA` | 25 | 0 | 0 | 0 | 0 | 25 | none |
 | `GIS658_INFOTAINMENTPROGMASTER_GLOBALA` | 16 | 0 | 0 | 0 | 0 | 16 | none |
-| `REMOTESERVERSETTINGS` | 15 | 3 | 7 | 0 | 0 | 5 | GMAuthTokenService 5, GMSubscriptionManager 4, GMRegistrationService 3 |
+| `REMOTESERVERSETTINGS` | 15 | 9 | 1 | 0 | 0 | 5 | GMAuthTokenService 5, GMSubscriptionManager 4, GMRegistrationService 3 |
 | `GIS887_REMOTEPROGRAMMINGHMI_GLOBALB` | 12 | 1 | 11 | 0 | 0 | 0 | GMBugReportService 12, GMEcommPayment 12, GMTrustedDevice 12 |
 | `GIS505_ONSTARUI` | 9 | 0 | 4 | 0 | 3 | 2 | GMSubscriptionManager 2, GMOnStar 2, GMBugReportService 1 |
 | `GIS697_REMOTEREFLASHINFOTAINMENTFUNCTIONAL_GLOBALA` | 9 | 0 | 0 | 0 | 0 | 9 | none |
@@ -420,10 +424,15 @@ are a `GHSCalibrations` entry (`P_IPC_AR_CAMERA_PRESENT`) and the generic word `
 
 Good read coverage: `GIS887_REMOTEPROGRAMMINGHMI_GLOBALB` and `GIS864_USBPROG_GLOBALB` are read in full by the
 framework update classes (`Calibrations.OTA`, `Calibrations.USB`), server names and timers by the token, registration
-and subscription services. Effects were not traced, except in `REMOTESERVERSETTINGS`: `BACK_OFFICE_SERVER_ENABLED`
-(Settings rows) and the two rows GMTrailer reads to build its back-office URL, `ACCOUNT_AUTHENTICATOR_SERVER_NAME` and
-`SECURITY_EVENT_LOGGING_SERVER_HOST_PORT` (`trailer.backoffice_sync`). `SECURITY_EVENT_LOGGING_SERVER_NAME` has no
-reader. OMA-DM, reflash and programming-master groups are unread.
+and subscription services. `REMOTESERVERSETTINGS` now has 9 traced rows: the server host and port strings that the
+account-token, personalization-sync, device-registration, trailering and app-shop clients read to build their HTTPS
+URLs, plus the `BACK_OFFICE_SERVER_ENABLED` / `APP_SHOP_SERVER_ENABLED` gates. Its one remaining read-only row is
+`APP_SHOP_SERVER_NAME` (read by GUID, effect traced in rule `net.appshop_salesforce` but kept at "read" because it has
+no string-literal read site), and five rows have no reader at all: `SECURITY_EVENT_LOGGING_SERVER_NAME`,
+`SPEECH_REC_SERVER_NAME`, `SPEECH_REC_SERVER_HOST_PORT` and the two `APP_SHOP_SERVER_*_HOST_PORT` ports. The GM back-office
+host `BACKOFFICE_SERVER_NAME` (`SFS1_PERSONALIZATIONFRD`, nine reader packages) is now traced too. OMA-DM, reflash and
+programming-master groups are unread: `OVER_THE_AIR_REFLASH_SERVER_NAME` / `_HOST_PORT` have no reader on the Android
+image. The full destination inventory and the per-destination TLS verdict are in [Network destinations](#network-destinations).
 
 ### Vehicle identity and region
 
@@ -772,6 +781,93 @@ Not confirmed, with the reason:
   location, pointer location, GPU and animation options). It reads no calibration either; availability is the same
   global setting plus the user restriction and an app preference. Whether this GM list is reachable on this build was
   not checked.
+
+## Network destinations
+
+Every calibration in the image database (`CalSets.db`, 2573 rows) whose name or value names an external network
+destination — a server hostname, IP, URL, or the port that pairs with one — with, for each, whether live Android code
+reads it and, for the ones that are read, whether redirecting the address to an owner-controlled host would actually
+connect or would be refused by the client's TLS checks. Local-only addresses (the Wi-Fi hotspot's own DHCP/DNS pool,
+`WIFIINFO3` `DHCPStartIPAddress` / `DHCPEndIPAddress` / `DNSIPAddress`, all image value `TODO`) are excluded: they are
+not external destinations and have no reader.
+
+### The GM transport, and what a redirect does to it
+
+Every GM back-office / PAPI / trailering / registration client that was read routes through one TLS stack,
+`gm.android.security.GMHttpsConnector` (in `gmsecurity.jar`; used directly by `GMTrailer`'s `TrustClient` and by
+`GMRegistrationService`, and through the `gm.compat` wrapper by `GMSubscriptionManager`, `GMEcommPayment`, `GMAnalytics`,
+`GMTCPS`, `GMMyBrand`, `GMNotifications`, `GMRSISrc` and `GMTrustedDevice`). Its `getSSLSocketFactory()` builds the
+`SSLContext` trust managers from a `KeyStore` loaded **only** with the certificates of `GMTrustedGmRootCertificateStore`
+— GM's own root CAs under `$ANDROID_ROOT/etc/security/gmcerts`, with a `$ANDROID_DATA/misc/keychain/gmcerts-{added,removed}`
+overlay — never the system CA store. Its `HostnameVerifier.verify()` returns `true` unconditionally. Client auth (the
+device's own cert from `GMKeyChain`, alias `BO_ALIAS`) is on for every path except first-time registration.
+
+The consequence for the owner's goal: **the server certificate must chain to a GM root CA; the hostname is not checked.**
+So pointing one of these calibrations at a home-lab host that presents a self-signed or public-CA certificate makes
+`checkServerTrusted` fail and the **TLS handshake is refused** — the client does **not** fall back to sending the data
+in plaintext. The disabled hostname verifier does not help, because the trust anchor, not the hostname, is the gate. A
+redirect only yields observable traffic if the owner also installs their own CA into the GM store (`gmcerts-added`, which
+needs root on the head unit); once that CA is trusted, the disabled hostname check means the owner's cert can carry any
+name and still be accepted for the redirected host. `GMAuthTokenService` and `GMAPIManager` build their `https://…` URLs
+from these calibrations but hand the actual request to the bundled OnStar SDK (`com.gm.onstar.sdk`), whose HTTP client is
+not present in these decompiled trees; their URLs are HTTPS and nothing indicates a weaker transport, so their verdict is
+recorded as "unconfirmed (OnStar SDK), but same GM HTTPS URL".
+
+No calibration separately gates verbose logging for these clients: the Retrofit `LogLevel.FULL` seen in `GMTrailer`
+(`BOServiceGenerator`) and in `GMSubscriptionManager` (`MutualAuthRetrofitDaoFactory`, `AbstractMutualAuthRetrofitDaoFactory`)
+and the `DEBUG = true` in `GMHttpsConnector` are all hard-coded, not calibration-controlled.
+
+### The seven `RemoteServerSettings` / slot-05 server strings
+
+Stock override slot 5 (part `87846416`) ships six host strings; the image `REMOTESERVERSETTINGS` group holds six
+`*_SERVER_NAME` strings. Naming every one (the "seven" of an earlier note is these six plus `BACKOFFICE_SERVER_NAME`,
+which shares the slot-5 part but belongs to `SFS1_PERSONALIZATIONFRD`, not `REMOTESERVERSETTINGS`):
+
+1. `ACCOUNT_AUTHENTICATOR_SERVER_NAME` — `vehicle.api.gm.com` — **read** (GMAuthTokenService auth URL; GMTrailer BO host).
+2. `APP_SHOP_SERVER_NAME` — `sit-gm.cs21.force.com` (live `gm.secure.force.com`) — **read** (GMSubscriptionManager, by GUID).
+3. `DEVICE_REGISTRATION_SERVER_NAME` — `vehicle.api.gm.com` — **read** (GMRegistrationService).
+4. `PERSONALIZATION_SYNCH_SERVER_NAME` — `vehicle.api.gm.com` — **read** (GMAuthTokenService sync URL).
+5. `SPEECH_REC_SERVER_NAME` — `vehicle.api.gm.com` (live `gminfo3-am-ncs-ssl.gm.nuancemobility.net`) — **no reader**.
+6. `SECURITY_EVENT_LOGGING_SERVER_NAME` — `vehicle.api.gm.com` — **no reader** (slot 0, no override).
+7. `BACKOFFICE_SERVER_NAME` (`SFS1_PERSONALIZATIONFRD`) — `beta.api.gm.com:20643` (live `vehicle.api.gm.com:20445`) — **read** by nine packages.
+
+### Inventory
+
+"Redirect verdict" is for a home-lab host the owner controls: *rejected at TLS* = the client refuses the connection
+(GM-root-pinned trust); *unconfirmed* = the URL is HTTPS but the transport code was not in the decompiled tree.
+
+| Calibration | Group | Image value | Reader status | Redirect verdict · evidence |
+|---|---|---|---|---|
+| `BACKOFFICE_SERVER_NAME` | `SFS1_PERSONALIZATIONFRD` | `beta.api.gm.com:20643` | **read (9 pkgs)** | Rejected at TLS (GMSubscriptionManager path) / unconfirmed (OnStar-SDK readers). `VehicleCalibrationDAO.getPapiUrl` → `MutualAuthRetrofitDaoFactory` → `CustomUrlConnectionClient`/`CSMHttpsConnector`/`GMHttpsConnector` + `GMTrustedGmRootCertificateStore`. Also GMAPIManager, GMMyBrand, GMEcommPayment, GMNotifications, GMRSISrc, GMTCPS, GMTrustedDevice, GMAnalytics |
+| `ACCOUNT_AUTHENTICATOR_SERVER_NAME` | `REMOTESERVERSETTINGS` | `vehicle.api.gm.com` | **read** | GMTrailer: rejected at TLS (`TrustClient.openConnection` → `GMHttpsConnector(…, GMTrustedGmRootCertificateStore, true, true)`). GMAuthTokenService (`a/g.java:44`): unconfirmed (OnStar SDK) |
+| `ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT` | `REMOTESERVERSETTINGS` | `20647` | **read** | Pairs with the above in GMAuthTokenService `a/g.java:44` |
+| `PERSONALIZATION_SYNCH_SERVER_NAME` | `REMOTESERVERSETTINGS` | `vehicle.api.gm.com` | **read** | Unconfirmed (OnStar SDK). GMAuthTokenService `a/g.java:90` builds `https://name:port` |
+| `PERSONALIZATION_SYNCH_SERVER_HOST_PORT` | `REMOTESERVERSETTINGS` | `20647` | **read** | Pairs with the above (`a/g.java:90`) |
+| `DEVICE_REGISTRATION_SERVER_NAME` | `REMOTESERVERSETTINGS` | `vehicle.api.gm.com` | **read** | Rejected at TLS. `RegistrationHelper.getRegistrationURL:92` → `RegistrationService.createGMHttpsConnector` = `GMHttpsConnector(…, GMTrustedGmRootCertificateStore, false, true)` (client-auth off, trust still GM-root-pinned). `persist.gm.registration.address` overrides the calibration |
+| `DEVICE_REGISTRATION_SERVER_HOST_PORT` | `REMOTESERVERSETTINGS` | `443` | **read** | Pairs with the above (`RegistrationHelper:93`) |
+| `APP_SHOP_SERVER_NAME` | `REMOTESERVERSETTINGS` | `sit-gm.cs21.force.com` | **read** (by GUID) | Rejected at TLS. `VehicleCalibrationDAO.getSalesforceUrl:110` → same mutual-auth DAO stack. Effect traced in `net.appshop_salesforce` but status stays "read" (no string-literal site) |
+| `APP_SHOP_SERVER_ENABLED` | `REMOTESERVERSETTINGS` | `1` | **read** | Gate, `VehicleCalibrationDAO.isAppShopServerEnabled:138`; rule `net.appshop_salesforce` |
+| `SECURITY_EVENT_LOGGING_SERVER_HOST_PORT` | `REMOTESERVERSETTINGS` | `20445` | **read** | GMTrailer BO port (despite the name). Rejected at TLS (GMTrailer `TrustClient`); `TrailerCalibrationManager:72`, rule `trailer.backoffice_sync` |
+| `BACK_OFFICE_SERVER_ENABLED` | `REMOTESERVERSETTINGS` | `1` | **read (13 pkgs)** | Gate, not a destination. Already mapped; does not itself need to stay on for a destination string to be reached, but gates registration/token/Wi-Fi flows (see its Settings rules) |
+| `SECURITY_EVENT_LOGGING_SERVER_NAME` | `REMOTESERVERSETTINGS` | `vehicle.api.gm.com` | **no reader** | Nothing on the Android image consumes it (confirmed) |
+| `SPEECH_REC_SERVER_NAME` | `REMOTESERVERSETTINGS` | `vehicle.api.gm.com` | **no reader** | — |
+| `SPEECH_REC_SERVER_HOST_PORT` | `REMOTESERVERSETTINGS` | `443` | **no reader** | — |
+| `APP_SHOP_SERVER_MUTUAL_AUTH_HOST_PORT` | `REMOTESERVERSETTINGS` | `20647` | **no reader** | Unused; the app-shop host string carries no port, so HTTPS 443 is implied |
+| `APP_SHOP_SERVER_SIMPLE_AUTH_HOST_PORT` | `REMOTESERVERSETTINGS` | `443` | **no reader** | Unused |
+| `OVER_THE_AIR_REFLASH_SERVER_NAME` | `GIS668_REMOTEOMADMSERVERINTERFACE_GLOBALA` | `vtmpub.oboservices.mobi` | **no reader** | OMA-DM/reflash client is not on the Android image (native/other controller). `OMADM_CERT_SUBJECT` / `OMADM_CERT_ISSUER` pin the expected server cert DN |
+| `OVER_THE_AIR_REFLASH_SERVER_HOST_PORT` | `GIS668_REMOTEOMADMSERVERINTERFACE_GLOBALA` | `443` | **no reader** | — |
+
+### Bottom line for the redirect
+
+Every confirmed-live destination reached by code that is present on the image is behind the GM-root-pinned TLS stack, so
+a bare calibration redirect to a home-lab IP **would be rejected at the TLS handshake**, not silently captured. Making a
+redirect observe real traffic requires, in addition to the address change, installing an owner CA into the GM trust store
+(`/etc/security/gmcerts` or the `gmcerts-added` keychain overlay, root required); the client's disabled hostname check then
+accepts that cert for any redirected host. The no-reader destinations (`SECURITY_EVENT_LOGGING_SERVER_NAME`,
+`SPEECH_REC_*`, `APP_SHOP_*_HOST_PORT`, `OVER_THE_AIR_REFLASH_*`) can be changed with no effect on the Android image.
+Note two couplings before redirecting: `ACCOUNT_AUTHENTICATOR_SERVER_NAME` is the host for **both** the OnStar
+auth-token service and the trailering back-office, and `SECURITY_EVENT_LOGGING_SERVER_HOST_PORT` — despite its name — is
+the trailering back-office **port**, so changing either moves more than one client.
 
 ## What this method can and can't do, for next time
 

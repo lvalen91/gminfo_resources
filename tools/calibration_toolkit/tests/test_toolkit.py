@@ -84,7 +84,7 @@ def run_cli(*argv):
 class KnownEffects(unittest.TestCase):
     def test_snapshot_is_bundled_and_never_invents(self):
         doc = caldef._load_known_effects()
-        self.assertEqual(len(doc["entries"]), 161)
+        self.assertEqual(len(doc["entries"]), 168)
         for name, row in doc["entries"].items():
             self.assertIn(row["status"], MAP_STATUSES, name)
             # every bundled row has something behind it, and every rule resolves

@@ -43,6 +43,22 @@ _AUD_NOTE = ("GMAudio (com.gm.hmi.radio) AudioCalibrationManager maps the key th
              "false. Traced to the list onAddAudioSettingsList() builds; the row view was not inspected.")
 TRL_NET = "trailercore/data/backoffice/Managers/TrailerNetworkConnectionManager.java"
 
+# Shared TLS verdict for the GM back-office / PAPI destinations. The GM two-way-auth client
+# (gm.android.security.GMHttpsConnector in gmsecurity.jar, used directly by GMTrailer TrustClient and
+# GMRegistrationService, and through the gm.compat wrapper by GMSubscriptionManager/GMEcommPayment/GMAnalytics/GMTCPS/
+# GMMyBrand/GMNotifications/GMRSISrc/GMTrustedDevice) builds its SSLContext trust managers from a KeyStore loaded ONLY
+# with the certificates of GMTrustedGmRootCertificateStore (GM root CAs under $ANDROID_ROOT/etc/security/gmcerts, plus a
+# $ANDROID_DATA/misc/keychain/gmcerts-{added,removed} overlay), never the system CA store; its HostnameVerifier.verify()
+# returns true unconditionally. So the server certificate must chain to a GM root CA, while the hostname is not checked.
+# Consequence for a redirect: pointing one of these destination calibrations at a home-lab host that presents a
+# self-signed or public-CA certificate makes checkServerTrusted fail -> the TLS handshake is refused (the client does
+# NOT fall back to plaintext). A redirect only observes traffic if the owner also installs their own CA into the GM
+# store (gmcerts-added, root required); the disabled hostname verifier then lets that cert serve any redirected host.
+NET_TLS = ("Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS "
+           "pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + "
+           "GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a "
+           "non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'.")
+
 
 def rule(id, feature, expr, effect, check, anchors, level="traced", note=""):
     return dict(id=id, feature=feature, expr=expr, effect=effect, check=check, anchors=anchors, level=level, note=note)
@@ -491,7 +507,26 @@ RULES += [
               "persist.gm.bo.trailer.sync (minutes) replaces the 30-minute period. The client is built with Retrofit log level "
               "FULL, whose Android default writes requests and responses to logcat tag Retrofit. Read in code, nothing run: "
               "the link from the network check to the VIN event and the individual request builders were not followed line by "
-              "line. Despite its name, SECURITY_EVENT_LOGGING_SERVER_HOST_PORT has no other reader on the image."),
+              "line. Despite its name, SECURITY_EVENT_LOGGING_SERVER_HOST_PORT has no other reader on the image. TLS: GMTrailer's "
+              "TrustClient.openConnection() is gm.android.security.GMHttpsConnector(..., GMTrustedGmRootCertificateStore, "
+              "clientAuth=true, ocsp=true); server cert pinned to the GM root CA, hostname check disabled, so a home-lab "
+              "redirect of ACCOUNT_AUTHENTICATOR_SERVER_NAME / SECURITY_EVENT_LOGGING_SERVER_HOST_PORT is rejected at the "
+              "handshake (README 'Network destinations')."),
+    rule("net.appshop_salesforce", "App-shop (Salesforce) back-office URL",
+         "APP_SHOP_SERVER_ENABLED",
+         "GMSubscriptionManager VehicleCalibrationDAO builds the app-shop URL https://<APP_SHOP_SERVER_NAME> "
+         "(getSalesforceUrl), gated for app-shop use by APP_SHOP_SERVER_ENABLED (isAppShopServerEnabled); the port "
+         "calibrations APP_SHOP_SERVER_*_HOST_PORT have no reader (the host string carries no port, so HTTPS 443 is used). "
+         "The DAO is consumed by the mutual-auth PAPI DAO factory (RestAdapter log level FULL)",
+         "logcat 'serverEnabled:' in GMSubscriptionManager; packet capture",
+         [("GMSubscriptionManager", "info3/vehicledata/VehicleCalibrationDAO.java",
+           "this.calibrationsManager.getBoolean(REMOTESERVERSETTINGS.APP_SHOP_SERVER_ENABLED_CalID)"),
+          ("GMSubscriptionManager", "info3/vehicledata/VehicleCalibrationDAO.java",
+           'return "https://" + this.calibrationsManager.getString(REMOTESERVERSETTINGS.APP_SHOP_SERVER_NAME_CalID);')],
+         note="APP_SHOP_SERVER_NAME is read only by GUID here (no string-literal/CalId read site), so it keeps status "
+              "'read, effect not traced' even though its effect is traced in this rule; its redirect feasibility is the "
+              "same GM two-way-auth verdict as the other PAPI destinations. Image value sit-gm.cs21.force.com (live LTZ: "
+              "gm.secure.force.com). " + NET_TLS),
 ]
 
 # Settings whose value is passed through rather than gating a feature.
@@ -538,8 +573,35 @@ VALUE_EFFECTS = {
         "the URL without port and path. This is its only reader on the image: no security-event logging code uses it",
         "GMTrailer", "trailercore/managers/TrailerCalibrationManager.java"),
     "ACCOUNT_AUTHENTICATOR_SERVER_NAME": (
-        "Host of the trailering app's back-office URL; empty leaves the URL unset. Also read by GMAuthTokenService "
-        "(effect there not traced)", "GMTrailer", "trailercore/managers/TrailerCalibrationManager.java"),
+        "Host of TWO destinations: the trailering app's back-office URL (GMTrailer, with "
+        "SECURITY_EVENT_LOGGING_SERVER_HOST_PORT as the port) AND the OnStar auth-token server URL "
+        "https://<name>:<ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT> (GMAuthTokenService a/g.java). Redirecting it moves both. "
+        + NET_TLS, "GMTrailer", "trailercore/managers/TrailerCalibrationManager.java"),
+    # Bench pass: network destinations (see README 'Network destinations' for the full inventory and the TLS verdict)
+    "ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT": (
+        "Port of the OnStar auth-token server URL built by GMAuthTokenService (https://<ACCOUNT_AUTHENTICATOR_SERVER_NAME>"
+        ":<port>); image 20647. " + NET_TLS, "GMAuthTokenService", "@a/g.java"),
+    "PERSONALIZATION_SYNCH_SERVER_NAME": (
+        "Host of the personalization-sync server URL built by GMAuthTokenService "
+        "(https://<name>:<PERSONALIZATION_SYNCH_SERVER_HOST_PORT>); image vehicle.api.gm.com. " + NET_TLS,
+        "GMAuthTokenService", "@a/g.java"),
+    "PERSONALIZATION_SYNCH_SERVER_HOST_PORT": (
+        "Port of the personalization-sync server URL (GMAuthTokenService); image 20647. " + NET_TLS,
+        "GMAuthTokenService", "@a/g.java"),
+    "DEVICE_REGISTRATION_SERVER_NAME": (
+        "Host of the device-registration server URL built by GMRegistrationService "
+        "(https://<name>:<DEVICE_REGISTRATION_SERVER_HOST_PORT>/...); image vehicle.api.gm.com. System property "
+        "persist.gm.registration.address overrides it. Registration uses GMHttpsConnector with client-auth OFF (no device "
+        "cert yet) but the same GM-root-pinned trust store, so the redirect verdict is unchanged. " + NET_TLS,
+        "GMRegistrationService", "android/registration/util/RegistrationHelper.java"),
+    "DEVICE_REGISTRATION_SERVER_HOST_PORT": (
+        "Port of the device-registration server URL (GMRegistrationService); image 443. " + NET_TLS,
+        "GMRegistrationService", "android/registration/util/RegistrationHelper.java"),
+    "BACKOFFICE_SERVER_NAME": (
+        "The GM PAPI back-office host[:port] (image beta.api.gm.com:20643; live LTZ vehicle.api.gm.com:20445). Read as "
+        "https://<value> by the PAPI clients of GMSubscriptionManager (getPapiUrl), GMAPIManager, GMMyBrand, GMEcommPayment, "
+        "GMNotifications, GMRSISrc, GMTCPS, GMTrustedDevice and GMAnalytics: the single most widely read network destination "
+        "on the image. " + NET_TLS, "GMAPIManager", "apimanager/signal/BaseSignalHandler.java"),
     "GM_Account_Sign_In_Method": ("Value 1: account sign-in by e-mail and phone number; any other value: e-mail only (via CalItem)",
                                   SET, "settings/data/calibration/CalItem.java"),
 }

@@ -95,7 +95,7 @@ for (app, rel), (_, _, text, getter_rel) in ENUM_KEYS.items():
 info = {r["name"]: r for r in scope}
 first_slice = set(info)
 for r in RULES:
-    if not r["id"].startswith(("icon.", "settings.", "time.", "tuner.", "trailer.")):  # these rule families belong to the wide pass
+    if not r["id"].startswith(("icon.", "settings.", "time.", "tuner.", "trailer.", "net.")):  # these rule families belong to the wide pass
         for token in re.findall(r"[A-Za-z_]\w*", r["expr"]):
             if token in values:
                 first_slice.add(token)

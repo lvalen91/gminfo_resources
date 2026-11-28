@@ -166,3 +166,19 @@ Entries are grouped by date, oldest first within each date, newest date at the b
 - `tests/test_toolkit.py`: the pinned snapshot entry count follows (155 to 161).
   `README.md`: same count.
 - No code change; full suite green after.
+
+## 2026-11-28 — known-effect snapshot refreshed (network-destinations pass)
+
+- `data/known_effects.json` regenerated from the calibration map: 168 names (was 161),
+  91 rules (was 90). The calibration-map pass inventoried every row naming an external
+  network destination and, for each live reader, checked whether redirecting the address
+  to an owner-controlled host would connect or be refused by the client's TLS checks
+  (the GM back-office/PAPI/trailering/registration clients pin the server cert to the GM
+  root CA store with the hostname check disabled, so a bare redirect is rejected at the
+  TLS handshake). New traced rule: `net.appshop_salesforce`. New value effects:
+  `BACKOFFICE_SERVER_NAME`, `ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT`,
+  `PERSONALIZATION_SYNCH_SERVER_NAME`, `PERSONALIZATION_SYNCH_SERVER_HOST_PORT`,
+  `DEVICE_REGISTRATION_SERVER_NAME`, `DEVICE_REGISTRATION_SERVER_HOST_PORT`.
+- `tests/test_toolkit.py`: the pinned snapshot entry count follows (161 to 168).
+  `README.md`: same count.
+- No code change; full suite green after.

@@ -4,12 +4,12 @@
   "map": "research/calibration-map/map.json",
   "rules": "research/calibration-map/rules.py",
   "firmware": "Y175 code and bench dump values",
-  "map_sha256": "7440509ba86feff198e2b5889620eb08a1bcbecacc23235e675594d85f022175",
-  "rules_sha256": "927652d7abefe5d982aba109600a1ffd874dfd5c8f6a0acec0dd7b6f5dfba6c3",
+  "map_sha256": "e51dc336d999a657c9e83cfcaa48120590a2a9f7400242c81055c04fe2e76f2b",
+  "rules_sha256": "9c3dec2b8912534bcb0063a75317afc32b7777a1551b0bbc7c783e8b2359f346",
   "map_rows": 2574,
   "map_status_counts": {
-   "effect traced": 160,
-   "read, effect not traced": 178,
+   "effect traced": 167,
+   "read, effect not traced": 171,
    "mentioned in decompiled Java, read not established": 43,
    "name only": 853,
    "not found outside bulk lists": 1340
@@ -406,6 +406,14 @@
    "check": "home screen / app tray",
    "note": "Values come through CalibrationShadow, a per-app cache file (cache dir, calshadow/LauncherIcon) refreshed when the calibration update indicator changes. Visible does not prove the app is installed. GMHomeScreen carries its own copy of this switch (ui.home_* rules); its hotspot case adds APPLICATION_HOMESCREEN_ONSTAR_ENABLED."
   },
+  "net.appshop_salesforce": {
+   "feature": "App-shop (Salesforce) back-office URL",
+   "expr": "APP_SHOP_SERVER_ENABLED",
+   "effect": "GMSubscriptionManager VehicleCalibrationDAO builds the app-shop URL https://<APP_SHOP_SERVER_NAME> (getSalesforceUrl), gated for app-shop use by APP_SHOP_SERVER_ENABLED (isAppShopServerEnabled); the port calibrations APP_SHOP_SERVER_*_HOST_PORT have no reader (the host string carries no port, so HTTPS 443 is used). The DAO is consumed by the mutual-auth PAPI DAO factory (RestAdapter log level FULL)",
+   "level": "traced",
+   "check": "logcat 'serverEnabled:' in GMSubscriptionManager; packet capture",
+   "note": "APP_SHOP_SERVER_NAME is read only by GUID here (no string-literal/CalId read site), so it keeps status 'read, effect not traced' even though its effect is traced in this rule; its redirect feasibility is the same GM two-way-auth verdict as the other PAPI destinations. Image value sit-gm.cs21.force.com (live LTZ: gm.secure.force.com). Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
+  },
   "settings.account.network_service": {
    "feature": "Settings: GM account sign-in network check",
    "expr": "DataServicesEnable and data_services_setting_on",
@@ -620,7 +628,7 @@
    "effect": "The full trailering app creates its network connection manager. Once the network is up and the OnStar account reports the TRAILER entitlement, it runs a profile sync and repeats it every 30 minutes: HTTPS requests to https://<ACCOUNT_AUTHENTICATOR_SERVER_NAME>:<SECURITY_EVENT_LOGGING_SERVER_HOST_PORT>/api/v2/trailering/... with a bearer token; request paths carry the VIN and trailer ids, bodies carry trailer profiles, checklists, maintenance reminders, tyre-pressure sensor data and metrics (distance delta, fuel economy, transmission temperature). App type 1 (lite) or 0: the manager is never created",
    "level": "traced",
    "check": "logcat 'Backoffice URL  =', 'Trailering Entitlement is AVAILABLE, starting BO', 'Running 30 min Sync'; packet capture",
-   "note": "trailer_backoffice_allowed: demo mode off, an active network, and an OnStar account that is active with TRAILER entitlement state 1 (or 2 with type Data); without the entitlement no request adapter is built. System property persist.gm.bo.trailer.sync (minutes) replaces the 30-minute period. The client is built with Retrofit log level FULL, whose Android default writes requests and responses to logcat tag Retrofit. Read in code, nothing run: the link from the network check to the VIN event and the individual request builders were not followed line by line. Despite its name, SECURITY_EVENT_LOGGING_SERVER_HOST_PORT has no other reader on the image."
+   "note": "trailer_backoffice_allowed: demo mode off, an active network, and an OnStar account that is active with TRAILER entitlement state 1 (or 2 with type Data); without the entitlement no request adapter is built. System property persist.gm.bo.trailer.sync (minutes) replaces the 30-minute period. The client is built with Retrofit log level FULL, whose Android default writes requests and responses to logcat tag Retrofit. Read in code, nothing run: the link from the network check to the VIN event and the individual request builders were not followed line by line. Despite its name, SECURITY_EVENT_LOGGING_SERVER_HOST_PORT has no other reader on the image. TLS: GMTrailer's TrustClient.openConnection() is gm.android.security.GMHttpsConnector(..., GMTrustedGmRootCertificateStore, clientAuth=true, ocsp=true); server cert pinned to the GM root CA, hostname check disabled, so a home-lab redirect of ACCOUNT_AUTHENTICATOR_SERVER_NAME / SECURITY_EVENT_LOGGING_SERVER_HOST_PORT is rejected at the handshake (README 'Network destinations')."
   },
   "tuner.fm_settings_radio_text_row": {
    "feature": "Audio settings list, FM source: RDS radio text on/off row",
@@ -752,6 +760,17 @@
   }
  },
  "entries": {
+  "ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "20647",
+   "bench": "20445",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [],
+   "value_effect": "Port of the OnStar auth-token server URL built by GMAuthTokenService (https://<ACCOUNT_AUTHENTICATOR_SERVER_NAME>:<port>); image 20647. Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
+  },
   "ACCOUNT_AUTHENTICATOR_SERVER_NAME": {
    "status": "effect traced",
    "basis": "hand-traced rule or value effect in rules.py",
@@ -761,7 +780,7 @@
    "bench_slot": 5,
    "bench_part": "87846416",
    "rules": [],
-   "value_effect": "Host of the trailering app's back-office URL; empty leaves the URL unset. Also read by GMAuthTokenService (effect there not traced)"
+   "value_effect": "Host of TWO destinations: the trailering app's back-office URL (GMTrailer, with SECURITY_EVENT_LOGGING_SERVER_HOST_PORT as the port) AND the OnStar auth-token server URL https://<name>:<ACCOUNT_AUTHENTICATOR_SERVER_HOST_PORT> (GMAuthTokenService a/g.java). Redirecting it moves both. Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
   },
   "APPLICATION_HOMESCREEN_AIRDOWNMODE_ENABLED": {
    "status": "effect traced",
@@ -1281,6 +1300,19 @@
     "ui.settings_hotspot_available",
     "ui.home_hotspot_tile",
     "icon.wifi_hotspot"
+   ],
+   "value_effect": null
+  },
+  "APP_SHOP_SERVER_ENABLED": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "1",
+   "bench": "0",
+   "bench_slot": 11,
+   "bench_part": "86292118",
+   "rules": [
+    "net.appshop_salesforce"
    ],
    "value_effect": null
   },
@@ -2129,6 +2161,17 @@
    "rules": [],
    "value_effect": "default home-screen order, slot 9: the enumeration value selects an icon type through CAL_IDS_APP_TYPE (0 audio, 2 phone, 3 nav, 5 hotspot, 7 settings, 8 CarPlay, 10 Android Auto, 11 trailering, ...); a slot whose type is not visible is skipped"
   },
+  "BACKOFFICE_SERVER_NAME": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "SFS1_PERSONALIZATIONFRD",
+   "image": "beta.api.gm.com:20643",
+   "bench": "vehicle.api.gm.com:20445",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [],
+   "value_effect": "The GM PAPI back-office host[:port] (image beta.api.gm.com:20643; live LTZ vehicle.api.gm.com:20445). Read as https://<value> by the PAPI clients of GMSubscriptionManager (getPapiUrl), GMAPIManager, GMMyBrand, GMEcommPayment, GMNotifications, GMRSISrc, GMTCPS, GMTrustedDevice and GMAnalytics: the single most widely read network destination on the image. Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
+  },
   "BACK_OFFICE_SERVER_ENABLED": {
    "status": "effect traced",
    "basis": "hand-traced rule or value effect in rules.py",
@@ -2227,6 +2270,28 @@
     "icon.climate"
    ],
    "value_effect": null
+  },
+  "DEVICE_REGISTRATION_SERVER_HOST_PORT": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "443",
+   "bench": "20443",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [],
+   "value_effect": "Port of the device-registration server URL (GMRegistrationService); image 443. Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
+  },
+  "DEVICE_REGISTRATION_SERVER_NAME": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "vehicle.api.gm.com",
+   "bench": "vehicle.api.gm.com",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [],
+   "value_effect": "Host of the device-registration server URL built by GMRegistrationService (https://<name>:<DEVICE_REGISTRATION_SERVER_HOST_PORT>/...); image vehicle.api.gm.com. System property persist.gm.registration.address overrides it. Registration uses GMHttpsConnector with client-auth OFF (no device cert yet) but the same GM-root-pinned trust store, so the redirect verdict is unchanged. Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
   },
   "DataServicesEnable": {
    "status": "effect traced",
@@ -2608,6 +2673,28 @@
     "settings.car.apps_offroad"
    ],
    "value_effect": null
+  },
+  "PERSONALIZATION_SYNCH_SERVER_HOST_PORT": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "20647",
+   "bench": "20445",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [],
+   "value_effect": "Port of the personalization-sync server URL (GMAuthTokenService); image 20647. Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
+  },
+  "PERSONALIZATION_SYNCH_SERVER_NAME": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "vehicle.api.gm.com",
+   "bench": "vehicle.api.gm.com",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [],
+   "value_effect": "Host of the personalization-sync server URL built by GMAuthTokenService (https://<name>:<PERSONALIZATION_SYNCH_SERVER_HOST_PORT>); image vehicle.api.gm.com. Read as the server address the client connects to; the value becomes https://<value>. GM two-way-auth TLS pins the server cert to the GM root CA store (gm.android.security.GMHttpsConnector + GMTrustedGmRootCertificateStore) with the hostname check disabled, so a redirect to a home-lab host with a non-GM-rooted cert is rejected at the TLS handshake, not sent in the clear. See README 'Network destinations'."
   },
   "PI_CODE_CONFIGURATION": {
    "status": "effect traced",
