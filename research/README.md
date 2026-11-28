@@ -20,7 +20,7 @@ rewrite them — and ship byte-for-byte unchanged apart from the repo-path rewri
 ### Calibration effect map
 | Doc | Contents |
 |---|---|
-| [calibration-map/README.md](calibration-map/README.md) | Y175 calibration values (image, overrides, bench) mapped to traced Android effects: every database row classified (2574 rows, 154 with a traced effect, 85 hand-traced rules), Settings UI gates, clock and time-zone service; offline predictor. A snapshot is bundled in `tools/calibration_toolkit` as its known-effect lookup |
+| [calibration-map/README.md](calibration-map/README.md) | Y175 calibration values (image, overrides, bench) mapped to traced Android effects: every database row classified (2574 rows, 160 with a traced effect, 90 hand-traced rules), Settings UI gates, clock and time-zone service, bench/logging/diagnostics findings; offline predictor. A snapshot is bundled in `tools/calibration_toolkit` as its known-effect lookup |
 
 ### GHS hypervisor, boot, update, recovery
 | Doc | Contents |

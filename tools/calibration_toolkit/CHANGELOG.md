@@ -153,3 +153,16 @@ Entries are grouped by date, oldest first within each date, newest date at the b
   now state what that rule implies for the two `BACK_OFFICE_SERVER_ENABLED` cases. Still
   `predicted, untested`.
 - No code change; full suite green before and after.
+
+## 2026-11-28 — known-effect snapshot refreshed (bench pass)
+
+- `data/known_effects.json` regenerated from the calibration map: 161 names (was 155),
+  90 rules (was 85). New traced rules: four audio-settings-list rows
+  (`tuner.fm_settings_radio_text_row`, `tuner.fm_settings_traffic_program_row`,
+  `tuner.settings_region_rows`, `tuner.settings_fade_balance_row`) and
+  `trailer.backoffice_sync`. New value effects: `SECURITY_EVENT_LOGGING_SERVER_HOST_PORT`
+  and `ACCOUNT_AUTHENTICATOR_SERVER_NAME` (host and port of the trailering app's
+  back-office URL; no security-event logging code reads either).
+- `tests/test_toolkit.py`: the pinned snapshot entry count follows (155 to 161).
+  `README.md`: same count.
+- No code change; full suite green after.

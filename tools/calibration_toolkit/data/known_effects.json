@@ -4,13 +4,13 @@
   "map": "research/calibration-map/map.json",
   "rules": "research/calibration-map/rules.py",
   "firmware": "Y175 code and bench dump values",
-  "map_sha256": "6510b8e5e1b37b5d4e8e7c9a2075614678e84cb83f190897a85539f5e762ab10",
-  "rules_sha256": "83e90dcf1509e77b0102d5203bafa409d9ebbc620cd15d41ecff68033c73a946",
+  "map_sha256": "7440509ba86feff198e2b5889620eb08a1bcbecacc23235e675594d85f022175",
+  "rules_sha256": "927652d7abefe5d982aba109600a1ffd874dfd5c8f6a0acec0dd7b6f5dfba6c3",
   "map_rows": 2574,
   "map_status_counts": {
-   "effect traced": 154,
-   "read, effect not traced": 182,
-   "mentioned in decompiled Java, read not established": 45,
+   "effect traced": 160,
+   "read, effect not traced": 178,
+   "mentioned in decompiled Java, read not established": 43,
    "name only": 853,
    "not found outside bulk lists": 1340
   }
@@ -614,6 +614,46 @@
    "check": "log 'VehicleTime: Trusted time verified and locked' / 'VehicleTime: Setting time to'; adb shell getprop persist.sys.clockOffset; adb shell settings get global auto_time",
    "note": "No branch on mTimeUpdateMode skips a clock write. updateSystemClock() subtracts the offset in manual mode and sets the clock when it is more than 1.5 s from the target; syncClocks() (first verified trusted time) and calculateDrift() call it in both modes. In manual mode the offset is recomputed at every TIME_SET / DATE_CHANGED as (trusted time, or the remote real-time clock when there is none) minus the system clock, so a manual entry survives later corrections; an offset taken against a wrong remote clock is kept when trusted time arrives. Switching auto_time to 1 sets the clock to trusted time and zeroes the offset; a time set from elsewhere in automatic mode is undone by the next drift check. Drift monitor: a repeating alarm every 30 minutes (1800000 ms; started at boot-completed and resume, stopped on suspend) runs calculateDrift(), which re-sets both clocks when the remote clock is more than 1.5 s or the system clock more than 0.5 s from the expected value. That is a re-check period, not a limit on the size of a correction: this service has no upper bound on how far a trusted time may move the clock. It is unrelated to RDS_CLOCK_TIME_MAX_DIFF (minutes, RDS local time only) and to the half-hour rounding of the time-zone offset (time.rds_local_source). A trusted value is accepted after five further values each within 3 s of the one before, or at once when the first value is within 3 s of the remote clock. BACK_OFFICE_SERVER_ENABLED is not read by this service. Whether a location provider delivers fixes for value 1 on this hardware is unknown."
   },
+  "trailer.backoffice_sync": {
+   "feature": "Trailering app: back-office (network) synchronisation",
+   "expr": "TraileringAppType == 2 and trailer_backoffice_allowed",
+   "effect": "The full trailering app creates its network connection manager. Once the network is up and the OnStar account reports the TRAILER entitlement, it runs a profile sync and repeats it every 30 minutes: HTTPS requests to https://<ACCOUNT_AUTHENTICATOR_SERVER_NAME>:<SECURITY_EVENT_LOGGING_SERVER_HOST_PORT>/api/v2/trailering/... with a bearer token; request paths carry the VIN and trailer ids, bodies carry trailer profiles, checklists, maintenance reminders, tyre-pressure sensor data and metrics (distance delta, fuel economy, transmission temperature). App type 1 (lite) or 0: the manager is never created",
+   "level": "traced",
+   "check": "logcat 'Backoffice URL  =', 'Trailering Entitlement is AVAILABLE, starting BO', 'Running 30 min Sync'; packet capture",
+   "note": "trailer_backoffice_allowed: demo mode off, an active network, and an OnStar account that is active with TRAILER entitlement state 1 (or 2 with type Data); without the entitlement no request adapter is built. System property persist.gm.bo.trailer.sync (minutes) replaces the 30-minute period. The client is built with Retrofit log level FULL, whose Android default writes requests and responses to logcat tag Retrofit. Read in code, nothing run: the link from the network check to the VIN event and the individual request builders were not followed line by line. Despite its name, SECURITY_EVENT_LOGGING_SERVER_HOST_PORT has no other reader on the image."
+  },
+  "tuner.fm_settings_radio_text_row": {
+   "feature": "Audio settings list, FM source: RDS radio text on/off row",
+   "expr": "RDS_Radio_Menu_Item_On",
+   "effect": "onAddAudioSettingsList() adds the radio text on/off row (label audio_3_0_list_radioText_csm, event eSettingsRDSOnOff) to the FM list; false: the row is not added",
+   "level": "traced",
+   "check": "tune FM, open the audio settings list; log 'RDS Option show cal value -->'",
+   "note": "GMAudio (com.gm.hmi.radio) AudioCalibrationManager maps the key through an alias table and fetches the value from GMAudioServer, which calls CalibrationManager.get(name) by reflection; a value not yet delivered reads as false. Traced to the list onAddAudioSettingsList() builds; the row view was not inspected."
+  },
+  "tuner.fm_settings_traffic_program_row": {
+   "feature": "Audio settings list, FM source: traffic program on/off row",
+   "expr": "FM_RDS_TP_enabled",
+   "effect": "The FM list gets the traffic program on/off row (audio_3_0_TP_csm, eSetTrafficProgram), and the DAB announcement category list gets a Traffic entry; false: neither is added",
+   "level": "traced",
+   "check": "tune FM, open the audio settings list",
+   "note": "GMAudio (com.gm.hmi.radio) AudioCalibrationManager maps the key through an alias table and fetches the value from GMAudioServer, which calls CalibrationManager.get(name) by reflection; a value not yet delivered reads as false. Traced to the list onAddAudioSettingsList() builds; the row view was not inspected. Traffic_Program_Menu_Item_On is defined as a constant in the same package but no code uses it: this row follows FM_RDS_TP_enabled."
+  },
+  "tuner.settings_fade_balance_row": {
+   "feature": "Audio settings list, every source: fade/balance row",
+   "expr": "ENABLE_FADE",
+   "effect": "The list gets the fade/balance row (eFadeOrBalanceScreen); false: not added",
+   "level": "traced",
+   "check": "open the audio settings list; log 'FadeBalance value -->'",
+   "note": "GMAudio (com.gm.hmi.radio) AudioCalibrationManager maps the key through an alias table and fetches the value from GMAudioServer, which calls CalibrationManager.get(name) by reflection; a value not yet delivered reads as false. Traced to the list onAddAudioSettingsList() builds; the row view was not inspected."
+  },
+  "tuner.settings_region_rows": {
+   "feature": "Audio settings list, FM and DAB sources: RDS categories and region rows",
+   "expr": "REGIONS in (2, 4)",
+   "effect": "For region Europe (2) or Middle East (4) the FM list gets the RDS categories row (eSettingsRDSCategoryOnOff) and the region row (eSettingsRegionOnOff), and the DAB list gets the region row; any other region: not added",
+   "level": "traced",
+   "check": "tune FM, open the audio settings list; log 'isRegionEUOrME REGION value in Cal DataBase is'",
+   "note": "GMAudio (com.gm.hmi.radio) AudioCalibrationManager maps the key through an alias table and fetches the value from GMAudioServer, which calls CalibrationManager.get(name) by reflection; a value not yet delivered reads as false. Traced to the list onAddAudioSettingsList() builds; the row view was not inspected. Region_Setting_Menu_Item_On and RDS_PTY_Menu_Item_On are not referenced by any code on the image: these rows follow REGIONS."
+  },
   "ui.home_androidauto_tile": {
    "feature": "Home screen: Android Auto",
    "expr": "APPLICATION_HOMESCREEN_ANDROIDAUTO_ENABLED and Enable_application_google_Automotive_link",
@@ -712,6 +752,17 @@
   }
  },
  "entries": {
+  "ACCOUNT_AUTHENTICATOR_SERVER_NAME": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "vehicle.api.gm.com",
+   "bench": "vehicle.api.gm.com",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [],
+   "value_effect": "Host of the trailering app's back-office URL; empty leaves the URL unset. Also read by GMAuthTokenService (effect there not traced)"
+  },
   "APPLICATION_HOMESCREEN_AIRDOWNMODE_ENABLED": {
    "status": "effect traced",
    "basis": "hand-traced rule or value effect in rules.py",
@@ -2215,6 +2266,19 @@
    ],
    "value_effect": null
   },
+  "ENABLE_FADE": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "AUDIOHMICALS",
+   "image": "1",
+   "bench": "1",
+   "bench_slot": 0,
+   "bench_part": null,
+   "rules": [
+    "tuner.settings_fade_balance_row"
+   ],
+   "value_effect": null
+  },
   "ENABLE_MENU_AUDIO_TOUCH_FEEDBACK": {
    "status": "effect traced",
    "basis": "hand-traced rule or value effect in rules.py",
@@ -2329,6 +2393,19 @@
      "settings.time.auto_timezone_row"
     ]
    }
+  },
+  "FM_RDS_TP_enabled": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "GIS653_FMTUNER",
+   "image": "0",
+   "bench": "0",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [
+    "tuner.fm_settings_traffic_program_row"
+   ],
+   "value_effect": null
   },
   "GIS887_VehicleTransmissionType": {
    "status": "effect traced",
@@ -2554,6 +2631,32 @@
    "rules": [],
    "value_effect": "Minutes: RDS clock time further than this from the system's local clock is rejected unless PI_CODE_CONFIGURATION accepts the country"
   },
+  "RDS_Radio_Menu_Item_On": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "GIS502_TUNERHMI",
+   "image": "1",
+   "bench": "1",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [
+    "tuner.fm_settings_radio_text_row"
+   ],
+   "value_effect": null
+  },
+  "REGIONS": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "LANGUAGEANDREGIONALIZATIONGLOBALA",
+   "image": "0",
+   "bench": "0",
+   "bench_slot": 5,
+   "bench_part": "87846416",
+   "rules": [
+    "tuner.settings_region_rows"
+   ],
+   "value_effect": null
+  },
   "RVS_FEATURE_AVAIL_SMART_TOW": {
    "status": "effect traced",
    "basis": "hand-traced rule or value effect in rules.py",
@@ -2607,6 +2710,17 @@
     "icon.rear_climate"
    ],
    "value_effect": null
+  },
+  "SECURITY_EVENT_LOGGING_SERVER_HOST_PORT": {
+   "status": "effect traced",
+   "basis": "hand-traced rule or value effect in rules.py",
+   "caldef": "REMOTESERVERSETTINGS",
+   "image": "20445",
+   "bench": "20445",
+   "bench_slot": 0,
+   "bench_part": null,
+   "rules": [],
+   "value_effect": "Port of the trailering app's back-office URL (https://<ACCOUNT_AUTHENTICATOR_SERVER_NAME>:<port>/api/v2); 0 leaves the URL without port and path. This is its only reader on the image: no security-event logging code uses it"
   },
   "SUSPEND_TO_RAM_ENABLE": {
    "status": "effect traced",
@@ -2677,7 +2791,8 @@
    "bench_part": "87846384",
    "rules": [
     "icon.trailering_full",
-    "icon.trailering_lite"
+    "icon.trailering_lite",
+    "trailer.backoffice_sync"
    ],
    "value_effect": null
   },

@@ -45,7 +45,7 @@ Read both before using this tool's output on anything you intend to write to rea
 hardware — this toolkit produces correctly-formatted payloads, it does not tell you
 what a given change actually does.
 
-The bundled known-effect snapshot narrows that gap without closing it. For 155 of the
+The bundled known-effect snapshot narrows that gap without closing it. For 161 of the
 ~3,000 calibrations a lookup also reports what the calibration map traced, with its
 evidence label; for every other name it reports nothing, because nothing is known. It
 is reference text on the read side only: it never validates, blocks or alters an edit,

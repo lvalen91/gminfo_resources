@@ -15,6 +15,8 @@ STATE = {
     # Settings pass
     "onstar_subscription_valid": True, "product_is_my23_csm": True, "ambient_aux1_signal_available": True,
     "park_assist_property_available": True, "data_services_setting_on": True,
+    # Bench pass
+    "trailer_backoffice_allowed": True,
 }
 
 DW = "DelayedWKSApp"
@@ -28,6 +30,18 @@ CPC = "server/carplay/service/internals/utils/CarPlayConfiguration.java"
 BOR = "settings/repositories/BackOfficeRepository.java"
 CONN = "GMConnections"
 CONN_RL = "@p007d0/b.java"  # ResponseListener.kt of GMConnections
+
+
+AUD = "GMAudio"
+AUD_RL = "hmi/radio/events/listener/ResponseListener.java"
+AUD_RL_FM_RDS = (AUD, AUD_RL, 'if (audioCalibrationManager.b("rds_radio_menu_item_on")) {')
+AUD_ALIAS_RDS = (AUD, "@p003c/a.java", 'map.put("rds_radio_menu_item_on", EnumCalibrations.RDS_RADIO_MENU_ITEM_ON);')
+AUD_CLIENT = (AUD, "@p017j/f.java", 'return f(e.o("calibration", str));')
+AUD_SERVER = ("GMAudioServer", "gmaudio/server/model/SettingsSession.java", 'CalibrationManager.class.getDeclaredMethod("get", String.class)')
+_AUD_NOTE = ("GMAudio (com.gm.hmi.radio) AudioCalibrationManager maps the key through an alias table and fetches the value "
+             "from GMAudioServer, which calls CalibrationManager.get(name) by reflection; a value not yet delivered reads as "
+             "false. Traced to the list onAddAudioSettingsList() builds; the row view was not inspected.")
+TRL_NET = "trailercore/data/backoffice/Managers/TrailerNetworkConnectionManager.java"
 
 
 def rule(id, feature, expr, effect, check, anchors, level="traced", note=""):
@@ -422,6 +436,62 @@ RULES += [
          "open a paired phone in Settings > Connections > Phones",
          [(CONN, BTR, "getBooleanValue(CalItem.AndroidAuto_enableWireless)"),
           (CONN, CONN_RL, "if (bTDeviceInfoT.getIsProjectionToggleOptionAvailable() == 1) {")]),
+    # Bench pass: tuner audio-settings list (GMAudio) and the trailering back-office client (GMTrailer)
+    rule("tuner.fm_settings_radio_text_row", "Audio settings list, FM source: RDS radio text on/off row",
+         "RDS_Radio_Menu_Item_On",
+         "onAddAudioSettingsList() adds the radio text on/off row (label audio_3_0_list_radioText_csm, event eSettingsRDSOnOff) "
+         "to the FM list; false: the row is not added",
+         "tune FM, open the audio settings list; log 'RDS Option show cal value -->'",
+         [AUD_RL_FM_RDS, AUD_ALIAS_RDS, AUD_CLIENT, AUD_SERVER],
+         note=_AUD_NOTE),
+    rule("tuner.fm_settings_traffic_program_row", "Audio settings list, FM source: traffic program on/off row",
+         "FM_RDS_TP_enabled",
+         "The FM list gets the traffic program on/off row (audio_3_0_TP_csm, eSetTrafficProgram), and the DAB announcement "
+         "category list gets a Traffic entry; false: neither is added",
+         "tune FM, open the audio settings list",
+         [(AUD, AUD_RL, 'if (audioCalibrationManager.b("traffic_program_enabled")) {'),
+          (AUD, "@p003c/a.java", 'map.put("traffic_program_enabled", EnumCalibrations.RDS_TP_ENABLED);'), AUD_CLIENT, AUD_SERVER],
+         note=_AUD_NOTE + " Traffic_Program_Menu_Item_On is defined as a constant in the same package but no code uses it: "
+              "this row follows FM_RDS_TP_enabled."),
+    rule("tuner.settings_region_rows", "Audio settings list, FM and DAB sources: RDS categories and region rows",
+         "REGIONS in (2, 4)",
+         "For region Europe (2) or Middle East (4) the FM list gets the RDS categories row (eSettingsRDSCategoryOnOff) and the "
+         "region row (eSettingsRegionOnOff), and the DAB list gets the region row; any other region: not added",
+         "tune FM, open the audio settings list; log 'isRegionEUOrME REGION value in Cal DataBase is'",
+         [(AUD, AUD_RL, "if (audioCalibrationManager.h()) {"),
+          (AUD, "@p003c/a.java", "iD == LANGUAGEANDREGIONALIZATIONGLOBALA_ENUM.REGIONS.EUROPE.ordinal() || iD == LANGUAGEANDREGIONALIZATIONGLOBALA_ENUM.REGIONS.MIDDLE_EAST.ordinal()"),
+          AUD_CLIENT, AUD_SERVER],
+         note=_AUD_NOTE + " Region_Setting_Menu_Item_On and RDS_PTY_Menu_Item_On are not referenced by any code on the image: "
+              "these rows follow REGIONS."),
+    rule("tuner.settings_fade_balance_row", "Audio settings list, every source: fade/balance row",
+         "ENABLE_FADE",
+         "The list gets the fade/balance row (eFadeOrBalanceScreen); false: not added",
+         "open the audio settings list; log 'FadeBalance value -->'",
+         [(AUD, AUD_RL, 'if (aVar.b("tone_settings_fade_enabled")) {'),
+          (AUD, "@p003c/a.java", 'map.put("tone_settings_fade_enabled", EnumCalibrations.TONE_SETTINGS_FADE_ENABLED);'), AUD_CLIENT, AUD_SERVER],
+         note=_AUD_NOTE),
+    rule("trailer.backoffice_sync", "Trailering app: back-office (network) synchronisation",
+         "TraileringAppType == 2 and trailer_backoffice_allowed",
+         "The full trailering app creates its network connection manager. Once the network is up and the OnStar account "
+         "reports the TRAILER entitlement, it runs a profile sync and repeats it every 30 minutes: HTTPS requests to "
+         "https://<ACCOUNT_AUTHENTICATOR_SERVER_NAME>:<SECURITY_EVENT_LOGGING_SERVER_HOST_PORT>/api/v2/trailering/... with a "
+         "bearer token; request paths carry the VIN and trailer ids, bodies carry trailer profiles, checklists, maintenance "
+         "reminders, tyre-pressure sensor data and metrics (distance delta, fuel economy, transmission temperature). "
+         "App type 1 (lite) or 0: the manager is never created",
+         "logcat 'Backoffice URL  =', 'Trailering Entitlement is AVAILABLE, starting BO', 'Running 30 min Sync'; packet capture",
+         [("GMTrailer", "trailercore/data/TrailerVehicleService.java", "trailerNetworkConnectionManager.initialize();"),
+          ("GMTrailer", "trailercore/data/TrailerVehicleService.java", "if (2 != i) {"),
+          ("GMTrailer", TRL_NET, 'BOUtils.API_URL += ":" + calibrationEvent.calTrailerBOPort + "/api/v2";'),
+          ("GMTrailer", TRL_NET, 'int entitlementActivationState = onstarAccountInfo.getEntitlementActivationState("TRAILER");'),
+          ("GMTrailer", TRL_NET, "startPeriodicBoSyncing(getSyncPeriodInMilliseconds(1800000));"),
+          ("GMTrailer", "trailercore/data/backoffice/BOServiceGenerator.java", "setEndpoint(BOUtils.API_URL).setLogLevel(RestAdapter.LogLevel.FULL)"),
+          ("GMTrailer", "trailercore/data/backoffice/ClientInterface/IBOProfileClient.java", '@POST("/trailering/trailers/{trailerId}/vehicles/{vin}/metrics")')],
+         note="trailer_backoffice_allowed: demo mode off, an active network, and an OnStar account that is active with TRAILER "
+              "entitlement state 1 (or 2 with type Data); without the entitlement no request adapter is built. System property "
+              "persist.gm.bo.trailer.sync (minutes) replaces the 30-minute period. The client is built with Retrofit log level "
+              "FULL, whose Android default writes requests and responses to logcat tag Retrofit. Read in code, nothing run: "
+              "the link from the network check to the VIN event and the individual request builders were not followed line by "
+              "line. Despite its name, SECURITY_EVENT_LOGGING_SERVER_HOST_PORT has no other reader on the image."),
 ]
 
 # Settings whose value is passed through rather than gating a feature.
@@ -462,6 +532,14 @@ VALUE_EFFECTS = {
                                     SET, "settings/data/calibration/CalItem.java"),
     "GIS887_VehicleTransmissionType": ("Value 1 selects the first of two description texts of the automatic door lock setting "
                                        "(via CalItem)", SET, "settings/data/calibration/CalItem.java"),
+    # Bench pass
+    "SECURITY_EVENT_LOGGING_SERVER_HOST_PORT": (
+        "Port of the trailering app's back-office URL (https://<ACCOUNT_AUTHENTICATOR_SERVER_NAME>:<port>/api/v2); 0 leaves "
+        "the URL without port and path. This is its only reader on the image: no security-event logging code uses it",
+        "GMTrailer", "trailercore/managers/TrailerCalibrationManager.java"),
+    "ACCOUNT_AUTHENTICATOR_SERVER_NAME": (
+        "Host of the trailering app's back-office URL; empty leaves the URL unset. Also read by GMAuthTokenService "
+        "(effect there not traced)", "GMTrailer", "trailercore/managers/TrailerCalibrationManager.java"),
     "GM_Account_Sign_In_Method": ("Value 1: account sign-in by e-mail and phone number; any other value: e-mail only (via CalItem)",
                                   SET, "settings/data/calibration/CalItem.java"),
 }

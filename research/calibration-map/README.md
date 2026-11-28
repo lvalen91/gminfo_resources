@@ -1,7 +1,7 @@
 # Calibration effect map
 
 Links every row of the gminfo37 calibration database to what the **Y175** Android image does with it, as far as files
-on disk can show. Written 2026-11-28. Three passes share one status ladder:
+on disk can show. Written 2026-11-28. Four passes share one status ladder:
 
 - **First slice** (100 settings: projection, Wi-Fi, Bluetooth, home screen): hand-traced rules, offline predictor.
 - **Wide pass** (all 2573 image rows plus one bench-only row): automated classification of every name, with hand-traced
@@ -9,6 +9,8 @@ on disk can show. Written 2026-11-28. Three passes share one status ladder:
 - **Settings pass** (the three packages that draw Settings, plus the time-of-day service): 25 hand-traced rules, 11
   value effects, 5 first-slice rules revised; one time-of-day rule added afterwards (`time.trusted_clock_sync`).
   See [Settings](#settings).
+- **Bench pass** (30 candidate names: logging, diagnostics, hidden menu rows): 5 hand-traced rules, 2 value effects, and
+  a list of what stayed unresolved. See [Bench and development value](#bench-and-development-value).
 
 | File | Content |
 |---|---|
@@ -28,14 +30,14 @@ on disk can show. Written 2026-11-28. Three passes share one status ladder:
 
 | Status | All rows | First slice | Bench rows with an override slot | Bench value differs from image |
 |---|---|---|---|---|
-| effect traced | 154 | 27 | 75 | 19 |
-| read, effect not traced | 182 | 1 | 105 | 40 |
-| mentioned in decompiled Java, read not established | 45 | 0 | 15 | 6 |
+| effect traced | 160 | 27 | 79 | 19 |
+| read, effect not traced | 178 | 1 | 102 | 40 |
+| mentioned in decompiled Java, read not established | 43 | 0 | 14 | 6 |
 | name only | 853 | 43 | 538 | 350 |
 | not found outside bulk lists | 1340 | 29 | 249 | 90 |
 | Total | 2574 | 100 | 982 | 505 |
 
-Of the 182 "read" rows, 177 have a typed getter call in decompiled Java and 5 rest only on the native read-set check
+Of the 178 "read" rows, 173 have a typed getter call in decompiled Java and 5 rest only on the native read-set check
 (`animengine`, `vehiclepanel`).
 
 ## Value layers
@@ -169,7 +171,7 @@ power, device limits) and `GIS512_CONNECTIONS` has no reader on the image.
 
 ### Audio processing, volume, chimes
 
-24 groups, 708 rows: 6 traced, 9 read, 4 mentioned, 441 name only, 248 bulk lists only.
+24 groups, 708 rows: 7 traced, 9 read, 3 mentioned, 441 name only, 248 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
@@ -188,7 +190,7 @@ power, device limits) and `GIS512_CONNECTIONS` has no reader on the image.
 | `BRANDANIMATIONSAUDIOCUES` | 12 | 3 | 5 | 0 | 0 | 4 | animengine 5, GMConnections 3, GMSubscriptionManager 1 |
 | `GIS1001_INCARCOMMUNICATION` | 7 | 0 | 0 | 0 | 0 | 7 | none |
 | `AOSPSINKLEVELCONTROL` | 6 | 0 | 1 | 0 | 5 | 0 | vehicleaudiocontrol 6, CarService 1 |
-| `AUDIOHMICALS` | 6 | 0 | 1 | 4 | 1 | 0 | vehicleaudiocontrol 1, GMAudioServer 1 |
+| `AUDIOHMICALS` | 6 | 1 | 1 | 3 | 1 | 0 | vehicleaudiocontrol 1, GMAudioServer 1 |
 | `GIS604_SAFETYRELATEDVOLUMEGROUPOVERRIDES` | 6 | 0 | 0 | 0 | 4 | 2 | vehicleaudiocontrol 4 |
 | `GIS631_CONFIGSTDCHIMEPROD_GENERICCAL_GLOBALB` | 5 | 0 | 0 | 0 | 5 | 0 | GHSCalibrations 5, libpal_chime.so 4, vehicleaudiocontrol 3 |
 | `GLOBALCHIMEGAINCALS` | 5 | 0 | 0 | 0 | 5 | 0 | GHSCalibrations 5, libpal_chime.so 5, vehicleaudiocontrol 5 |
@@ -205,17 +207,18 @@ register, so a per-name read was not established and the rows stay name only. Th
 outside Android. Values here are mostly arrays, records and binary tuning blobs, so even a located read would not give
 a behaviour statement without the DSP semantics. Voice-tuning names also appear as file names under `vendor/etc/gmvt`.
 `GIS631_CONFIGCHIMEPROD_CADTHEME1_GLOBALB` (156 of 158 rows), `CODEC` and `VOLUMEGROUPRAMPTIMES` have no reader here.
-The six traced rows are Settings ones (chime and start-up volume limits, audio-cue rows); their audio-side use stays
-untraced.
+Six of the seven traced rows are Settings ones (chime and start-up volume limits, audio-cue rows); their audio-side
+use stays untraced. The seventh, `ENABLE_FADE`, gates the fade/balance row of the audio settings list
+(`tuner.settings_fade_balance_row`).
 
 ### Tuner
 
-8 groups, 182 rows: 1 traced, 16 read, 34 mentioned, 50 name only, 81 bulk lists only.
+8 groups, 182 rows: 3 traced, 15 read, 33 mentioned, 50 name only, 81 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
-| `GIS502_TUNERHMI` | 53 | 0 | 1 | 27 | 0 | 25 | GMTunerService 1 |
-| `GIS653_FMTUNER` | 41 | 1 | 5 | 1 | 30 | 4 | vendor.harman.tuner-service 36, GMTunerService 3, DelayedWKSApp 2 |
+| `GIS502_TUNERHMI` | 53 | 1 | 1 | 26 | 0 | 25 | GMTunerService 1 |
+| `GIS653_FMTUNER` | 41 | 2 | 4 | 1 | 30 | 4 | vendor.harman.tuner-service 36, GMTunerService 3, DelayedWKSApp 2 |
 | `GIS655_DABTUNER` | 25 | 0 | 4 | 2 | 6 | 13 | vendor.harman.tuner-service 9, GMTunerService 4, GMMedia 1 |
 | `GIS605_HDTUNER` | 23 | 0 | 0 | 3 | 0 | 20 | none |
 | `GIS653_AMTUNER` | 18 | 0 | 4 | 0 | 10 | 4 | vendor.harman.tuner-service 14, DelayedWKSApp 2, GMTunerService 2 |
@@ -226,8 +229,13 @@ untraced.
 Split three ways. `vendor.harman.tuner-service` carries 64 names in a pointer table and imports
 `getMultiCalibrations` (name only). `GMTunerService` reads 11 by typed getter. GMAudio defines 51 names as
 constants in `EnumCalibrations` and resolves them at run time through an alias map and a call into GMAudioServer
-(`AudioCalibrationManager`), which is why 34 rows stop at "mentioned": the lookup key is built at run time and the
-value crosses a process boundary. HD and SXM rows are largely unread on this image.
+(`AudioCalibrationManager`), which is why 33 rows stop at "mentioned": the lookup key is built at run time and the
+value crosses a process boundary. The bench pass followed that path end to end for the keys the audio settings list
+tests (GMAudio `p003c/a.java` alias map, binder call, GMAudioServer `SettingsSession.getCalibration`, a reflective
+`CalibrationManager.get(name)`): `RDS_Radio_Menu_Item_On` and `FM_RDS_TP_enabled` are traced to list rows
+([Bench and development value](#bench-and-development-value)). Of the 16 `*_Menu_Item_On` names in `GIS502_TUNERHMI`
+that is the only one with a use: five more are constants with no call site, ten appear nowhere outside the bulk
+lists. HD and SXM rows are largely unread on this image.
 
 ### Camera and video
 
@@ -268,7 +276,9 @@ groups and `GIS942_AUGMENTEDREALITY_GLOBALB` have no reader on the image.
 `GIS641_DIAGNOSTICCALDEF_GLOBALB` (DTC and DID masks) is in the PAL table and in a pointer table of
 `vendor.gm.diagnostics.ethernet@1.0-impl.so`: name only. `GIS621_DIAGNOSTICCALDEF_GLOBALA` (88 of 89 rows) and the CSM
 groups are not referenced by any code on the image. Mask values gate which DTCs or DIDs a diagnostic server reports,
-which a static read of the Android side cannot confirm.
+which a static read of the Android side cannot confirm. The family holds no enumeration-typed row: 258 booleans,
+15 integers, 3 strings, 2 floats and 1 array, so nothing in it selects a logging level. `VN_ACTIVATION` (boolean) is
+among the 88 unreferenced `GIS621_DIAGNOSTICCALDEF_GLOBALA` rows.
 
 ### System state, display, controls
 
@@ -382,17 +392,21 @@ GMConnections name 34 calibrations through a `CalItem` enum whose entries are fe
 `getBooleanValue(CalItem.X)` calls; these are now resolved as reads (`ENUM_KEYS` in `rules.py`) and all 34 are read
 somewhere in the shared code. Most of them sit in other CalDef groups, so this family's counts understate what Settings
 reads: see [Settings](#settings), which is organised by screen. Most personalization and driver-workload rows have no
-reader on the image.
+reader on the image. That includes all the menu-presence rows of `GIS1007_SETTINGS_GLOBALB` (`PIXEL_REFRESHER_MENU`,
+`P_DISPLAY_UNIT_MENU_PRESENT`, `P_HUD_*`, `P_IPC_SPEED_SIGN_MENU_PRESENT`, `P_TIRE_LOAD_MENU_PRESENT`): none is in the
+`CalItem` catalogs of the three Settings packages or in any other dex or ELF file, and the group's two name-only rows
+are a `GHSCalibrations` entry (`P_IPC_AR_CAMERA_PRESENT`) and the generic word `Search`. `MAX_LOGIN_ATTEMPTS` and
+`SECURITY_EVENT_LOGGING_ENABLED` (the single `SFS22_SECURITYEVENTLOGGINGFRD` row) are likewise unread.
 
 ### Connected services and updates
 
-13 groups, 101 rows: 3 traced, 32 read, 3 mentioned, 3 name only, 60 bulk lists only.
+13 groups, 101 rows: 5 traced, 30 read, 3 mentioned, 3 name only, 60 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
 | `GIS668_REMOTEOMADMSERVERINTERFACE_GLOBALA` | 25 | 0 | 0 | 0 | 0 | 25 | none |
 | `GIS658_INFOTAINMENTPROGMASTER_GLOBALA` | 16 | 0 | 0 | 0 | 0 | 16 | none |
-| `REMOTESERVERSETTINGS` | 15 | 1 | 9 | 0 | 0 | 5 | GMAuthTokenService 5, GMSubscriptionManager 4, GMRegistrationService 3 |
+| `REMOTESERVERSETTINGS` | 15 | 3 | 7 | 0 | 0 | 5 | GMAuthTokenService 5, GMSubscriptionManager 4, GMRegistrationService 3 |
 | `GIS887_REMOTEPROGRAMMINGHMI_GLOBALB` | 12 | 1 | 11 | 0 | 0 | 0 | GMBugReportService 12, GMEcommPayment 12, GMTrustedDevice 12 |
 | `GIS505_ONSTARUI` | 9 | 0 | 4 | 0 | 3 | 2 | GMSubscriptionManager 2, GMOnStar 2, GMBugReportService 1 |
 | `GIS697_REMOTEREFLASHINFOTAINMENTFUNCTIONAL_GLOBALA` | 9 | 0 | 0 | 0 | 0 | 9 | none |
@@ -406,22 +420,26 @@ reader on the image.
 
 Good read coverage: `GIS887_REMOTEPROGRAMMINGHMI_GLOBALB` and `GIS864_USBPROG_GLOBALB` are read in full by the
 framework update classes (`Calibrations.OTA`, `Calibrations.USB`), server names and timers by the token, registration
-and subscription services. Effects were not traced. OMA-DM, reflash and programming-master groups are unread.
+and subscription services. Effects were not traced, except in `REMOTESERVERSETTINGS`: `BACK_OFFICE_SERVER_ENABLED`
+(Settings rows) and the two rows GMTrailer reads to build its back-office URL, `ACCOUNT_AUTHENTICATOR_SERVER_NAME` and
+`SECURITY_EVENT_LOGGING_SERVER_HOST_PORT` (`trailer.backoffice_sync`). `SECURITY_EVENT_LOGGING_SERVER_NAME` has no
+reader. OMA-DM, reflash and programming-master groups are unread.
 
 ### Vehicle identity and region
 
-3 groups, 32 rows: 4 traced, 13 read, 2 mentioned, 2 name only, 11 bulk lists only.
+3 groups, 32 rows: 5 traced, 12 read, 2 mentioned, 2 name only, 11 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
 | `GLOBAL_INFO3` | 17 | 1 | 8 | 2 | 2 | 4 | android.hardware.automotive.vehicle@2.0-service-gm 8, GMRSISrc 6, services 5 |
 | `GIS500_UI` | 10 | 2 | 1 | 0 | 0 | 7 | GMSystemUI 9, DelayedWKSApp 8, GMConnections 8 |
-| `LANGUAGEANDREGIONALIZATIONGLOBALA` | 5 | 1 | 4 | 0 | 0 | 0 | DelayedWKSApp 10, libnavsens_gm.so 5, GMConnections 4 |
+| `LANGUAGEANDREGIONALIZATIONGLOBALA` | 5 | 2 | 3 | 0 | 0 | 0 | DelayedWKSApp 10, libnavsens_gm.so 5, GMConnections 4 |
 
 `GMBrand`, `GMModel` and `GMTrim` are read by nearly every GM package (theme and feature selection) and by
 `animengine`, where the read set was checked in disassembly. `COUNTRY_CODE` is traced for the Alexa icon, CarPlay
 touch fidelity and four Settings rows; its other reads are not followed. `GMBrand` and `GMModel` are traced only for
-the Settings rows that test them. The fuel-type rows are imported by the vehicle HAL.
+the Settings rows that test them. `REGIONS` is traced for the region and RDS-category rows of the audio settings list
+(`tuner.settings_region_rows`); its other reads are not followed. The fuel-type rows are imported by the vehicle HAL.
 
 ### Unassigned
 
@@ -645,6 +663,115 @@ Answers, with their basis:
 - GMSWUpdater, GMTCPS, GMOnStar and GMTrustedDevice screens; the resource-overlay packages; `/data` state (component
   enable state, `Settings.Global` values, per-process calibration caches).
 - GMSettings account, profile and security screens beyond the two calibrations named above.
+
+## Bench and development value
+
+Question: which calibrations give a bench researcher richer logging or diagnostics, or an extra Settings or HMI menu
+row? 30 candidate names were checked (every `LOG`, `DEBUG`, `DIAGNOSTIC` and `MENU`-type name outside the DTC masks).
+Same standard as the rest of the map: a claim needs a read site and a followed effect. Evidence level of every rule
+here is `traced`: code read, nothing run.
+
+How "no reader" was established for a name: its name and its row GUID are absent from the dex string tables of all
+packages on the image and from every ELF file (`packages.json`, `native.json`), apart from the twelve catalog packages,
+`calserviced` and `libcalmgr.so`; a second scan of every dex, bundled library and asset inside the 423 archives for the
+security-event names agreed. Limits as in [Status of a setting](#status-of-a-setting): controllers outside Android and
+by-group reads are invisible.
+
+### Richer logging, diagnostics or telemetry
+
+**Nothing confirmed.** No calibration on this image was found to raise log output, enable a diagnostic view or select
+a logging level.
+
+| Name | Image | Bench | Result |
+|---|---|---|---|
+| `SECURITY_EVENT_LOGGING_ENABLED` | 1 | 0 (override part 87846416) | No reader. No code on the Android image reads it by name or GUID |
+| `SECURITY_EVENT_LOGGING_SERVER_NAME` | `vehicle.api.gm.com` | same | No reader |
+| `SECURITY_EVENT_LOGGING_SERVER_HOST_PORT` | 20445 | same | One reader, and it is not a security-event logger: GMTrailer uses it as the port of its back-office URL (below) |
+| `VN_ACTIVATION` | 1 | 1 | No reader |
+| Logging level (any enumeration in the Diagnostics family) | | | Does not exist: the family has no enumeration-typed row. A name search of the whole database for log, verbose, trace, debug, dump, telemetry, analytics, developer and engineering found only the three rows above, two `ADASIS` debug rows without a reader (`AHP_Debug_Enable_Visualization`, `TX_Debug_Delay_Initial_Transmission`) and unrelated names |
+| `EnableSelfReportedUsageData`, `ActivityCounterIncrementInterval` | 1, 300 | same | Name only (PAL table). The consumer is outside Android; what is reported, and to whom, is not visible here |
+
+Security-event logging, stated precisely:
+
+- **Confirmed absent on the Android image:** a consumer of the three calibrations as a security-event feature, and
+  any GM-authored security-event logger. The only code matching "security event" in any dex, library or asset is
+  AOSP's `android.app.admin.SecurityLog` (device-policy audit log, `services.jar`, `KeyChain.apk`), Chrome and Google
+  components. None of them reads a calibration.
+- **So this map cannot say** what GM counts as a security event, whether such events are recorded, or whether a
+  module outside Android (hypervisor side, telematics) implements the feature from its own copy of the calibration.
+  The names are in `calserviced` and `libcalmgr.so` only because those hold every row. They are not in the 230-name
+  `GHSCalibrations` list sent to the hypervisor side or in the PAL table.
+- **No viewer:** no screen, log file or event list tied to these names exists in the Settings packages or elsewhere.
+- **The bench already has `SECURITY_EVENT_LOGGING_ENABLED` = 0** through the LTZ override. Since nothing on the
+  image reads it, no behaviour difference between 0 and 1 can be predicted from static files.
+
+What the port row really feeds (rule `trailer.backoffice_sync`, privacy-relevant):
+
+1. `TrailerCalibrationManager` (GMTrailer) reads `ACCOUNT_AUTHENTICATOR_SERVER_NAME` as the back-office host and
+   `SECURITY_EVENT_LOGGING_SERVER_HOST_PORT` as its port; `TrailerNetworkConnectionManager.onCalibrationEvent` builds
+   `https://vehicle.api.gm.com:20445/api/v2` from the image and bench values.
+2. Only the full trailering app (`TraileringAppType` = 2: bench 2, image 0) creates the network manager, and not in
+   demo mode. It starts the back office when a network is active and the OnStar account is active with the `TRAILER`
+   entitlement (state 1, or 2 with type `Data`). Without an OnStar account record the state stays unknown, it retries,
+   and no request adapter is built.
+3. Then: one profile sync, repeated every 30 minutes (`persist.gm.bo.trailer.sync`, minutes, overrides). Requests go
+   to `/trailering/...` paths that carry the VIN and trailer ids, with a bearer token from the GM auth-token service
+   (scopes `user_trailer`, `trailer`) over TLS 1.2 against the GM root store. Bodies are trailer profiles, checklists,
+   maintenance reminders, tyre-pressure sensor data and a metrics record (distance delta, fuel economy, transmission
+   temperature).
+4. The request client is built with Retrofit log level `FULL`; Retrofit's Android default logs requests and responses
+   to logcat tag `Retrofit`. That is fixed in code, not a calibration.
+
+Confirmed in code: the read, the URL, the app-type and entitlement conditions, the 30-minute schedule, the endpoint
+list. Inferred, not followed line by line: that a network change leads to the VIN event that starts the sequence, and
+the exact body of each request. Not known: whether a bench without a subscribed OnStar account ever reaches state
+"available" (the code says it should not), and whether the server accepts the connection. Changing the port row would
+move or break trailer sync; it would not switch any logging on or off.
+
+### Extra Settings or HMI menu rows
+
+Confirmed gates, all in the audio settings list that GMAudio (`com.gm.hmi.radio`) builds per source
+(`ResponseListener.onAddAudioSettingsList`). The row view itself was not inspected.
+
+| Row | Shown when | Bench | Image | Rule |
+|---|---|---|---|---|
+| FM: RDS radio text on/off | `RDS_Radio_Menu_Item_On` | shown | shown | `tuner.fm_settings_radio_text_row` |
+| FM: traffic program on/off; DAB announcements: Traffic category | `FM_RDS_TP_enabled` | absent | absent | `tuner.fm_settings_traffic_program_row` |
+| FM: RDS categories, region; DAB: region | `REGIONS` is 2 (Europe) or 4 (Middle East) | absent | absent | `tuner.settings_region_rows` |
+| Every source: fade/balance | `ENABLE_FADE` | shown | shown | `tuner.settings_fade_balance_row` |
+
+Rows of that list with no calibration gate: equaliser, manage favourites, AM station update; for a DAB source the
+announcements entry and the two linking toggles. Sound mode and Bose AudioPilot follow values in the settings response,
+not calibrations read here.
+
+So on the bench set, two hidden tuner rows can be made to appear: traffic program (`FM_RDS_TP_enabled` = 1) and the
+RDS categories and region rows (`REGIONS` = 2 or 4). `REGIONS` and `FM_RDS_TP_enabled` are also read by the tuner HAL
+and other services, so either change has effects beyond the menu that are not traced.
+
+Not confirmed, with the reason:
+
+| Names | Result |
+|---|---|
+| `DAB_DAB_Linking_Menu_Item_On`, `DAB_FM_Linking_Menu_Item_On`, `DAB_Slide_Show_Menu_Item_On`, `Explicit_Content_Menu_Item_On`, `Traffic_Program_Menu_Item_On` | Constants in GMAudio `EnumCalibrations` (the explicit-content one is also in the alias map), but no call passes them or their keys to a getter. The DAB linking rows are added unconditionally for a DAB source; the traffic program row follows `FM_RDS_TP_enabled`. Status stays "mentioned" |
+| `HD_Radio_Menu_Item_On`, `Album_Art_Menu_Item_On`, `MetadataCorrector_Menu_Item_On`, `Instant_Replay_Menu_Item_On`, `RDS_PTY_Menu_Item_On`, `Sports_Flash_Menu_Item_On`, `Traffic_Information_Menu_Item_On`, `Tune_Start_Menu_Item_On`, `Region_Setting_Menu_Item_On`, `DAB_Announcement_Menu_Item_On` | No reader. The region row follows `REGIONS`, not `Region_Setting_Menu_Item_On` |
+| `PIXEL_REFRESHER_MENU`, `P_DISPLAY_UNIT_MENU_PRESENT`, `P_HUD_MENU_AVAILABLE`, `P_HUD_MAP_MENU_PRESENT`, `P_HUD_SPEED_SIGN_MENU_PRESENT`, `P_IPC_SPEED_SIGN_MENU_PRESENT`, `P_TIRE_LOAD_MENU_PRESENT` | No reader. GMSettings has a tyre-load string, but its Vehicle rows come from vehicle signals ([Not covered](#not-covered)) and no Settings package names any `GIS1007_SETTINGS_GLOBALB` row. The names suggest cluster or head-up display menus, which are outside this image; that is an inference from the names |
+| `ENABLE_SPEECH_SETTING_MENU`, `SPEECH_SETTING_MENU_PROMPT_LENGTH_ENABLE` | No reader, like every row of the five speech groups |
+| `MAX_LOGIN_ATTEMPTS` | No reader. Its group (`SFS1_PERSONALIZATIONFRD`) is profile and account personalization; nothing diagnostic was found under that name |
+
+### Developer options
+
+**No calibration adds or removes a row of Developer options.**
+
+- Stock screen: CarSettings' System page has one entry row (`DeveloperOptionsEntryPreferenceController`). It is shown
+  when `Settings.Global development_settings_enabled` is set for an admin user without the `no_debugging_features`
+  restriction, and opens `com.android.car.developeroptions` (`CarDeveloperOptions.apk`). That package holds no
+  calibration name or GUID and does not use the calibration API. CarSettings reads calibrations in two classes only
+  (`ApplicationListItemManager`, `QuickStartupPreferenceController`); `SUSPEND_TO_RAM_ENABLE` remains a System row, not
+  a Developer options row.
+- GM screen: GMSettings carries its own developer-options list (`DeveloperOptionsRepository`: ADB, bug report, mock
+  location, pointer location, GPU and animation options). It reads no calibration either; availability is the same
+  global setting plus the user restriction and an app preference. Whether this GM list is reachable on this build was
+  not checked.
 
 ## What this method can and can't do, for next time
 
