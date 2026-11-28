@@ -20,7 +20,7 @@ import re
 import sqlite3
 import sys
 
-from rules import RULES, TABLES, VALUE_EFFECTS, WRAPPERS
+from rules import ENUM_KEYS, RULES, TABLES, VALUE_EFFECTS, WRAPPERS
 
 STATUSES = ["effect traced", "read, effect not traced", "mentioned in decompiled Java, read not established",
             "name only", "not found outside bulk lists"]
@@ -88,10 +88,14 @@ for table, where in ((WRAPPERS, "wrapper"), (TABLES, "table")):
         if text not in (source(app, rel, plain=True) or ""):
             failed.append(f"{where} {app}/{rel}: {text}")
 
+for (app, rel), (_, _, text, getter_rel) in ENUM_KEYS.items():
+    if source(app, rel, plain=True) is None or text not in (source(app, getter_rel, plain=True) or ""):
+        failed.append(f"enum catalog {app}/{rel}: {text}")
+
 info = {r["name"]: r for r in scope}
 first_slice = set(info)
 for r in RULES:
-    if not r["id"].startswith("icon."):  # the icon rules belong to the wide pass
+    if not r["id"].startswith(("icon.", "settings.", "time.")):  # icon and Settings-pass rules belong to the wide pass
         for token in re.findall(r"[A-Za-z_]\w*", r["expr"]):
             if token in values:
                 first_slice.add(token)
@@ -224,7 +228,7 @@ for label, subset in (("all settings", settings), ("first slice", {n: s for n, s
     counts = collections.Counter(s["status"] for s in subset.values())
     print(label, len(subset), {st: counts[st] for st in STATUSES})
 print("groups", len(groups), "| rules", len(RULES), "anchors checked", sum(len(r["anchors"]) for r in RULES), "+", len(VALUE_EFFECTS),
-      "value effects +", len(WRAPPERS), "wrappers +", len(TABLES), "tables")
+      "value effects +", len(WRAPPERS), "wrappers +", len(TABLES), "tables +", len(ENUM_KEYS), "enum catalogs")
 for f in failed:
     print("ANCHOR FAILED", f)
 sys.exit(1 if failed else 0)

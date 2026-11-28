@@ -9,7 +9,8 @@ Catalog classes (`gm/calibrations/`, `gm/compat/calibrations/`), which list ever
 
 Site kinds, strongest first:
   read               the token is the first argument of a typed getter (getBoolean, getEnumeration, ...)
-  read-via-constant  a getter takes an identifier that the same app defines as `String X = "<name>"`
+  read-via-constant  a getter takes an identifier that the same app defines as `String X = "<name>"`, or a method listed
+                     in rules.ENUM_KEYS takes an entry of a hand-checked enum catalog (`getBooleanValue(CalItem.X)`)
   read-via-wrapper   the token is passed to a method listed in rules.WRAPPERS (hand-checked to forward to a getter)
   read-via-table     the token is an entry of a list in a file listed in rules.TABLES (hand-checked: one loop reads
                      every entry)
@@ -37,7 +38,7 @@ import sqlite3
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from rules import TABLES, WRAPPERS  # noqa: E402
+from rules import ENUM_KEYS, TABLES, WRAPPERS  # noqa: E402
 
 db, out_path, *roots = sys.argv[1:]
 rows = list(sqlite3.connect(f"file:{db}?mode=ro&immutable=1", uri=True).execute("select _id,CalName from AllCalSets"))
@@ -149,6 +150,35 @@ for app, src in apps.items():
                     sites[app_const[m.group(1)]].append(dict(app=app, file=rel, line=no, via="constant", kind="read-via-constant",
                                                              code=line.strip()[:260], const=m.group(1)))
                     digests[(app, rel)] = hashlib.sha1(text.encode()).hexdigest()
+
+    # Enum catalogs (rules.ENUM_KEYS): resolve `getter(Enum.X)` to the calibration name bound to X.
+    for (a, rel), (enum, methods, _, _) in ENUM_KEYS.items():
+        if a != app or not os.path.isfile(os.path.join(src, rel)):
+            continue
+        catalog = open(os.path.join(src, rel), errors="replace").read()
+        bound = {m.group(1): m.group(2) for m in re.finditer(r'new\s+' + enum + r'\("(\w+)",\s*\d+,\s*"([^"]+)"', catalog)}
+        bound.update({m.group(1): m.group(2) for m in re.finditer(r'^\s*(\w+)\("([^"]+)",\s*\d+,', catalog, re.M)})
+        bound = {k: v for k, v in bound.items() if v in names}
+        pat = re.compile(r"\b(?:" + "|".join(methods) + r")\(\s*" + enum + r"\.(\w+)\s*\)")
+        for base, _, files in os.walk(src):
+            sub = os.path.relpath(base, src).replace(os.sep, "/") + "/"
+            if THIRD_PARTY.match(sub):
+                continue
+            for fn in files:
+                if not fn.endswith(".java") or sub + fn == rel:
+                    continue
+                try:
+                    text = open(os.path.join(base, fn), errors="replace").read()
+                except OSError:
+                    continue
+                if enum + "." not in text:
+                    continue
+                for no, line in enumerate(text.split("\n"), 1):
+                    for m in pat.finditer(line):
+                        if m.group(1) in bound:
+                            sites[bound[m.group(1)]].append(dict(app=app, file=sub + fn, line=no, via="constant", kind="read-via-constant",
+                                                                 code=line.strip()[:260], const=f"{enum}.{m.group(1)}"))
+                            digests[(app, sub + fn)] = hashlib.sha1(text.encode()).hexdigest()
 
 # Byte-identical copies of one source file bundled into several packages are one site with `copies_in`.
 out = {}

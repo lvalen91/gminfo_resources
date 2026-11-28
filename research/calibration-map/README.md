@@ -1,37 +1,40 @@
 # Calibration effect map
 
 Links every row of the gminfo37 calibration database to what the **Y175** Android image does with it, as far as files
-on disk can show. Written 2026-11-28. Two passes share one status ladder:
+on disk can show. Written 2026-11-28. Three passes share one status ladder:
 
 - **First slice** (100 settings: projection, Wi-Fi, Bluetooth, home screen): hand-traced rules, offline predictor.
 - **Wide pass** (all 2573 image rows plus one bench-only row): automated classification of every name, with hand-traced
   rules added only where the code was read (framework launcher icons and icon ordering).
+- **Settings pass** (the three packages that draw Settings, plus the time-of-day service): 25 hand-traced rules, 11
+  value effects, 5 first-slice rules revised. See [Settings](#settings).
 
 | File | Content |
 |---|---|
 | `map.json` | Per setting: group, type, image and bench value, override slot/part, status and its basis, rules, Java read sites, packages and native files naming it. Per group: status counts |
-| `rules.py` | Hand-traced effect rules, runtime states, checks, code anchors, and the hand-checked wrapper and table lists |
+| `rules.py` | Hand-traced effect rules, runtime states, checks, code anchors, and the hand-checked wrapper, table and enum-catalog lists |
 | `predict.py` | Lists traced effects that differ after a calibration or state change (offline; touches no radio) |
-| `build_map.py` | Rebuilds `map.json`; fails if a rule, wrapper or table anchor is missing from the decompiled sources |
+| `build_map.py` | Rebuilds `map.json`; fails if a rule, wrapper, table or enum-catalog anchor is missing from the decompiled sources |
 | `tools/` | The extraction scripts for the wide pass (see [Rebuild](#rebuild)) |
 
 ```bash
 ./predict.py --set Apple_CarPlay_enableWireless=0
 ./predict.py --set TraileringAppType=1
+./predict.py --set FM_RDS_Clocktime_enabled=1 --state onstar_subscription_valid=False
 ```
 
 ## Result
 
 | Status | All rows | First slice | Bench rows with an override slot | Bench value differs from image |
 |---|---|---|---|---|
-| effect traced | 129 | 27 | 63 | 12 |
-| read, effect not traced | 198 | 1 | 111 | 44 |
-| mentioned in decompiled Java, read not established | 54 | 0 | 21 | 9 |
+| effect traced | 154 | 27 | 75 | 19 |
+| read, effect not traced | 182 | 1 | 105 | 40 |
+| mentioned in decompiled Java, read not established | 45 | 0 | 15 | 6 |
 | name only | 853 | 43 | 538 | 350 |
 | not found outside bulk lists | 1340 | 29 | 249 | 90 |
 | Total | 2574 | 100 | 982 | 505 |
 
-Of the 198 "read" rows, 192 have a typed getter call in decompiled Java and 6 rest only on the native read-set check
+Of the 182 "read" rows, 177 have a typed getter call in decompiled Java and 5 rest only on the native read-set check
 (`animengine`, `vehiclepanel`).
 
 ## Value layers
@@ -55,7 +58,7 @@ Array, record and binary values are clipped in `map.json` (head plus length).
 | Status | Meaning | What it does not mean |
 |---|---|---|
 | effect traced | A rule or value effect in `rules.py` connects the value to a behaviour; anchors verified in the sources | Tested. Other code paths can add to or override the rule |
-| read, effect not traced | A typed getter call names it in decompiled Java, directly, through a checked wrapper, a checked table loop or an app constant; or a native binary's imported `CalId` set equals its getter-call set | That the value changes anything visible. The consequence was not followed |
+| read, effect not traced | A typed getter call names it in decompiled Java, directly, through a checked wrapper, a checked table loop, an app constant or a checked enum catalog; or a native binary's imported `CalId` set equals its getter-call set | That the value changes anything visible. The consequence was not followed |
 | mentioned | Named in app Java as a table entry, constant or comparison, with no getter call found | Unused. Table and alias lookups are resolved at run time |
 | name only | The name or GUID is in a native binary that imports a calibration getter, in the PAL table, or in a configuration file | A located read. No function was decompiled |
 | not found outside bulk lists | Present only in the generated constant classes, `calserviced`, `libcalmgr.so` and the database | Unused in the vehicle. Non-Android controllers and by-group reads are invisible here |
@@ -106,6 +109,9 @@ Checked on the Y175 image; each item changes what a search has to look for.
 - **To the hypervisor side:** `GHSCalibrations` (230 names) writes calibration messages to `/dev/ghs/cal`.
 - **Cached copies:** `gm.content.CalibrationShadow` persists values under the app cache directory (`calshadow/<name>`)
   and refreshes them when the calibration update indicator changes.
+- **Enum catalogs:** GMSettings, GMConnections and CarSettings bind each name to an enum entry (`CalItem.X`) and read
+  it through `CalibrationRequest.getBooleanValue(CalItem.X)` and siblings. Values are cached in static maps for the
+  life of the process, and a missing row reads as the entry's own default.
 
 Twelve packages embed the full generated constant classes (all or nearly all 2573 names) and are not evidence of use:
 info3.jar, diagnostics_pci_impl.jar, GMSXM, GMBugReportService, GMTrustedDevice, GMEcommPayment, GMAlexa, GMTCPS,
@@ -139,21 +145,22 @@ other small groups have no reader on this image.
 
 ### Projection, connections, Wi-Fi, Bluetooth, phone
 
-9 groups, 117 rows: 21 traced, 4 read, 1 mentioned, 36 name only, 55 bulk lists only.
+9 groups, 117 rows: 22 traced, 3 read, 1 mentioned, 36 name only, 55 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
 | `HANDSFREE` | 22 | 0 | 0 | 0 | 22 | 0 | vehicleaudiocontrol 22 |
-| `GIS512_CONNECTIONS` | 20 | 4 | 2 | 0 | 0 | 14 | DelayedWKSApp 6, GMSystemUI 2 |
-| `GIS503_PHONEDOMAIN` | 18 | 0 | 1 | 0 | 0 | 17 | GMOnStar 1 |
+| `GIS512_CONNECTIONS` | 20 | 4 | 2 | 0 | 0 | 14 | DelayedWKSApp 6, GMConnections 3, GMSettings 3 |
+| `GIS503_PHONEDOMAIN` | 18 | 1 | 0 | 0 | 0 | 17 | GMConnections 1, GMOnStar 1, GMSettings 1 |
 | `BLUETOOTHFEATUREENABLES` | 14 | 0 | 0 | 0 | 14 | 0 | libpal_calibrations.so 14 |
-| `GIS337_CONSUMERDEVICEPROJECTION` | 14 | 13 | 0 | 0 | 0 | 1 | DelayedWKSApp 17, CarService 2 |
-| `WIFIINFO3` | 12 | 2 | 0 | 0 | 0 | 10 | DelayedWKSApp 2, GMBugReportService 2, GMEcommPayment 2 |
-| `GIS513_DEVICEPROJECTION` | 6 | 2 | 1 | 0 | 0 | 3 | DelayedWKSApp 7, GMBugReportService 2, GMEcommPayment 2 |
+| `GIS337_CONSUMERDEVICEPROJECTION` | 14 | 13 | 0 | 0 | 0 | 1 | DelayedWKSApp 17, GMConnections 6, GMSettings 6 |
+| `WIFIINFO3` | 12 | 2 | 0 | 0 | 0 | 10 | GMConnections 3, GMSettings 3, DelayedWKSApp 2 |
+| `GIS513_DEVICEPROJECTION` | 6 | 2 | 1 | 0 | 0 | 3 | DelayedWKSApp 7, GMBugReportService 2, GMConnections 2 |
 | `USB` | 6 | 0 | 0 | 1 | 0 | 5 | none |
 | `BLUETOOTHHMIPERFORMANCE` | 5 | 0 | 0 | 0 | 0 | 5 | none |
 
-The first-slice rules live here (projection allowance, wireless listeners, hotspot, Settings). `BLUETOOTHFEATUREENABLES`
+The first-slice rules live here (projection allowance, wireless listeners, hotspot, Settings); the Settings ones now
+name the row they control ([Settings](#settings)). `BLUETOOTHFEATUREENABLES`
 (profile enables, microphone setup) appears only in the table exported by `libpal_calibrations.so`, and `HANDSFREE`
 only as a pointer table in `vehicleaudiocontrol`: both are name only, and no Java code reads the profile enables, so
 static files do not show whether the Android Bluetooth stack honours them. Most of `WIFIINFO3` (DHCP range, transmit
@@ -161,7 +168,7 @@ power, device limits) and `GIS512_CONNECTIONS` has no reader on the image.
 
 ### Audio processing, volume, chimes
 
-24 groups, 708 rows: 0 traced, 11 read, 8 mentioned, 441 name only, 248 bulk lists only.
+24 groups, 708 rows: 6 traced, 9 read, 4 mentioned, 441 name only, 248 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
@@ -169,7 +176,7 @@ power, device limits) and `GIS512_CONNECTIONS` has no reader on the image.
 | `GIS631_CONFIGCHIMEPROD_CADTHEME1_GLOBALB` | 158 | 0 | 0 | 0 | 2 | 156 | GHSCalibrations 2 |
 | `VEHICLESPECIFICEQUALIZATION` | 123 | 0 | 0 | 0 | 114 | 9 | vehicleaudiocontrol 114 |
 | `REQUESTACTIONMAP` | 41 | 0 | 0 | 0 | 41 | 0 | vehicleaudiocontrol 35, vendor.harman.tuner-service 6 |
-| `SINKLEVELCONTROLCALS` | 31 | 0 | 2 | 2 | 14 | 13 | vehicleaudiocontrol 17, CarService 1, DelayedWKSApp 1 |
+| `SINKLEVELCONTROLCALS` | 31 | 3 | 1 | 0 | 14 | 13 | vehicleaudiocontrol 17, GMConnections 5, GMSettings 5 |
 | `GM_SR_TUNINGFILES` | 30 | 0 | 0 | 0 | 30 | 0 | vehicleaudiocontrol 30 |
 | `CODEC` | 22 | 0 | 0 | 0 | 0 | 22 | none |
 | `AOSPVOLUMEGROUPRAMPTIMES` | 20 | 0 | 0 | 0 | 20 | 0 | vehicleaudiocontrol 20 |
@@ -177,7 +184,7 @@ power, device limits) and `GIS512_CONNECTIONS` has no reader on the image.
 | `ROOMMODE` | 15 | 0 | 0 | 0 | 15 | 0 | vehicleaudiocontrol 15 |
 | `DIRECTIONALAUDIOPROMPTRENDERING` | 14 | 0 | 0 | 0 | 0 | 14 | none |
 | `VOLUMEGROUPRAMPTIMES` | 14 | 0 | 0 | 0 | 0 | 14 | none |
-| `BRANDANIMATIONSAUDIOCUES` | 12 | 0 | 6 | 2 | 0 | 4 | animengine 5, GMSubscriptionManager 1 |
+| `BRANDANIMATIONSAUDIOCUES` | 12 | 3 | 5 | 0 | 0 | 4 | animengine 5, GMConnections 3, GMSubscriptionManager 1 |
 | `GIS1001_INCARCOMMUNICATION` | 7 | 0 | 0 | 0 | 0 | 7 | none |
 | `AOSPSINKLEVELCONTROL` | 6 | 0 | 1 | 0 | 5 | 0 | vehicleaudiocontrol 6, CarService 1 |
 | `AUDIOHMICALS` | 6 | 0 | 1 | 4 | 1 | 0 | vehicleaudiocontrol 1, GMAudioServer 1 |
@@ -197,15 +204,17 @@ register, so a per-name read was not established and the rows stay name only. Th
 outside Android. Values here are mostly arrays, records and binary tuning blobs, so even a located read would not give
 a behaviour statement without the DSP semantics. Voice-tuning names also appear as file names under `vendor/etc/gmvt`.
 `GIS631_CONFIGCHIMEPROD_CADTHEME1_GLOBALB` (156 of 158 rows), `CODEC` and `VOLUMEGROUPRAMPTIMES` have no reader here.
+The six traced rows are Settings ones (chime and start-up volume limits, audio-cue rows); their audio-side use stays
+untraced.
 
 ### Tuner
 
-8 groups, 182 rows: 0 traced, 17 read, 34 mentioned, 50 name only, 81 bulk lists only.
+8 groups, 182 rows: 1 traced, 16 read, 34 mentioned, 50 name only, 81 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
 | `GIS502_TUNERHMI` | 53 | 0 | 1 | 27 | 0 | 25 | GMTunerService 1 |
-| `GIS653_FMTUNER` | 41 | 0 | 6 | 1 | 30 | 4 | vendor.harman.tuner-service 36, GMTunerService 3, DelayedWKSApp 2 |
+| `GIS653_FMTUNER` | 41 | 1 | 5 | 1 | 30 | 4 | vendor.harman.tuner-service 36, GMTunerService 3, DelayedWKSApp 2 |
 | `GIS655_DABTUNER` | 25 | 0 | 4 | 2 | 6 | 13 | vendor.harman.tuner-service 9, GMTunerService 4, GMMedia 1 |
 | `GIS605_HDTUNER` | 23 | 0 | 0 | 3 | 0 | 20 | none |
 | `GIS653_AMTUNER` | 18 | 0 | 4 | 0 | 10 | 4 | vendor.harman.tuner-service 14, DelayedWKSApp 2, GMTunerService 2 |
@@ -221,11 +230,11 @@ value crosses a process boundary. HD and SXM rows are largely unread on this ima
 
 ### Camera and video
 
-8 groups, 175 rows: 2 traced, 11 read, 0 mentioned, 76 name only, 86 bulk lists only.
+8 groups, 175 rows: 3 traced, 10 read, 0 mentioned, 76 name only, 86 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
-| `FRONTREARCAMERASTATIC` | 86 | 2 | 9 | 0 | 75 | 0 | libpal_calibrations.so 86, GHSCalibrations 50, DelayedWKSApp 11 |
+| `FRONTREARCAMERASTATIC` | 86 | 3 | 8 | 0 | 75 | 0 | libpal_calibrations.so 86, GHSCalibrations 50, DelayedWKSApp 11 |
 | `GIS942_AUGMENTEDREALITY_GLOBALB` | 36 | 0 | 0 | 0 | 0 | 36 | none |
 | `GIS738_RVCVIDEOROBUSTNESSREQUIREMENT` | 16 | 0 | 1 | 0 | 0 | 15 | DelayedWKSApp 4, GMSystemUI 3, GMTrustedDevice 3 |
 | `IMAGE_ENHANCEMENT_TECHWELL_TW8845REGISTERS_WITH_DIGITAL_CAMERA` | 14 | 0 | 0 | 0 | 0 | 14 | none |
@@ -262,20 +271,20 @@ which a static read of the Android side cannot confirm.
 
 ### System state, display, controls
 
-15 groups, 180 rows: 0 traced, 18 read, 2 mentioned, 56 name only, 104 bulk lists only.
+15 groups, 180 rows: 8 traced, 12 read, 0 mentioned, 56 name only, 104 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
-| `GIS618_SYSTEMSTATE` | 37 | 0 | 1 | 1 | 35 | 0 | libpal_calibrations.so 37, DelayedWKSApp 1 |
+| `GIS618_SYSTEMSTATE` | 37 | 1 | 1 | 0 | 35 | 0 | libpal_calibrations.so 37, DelayedWKSApp 1, CarSettings 1 |
 | `FACEPLATEBUTTONS_GLOBALA` | 29 | 0 | 2 | 0 | 0 | 27 | DelayedWKSApp 4 |
-| `DISPLAYGESTURESANDTIMEOUTS` | 24 | 0 | 3 | 1 | 0 | 20 | GMSubscriptionManager 2, services 1 |
+| `DISPLAYGESTURESANDTIMEOUTS` | 24 | 1 | 3 | 0 | 0 | 20 | GMSubscriptionManager 2, GMConnections 1, GMSettings 1 |
 | `GIS619_BRIGHTNESSCONTROL_GLOBALA` | 19 | 0 | 0 | 0 | 0 | 19 | none |
 | `GIS619_BRIGHTNESSCONTROL_GLOBALB` | 15 | 0 | 0 | 0 | 15 | 0 | libpal_calibrations.so 15 |
 | `STEERINGWHEELSWITCHES_GLOBALA` | 13 | 0 | 0 | 0 | 0 | 13 | none |
 | `GIS652_MULTIFUNCTIONCONTROLLER` | 12 | 0 | 6 | 0 | 0 | 6 | DelayedWKSApp 14 |
 | `GIS611_SYSTEMPARAMETERS` | 9 | 0 | 0 | 0 | 1 | 8 | none |
 | `CANHANDLERCALS` | 6 | 0 | 0 | 0 | 0 | 6 | none |
-| `GIS651_TIMEOFDAY` | 6 | 0 | 6 | 0 | 0 | 0 | CriticalWKSApp 6, DelayedWKSApp 2 |
+| `GIS651_TIMEOFDAY` | 6 | 6 | 0 | 0 | 0 | 0 | CriticalWKSApp 6, DelayedWKSApp 2, GMConnections 2 |
 | `GARAGEMODECONFIGURATIONS` | 5 | 0 | 0 | 0 | 5 | 0 | android.hardware.automotive.vehicle@2.0-service-gm 5 |
 | `TOUCHCONTROLLER` | 2 | 0 | 0 | 0 | 0 | 2 | none |
 | `CUSTOMIZATIONGATEWAYTIMER` | 1 | 0 | 0 | 0 | 0 | 1 | none |
@@ -283,20 +292,21 @@ which a static read of the Android side cannot confirm.
 | `GIS549_MULTIFUNCTIONINFOTAINMENTCONTROLLER` | 1 | 0 | 0 | 0 | 0 | 1 | none |
 
 `GIS618_SYSTEMSTATE` and `GIS619_BRIGHTNESSCONTROL_GLOBALB` (timeouts, brightness tables) are PAL-table rows: power
-moding and backlight are handled below Android. Java reads cover time of day (CriticalWKSApp), the multifunction
-controller and faceplate mapping (DelayedWKSApp) and a few gesture timeouts. `GARAGEMODECONFIGURATIONS` is imported by
+moding and backlight are handled below Android. Java reads cover time of day (CriticalWKSApp `TimeofDayService`,
+traced in [Clock and time zone](#clock-and-time-zone)), the multifunction controller and faceplate mapping
+(DelayedWKSApp) and a few gesture timeouts. `GARAGEMODECONFIGURATIONS` is imported by
 the vehicle HAL as `CalId` symbols, but its five `CalibrationManager::get` calls go through a wrapper, so the reads are
 not paired with names. Steering-wheel switch and most faceplate rows have no reader here.
 
 ### Climate, seats, energy, trailering, vehicle apps
 
-13 groups, 230 rows: 4 traced, 68 read, 0 mentioned, 1 name only, 157 bulk lists only.
+13 groups, 230 rows: 5 traced, 67 read, 0 mentioned, 1 name only, 157 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
-| `GIS520_ENERGYUI` | 79 | 1 | 7 | 0 | 0 | 71 | DelayedWKSApp 8, GMBugReportService 1, GMHomeScreen 1 |
+| `GIS520_ENERGYUI` | 79 | 1 | 7 | 0 | 0 | 71 | DelayedWKSApp 8, CarSettings 1, GMBugReportService 1 |
 | `GIS539_TRAILERAPPUI` | 49 | 1 | 38 | 0 | 0 | 10 | GMTrailer 39, GMBugReportService 2, GMEcommPayment 2 |
-| `OFFROADAPP` | 31 | 0 | 1 | 0 | 0 | 30 | GMHomeScreen 1, GMSystemUI 1 |
+| `OFFROADAPP` | 31 | 1 | 0 | 0 | 0 | 30 | CarSettings 1, GMHomeScreen 1, GMSystemUI 1 |
 | `GIS550_CLIMATETOUCHSCREENUI_GLOBALB` | 20 | 2 | 16 | 0 | 1 | 1 | GMHvac 18, android.hardware.automotive.vehicle@2.0-service-gm 12, GMEcommPayment 3 |
 | `HMIEXTERNALVEHICLEFEATURES` | 16 | 0 | 0 | 0 | 0 | 16 | none |
 | `GIS517_SEATSTATUSPANEUI` | 7 | 0 | 6 | 0 | 0 | 1 | GMSeatStatusPane 6 |
@@ -346,11 +356,11 @@ Static files therefore say nothing about them beyond "no consumer found on this 
 
 ### Settings, personalization, accounts, restrictions
 
-15 groups, 112 rows: 1 traced, 13 read, 3 mentioned, 4 name only, 91 bulk lists only.
+15 groups, 112 rows: 4 traced, 13 read, 0 mentioned, 4 name only, 91 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
-| `GIS507_SETTINGS` | 28 | 1 | 3 | 2 | 1 | 21 | GMTeenMode 2, GMBugReportService 1, GMEcommPayment 1 |
+| `GIS507_SETTINGS` | 28 | 3 | 3 | 0 | 1 | 21 | GMConnections 4, GMTeenMode 2, GMSettings 2 |
 | `GIS1007_SETTINGS_GLOBALB` | 23 | 0 | 0 | 0 | 2 | 21 | GHSCalibrations 1 |
 | `GIS508_PERSONALIZATIONFBS` | 23 | 0 | 0 | 0 | 0 | 23 | none |
 | `SFS1_PERSONALIZATIONFRD` | 15 | 0 | 3 | 0 | 1 | 11 | GMAuthTokenService 2, GMAPIManager 2, GMEcommPayment 2 |
@@ -363,31 +373,33 @@ Static files therefore say nothing about them beyond "no consumer found on this 
 | `GIS525_AUTHENTICATORDRIVERWORKLOADS` | 2 | 0 | 0 | 0 | 0 | 2 | none |
 | `DRIVINGRESTRICTIONS` | 1 | 0 | 1 | 0 | 0 | 0 | GMSystemUI 1 |
 | `GIS1024_TERMSANDCONDITIONS` | 1 | 0 | 0 | 0 | 0 | 1 | none |
-| `GIS525_AUTHENTICATORUI` | 1 | 0 | 0 | 1 | 0 | 0 | none |
+| `GIS525_AUTHENTICATORUI` | 1 | 1 | 0 | 0 | 0 | 0 | none |
 | `SFS22_SECURITYEVENTLOGGINGFRD` | 1 | 0 | 0 | 0 | 0 | 1 | none |
 
 A few reads in GMTeenMode, the account and registration services and GMSubscriptionManager. GMSettings and
-GMConnections name 34 calibrations through a `CalItem` table whose entries are fetched on demand by generic
-`getBooleanValue(CalItem)` calls; a table entry alone is counted as "mentioned". Most personalization and
-driver-workload rows have no reader on the image.
+GMConnections name 34 calibrations through a `CalItem` enum whose entries are fetched on demand by
+`getBooleanValue(CalItem.X)` calls; these are now resolved as reads (`ENUM_KEYS` in `rules.py`) and all 34 are read
+somewhere in the shared code. Most of them sit in other CalDef groups, so this family's counts understate what Settings
+reads: see [Settings](#settings), which is organised by screen. Most personalization and driver-workload rows have no
+reader on the image.
 
 ### Connected services and updates
 
-13 groups, 101 rows: 1 traced, 34 read, 3 mentioned, 3 name only, 60 bulk lists only.
+13 groups, 101 rows: 3 traced, 32 read, 3 mentioned, 3 name only, 60 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
 | `GIS668_REMOTEOMADMSERVERINTERFACE_GLOBALA` | 25 | 0 | 0 | 0 | 0 | 25 | none |
 | `GIS658_INFOTAINMENTPROGMASTER_GLOBALA` | 16 | 0 | 0 | 0 | 0 | 16 | none |
 | `REMOTESERVERSETTINGS` | 15 | 1 | 9 | 0 | 0 | 5 | GMAuthTokenService 5, GMSubscriptionManager 4, GMRegistrationService 3 |
-| `GIS887_REMOTEPROGRAMMINGHMI_GLOBALB` | 12 | 0 | 12 | 0 | 0 | 0 | GMBugReportService 12, GMEcommPayment 12, GMTrustedDevice 12 |
+| `GIS887_REMOTEPROGRAMMINGHMI_GLOBALB` | 12 | 1 | 11 | 0 | 0 | 0 | GMBugReportService 12, GMEcommPayment 12, GMTrustedDevice 12 |
 | `GIS505_ONSTARUI` | 9 | 0 | 4 | 0 | 3 | 2 | GMSubscriptionManager 2, GMOnStar 2, GMBugReportService 1 |
 | `GIS697_REMOTEREFLASHINFOTAINMENTFUNCTIONAL_GLOBALA` | 9 | 0 | 0 | 0 | 0 | 9 | none |
 | `GIS864_USBPROG_GLOBALB` | 7 | 0 | 7 | 0 | 0 | 0 | GMBugReportService 7, GMTrustedDevice 7, info3 7 |
 | `GIS609_LICENSECOMPLIANCEMATERIALDISPLAY_GLOBALB` | 3 | 0 | 0 | 3 | 0 | 0 | none |
 | `GIS1009_UPDATER` | 1 | 0 | 0 | 0 | 0 | 1 | none |
 | `GIS506_ONSTARTBTUI` | 1 | 0 | 0 | 0 | 0 | 1 | none |
-| `GIS675_MYBRANDAPP_ACCESSVEHICLEDATA` | 1 | 0 | 1 | 0 | 0 | 0 | DelayedWKSApp 1 |
+| `GIS675_MYBRANDAPP_ACCESSVEHICLEDATA` | 1 | 1 | 0 | 0 | 0 | 0 | DelayedWKSApp 1, GMConnections 1 |
 | `GIS675_VCA_COMMANDCONTROL` | 1 | 0 | 0 | 0 | 0 | 1 | none |
 | `PARTNERAPPSCALS` | 1 | 0 | 1 | 0 | 0 | 0 | DelayedWKSApp 1 |
 
@@ -397,17 +409,18 @@ and subscription services. Effects were not traced. OMA-DM, reflash and programm
 
 ### Vehicle identity and region
 
-3 groups, 32 rows: 2 traced, 15 read, 2 mentioned, 2 name only, 11 bulk lists only.
+3 groups, 32 rows: 4 traced, 13 read, 2 mentioned, 2 name only, 11 bulk lists only.
 
 | CalDef group | Rows | Traced | Read | Mentioned | Name only | Bulk lists only | Named by (rows) |
 |---|---|---|---|---|---|---|---|
 | `GLOBAL_INFO3` | 17 | 1 | 8 | 2 | 2 | 4 | android.hardware.automotive.vehicle@2.0-service-gm 8, GMRSISrc 6, services 5 |
-| `GIS500_UI` | 10 | 0 | 3 | 0 | 0 | 7 | GMSystemUI 9, DelayedWKSApp 8, GMVAC 8 |
-| `LANGUAGEANDREGIONALIZATIONGLOBALA` | 5 | 1 | 4 | 0 | 0 | 0 | DelayedWKSApp 10, libnavsens_gm.so 5, GMBugReportService 2 |
+| `GIS500_UI` | 10 | 2 | 1 | 0 | 0 | 7 | GMSystemUI 9, DelayedWKSApp 8, GMConnections 8 |
+| `LANGUAGEANDREGIONALIZATIONGLOBALA` | 5 | 1 | 4 | 0 | 0 | 0 | DelayedWKSApp 10, libnavsens_gm.so 5, GMConnections 4 |
 
 `GMBrand`, `GMModel` and `GMTrim` are read by nearly every GM package (theme and feature selection) and by
-`animengine`, where the read set was checked in disassembly. `COUNTRY_CODE` is traced for the Alexa icon and CarPlay
-touch fidelity only; its many other reads are not followed. The fuel-type rows are imported by the vehicle HAL.
+`animengine`, where the read set was checked in disassembly. `COUNTRY_CODE` is traced for the Alexa icon, CarPlay
+touch fidelity and four Settings rows; its other reads are not followed. `GMBrand` and `GMModel` are traced only for
+the Settings rows that test them. The fuel-type rows are imported by the vehicle HAL.
 
 ### Unassigned
 
@@ -418,6 +431,207 @@ touch fidelity only; its many other reads are not followed. The fuel-type rows a
 | `(row absent from the image database)` | 1 | 0 | 0 | 0 | 0 | 1 | none |
 
 `UPDATE_INDICATOR` exists only in the bench database, not in the image database.
+
+## Settings
+
+Organised by screen, not by CalDef group: the 46 calibrations named here come from 22 groups. Rule ids refer to
+`rules.py`; "Bench" and "Image" are the rule's result with the bench dump values and the image defaults, every runtime
+state assumed to allow the feature.
+
+### Who draws what
+
+| Package | Role | Calibration access |
+|---|---|---|
+| CarSettings (`com.android.car.settings`) | Home page and the AOSP-derived screens (Apps, System, About, Privacy, Security, Notifications). The launcher alias `Settings_Launcher_Homepage` and `android.settings.SETTINGS` open it | Own `CalItem` enum, 11 names, read in 2 classes |
+| GMSettings (`com.gm.hmi.settings`) | GM screens opened by intent action: Vehicle, Date and time, Display, Sounds, Language, reset, quick start-up, location services, accounts and profiles | `com.gm.settings.data.calibration.CalItem`, 34 names |
+| GMConnections (`com.gm.hmi.connection`) | Connections, Phones, Wi-Fi networks, Wi-Fi hotspot, projection pop-ups | Same `com.gm.settings.*` code as GMSettings (same `CalItem`) |
+| GMSWUpdater, GMTCPS, GMOnStar, GMTrustedDevice | Updates, privacy statement, TTY, trusted device: opened from Settings rows | Own reads, effects not traced here |
+
+Home page rows (CarSettings `homepage_fragment.xml`): Connections (`com.gm.settings.app.CONNECTIONS`, GMConnections),
+Vehicle (`…VEHICLE`, GMSettings), Notifications, Apps, Date and time (`…DATETIME`, GMSettings), Display and Sounds
+(`…DISPLAY`, `…SOUNDS`, GMSettings `DisplayActivity`), Profiles and accounts, Privacy, Security, System, Updates
+(`…UPDATES`, GMSWUpdater), plus two groups filled from other packages' manifests. No home-page row is gated by a
+calibration inside CarSettings; the Settings launcher icon itself is `icon.settings`
+(`APPLICATION_HOMESCREEN_SETTINGS_ENABLED`).
+
+Three mechanisms connect a calibration to a row:
+
+1. **List filter.** A repository or signal class answers `isAvailable()`; the list builder leaves the row out.
+2. **View visibility.** A data-binding class sets a row's views `VISIBLE` or `GONE` from an observable.
+3. **Package manager.** GMSettings start-up enables or disables an activity (`setComponentEnabledSetting`). CarSettings
+   builds some rows from `queryIntentActivitiesAsUser` by `com.android.settings.category`, so the row follows the
+   component state. This state is stored under `/data` and changes only when GMSettings next starts as the Settings
+   client.
+
+### The obfuscated layer, resolved
+
+GMSettings and GMConnections keep the Kotlin source-file name of every class ("compiled from" in jadx output), which
+names the R8-renamed classes. Requests are dispatched by name: a view tag or activity call gives an event key,
+`res/raw/eventmap.json` maps it to a method name, and `IManager.class.getMethod(name)` invokes it (GMSettings
+`O/a.java`, GMConnections `T/a.java`). A handler method with no Java caller is therefore not dead until its event key
+has been checked too.
+
+| GMSettings class | Source file | Role |
+|---|---|---|
+| `Q/G` | `SDKManager.kt` | `IManager`: the reflective entry point; forwards to the handlers below |
+| `Q/C0171q` | `BasicSettingsReqHandler.kt` | Date and time, sounds list, languages, about, quick start-up, system menu status |
+| `Q/C0164j` | `AdvancedSettingsReqHandler.kt` | Developer options, remote devices, factory reset, running apps |
+| `Q/C0165k` | `AppSettingsReqHandler.kt` | Memory data only |
+| `Q/F` | `MultiUserProfileSettingsReqHandler.kt` | Users, accounts, sign-in |
+| `Q/L` | `UserSettingsReqHandler.kt` | Privacy, permissions, location services |
+| `Q/Q` | `VehicleSettingsReqHandler.kt` | Vehicle settings categories, options, lighting, volumes |
+| `Q/A`…`Q/E`, `Q/C0155a`…`Q/C0163i`, `Q/C0166l`…`Q/C0170p`, `Q/H`…`Q/K`, `Q/N`…`Q/P`, `Q/w`…`Q/z` | `ExtensionFunctions.kt` | Use-case result callbacks (`Observer.Acceptor`, one `switch` per class): convert the result and call a `P/*` response handler |
+| `Q/r`…`Q/u` | `EventBusHandler.java` | Event-bus consumers |
+| `Q/M`, `Q/v` | none | Synthetic switch tables |
+| `P/a`…`P/g` | `*ResHandler.kt` | Forward to `O/c`, then `Z/c` |
+| `Z/c` | `ResponseListener.kt` | Builds the row lists and sets the observables the layouts bind to |
+| `S/i` | `DataPoolDataHandler.kt` | The observable store (view model) |
+| `V/*` | `*BindingImpl.java` | Data-binding classes, one per layout |
+
+Callbacks read for this pass: `Q/C0162h` (cases 2, 3, 4), `Q/C0166l` (case 4), `Q/C0169o` (case 0), `Q/H` (case 3),
+`Q/J` (case 2), `Q/z` (case 2), `Q/w` (case 2). The other `ExtensionFunctions.kt` classes were only checked for which
+use cases they import (none of the calibration-dependent ones beyond those listed) and are not otherwise resolved.
+GMConnections uses the same layout: `V/j` (`SDKManager.kt`), `V/b`, `V/e`, `V/g` (Bluetooth, hotspot, Wi-Fi network
+request handlers), `p007d0/b` (`ResponseListener.kt`), `p000a0/*` (binding classes).
+
+### Gates traced to a row
+
+All are evidence level `traced`: code read, nothing run.
+
+| Screen and row | True when | Effect of false | Bench | Image | Rule |
+|---|---|---|---|---|---|
+| Connections: Wi-Fi networks | `BACK_OFFICE_SERVER_ENABLED and WiFiEnable` | Row left out of the list | shown | shown | `ui.settings_wifi_networks` |
+| Connections: Wi-Fi hotspot | `WiFiEnable and WiFiP2PEnable and APPLICATION_HOMESCREEN_WIFIHOTSPOT_ENABLED` | Row left out | shown | shown | `ui.settings_hotspot_available` |
+| Connections: vehicle-to-phone sharing | `VCA_ACCESS_VEHICLE_DATA` | Row left out | shown | absent | `settings.connections.vehicle_to_phone_row` |
+| Wi-Fi hotspot: Wi-Fi Services | neither `Apple_CarPlay_enableWireless` nor `AndroidAuto_enableWireless` | Row `GONE` | gone | shown | `ui.settings_wifi_services_menu` |
+| Wi-Fi hotspot: Share Hotspot Data | `APPLICATION_HOMESCREEN_ONSTAR_ENABLED or BACK_OFFICE_SERVER_ENABLED` | Row `GONE` | shown | shown | `settings.hotspot.share_data_row` |
+| Wi-Fi hotspot: password show/hide control | `COUNTRY_CODE == 4` | Control `GONE` | gone | gone | `settings.hotspot.password_reveal` |
+| Phone details: Apple CarPlay on/off | `Apple_CarPlay_enableWireless` (CarPlay-type device) | Row not added | shown | absent | `settings.phone.carplay_toggle_row` |
+| Phone details: Android Auto on/off | `AndroidAuto_enableWireless` (Android Auto-type device) | Row not added | shown | absent | `settings.phone.androidauto_toggle_row` |
+| Date and time: Automatic Date / Time | `BACK_OFFICE_SERVER_ENABLED and GPS_DATA_SOURCE == 2`, or `not BACK_OFFICE_SERVER_ENABLED and GPS_DATA_SOURCE == 1` | Row `GONE`; GMSettings start-up writes `auto_time` = 0 | shown | shown | `settings.time.auto_datetime_row` |
+| Date and time: Automatic Time Zone | the line above, and (`BACK_OFFICE_SERVER_ENABLED` and `APPLICATION_HOMESCREEN_ONSTAR_ENABLED` and a valid OnStar subscription, or `FM_RDS_Clocktime_enabled`) | Row `GONE` | shown if the subscription is valid | same | `settings.time.auto_timezone_row` |
+| Sounds: audible touch feedback | `ENABLE_MENU_AUDIO_TOUCH_FEEDBACK` | Row left out | shown | absent | `settings.sounds.audible_touch_row` |
+| Sounds: audio cue on/off and audio cue volume | `AUDIO_CUE_ACUE_RUN_ENABLED or AUDIO_CUE_WELCOME_ENABLE or AUDIO_CUE_ACUE_STOP_ENABLED` | Both rows left out | absent | absent | `settings.sounds.audio_cue_rows` |
+| Sounds: wording of those two rows | `AUDIO_CUE_ACUE_STOP_ENABLED` | Start-up-only titles | n/a | n/a | `settings.sounds.audio_cue_shutdown_wording` |
+| Privacy > Location: Location Services for OnStar | `APPLICATION_HOMESCREEN_ONSTAR_ENABLED and COUNTRY_CODE != 92` | Row left out | shown | shown | `settings.location.onstar_row` |
+| System: quick start-up | `SUSPEND_TO_RAM_ENABLE` | Preference `UNSUPPORTED_ON_DEVICE` | shown | shown | `settings.car.quick_startup` |
+| System: TTY | `TTYSetting` | OnStar TTY activity disabled in the package manager; row not built | shown | absent | `settings.car.tty_row` |
+| System > About: device registration | `BACK_OFFICE_SERVER_ENABLED` | Registration activity disabled in the package manager; row not built | shown | shown | `settings.car.device_registration_row` |
+| Apps: Alexa | `APPLICATION_HOMESCREEN_ALEXA_ENABLED and COUNTRY_CODE in (49, 5, 31)` | Entry dropped from the list | listed | listed | `settings.car.apps_alexa` |
+| Apps: Off-road, Energy, Trailering, `com.gm.fse` | Always, unless `GMBrand == 3 and GMModel == 10`; then the app's own home-screen setting(s) | Entry dropped | listed | listed | `settings.car.apps_offroad`, `_energy`, `_trailering`, `_gmc_studio` |
+| Vehicle: valet mode category | `ValetMaskMenu` | Category left out | absent | absent | `settings.vehicle.valet_mode` |
+| Vehicle > Lighting: engine lighting | MY23 CSM product, `AmbientLightingEnable`, an auxiliary ambient signal available | Sub-row left out | absent | absent | `settings.vehicle.engine_lighting` |
+| Vehicle: rear camera park assist symbols | `RVS_PRESENT_STATUS != 0`, and `RVS_FEATURE_AVAIL_UPA_SYMBOLS` (status 2: the vehicle property instead) | Sub-row left out | by property | shown | `settings.vehicle.rear_camera_park_assist` |
+| Vehicle > Drive mode: selection overlay | `GMBrand == 3` | Sub-row left out | shown | absent | `settings.vehicle.drive_mode_overlay` |
+| Account sign-in: network check | `DataServicesEnable` and `Settings.Global data_services_enabled` = 1 | Sign-in handlers get `NETWORK_SERVICE_DISABLED` | passes | disabled | `settings.account.network_service` |
+
+Precision notes:
+
+- "Left out of the list" was traced to the list the response listener or signal supervisor builds. For the Vehicle
+  rows the final row view was not inspected.
+- "Listed" in Apps says the entry passes this filter, not that the package is installed. For the four Corvette-only
+  filters the bench set (`GMBrand` 3, `GMModel` 4) never reaches the calibration test.
+- The two package-manager rows rest on one fact not read in code: that a disabled activity is not returned by the
+  query (standard platform behaviour; the query passes no flag that would include disabled components).
+- A listed Wi-Fi networks or hotspot row can still be greyed by `fid_wifi_disable_status`, `fid_hotspot_disable_status`
+  and the MEC counter (runtime state, not calibrations).
+- The Connections list also has a trusted-device row gated by `PlatformUtil.isGASBuild()` and the brand system
+  property, not by a calibration read in these packages.
+
+Value effects added (`VALUE_EFFECTS`): `MinChimeVolumeStep`, `MaxChimeVolumeStep` (chime volume slider ends),
+`DefaultMaximumStartupVolume`, `GIS887_VehicleTransmissionType` (door-lock description text),
+`GM_Account_Sign_In_Method` (1: e-mail and phone number, else e-mail only), and the six `GIS651_TIMEOFDAY` rows.
+
+### Read in Settings code, effect not resolved
+
+| Setting | Where | What is known |
+|---|---|---|
+| `DataServicesEnable` | `PermissionsRepository.isDataServicesCalibrationEnabled()` → `Q/H` → `Z/c.h0` (GM privacy list) | When false the list builder skips updating the Data Services row state; it does not remove the row. The visible result was not resolved, and no launcher of this screen's intent action (`…evG_PrivacyList`) was found in the 82 decompiled packages |
+| `Apple_CarPlay_enableWireless`, `AndroidAuto_enableWireless` | `ProjectionRepository.isWirelessProjectionEnabled()` → GMConnections `V/b` → observable `t0` | Selects the "connect phone" header text of `ProjectionPopUpConnectPhone` and is bound into the projection phone lists; per-view effect not resolved |
+| `EnableBluetooth`, `BluetoothDevicePairLimit` | `ui.settings_bluetooth` | Bound into three phone-list layouts; per-view effect not resolved |
+| `GMBrand` | `WiFiHotspotRepository.getCollectionsName()`, `AuthenticationRepository.getOwnerCenterName()`, theme helper (`p038n0/b`, with `GMModel`) | Selects a store name string, the brand passed to sign-in screens and the UI theme; one theme (brand 9, model 7 or 8) changes a flag on the display-mode row. Not followed further |
+| `REGIONS` | `TimeZoneManager.prepareTimeZones()` | Value 7 changes how the `Asia/Shanghai` entry of the time-zone list is labelled |
+| `COUNTRY_CODE` | `GMAuthUtil` | Passed into account creation |
+| `BTConnectionRequestTimer` | `BluetoothRepository.getConnectionRequestTimeout()` | Returned as the pairing timeout to the Phones screen (value effect) |
+
+### Defined but not reached on this build
+
+- **GMSettings "System" main menu.** `Z/c.a0` builds a 17-row list (date/time, phones, Wi-Fi networks, device remote
+  access, Wi-Fi hotspot, privacy, …) with the same Wi-Fi, hotspot and remote-access filters. Its request
+  (`onSystemMenuItemStatus`) is mapped from event key `evG_SystemMenuItems`, and no Java string, smali or layout in
+  the package emits that key. CarSettings draws the home page instead. Static files do not exclude an emitter in
+  another package.
+- **GM application list.** `ApplicationsRepository.getAvailableApplications()` (with the CarPlay and Android Auto
+  filter of `ui.settings_carplay_app`) has no caller: `GetAvailableApplicationsUseCase` is never instantiated in
+  GMSettings or GMConnections.
+- **Bluetooth, Wi-Fi, hotspot and projection use cases inside GMSettings.** Same code as GMConnections, no call sites
+  in the GMSettings package; only GMConnections runs them.
+
+### Clock and time zone
+
+Question: can FM RDS clock time set the clock or the time zone without the telematics module?
+
+**Implementation exists.** `com.gm.server.timeofday.TimeofDayService` in CriticalWKSApp observes `Settings.Global`
+`auto_time` and `auto_time_zone` and is the component that calls `AlarmManager.setTime` and `setTimeZone`. It publishes
+binder service `TimeofDay`; the framework's `NtpTrustedTime.getInstance()` returns `android.util.GMTrustedTime`, which
+reads that binder instead of querying an NTP server.
+
+| Quantity | Source | Selected by |
+|---|---|---|
+| Trusted (UTC) time, the only automatic input to the system clock | `GPS_DATA_SOURCE` 1: fix time of location updates (`GMLocationClient`). 2: vehicle property `VendorProperty.UTC`. 0: none | `GPS_DATA_SOURCE` (bench and image: 2) |
+| Fallback clock | Remote real-time clock (`RemoteClockManager`), else 2020-01-01 | No trusted time |
+| Local time, used only to derive a time zone | First choice: vehicle property `LOCAL_TIME`, available when `CELLULAR_NETWORK_DATE_AND_TIME_AVAILABLE` is true. Second: tuner RDS clock time | RDS allowed only if `FM_RDS_Clocktime_enabled` (bench and image: 0) |
+
+What the code does with RDS (rule `time.rds_local_source`):
+
+1. The broadcast-radio HAL `vendor.harman.tuner-service` exposes vendor parameter `com.gm.rds_time`. Its strings and
+   symbols name `RdsClockTime`, `CTunerClientAdapter::processRdsClockTime`, `sendRdsTime`, `CTuner::updateRdsTime`,
+   `localTimeOffset`, the text `RdsClockTime Disabled` and the calibration name
+   `GIS653_FMTUNER_FM_RDS_Clocktime_enabled`; `vendor/etc/tuner/tuner.json` sets `FM_RDS_CLOCK_TIME_ENABLED` to 1. The
+   binary was not decompiled: that it decodes the RDS clock-time group, and whether the calibration or the JSON value
+   decides, is inferred from names only.
+2. GMTunerService (`com.gm.gmaudio.tuner`, `k/m.java`) reads that parameter through `RadioTuner.getParameters` and
+   parameter updates, adds an elapsed-time stamp and puts the JSON string into its media-session extras.
+3. `GMTunerTimeSource` (CriticalWKSApp) reads the extras. It accepts a value when two successive values lie within
+   180 s and either bit *country code* of `PI_CODE_CONFIGURATION` (bench 0) is set or the value is within
+   `RDS_CLOCK_TIME_MAX_DIFF` (5) minutes of the system's own local clock.
+4. `LocalTimeHandler` uses it as local time when `FM_RDS_Clocktime_enabled` is true and the vehicle's cellular local
+   time is unavailable or invalid.
+5. While `auto_time_zone` is 1, `TimeofDayService` rounds (local time minus trusted time) to half hours and, if the
+   offset changed, sets the time zone to the first zone id for that raw offset whose id contains `GMT`, else the first
+   id. After the first two minutes (and unless the current offset is zero) a change must lie between
+   `TZDSTAdjust_LL` and `TZDSTAdjust_UL` seconds (1800 to 3600) and persist for `TZDSTAckWaitTime` (600) one-second
+   polls. The media-session listener is registered on a user switch, not at service start.
+
+Answers, with their basis:
+
+- **RDS never sets the clock** (verified in code): every `AlarmManager.setTime` call in the service takes trusted
+  time, the remote real-time clock or the default; local time is not an argument to any of them. Manual entry in
+  Settings is the other writer.
+- **RDS can set the time zone, only with `FM_RDS_Clocktime_enabled` = 1** (verified in code, not run). On the bench
+  and image value 0 the tuner source is never selected and the Settings row falls back to the OnStar-subscription
+  term.
+- **The clock still needs a trusted source or manual entry.** With `GPS_DATA_SOURCE` = 2 that source is the vehicle
+  property `UTC`. Which module feeds that property is outside this code (the enum calls it "ExternalOnStarGPS", the
+  service "TCP_GPS"): inferred, not traced, that it is the telematics module. With no trusted time the service keeps
+  the remote real-time clock's time; the time-zone offset is then computed against that clock.
+- **Settings and the service use different conditions.** Settings shows the automatic rows only for
+  `GPS_DATA_SOURCE` 2 with `BACK_OFFICE_SERVER_ENABLED`, or 1 without it, and forces `auto_time` to 0 otherwise. The
+  service looks at `GPS_DATA_SOURCE` alone and applies trusted time in both modes (in manual mode it keeps the user's
+  offset in `persist.sys.clockOffset`).
+- **Unknown:** whether a location provider delivers fixes with `GPS_DATA_SOURCE` = 1 on this hardware; whether the HAL
+  emits `com.gm.rds_time` when the calibration is 0; the zone id actually chosen for a given offset (a fixed-offset
+  `GMT` zone has no daylight-saving rule); whether the AOSP time detectors also run (`services.jar` contains them and
+  `framework-res` lists sources telephony, network, gnss with the GNSS time service enabled, but the system-server
+  start-up method did not decompile).
+
+### Not covered
+
+- Rows whose availability comes from a vehicle property (most Vehicle settings): the property's own dependence on
+  calibrations is in the vehicle HAL, not read.
+- GMSWUpdater, GMTCPS, GMOnStar and GMTrustedDevice screens; the resource-overlay packages; `/data` state (component
+  enable state, `Settings.Global` values, per-process calibration caches).
+- GMSettings account, profile and security screens beyond the two calibrations named above.
 
 ## What this method can and can't do, for next time
 
@@ -473,7 +687,7 @@ with nothing run.
 - Logs rarely print calibration names. Saved logs here named 18 of 2573, ten of them generic stream names; they print
   derived values under the component's own wording, so a log check has to be designed per rule from the code.
 
-**Expected yield.** On this image: 5% of rows traced to an effect, 13% with a located read (cumulative), 15% named in
+**Expected yield.** On this image: 6% of rows traced to an effect, 13% with a located read (cumulative), 15% named in
 app code, 48% tied to some component, 52% with no consumer on the Android side. The traced share grows only by manual
 work and clusters where one file gates many rows. Treat "name only" and "not found" as unknown, never as no effect,
 and plan a bench observation for any row that matters.
@@ -489,6 +703,9 @@ and plan a bench observation for any row that matters.
 - 174 resource-overlay packages and the Google prebuilt apps were not examined for calibration-dependent behaviour.
 - The scan covers the Y175 image. Y181 values match for shared IDs; Y181 code was not re-scanned.
 - Rule anchors check that text exists, not that the logic is unchanged. Re-read the code for another build.
+- The Settings pass also read apktool output (layouts, `res/raw/eventmap.json`, smali) of GMSettings, GMConnections and
+  CarSettings and `aapt2` manifest dumps of all 318 packages. Rule anchors cover the Java side only; layout and manifest
+  facts are stated in rule notes and in [Settings](#settings).
 - Rebuild inputs (merged values, site lists, jadx trees) are derived from firmware and the bench dump and are not
   stored here.
 
@@ -509,5 +726,5 @@ tools/log_mentions.py DB logs.json LOGDIR...    # names in saved runtime text
 ```
 
 `scope.json`, `values.json` and `reads.json` are the first-slice inputs (name list, merged image/override/bench
-values, first-slice read sites). A new wrapper or table goes into `rules.py` with an anchor only after its body has
-been read.
+values, first-slice read sites). A new wrapper, table or enum catalog goes into `rules.py` with an anchor only after
+its body has been read.

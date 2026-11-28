@@ -12,6 +12,9 @@ STATE = {
     "bt_adapter_on": True, "fid_hotspot_disable_status": 0, "hmi_hotspot_disable_status": 0,
     "fid_wifi_disable_status": 0, "wifi_usable": True, "country_allows_wifi": True,
     "system_state_active": True, "system_state_not_disabled": True, "country_is_JP_or_KR": False,
+    # Settings pass
+    "onstar_subscription_valid": True, "product_is_my23_csm": True, "ambient_aux1_signal_available": True,
+    "park_assist_property_available": True, "data_services_setting_on": True,
 }
 
 DW = "DelayedWKSApp"
@@ -22,6 +25,9 @@ HOT = "settings/repositories/WiFiHotspotRepository.java"
 APPS = "settings/repositories/ApplicationsRepository.java"
 BTR = "settings/repositories/BluetoothRepository.java"
 CPC = "server/carplay/service/internals/utils/CarPlayConfiguration.java"
+BOR = "settings/repositories/BackOfficeRepository.java"
+CONN = "GMConnections"
+CONN_RL = "@p007d0/b.java"  # ResponseListener.kt of GMConnections
 
 
 def rule(id, feature, expr, effect, check, anchors, level="traced", note=""):
@@ -88,21 +94,30 @@ RULES = [
          [(DW, WLAN, "startTetheredHotspot"), (DW, WLAN, "AP creation is disabled by calibration")],
          level="observed",
          note="Observed (true branch only) in a Y181 truck log. createWifiHotspot() also refuses on an existing STA connection."),
-    rule("ui.settings_hotspot_available", "Settings: hotspot",
+    rule("ui.settings_hotspot_available", "Settings > Connections: Wi-Fi hotspot row",
          "WiFiEnable and WiFiP2PEnable and APPLICATION_HOMESCREEN_WIFIHOTSPOT_ENABLED",
-         "isWifiHotspotAvailable() returns true", "open Settings and look for hotspot",
-         [("GMSettings", HOT, "isWifiHotspotAvailable()")]),
-    rule("ui.settings_wifi_services_menu", "Settings: Wi-Fi services menu",
+         "isWifiHotspotAvailable() true: the Connections screen (GMConnections ConnectionsActivity) lists the Wi-Fi hotspot row; "
+         "false: the row is left out of the list", "open Settings > Connections and look for Wi-Fi hotspot",
+         [("GMSettings", HOT, "isWifiHotspotAvailable()"), (CONN, CONN_RL, "systemMenuItemStatus.getIsWifiHotSpotAvailable()"),
+          (CONN, "hmi/connection/ui/activities/ConnectionsActivity.java", 'q().g("eSystemMenu")')],
+         note="A listed row is greyed (not removed) when isHotspotEnableAllowed() is false. GMSettings carries the same list builder "
+              "(Z/c.java a0) but no code or layout in it emits its trigger event evG_SystemMenuItems."),
+    rule("ui.settings_wifi_services_menu", "Settings > Connections > Wi-Fi hotspot: Wi-Fi Services row",
          "not (Apple_CarPlay_enableWireless or AndroidAuto_enableWireless)",
-         "The Wi-Fi services menu is available only with BOTH wireless projection settings off; "
+         "The Wi-Fi Services row of the hotspot screen is VISIBLE only with BOTH wireless projection settings off, else GONE; "
          "when hidden, Settings shows hotspot options regardless of hmi_hotspot_disable_status",
-         "open Settings and look for the Wi-Fi services control",
-         [("GMSettings", HOT, "isWifiServicesMenuAvailable()"), ("GMSettings", HOT, "Since WiFiServicesMenu is hidden")]),
-    rule("ui.settings_wifi_networks", "Settings: Wi-Fi networks",
-         "BACK_OFFICE_SERVER_ENABLED and WiFiEnable", "isWifiNetworksAvailable() returns true",
-         "open Settings and look for Wi-Fi networks",
-         [("GMSettings", "settings/repositories/WiFiNetworksRepository.java", "isWifiNetworksAvailable()")],
-         note="First term is the app's isBackOfficeServerEnable(); its link to this calibration was not traced."),
+         "open Settings > Connections > Wi-Fi hotspot and look for the Wi-Fi Services row",
+         [("GMSettings", HOT, "isWifiServicesMenuAvailable()"), ("GMSettings", HOT, "Since WiFiServicesMenu is hidden"),
+          (CONN, "@p000a0/C0192t.java", "i6 = mIsWifiServicesMenuAvailable ? 0 : 8;")],
+         note="Binding ActivityWifiHotspotListImpl sets the visibility of group1 (lbid_primary_constraints, the Wi-Fi Services row)."),
+    rule("ui.settings_wifi_networks", "Settings > Connections: Wi-Fi networks row",
+         "BACK_OFFICE_SERVER_ENABLED and WiFiEnable",
+         "isWifiNetworksAvailable() true: the Connections screen lists the Wi-Fi networks row; false: the row is left out",
+         "open Settings > Connections and look for Wi-Fi networks",
+         [("GMSettings", "settings/repositories/WiFiNetworksRepository.java", "isWifiNetworksAvailable()"),
+          ("GMSettings", BOR, "getBooleanValue(CalItem.BACK_OFFICE_SERVER_ENABLED)"),
+          (CONN, CONN_RL, "systemMenuItemStatus.getIsWifiNetworksAvailable()")],
+         note="A listed row is greyed when fid_wifi_disable_status is not 0, or the MEC counter is non-zero outside developer mode."),
     rule("ui.home_hotspot_tile", "Home screen: hotspot",
          "APPLICATION_HOMESCREEN_WIFIHOTSPOT_ENABLED and WiFiEnable and WiFiP2PEnable and APPLICATION_HOMESCREEN_ONSTAR_ENABLED",
          "Home screen allows the hotspot tile", "home screen / app tray",
@@ -119,13 +134,20 @@ RULES = [
          "Home screen allows the Android Auto tile", "home screen / app tray",
          [("GMHomeScreen", "@T/C0114g.java", 'g("APPLICATION_HOMESCREEN_ANDROIDAUTO_ENABLED")')],
          level="observed", note="Same owner record as the CarPlay tile."),
-    rule("ui.settings_carplay_app", "Settings: CarPlay apps",
-         "Enable_Application_Apple_Carplay", "Settings treats com.gm.carplay and com.gm.hmi.carplay as enabled",
-         "Settings application list", [("GMSettings", APPS, 'case "com.gm.hmi.carplay"')]),
-    rule("ui.settings_bluetooth", "Settings: Bluetooth state",
+    rule("ui.settings_carplay_app", "GM application list: CarPlay and Android Auto entries",
+         "Enable_Application_Apple_Carplay",
+         "ApplicationsRepository.isAppEnabled() returns true for com.gm.carplay and com.gm.hmi.carplay "
+         "(Enable_application_google_Automotive_link does the same for com.gm.gal and com.gm.hmi.androidauto)",
+         "none: no screen reached", [("GMSettings", APPS, 'case "com.gm.hmi.carplay"')],
+         note="Not reached on this build: GetAvailableApplicationsUseCase is never instantiated in GMSettings or GMConnections. "
+              "The Apps list opened from the Settings home page is CarSettings' own (settings.car.apps_* rules)."),
+    rule("ui.settings_bluetooth", "Settings > Connections > Phones: Bluetooth state",
          "bt_adapter_on and EnableBluetooth and BluetoothDevicePairLimit > 0",
-         "Settings reports Bluetooth as enabled (UI state; this does not switch the adapter)",
-         "log 'Bt adapter enabled: ..., calBtEnabled:'", [("GMSettings", BTR, "calBtPairLimit")]),
+         "GMConnections reports Bluetooth as enabled to its Phones screens (UI state; this does not switch the adapter)",
+         "log 'Bt adapter enabled: ..., calBtEnabled:'",
+         [("GMSettings", BTR, "calBtPairLimit"), (CONN, "@V/b.java", "new GetBluetoothStateUseCase().execute(new n())")],
+         note="Bound into the phone-list layouts (ActivityPhonesListImpl, DeviceListImpl, ProjectionDeviceListImpl); the per-view "
+              "consequence was not resolved. The GMSettings copy of the use case has no caller."),
 ]
 
 # Framework launcher-icon gate: gm.content.LauncherIconCalibrationHelper.isApplicationVisible() in info3.jar, one switch
@@ -169,6 +191,205 @@ for _type, _expr in ICONS:
              "calibration update indicator changes. Visible does not prove the app is installed. GMHomeScreen carries its own "
              "copy of this switch (ui.home_* rules); its hotspot case adds APPLICATION_HOMESCREEN_ONSTAR_ENABLED."))
 
+# Settings pass. Three packages draw the Settings UI: CarSettings (com.android.car.settings, the home page and its AOSP
+# screens), GMSettings (com.gm.hmi.settings, GM screens opened by intent action) and GMConnections (com.gm.hmi.connection,
+# the Connections screens). GMSettings and GMConnections share com.gm.settings.* (repositories, use cases, CalItem).
+# Their obfuscated request handlers are named by the "compiled from" tags jadx kept (README, Settings section).
+SET, CAR, CRIT = "GMSettings", "CarSettings", "CriticalWKSApp"
+SET_RL = "@Z/c.java"  # ResponseListener.kt of GMSettings
+TDR = "settings/repositories/TimeAndDateRepository.java"
+TDB = "@V/C0221o1.java"  # SettingstimedateactivitybindingImpl
+SIG = "settings/data/vehicle/signals/"
+SND = "settings/data/system/signals/sounds/"
+SUP = (SET, SIG + "SignalsGroupSupervisor.java", "if (value.isAvailable()) {")
+ALM = "@com/android/car/settings/applications/ApplicationListItemManager.java"
+XSL = (CAR, "@com/android/car/settings/common/ExtraSettingsLoader.java",
+       "this.mPm.queryIntentActivitiesAsUser(intent, 128, ActivityManager.getCurrentUser())")
+TOD = "server/timeofday/"
+GPS_OK = "((BACK_OFFICE_SERVER_ENABLED and GPS_DATA_SOURCE == 2) or (not BACK_OFFICE_SERVER_ENABLED and GPS_DATA_SOURCE == 1))"
+CORVETTE = "(GMBrand == 3 and GMModel == 10)"
+_APPS_NOTE = ("isLoaded() drops the entry from the list handed to the Apps screens (All apps, recently opened). Not a statement "
+              "about whether the package is installed or enabled.")
+
+RULES += [
+    # CarSettings
+    rule("settings.car.quick_startup", "Settings > System: quick start-up row",
+         "SUSPEND_TO_RAM_ENABLE",
+         "QuickStartupPreferenceController.getAvailabilityStatus() returns AVAILABLE (0); false: UNSUPPORTED_ON_DEVICE (2), "
+         "the row is not shown", "open Settings > System",
+         [(CAR, "@com/android/car/settings/system/QuickStartupPreferenceController.java", "return isSuspendRamEnable ? 0 : 2;")]),
+    rule("settings.car.apps_alexa", "Settings > Apps: Alexa entry",
+         "APPLICATION_HOMESCREEN_ALEXA_ENABLED and COUNTRY_CODE in (49, 5, 31)",
+         "com.gm.info3.alexa is kept in the application list", "open Settings > Apps > all apps",
+         [(CAR, ALM, "return isAlexaEnable && (countryCode == 49 || countryCode == 5 || countryCode == 31);")], note=_APPS_NOTE),
+    rule("settings.car.apps_offroad", "Settings > Apps: Off-road entry",
+         f"not {CORVETTE} or (APPLICATION_HOMESCREEN_OFFROAD_ENABLED and OFF_ROAD_APP_FEATURE_ENABLE)",
+         "com.gm.offroad is kept in the application list (always, unless brand 3 and model 10)", "open Settings > Apps > all apps",
+         [(CAR, ALM, "CalItem.OFF_ROAD_APP_FEATURE_ENABLE"), (CAR, ALM, "return brandEnum == 3 && modeEnum == 10;")], note=_APPS_NOTE),
+    rule("settings.car.apps_energy", "Settings > Apps: Energy entry",
+         f"not {CORVETTE} or (APPLICATION_HOMESCREEN_ENERGY_ENABLED and ENERGY_APPLICATION)",
+         "com.gm.hmi.energy is kept in the application list (always, unless brand 3 and model 10)", "open Settings > Apps > all apps",
+         [(CAR, ALM, "CalItem.ENERGY_APPLICATION")], note=_APPS_NOTE),
+    rule("settings.car.apps_trailering", "Settings > Apps: Trailering entry",
+         f"not {CORVETTE} or APPLICATION_HOMESCREEN_TRAILERING_ENABLED",
+         "com.gm.hmi.trailer is kept in the application list (always, unless brand 3 and model 10)", "open Settings > Apps > all apps",
+         [(CAR, ALM, "CalItem.APPLICATION_HOMESCREEN_TRAILERING_ENABLED")], note=_APPS_NOTE),
+    rule("settings.car.apps_gmc_studio", "Settings > Apps: com.gm.fse entry",
+         f"not {CORVETTE} or APPLICATION_HOMESCREEN_VIDEO_ENABLED",
+         "com.gm.fse is kept in the application list (always, unless brand 3 and model 10)", "open Settings > Apps > all apps",
+         [(CAR, ALM, "CalItem.APPLICATION_HOMESCREEN_VIDEO_ENABLED")], note=_APPS_NOTE),
+    # GMSettings start-up enables or disables two activities in the package manager; CarSettings lists them by category.
+    rule("settings.car.tty_row", "Settings > System: TTY row",
+         "TTYSetting",
+         "GMSettings start-up enables com.gm.hmi.onstarui/.ui.activities.TtySettingOverviewActivity in the package manager "
+         "(setComponentEnabledSetting); false: disables it. CarSettings fills the System screen's TTY group from enabled "
+         "activities with category com.gm.onstarui.app.tty.mode, so the row follows the component state",
+         "adb shell pm dump com.gm.hmi.onstarui | grep -A3 disabledComponents; open Settings > System",
+         [(SET, APPS, "enableComponent(ONSTAR_HMI_PKG_NAME, TTY_MODE_ACTIVITY_NAME);"),
+          (SET, "settings/core/ExecConfig.java", "new SetupCalibrationBasedSettingsUseCase().execute(null);"), XSL],
+         note="A package-manager state, persisted under /data: it outlives the calibration change until GMSettings starts again "
+              "(not for the Connections client). That a disabled activity is not returned by the query is platform behaviour, "
+              "not read here."),
+    rule("settings.car.device_registration_row", "Settings > System > About: device registration row",
+         "BACK_OFFICE_SERVER_ENABLED",
+         "GMSettings start-up enables com.gm.hmi.settings/.ui.activities.SettingsAboutDeviceRegistrationActivity in the package "
+         "manager; false: disables it. CarSettings fills the About screen's group from enabled activities with category "
+         "com.gm.hmi.settings.device.registration",
+         "adb shell pm dump com.gm.hmi.settings | grep -A3 disabledComponents; open Settings > System > About",
+         [(SET, APPS, "enableComponent(SETTINGS_HMI_PKG_NAME, DEVICE_REGISTRATION_ACTIVITY_NAME);"), XSL],
+         note="Same mechanism and caveats as the TTY row."),
+    # GMSettings: date and time
+    rule("settings.time.auto_datetime_row", "Settings > Date and time: Automatic Date / Time row",
+         GPS_OK,
+         "isAutomaticTimeAndDateAvailable() true: the Automatic Date / Time switch row is VISIBLE; false: the row is GONE and "
+         "GMSettings start-up writes Settings.Global auto_time = 0",
+         "open Settings > Date and time; adb shell settings get global auto_time",
+         [(SET, TDR, "return isTCPGPSAvailable() || isInternalGPSAvailable();"), (SET, TDR, "setAutomaticTimeAndDateStatus(false);"),
+          (SET, SET_RL, "ObservableBoolean observableBooleanL2 = this.f3564f.l2();"), (SET, TDB, "observableBooleanL3 = iVar2.l2();")],
+         note="Visibility read in smali (V/o1): available -> 0, else 8, applied to the row's switch, two labels and dividers. "
+              "FM_RDS_Clocktime_enabled is not a term. Manual time and date entry is ignored while auto_time is 1 and this is true."),
+    rule("settings.time.auto_timezone_row", "Settings > Date and time: Automatic Time Zone row",
+         f"{GPS_OK} and ((BACK_OFFICE_SERVER_ENABLED and onstar_subscription_valid and APPLICATION_HOMESCREEN_ONSTAR_ENABLED) "
+         "or FM_RDS_Clocktime_enabled)",
+         "isAutomaticTimeZoneAvailable() true: the Automatic Time Zone switch row is VISIBLE; false: GONE",
+         "open Settings > Date and time",
+         [(SET, TDR, "return (isTCPGPSAvailable() || isInternalGPSAvailable()) && (isActiveOnStarSubscription() || isRDSAvailable());"),
+          (SET, SET_RL, "ObservableBoolean observableBooleanB0 = this.f3564f.B0();"), (SET, TDB, "observableBooleanB0 = iVar2.B0();")],
+         note="onstar_subscription_valid is the runtime answer of OnStarRepository.isOnStarSubscriptionValid(). The setting is "
+              "a UI gate only; the time-zone logic is time.rds_local_source."),
+    # CriticalWKSApp: the service that sets the clock and the time zone
+    rule("time.rds_local_source", "Time-of-day service: RDS as local-time source",
+         "FM_RDS_Clocktime_enabled",
+         "TimeofDayService may take the tuner's RDS clock time as its LOCAL time source when the vehicle's cellular local time "
+         "is not available. Inside the service, local time is used only to derive a time zone (rounded half-hour difference "
+         "to trusted time, or to the remote real-time clock when there is none, then AlarmManager.setTimeZone) while "
+         "auto_time_zone is 1. It never sets the system clock",
+         "log 'TimeOfDay:GMTuner: computed Local Time' / 'VehicleTime: Setting time zone to'",
+         [(CRIT, TOD + "calibrations/TimeOfDayCalibrations.java", 'getBoolean("FM_RDS_Clocktime_enabled", false)'),
+          (CRIT, TOD + "sources/GMTunerTimeSource.java", "return calibrations.isRdsSourceAvailable();"),
+          (CRIT, TOD + "sources/GMTunerTimeSource.java", 'extras.getString("com.gm.rds_time")'),
+          (CRIT, TOD + "LocalTimeHandler.java", "this.localTimeSource = this.tunerTimeSource;"),
+          (CRIT, TOD + "TimeofDayService.java", "this.mAlarmManager.setTimeZone(zones.get(0));"),
+          ("GMTunerService", "@k/m.java", 'arrayList.add("com.gm.rds_time");')],
+         note="RDS time arrives as a JSON string in the media-session extras of com.gm.gmaudio.tuner, which reads vendor "
+              "parameter com.gm.rds_time from the broadcast-radio HAL (vendor.harman.tuner-service; strings and symbols name "
+              "RdsClockTime, sendRdsTime, updateRdsTime; not decompiled). Accepted only when two successive values lie "
+              "within 180 s and either bit <country code> of PI_CODE_CONFIGURATION is set or it is within "
+              "RDS_CLOCK_TIME_MAX_DIFF minutes of the system's local clock. Image and bench value: 0."),
+    # GMSettings: sounds, privacy, vehicle
+    rule("settings.sounds.audible_touch_row", "Settings > Sounds: audible touch feedback row",
+         "ENABLE_MENU_AUDIO_TOUCH_FEEDBACK",
+         "The audible touch feedback row is listed; false: left out. When true GMSettings also copies the user's "
+         "sound_effects_enabled value to user 0",
+         "open Settings > Sounds",
+         [(SET, SND + "AudibleTouchFeedback.java", "getBooleanValue(CalItem.ENABLE_MENU_AUDIO_TOUCH_FEEDBACK)"),
+          (SET, "@Q/C0162h.java", "if (soundsBundle.isAvailable()) {")]),
+    rule("settings.sounds.audio_cue_rows", "Settings > Sounds: start-up sound rows",
+         "AUDIO_CUE_ACUE_RUN_ENABLED or AUDIO_CUE_WELCOME_ENABLE or AUDIO_CUE_ACUE_STOP_ENABLED",
+         "The audio cue on/off row and the audio cue volume row are listed; false: both left out",
+         "open Settings > Sounds",
+         [(SET, SND + "SoundsCalibrationImpl.java", "return isAudioCueRunWelcomeEnabled() || isAudioCueStopEnabled();"),
+          (SET, SND + "StartupSounds.java", "return isAnyAudioCueEnabled();"), (SET, "@Q/C0162h.java", "if (soundsBundle.isAvailable()) {")],
+         note="The maximum start-up volume row is always listed."),
+    rule("settings.sounds.audio_cue_shutdown_wording", "Settings > Sounds: start-up/shut-down wording",
+         "AUDIO_CUE_ACUE_STOP_ENABLED",
+         "The two audio cue rows use the start-up-and-shut-down titles and descriptions; false: the start-up-only ones",
+         "open Settings > Sounds",
+         [(SET, SND + "StartupSounds.java", "return isAudioCueStopEnabled() ? R$string.settings_audio_cues_shutdown : R$string.settings_audio_cues;")]),
+    rule("settings.location.onstar_row", "Settings > Privacy > Location: Location Services for OnStar row",
+         "APPLICATION_HOMESCREEN_ONSTAR_ENABLED and COUNTRY_CODE != 92",
+         "The Location Services for OnStar row is listed; false: left out",
+         "open Settings > Privacy > Location",
+         [(SET, "settings/repositories/PermissionsRepository.java", "return onStarAvailability && z2;"),
+          (SET, SET_RL, "Location.LOCATION_SERVICES_FOR_ONSTAR.u(locationServicesBundle.a());"),
+          (SET, "hmi/settings/ui/activities/SettingsSystemLocationServicesActivity.java", 'getEventHandler().h("evg_LocationServicesOnStarAvailable");')]),
+    rule("settings.account.network_service", "Settings: GM account sign-in network check",
+         "DataServicesEnable and data_services_setting_on",
+         "ConnectivityStatus.getNetworkStatus() goes on to test the connection; false: it returns NETWORK_SERVICE_DISABLED "
+         "to the account sign-in handlers before looking at any network",
+         "log tag ConnectivityStatus",
+         [(SET, "settings/data/auth/ConnectivityStatus.java", "return NetworkStatus.NETWORK_SERVICE_DISABLED;"),
+          (SET, "@Q/F.java", "CheckNetworkStatusUseCase")],
+         note="data_services_setting_on is Settings.Global data_services_enabled == 1. The screen shown for the disabled status "
+              "was not resolved."),
+    rule("settings.vehicle.valet_mode", "Settings > Vehicle: valet mode category",
+         "ValetMaskMenu",
+         "ValetModeSignal.isAvailable() true: the valet mode category is in the list of available vehicle settings; false: left out",
+         "open Settings > Vehicle",
+         [(SET, SIG + "valetmode/ValetModeSignal.java", "getBooleanValue(CalItem.VALET_MASK_MENU)"),
+          (SET, SIG + "SignalsManager.java", "if (signalsGroupSupervisor.hasAvailableSignals()) {")],
+         note="Traced to the list returned by SignalsManager.getAvailableVehicleSignals(); the row view was not inspected."),
+    rule("settings.vehicle.engine_lighting", "Settings > Vehicle > Lighting: engine lighting row",
+         "product_is_my23_csm and AmbientLightingEnable and ambient_aux1_signal_available",
+         "EngineLightingSignal.isAvailable() true: the engine lighting sub-row is listed; false: left out",
+         "log 'return isAvailable() false by cal.'",
+         [(SET, SIG + "lightning/EngineLightingSignal.java", "getBooleanValue(CalItem.AMBIENT_LIGHTING_ENABLE)"), SUP],
+         note="product_is_my23_csm: the product name contains the MY23 CSM marker. ambient_aux1_signal_available: either "
+              "auxiliary ambient colour or animation vehicle signal is available."),
+    rule("settings.vehicle.rear_camera_park_assist", "Settings > Vehicle > Collision/detection: rear camera park assist symbols row",
+         "RVS_PRESENT_STATUS != 0 and (park_assist_property_available if RVS_PRESENT_STATUS == 2 else RVS_FEATURE_AVAIL_UPA_SYMBOLS)",
+         "RearCameraParkAssistSignal.isAvailable() true: the row is listed; false: left out. With status 2 the option is the "
+         "vehicle property, otherwise an on/off stored in Settings.Global rear_camera_park_assist_status",
+         "open Settings > Vehicle",
+         [(SET, SIG + "collisionanddetection/RearCameraParkAssistSignal.java", "getBooleanValue(CalItem.RVS_FEATURE_AVAIL_UPA_SYMBOLS)"), SUP],
+         note="Status values above 2 keep the camera type of the previous call (initially the status-1 type)."),
+    rule("settings.vehicle.drive_mode_overlay", "Settings > Vehicle > Drive mode: selection overlay row",
+         "GMBrand == 3",
+         "DriveModeSelectionOverlaySignal.isAvailable() true: the selection overlay on/off row is listed; false: left out",
+         "open Settings > Vehicle",
+         [(SET, SIG + "drivemodecustomization/DriveModeSelectionOverlaySignal.java", "return this.mCalibrationRequest.getEnumeration(CalItem.GMBrand) == 3;"), SUP],
+         note="The stored value is Settings.Global drive_mode_selection_overlay; its default is on only for brand 3 with model 10."),
+    # GMConnections
+    rule("settings.connections.vehicle_to_phone_row", "Settings > Connections: vehicle-to-phone sharing row",
+         "VCA_ACCESS_VEHICLE_DATA",
+         "The Connections screen lists the device remote access row; false: left out",
+         "open Settings > Connections",
+         [(SET, "settings/repositories/DeviceRemoteAccessRepository.java", "getBooleanValue(CalItem.VCA_ACCESS_VEHICLE_DATA)"),
+          (CONN, CONN_RL, "systemMenuItemStatus.getIsRemoteDevStatusAvailable()")]),
+    rule("settings.hotspot.share_data_row", "Settings > Connections > Wi-Fi hotspot: Share Hotspot Data row",
+         "APPLICATION_HOMESCREEN_ONSTAR_ENABLED or BACK_OFFICE_SERVER_ENABLED",
+         "The Share Hotspot Data row is VISIBLE; false: GONE", "open Settings > Connections > Wi-Fi hotspot",
+         [(CONN, HOT, "return new GetOnStarAvailabilityUseCase().executeSync().booleanValue() || isBackOfficeServerEnabled();"),
+          (CONN, "@p000a0/C0192t.java", "i7 = mIsHotspotDataSharedAvailable ? 0 : 8;")]),
+    rule("settings.hotspot.password_reveal", "Settings > Connections > Wi-Fi hotspot: password show/hide control",
+         "COUNTRY_CODE == 4",
+         "The hotspot password is hidden by default and the show/hide control is VISIBLE; false: the control is GONE",
+         "open Settings > Connections > Wi-Fi hotspot",
+         [(CONN, HOT, "return enumeration == 4;"), (CONN, "@p000a0/C0192t.java", "mIsPasswordHidden = wifiHotspotInfoK != null ? wifiHotspotInfoK.getMIsPasswordHidden() : false;")]),
+    rule("settings.phone.carplay_toggle_row", "Settings > Connections > Phones > phone: Apple CarPlay on/off row",
+         "Apple_CarPlay_enableWireless",
+         "For a device whose projection type is CarPlay the phone-details list adds the Apple CarPlay on/off row; false: no row",
+         "open a paired phone in Settings > Connections > Phones",
+         [(CONN, BTR, "getBooleanValue(CalItem.Apple_CarPlay_enableWireless)"),
+          (CONN, CONN_RL, "if (bTDeviceInfoT.getIsProjectionToggleOptionAvailable() == 1) {")]),
+    rule("settings.phone.androidauto_toggle_row", "Settings > Connections > Phones > phone: Android Auto on/off row",
+         "AndroidAuto_enableWireless",
+         "For a device whose projection type is Android Auto the phone-details list adds the Android Auto on/off row; false: no row",
+         "open a paired phone in Settings > Connections > Phones",
+         [(CONN, BTR, "getBooleanValue(CalItem.AndroidAuto_enableWireless)"),
+          (CONN, CONN_RL, "if (bTDeviceInfoT.getIsProjectionToggleOptionAvailable() == 1) {")]),
+]
+
 # Settings whose value is passed through rather than gating a feature.
 VALUE_EFFECTS = {
     "Apple_CarPlay_softKeyboard": ("CarPlay limited-UI element list includes soft keyboard when true", DW, CPC),
@@ -185,6 +406,30 @@ VALUE_EFFECTS = {
     "BluetoothModuleDeviceName": ("Read as the Bluetooth/host name by connection, CarPlay model name, Android Auto and WLAN code", DW, WLAN),
     "BTConnectionRequestTimer": ("Settings returns it as the Bluetooth connection-request timeout (via CalItem)", "GMSettings", "settings/data/calibration/CalItem.java"),
     "BluetoothDevicePairLimit": ("Paired-device limit in the connection manager", DW, DIM),
+    # Settings pass
+    "GPS_DATA_SOURCE": ("Time-of-day service trusted (UTC) time source: 0 none (clock from the remote real-time clock, else "
+                        "2020-01-01); 1 location fix time through GMLocationClient; 2 vehicle property UTC. Apart from the remote "
+                        "real-time clock and manual entry, nothing else sets the system clock in this service. Also a term "
+                        "of the two Settings date/time rows",
+                        CRIT, TOD + "calibrations/TimeOfDayCalibrations.java"),
+    "PI_CODE_CONFIGURATION": ("Bit mask over the RDS country code: a set bit accepts RDS clock time from that country without "
+                              "the RDS_CLOCK_TIME_MAX_DIFF check", CRIT, TOD + "calibrations/TimeOfDayCalibrations.java"),
+    "RDS_CLOCK_TIME_MAX_DIFF": ("Minutes: RDS clock time further than this from the system's local clock is rejected unless "
+                                "PI_CODE_CONFIGURATION accepts the country", CRIT, TOD + "calibrations/TimeOfDayCalibrations.java"),
+    "TZDSTAdjust_LL": ("Seconds: lower bound of a time-zone step the time-of-day service validates over repeated polls",
+                       CRIT, TOD + "calibrations/TimeOfDayCalibrations.java"),
+    "TZDSTAdjust_UL": ("Seconds: upper bound of that step", CRIT, TOD + "calibrations/TimeOfDayCalibrations.java"),
+    "TZDSTAckWaitTime": ("Number of consecutive one-second polls a time-zone step inside the bounds must persist before it is applied",
+                         CRIT, TOD + "calibrations/TimeOfDayCalibrations.java"),
+    "MinChimeVolumeStep": ("Lower end of the chime volume slider in Settings (via CalItem)", SET, "settings/data/calibration/CalItem.java"),
+    "MaxChimeVolumeStep": ("Upper end of the chime volume slider in Settings (via CalItem)", SET, "settings/data/calibration/CalItem.java"),
+    "DefaultMaximumStartupVolume": ("Settings shows it as the maximum start-up volume until Settings.Global maximum_startup_volume "
+                                    "is written, and as the audio cue volume if the audio manager call fails (via CalItem)",
+                                    SET, "settings/data/calibration/CalItem.java"),
+    "GIS887_VehicleTransmissionType": ("Value 1 selects the first of two description texts of the automatic door lock setting "
+                                       "(via CalItem)", SET, "settings/data/calibration/CalItem.java"),
+    "GM_Account_Sign_In_Method": ("Value 1: account sign-in by e-mail and phone number; any other value: e-mail only (via CalItem)",
+                                  SET, "settings/data/calibration/CalItem.java"),
 }
 
 # Methods that forward a String parameter straight to a calibration getter, so a call with a calibration name is a read.
@@ -200,6 +445,24 @@ WRAPPERS = {
     ("GMVAC", "com/gm/android/vehicle/support/navigation/NavigationHelper.java"): (["readBooleanCal"], "this.calibrationManager.getBoolean(str)"),
     ("GMAlexa", "com/gm/android/vehicle/support/navigation/NavigationHelper.java"): (["readBooleanCal"], "this.calibrationManager.getBoolean(str)"),
     ("GMRSISrc", "com/gm/rsicc/RSIApplication.java"): (["K", "X"], "boolean z = L().getBoolean(str, d.i(str));"),
+}
+
+# Enum catalogs: each entry binds an identifier to one calibration name, and the listed methods forward the entry's name to
+# a typed CalibrationManager getter. Key: (app, file under sources/). Value: (enum class, getter methods, text that must be
+# present in the file holding the getters, that file). A call `getter(Enum.X)` is then a read-via-constant site.
+ENUM_KEYS = {
+    ("GMSettings", "com/gm/settings/data/calibration/CalItem.java"): (
+        "CalItem", ["getBooleanValue", "getIntegerValue", "getEnumeration", "getBooleanCalibration"],
+        "calibrationManager.getBoolean(calItem.getCalId(), ((Boolean) calItem.getDefault()).booleanValue())",
+        "com/gm/settings/data/calibration/CalibrationRequest.java"),
+    ("GMConnections", "com/gm/settings/data/calibration/CalItem.java"): (
+        "CalItem", ["getBooleanValue", "getIntegerValue", "getEnumeration", "getBooleanCalibration"],
+        "calibrationManager.getBoolean(calItem.getCalId(), ((Boolean) calItem.getDefault()).booleanValue())",
+        "com/gm/settings/data/calibration/CalibrationRequest.java"),
+    ("CarSettings", "com/android/car/settings/calibration/CalItem.java"): (
+        "CalItem", ["getBooleanValue", "getIntegerValue", "getEnumeration"],
+        "calibrationManager.getBoolean(calItem.getCalId(), ((Boolean) calItem.getDefault()).booleanValue())",
+        "com/android/car/settings/calibration/CalibrationRequest.java"),
 }
 
 # Files whose list entries are all read by one loop. Key: (app, file under sources/). Value: text that must be present.
