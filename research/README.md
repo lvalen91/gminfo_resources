@@ -17,6 +17,11 @@ rewrite them — and ship byte-for-byte unchanged apart from the repo-path rewri
 
 ## Documents
 
+### Calibration effect map
+| Doc | Contents |
+|---|---|
+| [calibration-map/README.md](calibration-map/README.md) | Y175 calibration values (image, overrides, bench) mapped to traced Android effects, full database (2574 rows); offline predictor |
+
 ### GHS hypervisor, boot, update, recovery
 | Doc | Contents |
 |---|---|
